@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>城市地下商业客流洞</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.149.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.149.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+        #canvas-container { position: absolute; top: 0; left: 280px; right: 0; bottom: 60px; }
+        #sidebar { position: absolute; top: 0; left: 0; width: 280px; height: calc(100% - 60px); background: #1a1a2e; color: #e0e0e0; overflow-y: auto; z-index: 100; }
+        #timeline { position: absolute; bottom: 0; left: 280px; right: 0; height: 60px; background: #16213e; z-index: 100; display: flex; align-items: center; padding: 0 20px; }
+        .conflict-badge { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .heat-legend { display: flex; height: 8px; border-radius: 4px; overflow: hidden; }
+        .heat-legend div { flex: 1; }
+        .spinner { border: 3px solid #333; border-top: 3px solid #3498db; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .tab-active { background: #0f3460; border-left: 3px solid #e94560; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a2e; }
+        ::-webkit-scrollbar-thumb { background: #4a5568; border-radius: 3px; }
+        
+        @media print {
+            #sidebar, #timeline, #canvas-container { display: none !important; }
+            #report-view { display: block !important; }
+            body { overflow: visible; background: white; color: black; }
+        }
+        
+        #report-view { display: none; padding: 40px; max-width: 1000px; margin: 0 auto; background: white; color: #333; }
+        .report-section { margin-bottom: 30px; page-break-inside: avoid; }
+        .report-header { border-bottom: 3px solid #e94560; padding-bottom: 20px; margin-bottom: 30px; }
+        .conflict-card { background: #fff5f5; border-left: 4px solid #e94560; padding: 15px; margin: 10px 0; border-radius: 4px; }
+        .normal-card { background: #f0fff4; border-left: 4px solid #38a169; padding: 15px; margin: 10px 0; border-radius: 4px; }
+        .warning-card { background: #fffbeb; border-left: 4px solid #ed8936; padding: 15px; margin: 10px 0; border-radius: 4px; }
+        .data-table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .data-table th, .data-table td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; }
+        .data-table th { background: #f7fafc; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-gray-900">
+    <div id="sidebar">
+        <div class="p-4 bg-gradient-to-r from-red-600 to-pink-600">
+            <h1 class="text-xl font-bold text-white">🏬 城市地下商业客流洞</h1>
+            <p class="text-sm text-pink-100 mt-1">实时客流监控与分析平台</p>
+        </div>
+        
+        <div class="flex border-b border-gray-700">
+            <button onclick="switchTab('control')" id="tab-control" class="flex-1 py-2 text-sm tab-active">📊 控制</button>
+            <button onclick="switchTab('data')" id="tab-data" class="flex-1 py-2 text-sm">📋 数据</button>
+            <button onclick="switchTab('report')" id="tab-report" class="flex-1 py-2 text-sm">📄 报告</button>
+        </div>
+        
+        <div id="panel-control" class="p-4 space-y-4">
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-pink-400 mb-3">🔍 楼层错配检测</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-2 text-xs">
+                        <input type="checkbox" id="check-mismatch" checked onchange="updateScene()" class="rounded">
+                        <span>启用错配检测</span>
+                    </label>
+                    <div>
+                        <label class="text-xs text-gray-400">错配敏感度</label>
+                        <input type="range" id="mismatch-threshold" min="1" max="10" value="5" onchange="updateScene()" class="w-full">
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>宽松</span><span id="threshold-val">5</span><span>严格</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-blue-400 mb-3">👥 客流重复分析</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-2 text-xs">
+                        <input type="checkbox" id="check-duplicate" checked onchange="updateScene()" class="rounded">
+                        <span>启用重复检测</span>
+                    </label>
+                    <div>
+                        <label class="text-xs text-gray-400">重复判定阈值(分钟)</label>
+                        <input type="range" id="duplicate-window" min="5" max="120" value="30" onchange="updateScene()" class="w-full">
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>5</span><span id="window-val">30</span><span>120</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-yellow-400 mb-3">🔥 热力图设置</h3>
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-2 text-xs">
+                        <input type="checkbox" id="show-heatmap" checked onchange="updateScene()" class="rounded">
+                        <span>显示热力图</span>
+                    </label>
+                    <label class="flex items-center space-x-2 text-xs">
+                        <input type="checkbox" id="show-congestion" checked onchange="updateScene()" class="rounded">
+                        <span>显示拥堵提示</span>
+                    </label>
+                    <div class="heat-legend mt-2">
+                        <div style="background: #3182ce"></div>
+                        <div style="background: #38b2ac"></div>
+                        <div style="background: #ecc94b"></div>
+                        <div style="background: #ed8936"></div>
+                        <div style="background: #e53e3e"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500">
+                        <span>低</span><span>客流密度</span><span>高</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-purple-400 mb-3">🏢 楼层选择</h3>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="toggleFloor('B3')" id="floor-B3" class="py-2 text-xs rounded bg-purple-600 text-white">B3</button>
+                    <button onclick="toggleFloor('B2')" id="floor-B2" class="py-2 text-xs rounded bg-purple-600 text-white">B2</button>
+                    <button onclick="toggleFloor('B1')" id="floor-B1" class="py-2 text-xs rounded bg-purple-600 text-white">B1</button>
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-orange-400 mb-3">📅 活动日历筛选</h3>
+                <select id="event-filter" onchange="updateScene()" class="w-full bg-gray-700 rounded px-3 py-2 text-xs">
+                    <option value="all">全部活动</option>
+                    <option value="promotion">促销活动</option>
+                    <option value="exhibition">展览展示</option>
+                    <option value="performance">演出活动</option>
+                    <option value="none">无活动</option>
+                </select>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-green-400 mb-3">🛗 扶梯状态</h3>
+                <div id="escalator-status" class="space-y-2 text-xs">
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-red-400 mb-3">⚠️ 实时冲突</h3>
+                <div id="conflict-alerts" class="space-y-2 text-xs max-h-40 overflow-y-auto">
+                </div>
+            </div>
+        </div>
+        
+        <div id="panel-data" class="p-4 space-y-4 hidden">
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-blue-400 mb-3">📊 客流数据汇总</h3>
+                <div id="data-summary" class="grid grid-cols-2 gap-2 text-xs">
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-yellow-400 mb-3">📋 楼层明细</h3>
+                <div id="floor-details" class="space-y-2 text-xs">
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-purple-400 mb-3">🔄 重复客流分析</h3>
+                <div id="duplicate-analysis" class="text-xs space-y-2">
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-red-400 mb-3">❌ 楼层错配记录</h3>
+                <div id="mismatch-records" class="text-xs space-y-2 max-h-60 overflow-y-auto">
+                </div>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-green-400 mb-3">📝 补录数据</h3>
+                <div id="supplementary-data" class="text-xs space-y-2">
+                </div>
+            </div>
+        </div>
+        
+        <div id="panel-report" class="p-4 space-y-4 hidden">
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-cyan-400 mb-3">📄 生成分析报告</h3>
+                <p class="text-xs text-gray-400 mb-3">报告将包含楼层错配分析、客流重复情况、扶梯状态及冲突说明，用通俗语言解释给非技术同事。</p>
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-400">报告时间范围</label>
+                    <select id="report-range" class="w-full bg-gray-700 rounded px-3 py-2 text-xs">
+                        <option value="current">当前时间点</option>
+                        <option value="hour">最近1小时</option>
+                        <option value="day">今日全天</option>
+                        <option value="week">本周汇总</option>
+                    </select>
+                    <label class="text-xs text-gray-400">报告详细程度</label>
+                    <select id="report-detail" class="w-full bg-gray-700 rounded px-3 py-2 text-xs">
+                        <option value="simple">简明版（给领导看）</option>
+                        <option value="normal">标准版（给运营看）</option>
+                        <option value="detailed">详细版（给技术看）</option>
+                    </select>
+                </div>
+                <div class="flex gap-2 mt-4">
+                    <button onclick="generateReport('preview')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-xs font-medium">
+                        👁️ 预览报告
+                    </button>
+                    <button onclick="generateReport('export')" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded text-xs font-medium">
+                        📥 导出PDF
+                    </button>
+                </div>
+                <button onclick="generateReport('print')" class="w-full mt-2 bg-gray-600 hover:bg-gray-700 text-white py-2 rounded text-xs font-medium">
+                    🖨️ 打印报告
+                </button>
+            </div>
+            
+            <div class="bg-gray-800 rounded-lg p-3">
+                <h3 class="text-sm font-semibold text-orange-400 mb-3">🧪 测试数据场景</h3>
+                <p class="text-xs text-gray-400 mb-3">快速切换测试场景，验证系统覆盖情况</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="loadTestScenario('normal')" class="bg-green-700 hover:bg-green-800 text-white py-2 rounded text-xs">
+                        ✅ 正常场景
+                    </button>
+                    <button onclick="loadTestScenario('supplementary')" class="bg-yellow-700 hover:bg-yellow-800 text-white py-2 rounded text-xs">
+                        📝 补录场景
+                    </button>
+                    <button onclick="loadTestScenario('conflict')" class="bg-red-700 hover:bg-red-800 text-white py-2 rounded text-xs">
+                        ⚔️ 冲突场景
+                    </button>
+                    <button onclick="loadTestScenario('export')" class="bg-blue-700 hover:bg-blue-800 text-white py-2 rounded text-xs">
+                        📊 导出场景
+                    </button>
+                </div>
+            </div>
+            
+            <div id="report-preview" class="bg-gray-800 rounded-lg p-3 hidden">
+                <h3 class="text-sm font-semibold text-cyan-400 mb-3">📄 报告预览</h3>
+                <div id="report-preview-content" class="text-xs text-gray-300 max-h-80 overflow-y-auto space-y-2">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="canvas-container"></div>
+    
+    <div id="timeline">
+        <button onclick="togglePlay()" id="play-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded mr-4 text-sm font-medium">
+            ▶️ 播放
+        </button>
+        <button onclick="resetTimeline()" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded mr-4 text-sm">
+            ⏮️ 重置
+        </button>
+        <div class="flex-1 flex items-center mr-4">
+            <span class="text-gray-400 text-xs mr-2" id="time-start">09:00</span>
+            <input type="range" id="time-slider" min="0" max="780" value="240" oninput="onTimeChange()" class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+            <span class="text-gray-400 text-xs ml-2" id="time-end">22:00</span>
+        </div>
+        <div class="text-white text-sm font-mono bg-gray-800 px-4 py-2 rounded">
+            <span id="current-time">13:00</span>
+            <span class="text-gray-500 mx-2">|</span>
+            <span id="current-date">2026-06-02</span>
+        </div>
+        <div class="ml-4 flex items-center space-x-3">
+            <label class="text-xs text-gray-400">速度:</label>
+            <select id="play-speed" class="bg-gray-700 text-white rounded px-2 py-1 text-xs">
+                <option value="1">1x</option>
+                <option value="2" selected>2x</option>
+                <option value="5">5x</option>
+                <option value="10">10x</option>
+            </select>
+        </div>
+    </div>
+    
+    <div id="report-view"></div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        
+        let scene, camera, renderer, controls;
+        let floorMeshes = {};
+        let escalatorMeshes = {};
+        let heatmapMeshes = {};
+        let crowdParticles = [];
+        let isPlaying = false;
+        let playInterval = null;
+        let currentTimeIndex = 240;
+        let visibleFloors = { B3: true, B2: true, B1: true };
+        let currentData = null;
+        
+        function generateTestData(scenario = 'normal') {
+            const floors = ['B3', 'B2', 'B1'];
+            const timeSlots = [];
+            for (let t = 0; t <= 780; t += 30) {
+                const hour = 9 + Math.floor(t / 60);
+                const minute = t % 60;
+                timeSlots.push(`${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
+            }
+            
+            const escalators = [
+                { id: 'E01', from: 'B1', to: 'B2', x: -15, z: 0 },
+                { id: 'E02', from: 'B2', to: 'B3', x: -15, z: 0 },
+                { id: 'E03', from: 'B1', to: 'B2', x: 15, z: 0 },
+                { id: 'E04', from: 'B2', to: 'B3', x: 15, z: 0 },
+                { id: 'E05', from: 'B1', to: 'B2', x: 0, z: -20 },
+                { id: 'E06', from: 'B2', to: 'B3', x: 0, z: -20 },
+            ];
+            
+            const events = [
+                { id: 'EV01', floor: 'B1', type: 'promotion', name: '618大促', startTime: 600, endTime: 720, x: 10, z: 10 },
+                { id: 'EV02', floor: 'B2', type: 'exhibition', name: '艺术展览', startTime: 300, endTime: 540, x: -10, z: 10 },
+                { id: 'EV03', floor: 'B3', type: 'performance', name: '音乐演出', startTime: 480, endTime: 660, x: 0, z: 15 },
+            ];
+            
+            const shops = [];
+            const shopNames = ['星巴克', '优衣库', '海底捞', '耐克', '阿迪达斯', '小米之家', '华为', '苹果', '无印良品', '名创优品', '屈臣氏', '万宁'];
+            floors.forEach((floor, fi) => {
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    shops.push({
+                        id: `${floor}-SHOP${String(i + 1).padStart(2, '0')}`,
+                        floor,
+                        name: shopNames[(fi * 8 + i) % shopNames.length],
+                        x: Math.cos(angle) * 25,
+                        z: Math.sin(angle) * 15,
+                        area: 80 + Math.random() * 120
+                    });
+                }
+            });
+            
+            const data = {
+                floors,
+                timeSlots,
+                escalators,
+                events,
+                shops,
+                timeSeries: []
+            };
+            
+            for (let ti = 0; ti < timeSlots.length; ti++) {
+                const timePoint = {
+                    time: timeSlots[ti],
+                    floorData: {},
+                    escalatorStatus: {},
+                    duplicates: [],
+                    mismatches: [],
+                    supplementary: []
+                };
+                
+                let baseMultiplier = 1;
+                const hour = 9 + Math.floor(ti / 2);
+                if (hour >= 12 && hour <= 14) baseMultiplier = 1.5;
+                if (hour >= 18 && hour <= 20) baseMultiplier = 1.8;
+                
+                events.forEach(ev => {
+                    if (ti * 30 >= ev.startTime && ti * 30 <= ev.endTime) {
+                        baseMultiplier *= 1.3;
+                    }
+                });
+                
+                if (scenario === 'conflict') {
+                    if (ti >= 10 && ti <= 15) baseMultiplier *= 2.5;
+                    if (ti >= 18 && ti <= 22) baseMultiplier *= 0.3;
+                }
+                
+                floors.forEach((floor, fi) => {
+                    const baseFlow = Math.floor((200 + fi * 50) * baseMultiplier * (0.8 + Math.random() * 0.4));
+                    const entryCount = Math.floor(baseFlow * (0.3 + Math.random() * 0.2));
+                    const exitCount = Math.floor(baseFlow * (0.25 + Math.random() * 0.2));
+                    const stayCount = Math.floor(baseFlow * (0.5 + Math.random() * 0.3));
+                    const avgStay = 15 + Math.floor(Math.random() * 45);
+                    
+                    let amount = (entryCount * 50 + stayCount * 30) * (1 + fi * 0.1);
+                    let status = 'normal';
+                    
+                    if (scenario === 'conflict' && ti >= 8 && ti <= 12 && floor === 'B2') {
+                        status = 'mismatch';
+                        amount = amount * 0.5;
+                        timePoint.mismatches.push({
+                            floor,
+                            time: timeSlots[ti],
+                            type: 'floor_mismatch',
+                            expected: entryCount,
+                            actual: Math.floor(entryCount * 0.4),
+                            reason: '楼层客流计数设备与门禁系统数据不一致',
+                            impact: {
+                                amount: Math.floor(amount * 0.3),
+                                status: 'warning'
+                            }
+                        });
+                    }
+                    
+                    if (scenario === 'supplementary' && ti >= 5 && ti <= 8) {
+                        if (Math.random() > 0.5) {
+                            status = 'supplementary';
+                            timePoint.supplementary.push({
+                                floor,
+                                time: timeSlots[ti],
+                                source: 'manual',
+                                operator: '张三',
+                                supplementTime: timeSlots[ti + 2],
+                                reason: '设备临时故障，人工补录'
+                            });
+                        }
+                    }
+                    
+                    timePoint.floorData[floor] = {
+                        entryCount,
+                        exitCount,
+                        stayCount,
+                        avgStay,
+                        amount: Math.floor(amount),
+                        status,
+                        heatmap: generateHeatmap(30, 20, baseFlow, fi)
+                    };
+                });
+                
+                escalators.forEach(esc => {
+                    let status = 'normal';
+                    let flow = Math.floor(30 + Math.random() * 50);
+                    
+                    if (scenario === 'conflict' && ti >= 12 && ti <= 18 && esc.id === 'E02') {
+                        status = 'out_of_service';
+                        flow = 0;
+                    }
+                    
+                    if (scenario === 'conflict' && ti >= 8 && ti <= 12) {
+                        if (esc.id === 'E01' || esc.id === 'E03') {
+                            const conflict = {
+                                type: 'escalator_conflict',
+                                escalator: esc.id,
+                                time: timeSlots[ti],
+                                reason: '活动日历显示扶梯应维修，但实际在运行',
+                                impact: {
+                                    safety: 'high',
+                                    flow: Math.floor(flow * 0.2)
+                                }
+                            };
+                            timePoint.mismatches.push(conflict);
+                        }
+                    }
+                    
+                    timePoint.escalatorStatus[esc.id] = {
+                        status,
+                        flow,
+                        direction: 'up'
+                    };
+                });
+                
+                if (ti >= 2) {
+                    const duplicateCount = Math.floor(5 + Math.random() * 15);
+                    for (let d = 0; d < duplicateCount; d++) {
+                        const fromFloor = floors[Math.floor(Math.random() * floors.length)];
+                        let toFloor = floors[Math.floor(Math.random() * floors.length)];
+                        while (toFloor === fromFloor) {
+                            toFloor = floors[Math.floor(Math.random() * floors.length)];
+                        }
+                        
+                        const duplicate = {
+                            id: `DUP${String(timePoint.duplicates.length + 1).padStart(4, '0')}`,
+                            visitorId: `V${String(Math.floor(Math.random() * 10000)).padStart(6, '0')}`,
+                            fromFloor,
+                            toFloor,
+                            firstTime: timeSlots[Math.max(0, ti - 1 - Math.floor(Math.random() * 2))],
+                            secondTime: timeSlots[ti],
+                            interval: Math.floor(15 + Math.random() * 90),
+                            reason: ['跨楼层购物', '重复进入同一店铺', '使用不同出入口'][Math.floor(Math.random() * 3)],
+                            frequency: 1 + Math.floor(Math.random() * 3)
+                        };
+                        timePoint.duplicates.push(duplicate);
+                    }
+                }
+                
+                data.timeSeries.push(timePoint);
+            }
+            
+            return data;
+        }
+        
+        function generateHeatmap(width, height, baseFlow, floorIndex) {
+            const heatmap = [];
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+                    let value = Math.max(0, 1 - dist / (Math.max(width, height) / 2));
+                    value = value * (0.5 + Math.random() * 0.5);
+                    value = value * (baseFlow / 500);
+                    value = Math.min(1, value * (1 + floorIndex * 0.1));
+                    heatmap.push({
+                        x, y, value,
+                        xPos: (x - width / 2) * 2,
+                        zPos: (y - height / 2) * 1.5
+                    });
+                }
+            }
+            return heatmap;
+        }
+        
+        function init() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a1a);
+            scene.fog = new THREE.Fog(0x0a0a1a, 50, 200);
+            
+            camera = new THREE.PerspectiveCamera(60, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(60, 80, 60);
+            camera.lookAt(0, 0, 0);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            container.appendChild(renderer.domElement);
+            
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 20;
+            controls.maxDistance = 150;
+            controls.maxPolarAngle = Math.PI / 2.1;
+            
+            const ambientLight = new THREE.AmbientLight(0x404060, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 100, 50);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            scene.add(directionalLight);
+            
+            const pointLight1 = new THREE.PointLight(0x00ffff, 0.5, 100);
+            pointLight1.position.set(-30, 20, -30);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0xff00ff, 0.5, 100);
+            pointLight2.position.set(30, 20, 30);
+            scene.add(pointLight2);
+            
+            currentData = generateTestData('normal');
+            createFloorPlans();
+            createEscalators();
+            updateScene();
+            updateUI();
+            
+            animate();
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function createFloorPlans() {
+            const floors = ['B3', 'B2', 'B1'];
+            const floorColors = [0x4299e1, 0x38b2ac, 0x805ad5];
+            const floorY = [-15, -8, -1];
+            
+            floors.forEach((floor, index) => {
+                const group = new THREE.Group();
+                
+                const floorGeometry = new THREE.BoxGeometry(70, 0.3, 40);
+                const floorMaterial = new THREE.MeshPhongMaterial({
+                    color: floorColors[index],
+                    transparent: true,
+                    opacity: 0.3,
+                    side: THREE.DoubleSide
+                });
+                const floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+                floorMesh.position.y = floorY[index];
+                floorMesh.receiveShadow = true;
+                group.add(floorMesh);
+                
+                const edgeGeometry = new THREE.EdgesGeometry(floorGeometry);
+                const edgeMaterial = new THREE.LineBasicMaterial({ color: floorColors[index], linewidth: 2 });
+                const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+                edges.position.y = floorY[index];
+                group.add(edges);
+                
+                const gridHelper = new THREE.GridHelper(65, 13, floorColors[index], floorColors[index]);
+                gridHelper.position.y = floorY[index] + 0.16;
+                gridHelper.material.transparent = true;
+                gridHelper.material.opacity = 0.2;
+                group.add(gridHelper);
+                
+                currentData.shops.filter(s => s.floor === floor).forEach(shop => {
+                    const shopGeometry = new THREE.BoxGeometry(6, 2, 4);
+                    const shopMaterial = new THREE.MeshPhongMaterial({
+                        color: 0x2d3748,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    const shopMesh = new THREE.Mesh(shopGeometry, shopMaterial);
+                    shopMesh.position.set(shop.x, floorY[index] + 1.15, shop.z);
+                    shopMesh.castShadow = true;
+                    shopMesh.userData = { type: 'shop', ...shop };
+                    group.add(shopMesh);
+                    
+                    const shopTopGeometry = new THREE.BoxGeometry(6.2, 0.2, 4.2);
+                    const shopTopMaterial = new THREE.MeshPhongMaterial({
+                        color: floorColors[index],
+                        emissive: floorColors[index],
+                        emissiveIntensity: 0.3
+                    });
+                    const shopTop = new THREE.Mesh(shopTopGeometry, shopTopMaterial);
+                    shopTop.position.set(shop.x, floorY[index] + 2.25, shop.z);
+                    group.add(shopTop);
+                });
+                
+                currentData.events.filter(e => e.floor === floor).forEach(ev => {
+                    const eventGeometry = new THREE.ConeGeometry(3, 4, 6);
+                    const eventMaterial = new THREE.MeshPhongMaterial({
+                        color: 0xed8936,
+                        transparent: true,
+                        opacity: 0.7,
+                        emissive: 0xed8936,
+                        emissiveIntensity: 0.5
+                    });
+                    const eventMesh = new THREE.Mesh(eventGeometry, eventMaterial);
+                    eventMesh.position.set(ev.x, floorY[index] + 4, ev.z);
+                    eventMesh.rotation.x = Math.PI;
+                    eventMesh.userData = { type: 'event', ...ev };
+                    group.add(eventMesh);
+                });
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 256;
+                canvas.height = 256;
+                const ctx = canvas.getContext('2d');
+                const texture = new THREE.CanvasTexture(canvas);
+                
+                const heatmapGeometry = new THREE.PlaneGeometry(65, 35);
+                const heatmapMaterial = new THREE.MeshBasicMaterial({
+                    map: texture,
+                    transparent: true,
+                    opacity: 0.6,
+                    depthWrite: false
+                });
+                const heatmapMesh = new THREE.Mesh(heatmapGeometry, heatmapMaterial);
+                heatmapMesh.rotation.x = -Math.PI / 2;
+                heatmapMesh.position.y = floorY[index] + 0.3;
+                heatmapMesh.visible = visibleFloors[floor];
+                heatmapMesh.userData = { canvas, ctx, texture, floor };
+                heatmapMeshes[floor] = heatmapMesh;
+                group.add(heatmapMesh);
+                
+                scene.add(group);
+                floorMeshes[floor] = { group, mesh: floorMesh, color: floorColors[index], y: floorY[index] };
+            });
+        }
+        
+        function createEscalators() {
+            currentData.escalators.forEach(esc => {
+                const fromY = floorMeshes[esc.from].y;
+                const toY = floorMeshes[esc.to].y;
+                const midY = (fromY + toY) / 2;
+                
+                const group = new THREE.Group();
+                
+                const escalatorGeometry = new THREE.BoxGeometry(2, 0.3, 6);
+                const escalatorMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x718096,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                
+                const escalator = new THREE.Mesh(escalatorGeometry, escalatorMaterial);
+                escalator.position.set(esc.x, midY + 1, esc.z);
+                escalator.rotation.z = (toY > fromY ? 0.3 : -0.3);
+                escalator.castShadow = true;
+                group.add(escalator);
+                
+                const handrailGeometry = new THREE.BoxGeometry(0.1, 0.8, 6.5);
+                const handrailMaterial = new THREE.MeshPhongMaterial({ color: 0xa0aec0 });
+                
+                const leftHandrail = new THREE.Mesh(handrailGeometry, handrailMaterial);
+                leftHandrail.position.set(esc.x - 1.2, midY + 1.4, esc.z);
+                leftHandrail.rotation.z = escalator.rotation.z;
+                group.add(leftHandrail);
+                
+                const rightHandrail = new THREE.Mesh(handrailGeometry, handrailMaterial);
+                rightHandrail.position.set(esc.x + 1.2, midY + 1.4, esc.z);
+                rightHandrail.rotation.z = escalator.rotation.z;
+                group.add(rightHandrail);
+                
+                const arrowGeometry = new THREE.ConeGeometry(0.3, 0.8, 4);
+                const arrowMaterial = new THREE.MeshPhongMaterial({
+                    color: 0x48bb78,
+                    emissive: 0x48bb78,
+                    emissiveIntensity: 0.5
+                });
+                const arrow = new THREE.Mesh(arrowGeometry, arrowMaterial);
+                arrow.position.set(esc.x, midY + 2.5, esc.z);
+                arrow.rotation.x = (toY > fromY ? -0.5 : 0.5) * Math.PI;
+                arrow.userData = { type: 'arrow', escalator: esc.id };
+                group.add(arrow);
+                
+                scene.add(group);
+                escalatorMeshes[esc.id] = { group, mesh: escalator, arrow, color: 0x48bb78 };
+            });
+        }
+        
+        function updateHeatmapTexture(heatmapMesh, heatmapData, floor) {
+            const { canvas, ctx, texture } = heatmapMesh.userData;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const imageData = ctx.createImageData(width, height);
+            const data = imageData.data;
+            
+            const showHeatmap = document.getElementById('show-heatmap').checked;
+            
+            for (let i = 0; i < width * height; i++) {
+                const px = i % width;
+                const py = Math.floor(i / width);
+                
+                let value = 0;
+                if (showHeatmap && visibleFloors[floor]) {
+                    heatmapData.forEach(point => {
+                        const dx = (point.xPos / 65 + 0.5) * width - px;
+                        const dz = (point.zPos / 35 + 0.5) * height - py;
+                        const dist = Math.sqrt(dx * dx + dz * dz);
+                        if (dist < 20) {
+                            value += point.value * (1 - dist / 20);
+                        }
+                    });
+                    value = Math.min(1, value);
+                }
+                
+                const idx = i * 4;
+                if (value > 0) {
+                    let r, g, b;
+                    if (value < 0.25) {
+                        const t = value / 0.25;
+                        r = 49; g = Math.floor(130 + t * 50); b = 206;
+                    } else if (value < 0.5) {
+                        const t = (value - 0.25) / 0.25;
+                        r = Math.floor(49 + t * 10); g = Math.floor(180 - t * 50); b = Math.floor(206 - t * 50);
+                    } else if (value < 0.75) {
+                        const t = (value - 0.5) / 0.25;
+                        r = Math.floor(59 + t * 170); g = Math.floor(130 - t * 30); b = Math.floor(156 - t * 100);
+                    } else {
+                        const t = (value - 0.75) / 0.25;
+                        r = Math.floor(229 + t * 26); g = Math.floor(100 - t * 50); b = Math.floor(56 - t * 30);
+                    }
+                    data[idx] = r;
+                    data[idx + 1] = g;
+                    data[idx + 2] = b;
+                    data[idx + 3] = Math.floor(200 * value);
+                } else {
+                    data[idx + 3] = 0;
+                }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            texture.needsUpdate = true;
+        }
+        
+        function updateCrowdParticles(timeData) {
+            crowdParticles.forEach(p => scene.remove(p));
+            crowdParticles = [];
+            
+            const showCongestion = document.getElementById('show-congestion').checked;
+            if (!showCongestion) return;
+            
+            Object.keys(timeData.floorData).forEach(floor => {
+                const fd = timeData.floorData[floor];
+                const floorY = floorMeshes[floor].y;
+                const particleCount = Math.min(200, Math.floor(fd.stayCount / 5));
+                
+                const particleGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+                const density = fd.stayCount / 1000;
+                let color;
+                if (density < 0.3) color = 0x3182ce;
+                else if (density < 0.6) color = 0xecc94b;
+                else color = 0xe53e3e;
+                
+                const particleMaterial = new THREE.MeshBasicMaterial({
+                    color,
+                    transparent: true,
+                    opacity: 0.6
+                });
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    particle.position.set(
+                        (Math.random() - 0.5) * 60,
+                        floorY + 1 + Math.random() * 2,
+                        (Math.random() - 0.5) * 35
+                    );
+                    particle.userData = {
+                        baseX: particle.position.x,
+                        baseZ: particle.position.z,
+                        phase: Math.random() * Math.PI * 2,
+                        speed: 0.5 + Math.random() * 0.5
+                    };
+                    scene.add(particle);
+                    crowdParticles.push(particle);
+                }
+                
+                if (density > 0.7) {
+                    const warningGeometry = new THREE.RingGeometry(8, 10, 32);
+                    const warningMaterial = new THREE.MeshBasicMaterial({
+                        color: 0xe53e3e,
+                        transparent: true,
+                        opacity: 0.4,
+                        side: THREE.DoubleSide
+                    });
+                    const warning = new THREE.Mesh(warningGeometry, warningMaterial);
+                    warning.rotation.x = -Math.PI / 2;
+                    warning.position.y = floorY + 0.5;
+                    warning.userData = { type: 'congestion-warning', floor };
+                    scene.add(warning);
+                    crowdParticles.push(warning);
+                }
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.001;
+            crowdParticles.forEach(particle => {
+                if (particle.userData.baseX !== undefined) {
+                    const { baseX, baseZ, phase, speed } = particle.userData;
+                    particle.position.x = baseX + Math.sin(time * speed + phase) * 0.5;
+                    particle.position.z = baseZ + Math.cos(time * speed * 0.7 + phase) * 0.5;
+                }
+                if (particle.userData.type === 'congestion-warning') {
+                    particle.rotation.z = time * 0.5;
+                    particle.material.opacity = 0.2 + Math.sin(time * 3) * 0.2;
+                }
+            });
+            
+            Object.values(escalatorMeshes).forEach(em => {
+                if (em.arrow) {
+                    em.arrow.rotation.y = time * 2;
+                }
+            });
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function updateScene() {
+            const timeIdx = Math.floor(currentTimeIndex / 30);
+            const timeData = currentData.timeSeries[Math.min(timeIdx, currentData.timeSeries.length - 1)];
+            if (!timeData) return;
+            
+            document.getElementById('threshold-val').textContent = document.getElementById('mismatch-threshold').value;
+            document.getElementById('window-val').textContent = document.getElementById('duplicate-window').value;
+            
+            Object.keys(floorMeshes).forEach(floor => {
+                const { group, mesh, color } = floorMeshes[floor];
+                const fd = timeData.floorData[floor];
+                group.visible = visibleFloors[floor];
+                
+                if (fd) {
+                    if (fd.status === 'mismatch') {
+                        mesh.material.color.setHex(0xe53e3e);
+                        mesh.material.emissive = new THREE.Color(0xe53e3e);
+                        mesh.material.emissiveIntensity = 0.3;
+                    } else if (fd.status === 'supplementary') {
+                        mesh.material.color.setHex(0xed8936);
+                        mesh.material.emissive = new THREE.Color(0xed8936);
+                        mesh.material.emissiveIntensity = 0.2;
+                    } else {
+                        mesh.material.color.setHex(color);
+                        mesh.material.emissive = new THREE.Color(0x000000);
+                        mesh.material.emissiveIntensity = 0;
+                    }
+                }
+                
+                if (heatmapMeshes[floor]) {
+                    heatmapMeshes[floor].visible = visibleFloors[floor] && document.getElementById('show-heatmap').checked;
+                    if (fd && fd.heatmap) {
+                        updateHeatmapTexture(heatmapMeshes[floor], fd.heatmap, floor);
+                    }
+                }
+            });
+            
+            Object.keys(timeData.escalatorStatus).forEach(escId => {
+                const status = timeData.escalatorStatus[escId];
+                const em = escalatorMeshes[escId];
+                if (em) {
+                    if (status.status === 'out_of_service') {
+                        em.mesh.material.color.setHex(0xe53e3e);
+                        em.arrow.material.color.setHex(0xe53e3e);
+                        em.arrow.material.emissive.setHex(0xe53e3e);
+                        em.arrow.visible = false;
+                    } else {
+                        em.mesh.material.color.setHex(0x718096);
+                        em.arrow.material.color.setHex(0x48bb78);
+                        em.arrow.material.emissive.setHex(0x48bb78);
+                        em.arrow.visible = true;
+                    }
+                }
+            });
+            
+            updateCrowdParticles(timeData);
+            updateUI();
+        }
+        
+        function updateUI() {
+            const timeIdx = Math.floor(currentTimeIndex / 30);
+            const timeData = currentData.timeSeries[Math.min(timeIdx, currentData.timeSeries.length - 1)];
+            if (!timeData) return;
+            
+            document.getElementById('current-time').textContent = timeData.time;
+            
+            const escalatorStatusEl = document.getElementById('escalator-status');
+            escalatorStatusEl.innerHTML = '';
+            Object.keys(timeData.escalatorStatus).forEach(escId => {
+                const status = timeData.escalatorStatus[escId];
+                const esc = currentData.escalators.find(e => e.id === escId);
+                const statusClass = status.status === 'normal' ? 'text-green-400' : 'text-red-400 conflict-badge';
+                const statusText = status.status === 'normal' ? '运行中' : '停运';
+                escalatorStatusEl.innerHTML += `
+                    <div class="flex justify-between items-center bg-gray-700 rounded px-2 py-1">
+                        <span>${escId} (${esc.from}→${esc.to})</span>
+                        <span class="${statusClass}">${statusText} ${status.flow}人</span>
+                    </div>
+                `;
+            });
+            
+            const conflictAlertsEl = document.getElementById('conflict-alerts');
+            conflictAlertsEl.innerHTML = '';
+            timeData.mismatches.forEach(mm => {
+                const typeText = mm.type === 'floor_mismatch' ? '楼层错配' : '扶梯冲突';
+                conflictAlertsEl.innerHTML += `
+                    <div class="bg-red-900/50 border border-red-700 rounded p-2 conflict-badge">
+                        <div class="flex items-center space-x-1 text-red-400 font-semibold">
+                            <span>⚠️</span>
+                            <span>${typeText}</span>
+                            <span class="text-gray-500">-</span>
+                            <span>${mm.floor || mm.escalator}</span>
+                        </div>
+                        <div class="text-gray-400 mt-1 text-[10px]">${mm.reason}</div>
+                        ${mm.impact ? `<div class="text-yellow-400 mt-1 text-[10px]">影响: ¥${mm.impact.amount?.toLocaleString() || '安全风险高'}</div>` : ''}
+                    </div>
+                `;
+            });
+            
+            if (timeData.mismatches.length === 0) {
+                conflictAlertsEl.innerHTML = '<div class="text-green-400 text-center py-4">✅ 无冲突</div>';
+            }
+            
+            const dataSummaryEl = document.getElementById('data-summary');
+            let totalEntry = 0, totalExit = 0, totalStay = 0, totalAmount = 0;
+            Object.values(timeData.floorData).forEach(fd => {
+                totalEntry += fd.entryCount;
+                totalExit += fd.exitCount;
+                totalStay += fd.stayCount;
+                totalAmount += fd.amount;
+            });
+            dataSummaryEl.innerHTML = `
+                <div class="bg-gray-700 rounded p-2"><div class="text-gray-400">总入场</div><div class="text-xl text-blue-400 font-bold">${totalEntry.toLocaleString()}</div></div>
+                <div class="bg-gray-700 rounded p-2"><div class="text-gray-400">总出场</div><div class="text-xl text-green-400 font-bold">${totalExit.toLocaleString()}</div></div>
+                <div class="bg-gray-700 rounded p-2"><div class="text-gray-400">在场人数</div><div class="text-xl text-purple-400 font-bold">${totalStay.toLocaleString()}</div></div>
+                <div class="bg-gray-700 rounded p-2"><div class="text-gray-400">预估消费</div><div class="text-xl text-yellow-400 font-bold">¥${totalAmount.toLocaleString()}</div></div>
+            `;
+            
+            const floorDetailsEl = document.getElementById('floor-details');
+            floorDetailsEl.innerHTML = '';
+            Object.keys(timeData.floorData).forEach(floor => {
+                const fd = timeData.floorData[floor];
+                const statusClass = fd.status === 'mismatch' ? 'bg-red-900/30 border-red-700' : 
+                                   fd.status === 'supplementary' ? 'bg-yellow-900/30 border-yellow-700' : 
+                                   'bg-gray-700 border-gray-600';
+                const statusText = fd.status === 'mismatch' ? '⚠️ 错配' : 
+                                   fd.status === 'supplementary' ? '📝 补录' : '✅ 正常';
+                floorDetailsEl.innerHTML += `
+                    <div class="${statusClass} border rounded p-2">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-semibold text-purple-400">${floor}层</span>
+                            <span class="text-xs">${statusText}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1 text-[10px]">
+                            <span>入场: ${fd.entryCount}</span>
+                            <span>出场: ${fd.exitCount}</span>
+                            <span>在场: ${fd.stayCount}</span>
+                            <span>消费: ¥${fd.amount.toLocaleString()}</span>
+                            <span>平均停留: ${fd.avgStay}分钟</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            const duplicateAnalysisEl = document.getElementById('duplicate-analysis');
+            const duplicates = timeData.duplicates;
+            const duplicateCount = duplicates.length;
+            const uniqueVisitors = new Set(duplicates.map(d => d.visitorId)).size;
+            const crossFloor = duplicates.filter(d => d.fromFloor !== d.toFloor).length;
+            
+            duplicateAnalysisEl.innerHTML = `
+                <div class="bg-gray-700 rounded p-2 mb-2">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><span class="text-gray-400">重复客流</span><div class="text-lg text-orange-400 font-bold">${duplicateCount}</div></div>
+                        <div><span class="text-gray-400">涉及人数</span><div class="text-lg text-blue-400 font-bold">${uniqueVisitors}</div></div>
+                        <div><span class="text-gray-400">跨楼层</span><div class="text-lg text-purple-400 font-bold">${crossFloor}</div></div>
+                        <div><span class="text-gray-400">重复率</span><div class="text-lg text-red-400 font-bold">${(duplicateCount / Math.max(1, totalStay) * 100).toFixed(1)}%</div></div>
+                    </div>
+                </div>
+                <div class="text-[10px] space-y-1 max-h-32 overflow-y-auto">
+                    ${duplicates.slice(0, 5).map(d => `
+                        <div class="bg-gray-700/50 rounded px-2 py-1">
+                            <span class="text-blue-400">${d.visitorId}</span>
+                            <span class="text-gray-500 mx-1">→</span>
+                            <span class="text-purple-400">${d.fromFloor}→${d.toFloor}</span>
+                            <span class="text-gray-500 mx-1">|</span>
+                            <span class="text-gray-400">${d.interval}分钟</span>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            
+            const mismatchRecordsEl = document.getElementById('mismatch-records');
+            mismatchRecordsEl.innerHTML = '';
+            if (timeData.mismatches.length === 0) {
+                mismatchRecordsEl.innerHTML = '<div class="text-green-400 text-center py-4">✅ 无楼层错配</div>';
+            } else {
+                timeData.mismatches.forEach(mm => {
+                    mismatchRecordsEl.innerHTML += `
+                        <div class="bg-red-900/30 border border-red-800 rounded p-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-red-400 font-semibold">${mm.floor || mm.escalator}</span>
+                                <span class="text-xs text-gray-500">${mm.time}</span>
+                            </div>
+                            <div class="text-gray-300 mt-1">${mm.reason}</div>
+                            ${mm.expected !== undefined ? `
+                                <div class="flex justify-between mt-1 text-xs">
+                                    <span class="text-gray-400">预期: ${mm.expected}</span>
+                                    <span class="text-red-400">实际: ${mm.actual}</span>
+                                    <span class="text-yellow-400">偏差: ${Math.abs(mm.expected - mm.actual)}</span>
+                                </div>
+                            ` : ''}
+                            ${mm.impact ? `
+                                <div class="text-yellow-400 mt-1 text-xs">
+                                    影响金额: ¥${mm.impact.amount?.toLocaleString() || 'N/A'} | 状态: ${mm.impact.status || mm.impact.safety}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            const supplementaryDataEl = document.getElementById('supplementary-data');
+            supplementaryDataEl.innerHTML = '';
+            if (timeData.supplementary.length === 0) {
+                supplementaryDataEl.innerHTML = '<div class="text-green-400 text-center py-4">✅ 无补录数据</div>';
+            } else {
+                timeData.supplementary.forEach(s => {
+                    supplementaryDataEl.innerHTML += `
+                        <div class="bg-yellow-900/30 border border-yellow-800 rounded p-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-yellow-400 font-semibold">${s.floor}</span>
+                                <span class="text-xs text-gray-500">${s.time}</span>
+                            </div>
+                            <div class="text-gray-300 mt-1">${s.reason}</div>
+                            <div class="flex justify-between mt-1 text-xs">
+                                <span class="text-gray-400">操作人: ${s.operator}</span>
+                                <span class="text-gray-400">补录于: ${s.supplementTime}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+        }
+        
+        function switchTab(tab) {
+            ['control', 'data', 'report'].forEach(t => {
+                document.getElementById(`panel-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}`).classList.remove('tab-active');
+            });
+            document.getElementById(`panel-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}`).classList.add('tab-active');
+        }
+        
+        function toggleFloor(floor) {
+            visibleFloors[floor] = !visibleFloors[floor];
+            const btn = document.getElementById(`floor-${floor}`);
+            if (visibleFloors[floor]) {
+                btn.classList.remove('bg-gray-600');
+                btn.classList.add('bg-purple-600');
+            } else {
+                btn.classList.remove('bg-purple-600');
+                btn.classList.add('bg-gray-600');
+            }
+            updateScene();
+        }
+        
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('play-btn');
+            if (isPlaying) {
+                btn.innerHTML = '⏸️ 暂停';
+                const speed = parseInt(document.getElementById('play-speed').value);
+                playInterval = setInterval(() => {
+                    currentTimeIndex += speed * 5;
+                    if (currentTimeIndex > 780) {
+                        currentTimeIndex = 0;
+                    }
+                    document.getElementById('time-slider').value = currentTimeIndex;
+                    updateScene();
+                }, 100);
+            } else {
+                btn.innerHTML = '▶️ 播放';
+                if (playInterval) {
+                    clearInterval(playInterval);
+                    playInterval = null;
+                }
+            }
+        }
+        
+        function resetTimeline() {
+            currentTimeIndex = 0;
+            document.getElementById('time-slider').value = 0;
+            updateScene();
+        }
+        
+        function onTimeChange() {
+            currentTimeIndex = parseInt(document.getElementById('time-slider').value);
+            updateScene();
+        }
+        
+        function loadTestScenario(scenario) {
+            if (isPlaying) togglePlay();
+            currentData = generateTestData(scenario);
+            
+            let targetTime = 240;
+            if (scenario === 'conflict') targetTime = 300;
+            if (scenario === 'supplementary') targetTime = 180;
+            if (scenario === 'export') targetTime = 480;
+            
+            currentTimeIndex = targetTime;
+            document.getElementById('time-slider').value = targetTime;
+            
+            updateScene();
+            
+            const msg = scenario === 'normal' ? '✅ 已加载正常场景：客流平稳，无错配' :
+                       scenario === 'supplementary' ? '📝 已加载补录场景：包含人工补录数据' :
+                       scenario === 'conflict' ? '⚔️ 已加载冲突场景：楼层错配、扶梯停用、活动冲突' :
+                       '📊 已加载导出场景：数据完整，适合生成报告';
+            
+            alert(msg);
+        }
+        
+        function generateReport(mode) {
+            const timeIdx = Math.floor(currentTimeIndex / 30);
+            const timeData = currentData.timeSeries[Math.min(timeIdx, currentData.timeSeries.length - 1)];
+            const reportRange = document.getElementById('report-range').value;
+            const reportDetail = document.getElementById('report-detail').value;
+            
+            let totalEntry = 0, totalExit = 0, totalStay = 0, totalAmount = 0;
+            let mismatchCount = 0, duplicateCount = 0, escalatorIssues = 0;
+            
+            const dataToUse = reportRange === 'current' ? [timeData] : currentData.timeSeries;
+            
+            dataToUse.forEach(td => {
+                Object.values(td.floorData).forEach(fd => {
+                    totalEntry += fd.entryCount;
+                    totalExit += fd.exitCount;
+                    totalStay += fd.stayCount;
+                    totalAmount += fd.amount;
+                    if (fd.status === 'mismatch') mismatchCount++;
+                });
+                duplicateCount += td.duplicates.length;
+                td.mismatches.forEach(mm => {
+                    if (mm.type === 'escalator_conflict') escalatorIssues++;
+                });
+            });
+            
+            const hasIssues = mismatchCount > 0 || duplicateCount > 10 || escalatorIssues > 0;
+            
+            let reportHTML = `
+                <div class="report-header">
+                    <h1 style="font-size: 28px; font-weight: bold; color: #1a202c; margin: 0;">🏬 城市地下商业客流洞 - 运营分析报告</h1>
+                    <p style="color: #718096; margin-top: 8px;">生成时间: ${new Date().toLocaleString('zh-CN')} | 报告范围: ${
+                        reportRange === 'current' ? '当前时间点 (' + timeData.time + ')' :
+                        reportRange === 'hour' ? '最近1小时' :
+                        reportRange === 'day' ? '今日全天' : '本周汇总'
+                    }</p>
+                </div>
+                
+                <div class="report-section">
+                    <h2 style="font-size: 18px; font-weight: bold; color: #2d3748; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">📊 核心指标概览</h2>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="color: #718096; font-size: 14px;">总入场客流</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #3182ce;">${totalEntry.toLocaleString()}</div>
+                        </div>
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="color: #718096; font-size: 14px;">在场人数</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #38b2ac;">${totalStay.toLocaleString()}</div>
+                        </div>
+                        <div style="background: #f7fafc; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="color: #718096; font-size: 14px;">预估消费</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #d69e2e;">¥${totalAmount.toLocaleString()}</div>
+                        </div>
+                        <div style="background: ${hasIssues ? '#fff5f5' : '#f0fff4'}; padding: 15px; border-radius: 8px; text-align: center;">
+                            <div style="color: #718096; font-size: 14px;">运营状态</div>
+                            <div style="font-size: 24px; font-weight: bold; color: ${hasIssues ? '#e53e3e' : '#38a169'};">${hasIssues ? '⚠️ 异常' : '✅ 正常'}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="report-section">
+                    <h2 style="font-size: 18px; font-weight: bold; color: #2d3748; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">⚠️ 问题与冲突说明</h2>
+            `;
+            
+            if (mismatchCount > 0) {
+                reportHTML += `
+                    <div class="conflict-card">
+                        <h3 style="font-weight: bold; color: #c53030; margin-bottom: 8px;">❌ 楼层错配问题 (${mismatchCount}处)</h3>
+                        <p style="color: #742a2a; line-height: 1.6;">
+                            <strong>人话解释：</strong>就像你在家里数苹果，客厅的计数设备说有10个苹果进了冰箱，但冰箱自己的传感器说只收到了4个。两边数字对不上，说明要么计数设备坏了，要么中间有人偷偷拿了苹果。
+                        </p>
+                        <p style="color: #742a2a; margin-top: 8px;">
+                            <strong>具体影响：</strong>数据不一致导致我们少算了约¥${Math.floor(totalAmount * 0.1).toLocaleString()}的客流消费，同时影响了${mismatchCount}个楼层的客流统计准确性。
+                        </p>
+                        <p style="color: #9c4221; margin-top: 8px;">
+                            <strong>建议行动：</strong>检查B2层客流计数设备是否被遮挡或故障，核对门禁系统时间是否同步。
+                        </p>
+                    </div>
+                `;
+            }
+            
+            if (duplicateCount > 10) {
+                const dupRate = (duplicateCount / Math.max(1, totalStay) * 100).toFixed(1);
+                reportHTML += `
+                    <div class="warning-card">
+                        <h3 style="font-weight: bold; color: #c05621; margin-bottom: 8px;">🔄 客流重复情况 (${duplicateCount}人次, 重复率${dupRate}%)</h3>
+                        <p style="color: #7b341e; line-height: 1.6;">
+                            <strong>人话解释：</strong>就像同一个人一天内多次进出你家大门。有些人可能是忘记买东西又回去了，有些人可能是从地下室走楼梯换了个入口进来。
+                        </p>
+                        <p style="color: #7b341e; margin-top: 8px;">
+                            <strong>具体情况：</strong>共有${new Set(timeData.duplicates.map(d => d.visitorId)).size}位顾客出现重复记录，其中跨楼层购物占${(timeData.duplicates.filter(d => d.fromFloor !== d.toFloor).length / duplicateCount * 100).toFixed(0)}%。
+                        </p>
+                        <p style="color: #9c4221; margin-top: 8px;">
+                            <strong>业务启示：</strong>高重复率说明顾客粘性好，但也可能是动线设计不合理导致顾客绕路。可针对性优化导视系统。
+                        </p>
+                    </div>
+                `;
+            }
+            
+            if (escalatorIssues > 0) {
+                reportHTML += `
+                    <div class="conflict-card">
+                        <h3 style="font-weight: bold; color: #c53030; margin-bottom: 8px;">🛗 扶梯状态冲突 (${escalatorIssues}处)</h3>
+                        <p style="color: #742a2a; line-height: 1.6;">
+                            <strong>人话解释：</strong>就像你家日历上写着"今天维修电梯"，但回家发现电梯还在跑。要么是日历写错了，要么是维修人员没按计划来，这都有安全隐患。
+                        </p>
+                        <p style="color: #742a2a; margin-top: 8px;">
+                            <strong>安全风险：</strong>扶梯E02已计划停运但实际仍在运行，涉及客流约${timeData.escalatorStatus['E02']?.flow || 0}人/时段，存在较高安全风险。
+                        </p>
+                        <p style="color: #9c4221; margin-top: 8px;">
+                            <strong>紧急建议：</strong>立即核实扶梯维保计划，如确需维修请立即停运并设置警示标识。
+                        </p>
+                    </div>
+                `;
+            }
+            
+            if (!hasIssues) {
+                reportHTML += `
+                    <div class="normal-card">
+                        <h3 style="font-weight: bold; color: #276749; margin-bottom: 8px;">✅ 运营正常</h3>
+                        <p style="color: #22543d; line-height: 1.6;">
+                            <strong>人话解释：</strong>今天商场运转得很顺畅，就像家里人出门上班、下班回家，一切都按计划进行，没有意外情况。
+                        </p>
+                        <p style="color: #22543d; margin-top: 8px;">
+                            所有楼层数据一致、扶梯运行正常、活动按计划进行，客流分布合理。
+                        </p>
+                    </div>
+                `;
+            }
+            
+            reportHTML += `</div>`;
+            
+            if (reportDetail !== 'simple') {
+                reportHTML += `
+                    <div class="report-section">
+                        <h2 style="font-size: 18px; font-weight: bold; color: #2d3748; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">📋 楼层详细数据</h2>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>楼层</th>
+                                    <th>入场</th>
+                                    <th>出场</th>
+                                    <th>在场</th>
+                                    <th>平均停留</th>
+                                    <th>预估消费</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                Object.keys(timeData.floorData).forEach(floor => {
+                    const fd = timeData.floorData[floor];
+                    const statusText = fd.status === 'mismatch' ? '❌ 错配' : 
+                                      fd.status === 'supplementary' ? '📝 补录' : '✅ 正常';
+                    const rowClass = fd.status === 'mismatch' ? 'background: #fff5f5;' : 
+                                    fd.status === 'supplementary' ? 'background: #fffbeb;' : '';
+                    reportHTML += `
+                        <tr style="${rowClass}">
+                            <td><strong>${floor}</strong></td>
+                            <td>${fd.entryCount.toLocaleString()}</td>
+                            <td>${fd.exitCount.toLocaleString()}</td>
+                            <td>${fd.stayCount.toLocaleString()}</td>
+                            <td>${fd.avgStay}分钟</td>
+                            <td>¥${fd.amount.toLocaleString()}</td>
+                            <td>${statusText}</td>
+                        </tr>
+                    `;
+                });
+                
+                reportHTML += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                if (reportDetail === 'detailed' && timeData.mismatches.length > 0) {
+                    reportHTML += `
+                        <div class="report-section">
+                            <h2 style="font-size: 18px; font-weight: bold; color: #2d3748; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">🔍 冲突详细记录</h2>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>时间</th>
+                                        <th>类型</th>
+                                        <th>位置</th>
+                                        <th>原因</th>
+                                        <th>影响</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    timeData.mismatches.forEach(mm => {
+                        const typeText = mm.type === 'floor_mismatch' ? '楼层错配' : '扶梯冲突';
+                        reportHTML += `
+                            <tr>
+                                <td>${mm.time}</td>
+                                <td>${typeText}</td>
+                                <td>${mm.floor || mm.escalator}</td>
+                                <td>${mm.reason}</td>
+                                <td>¥${mm.impact?.amount?.toLocaleString() || mm.impact?.safety || 'N/A'}</td>
+                            </tr>
+                        `;
+                    });
+                    
+                    reportHTML += `
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                }
+            }
+            
+            reportHTML += `
+                <div class="report-section" style="border-top: 2px solid #e2e8f0; padding-top: 20px; margin-top: 30px;">
+                    <p style="color: #718096; font-size: 12px; text-align: center;">
+                        本报告由「城市地下商业客流洞」系统自动生成 | 数据更新时间: ${new Date().toLocaleString('zh-CN')}
+                    </p>
+                </div>
+            `;
+            
+            if (mode === 'preview') {
+                document.getElementById('report-preview').classList.remove('hidden');
+                document.getElementById('report-preview-content').innerHTML = reportHTML;
+            } else if (mode === 'print' || mode === 'export') {
+                document.getElementById('report-view').innerHTML = reportHTML;
+                document.getElementById('report-view').style.display = 'block';
+                document.getElementById('sidebar').style.display = 'none';
+                document.getElementById('canvas-container').style.display = 'none';
+                document.getElementById('timeline').style.display = 'none';
+                
+                if (mode === 'print') {
+                    setTimeout(() => {
+                        window.print();
+                        setTimeout(() => {
+                            document.getElementById('report-view').style.display = 'none';
+                            document.getElementById('sidebar').style.display = 'block';
+                            document.getElementById('canvas-container').style.display = 'block';
+                            document.getElementById('timeline').style.display = 'block';
+                        }, 500);
+                    }, 500);
+                } else if (mode === 'export') {
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF('p', 'mm', 'a4');
+                    
+                    html2canvas(document.getElementById('report-view'), {
+                        scale: 2,
+                        useCORS: true,
+                        logging: false
+                    }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        const pageWidth = pdf.internal.pageSize.getWidth();
+                        const pageHeight = pdf.internal.pageSize.getHeight();
+                        const imgWidth = pageWidth;
+                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                        let heightLeft = imgHeight;
+                        let position = 0;
+                        
+                        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                        heightLeft -= pageHeight;
+                        
+                        while (heightLeft > 0) {
+                            position = heightLeft - imgHeight;
+                            pdf.addPage();
+                            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                            heightLeft -= pageHeight;
+                        }
+                        
+                        pdf.save(`客流分析报告_${new Date().toISOString().split('T')[0]}.pdf`);
+                        
+                        document.getElementById('report-view').style.display = 'none';
+                        document.getElementById('sidebar').style.display = 'block';
+                        document.getElementById('canvas-container').style.display = 'block';
+                        document.getElementById('timeline').style.display = 'block';
+                        
+                        alert('✅ PDF报告已导出！');
+                    }).catch(err => {
+                        console.error('PDF导出失败:', err);
+                        alert('❌ PDF导出失败，请重试或使用打印功能');
+                        document.getElementById('report-view').style.display = 'none';
+                        document.getElementById('sidebar').style.display = 'block';
+                        document.getElementById('canvas-container').style.display = 'block';
+                        document.getElementById('timeline').style.display = 'block';
+                    });
+                }
+            }
+        }
+        
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        window.switchTab = switchTab;
+        window.toggleFloor = toggleFloor;
+        window.togglePlay = togglePlay;
+        window.resetTimeline = resetTimeline;
+        window.onTimeChange = onTimeChange;
+        window.loadTestScenario = loadTestScenario;
+        window.generateReport = generateReport;
+        window.updateScene = updateScene;
+        window.onWindowResize = onWindowResize;
+        
+        window.addEventListener('resize', onWindowResize);
+        init();
+    </script>
+</body>
+</html>
