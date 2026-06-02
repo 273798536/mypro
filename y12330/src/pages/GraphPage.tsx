@@ -108,6 +108,20 @@ export default function GraphPage() {
       .attr('cursor', 'pointer')
       .on('click', (_event, d) => setSelectedNodeId(d.id === selectedNodeId ? null : d.id))
 
+    const simulation = d3.forceSimulation<SimNode>(simNodes)
+      .force('link', d3.forceLink<SimNode, SimEdge>(simEdges).id((d) => d.id).distance(80))
+      .force('charge', d3.forceManyBody().strength(-200))
+      .force('center', d3.forceCenter(dimensions.width / 2, dimensions.height / 2))
+      .force('collide', d3.forceCollide<SimNode>().radius((d) => 5 + ((deg.get(d.id) ?? 0) / maxDeg) * 10 + 4))
+      .on('tick', () => {
+        linkSel
+          .attr('x1', (d) => (d.source as SimNode).x!)
+          .attr('y1', (d) => (d.source as SimNode).y!)
+          .attr('x2', (d) => (d.target as SimNode).x!)
+          .attr('y2', (d) => (d.target as SimNode).y!)
+        nodeSel.attr('cx', (d) => d.x!).attr('cy', (d) => d.y!)
+      })
+
     const drag = d3.drag<SVGCircleElement, SimNode>()
       .on('start', (event, d) => {
         if (!event.active) simulation.alphaTarget(0.3).restart()
@@ -125,24 +139,10 @@ export default function GraphPage() {
       })
     nodeSel.call(drag)
 
-    const simulation = d3.forceSimulation<SimNode>(simNodes)
-      .force('link', d3.forceLink<SimNode, SimEdge>(simEdges).id((d) => d.id).distance(80))
-      .force('charge', d3.forceManyBody().strength(-200))
-      .force('center', d3.forceCenter(dimensions.width / 2, dimensions.height / 2))
-      .force('collide', d3.forceCollide<SimNode>().radius((d) => 5 + ((deg.get(d.id) ?? 0) / maxDeg) * 10 + 4))
-      .on('tick', () => {
-        linkSel
-          .attr('x1', (d) => (d.source as SimNode).x!)
-          .attr('y1', (d) => (d.source as SimNode).y!)
-          .attr('x2', (d) => (d.target as SimNode).x!)
-          .attr('y2', (d) => (d.target as SimNode).y!)
-        nodeSel.attr('cx', (d) => d.x!).attr('cy', (d) => d.y!)
-      })
-
     return () => {
       simulation.stop()
     }
-  }, [graphNodes, graphEdges, dimensions, hasData, degreeMap])
+  }, [graphNodes, graphEdges, dimensions, hasData, degreeMap, selectedNodeId, setSelectedNodeId])
 
   useEffect(() => {
     if (!svgRef.current || !hasData) return
@@ -152,14 +152,6 @@ export default function GraphPage() {
 
     const deg = degreeMap()
     const maxDeg = Math.max(1, ...deg.values())
-    const communityColorMap = new Map<string, string>()
-    let ci = 0
-    for (const n of graphNodes) {
-      if (!communityColorMap.has(n.community)) {
-        communityColorMap.set(n.community, PALETTE[ci % PALETTE.length])
-        ci++
-      }
-    }
 
     const isolatedSet = new Set(qualityReport?.isolatedNodes ?? [])
     const noiseSet = new Set(qualityReport?.noiseNodes ?? [])

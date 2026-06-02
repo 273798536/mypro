@@ -67,8 +67,8 @@ function jacobiEigen(
   if (n === 0) return { eigenvalues: [], eigenvectors: [] }
   if (n === 1) return { eigenvalues: [matrix[0][0]], eigenvectors: [[1]] }
 
-  let A = matrix.map(row => [...row])
-  let V: number[][] = Array.from({ length: n }, (_, i) =>
+  const A = matrix.map(row => [...row])
+  const V: number[][] = Array.from({ length: n }, (_, i) =>
     Array.from({ length: n }, (_, j) => (i === j ? 1 : 0))
   )
 
@@ -95,12 +95,9 @@ function jacobiEigen(
     const aqq = A[q][q]
     const apq = A[p][q]
 
-    let tau: number
-    if (Math.abs(app - aqq) < 1e-15) {
-      tau = 1
-    } else {
-      tau = (aqq - app) / (2 * apq)
-    }
+    const tau = Math.abs(app - aqq) < 1e-15
+      ? 1
+      : (aqq - app) / (2 * apq)
 
     const t = tau >= 0
       ? 1 / (tau + Math.sqrt(1 + tau * tau))
@@ -147,7 +144,7 @@ function kMeans(data: number[][], k: number, maxIter: number = 50): number[] {
   while (chosen.size < Math.min(k, n)) {
     chosen.add(Math.floor(Math.random() * n))
   }
-  let centroids = Array.from(chosen).map(i => [...data[i]])
+  const centroids = Array.from(chosen).map(i => [...data[i]])
 
   let assignments = new Array(n).fill(0)
 
@@ -157,8 +154,8 @@ function kMeans(data: number[][], k: number, maxIter: number = 50): number[] {
       let best = 0
       for (let ci = 0; ci < centroids.length; ci++) {
         let dist = 0
-        for (let d = 0; d < dim; d++) {
-          dist += (point[d] - centroids[ci][d]) ** 2
+        for (let dIdx = 0; dIdx < dim; dIdx++) {
+          dist += (point[dIdx] - centroids[ci][dIdx]) ** 2
         }
         if (dist < minDist) {
           minDist = dist
@@ -171,14 +168,17 @@ function kMeans(data: number[][], k: number, maxIter: number = 50): number[] {
     if (newAssignments.every((a, i) => a === assignments[i])) break
     assignments = newAssignments
 
-    centroids = centroids.map((c, ci) => {
+    for (let ci = 0; ci < centroids.length; ci++) {
       const members: number[][] = []
       for (let i = 0; i < n; i++) {
         if (assignments[i] === ci) members.push(data[i])
       }
-      if (members.length === 0) return c
-      return c.map((_, d) => members.reduce((sum, m) => sum + m[d], 0) / members.length)
-    })
+      if (members.length > 0) {
+        for (let dIdx = 0; dIdx < dim; dIdx++) {
+          centroids[ci][dIdx] = members.reduce((sum, m) => sum + m[dIdx], 0) / members.length
+        }
+      }
+    }
   }
 
   return assignments
@@ -265,7 +265,7 @@ export function spectralCluster(
   }
 
   const subN = nonIsolatedIndices.length
-  let effectiveK = Math.min(k, subN)
+  const effectiveK = Math.min(k, subN)
 
   const subAdj: number[][] = Array.from({ length: subN }, () => new Array(subN).fill(0))
   for (let i = 0; i < subN; i++) {
@@ -274,12 +274,11 @@ export function spectralCluster(
     }
   }
 
-  let subAssignments: number[]
+  const subAssignments = (() => {
+    if (subN <= effectiveK) {
+      return nonIsolatedIndices.map((_, i) => i)
+    }
 
-  if (subN <= effectiveK) {
-    subAssignments = nonIsolatedIndices.map((_, i) => i)
-    effectiveK = subN
-  } else {
     const L = computeNormalizedLaplacian(subAdj)
     const { eigenvalues, eigenvectors } = jacobiEigen(L)
 
@@ -307,8 +306,8 @@ export function spectralCluster(
       }
     }
 
-    subAssignments = kMeans(embeddings, effectiveK)
-  }
+    return kMeans(embeddings, effectiveK)
+  })()
 
   const fullAssignments = new Array(n).fill(-1)
   isolatedIndices.forEach((idx, i) => {

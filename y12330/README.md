@@ -1,57 +1,197 @@
-# React + TypeScript + Vite
+# 谱聚类社群拆分
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+面向社区运营分析师的谱聚类社群划分工具。解决用户标签与时间窗口冲突导致社群划分不稳定的问题，提供完整的数据溯源、质量检测和结果导出能力。
 
-Currently, two official plugins are available:
+## 核心功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. **数据导入** - 支持导入互动边、用户标签、活动记录三类数据，追踪来源与版本
+2. **聚类分析** - 谱聚类算法拆分社群，可配置参数，输出社群评分
+3. **可视化图** - D3力导向图展示社群结构，孤立节点高亮，点击查看明细
+4. **结果溯源** - 从单条结果追溯到谱聚类参数、社群评分和异常节点，导出结果
 
-## Expanding the ESLint configuration
+## 技术栈
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React 18 + TypeScript + Vite
+- Tailwind CSS 3
+- Zustand (状态管理)
+- D3.js (力导向图可视化)
+- Jacobi 特征分解 + K-Means (谱聚类算法)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 快速开始
+
+### 安装依赖
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 启动开发服务器
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm run dev
 ```
+
+启动后访问 `http://localhost:5173`
+
+### 类型检查
+
+```bash
+npm run check
+```
+
+### Lint 检查
+
+```bash
+npm run lint
+```
+
+### 构建生产版本
+
+```bash
+npm run build
+```
+
+## 数据格式
+
+### 互动边 (CSV)
+
+| 字段 | 说明 |
+|------|------|
+| source | 源用户ID |
+| target | 目标用户ID |
+| weight | 互动权重 (0-1) |
+| timestamp | 时间戳 |
+
+### 用户标签 (CSV)
+
+| 字段 | 说明 |
+|------|------|
+| userId | 用户ID |
+| tags | 标签列表，竖线分隔（如：tag1|tag2） |
+
+### 活动记录 (CSV)
+
+| 字段 | 说明 |
+|------|------|
+| userId | 用户ID |
+| activityType | 活动类型 |
+| timestamp | 时间戳 |
+
+## 核心流程
+
+### 样例数据快速体验
+
+1. 打开「数据导入」页面
+2. 依次点击三类数据卡片的「加载样例数据」
+3. 观察「质量预检」区域的检测结果
+4. 切换到「聚类分析」页面
+5. 点击「执行谱聚类」（K=3 为默认参数）
+6. 查看社群评分表和异常节点列表
+7. 切换到「可视化图」页面，观察力导向图
+8. 切换到「结果溯源」页面，展开社群查看完整溯源链
+9. 选择导出格式，点击「导出社群结果」或「导出溯源记录」
+
+### 孤立节点验证路径（关键测试场景）
+
+样例数据已内置 `user_19` 和 `user_20` 两个孤立节点（无任何互动边，且缺失标签），用于验证失败路径：
+
+1. **数据导入阶段**
+   - 导入样例后，「质量预检」的「孤立节点」卡片显示 2 个
+   - 「缺失标签节点」卡片也显示 2 个
+   - 每个节点 ID 可点击展开查看完整列表
+
+2. **聚类分析阶段**
+   - 执行谱聚类后生成 5 个社群（K=3 + 2 个孤立节点单独成组）
+   - 孤立节点所在社群评分为 D（密度为 0）
+   - 「异常节点」区域显示 4 条记录（每个孤立节点有 isolated + missing_tag 两种异常）
+   - 每个异常节点显示影响说明，并可点击跳转到可视化图高亮
+
+3. **可视化阶段**
+   - 孤立节点在图中以红色脉冲圈高亮 (`animate-pulse-danger`)
+   - 同时有灰色虚线圈（缺失标签）
+   - 点击孤立节点，右侧面板显示「异常标记」区域
+
+4. **溯源阶段**
+   - 孤立节点所在社群（通常是 community-3, community-4）
+   - 展开后可查看完整五级溯源链：
+     - 社群结果（评分 D，1 节点）
+     - 社群评分（模块度、密度）
+     - 聚类参数（K, 阈值, 衰减系数, 数据集版本）
+     - 数据源版本（三个文件的版本号）
+     - 质量检测记录（isolated + missing_tag 异常说明）
+
+## 数据质量检测
+
+工具自动检测以下三类数据质量问题：
+
+| 异常类型 | 判定标准 | 影响说明 |
+|----------|----------|----------|
+| 孤立节点 | 无任何互动边连接 | 无法参与社群聚合，单独成组 |
+| 活动噪声 | 活动频次超过均值 + 2 倍标准差 | 可能导致社群边界偏移 |
+| 缺失标签 | 无标签数据或标签为空 | 无法辅助社群语义标注 |
+
+## 导出格式
+
+### CSV
+
+包含字段：`communityId`, `nodeId`, `modularity`, `density`, `score`, `anomalies`
+
+### JSON
+
+完整的结构化数据，包含所有字段。
+
+## 项目结构
+
+```
+src/
+├── types/           # 类型定义
+├── store/           # Zustand 状态管理
+├── utils/
+│   ├── clustering.ts    # 谱聚类算法引擎
+│   ├── quality.ts       # 数据质量检测
+│   ├── export.ts        # 结果导出
+│   └── sampleData.ts    # 内置样例数据
+├── pages/           # 四个页面组件
+├── components/      # 通用组件
+└── App.tsx          # 主应用入口
+```
+
+## 算法说明
+
+### 谱聚类流程
+
+1. 构建邻接矩阵，按相似度阈值过滤边
+2. 计算归一化拉普拉斯矩阵 `L = D^(-1/2) * (D - A) * D^(-1/2)`
+3. Jacobi 旋转法求解特征值和特征向量
+4. 取 K 个最小特征向量构成嵌入矩阵
+5. 对每个节点的嵌入向量做 L2 归一化
+6. K-Means 聚类得到社群划分
+7. 计算模块度和密度评分
+
+### 孤立节点特殊处理
+
+度为 0 的节点（无任何连接）会被识别并单独成组，不参与谱分解，避免影响正常社群的划分结果。
+
+## 验证命令
+
+### 完整验证流程
+
+```bash
+# 代码质量检查
+npm run lint
+
+# 类型检查
+npm run check
+
+# 启动服务
+npm run dev
+
+# 构建验证
+npm run build
+```
+
+预期结果：
+- `npm run lint`：0 个错误，0 个警告
+- `npm run check`：0 个类型错误
+- `npm run dev`：服务正常启动，页面可访问
+- 浏览器中完整走一遍样例流程：导入 → 聚类 → 可视化 → 溯源 → 导出

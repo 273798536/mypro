@@ -1,6 +1,8 @@
 import type { ClusterResult, TraceChain } from '@/types'
 
-export function exportToCSV(data: any[], filename: string): void {
+type ExportRecord = Record<string, string | number | boolean | null | undefined>
+
+export function exportToCSV(data: ExportRecord[], filename: string): void {
   if (data.length === 0) return
   const headers = Object.keys(data[0])
   const csvRows = [
@@ -27,7 +29,10 @@ export function exportToCSV(data: any[], filename: string): void {
   URL.revokeObjectURL(url)
 }
 
-export function exportToJSON(data: any, filename: string): void {
+export function exportToJSON(
+  data: ExportRecord[] | Record<string, unknown>,
+  filename: string
+): void {
   const jsonString = JSON.stringify(data, null, 2)
   const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8;' })
   const url = URL.createObjectURL(blob)
@@ -40,8 +45,17 @@ export function exportToJSON(data: any, filename: string): void {
   URL.revokeObjectURL(url)
 }
 
-export function formatCommunityResults(clusterResult: ClusterResult): any[] {
-  const rows: any[] = []
+interface CommunityRow {
+  communityId: string
+  nodeId: string
+  modularity: number
+  density: number
+  score: string
+  anomalies: string
+}
+
+export function formatCommunityResults(clusterResult: ClusterResult): CommunityRow[] {
+  const rows: CommunityRow[] = []
   for (const community of clusterResult.communities) {
     for (const nodeId of community.nodes) {
       const anomalyInfo = community.anomalies
@@ -61,7 +75,15 @@ export function formatCommunityResults(clusterResult: ClusterResult): any[] {
   return rows
 }
 
-export function formatTraceResults(traceChains: TraceChain[]): any[] {
+interface TraceRow {
+  resultId: string
+  communityId: string
+  params: string
+  dataSources: string
+  qualityIssues: string
+}
+
+export function formatTraceResults(traceChains: TraceChain[]): TraceRow[] {
   return traceChains.map(chain => ({
     resultId: chain.resultId,
     communityId: chain.communityId,
