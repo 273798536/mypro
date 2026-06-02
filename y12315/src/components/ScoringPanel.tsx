@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { useAppStore } from '../store';
 
 const ScoringPanel: React.FC = () => {
-  const { suppliers, criteria, scores, updateScore, calculateRankings, saveVersion } = useAppStore();
+  const { suppliers, criteria, scores, updateScore, calculateRankings, saveVersion, rankings, weightModifications } = useAppStore();
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [editingScore, setEditingScore] = useState<{ supplierId: string; criterionId: string } | null>(null);
   const [noteText, setNoteText] = useState('');
+  const [lastCalcDiff, setLastCalcDiff] = useState<string | null>(null);
 
   const leafCriteria = criteria.filter(c => 
     !criteria.some(child => child.parentId === c.id)
@@ -43,6 +44,37 @@ const ScoringPanel: React.FC = () => {
     setEditingScore(null);
   };
 
+  const handleRecalcAndSave = () => {
+    const oldRankings = [...rankings];
+    calculateRankings();
+    const state = useAppStore.getState();
+    const newRankings = state.rankings;
+
+    const diffs: string[] = [];
+    for (const newR of newRankings) {
+      const oldR = oldRankings.find(o => o.supplierId === newR.supplierId);
+      if (!oldR) continue;
+      if (oldR.rank !== newR.rank || Math.abs(oldR.totalScore - newR.totalScore) > 0.00005) {
+        const scoreDelta = Math.round((newR.totalScore - oldR.totalScore) * 10000) / 10000;
+        diffs.push(
+          `${newR.supplierName}: 第${oldR.rank}名→第${newR.rank}名 (${scoreDelta > 0 ? '+' : ''}${(scoreDelta * 100).toFixed(2)}分)`
+        );
+      }
+    }
+
+    if (diffs.length > 0) {
+      setLastCalcDiff(`排名变动: ${diffs.join('; ')}`);
+    } else {
+      setLastCalcDiff('排名无变化');
+    }
+  };
+
+  const handleSaveVersion = () => {
+    const diffText = lastCalcDiff || '评分更新';
+    saveVersion('评审组', [diffText]);
+    setLastCalcDiff(null);
+  };
+
   const getScoreColor = (value: number) => {
     if (value >= 0.9) return '#155724';
     if (value >= 0.7) return '#856404';
@@ -56,17 +88,45 @@ const ScoringPanel: React.FC = () => {
         <div className="card-header">
           <h2 className="card-title">指标评分</h2>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button className="btn btn-secondary" onClick={() => calculateRankings()}>
+            <button className="btn btn-secondary" onClick={handleRecalcAndSave}>
               🔄 重新计算排名
             </button>
             <button 
               className="btn btn-primary" 
-              onClick={() => saveVersion('评审组', ['评分更新，重新计算排名'])}
+              onClick={handleSaveVersion}
             >
               💾 保存版本
             </button>
           </div>
         </div>
+
+        {lastCalcDiff && (
+          <div style={{
+            padding: '12px 16px',
+            background: lastCalcDiff === '排名无变化' ? '#d4edda' : '#fff3cd',
+            color: lastCalcDiff === '排名无变化' ? '#155724' : '#856404',
+            borderRadius: '8px',
+            marginBottom: '16px',
+            fontSize: '13px',
+            fontWeight: 500
+          }}>
+            📊 {lastCalcDiff}
+          </div>
+        )}
+
+        {weightModifications.length > 0 && (
+          <div style={{
+            padding: '12px 16px',
+            background: '#fff9e6',
+            borderLeft: '4px solid #f5a623',
+            borderRadius: '0 8px 8px 0',
+            marginBottom: '16px',
+            fontSize: '13px'
+          }}>
+            ⚠ 当前有 {weightModifications.length} 条权重修改记录，排名已受影响。
+            保存版本可在历史中追溯前后差异。
+          </div>
+        )}
 
         <div style={{ overflowX: 'auto' }}>
           <table className="table">
@@ -156,7 +216,7 @@ const ScoringPanel: React.FC = () => {
             <span style={{ color: '#721c24' }}>● {'<'} 0.5 较差</span>
           </div>
           <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
-            💡 评分范围：0-1，保留2位小数。点击单元格旁的蓝点可查看/编辑备注和资料来源。
+            💡 评分范围：0-1，保留2位小数。修改评分后点击「重新计算排名」查看影响，再点「保存版本」保留前后差异。
           </div>
         </div>
       </div>

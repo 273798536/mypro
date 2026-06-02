@@ -61,6 +61,27 @@ interface AppState {
   loadSampleData: () => void;
 }
 
+const computeImpactOnRanking = (
+  oldRankings: RankingResult[],
+  newRankings: RankingResult[]
+): WeightModification['impactOnRanking'] => {
+  const impacts: WeightModification['impactOnRanking'] = [];
+  for (const newR of newRankings) {
+    const oldR = oldRankings.find(o => o.supplierId === newR.supplierId);
+    if (!oldR) continue;
+    if (oldR.rank !== newR.rank || Math.abs(oldR.totalScore - newR.totalScore) > 0.00005) {
+      impacts.push({
+        supplierId: newR.supplierId,
+        supplierName: newR.supplierName,
+        originalRank: oldR.rank,
+        newRank: newR.rank,
+        scoreChange: Math.round((newR.totalScore - oldR.totalScore) * 10000) / 10000
+      });
+    }
+  }
+  return impacts;
+};
+
 export const useAppStore = create<AppState>((set, get) => ({
   suppliers: [],
   criteria: [],
@@ -109,23 +130,119 @@ export const useAppStore = create<AppState>((set, get) => ({
   })),
 
   setCriteriaMatrix: (matrix) => set({ criteriaMatrix: matrix }),
+
   updateCriteriaMatrix: (row, col, value) => set((state) => {
     if (!state.criteriaMatrix) return state;
+
+    const oldWeights = [...state.criteriaMatrix.weights];
+    const oldRankings = [...state.rankings];
+    const newMatrix = updateMatrixValue(state.criteriaMatrix, row, col, value);
+    const newWeights = newMatrix.weights;
+
+    const rootCriteria = state.criteria.filter(c => !c.parentId);
+    const changedIndices: number[] = [];
+    for (let i = 0; i < oldWeights.length; i++) {
+      if (Math.abs(oldWeights[i] - newWeights[i]) > 0.0005) {
+        changedIndices.push(i);
+      }
+    }
+
+    const { rankings: newRankings } = calculateRanking(
+      state.suppliers,
+      state.criteria,
+      state.scores,
+      newMatrix,
+      state.subMatrices
+    );
+
+    const newModifications: WeightModification[] = [];
+    for (const idx of changedIndices) {
+      const criterion = rootCriteria[idx];
+      if (!criterion) continue;
+      const impact = computeImpactOnRanking(oldRankings, newRankings);
+      if (impact.length > 0) {
+        newModifications.push({
+          id: `mod-${Date.now()}-${idx}`,
+          criterionId: criterion.id,
+          criterionName: criterion.name,
+          originalWeight: Math.round(oldWeights[idx] * 10000) / 10000,
+          newWeight: Math.round(newWeights[idx] * 10000) / 10000,
+          modifiedBy: '评审组（矩阵调整）',
+          modifiedAt: new Date().toISOString(),
+          reason: `判断矩阵第${row + 1}行第${col + 1}列从${state.criteriaMatrix.matrix[row][col].toFixed(2)}调整为${value.toFixed(2)}`,
+          impactOnRanking: impact
+        });
+      }
+    }
+
     return {
-      criteriaMatrix: updateMatrixValue(state.criteriaMatrix, row, col, value)
+      criteriaMatrix: newMatrix,
+      rankings: newRankings,
+      weightModifications: [...state.weightModifications, ...newModifications]
     };
   }),
+
   setSubMatrix: (criterionId, matrix) => set((state) => {
     const newSubMatrices = new Map(state.subMatrices);
     newSubMatrices.set(criterionId, matrix);
     return { subMatrices: newSubMatrices };
   }),
+
   updateSubMatrix: (criterionId, row, col, value) => set((state) => {
     const subMatrix = state.subMatrices.get(criterionId);
     if (!subMatrix) return state;
+
+    const oldWeights = [...subMatrix.weights];
+    const oldRankings = [...state.rankings];
+    const newSubMatrix = updateMatrixValue(subMatrix, row, col, value);
+    const newWeights = newSubMatrix.weights;
+
+    const childCriteria = state.criteria.filter(c => c.parentId === criterionId);
+    const parentCriterion = state.criteria.find(c => c.id === criterionId);
+
+    const changedIndices: number[] = [];
+    for (let i = 0; i < oldWeights.length; i++) {
+      if (Math.abs(oldWeights[i] - newWeights[i]) > 0.0005) {
+        changedIndices.push(i);
+      }
+    }
+
     const newSubMatrices = new Map(state.subMatrices);
-    newSubMatrices.set(criterionId, updateMatrixValue(subMatrix, row, col, value));
-    return { subMatrices: newSubMatrices };
+    newSubMatrices.set(criterionId, newSubMatrix);
+
+    const { rankings: newRankings } = calculateRanking(
+      state.suppliers,
+      state.criteria,
+      state.scores,
+      state.criteriaMatrix!,
+      newSubMatrices
+    );
+
+    const newModifications: WeightModification[] = [];
+    for (const idx of changedIndices) {
+      const criterion = childCriteria[idx];
+      if (!criterion) continue;
+      const impact = computeImpactOnRanking(oldRankings, newRankings);
+      if (impact.length > 0) {
+        newModifications.push({
+          id: `mod-${Date.now()}-${idx}`,
+          criterionId: criterion.id,
+          criterionName: `${parentCriterion?.name || ''} > ${criterion.name}`,
+          originalWeight: Math.round(oldWeights[idx] * 10000) / 10000,
+          newWeight: Math.round(newWeights[idx] * 10000) / 10000,
+          modifiedBy: '评审组（子矩阵调整）',
+          modifiedAt: new Date().toISOString(),
+          reason: `${parentCriterion?.name || ''}子矩阵第${row + 1}行第${col + 1}列从${subMatrix.matrix[row][col].toFixed(2)}调整为${value.toFixed(2)}`,
+          impactOnRanking: impact
+        });
+      }
+    }
+
+    return {
+      subMatrices: newSubMatrices,
+      rankings: newRankings,
+      weightModifications: [...state.weightModifications, ...newModifications]
+    };
   }),
 
   setScores: (scores) => set({ scores }),
@@ -158,7 +275,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   calculateRankings: () => set((state) => {
     if (!state.criteriaMatrix) return { rankings: [] };
-    
+
     const { rankings } = calculateRanking(
       state.suppliers,
       state.criteria,
@@ -166,19 +283,35 @@ export const useAppStore = create<AppState>((set, get) => ({
       state.criteriaMatrix,
       state.subMatrices
     );
-    
+
     return { rankings };
   }),
 
   saveVersion: (modifiedBy, changes) => set((state) => {
+    const oldRankings = state.versionHistory.length > 0
+      ? state.versionHistory[state.versionHistory.length - 1].rankings
+      : [];
+
+    const rankingDiff = oldRankings.length > 0
+      ? computeImpactOnRanking(oldRankings, state.rankings)
+          .map(imp => `${imp.supplierName}: 第${imp.originalRank}名→第${imp.newRank}名 (${imp.scoreChange > 0 ? '+' : ''}${(imp.scoreChange * 100).toFixed(2)}分)`)
+      : [];
+
+    const allChanges = [...changes];
+    if (rankingDiff.length > 0) {
+      allChanges.push(`排名变动: ${rankingDiff.join('; ')}`);
+    }
+
     const newVersion: VersionHistory = {
       id: `version-${Date.now()}`,
       version: state.currentVersion + 1,
       timestamp: new Date().toISOString(),
       modifiedBy,
-      changes,
-      rankings: [...state.rankings],
-      matrices: [state.criteriaMatrix!, ...Array.from(state.subMatrices.values())]
+      changes: allChanges,
+      rankings: state.rankings.map(r => ({ ...r, scoresByCriterion: [...r.scoresByCriterion] })),
+      matrices: state.criteriaMatrix
+        ? [state.criteriaMatrix, ...Array.from(state.subMatrices.values())]
+        : []
     };
     return {
       versionHistory: [...state.versionHistory, newVersion],
@@ -266,7 +399,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     ];
 
     const sampleCriteria: Criterion[] = [
-      { id: 'criterion-1', name: '价格成本', description: '报价合理性、性价比', weight: 0.35, isManuallyModified: true, modifiedBy: '评审组', modifiedAt: '2024-01-20T10:00:00Z', modificationReason: '根据项目预算调整', originalWeight: 0.30 },
+      { id: 'criterion-1', name: '价格成本', description: '报价合理性、性价比' },
       { id: 'criterion-2', name: '技术能力', description: '技术水平、研发能力' },
       { id: 'criterion-3', name: '质量管控', description: '质量管理体系、产品合格率' },
       { id: 'criterion-4', name: '交付能力', description: '交货周期、履约记录' },
@@ -319,53 +452,36 @@ export const useAppStore = create<AppState>((set, get) => ({
       { supplierId: 'supplier-2', criterionId: 'criterion-1', value: 0.95, note: '价格优势明显', sourceReference: '报价单-编号QUO-002' },
       { supplierId: 'supplier-3', criterionId: 'criterion-1', value: 0, note: '报价缺失', sourceReference: '' },
       { supplierId: 'supplier-4', criterionId: 'criterion-1', value: 0.88, note: '报价合理', sourceReference: '报价单-编号QUO-004' },
-      
+
       { supplierId: 'supplier-1', criterionId: 'criterion-2-1', value: 0.90, sourceReference: '技术评估报告-T-001' },
       { supplierId: 'supplier-2', criterionId: 'criterion-2-1', value: 0.85, sourceReference: '技术评估报告-T-002' },
       { supplierId: 'supplier-3', criterionId: 'criterion-2-1', value: 0.92, sourceReference: '技术评估报告-T-003' },
       { supplierId: 'supplier-4', criterionId: 'criterion-2-1', value: 0.78, sourceReference: '技术评估报告-T-004' },
-      
+
       { supplierId: 'supplier-1', criterionId: 'criterion-2-2', value: 0.80, sourceReference: '技术评估报告-T-001' },
       { supplierId: 'supplier-2', criterionId: 'criterion-2-2', value: 0.88, sourceReference: '技术评估报告-T-002' },
       { supplierId: 'supplier-3', criterionId: 'criterion-2-2', value: 0.85, sourceReference: '技术评估报告-T-003' },
       { supplierId: 'supplier-4', criterionId: 'criterion-2-2', value: 0.70, sourceReference: '技术评估报告-T-004' },
-      
+
       { supplierId: 'supplier-1', criterionId: 'criterion-3-1', value: 0.95, sourceReference: '质量认证-Q-001' },
       { supplierId: 'supplier-2', criterionId: 'criterion-3-1', value: 1.0, sourceReference: '质量认证-Q-002' },
       { supplierId: 'supplier-3', criterionId: 'criterion-3-1', value: 0.88, sourceReference: '质量认证-Q-003' },
       { supplierId: 'supplier-4', criterionId: 'criterion-3-1', value: 0.82, sourceReference: '质量认证-Q-004' },
-      
+
       { supplierId: 'supplier-1', criterionId: 'criterion-3-2', value: 0.92, sourceReference: '质量报告-QR-001' },
       { supplierId: 'supplier-2', criterionId: 'criterion-3-2', value: 0.96, sourceReference: '质量报告-QR-002' },
       { supplierId: 'supplier-3', criterionId: 'criterion-3-2', value: 0.90, sourceReference: '质量报告-QR-003' },
       { supplierId: 'supplier-4', criterionId: 'criterion-3-2', value: 0.85, sourceReference: '质量报告-QR-004' },
-      
+
       { supplierId: 'supplier-1', criterionId: 'criterion-4', value: 0.88, sourceReference: '交付记录-D-001' },
       { supplierId: 'supplier-2', criterionId: 'criterion-4', value: 0.94, sourceReference: '交付记录-D-002' },
       { supplierId: 'supplier-3', criterionId: 'criterion-4', value: 0.82, sourceReference: '交付记录-D-003' },
       { supplierId: 'supplier-4', criterionId: 'criterion-4', value: 0.75, sourceReference: '交付记录-D-004' },
-      
+
       { supplierId: 'supplier-1', criterionId: 'criterion-5', value: 0.75, sourceReference: '资质文件-Z-001' },
       { supplierId: 'supplier-2', criterionId: 'criterion-5', value: 1.0, sourceReference: '资质文件-Z-002' },
       { supplierId: 'supplier-3', criterionId: 'criterion-5', value: 0.85, sourceReference: '资质文件-Z-003' },
       { supplierId: 'supplier-4', criterionId: 'criterion-5', value: 0.65, sourceReference: '资质文件-Z-004' }
-    ];
-
-    const weightMods: WeightModification[] = [
-      {
-        id: 'mod-1',
-        criterionId: 'criterion-1',
-        criterionName: '价格成本',
-        originalWeight: 0.30,
-        newWeight: 0.35,
-        modifiedBy: '评审组',
-        modifiedAt: '2024-01-20T10:00:00Z',
-        reason: '根据项目预算调整，成本因素权重提升5%',
-        impactOnRanking: [
-          { supplierId: 'supplier-2', supplierName: '恒远实业集团', originalRank: 2, newRank: 1, scoreChange: 0.025 },
-          { supplierId: 'supplier-1', supplierName: '华信科技有限公司', originalRank: 1, newRank: 2, scoreChange: -0.015 }
-        ]
-      }
     ];
 
     set({
@@ -374,7 +490,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       criteriaMatrix: criteriaMatrixData,
       subMatrices: subMatricesMap,
       scores: sampleScores,
-      weightModifications: weightMods
+      weightModifications: [],
+      versionHistory: [],
+      currentVersion: 0
     });
 
     setTimeout(() => {
