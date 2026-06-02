@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, AlertTriangle, ArrowRight, GitBranch, RefreshCw, Layers, Play, FileText, Link2, ExternalLink } from 'lucide-react';
+import { Search, AlertTriangle, ArrowRight, GitBranch, RefreshCw, Layers, Play, FileText, Link2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { SudokuGrid } from '../components/SudokuGrid/SudokuGrid';
 import { usePuzzleStore } from '../stores/usePuzzleStore';
@@ -25,7 +25,6 @@ export const AnalyzePage: React.FC = () => {
     selectedErrorId,
     setSelectedErrorId,
     setSelectedCell,
-    selectedCell,
     currentBatchId,
     importedMaterials,
     getCurrentBatch,
@@ -105,18 +104,20 @@ export const AnalyzePage: React.FC = () => {
             <div className="card-header flex items-center justify-between">
               <span className="flex items-center space-x-2">
                 <Search size={18} />
-                <span>题盘与错误分布
+                <span>题盘与错误分布</span>
               </span>
               <div className="flex items-center space-x-3">
                 <button
                   onClick={toggleCandidates}
-                  className="text-sm text-gray-600 hover:text-sudoku-secondary">
+                  className="text-sm text-gray-600 hover:text-sudoku-secondary"
+                >
                   {showCandidates ? '隐藏候选数' : '显示候选数'}
                 </button>
                 <button
                   onClick={runAnalysis}
                   disabled={isAnalyzing}
-                  className="flex items-center space-x-1 px-3 py-1.5 bg-sudoku-primary text-white rounded-md text-sm hover:bg-sudoku-dark transition-all disabled:opacity-50">
+                  className="flex items-center space-x-1 px-3 py-1.5 bg-sudoku-primary text-white rounded-md text-sm hover:bg-sudoku-dark transition-all disabled:opacity-50"
+                >
                   {isAnalyzing ? (
                     <>
                       <RefreshCw size={14} className="animate-spin" />
@@ -125,7 +126,7 @@ export const AnalyzePage: React.FC = () => {
                   ) : (
                     <>
                       <RefreshCw size={14} />
-                      <span>重新分析
+                      <span>重新分析</span>
                     </>
                   )}
                 </button>
@@ -198,36 +199,38 @@ export const AnalyzePage: React.FC = () => {
                             <div className="text-xs font-medium text-gray-700 mb-2 flex items-center justify-between">
                               <div className="flex items-center space-x-1">
                                 <GitBranch size={12} />
-                                <span>约束传播链 ({error.constraintChain.length} 步</span>
+                                <span>约束传播链 ({error.constraintChain.length} 步)</span>
                               </div>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setShowChainDetail(!showChainDetail);
                                 }}
-                                className="text-sudoku-secondary hover:underline">
+                                className="text-sudoku-secondary hover:underline"
+                              >
                                 {showChainDetail ? '收起' : '展开'}
                               </button>
                             </div>
                             
                             <div className="flex flex-wrap gap-1">
                               {error.constraintChain.slice(0, showChainDetail ? error.constraintChain.length : 3).map((node, index) => (
-                              <div key={node.id} className="inline-flex items-center">
-                                <span
-                                  className={`px-2 py-0.5 text-xs rounded ${
-                                    node.type === 'source'
-                                      ? 'bg-blue-100 text-blue-700'
-                                      : node.type === 'conflict'
-                                      ? 'bg-red-100 text-red-700'
-                                      : 'bg-gray-100 text-gray-700'
-                                  }`}
-                                >
-                                  ({node.cell.row + 1},{node.cell.col + 1}) → {node.candidate}
-                                </span>
-                                {index < (showChainDetail ? error.constraintChain.length : Math.min(3, error.constraintChain.length - 1 && (
-                                  <ArrowRight size={12} className="mx-1 text-gray-400" />
-                                )}
-                              </div>
+                                <div key={node.id} className="inline-flex items-center">
+                                  <span
+                                    className={`px-2 py-0.5 text-xs rounded ${
+                                      node.type === 'source'
+                                        ? 'bg-blue-100 text-blue-700'
+                                        : node.type === 'conflict'
+                                        ? 'bg-red-100 text-red-700'
+                                        : 'bg-gray-100 text-gray-700'
+                                    }`}
+                                  >
+                                    ({node.cell.row + 1},{node.cell.col + 1}) → {node.candidate}
+                                  </span>
+                                  {index < (showChainDetail ? error.constraintChain.length : Math.min(3, error.constraintChain.length)) - 1 && (
+                                    <ArrowRight size={12} className="mx-1 text-gray-400" />
+                                  )}
+                                </div>
+                              ))}
                             </div>
                           </div>
                         )}
@@ -236,7 +239,7 @@ export const AnalyzePage: React.FC = () => {
                   </div>
                 ) : (
                   <div className="text-center py-8 text-gray-500">
-                    <p>检测通过，当前没有发现错误
+                    <p>检测通过，当前没有发现错误</p>
                   </div>
                 )}
 
@@ -244,15 +247,17 @@ export const AnalyzePage: React.FC = () => {
                   <div className="flex gap-2 pt-2">
                     <button
                       onClick={handleGoToReplay}
-                      className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors">
+                      className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors"
+                    >
                       <Play size={14} />
-                      <span>查看步骤回放
+                      <span>查看步骤回放</span>
                     </button>
                     <button
                       onClick={handleGoToReport}
-                      className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors">
+                      className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors"
+                    >
                       <FileText size={14} />
-                      <span>生成纠错报告
+                      <span>生成纠错报告</span>
                     </button>
                   </div>
                 )}
@@ -260,18 +265,20 @@ export const AnalyzePage: React.FC = () => {
                 {errors.length > 0 && (
                   <button
                     onClick={clearErrors}
-                    className="w-full btn-secondary text-sm">
+                    className="w-full btn-secondary text-sm"
+                  >
                     清除错误标记
                   </button>
                 )}
               </div>
             </div>
           </div>
+
           <div className="card mt-6">
             <div className="card-header">
               <span className="flex items-center space-x-2">
                 <Layers size={18} />
-                <span>图例说明
+                <span>图例说明</span>
               </span>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -293,12 +300,13 @@ export const AnalyzePage: React.FC = () => {
               </div>
             </div>
           </div>
+
           {selectedError && selectedError.constraintChain.length > 0 && showChainDetail && (
             <div className="card mt-6">
               <div className="card-header">
                 <span className="flex items-center space-x-2">
                   <GitBranch size={18} />
-                  <span>约束传播链详情
+                  <span>约束传播链详情</span>
                 </span>
               </div>
               <div className="space-y-3">
@@ -340,11 +348,11 @@ export const AnalyzePage: React.FC = () => {
                     {node.parentIds.length > 0 && (
                       <div className="mt-1 text-xs text-gray-500 ml-7 flex items-center space-x-1">
                         <Link2 size={12} />
-                        <span>关联节点: {node.parentIds.join(', ')}
+                        <span>关联节点: {node.parentIds.join(', ')}</span>
                       </div>
                     )}
                   </div>
-                )}
+                ))}
               </div>
             </div>
           )}
@@ -355,7 +363,7 @@ export const AnalyzePage: React.FC = () => {
             <div className="card-header">
               <span className="flex items-center space-x-2">
                 <AlertTriangle size={18} />
-                <span>错误类型说明
+                <span>错误类型说明</span>
               </span>
             </div>
             <div className="space-y-4">
@@ -393,7 +401,7 @@ export const AnalyzePage: React.FC = () => {
             <div className="card-header">
               <span className="flex items-center space-x-2">
                 <FileText size={18} />
-                <span>数据来源
+                <span>数据来源</span>
               </span>
             </div>
             <div className="space-y-2 text-sm">
@@ -403,7 +411,9 @@ export const AnalyzePage: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">材料来源：</span>
-                <span className="font-medium text-right text-xs max-w-[120px] truncate">{puzzle.source}</span>
+                <span className="font-medium text-right text-xs max-w-[120px] truncate">
+                  {puzzle.source}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">已填数字：</span>
@@ -431,7 +441,7 @@ export const AnalyzePage: React.FC = () => {
               <div className="card-header">
                 <span className="flex items-center space-x-2">
                   <Layers size={18} />
-                  <span>关联材料 ({importedMaterials.length} 份</span>
+                  <span>关联材料 ({importedMaterials.length} 份)</span>
                 </span>
               </div>
               <div className="space-y-2">
@@ -455,10 +465,10 @@ export const AnalyzePage: React.FC = () => {
               🔗 追溯流程
             </div>
             <ol className="text-xs text-sudoku-dark space-y-1.5 list-decimal list-inside">
-              <li>点击错误项选中查看传播链
-              <li>点击"查看步骤回放"跳转到对应步骤
-              <li>点击"生成纠错报告"查看详细解释
-              <li>在报告页可导出完整分析结果
+              <li>点击错误项选中查看传播链</li>
+              <li>点击"查看步骤回放"跳转到对应步骤</li>
+              <li>点击"生成纠错报告"查看详细解释</li>
+              <li>在报告页可导出完整分析结果</li>
             </ol>
           </div>
         </div>

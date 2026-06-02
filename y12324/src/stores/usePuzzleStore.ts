@@ -13,7 +13,7 @@ import {
   SolutionStep,
   SudokuPuzzle,
 } from '../types';
-import { analyzeErrors } from '../engine/conflictDetector';
+import { analyzeErrors, validateAllSteps } from '../engine/conflictDetector';
 import { generateCorrectionReport } from '../engine/explanationGenerator';
 import { applyStep } from '../engine/sudokuCore';
 import { getFirstMockDataSet, getMockDataSet, MockDataSet } from '../data/mockData';
@@ -289,13 +289,13 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
           createdAt: new Date(),
         };
         
-        const errors = analyzeErrors(mergedPuzzle);
-        const report = generateCorrectionReport(mergedPuzzle, errors, puzzleSource);
+        const allErrors = validateAllSteps(mergedPuzzle, mergedSteps);
+        const report = generateCorrectionReport(mergedPuzzle, allErrors, puzzleSource);
         
         set((state) => ({
           puzzle: mergedPuzzle,
           steps: mergedSteps,
-          errors,
+          errors: allErrors,
           report,
           currentStepIndex: mergedSteps.length > 0 ? mergedSteps.length - 1 : 0,
           isMerging: false,
@@ -306,7 +306,7 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
               ...state.batches[state.currentBatchId],
               mergedPuzzle,
               mergedSteps,
-              mergedErrors: errors,
+              mergedErrors: allErrors,
               mergedReport: report,
               isAnalyzed: true,
             },
@@ -358,8 +358,8 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
       set({ isAnalyzing: true });
       setTimeout(() => {
         const state = get();
-        const errors = analyzeErrors(state.puzzle);
-        set({ errors, isAnalyzing: false });
+        const allErrors = validateAllSteps(state.puzzle, state.steps);
+        set({ errors: allErrors, isAnalyzing: false });
       }, 500);
     },
 

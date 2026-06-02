@@ -4,9 +4,10 @@ import {
   ErrorDetection,
   ErrorType,
   Severity,
+  SolutionStep,
   SudokuPuzzle,
 } from '../types';
-import { getRelatedCells } from './sudokuCore';
+import { getRelatedCells, hasUniqueSolution } from './sudokuCore';
 
 export interface ConflictInfo {
   cell: CellPosition;
@@ -282,4 +283,105 @@ export function calculateHeatmapScore(
   }
   
   return scores;
+}
+
+export function detectStepJumps(
+  steps: SolutionStep[]
+): ErrorDetection[] {
+  const errors: ErrorDetection[] = [];
+  
+  for (let i = 1; i < steps.length; i++) {
+    const prevStep = steps[i - 1];
+    const currStep = steps[i];
+    
+    let prevFilled = 0;
+    let currFilled = 0;
+    
+    for (let row = 0; row < 9; row++) {
+      for (let col = 0; col < 9; col++) {
+        if (prevStep.board[row][col] !== null) prevFilled++;
+        if (currStep.board[row][col] !== null) currFilled++;
+      }
+    }
+    
+    const delta = currFilled - prevFilled;
+    
+    if (delta > 1) {
+      const errorId = `error-step-jump-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      
+      errors.push({
+        id: errorId,
+        puzzleId: steps[0]?.puzzleId || 'unknown',
+        stepId: currStep.id,
+        errorType: 'step_jump',
+        severity: delta > 3 ? 'critical' : delta > 2 ? 'high' : 'medium',
+        triggerCell: { row: currStep.row, col: currStep.col },
+        affectedCells: [],
+        constraintChain: [],
+        description: `一步填写了 ${delta} 个数字，建议拆分为 ${delta} 个独立步骤`,
+      });
+    }
+  }
+  
+  return errors;
+}
+
+export function detectUniqueSolutionViolation(
+  board: (number | null)[][],
+  puzzle: SudokuPuzzle
+): ErrorDetection[] {
+  const errors: ErrorDetection[] = [];
+  
+  const hasUnique = hasUniqueSolution(board);
+  
+  if (!hasUnique) {
+    const emptyCell = findFirstEmptyCell(board);
+    
+    if (emptyCell) {
+      const errorId = `error-unique-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      
+      errors.push({
+        id: errorId,
+        puzzleId: puzzle.id,
+        stepId: 'current',
+        errorType: 'unique_solution_violation',
+        severity: 'critical',
+        triggerCell: emptyCell,
+        affectedCells: [],
+        constraintChain: [],
+        description: '当前填法导致题目失去唯一正确解，请检查已填写的数字',
+      });
+    }
+  }
+  
+  return errors;
+}
+
+function findFirstEmptyCell(board: (number | null)[][]): CellPosition | null {
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (board[row][col] === null) {
+        return { row, col };
+      }
+    }
+  }
+  return null;
+}
+
+export function validateAllSteps(
+  puzzle: SudokuPuzzle,
+  steps: SolutionStep[]
+): ErrorDetection[] {
+  const allErrors: ErrorDetection[] = [];
+  
+  const candidateErrors = analyzeErrors(puzzle, 'current');
+  allErrors.push(...candidateErrors);
+  
+  const stepJumpErrors = detectStepJumps(steps);
+  allErrors.push(...stepJumpErrors);
+  
+  const uniqueSolutionErrors = detectUniqueSolutionViolation(puzzle.board, puzzle);
+  allErrors.push(...uniqueSolutionErrors);
+  
+  return allErrors;
 }
