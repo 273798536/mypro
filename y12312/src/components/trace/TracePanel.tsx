@@ -23,7 +23,7 @@ export const TracePanel: React.FC = () => {
 
     batches.forEach((batch) => {
       const batchAudioFiles = Object.values(audioFiles).filter(f => f.batchId === batch.batchId);
-      const batchAnalysis = analysisResults[batch.batchId];
+      const batchAnalysis = Object.values(analysisResults).find(r => r.batchId === batch.batchId);
       const batchProblems = problems[batch.batchId] || [];
 
       if (batchAudioFiles.length > 0) {
@@ -139,7 +139,7 @@ export const TracePanel: React.FC = () => {
   };
 
   const getBatchAnalysis = (batchId: string): AnalysisResult | undefined => {
-    return analysisResults[batchId];
+    return Object.values(analysisResults).find(r => r.batchId === batchId);
   };
 
   return (

@@ -76,6 +76,7 @@ interface AppActions {
   getActiveAudioFiles: () => AudioFile[];
   getActiveProblems: () => ProblemRecord[];
   getActiveAnalysisResult: () => AnalysisResult | null;
+  getAnalysisResultByBatchId: (batchId: string) => AnalysisResult | null;
 
   createNewBatch: (name: string, sourceNote?: string, listenerNote?: string) => Batch;
 }
@@ -85,7 +86,6 @@ function computeDerivedState(state: {
   batches: Batch[];
   audioFiles: Record<string, AudioFile>;
   analysisResults: Record<string, AnalysisResult>;
-  activeBatchId_id?: string | null;
 }) {
   const activeBatch = state.batches.find(b => b.batchId === state.activeBatchId) || null;
   const activeFiles = state.activeBatchId
@@ -94,18 +94,14 @@ function computeDerivedState(state: {
   const originalFile = activeFiles.find(f => f.type === 'original') || null;
   const processedFile = activeFiles.find(f => f.type === 'processed') || null;
 
-  let analysisResult: AnalysisResult | null = null;
-  if (processedFile) {
-    analysisResult = Object.values(state.analysisResults).find(
-      r => r.processedFileId === processedFile.fileId
-    ) || null;
-  } else if (originalFile) {
-    analysisResult = Object.values(state.analysisResults).find(
-      r => r.originalFileId === originalFile.fileId
-    ) || null;
-  }
+  const analysisResult = Object.values(state.analysisResults).find(
+    r => r.batchId === state.activeBatchId
+  ) || null;
 
-  return { activeBatch, originalFile, processedFile, analysisResult };
+  const spectrumBefore = analysisResult?.spectrumBefore || null;
+  const spectrumAfter = analysisResult?.spectrumAfter || null;
+
+  return { activeBatch, originalFile, processedFile, analysisResult, spectrumBefore, spectrumAfter };
 }
 
 export const useAppStore = create<AppState & AppActions>((set, get) => {
@@ -117,9 +113,23 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
     initialAudioFiles[f.fileId] = { ...f, sourceType: f.type };
   });
 
-  const initialState = {
-    batches: mockList.map(item => item.batch),
-    activeBatchId: mockList[0].batch.batchId,
+  const allBatches = [
+    mockData.batch,
+    ...mockList.slice(1).map(item => item.batch),
+  ];
+
+  const derived = computeDerivedState({
+    activeBatchId: mockData.batch.batchId,
+    batches: allBatches,
+    audioFiles: initialAudioFiles,
+    analysisResults: {
+      [mockData.analysisResult.resultId]: mockData.analysisResult,
+    },
+  });
+
+  const initialState: AppState = {
+    batches: allBatches,
+    activeBatchId: mockData.batch.batchId,
     audioFiles: initialAudioFiles,
     analysisResults: {
       [mockData.analysisResult.resultId]: mockData.analysisResult,
@@ -146,23 +156,23 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
 
     activeView: 'spectrum' as ViewTab,
 
-    spectrumBefore: mockData.spectrumBefore,
-    spectrumAfter: mockData.spectrumAfter,
+    spectrumBefore: derived.spectrumBefore,
+    spectrumAfter: derived.spectrumAfter,
 
     traceTarget: {
       resultId: null,
       view: null,
     },
 
-    activeBatch: mockList[0].batch as Batch | null,
-    originalFile: mockData.audioFiles.find(f => f.type === 'original') as AudioFile | null,
-    processedFile: mockData.audioFiles.find(f => f.type === 'processed') as AudioFile | null,
-    analysisResult: mockData.analysisResult as AnalysisResult | null,
+    activeBatch: derived.activeBatch,
+    originalFile: derived.originalFile,
+    processedFile: derived.processedFile,
+    analysisResult: derived.analysisResult,
   };
 
-  const updateDerived = (partial: Partial<AppState>) => {
-    const state = { ...get(), ...partial };
-    const derived = computeDerivedState(state);
+  const recalcDerived = (partial: Partial<AppState>): Partial<AppState> => {
+    const merged = { ...get(), ...partial };
+    const derived = computeDerivedState(merged);
     return { ...partial, ...derived };
   };
 
@@ -171,27 +181,28 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
 
     initializeWithMockData: () => {
       const mock = generateMockBatch();
-      set(updateDerived({
+      set(recalcDerived({
         activeBatchId: mock.batch.batchId,
         batches: [mock.batch, ...get().batches.filter(b => b.batchId !== mock.batch.batchId)],
         audioFiles: {
+          ...get().audioFiles,
           [mock.audioFiles[0].fileId]: { ...mock.audioFiles[0], sourceType: mock.audioFiles[0].type },
           [mock.audioFiles[1].fileId]: { ...mock.audioFiles[1], sourceType: mock.audioFiles[1].type },
         },
         analysisResults: {
+          ...get().analysisResults,
           [mock.analysisResult.resultId]: mock.analysisResult,
         },
         problems: {
+          ...get().problems,
           [mock.batch.batchId]: mock.problems,
         },
-        spectrumBefore: mock.spectrumBefore,
-        spectrumAfter: mock.spectrumAfter,
         filterParams: mock.filterParams,
       }));
     },
 
     setActiveBatch: (batchId) => {
-      set(updateDerived({ activeBatchId: batchId }));
+      set(recalcDerived({ activeBatchId: batchId }));
     },
 
     setActiveView: (view) => {
@@ -213,7 +224,7 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
         numberOfChannels: file.channelData.length,
         channelData: file.channelData,
       };
-      set(updateDerived({
+      set(recalcDerived({
         audioFiles: {
           ...state.audioFiles,
           [newFile.fileId]: newFile,
@@ -239,11 +250,11 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
       }));
     },
 
-    updateViewState: (state) => {
+    updateViewState: (vs) => {
       set(prev => ({
         viewState: {
           ...prev.viewState,
-          ...state,
+          ...vs,
         },
       }));
     },
@@ -280,13 +291,58 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
         sampleRate: originalFile.sampleRate,
       };
 
+      const beforeDB = magnitudeToDB(fftSpectrum.frequencyData);
+      let peakFreq = 0;
+      let noiseFloor = -100;
+      let snr = 0;
+      {
+        let maxMag = -Infinity;
+        let maxIdx = 0;
+        for (let i = 0; i < beforeDB.length; i++) {
+          if (beforeDB[i] > maxMag) {
+            maxMag = beforeDB[i];
+            maxIdx = i;
+          }
+        }
+        peakFreq = fftSpectrum.binFrequencies[maxIdx] || 0;
+        const sorted = Array.from(beforeDB).sort((a, b) => a - b);
+        const bottom10 = sorted.slice(0, Math.max(1, Math.floor(sorted.length * 0.1)));
+        noiseFloor = bottom10.reduce((s, v) => s + v, 0) / bottom10.length;
+        snr = maxMag - noiseFloor;
+      }
+
+      const resultId = generateId('result');
+      const analysisResult: AnalysisResult = {
+        resultId,
+        batchId: originalFile.batchId,
+        originalFileId: originalFile.fileId,
+        processedFileId: '',
+        paramsId: '',
+        spectrumBefore: fftSpectrum,
+        spectrumAfter: state.spectrumAfter || fftSpectrum,
+        waveformDiff: [],
+        createdAt: Date.now(),
+        analyzedAt: Date.now(),
+        filteredAt: 0,
+        fftSize,
+        peakFrequency: peakFreq,
+        noiseFloor,
+        snr,
+        snrImprovement: 0,
+        problemCount: 0,
+      };
+
       set({ processingProgress: 70 });
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      set({
+      set(prev => recalcDerived({
         spectrumBefore: fftSpectrum,
+        analysisResults: {
+          ...prev.analysisResults,
+          [resultId]: analysisResult,
+        },
         processingProgress: 100,
-      });
+      }));
 
       await new Promise(resolve => setTimeout(resolve, 200));
       set({ isProcessing: false, processingProgress: 0 });
@@ -403,8 +459,8 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
         spectrumBefore: state.spectrumBefore!,
         spectrumAfter,
         waveformDiff: computeWaveformDifference(originalFile.channelData[0], processedData),
-        createdAt: Date.now(),
-        analyzedAt: Date.now(),
+        createdAt: state.analysisResult?.createdAt || Date.now(),
+        analyzedAt: state.analysisResult?.analyzedAt || Date.now(),
         filteredAt: Date.now(),
         fftSize,
         peakFrequency: peakFreq,
@@ -417,7 +473,7 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
       set({ processingProgress: 90 });
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      set(prev => updateDerived.call(null, {
+      set(prev => recalcDerived({
         audioFiles: {
           ...prev.audioFiles,
           [processedFile.fileId]: processedFile,
@@ -441,7 +497,7 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
       const state = get();
       const activeFiles = state.getActiveAudioFiles();
 
-      const problems = detectAllProblems(
+      const detectedProblems = detectAllProblems(
         activeFiles,
         state.spectrumBefore || undefined,
         state.spectrumAfter || undefined
@@ -449,12 +505,12 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
 
       if (state.activeBatchId) {
         const existingProblems = state.problems[state.activeBatchId] || [];
-        const newProblems = problems.filter(
+        const newProblems = detectedProblems.filter(
           p => !existingProblems.some(ep => ep.type === p.type)
         );
 
-        if (newProblems.length > 0 || existingProblems.length !== problems.length) {
-          set(prev => updateDerived.call(null, {
+        if (newProblems.length > 0 || existingProblems.length !== detectedProblems.length) {
+          set(prev => recalcDerived({
             problems: {
               ...prev.problems,
               [state.activeBatchId!]: [...existingProblems, ...newProblems],
@@ -480,7 +536,7 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
       if (resultId) {
         const result = get().analysisResults[resultId];
         if (result) {
-          set(updateDerived({
+          set(recalcDerived({
             activeBatchId: result.batchId,
             spectrumBefore: result.spectrumBefore,
             spectrumAfter: result.spectrumAfter,
@@ -522,6 +578,10 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
       return get().analysisResult;
     },
 
+    getAnalysisResultByBatchId: (batchId: string) => {
+      return Object.values(get().analysisResults).find(r => r.batchId === batchId) || null;
+    },
+
     createNewBatch: (name, sourceNote = '', listenerNote = '') => {
       const newBatch: Batch = {
         batchId: generateId('batch'),
@@ -532,7 +592,7 @@ export const useAppStore = create<AppState & AppActions>((set, get) => {
         status: 'pending',
       };
 
-      set(prev => updateDerived.call(null, {
+      set(prev => recalcDerived({
         batches: [newBatch, ...prev.batches],
         activeBatchId: newBatch.batchId,
         spectrumBefore: null,

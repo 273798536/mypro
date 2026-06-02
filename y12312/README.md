@@ -1,57 +1,59 @@
-# React + TypeScript + Vite
+# 傅里叶噪声拆解
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+面向音乐科技助教的频域音频分析工具。学生录音里混着电流声和环境噪声时，可视化展示频域滤波前后到底改了什么——图表、明细、下载文件来自同一批数据，问题检测自动归入导出报告。
 
-Currently, two official plugins are available:
+## 快速开始
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+浏览器打开 `http://localhost:5173` 即可使用。所有音频处理在浏览器本地完成，不需要后端服务。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 关键流程
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### 1. 准备音频片段
+
+- 支持 WAV / MP3 / OGG / FLAC / M4A / AAC，单文件 < 50MB
+- 推荐采样率 44100 Hz 或 48000 Hz，位深度 16/24 bit
+- 录音时保持采样率一致，保留 1-2 秒环境噪声作为参考
+- 用"原始材料"标记待处理音频，"处理结果"标记已处理音频
+- 在备注中注明录音设备和环境
+
+### 2. 分析与滤波
+
+1. 新建分析批次，填写来源和听感备注
+2. 上传原始材料（标记为"原始材料"）
+3. 点击 **FFT 分析** 运行频谱分析，查看频谱图
+4. 选择滤波类型（低通/高通/带通/陷波），调节截止频率
+5. 点击 **应用滤波** 生成处理后音频
+6. 在波形对比视图中 A/B 试听
+
+### 3. 复现采样率错
+
+1. 准备 44100 Hz 采样的测试音频
+2. 创建批次并上传，不转换采样率
+3. 系统会自动检测采样率异常并报告
+4. 也可手动对比：用音频软件查看文件信息，确认实际采样率
+5. 如果检测到 50Hz/60Hz 处有异常尖峰，可能是采样率不匹配导致的频率偏移
+
+### 4. 查看导出音频
+
+- **原始音频**（青色标签）：滤波前的原始录音
+- **处理后音频**（粉色标签）：滤波后的结果
+- **差异音频**（紫色标签）：原始减去处理后，包含被滤除的部分
+- 如果差异音频里有明显的音乐成分，说明滤波过度
+- 导出格式：PDF 报告 / JSON 数据 / WAV 音频（16/24/32 bit）
+
+### 5. 结果追溯
+
+在"结果追溯"面板中，每条操作记录可点击跳转到对应的频谱分析、波形对比或问题检测视图。从一条结果追到 FFT 参数和滤波设置，出问题时方便找人确认。
+
+## 技术栈
+
+- React 18 + TypeScript + Vite + TailwindCSS
+- 自实现 Cooley-Tukey FFT（256–8192 点，hann/hamming/blackman/rectangular 窗函数）
+- 频域滤波（低通/高通/带通/陷波，FIR 内核）
+- 6 种问题自动检测：采样率不匹配、过度滤波、频段混叠、噪声底过高、直流偏移、削波
+- Zustand 状态管理，纯前端无后端
