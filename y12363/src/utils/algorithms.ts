@@ -74,11 +74,17 @@ export const estimateTemperature = (params: EstimationParams): {
     });
   }
 
-  if (!reading.materialBatchId || !batch) {
+  if (!reading.materialBatchId) {
     anomalies.push({
       type: AnomalyType.FIELD_MISSING,
       level: ANOMALY_TYPE_TO_LEVEL[AnomalyType.FIELD_MISSING],
       description: '材料批次信息缺失',
+    });
+  } else if (!batch) {
+    anomalies.push({
+      type: AnomalyType.BATCH_MISMATCH,
+      level: ANOMALY_TYPE_TO_LEVEL[AnomalyType.BATCH_MISMATCH],
+      description: `批次混入：无效的批次ID ${reading.materialBatchId}`,
     });
   }
 

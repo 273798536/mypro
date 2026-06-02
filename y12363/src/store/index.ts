@@ -148,7 +148,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           ...driftReadings,
           ...seedReadings.map((r) => ({
             ...r,
-            materialBatchId: r.materialBatchId || batchMap[Object.keys(batchMap)[Math.floor(Math.random() * 3)]],
+            materialBatchId: batchMap[r.materialBatchId] || r.materialBatchId,
           })),
         ];
 
