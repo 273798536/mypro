@@ -1,4 +1,4 @@
-import type { IVCurveData, TraceNode, Abnormality } from '../types';
+import type { IVCurveData, TraceNode, Abnormality, DiagnosisResult } from '../types';
 
 export function calculateHash(data: any): string {
   const str = JSON.stringify(data);
@@ -15,7 +15,12 @@ export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-export function curveFitting(voltage: number[], current: number[]): {
+export function seededRandom(seed: number): number {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+export function curveFitting(voltage: number[], current: number[], seed: number = 0): {
   voc: number;
   isc: number;
   vm: number;
@@ -44,8 +49,9 @@ export function curveFitting(voltage: number[], current: number[]): {
   
   const ff = (vm * im) / (voc * isc);
   
-  const rs = 0.05 + Math.random() * 0.03;
-  const rsh = 100 + Math.random() * 50;
+  const dataSeed = seed || Math.floor(voc * isc * 1000);
+  const rs = 0.05 + seededRandom(dataSeed) * 0.03;
+  const rsh = 100 + seededRandom(dataSeed + 1) * 50;
   
   const duration = Date.now() - startTime;
   
@@ -204,6 +210,7 @@ export function diagnoseCurve(curve: IVCurveData): {
   abnormalities: Abnormality[];
   traceNodes: TraceNode[];
   faultLevel: 'normal' | 'warning' | 'error';
+  outputHash: string;
 } {
   const traceNodes: TraceNode[] = [];
   
@@ -230,19 +237,54 @@ export function diagnoseCurve(curve: IVCurveData): {
   });
   traceNodes.push(classificationResult.traceNode);
   
+  const parameters = {
+    voc: correctionResult.correctedParams.voc,
+    isc: correctionResult.correctedParams.isc,
+    vm: correctionResult.correctedParams.vm,
+    im: correctionResult.correctedParams.im,
+    ff: fittingResult.ff,
+    rs: fittingResult.rs,
+    rsh: fittingResult.rsh,
+  };
+  
+  const outputHash = calculateHash(parameters);
+  
   return {
-    parameters: {
-      voc: correctionResult.correctedParams.voc,
-      isc: correctionResult.correctedParams.isc,
-      vm: correctionResult.correctedParams.vm,
-      im: correctionResult.correctedParams.im,
-      ff: fittingResult.ff,
-      rs: fittingResult.rs,
-      rsh: fittingResult.rsh,
-    },
+    parameters,
     abnormalities: classificationResult.abnormalities,
     traceNodes,
     faultLevel: classificationResult.faultLevel,
+    outputHash,
+  };
+}
+
+export function verifyDiagnosisConsistency(
+  originalResult: DiagnosisResult,
+  newResult: DiagnosisResult
+): {
+  isConsistent: boolean;
+  differences: string[];
+} {
+  const differences: string[] = [];
+  
+  if (originalResult.inputHash !== newResult.inputHash) {
+    differences.push('输入数据哈希不一致');
+  }
+  
+  const paramKeys = ['voc', 'isc', 'vm', 'im', 'ff', 'rs', 'rsh'] as const;
+  paramKeys.forEach((key) => {
+    if (Math.abs(originalResult.parameters[key] - newResult.parameters[key]) > 0.0001) {
+      differences.push(`${key} 参数不一致: ${originalResult.parameters[key]} vs ${newResult.parameters[key]}`);
+    }
+  });
+  
+  if (originalResult.faultLevel !== newResult.faultLevel) {
+    differences.push(`故障等级不一致: ${originalResult.faultLevel} vs ${newResult.faultLevel}`);
+  }
+  
+  return {
+    isConsistent: differences.length === 0,
+    differences,
   };
 }
 
@@ -276,6 +318,80 @@ export function generateMockCurveData(): IVCurveData {
     timestamp: Date.now(),
     hash: calculateHash(data),
   };
+}
+
+export function parseIVCurveCSV(content: string): Partial<IVCurveData> | null {
+  try {
+    const lines = content.trim().split('\n');
+    if (lines.length < 2) return null;
+    
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const voltageIdx = headers.findIndex(h => h.includes('voltage') || h.includes('v') || h.includes('电压'));
+    const currentIdx = headers.findIndex(h => h.includes('current') || h.includes('i') || h.includes('电流'));
+    const tempIdx = headers.findIndex(h => h.includes('temp') || h.includes('温度'));
+    const irradIdx = headers.findIndex(h => h.includes('irrad') || h.includes('辐照'));
+    
+    if (voltageIdx === -1 || currentIdx === -1) return null;
+    
+    const voltage: number[] = [];
+    const current: number[] = [];
+    let temperature = 25;
+    let irradiance = 1000;
+    
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',');
+      if (values.length >= 2) {
+        const v = parseFloat(values[voltageIdx]);
+        const c = parseFloat(values[currentIdx]);
+        if (!isNaN(v) && !isNaN(c)) {
+          voltage.push(v);
+          current.push(c);
+        }
+        if (tempIdx !== -1 && values[tempIdx]) {
+          const t = parseFloat(values[tempIdx]);
+          if (!isNaN(t)) temperature = t;
+        }
+        if (irradIdx !== -1 && values[irradIdx]) {
+          const ir = parseFloat(values[irradIdx]);
+          if (!isNaN(ir)) irradiance = ir;
+        }
+      }
+    }
+    
+    if (voltage.length === 0 || current.length === 0) return null;
+    
+    return {
+      voltage,
+      current,
+      temperature,
+      irradiance,
+    };
+  } catch (e) {
+    console.error('CSV解析失败:', e);
+    return null;
+  }
+}
+
+export function parseIVCurveJSON(content: string): Partial<IVCurveData> | null {
+  try {
+    const data = JSON.parse(content);
+    const voltage = data.voltage || data.V || data.v;
+    const current = data.current || data.I || data.i;
+    
+    if (!Array.isArray(voltage) || !Array.isArray(current)) {
+      return null;
+    }
+    
+    return {
+      voltage: voltage.map(Number),
+      current: current.map(Number),
+      temperature: data.temperature || data.temp || 25,
+      irradiance: data.irradiance || data.irrad || 1000,
+    };
+  } catch (e) {
+    console.error('JSON解析失败:', e);
+    return null;
+  }
 }
 
 export function detectProblems(

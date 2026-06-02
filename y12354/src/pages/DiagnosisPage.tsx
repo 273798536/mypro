@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Button, Card, Upload, Progress, Tag, Tooltip, Row, Col, Statistic, Divider } from 'antd';
-import { UploadOutlined, PlayCircleOutlined, ReloadOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { Button, Card, Upload, Progress, Tag, Tooltip, Row, Col, Statistic, Divider, message, Alert } from 'antd';
+import { UploadOutlined, PlayCircleOutlined, ReloadOutlined, InfoCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import type { UploadProps } from 'antd';
 import { useAppStore } from '../store/appStore';
-import { generateMockCurveData, diagnoseCurve, calculateHash, generateId } from '../utils/diagnosis';
+import { generateMockCurveData, diagnoseCurve, calculateHash, generateId, parseIVCurveCSV, parseIVCurveJSON, verifyDiagnosisConsistency } from '../utils/diagnosis';
 import type { IVCurveData, DiagnosisResult } from '../types';
 
 const parameterLabels: Record<string, string> = {
@@ -31,64 +31,121 @@ export default function DiagnosisPage() {
   const { curves, addCurve, selectedCurve, setSelectedCurve, addDiagnosis, diagnoses, setSelectedDiagnosis } = useAppStore();
   const [loading, setLoading] = useState(false);
   const [diagnosisResult, setDiagnosisResult] = useState<DiagnosisResult | null>(null);
+  const [reverifyResult, setReverifyResult] = useState<{ isConsistent: boolean; differences: string[] } | null>(null);
 
   const handleGenerateMock = () => {
     const curve = generateMockCurveData();
     addCurve(curve);
     setSelectedCurve(curve);
     setDiagnosisResult(null);
+    setReverifyResult(null);
+    message.success('已生成模拟IV曲线数据');
+  };
+
+  const handleFileUpload: UploadProps['customRequest'] = async ({ file, onSuccess, onError }) => {
+    try {
+      const text = await (file as File).text();
+      const fileName = (file as File).name.toLowerCase();
+      
+      let parsedData: Partial<IVCurveData> | null = null;
+      
+      if (fileName.endsWith('.csv')) {
+        parsedData = parseIVCurveCSV(text);
+      } else if (fileName.endsWith('.json')) {
+        parsedData = parseIVCurveJSON(text);
+      }
+      
+      if (!parsedData || !parsedData.voltage || !parsedData.current) {
+        message.error('文件解析失败，请检查文件格式');
+        onError?.(new Error('解析失败'));
+        return;
+      }
+      
+      const data = {
+        voltage: parsedData.voltage,
+        current: parsedData.current,
+        temperature: parsedData.temperature || 25,
+        irradiance: parsedData.irradiance || 1000,
+      };
+      
+      const curve: IVCurveData = {
+        id: generateId(),
+        serialNumber: `SN-${Date.now().toString().slice(-6)}`,
+        ...data,
+        timestamp: Date.now(),
+        hash: calculateHash(data),
+      };
+      
+      addCurve(curve);
+      setSelectedCurve(curve);
+      setDiagnosisResult(null);
+      setReverifyResult(null);
+      message.success(`已导入IV曲线数据，共 ${data.voltage.length} 个数据点`);
+      onSuccess?.(file);
+    } catch (error) {
+      console.error('文件上传失败:', error);
+      message.error('文件上传失败');
+      onError?.(error as Error);
+    }
   };
 
   const handleDiagnose = () => {
     if (!selectedCurve) return;
     
     setLoading(true);
+    setReverifyResult(null);
+    
     setTimeout(() => {
       const result = diagnoseCurve(selectedCurve);
       const diagnosis: DiagnosisResult = {
         id: generateId(),
         curveId: selectedCurve.id,
         inputHash: selectedCurve.hash,
-        ...result,
+        outputHash: result.outputHash,
+        parameters: result.parameters,
+        abnormalities: result.abnormalities,
+        traceNodes: result.traceNodes,
+        faultLevel: result.faultLevel,
         createdAt: Date.now(),
       };
       addDiagnosis(diagnosis);
       setDiagnosisResult(diagnosis);
       setSelectedDiagnosis(diagnosis);
       setLoading(false);
+      message.success('诊断完成');
     }, 1500);
   };
 
   const handleReDiagnose = () => {
-    if (!selectedCurve) return;
+    if (!selectedCurve || !diagnosisResult) return;
     
     setLoading(true);
+    
     setTimeout(() => {
       const result = diagnoseCurve(selectedCurve);
-      const newHash = calculateHash({
-        voltage: selectedCurve.voltage,
-        current: selectedCurve.current,
-        temperature: selectedCurve.temperature,
-        irradiance: selectedCurve.irradiance,
-      });
-      
-      const isConsistent = newHash === diagnosisResult?.inputHash;
-      
-      const diagnosis: DiagnosisResult = {
+      const newDiagnosis: DiagnosisResult = {
         id: generateId(),
         curveId: selectedCurve.id,
-        inputHash: newHash,
-        ...result,
+        inputHash: selectedCurve.hash,
+        outputHash: result.outputHash,
+        parameters: result.parameters,
+        abnormalities: result.abnormalities,
+        traceNodes: result.traceNodes,
+        faultLevel: result.faultLevel,
         createdAt: Date.now(),
       };
-      addDiagnosis(diagnosis);
-      setDiagnosisResult(diagnosis);
-      setSelectedDiagnosis(diagnosis);
-      setLoading(false);
       
-      if (!isConsistent) {
-        console.warn('输入数据已变更，复算结果可能不同');
+      const consistency = verifyDiagnosisConsistency(diagnosisResult, newDiagnosis);
+      
+      setReverifyResult(consistency);
+      
+      if (consistency.isConsistent) {
+        message.success('复算验证通过：输入输出完全一致');
+      } else {
+        message.warning(`复算发现 ${consistency.differences.length} 处差异`);
       }
+      
+      setLoading(false);
     }, 1500);
   };
 
@@ -96,17 +153,17 @@ export default function DiagnosisPage() {
     name: 'file',
     accept: '.csv,.json',
     showUploadList: false,
-    beforeUpload: () => false,
-    onChange(info) {
-      if (info.file.status === 'done') {
-        handleGenerateMock();
-      }
-    },
+    customRequest: handleFileUpload,
   };
 
   const getCurveChartOption = () => {
     if (!selectedCurve) {
-      return { title: { text: '请选择或上传IV曲线数据' } };
+      return { 
+        title: { text: '请选择或上传IV曲线数据', left: 'center', top: 'center' },
+        xAxis: { type: 'value' },
+        yAxis: { type: 'value' },
+        series: []
+      };
     }
     return {
       tooltip: {
@@ -193,6 +250,7 @@ export default function DiagnosisPage() {
                     onClick={() => {
                       setSelectedCurve(curve);
                       setDiagnosisResult(null);
+                      setReverifyResult(null);
                     }}
                   >
                     <div className="flex items-center justify-between">
@@ -264,6 +322,21 @@ export default function DiagnosisPage() {
           </div>
         )}
 
+        {reverifyResult && (
+          <Alert
+            message={reverifyResult.isConsistent ? '复算验证通过' : '复算发现差异'}
+            description={
+              reverifyResult.isConsistent
+                ? '输入数据和输出结果完全一致，诊断可复算性验证通过'
+                : `发现 ${reverifyResult.differences.length} 处差异: ${reverifyResult.differences.join('; ')}`
+            }
+            type={reverifyResult.isConsistent ? 'success' : 'warning'}
+            showIcon
+            icon={reverifyResult.isConsistent ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+            className="mb-4"
+          />
+        )}
+
         {diagnosisResult && !loading && (
           <div className="space-y-6">
             <div className="flex items-center gap-4">
@@ -273,6 +346,9 @@ export default function DiagnosisPage() {
               </Tag>
               <span className="text-gray-400 text-sm">
                 输入校验哈希: {diagnosisResult.inputHash}
+              </span>
+              <span className="text-gray-400 text-sm">
+                输出校验哈希: {diagnosisResult.outputHash}
               </span>
             </div>
 

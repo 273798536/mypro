@@ -34,6 +34,7 @@ export interface DiagnosisResult {
   id: string;
   curveId: string;
   inputHash: string;
+  outputHash: string;
   parameters: {
     voc: number;
     isc: number;
