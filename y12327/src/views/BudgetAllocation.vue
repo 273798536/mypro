@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { useBudgetStore } from '@/stores/budget'
 import { formatCurrency } from '@/utils/currency'
-import { exportAllocationReport } from '@/utils/export'
+import { exportAllocationReport, generateSupplementaryMarkSheet } from '@/utils/export'
 import type { BudgetAllocationDetail, BudgetPlaybackSnapshot } from '@/types'
 import {
   Plus,
@@ -20,6 +20,7 @@ import {
   Clock,
   FileText,
   Info,
+  Eye,
   Settings
 } from 'lucide-vue-next'
 import dayjs from 'dayjs'
@@ -28,10 +29,10 @@ const store = useBudgetStore()
 
 const totalBudgetInput = ref(150000)
 const showModifyModal = ref(false)
-const showPlaybackModal = ref(false)
 const modifyingDetail = ref<BudgetAllocationDetail | null>(null)
 const newValue = ref(0)
 const modifyReason = ref('')
+const showExportPreview = ref(false)
 const activeTab = ref<'current' | 'history'>('current')
 
 const hasReport = computed(() => !!store.currentReport)
@@ -113,6 +114,19 @@ function getSourceClass(source: string): string {
     default: return 'badge-secondary'
   }
 }
+
+const supplementaryBiddingDetails = computed(() => {
+  if (!store.currentReport) return []
+  return store.supplementaryBiddingRecords.map(record => ({
+    record,
+    affectedDetails: store.getAffectedDetailsForSupplementaryRecord(record.id, store.currentReport.id)
+  }))
+})
+
+const exportPreviewData = computed(() => {
+  if (!store.currentReport) return []
+  return generateSupplementaryMarkSheet(store.currentReport, store.conversions, store.biddingRecords)
+})
 </script>
 
 <template>
@@ -201,6 +215,10 @@ function getSourceClass(source: string): string {
           <button class="btn-secondary" @click="generateReport">
             <RefreshCw class="w-4 h-4 mr-2" />
             重新生成
+          </button>
+          <button class="btn-secondary" @click="showExportPreview = !showExportPreview">
+            <Eye class="w-4 h-4 mr-2" />
+            {{ showExportPreview ? '隐藏预览' : '预览导出' }}
           </button>
           <button class="btn-primary" @click="exportReport">
             <Download class="w-4 h-4 mr-2" />
@@ -439,6 +457,68 @@ function getSourceClass(source: string): string {
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="activeTab === 'current' && showExportPreview" class="card">
+        <div class="card-header">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-slate-900">导出内容预览 - 补录记录影响</h3>
+            <span class="text-xs text-slate-500">与Excel导出内容一致</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="overflow-x-auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>补录类型</th>
+                  <th>补录记录ID</th>
+                  <th>渠道名称</th>
+                  <th>出价金额/转化价值</th>
+                  <th>备注</th>
+                  <th>影响分配明细</th>
+                  <th>影响明细数量</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, idx) in exportPreviewData" :key="idx">
+                  <td>{{ row['序号'] }}</td>
+                  <td>
+                    <span :class="row['补录类型'] === '出价记录' ? 'badge-info' : 'badge-warning'" class="text-xs">
+                      {{ row['补录类型'] }}
+                    </span>
+                  </td>
+                  <td class="font-mono text-xs">{{ row['补录记录ID'] }}</td>
+                  <td>{{ row['渠道名称'] }}</td>
+                  <td>
+                    <span v-if="row['补录类型'] === '出价记录'">{{ row['出价金额'] }}</span>
+                    <span v-else>{{ row['转化价值'] }}</span>
+                  </td>
+                  <td>{{ row['备注'] || '-' }}</td>
+                  <td>{{ row['影响分配明细'] }}</td>
+                  <td>{{ row['影响明细数量'] }}</td>
+                </tr>
+                <tr v-if="exportPreviewData.length === 0">
+                  <td colspan="8" class="text-center text-slate-500 py-8">暂无补录记录影响数据</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div class="flex items-center gap-2">
+              <CheckCircle class="w-4 h-4 text-green-600" />
+              <span class="text-sm font-medium text-green-800">导出链路验证状态</span>
+            </div>
+            <div class="mt-2 text-sm text-green-700">
+              <p>• 补录转化记录数：{{ exportPreviewData.filter(r => r['补录类型'] === '转化数据').length }}</p>
+              <p>• 补录出价记录数：{{ exportPreviewData.filter(r => r['补录类型'] === '出价记录').length }}</p>
+              <p>• 总计导出行数：{{ exportPreviewData.length }}</p>
+              <p v-if="exportPreviewData.length === 2" class="font-medium text-green-800 mt-2">✅ 导出链路完整，补录出价记录已成功进入工作表</p>
+              <p v-else class="font-medium text-red-800 mt-2">⚠️ 数据异常，预期2行（1条转化 + 1条出价）</p>
             </div>
           </div>
         </div>

@@ -155,7 +155,7 @@ function generateModificationTraceSheet(traces: ModificationTrace[]) {
   }))
 }
 
-function generateSupplementaryMarkSheet(report: BudgetAllocationReport, conversions: ConversionData[], biddingRecords: BiddingRecord[]) {
+export function generateSupplementaryMarkSheet(report: BudgetAllocationReport, conversions: ConversionData[], biddingRecords: BiddingRecord[]) {
   const rows: Record<string, any>[] = []
   let index = 1
 
@@ -164,6 +164,8 @@ function generateSupplementaryMarkSheet(report: BudgetAllocationReport, conversi
     const affectedDetails = report.details.filter(d =>
       conv.affectedRecordIds.includes(d.id)
     )
+
+    if (affectedDetails.length === 0) return
 
     rows.push({
       '序号': index++,
@@ -188,6 +190,8 @@ function generateSupplementaryMarkSheet(report: BudgetAllocationReport, conversi
     const affectedDetails = report.details.filter(d =>
       record.affectedAllocationIds.includes(d.id)
     )
+
+    if (affectedDetails.length === 0) return
 
     rows.push({
       '序号': index++,
