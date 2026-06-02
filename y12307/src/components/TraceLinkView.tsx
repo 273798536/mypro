@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronRight, ChevronDown, ArrowDown, ArrowUp, Search } from 'lucide-react'
+import { ChevronRight, ChevronDown, ArrowDown, ArrowUp } from 'lucide-react'
 import { useBayesianStore } from '@/store/bayesianStore'
 import type { TraceNode } from '@/types'
 import { cn } from '@/lib/utils'

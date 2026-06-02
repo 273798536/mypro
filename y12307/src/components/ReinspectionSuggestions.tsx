@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle, Wrench } from 'lucide-react'
+import { CheckCircle, Wrench } from 'lucide-react'
 import { useBayesianStore } from '@/store/bayesianStore'
 import { cn } from '@/lib/utils'
 
