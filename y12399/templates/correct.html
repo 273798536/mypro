@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}手动修正 - {{ session.midi_file_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>手动修正</h2>
+    <p class="subtitle">{{ session.midi_file_name }}</p>
+</div>
+
+<nav class="sub-nav">
+    <a href="{{ url_for('session_detail', session_id=session_id) }}">详情</a>
+    <a href="{{ url_for('anomalies_view', session_id=session_id) }}">异常列表</a>
+    <a href="{{ url_for('bad_rows_view', session_id=session_id) }}">坏行列表</a>
+    <a href="{{ url_for('correct_view', session_id=session_id) }}" class="active">手动修正</a>
+    <a href="{{ url_for('compare_view', session_id=session_id) }}">新旧对比</a>
+</nav>
+
+<div class="correct-layout">
+    <div class="notes-panel">
+        <div class="panel-header">
+            <h3>音符列表</h3>
+            <div class="search-box">
+                <input type="text" id="noteSearch" placeholder="搜索音符ID、音高...">
+            </div>
+        </div>
+
+        <div class="notes-table-container">
+            <table class="notes-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>轨道</th>
+                        <th>小节</th>
+                        <th>音高</th>
+                        <th>力度</th>
+                        <th>时长</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody id="notesTableBody">
+                    {% for note in notes %}
+                    <tr class="note-row {{ 'selected' if selected_note and note.note_id == selected_note.note_id }} {{ 'corrected' if note.is_manually_corrected }}"
+                        data-note-id="{{ note.note_id }}">
+                        <td class="monospace">#{{ note.note_id }}</td>
+                        <td>{{ note.track }}</td>
+                        <td>{{ note.measure }}</td>
+                        <td>{{ note.pitch_name }}</td>
+                        <td class="velocity-cell">
+                            <span class="velocity-value">{{ note.velocity }}</span>
+                            {% if note.is_manually_corrected %}
+                            <span class="original-velocity">(原: {{ note.original_velocity }})</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ (note.duration_seconds * 1000)|round(0) }}ms</td>
+                        <td>
+                            {% if note.is_manually_corrected %}
+                            <span class="status-badge modified">已修正</span>
+                            {% elif note.is_anomaly %}
+                            <span class="status-badge danger">异常</span>
+                            {% else %}
+                            <span class="status-badge ok">正常</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="correction-panel">
+        <div class="panel-header">
+            <h3>修正面板</h3>
+            {% if selected_anomaly %}
+            <span class="anomaly-tag">关联异常: #{{ selected_anomaly.anomaly_id[:8] }}</span>
+            {% endif %}
+        </div>
+
+        {% if selected_note %}
+        <div class="correction-form">
+            <div class="form-section">
+                <h4>当前音符信息</h4>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">音符ID</span>
+                        <span class="info-value monospace">#{{ selected_note.note_id }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">音高</span>
+                        <span class="info-value">{{ selected_note.pitch_name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">轨道</span>
+                        <span class="info-value">{{ selected_note.track }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">小节</span>
+                        <span class="info-value">{{ selected_note.measure }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">开始时间</span>
+                        <span class="info-value">{{ selected_note.start_time_seconds|round(3) }}s</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">时长</span>
+                        <span class="info-value">{{ (selected_note.duration_seconds * 1000)|round(0) }}ms</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h4>力度信息</h4>
+                <div class="velocity-display">
+                    <div class="velocity-current">
+                        <span class="label">当前力度</span>
+                        <span class="value {{ 'modified' if selected_note.is_manually_corrected }}">
+                            {{ selected_note.velocity }}
+                        </span>
+                    </div>
+                    {% if selected_note.is_manually_corrected %}
+                    <div class="velocity-original">
+                        <span class="label">原始力度</span>
+                        <span class="value">{{ selected_note.original_velocity }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="velocity-slider-container">
+                        <input type="range" id="velocitySlider" min="1" max="127"
+                               value="{{ selected_note.velocity }}"
+                               class="velocity-slider">
+                        <div class="slider-labels">
+                            <span>1</span>
+                            <span>64</span>
+                            <span>127</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if selected_anomaly %}
+            <div class="form-section">
+                <h4>关联异常</h4>
+                <div class="anomaly-info severity-{{ selected_anomaly.severity }}">
+                    <div class="anomaly-type">
+                        <span class="severity-badge {{ selected_anomaly.severity }}">
+                            {% if selected_anomaly.severity == 'critical' %}严重
+                            {% elif selected_anomaly.severity == 'warning' %}警告
+                            {% else %}提示
+                            {% endif %}
+                        </span>
+                        <span class="anomaly-type-name">
+                            {% if selected_anomaly.type == 'out_of_range' %}超出范围
+                            {% elif selected_anomaly.type == 'sudden_change' %}力度突变
+                            {% elif selected_anomaly.type == 'local_outlier' %}局部异常
+                            {% elif selected_anomaly.type == 'z_score_outlier' %}Z分数异常
+                            {% elif selected_anomaly.type == 'iqr_outlier' %}四分位距异常
+                            {% elif selected_anomaly.type == 'individual_note' %}单个音符错位
+                            {% elif selected_anomaly.type == 'systematic_offset' %}系统性偏移
+                            {% else %}{{ selected_anomaly.type }}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="anomaly-description">{{ selected_anomaly.description }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-section">
+                <h4>修正设置</h4>
+                <div class="form-group">
+                    <label for="newVelocity">新力度值</label>
+                    <input type="number" id="newVelocity" min="1" max="127"
+                           value="{{ selected_note.velocity }}"
+                           class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="correctionReason">修正原因</label>
+                    <textarea id="correctionReason" rows="3" class="form-input"
+                              placeholder="请输入修正原因...">{% if selected_anomaly %}修正异常: {{ selected_anomaly.description }}{% endif %}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="correctedBy">修正人</label>
+                    <input type="text" id="correctedBy" value="web_user" class="form-input">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button id="applyCorrection" class="btn btn-primary btn-lg">
+                    应用修正
+                </button>
+                <button id="resetNote" class="btn btn-secondary">
+                    重置此音符
+                </button>
+            </div>
+
+            <div id="correctionResult" class="result-area hidden"></div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🎹</div>
+            <h3>选择一个音符</h3>
+            <p>从左侧列表中选择要修正的音符，或从异常列表中点击"修正此音符"</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+window.SESSION_ID = "{{ session_id }}";
+{% if selected_note %}
+window.SELECTED_NOTE_ID = {{ selected_note.note_id }};
+{% endif %}
+{% if selected_anomaly %}
+window.SELECTED_ANOMALY_ID = "{{ selected_anomaly.anomaly_id }}";
+{% endif %}
+</script>
+<script src="{{ url_for('static', filename='js/correct.js') }}"></script>
+{% endblock %}

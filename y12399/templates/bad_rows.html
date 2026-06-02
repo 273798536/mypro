@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}坏行列表 - {{ session.midi_file_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>坏行列表</h2>
+    <p class="subtitle">{{ session.midi_file_name }} | 共 {{ total_count }} 条坏行</p>
+</div>
+
+<nav class="sub-nav">
+    <a href="{{ url_for('session_detail', session_id=session_id) }}">详情</a>
+    <a href="{{ url_for('anomalies_view', session_id=session_id) }}">异常列表</a>
+    <a href="{{ url_for('bad_rows_view', session_id=session_id) }}" class="active">坏行列表</a>
+    <a href="{{ url_for('correct_view', session_id=session_id) }}">手动修正</a>
+    <a href="{{ url_for('compare_view', session_id=session_id) }}">新旧对比</a>
+</nav>
+
+<div class="filter-bar">
+    <div class="filter-group">
+        <label>坏行类型:</label>
+        <div class="filter-buttons">
+            <a href="{{ url_for('bad_rows_view', session_id=session_id) }}"
+               class="filter-btn {{ 'active' if bad_type is none }}">全部</a>
+            {% for type_name in bad_rows_grouped.keys() %}
+            <a href="{{ url_for('bad_rows_view', session_id=session_id, type=type_name) }}"
+               class="filter-btn {{ 'active' if bad_type == type_name }}">
+                {% if type_name == 'overlapping_notes' %}重叠音符
+                {% elif type_name == 'zero_duration' %}零时长
+                {% elif type_name == 'invalid_velocity' %}无效力度
+                {% elif type_name == 'orphaned_note_off' %}孤立关闭事件
+                {% elif type_name == 'unclosed_note' %}未关闭音符
+                {% else %}{{ type_name }}
+                {% endif %}
+                ({{ bad_rows_grouped[type_name]|length }})
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% if bad_rows_grouped %}
+<div class="bad-rows-groups">
+    {% for type_name, rows in bad_rows_grouped.items() %}
+    <div class="bad-rows-group">
+        <h3 class="group-header">
+            <span class="group-icon">
+                {% if type_name == 'overlapping_notes' %}🔄
+                {% elif type_name == 'zero_duration' %}⏱️
+                {% elif type_name == 'invalid_velocity' %}❌
+                {% elif type_name == 'orphaned_note_off' %}🎚️
+                {% elif type_name == 'unclosed_note' %}⚠️
+                {% else %}📋
+                {% endif %}
+            </span>
+            {% if type_name == 'overlapping_notes' %}重叠音符
+            {% elif type_name == 'zero_duration' %}零时长音符
+            {% elif type_name == 'invalid_velocity' %}无效力度值
+            {% elif type_name == 'orphaned_note_off' %}孤立音符关闭事件
+            {% elif type_name == 'unclosed_note' %}未关闭音符
+            {% else %}{{ type_name }}
+            {% endif %}
+            <span class="group-count">{{ rows|length }} 条</span>
+        </h3>
+
+        <div class="bad-rows-table-container">
+            <table class="bad-rows-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>音符ID</th>
+                        <th>轨道</th>
+                        <th>小节</th>
+                        <th>音高</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                        <th>力度</th>
+                        <th>描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr class="bad-row">
+                        <td>{{ loop.index }}</td>
+                        <td class="monospace">#{{ row.note_id }}</td>
+                        <td>{{ row.track }}</td>
+                        <td>{{ row.measure }}</td>
+                        <td>{{ row.pitch_name }}</td>
+                        <td>{{ row.start_time_seconds|round(3) }}s</td>
+                        <td>{{ row.end_time_seconds|round(3) }}s</td>
+                        <td class="{{ 'danger' if row.velocity == 0 or row.velocity > 127 else '' }}">
+                            {{ row.velocity }}
+                        </td>
+                        <td class="description">{{ row.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">✅</div>
+    <h3>没有坏行</h3>
+    <p>该MIDI文件的结构非常好，没有发现任何坏行</p>
+</div>
+{% endif %}
+{% endblock %}

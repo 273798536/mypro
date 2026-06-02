@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}异常列表 - {{ session.midi_file_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>异常列表</h2>
+    <p class="subtitle">{{ session.midi_file_name }} | 共 {{ total_count }} 条异常</p>
+</div>
+
+<nav class="sub-nav">
+    <a href="{{ url_for('session_detail', session_id=session_id) }}">详情</a>
+    <a href="{{ url_for('anomalies_view', session_id=session_id) }}" class="active">异常列表</a>
+    <a href="{{ url_for('bad_rows_view', session_id=session_id) }}">坏行列表</a>
+    <a href="{{ url_for('correct_view', session_id=session_id) }}">手动修正</a>
+    <a href="{{ url_for('compare_view', session_id=session_id) }}">新旧对比</a>
+</nav>
+
+<div class="filter-bar">
+    <div class="filter-group">
+        <label>异常分类:</label>
+        <div class="filter-buttons">
+            <a href="{{ url_for('anomalies_view', session_id=session_id, severity=severity) }}"
+               class="filter-btn {{ 'active' if category == 'all' }}">全部</a>
+            <a href="{{ url_for('anomalies_view', session_id=session_id, category='spikes', severity=severity) }}"
+               class="filter-btn {{ 'active' if category == 'spikes' }}">力度爆点</a>
+            <a href="{{ url_for('anomalies_view', session_id=session_id, category='statistical', severity=severity) }}"
+               class="filter-btn {{ 'active' if category == 'statistical' }}">统计异常</a>
+            <a href="{{ url_for('anomalies_view', session_id=session_id, category='measure', severity=severity) }}"
+               class="filter-btn {{ 'active' if category == 'measure' }}">小节错位</a>
+            <a href="{{ url_for('anomalies_view', session_id=session_id, category='systematic', severity=severity) }}"
+               class="filter-btn {{ 'active' if category == 'systematic' }}">系统性错位</a>
+        </div>
+    </div>
+
+    <div class="filter-group">
+        <label>严重程度:</label>
+        <div class="filter-buttons">
+            <a href="{{ url_for('anomalies_view', session_id=session_id, category=category) }}"
+               class="filter-btn {{ 'active' if severity == 'all' }}">全部</a>
+            <a href="{{ url_for('anomalies_view', session_id=session_id, category=category, severity='critical') }}"
+               class="filter-btn severity-critical {{ 'active' if severity == 'critical' }}">严重</a>
+            <a href="{{ url_for('anomalies_view', session_id=session_id, category=category, severity='warning') }}"
+               class="filter-btn severity-warning {{ 'active' if severity == 'warning' }}">警告</a>
+            <a href="{{ url_for('anomalies_view', session_id=session_id, category=category, severity='info') }}"
+               class="filter-btn severity-info {{ 'active' if severity == 'info' }}">提示</a>
+        </div>
+    </div>
+</div>
+
+{% if anomalies %}
+<div class="anomalies-list">
+    {% for anomaly in anomalies %}
+    <div class="anomaly-card severity-{{ anomaly.severity }}">
+        <div class="anomaly-header">
+            <div class="anomaly-type">
+                <span class="anomaly-icon">
+                    {% if anomaly.type in ['out_of_range', 'sudden_change', 'local_outlier'] %}
+                    ⚡
+                    {% elif anomaly.type in ['z_score_outlier', 'iqr_outlier'] %}
+                    📊
+                    {% elif anomaly.type == 'individual_note' %}
+                    📏
+                    {% elif anomaly.type == 'systematic_offset' %}
+                    🔄
+                    {% endif %}
+                </span>
+                <span class="anomaly-type-name">
+                    {% if anomaly.type == 'out_of_range' %}超出范围
+                    {% elif anomaly.type == 'sudden_change' %}力度突变
+                    {% elif anomaly.type == 'local_outlier' %}局部异常
+                    {% elif anomaly.type == 'z_score_outlier' %}Z分数异常
+                    {% elif anomaly.type == 'iqr_outlier' %}四分位距异常
+                    {% elif anomaly.type == 'individual_note' %}单个音符错位
+                    {% elif anomaly.type == 'systematic_offset' %}系统性偏移
+                    {% else %}{{ anomaly.type }}
+                    {% endif %}
+                </span>
+                <span class="severity-badge {{ anomaly.severity }}">
+                    {% if anomaly.severity == 'critical' %}严重
+                    {% elif anomaly.severity == 'warning' %}警告
+                    {% else %}提示
+                    {% endif %}
+                </span>
+            </div>
+            <span class="anomaly-id">#{{ anomaly.anomaly_id[:8] }}</span>
+        </div>
+
+        <div class="anomaly-details">
+            <div class="detail-row">
+                <span class="detail-label">音符ID:</span>
+                <span class="detail-value">#{{ anomaly.note_id }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">轨道:</span>
+                <span class="detail-value">{{ anomaly.track }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">小节:</span>
+                <span class="detail-value">{{ anomaly.measure }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">音高:</span>
+                <span class="detail-value">{{ anomaly.pitch_name }}</span>
+            </div>
+            {% if 'velocity' in anomaly %}
+            <div class="detail-row">
+                <span class="detail-label">力度:</span>
+                <span class="detail-value highlight">{{ anomaly.velocity }}</span>
+            </div>
+            {% endif %}
+            {% if 'deviation' in anomaly %}
+            <div class="detail-row">
+                <span class="detail-label">偏差:</span>
+                <span class="detail-value">{{ anomaly.deviation }} 拍</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="anomaly-description">
+            {{ anomaly.description }}
+        </div>
+
+        <div class="anomaly-actions">
+            <a href="{{ url_for('correct_view', session_id=session_id, note_id=anomaly.note_id, anomaly_id=anomaly.anomaly_id) }}"
+               class="btn btn-sm btn-warning">修正此音符</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">✅</div>
+    <h3>没有符合条件的异常</h3>
+    <p>尝试调整筛选条件查看其他类型的异常</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}会话列表 - MIDI力度曲线清洗系统{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>清洗会话列表</h2>
+    <p class="subtitle">所有已完成的MIDI清洗任务</p>
+</div>
+
+{% if sessions %}
+<div class="sessions-grid">
+    {% for session in sessions %}
+    <div class="session-card">
+        <div class="session-card-header">
+            <h3>
+                <a href="{{ url_for('session_detail', session_id=session.session_id) }}">
+                    {{ session.midi_file_name }}
+                </a>
+            </h3>
+            <span class="session-id">#{{ session.session_id[:8] }}</span>
+        </div>
+
+        <div class="session-meta">
+            <div class="meta-row">
+                <span class="meta-label">来源版本:</span>
+                <span class="meta-value">{{ session.source_version }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">轨道版本:</span>
+                <span class="meta-value">{{ session.track_version }}</span>
+            </div>
+            <div class="meta-row">
+                <span class="meta-label">清洗时间:</span>
+                <span class="meta-value">{{ session.cleaned_at }}</span>
+            </div>
+        </div>
+
+        <div class="session-summary">
+            <div class="summary-item">
+                <span class="summary-value">{{ session.summary.note_count }}</span>
+                <span class="summary-label">音符</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-value {{ 'warning' if session.summary.anomaly_count > 0 }}">
+                    {{ session.summary.anomaly_count }}
+                </span>
+                <span class="summary-label">异常</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-value {{ 'danger' if session.summary.bad_row_count > 0 }}">
+                    {{ session.summary.bad_row_count }}
+                </span>
+                <span class="summary-label">坏行</span>
+            </div>
+        </div>
+
+        <div class="session-status">
+            {% if session.has_manual_corrections %}
+            <span class="status-badge modified">已修正</span>
+            {% endif %}
+            {% if session.statistics_modified %}
+            <span class="status-badge stats-changed">统计已改</span>
+            {% endif %}
+        </div>
+
+        <div class="session-actions">
+            <a href="{{ url_for('session_detail', session_id=session.session_id) }}" class="btn btn-primary">查看详情</a>
+            <a href="{{ url_for('anomalies_view', session_id=session.session_id) }}" class="btn btn-secondary">异常列表</a>
+            <a href="{{ url_for('correct_view', session_id=session.session_id) }}" class="btn btn-warning">手动修正</a>
+            <a href="{{ url_for('compare_view', session_id=session.session_id) }}" class="btn btn-info">对比查看</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📁</div>
+    <h3>暂无清洗会话</h3>
+    <p>使用命令行工具开始您的第一个MIDI清洗任务</p>
+    <code class="cli-example">midi-cleaner clean path/to/file.mid --source-version v1.0 --track-version piano-main</code>
+</div>
+{% endif %}
+{% endblock %}

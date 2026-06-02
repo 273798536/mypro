@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}新旧对比 - {{ session.midi_file_name }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>新旧结果对比</h2>
+    <p class="subtitle">{{ session.midi_file_name }}</p>
+</div>
+
+<nav class="sub-nav">
+    <a href="{{ url_for('session_detail', session_id=session_id) }}">详情</a>
+    <a href="{{ url_for('anomalies_view', session_id=session_id) }}">异常列表</a>
+    <a href="{{ url_for('bad_rows_view', session_id=session_id) }}">坏行列表</a>
+    <a href="{{ url_for('correct_view', session_id=session_id) }}">手动修正</a>
+    <a href="{{ url_for('compare_view', session_id=session_id) }}" class="active">新旧对比</a>
+</nav>
+
+{% if has_corrections %}
+<div class="compare-layout">
+    <div class="compare-section">
+        <h3>统计数据对比</h3>
+        <div class="stats-comparison">
+            <div class="stats-column original">
+                <h4>原始数据</h4>
+                <div class="stat-item">
+                    <span class="stat-label">均值</span>
+                    <span class="stat-value">{{ comparison.original_stats.mean|round(2) }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">中位数</span>
+                    <span class="stat-value">{{ comparison.original_stats.median }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">标准差</span>
+                    <span class="stat-value">{{ comparison.original_stats.std_dev|round(2) }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">最小值</span>
+                    <span class="stat-value">{{ comparison.original_stats.min }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">最大值</span>
+                    <span class="stat-value">{{ comparison.original_stats.max }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">异常数</span>
+                    <span class="stat-value">{{ comparison.original_stats.anomaly_count }}</span>
+                </div>
+            </div>
+
+            <div class="stats-diff">
+                <h4>变化量</h4>
+                <div class="stat-item">
+                    <span class="stat-label">均值</span>
+                    <span class="stat-value {{ 'positive' if comparison.stats_diff.mean_diff > 0 }}{{ 'negative' if comparison.stats_diff.mean_diff < 0 }}">
+                        {% if comparison.stats_diff.mean_diff >= 0 %}+{% endif %}{{ comparison.stats_diff.mean_diff|round(2) }}
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">中位数</span>
+                    <span class="stat-value {{ 'positive' if comparison.stats_diff.median_diff > 0 }}{{ 'negative' if comparison.stats_diff.median_diff < 0 }}">
+                        {% if comparison.stats_diff.median_diff >= 0 %}+{% endif %}{{ comparison.stats_diff.median_diff }}
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">标准差</span>
+                    <span class="stat-value {{ 'positive' if comparison.stats_diff.std_dev_diff > 0 }}{{ 'negative' if comparison.stats_diff.std_dev_diff < 0 }}">
+                        {% if comparison.stats_diff.std_dev_diff >= 0 %}+{% endif %}{{ comparison.stats_diff.std_dev_diff|round(2) }}
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">最小值</span>
+                    <span class="stat-value {{ 'positive' if comparison.stats_diff.min_diff > 0 }}{{ 'negative' if comparison.stats_diff.min_diff < 0 }}">
+                        {% if comparison.stats_diff.min_diff >= 0 %}+{% endif %}{{ comparison.stats_diff.min_diff }}
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">最大值</span>
+                    <span class="stat-value {{ 'positive' if comparison.stats_diff.max_diff > 0 }}{{ 'negative' if comparison.stats_diff.max_diff < 0 }}">
+                        {% if comparison.stats_diff.max_diff >= 0 %}+{% endif %}{{ comparison.stats_diff.max_diff }}
+                    </span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">异常数</span>
+                    <span class="stat-value {{ 'positive' if comparison.stats_diff.anomaly_count_diff > 0 }}{{ 'negative' if comparison.stats_diff.anomaly_count_diff < 0 }}">
+                        {% if comparison.stats_diff.anomaly_count_diff >= 0 %}+{% endif %}{{ comparison.stats_diff.anomaly_count_diff }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="stats-column modified">
+                <h4>修正后数据</h4>
+                <div class="stat-item">
+                    <span class="stat-label">均值</span>
+                    <span class="stat-value modified">{{ comparison.modified_stats.mean|round(2) }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">中位数</span>
+                    <span class="stat-value modified">{{ comparison.modified_stats.median }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">标准差</span>
+                    <span class="stat-value modified">{{ comparison.modified_stats.std_dev|round(2) }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">最小值</span>
+                    <span class="stat-value modified">{{ comparison.modified_stats.min }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">最大值</span>
+                    <span class="stat-value modified">{{ comparison.modified_stats.max }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">异常数</span>
+                    <span class="stat-value modified">{{ comparison.modified_stats.anomaly_count }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="compare-section">
+        <h3>力度曲线并排对比</h3>
+        <div class="curve-comparison-container">
+            <canvas id="velocityComparisonChart" width="1200" height="400"></canvas>
+        </div>
+    </div>
+
+    <div class="compare-section full-width">
+        <h3>修正明细 ({{ correction_history.corrections|length }} 条)</h3>
+        <div class="corrections-comparison">
+            {% for corr in correction_history.corrections %}
+            <div class="correction-compare-row">
+                <div class="correction-note-info">
+                    <span class="note-id">#{{ corr.note_id }}</span>
+                    <span class="correction-id">#{{ corr.correction_id[:8] }}</span>
+                </div>
+                <div class="velocity-old">
+                    <span class="label">原始</span>
+                    <span class="value">{{ corr.old_velocity }}</span>
+                </div>
+                <div class="velocity-arrow">→</div>
+                <div class="velocity-new">
+                    <span class="label">修正</span>
+                    <span class="value modified">{{ corr.new_velocity }}</span>
+                </div>
+                <div class="velocity-change {{ 'positive' if corr.new_velocity > corr.old_velocity }}{{ 'negative' if corr.new_velocity < corr.old_velocity }}">
+                    {% if corr.new_velocity >= corr.old_velocity %}+{% endif %}{{ corr.new_velocity - corr.old_velocity }}
+                </div>
+                <div class="correction-reason">{{ corr.reason }}</div>
+                <div class="correction-meta">
+                    <span>{{ corr.corrected_by }}</span>
+                    <span>{{ corr.corrected_at }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="compare-section">
+        <h3>人工修改影响分析</h3>
+        <div class="impact-analysis">
+            <div class="impact-item">
+                <span class="impact-label">统计数据已修改</span>
+                <span class="impact-value">
+                    {% if comparison.modified_stats.is_manually_modified %}
+                    <span class="status-badge modified">是</span>
+                    {% else %}
+                    <span class="status-badge ok">否</span>
+                    {% endif %}
+                </span>
+            </div>
+            {% if comparison.modified_stats.modified_fields %}
+            <div class="impact-item">
+                <span class="impact-label">被修改的统计字段</span>
+                <span class="impact-value">
+                    {% for field in comparison.modified_stats.modified_fields %}
+                    <span class="badge">{{ field }}</span>
+                    {% endfor %}
+                </span>
+            </div>
+            {% endif %}
+            <div class="impact-item">
+                <span class="impact-label">修正音符数</span>
+                <span class="impact-value">{{ correction_history.corrections|length }}</span>
+            </div>
+            <div class="impact-item">
+                <span class="impact-label">总力度变化量</span>
+                <span class="impact-value {{ 'positive' if comparison.overall_velocity_change > 0 }}{{ 'negative' if comparison.overall_velocity_change < 0 }}">
+                    {% if comparison.overall_velocity_change >= 0 %}+{% endif %}{{ comparison.overall_velocity_change }}
+                </span>
+            </div>
+            <div class="impact-item">
+                <span class="impact-label">平均力度变化</span>
+                <span class="impact-value {{ 'positive' if comparison.average_velocity_change > 0 }}{{ 'negative' if comparison.average_velocity_change < 0 }}">
+                    {% if comparison.average_velocity_change >= 0 %}+{% endif %}{{ comparison.average_velocity_change|round(2) }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.ORIGINAL_CURVE = {{ curve_data.original_curve | tojson }};
+window.MODIFIED_CURVE = {{ curve_data.modified_curve | tojson }};
+window.CORRECTIONS = {{ curve_data.corrections | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/compare.js') }}"></script>
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📊</div>
+    <h3>暂无修正记录</h3>
+    <p>该会话还没有进行过手动修正，无法进行对比</p>
+    <a href="{{ url_for('correct_view', session_id=session_id) }}" class="btn btn-primary">去修正</a>
+</div>
+{% endif %}
+{% endblock %}

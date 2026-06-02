@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}{{ session.midi_file_name }} - 会话详情{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>{{ session.midi_file_name }}</h2>
+    <p class="subtitle">会话ID: {{ session.session_id }}</p>
+</div>
+
+<nav class="sub-nav">
+    <a href="{{ url_for('session_detail', session_id=session.session_id) }}" class="active">详情</a>
+    <a href="{{ url_for('anomalies_view', session_id=session.session_id) }}">异常列表</a>
+    <a href="{{ url_for('bad_rows_view', session_id=session.session_id) }}">坏行列表</a>
+    <a href="{{ url_for('correct_view', session_id=session.session_id) }}">手动修正</a>
+    <a href="{{ url_for('compare_view', session_id=session.session_id) }}">新旧对比</a>
+</nav>
+
+<div class="detail-grid">
+    <div class="detail-section">
+        <h3>文件信息</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">MIDI文件</span>
+                <span class="info-value monospace">{{ session.midi_file_path }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">文件哈希</span>
+                <span class="info-value monospace">{{ session.midi_file_hash }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">来源版本</span>
+                <span class="info-value version-tag">{{ session.source_version }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">轨道版本</span>
+                <span class="info-value version-tag">{{ session.track_version }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">清洗时间</span>
+                <span class="info-value">{{ session.cleaned_at }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-section">
+        <h3>清洗摘要</h3>
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-card-value">{{ session.summary.note_count }}</div>
+                <div class="summary-card-label">总音符数</div>
+            </div>
+            <div class="summary-card warning">
+                <div class="summary-card-value">{{ session.summary.anomaly_count }}</div>
+                <div class="summary-card-label">力度异常</div>
+            </div>
+            <div class="summary-card danger">
+                <div class="summary-card-value">{{ session.summary.bad_row_count }}</div>
+                <div class="summary-card-label">坏行数</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-card-value">{{ session.summary.track_count }}</div>
+                <div class="summary-card-label">轨道数</div>
+            </div>
+        </div>
+
+        {% if has_corrections %}
+        <div class="alert alert-info">
+            <strong>ℹ️ 已修正:</strong> 该会话包含 {{ correction_history|length }} 条手动修正记录
+            {% if session.statistics_modified %}
+            <br><strong>📊 统计数据已修改:</strong>
+            {% for field in session.modified_fields %}
+            <span class="badge">{{ field }}</span>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="detail-section full-width">
+        <h3>文件对应关系</h3>
+        <div class="relationship-diagram">
+            <div class="relationship-node">
+                <div class="node-icon">🎵</div>
+                <div class="node-title">MIDI文件</div>
+                <div class="node-path monospace">{{ relationship.midi_file }}</div>
+                <div class="node-hash">{{ relationship.midi_hash[:16] }}...</div>
+            </div>
+            <div class="relationship-arrow">→</div>
+            <div class="relationship-node">
+                <div class="node-icon">📊</div>
+                <div class="node-title">清洗数据</div>
+                <div class="node-path monospace">{{ relationship.cleaned_data_file }}</div>
+            </div>
+            <div class="relationship-arrow">→</div>
+            <div class="relationship-node">
+                <div class="node-icon">📈</div>
+                <div class="node-title">力度曲线</div>
+                <div class="node-path monospace">{{ relationship.velocity_curve_file }}</div>
+            </div>
+            <div class="relationship-arrow">→</div>
+            <div class="relationship-node">
+                <div class="node-icon">📄</div>
+                <div class="node-title">清洗报告</div>
+                <div class="node-path monospace">{{ relationship.report_markdown_file }}</div>
+            </div>
+            {% if relationship.correction_history_file %}
+            <div class="relationship-arrow">↔</div>
+            <div class="relationship-node modified">
+                <div class="node-icon">✏️</div>
+                <div class="node-title">修正历史</div>
+                <div class="node-path monospace">{{ relationship.correction_history_file }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if has_corrections %}
+    <div class="detail-section full-width">
+        <h3>修正历史</h3>
+        <div class="correction-list">
+            {% for corr in correction_history.corrections %}
+            <div class="correction-item">
+                <div class="correction-header">
+                    <span class="correction-id">#{{ corr.correction_id[:8] }}</span>
+                    <span class="correction-note">音符 #{{ corr.note_id }}</span>
+                    <span class="correction-change">
+                        <span class="old-value">{{ corr.old_velocity }}</span>
+                        →
+                        <span class="new-value">{{ corr.new_velocity }}</span>
+                        ({{ corr.new_velocity - corr.old_velocity }})
+                    </span>
+                </div>
+                <div class="correction-meta">
+                    <span>修正人: {{ corr.corrected_by }}</span>
+                    <span>时间: {{ corr.corrected_at }}</span>
+                </div>
+                <div class="correction-reason">{{ corr.reason }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if report_content %}
+    <div class="detail-section full-width">
+        <h3>清洗报告</h3>
+        <div class="report-preview">
+            <pre>{{ report_content }}</pre>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
