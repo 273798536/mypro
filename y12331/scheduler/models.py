@@ -171,3 +171,177 @@ class ScheduleContext:
         )
         self.versions.append(version)
         return version
+
+    def to_dict(self) -> dict:
+        return {
+            'teachers': [
+                {
+                    'id': t.id,
+                    'name': t.name,
+                    'available_times': [
+                        {'weekday': ts.weekday.to_str(), 'start_period': ts.start_period, 'end_period': ts.end_period}
+                        for ts in t.available_times
+                    ],
+                    'preferred_times': [
+                        {'weekday': ts.weekday.to_str(), 'start_period': ts.start_period, 'end_period': ts.end_period}
+                        for ts in t.preferred_times
+                    ]
+                } for t in self.teachers.values()
+            ],
+            'classes': [
+                {
+                    'id': c.id,
+                    'name': c.name,
+                    'student_count': c.student_count,
+                    'preferred_teachers': c.preferred_teachers,
+                    'preferred_times': [
+                        {'weekday': ts.weekday.to_str(), 'start_period': ts.start_period, 'end_period': ts.end_period}
+                        for ts in c.preferred_times
+                    ]
+                } for c in self.classes.values()
+            ],
+            'courses': [
+                {
+                    'id': c.id,
+                    'name': c.name,
+                    'teacher_id': c.teacher_id,
+                    'class_id': c.class_id,
+                    'duration': c.duration,
+                    'need_consecutive': c.need_consecutive,
+                    'capacity': c.capacity
+                } for c in self.courses.values()
+            ],
+            'versions': [
+                {
+                    'version': v.version,
+                    'timestamp': v.timestamp.isoformat(),
+                    'reason': v.reason,
+                    'entries': [
+                        {
+                            'course_id': e.course_id,
+                            'time_slot': {
+                                'weekday': e.time_slot.weekday.to_str(),
+                                'start_period': e.time_slot.start_period,
+                                'end_period': e.time_slot.end_period
+                            },
+                            'classroom': e.classroom,
+                            'status': e.status.value,
+                            'conflicts': [
+                                {
+                                    'type': c.type.value,
+                                    'description': c.description,
+                                    'related_courses': c.related_courses
+                                } for c in e.conflicts
+                            ],
+                            'is_locked': e.is_locked,
+                            'version': e.version
+                        } for e in v.entries.values()
+                    ]
+                } for v in self.versions
+            ],
+            'current_version': self.current_version
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict) -> 'ScheduleContext':
+        ctx = cls()
+
+        for t_data in data.get('teachers', []):
+            ctx.teachers[t_data['id']] = Teacher(
+                id=t_data['id'],
+                name=t_data['name'],
+                available_times=[
+                    TimeSlot(
+                        weekday=Weekday.from_str(t['weekday']),
+                        start_period=t['start_period'],
+                        end_period=t['end_period']
+                    ) for t in t_data.get('available_times', [])
+                ],
+                preferred_times=[
+                    TimeSlot(
+                        weekday=Weekday.from_str(t['weekday']),
+                        start_period=t['start_period'],
+                        end_period=t['end_period']
+                    ) for t in t_data.get('preferred_times', [])
+                ]
+            )
+
+        for c_data in data.get('classes', []):
+            ctx.classes[c_data['id']] = Class(
+                id=c_data['id'],
+                name=c_data['name'],
+                student_count=c_data['student_count'],
+                preferred_teachers=c_data.get('preferred_teachers', []),
+                preferred_times=[
+                    TimeSlot(
+                        weekday=Weekday.from_str(t['weekday']),
+                        start_period=t['start_period'],
+                        end_period=t['end_period']
+                    ) for t in c_data.get('preferred_times', [])
+                ]
+            )
+
+        for c_data in data.get('courses', []):
+            ctx.courses[c_data['id']] = Course(
+                id=c_data['id'],
+                name=c_data['name'],
+                teacher_id=c_data['teacher_id'],
+                class_id=c_data['class_id'],
+                duration=c_data.get('duration', 2),
+                need_consecutive=c_data.get('need_consecutive', False),
+                capacity=c_data.get('capacity', 0)
+            )
+
+        ctx.current_version = data.get('current_version', 0)
+
+        for v_data in data.get('versions', []):
+            entries = {}
+            for e_data in v_data['entries']:
+                ts = e_data['time_slot']
+                conflicts = [
+                    Conflict(
+                        type=ConflictType(c['type']),
+                        description=c['description'],
+                        related_courses=c.get('related_courses', [])
+                    ) for c in e_data.get('conflicts', [])
+                ]
+                entries[e_data['course_id']] = ScheduleEntry(
+                    course_id=e_data['course_id'],
+                    time_slot=TimeSlot(
+                        weekday=Weekday.from_str(ts['weekday']),
+                        start_period=ts['start_period'],
+                        end_period=ts['end_period']
+                    ),
+                    classroom=e_data.get('classroom', ''),
+                    status=ScheduleStatus(e_data['status']),
+                    conflicts=conflicts,
+                    is_locked=e_data.get('is_locked', False),
+                    version=e_data.get('version', 1)
+                )
+            ctx.versions.append(ScheduleVersion(
+                version=v_data['version'],
+                timestamp=datetime.fromisoformat(v_data['timestamp']),
+                entries=entries,
+                reason=v_data.get('reason', '')
+            ))
+
+        return ctx
+
+    def save(self, file_path: str):
+        import json
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(self.to_dict(), f, ensure_ascii=False, indent=2)
+
+    @classmethod
+    def load(cls, file_path: str) -> Optional['ScheduleContext']:
+        import json
+        from pathlib import Path
+        if not Path(file_path).exists():
+            return None
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return cls.from_dict(data)
+        except Exception as e:
+            print(f"警告: 加载状态文件失败: {e}，将使用空状态")
+            return None

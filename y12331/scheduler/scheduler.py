@@ -88,6 +88,12 @@ class DPScheduler:
             )
 
         final_entries = self.validator.validate_all(final_entries)
+
+        for cid, entry in final_entries.items():
+            if cid in existing_entries:
+                entry.is_locked = existing_entries[cid].is_locked
+                entry.version = existing_entries[cid].version + (0 if entry.time_slot == existing_entries[cid].time_slot else 1)
+
         self.context.create_new_version(final_entries, reason)
 
         return final_entries
