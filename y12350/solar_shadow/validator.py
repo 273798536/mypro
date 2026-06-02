@@ -27,7 +27,7 @@ def _check_timezone(obs: Observation, result: ValidationResult):
     expected = _expected_timezone(obs.longitude)
     diff = abs(obs.timezone_offset - expected)
     if diff > 1.0:
-        severity = Severity.ERROR if diff > 3.0 else Severity.WARNING
+        severity = Severity.ERROR if diff >= 3.0 else Severity.WARNING
         affected = ["solar_elevation_angle", "azimuth", "datetime_interpretation"]
         explanation = (
             f"经度 {obs.longitude}° 对应标准时区 UTC{'+' if expected >= 0 else ''}{expected}，"
@@ -49,7 +49,7 @@ def _check_pole_height(obs: Observation, result: ValidationResult):
         affected = ["solar_elevation_angle"]
         explanation = (
             "杆高缺失或无效，无法通过 arctan(杆高/影长) 计算太阳高度角。"
-            "该观测记录的太阳高度角将被跳过，仅保留天文算法估算结果。"
+            "影长法不可用，将回退至天文算法估算，结果可靠性低于影长法。"
         )
         result.add_issue(ValidationIssue(
             code="POLE_HEIGHT_MISSING",
@@ -64,8 +64,8 @@ def _check_shadow(obs: Observation, result: ValidationResult):
     if obs.shadow_length is None or obs.shadow_length < 0:
         affected = ["solar_elevation_angle"]
         explanation = (
-            "影长缺失或为负值，无法参与太阳高度角计算。"
-            "该观测的太阳高度角计算将被跳过。"
+            "影长缺失或为负值，影长法不可用。"
+            "将回退至天文算法估算太阳高度角，结果可靠性低于影长法。"
         )
         result.add_issue(ValidationIssue(
             code="SHADOW_INVALID",

@@ -23,8 +23,10 @@ def run(input_path: str, output_dir: str = ".", version: str = "", format: str =
     print(f"验证完成: {error_count} 个错误, {warning_count} 个警告")
 
     calculations = calculate_all(observations, validations)
-    completed = sum(1 for c in calculations if not c.skip_reason)
-    print(f"计算完成: {completed}/{len(calculations)} 条有效结果")
+    shadow_ok = sum(1 for c in calculations if not c.skip_reason and not c.fallback_reason)
+    fallback = sum(1 for c in calculations if c.fallback_reason)
+    skipped = sum(1 for c in calculations if c.skip_reason)
+    print(f"计算完成: 影长法 {shadow_ok} 条, 天文法回退 {fallback} 条, 跳过 {skipped} 条")
 
     report = generate_report(observations, validations, calculations, source=observations[0].source)
 

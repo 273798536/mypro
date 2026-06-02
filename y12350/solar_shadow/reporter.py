@@ -25,6 +25,13 @@ def _build_datetime_conclusion(calculations: list[CalculationResult]) -> str:
                 f"{calc.obs_date} {calc.obs_time} {calc.timezone_label} | "
                 f"跳过: {calc.skip_reason}"
             )
+        elif calc.fallback_reason:
+            angle = calc.solar_elevation_angle_deg
+            lines.append(
+                f"[#{calc.observation_index}] {calc.site_name} | "
+                f"{calc.obs_date} {calc.obs_time} {calc.timezone_label} | "
+                f"太阳高度角={angle}° (天文法回退: {calc.fallback_reason})"
+            )
         else:
             angle = calc.solar_elevation_angle_deg
             lines.append(
@@ -37,18 +44,20 @@ def _build_datetime_conclusion(calculations: list[CalculationResult]) -> str:
 
 def _build_summary(observations, validations, calculations) -> str:
     total = len(observations)
+    shadow_ok = sum(1 for c in calculations if not c.skip_reason and not c.fallback_reason)
+    fallback = sum(1 for c in calculations if c.fallback_reason)
     skipped = sum(1 for c in calculations if c.skip_reason)
-    completed = total - skipped
     error_count = sum(len(v.errors()) for v in validations)
     warning_count = sum(len(v.warnings()) for v in validations)
 
     lines = [
         f"共导入 {total} 条观测记录",
-        f"成功计算 {completed} 条，跳过 {skipped} 条",
+        f"影长法计算 {shadow_ok} 条，天文法回退 {fallback} 条，跳过 {skipped} 条",
         f"验证错误 {error_count} 项，警告 {warning_count} 项",
     ]
 
-    valid_angles = [c.solar_elevation_angle_deg for c in calculations if c.solar_elevation_angle_deg is not None]
+    valid_angles = [c.solar_elevation_angle_deg for c in calculations
+                    if c.solar_elevation_angle_deg is not None and not c.skip_reason]
     if valid_angles:
         lines.append(
             f"太阳高度角范围: {min(valid_angles):.2f}° ~ {max(valid_angles):.2f}°"
@@ -116,10 +125,16 @@ def export_text(report: Report, output_path: str) -> str:
     for i, detail in enumerate(report.validation.get("details", [])):
         obs_dict = report.observations[i] if i < len(report.observations) else {}
         lines.append(f"  --- 观测 #{i}: {obs_dict.get('site_name', '?')} ---")
-        if detail.get("passed"):
+        has_error = any(iss.get("severity") == "error" for iss in detail.get("issues", []))
+        has_warning = any(iss.get("severity") == "warning" for iss in detail.get("issues", []))
+        if has_error:
+            lines.append("  ✗ 验证未通过")
+        elif has_warning:
+            lines.append("  ⚠ 验证有警告")
+        elif detail.get("passed"):
             lines.append("  ✓ 验证通过")
         else:
-            lines.append("  ✗ 验证未通过")
+            lines.append("  ✓ 验证通过")
         for issue in detail.get("issues", []):
             icon = {"info": "ℹ", "warning": "⚠", "error": "✗"}.get(issue["severity"], "?")
             lines.append(f"  {icon} [{issue['code']}] {issue['message']}")
@@ -136,6 +151,8 @@ def export_text(report: Report, output_path: str) -> str:
         if calc.get("skip_reason"):
             lines.append(f"    跳过: {calc['skip_reason']}")
         else:
+            if calc.get("fallback_reason"):
+                lines.append(f"    [天文法回退] {calc['fallback_reason']}")
             lines.append(f"    太阳高度角: {calc['solar_elevation_angle_deg']}° "
                          f"({calc['solar_elevation_angle_rad']} rad)")
             if calc.get("azimuth_deg") is not None:
@@ -176,6 +193,10 @@ def print_summary(report: Report):
     for calc in report.calculations:
         if calc.get("skip_reason"):
             print(f"  #{calc['observation_index']} {calc['site_name']}: 跳过 - {calc['skip_reason']}")
+        elif calc.get("fallback_reason"):
+            print(f"  #{calc['observation_index']} {calc['site_name']}: "
+                  f"太阳高度角={calc['solar_elevation_angle_deg']}° "
+                  f"[天文法回退] 误差±{calc['error_estimate_deg']}°")
         else:
             print(f"  #{calc['observation_index']} {calc['site_name']}: "
                   f"太阳高度角={calc['solar_elevation_angle_deg']}° "

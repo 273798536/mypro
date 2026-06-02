@@ -130,6 +130,7 @@ class CalculationResult:
     error_estimate_deg: Optional[float] = None
     error_explanation: str = ""
     skip_reason: str = ""
+    fallback_reason: str = ""
 
     def to_dict(self):
         return {
@@ -148,6 +149,7 @@ class CalculationResult:
             "error_estimate_deg": self.error_estimate_deg,
             "error_explanation": self.error_explanation,
             "skip_reason": self.skip_reason,
+            "fallback_reason": self.fallback_reason,
         }
 
 

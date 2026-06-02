@@ -175,6 +175,12 @@ def calculate(obs: Observation, idx: int, validation: ValidationResult) -> Calcu
         base.solar_elevation_angle_rad = round(math.radians(astro_elev), 6)
         base.azimuth_deg = round(astro_az, 4) if astro_az is not None else None
         base.angle_source = "天文算法估算（无实测影长）"
+        fallback_parts = []
+        if obs.pole_height is None or obs.pole_height <= 0:
+            fallback_parts.append("杆高缺失")
+        if obs.shadow_length is None or obs.shadow_length <= 0:
+            fallback_parts.append("影长缺失或无效")
+        base.fallback_reason = "影长法不可用: " + "、".join(fallback_parts)
     else:
         base.skip_reason = "杆高或影长缺失，且天文算法计算失败"
         return base
