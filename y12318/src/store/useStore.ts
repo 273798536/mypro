@@ -152,9 +152,9 @@ function computeSuggestionsFromData(
 
     suggestions.push({
       skuId: snap.skuId,
-      skuName: snap.skuId,
-      category: "未分类",
-      store: "默认仓库",
+      skuName: snap.skuName || snap.skuId,
+      category: snap.category || "未分类",
+      store: snap.store || "默认仓库",
       suggestedQty,
       safetyStock,
       currentStock,

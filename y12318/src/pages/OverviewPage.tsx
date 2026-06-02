@@ -255,7 +255,7 @@ function SuggestionTable({
 }
 
 export default function OverviewPage() {
-  const { suggestions, consistencyRate, sampleLoaded } = useStore();
+  const { suggestions, consistencyRate } = useStore();
   const [anomalyFilter, setAnomalyFilter] = useState<Set<string>>(new Set());
 
   const toggleAnomaly = (key: string) => {
@@ -266,7 +266,7 @@ export default function OverviewPage() {
     });
   };
 
-  if (!sampleLoaded) {
+  if (suggestions.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh] gap-4">
         <Shield className="w-12 h-12 text-text-muted" />

@@ -49,6 +49,9 @@ const PROMO_KEYS = {
 
 const INVENTORY_KEYS = {
   skuId: ["sku_id", "skuid", "sku", "商品编号", "SKU"],
+  skuName: ["sku_name", "skuname", "name", "商品名称", "名称", "品名"],
+  category: ["category", "品类", "分类", "类别"],
+  store: ["store", "仓库", "门店", "仓"],
   snapshotDate: ["snapshot_date", "snapshotdate", "date", "快照日期", "日期"],
   onHandQty: ["on_hand_qty", "onhandqty", "on_hand", "在手数量", "库存量"],
   inTransitQty: ["in_transit_qty", "intransitqty", "in_transit", "在途数量"],
@@ -107,6 +110,9 @@ export function parseInventoryCSV(text: string): InventorySnapshot[] {
     }
     return {
       skuId: pick(row, INVENTORY_KEYS.skuId),
+      skuName: pick(row, INVENTORY_KEYS.skuName) || undefined,
+      category: pick(row, INVENTORY_KEYS.category) || undefined,
+      store: pick(row, INVENTORY_KEYS.store) || undefined,
       snapshotDate: pick(row, INVENTORY_KEYS.snapshotDate),
       onHandQty: onHand,
       inTransitQty: inTransit,

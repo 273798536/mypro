@@ -47,14 +47,14 @@ export const samplePromoCalendarV2: PromoCalendar[] = [
 ];
 
 export const sampleInventorySnapshot: InventorySnapshot[] = [
-  { skuId: "SKU-001", snapshotDate: "2026-05-18", onHandQty: 150, inTransitQty: 50, availableQty: 200, conclusion: "库存充足" },
-  { skuId: "SKU-002", snapshotDate: "2026-05-18", onHandQty: 30, inTransitQty: 10, availableQty: 40, conclusion: "库存偏低" },
-  { skuId: "SKU-003", snapshotDate: "2026-05-18", onHandQty: 15, inTransitQty: 0, availableQty: 15, conclusion: "库存告急" },
-  { skuId: "SKU-004", snapshotDate: "2026-05-18", onHandQty: -5, inTransitQty: 20, availableQty: 15, conclusion: "负库存" },
-  { skuId: "SKU-005", snapshotDate: "2026-05-18", onHandQty: 8, inTransitQty: 0, availableQty: 8, conclusion: "严重缺货" },
-  { skuId: "SKU-006", snapshotDate: "2026-05-18", onHandQty: 200, inTransitQty: 30, availableQty: 230, conclusion: "库存充足" },
-  { skuId: "SKU-007", snapshotDate: "2026-05-18", onHandQty: 45, inTransitQty: 0, availableQty: 45, conclusion: "库存适中" },
-  { skuId: "SKU-008", snapshotDate: "2026-05-18", onHandQty: -3, inTransitQty: 10, availableQty: 7, conclusion: "负库存" },
+  { skuId: "SKU-001", skuName: "纯牛奶 1L", category: "乳制品", store: "华东仓", snapshotDate: "2026-05-18", onHandQty: 150, inTransitQty: 50, availableQty: 200, conclusion: "库存充足" },
+  { skuId: "SKU-002", skuName: "有机鸡蛋 10枚", category: "蛋品", store: "华东仓", snapshotDate: "2026-05-18", onHandQty: 30, inTransitQty: 10, availableQty: 40, conclusion: "库存偏低" },
+  { skuId: "SKU-003", skuName: "进口牛排 200g", category: "肉制品", store: "华北仓", snapshotDate: "2026-05-18", onHandQty: 15, inTransitQty: 0, availableQty: 15, conclusion: "库存告急" },
+  { skuId: "SKU-004", skuName: "蓝莓 125g", category: "水果", store: "华南仓", snapshotDate: "2026-05-18", onHandQty: -5, inTransitQty: 20, availableQty: 15, conclusion: "负库存" },
+  { skuId: "SKU-005", skuName: "大米 5kg", category: "粮食", store: "华东仓", snapshotDate: "2026-05-18", onHandQty: 8, inTransitQty: 0, availableQty: 8, conclusion: "严重缺货" },
+  { skuId: "SKU-006", skuName: "橄榄油 500ml", category: "调味品", store: "华东仓", snapshotDate: "2026-05-18", onHandQty: 200, inTransitQty: 30, availableQty: 230, conclusion: "库存充足" },
+  { skuId: "SKU-007", skuName: "全麦面包 400g", category: "烘焙", store: "华南仓", snapshotDate: "2026-05-18", onHandQty: 45, inTransitQty: 0, availableQty: 45, conclusion: "库存适中" },
+  { skuId: "SKU-008", skuName: "三文鱼 300g", category: "海鲜", store: "华北仓", snapshotDate: "2026-05-18", onHandQty: -3, inTransitQty: 10, availableQty: 7, conclusion: "负库存" },
 ];
 
 export const sampleOutOfStock: OutOfStockRecord[] = [

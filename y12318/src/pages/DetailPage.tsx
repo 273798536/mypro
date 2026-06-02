@@ -182,17 +182,49 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
   const [success, setSuccess] = useState(false);
   const exportConsistencyCheck = useStore((st) => st.exportConsistencyCheck);
 
+  const csvCell = (v: string | number) => {
+    const s = String(v);
+    if (s.includes(",") || s.includes('"') || s.includes("\n")) {
+      return `"${s.replace(/"/g, '""')}"`;
+    }
+    return s;
+  };
+
   const doDownload = () => {
     const bom = "\uFEFF";
-    const header = "SKU,SKU名称,补货量,置信度,优先级,当前库存,安全库存,P50,P75,P90";
-    const row = `${s.skuId},${s.skuName},${s.suggestedQty},${(s.confidence * 100).toFixed(1)}%,${PRIORITY_LABEL[s.priority]},${s.currentStock},${s.safetyStock},${(s.probabilityP50 * 100).toFixed(1)}%,${(s.probabilityP75 * 100).toFixed(1)}%,${(s.probabilityP90 * 100).toFixed(1)}%`;
-    const evHeader = "证据ID,事件日期,事件类型,描述,数据源,是否覆盖,严重程度";
-    const evRows = evidences.map((e) => `${e.evidenceId},${e.eventDate},${EVT[e.eventType]?.label || e.eventType},"${e.description}",${e.sourceTable},${e.isOverride ? "是" : "否"},${e.severity}`).join("\n");
+    const snap = useStore.getState().inventorySnapshot.find((i) => i.skuId === s.skuId);
+    const skuConflicts = useStore.getState().conflicts.filter((c) => c.skuId === s.skuId);
+
+    const header = ["SKU", "SKU名称", "品类", "仓库", "补货量", "置信度", "优先级", "当前库存", "安全库存", "P50", "P75", "P90", "库存快照结论", "异常标记"].map(csvCell).join(",");
+    const row = [
+      s.skuId, s.skuName, s.category, s.store,
+      s.suggestedQty, (s.confidence * 100).toFixed(1) + "%", PRIORITY_LABEL[s.priority],
+      s.currentStock, s.safetyStock,
+      (s.probabilityP50 * 100).toFixed(1) + "%", (s.probabilityP75 * 100).toFixed(1) + "%", (s.probabilityP90 * 100).toFixed(1) + "%",
+      snap ? snap.conclusion : "-",
+      s.anomalyTypes.join(";") || "-",
+    ].map(csvCell).join(",");
+
+    const evHeader = ["证据ID", "事件日期", "事件类型", "描述", "数据源", "是否覆盖", "严重程度", "原始值", "覆盖值"].map(csvCell).join(",");
+    const evRows = evidences.map((e) =>
+      [e.evidenceId, e.eventDate, EVT[e.eventType]?.label || e.eventType, e.description, e.sourceTable, e.isOverride ? "是" : "否", e.severity, e.originalValue, e.overriddenValue].map(csvCell).join(",")
+    ).join("\n");
+
     let csv = bom + header + "\n" + row + "\n\n" + evHeader + "\n" + evRows;
+
+    if (skuConflicts.length > 0) {
+      const cHeader = ["冲突类型", "销售结论", "库存结论", "严重程度", "描述"].map(csvCell).join(",");
+      const cRows = skuConflicts.map((c) =>
+        ["口径冲突", c.salesConclusion, c.inventoryConclusion, c.severity, c.description].map(csvCell).join(",")
+      ).join("\n");
+      csv += "\n\n" + cHeader + "\n" + cRows;
+    }
+
     const result = exportConsistencyCheck();
     if (!result.passed) {
       csv += "\n\n一致性校验警告\n" + result.details.map((d) => `⚠ ${d}`).join("\n");
     }
+
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

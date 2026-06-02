@@ -19,6 +19,9 @@ export interface PromoCalendar {
 
 export interface InventorySnapshot {
   skuId: string;
+  skuName?: string;
+  category?: string;
+  store?: string;
   snapshotDate: string;
   onHandQty: number;
   inTransitQty: number;
