@@ -1,0 +1,32 @@
+[
+    {
+        "teacher_name": "张教授",
+        "max_courses_per_week": 8,
+        "available_slots": [
+            {"weekday": "周一", "start_time": "08:00", "end_time": "12:00", "section": "上午"},
+            {"weekday": "周二", "start_time": "14:00", "end_time": "18:00", "section": "下午"},
+            {"weekday": "周三", "start_time": "08:00", "end_time": "12:00", "section": "上午"},
+            {"weekday": "周三", "start_time": "14:00", "end_time": "18:00", "section": "下午"},
+            {"weekday": "周五", "start_time": "14:00", "end_time": "18:00", "section": "下午"}
+        ]
+    },
+    {
+        "teacher_name": "李教授",
+        "max_courses_per_week": 6,
+        "available_slots": [
+            {"weekday": "周二", "start_time": "08:00", "end_time": "12:00", "section": "上午"},
+            {"weekday": "周二", "start_time": "14:00", "end_time": "18:00", "section": "下午"},
+            {"weekday": "周四", "start_time": "08:00", "end_time": "12:00", "section": "上午"},
+            {"weekday": "周四", "start_time": "14:00", "end_time": "18:00", "section": "下午"}
+        ]
+    },
+    {
+        "teacher_name": "王老师",
+        "max_courses_per_week": 10,
+        "available_slots": [
+            {"weekday": "周一", "start_time": "08:00", "end_time": "12:00", "section": "上午"},
+            {"weekday": "周四", "start_time": "08:00", "end_time": "12:00", "section": "上午"},
+            {"weekday": "周五", "start_time": "08:00", "end_time": "12:00", "section": "上午"}
+        ]
+    }
+]

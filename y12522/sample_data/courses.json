@@ -1,0 +1,56 @@
+[
+    {
+        "course_id": "MATH101",
+        "course_name": "高等数学A",
+        "teacher_name": "张教授",
+        "student_count": 120,
+        "duration_minutes": 90,
+        "required_weekdays": ["周一", "周三"],
+        "preferred_sections": ["第1-2节", "第3-4节"]
+    },
+    {
+        "course_id": "MATH101",
+        "course_name": "高等数学A",
+        "teacher_name": "张教授",
+        "student_count": 120,
+        "duration_minutes": 90,
+        "required_weekdays": ["周一", "周三"],
+        "preferred_sections": ["第1-2节", "第3-4节"]
+    },
+    {
+        "course_id": "CS201",
+        "course_name": "数据结构",
+        "teacher_name": "李教授",
+        "student_count": 60,
+        "duration_minutes": 90,
+        "required_weekdays": ["周二", "周四"],
+        "preferred_sections": ["第5-6节", "第7-8节"]
+    },
+    {
+        "course_id": "ENG101",
+        "course_name": "大学英语",
+        "teacher_name": "王老师",
+        "student_count": 45,
+        "duration_minutes": 90,
+        "required_weekdays": ["周一", "周四"],
+        "preferred_sections": ["第3-4节"]
+    },
+    {
+        "course_id": "PHY101",
+        "course_name": "大学物理",
+        "teacher_name": "张教授",
+        "student_count": 80,
+        "duration_minutes": 90,
+        "required_weekdays": ["周三", "周五"],
+        "preferred_sections": ["第5-6节"]
+    },
+    {
+        "course_id": "CS301",
+        "course_name": "操作系统",
+        "teacher_name": "李教授",
+        "student_count": 50,
+        "duration_minutes": 90,
+        "required_weekdays": ["周二", "周四"],
+        "preferred_sections": ["第1-2节", "第3-4节"]
+    }
+]

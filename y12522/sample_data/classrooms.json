@@ -1,0 +1,26 @@
+[
+    {
+        "room_id": "R101",
+        "room_name": "第一教学楼101",
+        "capacity": 50,
+        "equipment": ["投影仪", "音响"]
+    },
+    {
+        "room_id": "R201",
+        "room_name": "第一教学楼201",
+        "capacity": 80,
+        "equipment": ["投影仪", "音响", "白板"]
+    },
+    {
+        "room_id": "R301",
+        "room_name": "第一教学楼301",
+        "capacity": 100,
+        "equipment": ["投影仪", "音响", "白板", "电脑"]
+    },
+    {
+        "room_id": "AUD1",
+        "room_name": "阶梯教室A",
+        "capacity": 150,
+        "equipment": ["投影仪", "专业音响", "录播设备"]
+    }
+]
