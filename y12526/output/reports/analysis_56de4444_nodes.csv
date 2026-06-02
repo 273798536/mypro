@@ -1,0 +1,5 @@
+node_id,node_type,risk_level,tag_count,tag_names,created_at,updated_at
+acc_001,account,high,1,fraud_confirmed,2026-06-02T12:10:32.852960,2026-06-02T12:10:32.852961
+addr_001,address,none,0,,2026-06-02T12:10:32.853007,2026-06-02T12:10:32.853007
+dev_001,device,none,0,,2026-06-02T12:10:32.853014,2026-06-02T12:10:32.853015
+acc_004,account,high,1,money_laundering,2026-06-02T12:10:32.852989,2026-06-02T12:10:32.852990

@@ -1,0 +1,4 @@
+edge_id,source_id,target_id,edge_type,is_stale,staleness_days,created_at,updated_at
+bb2da01b-db71-421b-9cfd-627d93baf70e,acc_001,addr_001,registered_at,True,10,2026-06-02T12:10:32.853040,2026-06-02T12:10:32.853040
+f24bc12f-3b68-4eed-ba3f-1c372ddfc7f1,acc_001,dev_001,used_device,False,0,2026-06-02T12:10:32.853064,2026-06-02T12:10:32.853064
+83ba81a1-0428-43b4-8ee8-57ecf9008b0d,acc_001,acc_004,transacted_with,False,0,2026-06-02T12:10:32.853097,2026-06-02T12:10:32.853098
