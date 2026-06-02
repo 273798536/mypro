@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "tsBuildInfoFile": "./.tsbuildinfo",
     "target": "ES2020",
     "useDefineForClassFields": true,
     "lib": [
