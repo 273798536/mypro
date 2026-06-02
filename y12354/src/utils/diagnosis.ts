@@ -1,4 +1,4 @@
-import type { IVCurveData, TraceNode, Abnormality, DiagnosisResult } from '../types';
+import type { IVCurveData, TraceNode, Abnormality, DiagnosisResult, TemperatureRecord } from '../types';
 
 export function calculateHash(data: any): string {
   const str = JSON.stringify(data);
@@ -421,4 +421,149 @@ export function detectProblems(
   }
   
   return problems;
+}
+
+export function parseTemperatureRecords(content: string): TemperatureRecord[] | null {
+  try {
+    const lines = content.trim().split('\n');
+    if (lines.length < 2) return null;
+    
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const timeIdx = headers.findIndex(h => h.includes('time') || h.includes('时间'));
+    const tempIdx = headers.findIndex(h => h.includes('temp') || h.includes('温度'));
+    const irradIdx = headers.findIndex(h => h.includes('irrad') || h.includes('辐照'));
+    
+    if (timeIdx === -1 || tempIdx === -1) return null;
+    
+    const records: TemperatureRecord[] = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',');
+      if (values.length >= 2) {
+        const time = values[timeIdx].trim();
+        const temp = parseFloat(values[tempIdx]);
+        if (!isNaN(temp)) {
+          const record: TemperatureRecord = { time, temperature: temp };
+          if (irradIdx !== -1 && values[irradIdx]) {
+            const irrad = parseFloat(values[irradIdx]);
+            if (!isNaN(irrad)) record.irradiance = irrad;
+          }
+          records.push(record);
+        }
+      }
+    }
+    
+    return records.length > 0 ? records : null;
+  } catch (e) {
+    console.error('温度记录解析失败:', e);
+    return null;
+  }
+}
+
+export function exportDiagnosisToCSV(diagnosis: DiagnosisResult, curve: IVCurveData): string {
+  const headers = ['参数名称', '参数值', '单位', '说明'];
+  const paramLabels: Record<string, { label: string; unit: string; desc: string }> = {
+    voc: { label: '开路电压', unit: 'V', desc: '组件两端开路时的电压' },
+    isc: { label: '短路电流', unit: 'A', desc: '组件两端短路时的电流' },
+    vm: { label: '最大功率点电压', unit: 'V', desc: '最大功率输出时的工作电压' },
+    im: { label: '最大功率点电流', unit: 'A', desc: '最大功率输出时的工作电流' },
+    ff: { label: '填充因子', unit: '', desc: '衡量IV曲线矩形度的指标' },
+    rs: { label: '串联电阻', unit: 'Ω', desc: '组件内部串联等效电阻' },
+    rsh: { label: '并联电阻', unit: 'Ω', desc: '组件内部并联等效电阻' },
+  };
+  
+  let csv = '\ufeff';
+  csv += headers.join(',') + '\n';
+  
+  Object.entries(diagnosis.parameters).forEach(([key, value]) => {
+    const info = paramLabels[key] || { label: key, unit: '', desc: '' };
+    csv += `${info.label},${value},${info.unit},${info.desc}\n`;
+  });
+  
+  csv += '\n';
+  csv += '诊断信息\n';
+  csv += `组件串号,${curve.serialNumber}\n`;
+  csv += `诊断时间,${new Date(diagnosis.createdAt).toLocaleString()}\n`;
+  csv += `故障等级,${diagnosis.faultLevel === 'normal' ? '正常' : diagnosis.faultLevel === 'warning' ? '预警' : '故障'}\n`;
+  csv += `输入哈希,${diagnosis.inputHash}\n`;
+  csv += `输出哈希,${diagnosis.outputHash}\n`;
+  csv += `异常数量,${diagnosis.abnormalities.length}\n`;
+  
+  if (diagnosis.abnormalities.length > 0) {
+    csv += '\n';
+    csv += '异常参数\n';
+    csv += '参数,当前值,阈值,严重程度,描述\n';
+    diagnosis.abnormalities.forEach(abnorm => {
+      csv += `${abnorm.parameter},${abnorm.value},${abnorm.threshold},${abnorm.severity === 'error' ? '严重' : '警告'},${abnorm.description}\n`;
+    });
+  }
+  
+  csv += '\n';
+  csv += 'IV曲线数据\n';
+  csv += '电压(V),电流(A)\n';
+  curve.voltage.forEach((v, i) => {
+    csv += `${v},${curve.current[i]}\n`;
+  });
+  
+  return csv;
+}
+
+export function exportDiagnosisToJSON(diagnosis: DiagnosisResult, curve: IVCurveData): string {
+  const exportData = {
+    exportVersion: '1.0',
+    exportTime: new Date().toISOString(),
+    curve: {
+      serialNumber: curve.serialNumber,
+      temperature: curve.temperature,
+      irradiance: curve.irradiance,
+      voltage: curve.voltage,
+      current: curve.current,
+      dataHash: curve.hash,
+    },
+    diagnosis: {
+      inputHash: diagnosis.inputHash,
+      outputHash: diagnosis.outputHash,
+      faultLevel: diagnosis.faultLevel,
+      parameters: diagnosis.parameters,
+      abnormalities: diagnosis.abnormalities.map(a => ({
+        parameter: a.parameter,
+        value: a.value,
+        threshold: a.threshold,
+        severity: a.severity,
+        description: a.description,
+        explanation: a.explanation,
+      })),
+      diagnosisTime: new Date(diagnosis.createdAt).toISOString(),
+    },
+    traceability: {
+      algorithm: '单二极管模型 + IEC 60891温度修正',
+      calculationNodes: diagnosis.traceNodes.map(n => ({
+        name: n.name,
+        type: n.type,
+        status: n.status,
+        durationMs: n.duration,
+        parameters: n.parameters,
+      })),
+    },
+  };
+  
+  return JSON.stringify(exportData, null, 2);
+}
+
+export function downloadFile(content: string, filename: string, mimeType: string) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+export function getAverageTemperature(records: TemperatureRecord[]): number {
+  if (records.length === 0) return 25;
+  const sum = records.reduce((acc, r) => acc + r.temperature, 0);
+  return sum / records.length;
 }

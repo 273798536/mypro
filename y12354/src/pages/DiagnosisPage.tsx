@@ -4,7 +4,7 @@ import { UploadOutlined, PlayCircleOutlined, ReloadOutlined, InfoCircleOutlined,
 import ReactECharts from 'echarts-for-react';
 import type { UploadProps } from 'antd';
 import { useAppStore } from '../store/appStore';
-import { generateMockCurveData, diagnoseCurve, calculateHash, generateId, parseIVCurveCSV, parseIVCurveJSON, verifyDiagnosisConsistency } from '../utils/diagnosis';
+import { generateMockCurveData, diagnoseCurve, calculateHash, generateId, parseIVCurveCSV, parseIVCurveJSON, verifyDiagnosisConsistency, exportDiagnosisToCSV, exportDiagnosisToJSON, downloadFile } from '../utils/diagnosis';
 import type { IVCurveData, DiagnosisResult } from '../types';
 
 const parameterLabels: Record<string, string> = {
@@ -147,6 +147,22 @@ export default function DiagnosisPage() {
       
       setLoading(false);
     }, 1500);
+  };
+
+  const handleExportCSV = () => {
+    if (!diagnosisResult || !selectedCurve) return;
+    const csvContent = exportDiagnosisToCSV(diagnosisResult, selectedCurve);
+    const filename = `诊断报告_${selectedCurve.serialNumber}_${new Date().toISOString().slice(0, 10)}.csv`;
+    downloadFile(csvContent, filename, 'text/csv;charset=utf-8');
+    message.success('CSV导出成功');
+  };
+
+  const handleExportJSON = () => {
+    if (!diagnosisResult || !selectedCurve) return;
+    const jsonContent = exportDiagnosisToJSON(diagnosisResult, selectedCurve);
+    const filename = `诊断报告_${selectedCurve.serialNumber}_${new Date().toISOString().slice(0, 10)}.json`;
+    downloadFile(jsonContent, filename, 'application/json');
+    message.success('JSON导出成功');
   };
 
   const uploadProps: UploadProps = {
@@ -312,6 +328,22 @@ export default function DiagnosisPage() {
             >
               复算验证
             </Button>
+            {diagnosisResult && selectedCurve && (
+              <>
+                <Button
+                  onClick={() => handleExportCSV()}
+                  disabled={loading}
+                >
+                  导出CSV
+                </Button>
+                <Button
+                  onClick={() => handleExportJSON()}
+                  disabled={loading}
+                >
+                  导出JSON
+                </Button>
+              </>
+            )}
           </div>
         }
       >

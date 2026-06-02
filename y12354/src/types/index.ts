@@ -50,12 +50,21 @@ export interface DiagnosisResult {
   createdAt: number;
 }
 
+export interface TemperatureRecord {
+  time: string;
+  temperature: number;
+  irradiance?: number;
+}
+
 export interface Clue {
   id: string;
   type: 'curve' | 'temperature' | 'photo' | 'note';
   name: string;
   url?: string;
   data?: any;
+  temperatureRecords?: TemperatureRecord[];
+  photoData?: string;
+  noteContent?: string;
   timestamp: number;
 }
 
