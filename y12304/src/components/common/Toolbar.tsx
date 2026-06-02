@@ -1,7 +1,8 @@
 import { Camera, RotateCcw, Maximize2, HelpCircle, FileText, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
-import html2canvas from 'html2canvas';
 import { useNavigate } from 'react-router-dom';
+import { useToastStore } from '../../store/useToastStore';
+import { generateTimestamp, getSafeFilename } from '../../utils/download';
 
 interface ToolbarProps {
   onScreenshot?: () => void;
@@ -9,20 +10,39 @@ interface ToolbarProps {
 
 export function Toolbar({ onScreenshot }: ToolbarProps) {
   const navigate = useNavigate();
+  const { showToast } = useToastStore();
 
   const handleScreenshot = async () => {
-    const canvas = document.querySelector('canvas');
-    if (!canvas) return;
-
     try {
+      const canvas = document.querySelector('canvas');
+      if (!canvas) {
+        showToast('error', '截图失败：未找到3D画布');
+        return;
+      }
+
       const canvasEl = canvas as HTMLCanvasElement;
+      const dataUrl = canvasEl.toDataURL('image/png');
+
+      if (!dataUrl || dataUrl === 'data:,') {
+        showToast('error', '截图失败：画布内容为空，请稍后重试');
+        return;
+      }
+
+      const timestamp = generateTimestamp();
+      const filename = getSafeFilename(`数据中心3D截图-${timestamp}.png`);
+
       const link = document.createElement('a');
-      link.download = `dc3d-screenshot-${Date.now()}.png`;
-      link.href = canvasEl.toDataURL('image/png');
+      link.download = filename;
+      link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+
       onScreenshot?.();
+      showToast('success', `截图已保存：${filename}`);
     } catch (error) {
       console.error('截图失败:', error);
+      showToast('error', `截图失败：${error instanceof Error ? error.message : '未知错误'}`);
     }
   };
 
@@ -56,7 +76,7 @@ export function Toolbar({ onScreenshot }: ToolbarProps) {
         <ToolbarButton
           icon={<HelpCircle className="w-4 h-4" />}
           label="帮助"
-          onClick={() => alert('操作说明：\n• 鼠标左键拖拽：旋转视角\n• 鼠标右键拖拽：平移\n• 滚轮：缩放\n• 点击对象：查看详情')}
+          onClick={() => showToast('info', '操作说明：拖拽旋转 · 滚轮缩放 · 点击查看详情', 5000)}
         />
       </motion.div>
     </div>

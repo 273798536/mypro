@@ -3,22 +3,35 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Download, Calendar, Clock, AlertTriangle, CheckCircle2, FileText, Server, Thermometer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { mockAlarms, mockRacks, mockVents } from '../data/mockData';
+import { exportReport } from '../utils/reportGenerator';
+import { useToastStore } from '../store/useToastStore';
 
 export function ReportPage() {
   const navigate = useNavigate();
   const [isExporting, setIsExporting] = useState(false);
+  const { showToast } = useToastStore();
 
   const criticalCount = mockAlarms.filter((a) => a.level === 'critical').length;
   const warningCount = mockAlarms.filter((a) => a.level === 'warning').length;
   const normalRacks = mockRacks.filter((r) => r.status === 'normal').length;
   const warningRacks = mockRacks.filter((r) => r.status === 'warning' || r.status === 'critical').length;
 
-  const handleExport = () => {
+  const handleExport = async () => {
+    if (isExporting) return;
+
     setIsExporting(true);
-    setTimeout(() => {
-      alert('报告已导出！（演示模式）');
+    try {
+      const result = await exportReport();
+      if (result.success) {
+        showToast('success', `报告已导出：${result.filename}`);
+      } else {
+        showToast('error', `导出失败：${result.error || '未知错误'}`);
+      }
+    } catch (error) {
+      showToast('error', `导出失败：${error instanceof Error ? error.message : '未知错误'}`);
+    } finally {
       setIsExporting(false);
-    }, 1500);
+    }
   };
 
   return (

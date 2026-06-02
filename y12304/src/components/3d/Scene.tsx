@@ -172,7 +172,7 @@ export function Scene() {
     <Canvas
       camera={{ position: [15, 12, 15], fov: 50 }}
       shadows
-      gl={{ antialias: true, alpha: false }}
+      gl={{ antialias: true, alpha: false, preserveDrawingBuffer: true }}
       style={{ background: '#050a14' }}
     >
       <CameraController />
