@@ -7,6 +7,7 @@ import {
   ANOMALY_TYPE_LABELS,
   TissueType,
   ArtifactType,
+  VersionHistory,
 } from '../types';
 import {
   FileText,
@@ -102,6 +103,17 @@ export const Report = () => {
         无变化
       </span>
     );
+  };
+
+  const labelOfBefore = (h: VersionHistory) => {
+    if (h.beforeData.tissueType) return TISSUE_TYPE_LABELS[h.beforeData.tissueType as TissueType];
+    if (h.beforeData.artifactLabel) return ARTIFACT_TYPE_LABELS[h.beforeData.artifactLabel as ArtifactType];
+    return '-';
+  };
+  const labelOfAfter = (h: VersionHistory) => {
+    if (h.afterData.tissueType) return TISSUE_TYPE_LABELS[h.afterData.tissueType as TissueType];
+    if (h.afterData.artifactLabel) return ARTIFACT_TYPE_LABELS[h.afterData.artifactLabel as ArtifactType];
+    return '-';
   };
 
   return (
@@ -481,30 +493,14 @@ export const Report = () => {
                                 <div>
                                   <span className="text-xs text-slate-500">修改前</span>
                                   <p className="font-medium text-slate-700">
-                                    {h.beforeData.tissueType
-                                      ? TISSUE_TYPE_LABELS[
-                                          h.beforeData.tissueType as TissueType
-                                        ]
-                                      : h.beforeData.artifactLabel
-                                      ? ARTIFACT_TYPE_LABELS[
-                                          h.beforeData.artifactLabel as ArtifactType
-                                        ]
-                                      : '-'}
+                                    {labelOfBefore(h)}
                                   </p>
                                 </div>
                                 <ArrowLeftRight className="w-4 h-4 text-slate-400" />
                                 <div>
                                   <span className="text-xs text-slate-500">修改后</span>
                                   <p className="font-medium text-blue-600">
-                                    {h.afterData.tissueType
-                                      ? TISSUE_TYPE_LABELS[
-                                          h.afterData.tissueType as TissueType
-                                        ]
-                                      : h.afterData.artifactLabel
-                                      ? ARTIFACT_TYPE_LABELS[
-                                          h.afterData.artifactLabel as ArtifactType
-                                        ]
-                                      : '-'}
+                                    {labelOfAfter(h)}
                                   </p>
                                 </div>
                               </div>
