@@ -207,3 +207,189 @@ class CombinationCounter:
             )
 
         return target
+
+
+@dataclass
+class ReportSpec:
+    report_id: str
+    scenario: str
+    rule_ids: list[str]
+    run_at: str = ""
+    notes: str = ""
+    metadata: dict[str, Any] = field(default_factory=dict)
+
+    REQUIRED_FIELDS = ("report_id", "rule_ids")
+
+    def validate(self) -> list[str]:
+        missing = []
+        for f in self.REQUIRED_FIELDS:
+            val = getattr(self, f, None)
+            if val is None or (isinstance(val, str) and not val) or (isinstance(val, list) and not val):
+                missing.append(f)
+        return missing
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> ReportSpec:
+        return cls(
+            report_id=data.get("report_id", ""),
+            scenario=data.get("scenario", ""),
+            rule_ids=data.get("rule_ids", []),
+            run_at=data.get("run_at", ""),
+            notes=data.get("notes", ""),
+            metadata={k: v for k, v in data.items() if k not in ("report_id", "scenario", "rule_ids", "run_at", "notes")},
+        )
+
+
+@dataclass
+class BatchReportResult:
+    report: ReportSpec
+    status: str
+    result: Optional[CountResult] = None
+    skip_reason: str = ""
+    missing_rules: list[str] = field(default_factory=list)
+    counter: Optional[CombinationCounter] = None
+    uncalculable_reasons: list[dict[str, Any]] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "report_id": self.report.report_id,
+            "scenario": self.report.scenario,
+            "status": self.status,
+        }
+        if self.report.run_at:
+            payload["run_at"] = self.report.run_at
+        if self.report.notes:
+            payload["notes"] = self.report.notes
+        if self.missing_rules:
+            payload["missing_rules"] = self.missing_rules
+        if self.skip_reason:
+            payload["skip_reason"] = self.skip_reason
+        if self.uncalculable_reasons:
+            payload["uncalculable_reasons"] = self.uncalculable_reasons
+        if self.result is not None:
+            payload["result"] = self.result.to_dict()
+        return payload
+
+
+class BatchCounter:
+    def __init__(
+        self,
+        all_rules: list[DiscountRule],
+        max_combinations: int = CombinationCounter.DEFAULT_CAP,
+        history_tracker: Any = None,
+    ):
+        self.rule_index: dict[str, DiscountRule] = {r.rule_id: r for r in all_rules if r.rule_id}
+        self.max_combinations = max_combinations
+        self.history = history_tracker
+
+    def _collect_uncalculable(self, report: ReportSpec, result: CountResult, missing_rules: list[str]) -> list[dict[str, Any]]:
+        reasons: list[dict[str, Any]] = []
+        if missing_rules:
+            reasons.append({
+                "type": "missing_rules",
+                "rules": missing_rules,
+                "reason": f"Report '{report.report_id} references rules that do not exist: {missing_rules}",
+                "impact": "Missing rules were excluded from the count; the result may be incomplete.",
+            })
+        if not report.scenario.strip():
+            reasons.append({
+                "type": "missing_metadata",
+                "field": "scenario",
+                "reason": f"Report '{report.report_id}' has empty scenario name",
+                "impact": "Report metadata is incomplete for traceability; review before using it as-is or add scenario name.",
+            })
+        if result.capped:
+            reasons.append({
+                "type": "combination_cap_exceeded",
+                "reason": f"Combination count exceeded cap of {result.cap_limit}",
+                "impact": "Exact count unavailable; add more exclusion rules or reduce rule set.",
+            })
+        for err in result.errors:
+            reasons.append({
+                "type": "validation_error",
+                "rule_id": err.get("rule_id"),
+                "missing_fields": err.get("missing_fields", []),
+                "reason": err.get("message"),
+                "impact": f"Rule had missing fields and was {'skipped' if err.get('action') == 'skip' else 'flagged'}.",
+            })
+        for p in result.pruned_branches:
+            if p.manually_modified:
+                reasons.append({
+                    "type": "manual_override",
+                    "rules": p.pruned_rule_ids,
+                    "reason": f"Pruning explanation manually modified for pair ({p.reason.rule_a}, {p.reason.rule_b})",
+                    "original": p.original_explanation,
+                    "current": p.current_explanation,
+                    "impact": "Displayed reason may not match actual rule conflict; review history for details.",
+                })
+        return reasons
+
+    def run_report(self, report: ReportSpec) -> BatchReportResult:
+        missing = report.validate()
+        if missing:
+            return BatchReportResult(
+                report=report,
+                status="SKIP",
+                skip_reason=f"Report missing required fields: {missing}",
+                uncalculable_reasons=[{
+                    "type": "report_invalid",
+                    "reason": f"Missing fields: {missing}",
+                    "impact": "Report cannot be processed.",
+                }],
+            )
+
+        rules_for_report: list[DiscountRule] = []
+        missing_rules: list[str] = []
+        for rid in report.rule_ids:
+            if rid in self.rule_index:
+                rules_for_report.append(self.rule_index[rid])
+            else:
+                missing_rules.append(rid)
+
+        if not rules_for_report:
+            return BatchReportResult(
+                report=report,
+                status="SKIP",
+                skip_reason="No valid rules found for this report",
+                missing_rules=missing_rules,
+                uncalculable_reasons=[{
+                    "type": "no_rules",
+                    "reason": "None of the referenced rules exist",
+                    "impact": "Cannot count combinations with zero rules.",
+                }],
+            )
+
+        counter = CombinationCounter(
+            rules_for_report,
+            max_combinations=self.max_combinations,
+            history_tracker=self.history,
+        )
+        result = counter.count()
+
+        uncalculable = self._collect_uncalculable(report, result, missing_rules)
+
+        status = "OK"
+        if uncalculable:
+            status = "WARN"
+        if missing_rules or result.errors or result.capped:
+            pass
+
+        return BatchReportResult(
+            report=report,
+            result=result,
+            status=status,
+            missing_rules=missing_rules,
+            counter=counter,
+            uncalculable_reasons=uncalculable,
+        )
+
+    def run_reports(self, reports: list[ReportSpec]) -> list[BatchReportResult]:
+        return [self.run_report(r) for r in reports]
+
+    @classmethod
+    def load_reports_from_json(cls, path: str) -> list[ReportSpec]:
+        import json
+        with open(path, encoding="utf-8") as f:
+            raw = json.load(f)
+        return [ReportSpec.from_dict(item) for item in raw]
+
