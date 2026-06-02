@@ -7,7 +7,8 @@ export function generatePDFReport(
   collisions: Collision[],
   config: ReportConfig,
   speedSource: string,
-  massSource: string
+  massSource: string,
+  videoNotes: string = ''
 ): Blob {
   const doc = new jsPDF()
   const pageWidth = doc.internal.pageSize.width
@@ -27,6 +28,25 @@ export function generatePDFReport(
   y += 5
   doc.text(`质量表来源: ${massSource || '未导入'}`, margin, y)
   y += 10
+
+  if (videoNotes && videoNotes.trim().length > 0) {
+    doc.setFontSize(12)
+    doc.setFont('helvetica', 'bold')
+    doc.text('视频备注', margin, y)
+    y += 6
+    doc.setFontSize(10)
+    doc.setFont('helvetica', 'normal')
+    const notesLines = videoNotes.split('\n')
+    notesLines.forEach((line) => {
+      if (y > 270) {
+        doc.addPage()
+        y = margin
+      }
+      doc.text(`  ${line}`, margin, y)
+      y += 4
+    })
+    y += 6
+  }
 
   doc.setFontSize(14)
   doc.setFont('helvetica', 'bold')
@@ -96,6 +116,23 @@ export function generatePDFReport(
     doc.setFont('helvetica', 'normal')
     doc.text(`状态: ${getStatusName(collision.status)} | 参与小球: ${collision.ballIds.join(', ')}`, margin, y)
     y += 6
+
+    if (collision.videoNotes && collision.videoNotes.trim().length > 0) {
+      doc.setFont('helvetica', 'bold')
+      doc.text('碰撞备注:', margin, y)
+      y += 5
+      doc.setFont('helvetica', 'normal')
+      const collisionNotesLines = collision.videoNotes.split('\n')
+      collisionNotesLines.forEach((line) => {
+        if (y > 270) {
+          doc.addPage()
+          y = margin
+        }
+        doc.text(`  ${line}`, margin, y)
+        y += 4
+      })
+      y += 3
+    }
 
     if (config.includeRawData) {
       doc.text('碰撞前数据:', margin, y)
@@ -182,13 +219,14 @@ export function generateExcelReport(
   collisions: Collision[],
   config: ReportConfig,
   speedRecords: { ballId: number; timestamp: number; velocityX: number; velocityY: number }[],
-  massTable: { ballId: number; mass: number }[]
+  massTable: { ballId: number; mass: number }[],
+  videoNotes: string = ''
 ): Blob {
   const wb = XLSX.utils.book_new()
 
   const overviewData = [
     ['碰撞事件概览'],
-    ['碰撞ID', '碰撞时间', '参与小球', '状态', '异常数量', '动量差异%', '能量损失%'],
+    ['碰撞ID', '碰撞时间', '参与小球', '状态', '异常数量', '动量差异%', '能量损失%', '视频备注'],
     ...collisions.map((c) => [
       c.id,
       c.collisionTimeFormatted,
@@ -197,10 +235,21 @@ export function generateExcelReport(
       c.anomalies.length,
       (c.calculationResult.momentumDifferencePercent * 100).toFixed(2),
       (c.calculationResult.energyLossPercent * 100).toFixed(2),
+      c.videoNotes || '',
     ]),
   ]
   const ws1 = XLSX.utils.aoa_to_sheet(overviewData)
   XLSX.utils.book_append_sheet(wb, ws1, '概览')
+
+  if (videoNotes && videoNotes.trim().length > 0) {
+    const notesData = [
+      ['全局视频备注'],
+      ['备注内容'],
+      ...videoNotes.split('\n').map((line) => [line]),
+    ]
+    const wsNotes = XLSX.utils.aoa_to_sheet(notesData)
+    XLSX.utils.book_append_sheet(wb, wsNotes, '视频备注')
+  }
 
   if (config.includeAnomalies) {
     const anomalyData = [

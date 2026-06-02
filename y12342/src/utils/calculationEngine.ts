@@ -299,7 +299,8 @@ export function detectCollisions(
   speedRecords: SpeedRecord[],
   massTable: MassTable[],
   speedSourceFile: string,
-  massSourceFile: string
+  massSourceFile: string,
+  videoNotes: string = ''
 ): Collision[] {
   const collisions: Collision[] = []
   const massMap = new Map<number, number>()
@@ -392,6 +393,7 @@ export function detectCollisions(
         ballIds: collidingBalls,
         speedRecordSource: speedSourceFile,
         massTableSource: massSourceFile,
+        videoNotes,
         calculationResult,
         anomalies,
         status,

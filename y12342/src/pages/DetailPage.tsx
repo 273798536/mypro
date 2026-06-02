@@ -17,7 +17,7 @@ import { getAnomalyTypeName, calculateVelocity } from '@/utils/calculationEngine
 export default function DetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { collisions, speedRecords, massTable } = useAppStore()
+  const { collisions, speedRecords, massTable, videoNotes: globalVideoNotes } = useAppStore()
   const [expandedStep, setExpandedStep] = useState<number | null>(null)
 
   const collision = collisions.find((c) => c.id === id)
@@ -415,14 +415,26 @@ export default function DetailPage() {
             </div>
           </div>
 
-          {collision.videoNotes && (
+          {globalVideoNotes && (
             <div>
               <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
                 <span className="w-2 h-2 bg-green-500 rounded-full" />
-                视频备注
+                全局视频备注
               </h4>
-              <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                <p className="text-green-800">{collision.videoNotes}</p>
+              <div className="p-4 bg-green-50 rounded-lg border border-green-200 whitespace-pre-wrap">
+                <p className="text-green-800">{globalVideoNotes}</p>
+              </div>
+            </div>
+          )}
+
+          {collision.videoNotes && (
+            <div>
+              <h4 className="font-medium text-slate-700 mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-500 rounded-full" />
+                本次碰撞备注
+              </h4>
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 whitespace-pre-wrap">
+                <p className="text-blue-800">{collision.videoNotes}</p>
               </div>
             </div>
           )}

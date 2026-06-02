@@ -16,7 +16,7 @@ import { generatePDFReport, generateExcelReport, downloadBlob } from '@/utils/re
 
 export default function ExportPage() {
   const navigate = useNavigate()
-  const { collisions, speedRecords, massTable, importedFiles } = useAppStore()
+  const { collisions, speedRecords, massTable, importedFiles, videoNotes } = useAppStore()
 
   const speedSource = importedFiles.find((f) => f.type === 'speed')?.name || '未导入'
   const massSource = importedFiles.find((f) => f.type === 'mass')?.name || '未导入'
@@ -47,10 +47,10 @@ export default function ExportPage() {
       let filename: string
 
       if (config.format === 'pdf') {
-        blob = generatePDFReport(collisions, config, speedSource, massSource)
+        blob = generatePDFReport(collisions, config, speedSource, massSource, videoNotes)
         filename = `动量复盘报告_${new Date().toISOString().slice(0, 10)}.pdf`
       } else {
-        blob = generateExcelReport(collisions, config, speedRecords, massTable)
+        blob = generateExcelReport(collisions, config, speedRecords, massTable, videoNotes)
         filename = `动量复盘报告_${new Date().toISOString().slice(0, 10)}.xlsx`
       }
 

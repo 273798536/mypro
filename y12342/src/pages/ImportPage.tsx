@@ -141,9 +141,18 @@ export default function ImportPage() {
   }
 
   const loadSampleData = () => {
+    const sampleVideoNotes = '实验视频备注：\n1. 0:00.210 - 小球1与小球2发生斜碰，碰撞角度约15度，小球2略有偏移\n2. 0:00.610 - 小球1与小球3发生对心碰撞，小球3质量较大\n3. 0:00.850 - 小球2与小球4发生边缘碰撞，角度较大'
+    setVideoNotes(sampleVideoNotes)
     setSpeedRecords(sampleSpeedRecords, '示例速度记录.csv')
     setMassTable(sampleMassTable, '示例质量表.xlsx')
-    setCollisions(sampleCollisions)
+    setCollisions(sampleCollisions.map((c, index) => ({
+      ...c,
+      videoNotes: index === 0 
+        ? '碰撞角度约15度，小球2略有偏移' 
+        : index === 1 
+          ? '对心碰撞，小球3质量较大' 
+          : '边缘碰撞，角度较大'
+    })))
     addImportedFile({
       id: `sample_speed_${Date.now()}`,
       name: '示例速度记录.csv',
@@ -175,7 +184,13 @@ export default function ImportPage() {
       try {
         const speedSource = importedFiles.find((f) => f.type === 'speed')?.name || ''
         const massSource = importedFiles.find((f) => f.type === 'mass')?.name || ''
-        const collisions = detectCollisions(speedRecords, massTable, speedSource, massSource)
+        const collisions = detectCollisions(
+          speedRecords,
+          massTable,
+          speedSource,
+          massSource,
+          videoNotes
+        )
         setCollisions(collisions)
         setIsProcessing(false)
         navigate('/analysis')
