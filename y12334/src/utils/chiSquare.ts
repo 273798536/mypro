@@ -115,7 +115,7 @@ export function performChiSquareTest(
   const conclusionText = generateConclusionText(chiSquareValue, degreesOfFreedom, pValue, criticalValue, alpha);
 
   return {
-    id: `result-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `result-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
     projectId,
     chiSquareValue,
     degreesOfFreedom,

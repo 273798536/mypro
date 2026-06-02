@@ -29,7 +29,7 @@ export function detectInsufficientSample(
   });
 
   return {
-    id: `abnormality-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `abnormality-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
     projectId: records[0]?.projectId || '',
     type: 'insufficient_sample',
     severity: zeroExpectedCount > 0 ? 'high' : smallExpectedCount > 3 ? 'medium' : 'low',
@@ -57,7 +57,7 @@ export function detectBatchMixed(
   });
 
   const mixedBatches = Object.entries(batchPatterns)
-    .filter(([_, patterns]) => patterns.size > 2)
+    .filter(([, patterns]) => patterns.size > 2)
     .map(([batchId]) => batchId);
 
   if (mixedBatches.length === 0) return null;
@@ -65,7 +65,7 @@ export function detectBatchMixed(
   const batchInfo = batches.find(b => b.id === mixedBatches[0]);
 
   return {
-    id: `abnormality-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `abnormality-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
     projectId: records[0]?.projectId || '',
     type: 'batch_mixed',
     severity: mixedBatches.length > 2 ? 'high' : 'medium',
@@ -87,7 +87,7 @@ export function detectCategoryMergeNeeded(
   });
 
   const smallCategories = Object.entries(categoryCounts)
-    .filter(([_, count]) => count < 10)
+    .filter(([, count]) => count < 10)
     .map(([category]) => category);
 
   if (smallCategories.length < 2) return null;
@@ -95,7 +95,7 @@ export function detectCategoryMergeNeeded(
   const triggerRecord = records.find(r => smallCategories.includes(r.category));
 
   return {
-    id: `abnormality-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    id: `abnormality-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
     projectId: records[0]?.projectId || '',
     type: 'category_merged',
     severity: smallCategories.length > 3 ? 'medium' : 'low',

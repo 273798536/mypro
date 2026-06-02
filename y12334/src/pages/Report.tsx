@@ -21,7 +21,6 @@ export default function Report() {
     getCurrentProject,
     getCurrentRecords,
     getCurrentResult,
-    getCurrentAbnormalities,
     getCurrentReviewAdvice,
     generateReview,
     currentProjectId
@@ -30,7 +29,6 @@ export default function Report() {
   const project = getCurrentProject();
   const records = getCurrentRecords();
   const result = getCurrentResult();
-  const abnormalities = getCurrentAbnormalities();
   const reviewAdvice = getCurrentReviewAdvice();
 
   const [isGenerating, setIsGenerating] = useState(false);

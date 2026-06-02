@@ -100,7 +100,7 @@ export const useAppStore = create<AppState>()(
 
       createProject: (name, description, teamInfo = initialTeamInfo) => {
         const newProject: Project = {
-          id: `project-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          id: `project-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
           name,
           description,
           significanceLevel: 0.05,
@@ -254,7 +254,7 @@ export const useAppStore = create<AppState>()(
             const totalRecords = group.records.length;
             const firstRecord = group.records[0];
             const newBatch = {
-              id: `batch-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              id: `batch-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
               projectId: actualProjectId,
               batchNumber: batchId,
               sampleSize: group.sampleSize || totalRecords,
