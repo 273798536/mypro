@@ -1,10 +1,12 @@
 {
   "name": "y12337",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "协同过滤冷启动诊断",
+  "main": "dist/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "test": "node dist/test.js"
   },
   "keywords": [],
   "author": "",
