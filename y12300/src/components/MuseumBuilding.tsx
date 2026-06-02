@@ -6,8 +6,6 @@ import {
   floors,
   halls,
   stairways,
-  getHallCenter,
-  getStairwayCenter,
   ExhibitionHall,
   Stairway,
 } from '@/data/museum-data';
