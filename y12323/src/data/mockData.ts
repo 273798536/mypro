@@ -221,6 +221,15 @@ export const mockPlans: SchedulePlan[] = [
     totalCost: 4580,
     totalEmployees: 8,
     assignments: mockAssignments,
+    isFeasible: true,
+    isOptimal: true,
+    optimalityGap: 0,
+    stationCost: 2500,
+    distanceCost: 2080,
+    solveTimeMs: 12,
+    nodesExplored: 31,
+    unassignedEmployees: [],
+    alternativePlans: [],
   },
 ];
 

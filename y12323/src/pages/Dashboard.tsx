@@ -1,28 +1,78 @@
 import { useAppStore } from '@/store';
 import { 
   Users, MapPin, FileBarChart, AlertTriangle, 
-  TrendingUp, Clock, CheckCircle
+  TrendingUp, Clock, CheckCircle, Filter
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 export default function Dashboard() {
-  const { employees, stations, plans, overflowRecords, currentPlanId, getAssignmentsByPlanId, getStationEmployeeCount } = useAppStore();
+  const { 
+    employees, stations, plans, overflowRecords, currentPlanId, 
+    getFilteredChartData, getFilteredAssignments, filters, setFilters
+  } = useAppStore();
   
   const activeEmployees = employees.filter(e => e.status === 'active').length;
   const missingDataCount = employees.filter(e => e.status === 'missing_data').length;
   const candidateStations = stations.filter(s => s.status === 'candidate').length;
   const unresolvedOverflows = overflowRecords.filter(r => !r.isResolved).length;
   
-  const chartData = stations.filter(s => s.status !== 'closed').map(station => ({
+  const chartData = currentPlanId ? getFilteredChartData(currentPlanId) : stations.filter(s => s.status !== 'closed').map(station => ({
     name: station.name,
-    已分配: currentPlanId ? getStationEmployeeCount(station.id, currentPlanId) : 0,
-    容量: station.capacity,
+    assigned: 0,
+    capacity: station.capacity,
+    isOverflow: false,
   }));
 
-  const currentAssignments = currentPlanId ? getAssignmentsByPlanId(currentPlanId) : [];
+  const filteredAssignments = currentPlanId ? getFilteredAssignments(currentPlanId) : [];
+  
+  const departments = [...new Set(employees.map(e => e.department).filter(Boolean))];
+  const hasFilters = filters.department || filters.status || filters.search;
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-3 mb-2">
+        <Filter className="w-5 h-5 text-gray-400" />
+        <select
+          value={filters.department}
+          onChange={(e) => setFilters({ department: e.target.value })}
+          className="input-field w-36 text-sm"
+        >
+          <option value="">全部部门</option>
+          {departments.map(dept => (
+            <option key={dept} value={dept}>{dept}</option>
+          ))}
+        </select>
+        <select
+          value={filters.status}
+          onChange={(e) => setFilters({ status: e.target.value })}
+          className="input-field w-36 text-sm"
+        >
+          <option value="">全部状态</option>
+          <option value="active">正常</option>
+          <option value="missing_data">数据缺失</option>
+        </select>
+        <input
+          type="text"
+          placeholder="搜索..."
+          value={filters.search}
+          onChange={(e) => setFilters({ search: e.target.value })}
+          className="input-field w-48 text-sm"
+        />
+        {hasFilters && (
+          <button 
+            className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+            onClick={() => setFilters({ department: '', status: '', search: '' })}
+          >
+            清除筛选
+          </button>
+        )}
+        {hasFilters && (
+          <span className="badge badge-info text-xs">
+            筛选已生效：图表和明细已同步
+          </span>
+        )}
+      </div>
+
       <div className="grid grid-cols-4 gap-6">
         <div className="card">
           <div className="flex items-center justify-between">
@@ -60,10 +110,12 @@ export default function Dashboard() {
             <div>
               <p className="text-sm text-gray-500">排程方案</p>
               <p className="text-3xl font-bold text-gray-900 mt-1">{plans.length}</p>
-              <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                <TrendingUp className="w-3 h-3" />
-                最新方案已完成
-              </p>
+              {plans.length > 0 && (
+                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
+                  <TrendingUp className="w-3 h-3" />
+                  最优间隙 {plans[0].optimalityGap.toFixed(1)}%
+                </p>
+              )}
             </div>
             <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
               <FileBarChart className="w-6 h-6 text-purple-600" />
@@ -96,7 +148,10 @@ export default function Dashboard() {
       
       <div className="grid grid-cols-2 gap-6">
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">站点容量分布</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">站点容量分布</h3>
+            {hasFilters && <span className="badge badge-info">按筛选</span>}
+          </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
@@ -104,17 +159,26 @@ export default function Dashboard() {
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Bar dataKey="已分配" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="容量" fill="#e5e7eb" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="assigned" radius={[4, 4, 0, 0]}>
+                  {chartData.map((entry, index) => (
+                    <Cell key={index} fill={entry.isOverflow ? '#ef4444' : '#3b82f6'} />
+                  ))}
+                </Bar>
+                <Bar dataKey="capacity" fill="#e5e7eb" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
         
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">最新排程分配</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              {hasFilters ? '筛选后排程分配' : '最新排程分配'}
+            </h3>
+            <span className="text-sm text-gray-500">{filteredAssignments.length} 条记录</span>
+          </div>
           <div className="space-y-3">
-            {currentAssignments.slice(0, 5).map(assignment => {
+            {filteredAssignments.slice(0, 5).map(assignment => {
               const employee = employees.find(e => e.id === assignment.employeeId);
               const station = stations.find(s => s.id === assignment.stationId);
               return (
@@ -135,6 +199,11 @@ export default function Dashboard() {
                 </div>
               );
             })}
+            {filteredAssignments.length === 0 && (
+              <p className="text-center text-gray-400 py-8">
+                {hasFilters ? '当前筛选无匹配结果' : '暂无排程方案'}
+              </p>
+            )}
           </div>
         </div>
       </div>

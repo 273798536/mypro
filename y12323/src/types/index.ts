@@ -45,6 +45,15 @@ export interface SchedulePlan {
   totalCost: number;
   totalEmployees: number;
   assignments: Assignment[];
+  isFeasible: boolean;
+  isOptimal: boolean;
+  optimalityGap: number;
+  stationCost: number;
+  distanceCost: number;
+  solveTimeMs: number;
+  nodesExplored: number;
+  unassignedEmployees: string[];
+  alternativePlans: AlgorithmResult[];
 }
 
 export interface OverflowRecord {

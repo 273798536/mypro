@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useAppStore } from '@/store';
-import { runIntegerPlanning } from '@/utils/algorithm';
+import { runIntegerPlanning, ExtendedAlgorithmResult } from '@/utils/algorithm';
 import { 
-  Play, Settings, BarChart3, Clock, CheckCircle, 
-  AlertTriangle, RefreshCw, Download
+  Play, Settings, BarChart3, CheckCircle, 
+  AlertTriangle, RefreshCw, Download, Target, Zap
 } from 'lucide-react';
 import { SchedulePlan } from '@/types';
 import * as XLSX from 'xlsx';
@@ -11,7 +11,8 @@ import * as XLSX from 'xlsx';
 export default function Scheduling() {
   const { 
     employees, stations, plans, currentPlanId, setCurrentPlanId,
-    addPlan, addOverflowRecord, updateStation, getAssignmentsByPlanId
+    addPlan, addOverflowRecord, updateStation, getFilteredAssignments, getFilteredChartData,
+    overflowRecords, filters
   } = useAppStore();
   
   const [isRunning, setIsRunning] = useState(false);
@@ -20,24 +21,36 @@ export default function Scheduling() {
     minStationEmployees: 2,
     costPerStation: 500,
   });
+  const [lastSolveInfo, setLastSolveInfo] = useState<ExtendedAlgorithmResult | null>(null);
 
   const handleRunAlgorithm = async () => {
     setIsRunning(true);
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 800));
     
     const planId = `plan-${Date.now()}`;
     const result = runIntegerPlanning(employees, stations, parameters, planId);
     
+    setLastSolveInfo(result);
+    
     const newPlan: SchedulePlan = {
       id: planId,
       name: `排程方案 ${new Date().toLocaleDateString('zh-CN')}`,
-      status: 'completed',
+      status: result.isFeasible ? 'completed' : 'failed',
       createdAt: new Date().toISOString(),
       parameters,
       totalCost: result.totalCost,
       totalEmployees: result.assignments.length,
       assignments: result.assignments,
+      isFeasible: result.isFeasible,
+      isOptimal: result.optimal,
+      optimalityGap: result.gap,
+      stationCost: result.stationCost,
+      distanceCost: result.distanceCost,
+      solveTimeMs: result.solveTimeMs,
+      nodesExplored: result.nodesExplored,
+      unassignedEmployees: result.unassignedEmployees,
+      alternativePlans: result.alternativePlans,
     };
     
     addPlan(newPlan);
@@ -57,7 +70,7 @@ export default function Scheduling() {
   const handleExport = () => {
     if (!currentPlanId) return;
     
-    const assignments = getAssignmentsByPlanId(currentPlanId);
+    const assignments = getFilteredAssignments(currentPlanId);
     const exportData = assignments.map(a => {
       const employee = employees.find(e => e.id === a.employeeId);
       const station = stations.find(s => s.id === a.stationId);
@@ -80,7 +93,9 @@ export default function Scheduling() {
   };
 
   const currentPlan = plans.find(p => p.id === currentPlanId);
-  const currentAssignments = currentPlanId ? getAssignmentsByPlanId(currentPlanId) : [];
+  const filteredAssignments = currentPlanId ? getFilteredAssignments(currentPlanId) : [];
+  const currentOverflowCount = overflowRecords.filter(r => r.planId === currentPlanId && !r.isResolved).length;
+  const hasFilters = filters.department || filters.status || filters.search;
 
   return (
     <div className="space-y-6">
@@ -98,10 +113,13 @@ export default function Scheduling() {
           </select>
           {currentPlan && (
             <span className={`badge ${
-              currentPlan.status === 'completed' ? 'badge-success' : 'badge-warning'
+              currentPlan.isFeasible ? 'badge-success' : 'badge-danger'
             }`}>
-              {currentPlan.status === 'completed' ? '已完成' : '运行中'}
+              {currentPlan.isFeasible ? '可行解' : '不可行'}
             </span>
+          )}
+          {currentPlan?.isOptimal && (
+            <span className="badge badge-info">最优解</span>
           )}
         </div>
         <div className="flex items-center gap-3">
@@ -123,10 +141,48 @@ export default function Scheduling() {
             ) : (
               <Play className="w-4 h-4" />
             )}
-            {isRunning ? '计算中...' : '运行整数规划'}
+            {isRunning ? '求解中...' : '运行整数规划'}
           </button>
         </div>
       </div>
+
+      {lastSolveInfo && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-center gap-6 text-sm">
+            <span className="flex items-center gap-1 text-blue-800">
+              <Zap className="w-4 h-4" />
+              求解耗时: <strong>{lastSolveInfo.solveTimeMs.toFixed(1)} ms</strong>
+            </span>
+            <span className="flex items-center gap-1 text-blue-800">
+              <Target className="w-4 h-4" />
+              探索节点: <strong>{lastSolveInfo.nodesExplored}</strong>
+            </span>
+            <span className="flex items-center gap-1 text-blue-800">
+              最优间隙: <strong>{lastSolveInfo.gap.toFixed(2)}%</strong>
+            </span>
+            <span className={`flex items-center gap-1 ${lastSolveInfo.isFeasible ? 'text-green-700' : 'text-red-700'}`}>
+              {lastSolveInfo.isFeasible ? <CheckCircle className="w-4 h-4" /> : <AlertTriangle className="w-4 h-4" />}
+              {lastSolveInfo.isFeasible ? '方案可行' : '方案不可行'}
+            </span>
+            {lastSolveInfo.optimal && (
+              <span className="flex items-center gap-1 text-green-700 font-medium">
+                <CheckCircle className="w-4 h-4" />
+                已证明最优
+              </span>
+            )}
+            {lastSolveInfo.unassignedEmployees.length > 0 && (
+              <span className="text-red-700">
+                未分配员工: {lastSolveInfo.unassignedEmployees.length} 人
+              </span>
+            )}
+            {lastSolveInfo.alternativePlans.length > 0 && (
+              <span className="text-blue-700">
+                备选方案: {lastSolveInfo.alternativePlans.length} 个
+              </span>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-4 gap-6">
         <div className="card col-span-1">
@@ -188,11 +244,14 @@ export default function Scheduling() {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">方案名称</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">创建时间</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">站点数</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">员工数</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">站点成本</th>
+                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">距离成本</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">总成本</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">状态</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-500">可行</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-500">最优</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-500">间隙</th>
                   <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">操作</th>
                 </tr>
               </thead>
@@ -204,20 +263,36 @@ export default function Scheduling() {
                       currentPlanId === plan.id ? 'bg-primary-50' : ''
                     }`}
                   >
-                    <td className="px-4 py-3 font-medium text-gray-900">{plan.name}</td>
-                    <td className="px-4 py-3 text-gray-500 text-sm">
-                      {new Date(plan.createdAt).toLocaleString('zh-CN')}
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-gray-900 text-sm">{plan.name}</p>
+                      <p className="text-xs text-gray-400">
+                        {new Date(plan.createdAt).toLocaleString('zh-CN')}
+                      </p>
                     </td>
                     <td className="px-4 py-3 text-gray-900">
                       {new Set(plan.assignments.map(a => a.stationId)).size} 个
                     </td>
                     <td className="px-4 py-3 text-gray-900">{plan.totalEmployees} 人</td>
-                    <td className="px-4 py-3 text-gray-900 font-mono">¥{plan.totalCost}</td>
-                    <td className="px-4 py-3">
-                      <span className={`badge ${
-                        plan.status === 'completed' ? 'badge-success' : 'badge-warning'
-                      }`}>
-                        {plan.status === 'completed' ? '已完成' : '运行中'}
+                    <td className="px-4 py-3 text-gray-600 font-mono text-sm">¥{plan.stationCost}</td>
+                    <td className="px-4 py-3 text-gray-600 font-mono text-sm">¥{plan.distanceCost.toFixed(0)}</td>
+                    <td className="px-4 py-3 text-gray-900 font-mono font-medium">¥{plan.totalCost.toFixed(0)}</td>
+                    <td className="px-4 py-3 text-center">
+                      {plan.isFeasible ? (
+                        <CheckCircle className="w-5 h-5 text-green-500 inline" />
+                      ) : (
+                        <AlertTriangle className="w-5 h-5 text-red-500 inline" />
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {plan.isOptimal ? (
+                        <Target className="w-5 h-5 text-blue-500 inline" />
+                      ) : (
+                        <span className="text-gray-300">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-center font-mono text-sm">
+                      <span className={plan.optimalityGap === 0 ? 'text-green-600 font-medium' : 'text-amber-600'}>
+                        {plan.optimalityGap.toFixed(1)}%
                       </span>
                     </td>
                     <td className="px-4 py-3">
@@ -225,14 +300,14 @@ export default function Scheduling() {
                         className="text-primary-600 hover:text-primary-700 text-sm font-medium"
                         onClick={() => setCurrentPlanId(plan.id)}
                       >
-                        查看详情
+                        查看
                       </button>
                     </td>
                   </tr>
                 ))}
                 {plans.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-12 text-center text-gray-400">
+                    <td colSpan={10} className="px-4 py-12 text-center text-gray-400">
                       暂无排程方案，请点击"运行整数规划"创建
                     </td>
                   </tr>
@@ -244,7 +319,7 @@ export default function Scheduling() {
       </div>
 
       {currentPlan && (
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-5 gap-6">
           <div className="card">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
@@ -252,7 +327,7 @@ export default function Scheduling() {
               </div>
               <div>
                 <p className="text-sm text-gray-500">总成本</p>
-                <p className="text-2xl font-bold text-gray-900">¥{currentPlan.totalCost}</p>
+                <p className="text-2xl font-bold text-gray-900">¥{currentPlan.totalCost.toFixed(0)}</p>
               </div>
             </div>
           </div>
@@ -262,7 +337,7 @@ export default function Scheduling() {
                 <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">已分配员工</p>
+                <p className="text-sm text-gray-500">已分配</p>
                 <p className="text-2xl font-bold text-gray-900">{currentPlan.totalEmployees} 人</p>
               </div>
             </div>
@@ -270,26 +345,45 @@ export default function Scheduling() {
           <div className="card">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Clock className="w-6 h-6 text-purple-600" />
+                <Target className="w-6 h-6 text-purple-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-500">选中站点</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {new Set(currentAssignments.map(a => a.stationId)).size} 个
+                  {new Set(currentPlan.assignments.map(a => a.stationId)).size} 个
                 </p>
               </div>
             </div>
           </div>
           <div className="card">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                <AlertTriangle className="w-6 h-6 text-red-600" />
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                currentPlan.isFeasible ? 'bg-green-100' : 'bg-red-100'
+              }`}>
+                {currentPlan.isFeasible ? (
+                  <CheckCircle className="w-6 h-6 text-green-600" />
+                ) : (
+                  <AlertTriangle className="w-6 h-6 text-red-600" />
+                )}
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">可行性</p>
+                <p className={`text-lg font-bold ${currentPlan.isFeasible ? 'text-green-700' : 'text-red-700'}`}>
+                  {currentPlan.isFeasible ? '可行' : '不可行'}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="card">
+            <div className="flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                currentOverflowCount > 0 ? 'bg-red-100' : 'bg-gray-100'
+              }`}>
+                <AlertTriangle className={`w-6 h-6 ${currentOverflowCount > 0 ? 'text-red-600' : 'text-gray-400'}`} />
               </div>
               <div>
                 <p className="text-sm text-gray-500">容量超限</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {useAppStore.getState().overflowRecords.filter(r => r.planId === currentPlanId && !r.isResolved).length} 处
-                </p>
+                <p className="text-2xl font-bold text-gray-900">{currentOverflowCount} 处</p>
               </div>
             </div>
           </div>
@@ -298,7 +392,15 @@ export default function Scheduling() {
 
       {currentPlan && (
         <div className="card">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">分配详情 - 员工住址 → 站点候选 对应关系</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              分配详情 - 员工住址 → 站点候选 对应关系
+            </h3>
+            <div className="flex items-center gap-3">
+              {hasFilters && <span className="badge badge-info">按筛选</span>}
+              <span className="text-sm text-gray-500">{filteredAssignments.length} 条记录</span>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
@@ -312,10 +414,10 @@ export default function Scheduling() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {currentAssignments.map((assignment) => {
+                {filteredAssignments.map((assignment) => {
                   const employee = employees.find(e => e.id === assignment.employeeId);
                   const station = stations.find(s => s.id === assignment.stationId);
-                  const stationCount = currentAssignments.filter(a => a.stationId === assignment.stationId).length;
+                  const stationCount = currentPlan.assignments.filter(a => a.stationId === assignment.stationId).length;
                   const isOverflow = stationCount > (station?.capacity || 0);
                   
                   return (
@@ -357,6 +459,13 @@ export default function Scheduling() {
                     </tr>
                   );
                 })}
+                {filteredAssignments.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-8 text-center text-gray-400">
+                      暂无分配记录
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
