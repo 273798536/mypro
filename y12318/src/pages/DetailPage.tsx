@@ -7,6 +7,7 @@ import {
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
+import * as XLSX from "xlsx";
 import { useStore } from "@/store/useStore";
 import type { ReplenishmentSuggestion, EvidenceItem } from "@/types";
 
@@ -180,6 +181,7 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
   const [format, setFormat] = useState<"csv" | "excel">("csv");
   const [warnings, setWarnings] = useState<string[] | null>(null);
   const [success, setSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const exportConsistencyCheck = useStore((st) => st.exportConsistencyCheck);
 
   const csvCell = (v: string | number) => {
@@ -190,7 +192,18 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
     return s;
   };
 
-  const doDownload = () => {
+  const triggerDownload = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+  };
+
+  const buildCSV = () => {
     const bom = "\uFEFF";
     const snap = useStore.getState().inventorySnapshot.find((i) => i.skuId === s.skuId);
     const skuConflicts = useStore.getState().conflicts.filter((c) => c.skuId === s.skuId);
@@ -225,16 +238,97 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
       csv += "\n\n一致性校验警告\n" + result.details.map((d) => `⚠ ${d}`).join("\n");
     }
 
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `补货详情_${s.skuId}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-    setSuccess(true);
-    setWarnings(null);
-    setTimeout(() => setSuccess(false), 2000);
+    return csv;
+  };
+
+  const buildExcel = () => {
+    const snap = useStore.getState().inventorySnapshot.find((i) => i.skuId === s.skuId);
+    const skuConflicts = useStore.getState().conflicts.filter((c) => c.skuId === s.skuId);
+
+    const wb = XLSX.utils.book_new();
+
+    const summaryData = [
+      ["SKU", s.skuId],
+      ["SKU名称", s.skuName],
+      ["品类", s.category],
+      ["仓库", s.store],
+      ["补货量", s.suggestedQty],
+      ["置信度", (s.confidence * 100).toFixed(1) + "%"],
+      ["优先级", PRIORITY_LABEL[s.priority]],
+      ["当前库存", s.currentStock],
+      ["安全库存", s.safetyStock],
+      ["P50", (s.probabilityP50 * 100).toFixed(1) + "%"],
+      ["P75", (s.probabilityP75 * 100).toFixed(1) + "%"],
+      ["P90", (s.probabilityP90 * 100).toFixed(1) + "%"],
+      ["库存快照结论", snap ? snap.conclusion : "-"],
+      ["异常标记", s.anomalyTypes.join(";") || "-"],
+      ["导出时间", new Date().toLocaleString("zh-CN")],
+    ];
+    const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+    ws1["!cols"] = [{ wch: 18 }, { wch: 40 }];
+    XLSX.utils.book_append_sheet(wb, ws1, "补货决策");
+
+    const evHeader = ["证据ID", "事件日期", "事件类型", "描述", "数据源", "是否覆盖", "严重程度", "原始值", "覆盖值"];
+    const evData = [evHeader, ...evidences.map((e) => [
+      e.evidenceId, e.eventDate, EVT[e.eventType]?.label || e.eventType, e.description, e.sourceTable,
+      e.isOverride ? "是" : "否", e.severity, e.originalValue, e.overriddenValue,
+    ])];
+    const ws2 = XLSX.utils.aoa_to_sheet(evData);
+    ws2["!cols"] = [{ wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 40 }, { wch: 14 }, { wch: 8 }, { wch: 8 }, { wch: 20 }, { wch: 20 }];
+    XLSX.utils.book_append_sheet(wb, ws2, "证据链");
+
+    if (skuConflicts.length > 0) {
+      const cHeader = ["冲突类型", "销售结论", "库存结论", "严重程度", "描述"];
+      const cData = [cHeader, ...skuConflicts.map((c) =>
+        ["口径冲突", c.salesConclusion, c.inventoryConclusion, c.severity, c.description]
+      )];
+      const ws3 = XLSX.utils.aoa_to_sheet(cData);
+      ws3["!cols"] = [{ wch: 10 }, { wch: 25 }, { wch: 25 }, { wch: 10 }, { wch: 50 }];
+      XLSX.utils.book_append_sheet(wb, ws3, "数据冲突");
+    }
+
+    const result = exportConsistencyCheck();
+    if (!result.passed) {
+      const warnData = [
+        ["一致性校验警告"],
+        ...result.details.map((d) => [`⚠ ${d}`]),
+      ];
+      const ws4 = XLSX.utils.aoa_to_sheet(warnData);
+      ws4["!cols"] = [{ wch: 80 }];
+      XLSX.utils.book_append_sheet(wb, ws4, "一致性警告");
+    }
+
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    return new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  };
+
+  const doDownload = () => {
+    setErrorMsg(null);
+    try {
+      const snap = useStore.getState().inventorySnapshot.find((i) => i.skuId === s.skuId);
+      if (!snap && evidences.length === 0) {
+        setErrorMsg("无可导出内容：库存快照和证据链均为空");
+        setTimeout(() => setErrorMsg(null), 3000);
+        return;
+      }
+
+      if (format === "csv") {
+        const csv = buildCSV();
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+        triggerDownload(blob, `补货详情_${s.skuId}.csv`);
+      } else {
+        const blob = buildExcel();
+        triggerDownload(blob, `补货详情_${s.skuId}.xlsx`);
+      }
+
+      setSuccess(true);
+      setWarnings(null);
+      setTimeout(() => setSuccess(false), 2000);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrorMsg(`导出失败：${msg}`);
+      setTimeout(() => setErrorMsg(null), 4000);
+    }
   };
 
   const handleExport = () => {
@@ -251,15 +345,21 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
       <div className="fixed bottom-0 left-56 right-0 bg-base-50 border-t border-base-100 px-6 py-3 flex items-center gap-4 z-30">
         <div className="flex items-center gap-2">
           {(["csv", "excel"] as const).map((f) => (
-            <button key={f} onClick={() => setFormat(f)} className={`px-3 py-1 rounded text-xs font-medium transition-colors ${format === f ? "bg-steel text-white" : "bg-base-100 text-text-secondary hover:text-text-primary"}`}>
+            <button
+              key={f}
+              onClick={() => setFormat(f)}
+              className={`px-3 py-1 rounded text-xs font-medium transition-colors ${format === f ? "bg-steel text-white" : "bg-base-100 text-text-secondary hover:text-text-primary"}`}
+            >
               {f.toUpperCase()}
             </button>
           ))}
         </div>
         <button onClick={handleExport} className="btn-primary flex items-center gap-2 text-sm">
-          <Download className="w-4 h-4" />导出报告
+          <Download className="w-4 h-4" />
+          导出{format === "csv" ? "CSV" : "Excel"}
         </button>
         {success && <span className="flex items-center gap-1 text-emerald text-xs"><CheckCircle2 className="w-3.5 h-3.5" />导出成功</span>}
+        {errorMsg && <span className="flex items-center gap-1 text-danger text-xs"><XCircle className="w-3.5 h-3.5" />{errorMsg}</span>}
       </div>
       {warnings && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setWarnings(null)}>
