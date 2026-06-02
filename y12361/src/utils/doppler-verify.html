@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>多普勒公式验证</title>
+  <style>
+    body { font-family: system-ui; padding: 20px; max-width: 800px; margin: 0 auto; }
+    .test-case { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin: 12px 0; }
+    .pass { background: #ecfdf5; border-color: #10b981; color: #065f46; }
+    .fail { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
+    .formula { font-family: monospace; background: #f3f4f6; padding: 8px 12px; border-radius: 4px; margin: 8px 0; }
+    h2 { margin-top: 32px; }
+  </style>
+</head>
+<body>
+  <h1>多普勒测速公式验证</h1>
+  <div id="results"></div>
+
+  <script type="module">
+    const SPEED_OF_SOUND = 343;
+
+    function calculateVelocityFromFrequency(emittedFrequency, receivedFrequency, direction, speedOfSound) {
+      if (!direction) return null;
+      if (receivedFrequency === 0 || emittedFrequency === 0) return null;
+      
+      const frequencyRatio = emittedFrequency / receivedFrequency;
+      let velocity;
+      
+      if (direction === 'approaching') {
+        velocity = speedOfSound * (1 - frequencyRatio);
+      } else {
+        velocity = speedOfSound * (frequencyRatio - 1);
+      }
+      
+      return Math.round(Math.abs(velocity) * 100) / 100;
+    }
+
+    function calculateFrequencyFromVelocity(emittedFrequency, velocity, direction, speedOfSound) {
+      if (!direction) return null;
+      const directionMultiplier = direction === 'approaching' ? 1 : -1;
+      const denominator = speedOfSound - velocity * directionMultiplier;
+      if (denominator === 0) return null;
+      const receivedFrequency = emittedFrequency * speedOfSound / denominator;
+      return Math.round(receivedFrequency * 100) / 100;
+    }
+
+    const tests = [
+      {
+        name: '远离场景：发射1000Hz，接收900Hz',
+        fn: () => {
+          const result = calculateVelocityFromFrequency(1000, 900, 'receding', SPEED_OF_SOUND);
+          return {
+            pass: result >= 38 && result <= 39 && result < SPEED_OF_SOUND,
+            actual: result,
+            expected: '~38.11 m/s ( < 343 m/s)'
+          };
+        }
+      },
+      {
+        name: '靠近场景：发射1000Hz，接收1100Hz',
+        fn: () => {
+          const result = calculateVelocityFromFrequency(1000, 1100, 'approaching', SPEED_OF_SOUND);
+          return {
+            pass: result >= 31 && result <= 32 && result < SPEED_OF_SOUND,
+            actual: result,
+            expected: '~31.18 m/s ( < 343 m/s)'
+          };
+        }
+      },
+      {
+        name: '无频移时速度为0',
+        fn: () => {
+          const r1 = calculateVelocityFromFrequency(1000, 1000, 'approaching', SPEED_OF_SOUND);
+          const r2 = calculateVelocityFromFrequency(1000, 1000, 'receding', SPEED_OF_SOUND);
+          return {
+            pass: r1 === 0 && r2 === 0,
+            actual: `靠近: ${r1}, 远离: ${r2}`,
+            expected: '0 m/s'
+          };
+        }
+      },
+      {
+        name: '闭环验证：频率→速度→频率（远离）',
+        fn: () => {
+          const emitted = 1000;
+          const received = 900;
+          const velocity = calculateVelocityFromFrequency(emitted, received, 'receding', SPEED_OF_SOUND);
+          const reconstructed = calculateFrequencyFromVelocity(emitted, velocity, 'receding', SPEED_OF_SOUND);
+          return {
+            pass: Math.abs(reconstructed - received) < 5,
+            actual: `${received} Hz → ${velocity} m/s → ${reconstructed} Hz`,
+            expected: `闭环误差 < 5 Hz`
+          };
+        }
+      },
+      {
+        name: '闭环验证：频率→速度→频率（靠近）',
+        fn: () => {
+          const emitted = 1000;
+          const received = 1100;
+          const velocity = calculateVelocityFromFrequency(emitted, received, 'approaching', SPEED_OF_SOUND);
+          const reconstructed = calculateFrequencyFromVelocity(emitted, velocity, 'approaching', SPEED_OF_SOUND);
+          return {
+            pass: Math.abs(reconstructed - received) < 5,
+            actual: `${received} Hz → ${velocity} m/s → ${reconstructed} Hz`,
+            expected: `闭环误差 < 5 Hz`
+          };
+        }
+      }
+    ];
+
+    const resultsEl = document.getElementById('results');
+    let passed = 0;
+
+    tests.forEach(test => {
+      const result = test.fn();
+      const passClass = result.pass ? 'pass' : 'fail';
+      if (result.pass) passed++;
+      
+      resultsEl.innerHTML += `
+        <div class="test-case ${passClass}">
+          <strong>${test.name}</strong>
+          <div style="margin-top: 8px;">
+            实际结果: ${result.actual}<br>
+            期望结果: ${result.expected}
+          </div>
+        </div>
+      `;
+    });
+
+    resultsEl.innerHTML = `
+      <div style="padding: 16px; background: ${passed === tests.length ? '#ecfdf5' : '#fef3c7'}; border-radius: 8px; margin-bottom: 16px;">
+        <strong>${passed} / ${tests.length} 测试通过</strong>
+      </div>
+      <h2>公式说明</h2>
+      <div class="formula">
+        靠近: f' = f₀ × v / (v - vₛ) → vₛ = v × (1 - f₀/f')
+      </div>
+      <div class="formula">
+        远离: f' = f₀ × v / (v + vₛ) → vₛ = v × (f₀/f' - 1)
+      </div>
+    ` + resultsEl.innerHTML;
+  </script>
+</body>
+</html>

@@ -22,13 +22,18 @@ export function calculateVelocityFromFrequency(
 ): number | null {
   if (!direction) return null;
   
-  const directionMultiplier = direction === 'approaching' ? 1 : -1;
+  if (receivedFrequency === 0 || emittedFrequency === 0) return null;
   
-  if (receivedFrequency === 0) return null;
+  const frequencyRatio = emittedFrequency / receivedFrequency;
+  let velocity: number;
   
-  const velocity = speedOfSound * (1 - (emittedFrequency / receivedFrequency) * directionMultiplier);
+  if (direction === 'approaching') {
+    velocity = speedOfSound * (1 - frequencyRatio);
+  } else {
+    velocity = speedOfSound * (frequencyRatio - 1);
+  }
   
-  return Math.round(velocity * 100) / 100;
+  return Math.round(Math.abs(velocity) * 100) / 100;
 }
 
 export function calculateFrequencyFromVelocity(
