@@ -1,10 +1,12 @@
-import type { ProductArchive, ProductNode3D, RiskIssue } from '../../shared/types';
+import type { ProductArchive, ProductNode3D, RiskIssue, ExplanationReport } from '../../shared/types';
 import { PRODUCT_TYPE_COLORS, RISK_LEVEL_COLORS } from '../../shared/types';
 
 export function calculate3DPositions(
   products: ProductArchive[],
   risks: RiskIssue[],
-  colorBy: 'type' | 'risk' = 'risk'
+  colorBy: 'type' | 'risk' = 'risk',
+  timelineCurrent?: number,
+  reports?: ExplanationReport[]
 ): ProductNode3D[] {
   const nodes: ProductNode3D[] = [];
   const typeGroups: Record<string, ProductArchive[]> = {};
@@ -33,9 +35,27 @@ export function calculate3DPositions(
         (r) => r.productId === product.id && r.severity === 'warning'
       );
 
+      let timeFactor = 1.0;
+      let timeOffset = 0;
+
+      if (timelineCurrent !== undefined) {
+        const productTime = product.createTime;
+        const timeDiff = timelineCurrent - productTime;
+
+        timeFactor = Math.min(Math.max(timeDiff / (86400000 * 60), 0.3), 1.0);
+        timeOffset = timeFactor * 3 - 1.5;
+
+        if (reports) {
+          const productReports = reports.filter(
+            (r) => r.productId === product.id && r.reportTime <= timelineCurrent
+          );
+          timeOffset += productReports.length * 0.5;
+        }
+      }
+
       const spiralAngle = groupAngle + (productIndex * 0.8) / (groupProducts.length + 1);
-      const spiralRadius = groupRadius + (productIndex % 3) * 2;
-      const heightOffset = (productIndex - groupProducts.length / 2) * 2;
+      const spiralRadius = groupRadius + (productIndex % 3) * 2 + timeOffset;
+      const heightOffset = (productIndex - groupProducts.length / 2) * 2 + timeOffset * 0.5;
       const riskElevation = hasRisk ? 3 : hasWarning ? 1.5 : 0;
 
       const position: [number, number, number] = [
@@ -57,7 +77,8 @@ export function calculate3DPositions(
         color = '#FFA502';
       }
 
-      const scale = hasRisk ? 1.5 : hasWarning ? 1.25 : 1.0;
+      const baseScale = hasRisk ? 1.5 : hasWarning ? 1.25 : 1.0;
+      const scale = baseScale * timeFactor;
 
       nodes.push({
         productId: product.id,

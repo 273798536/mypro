@@ -1,5 +1,12 @@
 import { useMemo, useState } from 'react';
-import { PanelRightClose, PanelRightOpen, Info, Calendar, Building2 } from 'lucide-react';
+import {
+  PanelRightClose,
+  PanelRightOpen,
+  Info,
+  Calendar,
+  Building2,
+  Clock,
+} from 'lucide-react';
 import { useAppStore } from '../../store';
 import { RiskIssueCard } from './RiskIssueCard';
 import { YieldChart } from './YieldChart';
@@ -16,6 +23,7 @@ export function RightPanel() {
     yields,
     reports,
     risks,
+    timeline,
   } = useAppStore();
 
   const [showPanel, setShowPanel] = useState(true);
@@ -30,15 +38,25 @@ export function RightPanel() {
     [yields, selectedProductId]
   );
 
-  const selectedReport = useMemo(
-    () => reports.find((r) => r.productId === selectedProductId) || null,
-    [reports, selectedProductId]
-  );
+  const selectedReport = useMemo(() => {
+    const productReports = reports
+      .filter((r) => r.productId === selectedProductId && r.reportTime <= timeline.current)
+      .sort((a, b) => b.reportTime - a.reportTime);
+    return productReports[0] || null;
+  }, [reports, selectedProductId, timeline.current]);
 
   const productRisks = useMemo(
     () => risks.filter((r) => r.productId === selectedProductId),
     [risks, selectedProductId]
   );
+
+  const formatTimelineDate = (ts: number) => {
+    return new Date(ts).toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
 
   if (!showPanel) {
     return (
@@ -78,6 +96,16 @@ export function RightPanel() {
       ) : (
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 space-y-4">
+            <div className="flex items-center justify-between px-1 py-2 bg-cyber-500/10 rounded-lg">
+              <div className="flex items-center gap-2 text-xs text-cyber-400">
+                <Clock className="w-3.5 h-3.5" />
+                <span>当前时间节点：</span>
+                <span className="font-mono font-medium">
+                  {formatTimelineDate(timeline.current)}
+                </span>
+              </div>
+            </div>
+
             <div className="glass rounded-lg p-4">
               <div className="flex items-start justify-between mb-3">
                 <div>

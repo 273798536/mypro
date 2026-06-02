@@ -237,13 +237,21 @@ export function detectMaterialConflicts(
 export function runAllRiskChecks(
   products: ProductArchive[],
   yields: YieldRange[],
-  reports: ExplanationReport[]
+  reports: ExplanationReport[],
+  timelineCurrent?: number
 ): RiskIssue[] {
   const issues: RiskIssue[] = [];
 
   products.forEach((product) => {
     const productYield = yields.find((y) => y.productId === product.id);
-    const productReport = reports.find((r) => r.productId === product.id);
+    let productReport = reports.find((r) => r.productId === product.id);
+
+    if (timelineCurrent !== undefined) {
+      const productReports = reports
+        .filter((r) => r.productId === product.id && r.reportTime <= timelineCurrent)
+        .sort((a, b) => b.reportTime - a.reportTime);
+      productReport = productReports[0] || undefined;
+    }
 
     if (productYield) {
       const misalignment = detectRiskMisalignment(product, productYield);

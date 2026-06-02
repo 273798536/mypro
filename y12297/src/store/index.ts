@@ -109,6 +109,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   setTimeline: (newTimeline) => {
     set((state) => ({ timeline: { ...state.timeline, ...newTimeline } }));
     saveToLocalStorage('spectrum_timeline', get().timeline);
+    get().runRiskChecks();
+    get().recalculate3DPositions();
   },
 
   toggleColorMode: () => {
@@ -185,14 +187,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   runRiskChecks: () => {
-    const { products, yields, reports } = get();
-    const risks = runAllRiskChecks(products, yields, reports);
+    const { products, yields, reports, timeline } = get();
+    const risks = runAllRiskChecks(products, yields, reports, timeline.current);
     const conflicts = detectMaterialConflicts(products, yields, reports);
     set({ risks, conflicts });
   },
 
   recalculate3DPositions: () => {
-    const { products, risks, filters, colorMode } = get();
+    const { products, risks, filters, colorMode, timeline, reports } = get();
 
     let filteredProducts = products;
     if (filters.type !== 'all') {
@@ -208,7 +210,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       });
     }
 
-    const nodes3D = calculate3DPositions(filteredProducts, risks, colorMode);
+    const nodes3D = calculate3DPositions(
+      filteredProducts,
+      risks,
+      colorMode,
+      timeline.current,
+      reports
+    );
     set({ nodes3D });
   },
 
