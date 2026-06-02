@@ -43,7 +43,7 @@ function getLabel(valve: ValveType): string {
   }
 }
 
-export default function Valve({ valve }: { valve: ValveType }) {
+export default function Valve({ valve, showLabel = true }: { valve: ValveType; showLabel?: boolean }) {
   const selectedValveId = useAppStore((s) => s.selectedValveId)
   const setSelectedValve = useAppStore((s) => s.setSelectedValve)
   const color = STATUS_COLORS[valve.status] ?? '#94A3B8'
@@ -78,24 +78,26 @@ export default function Valve({ valve }: { valve: ValveType }) {
         </mesh>
       )}
 
-      <Html
-        position={[0, 0.4, 0]}
-        center
-        distanceFactor={10}
-        style={{
-          color: 'white',
-          fontSize: '11px',
-          fontFamily: 'monospace',
-          background: `${color}CC`,
-          padding: '2px 6px',
-          borderRadius: '3px',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none',
-          userSelect: 'none',
-        }}
-      >
-        {getLabel(valve)}
-      </Html>
+      {showLabel && (
+        <Html
+          position={[0, 0.4, 0]}
+          center
+          distanceFactor={10}
+          style={{
+            color: 'white',
+            fontSize: '11px',
+            fontFamily: 'monospace',
+            background: `${color}CC`,
+            padding: '2px 6px',
+            borderRadius: '3px',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        >
+          {getLabel(valve)}
+        </Html>
+      )}
     </group>
   )
 }

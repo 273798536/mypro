@@ -9,7 +9,7 @@ const ROUTE_STYLES: Record<string, { color: string; dashed: boolean; opacity: nu
   draft: { color: '#94A3B8', dashed: true, opacity: 0.5 },
 }
 
-export default function RoutePath({ route }: { route: InspectionRoute }) {
+export default function RoutePath({ route, showLabel = true }: { route: InspectionRoute; showLabel?: boolean }) {
   const points = useMemo(
     () => route.points.map((p) => p.position),
     [route.points],
@@ -34,7 +34,7 @@ export default function RoutePath({ route }: { route: InspectionRoute }) {
         opacity={style.opacity}
       />
 
-      {startPos && (
+      {startPos && showLabel && (
         <Html
           position={startPos}
           center

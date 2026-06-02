@@ -9,7 +9,7 @@ const LEVEL_COLORS: Record<string, string> = {
   caution: '#EAB308',
 }
 
-export default function ForbiddenZone({ zone }: { zone: ForbiddenZoneType }) {
+export default function ForbiddenZone({ zone, showLabel = true }: { zone: ForbiddenZoneType; showLabel?: boolean }) {
   const { center, size, rotationY } = useMemo(() => {
     const boundary = zone.boundary
     if (boundary.length === 0) {
@@ -62,24 +62,26 @@ export default function ForbiddenZone({ zone }: { zone: ForbiddenZoneType }) {
         />
       )}
 
-      <Html
-        position={center}
-        center
-        distanceFactor={10}
-        style={{
-          color: 'white',
-          fontSize: '11px',
-          fontFamily: 'monospace',
-          background: `${color}CC`,
-          padding: '2px 6px',
-          borderRadius: '3px',
-          whiteSpace: 'nowrap',
-          pointerEvents: 'none',
-          userSelect: 'none',
-        }}
-      >
-        [禁区] {zone.name} ⊗ {zone.level}
-      </Html>
+      {showLabel && (
+        <Html
+          position={center}
+          center
+          distanceFactor={10}
+          style={{
+            color: 'white',
+            fontSize: '11px',
+            fontFamily: 'monospace',
+            background: `${color}CC`,
+            padding: '2px 6px',
+            borderRadius: '3px',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        >
+          [禁区] {zone.name} ⊗ {zone.level}
+        </Html>
+      )}
     </group>
   )
 }

@@ -9,6 +9,7 @@ import { detectDuplicateValves, detectForbiddenCrossing, detectModelMismatch } f
 
 type PanelTab = 'conflict' | 'workorder' | 'route' | 'valve'
 type ActiveView = 'workbench' | 'route' | 'valve' | 'conflict' | 'evidence'
+type ViewMode = 'top' | 'side' | 'free'
 
 interface AppState {
   corridor: CorridorModel
@@ -27,9 +28,14 @@ interface AppState {
   activePanelTab: PanelTab
   rightPanelOpen: boolean
   activeView: ActiveView
+  viewMode: ViewMode
   showFailedPaths: boolean
   showForbiddenZones: boolean
   showAnnotations: boolean
+  showValveLayer: boolean
+  showRouteLayer: boolean
+  showForbiddenLayer: boolean
+  showAnnotationLayer: boolean
 
   setSelectedValve: (id: string | null) => void
   setSelectedRoute: (id: string | null) => void
@@ -38,9 +44,14 @@ interface AppState {
   setActivePanelTab: (tab: PanelTab) => void
   setRightPanelOpen: (open: boolean) => void
   setActiveView: (view: ActiveView) => void
+  setViewMode: (mode: ViewMode) => void
   toggleFailedPaths: () => void
   toggleForbiddenZones: () => void
   toggleAnnotations: () => void
+  toggleValveLayer: () => void
+  toggleRouteLayer: () => void
+  toggleForbiddenLayer: () => void
+  toggleAnnotationLayer: () => void
   runConflictDetection: () => void
   addAnnotation: (annotation: Annotation) => void
 }
@@ -62,9 +73,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   activePanelTab: 'conflict',
   rightPanelOpen: true,
   activeView: 'workbench',
+  viewMode: 'free',
   showFailedPaths: true,
   showForbiddenZones: true,
   showAnnotations: true,
+  showValveLayer: true,
+  showRouteLayer: true,
+  showForbiddenLayer: true,
+  showAnnotationLayer: true,
 
   setSelectedValve: (id) => set({ selectedValveId: id }),
   setSelectedRoute: (id) => set({ selectedRouteId: id }),
@@ -73,9 +89,14 @@ export const useAppStore = create<AppState>((set, get) => ({
   setActivePanelTab: (tab) => set({ activePanelTab: tab, rightPanelOpen: true }),
   setRightPanelOpen: (open) => set({ rightPanelOpen: open }),
   setActiveView: (view) => set({ activeView: view }),
+  setViewMode: (mode) => set({ viewMode: mode }),
   toggleFailedPaths: () => set((s) => ({ showFailedPaths: !s.showFailedPaths })),
   toggleForbiddenZones: () => set((s) => ({ showForbiddenZones: !s.showForbiddenZones })),
   toggleAnnotations: () => set((s) => ({ showAnnotations: !s.showAnnotations })),
+  toggleValveLayer: () => set((s) => ({ showValveLayer: !s.showValveLayer })),
+  toggleRouteLayer: () => set((s) => ({ showRouteLayer: !s.showRouteLayer })),
+  toggleForbiddenLayer: () => set((s) => ({ showForbiddenLayer: !s.showForbiddenLayer })),
+  toggleAnnotationLayer: () => set((s) => ({ showAnnotationLayer: !s.showAnnotationLayer })),
 
   runConflictDetection: () => {
     const { valves, routes, corridor, forbiddenZones } = get()

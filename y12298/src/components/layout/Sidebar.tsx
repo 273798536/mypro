@@ -8,7 +8,6 @@ import {
   CheckSquare,
   Square,
 } from 'lucide-react'
-import { useState } from 'react'
 
 export default function Sidebar() {
   const showFailedPaths = useAppStore((s) => s.showFailedPaths)
@@ -18,18 +17,19 @@ export default function Sidebar() {
   const toggleForbiddenZones = useAppStore((s) => s.toggleForbiddenZones)
   const toggleAnnotations = useAppStore((s) => s.toggleAnnotations)
   const runConflictDetection = useAppStore((s) => s.runConflictDetection)
+  const viewMode = useAppStore((s) => s.viewMode)
+  const setViewMode = useAppStore((s) => s.setViewMode)
+  const showValveLayer = useAppStore((s) => s.showValveLayer)
+  const showRouteLayer = useAppStore((s) => s.showRouteLayer)
+  const showForbiddenLayer = useAppStore((s) => s.showForbiddenLayer)
+  const showAnnotationLayer = useAppStore((s) => s.showAnnotationLayer)
+  const toggleValveLayer = useAppStore((s) => s.toggleValveLayer)
+  const toggleRouteLayer = useAppStore((s) => s.toggleRouteLayer)
+  const toggleForbiddenLayer = useAppStore((s) => s.toggleForbiddenLayer)
+  const toggleAnnotationLayer = useAppStore((s) => s.toggleAnnotationLayer)
+  const activeView = useAppStore((s) => s.activeView)
 
-  const [viewMode, setViewMode] = useState<'top' | 'side' | 'free'>('free')
-  const [layers, setLayers] = useState({
-    valve: true,
-    route: true,
-    forbidden: true,
-    annotation: true,
-  })
-
-  const toggleLayer = (key: keyof typeof layers) => {
-    setLayers((prev) => ({ ...prev, [key]: !prev[key] }))
-  }
+  if (activeView !== 'workbench') return null
 
   return (
     <aside
@@ -122,18 +122,18 @@ export default function Sidebar() {
           </div>
           <div className="flex flex-col gap-1.5">
             {([
-              { key: 'valve' as const, label: '阀门层', icon: <Layers size={14} /> },
-              { key: 'route' as const, label: '路线层', icon: <Layers size={14} /> },
-              { key: 'forbidden' as const, label: '禁区层', icon: <Layers size={14} /> },
-              { key: 'annotation' as const, label: '标注层', icon: <Layers size={14} /> },
+              { key: 'valve' as const, label: '阀门层', icon: <Layers size={14} />, show: showValveLayer, toggle: toggleValveLayer },
+              { key: 'route' as const, label: '路线层', icon: <Layers size={14} />, show: showRouteLayer, toggle: toggleRouteLayer },
+              { key: 'forbidden' as const, label: '禁区层', icon: <Layers size={14} />, show: showForbiddenLayer, toggle: toggleForbiddenLayer },
+              { key: 'annotation' as const, label: '标注层', icon: <Layers size={14} />, show: showAnnotationLayer, toggle: toggleAnnotationLayer },
             ]).map((item) => (
               <label
                 key={item.key}
                 className="flex cursor-pointer items-center gap-2 text-xs"
-                style={{ color: layers[item.key] ? '#CBD5E1' : '#475569', fontFamily: 'Noto Sans SC, sans-serif' }}
+                style={{ color: item.show ? '#CBD5E1' : '#475569', fontFamily: 'Noto Sans SC, sans-serif' }}
               >
-                {layers[item.key] ? <CheckSquare size={14} style={{ color: '#059669' }} /> : <Square size={14} style={{ color: '#475569' }} />}
-                <input type="checkbox" checked={layers[item.key]} onChange={() => toggleLayer(item.key)} className="sr-only" />
+                {item.show ? <CheckSquare size={14} style={{ color: '#059669' }} /> : <Square size={14} style={{ color: '#475569' }} />}
+                <input type="checkbox" checked={item.show} onChange={item.toggle} className="sr-only" />
                 {item.label}
               </label>
             ))}
