@@ -1,10 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Wind, RefreshCw, Download } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Play, Pause, SkipBack, SkipForward, Wind, RefreshCw, Download, Upload } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { TIME_PERIODS, TimePeriod } from '../../types';
 import { cn } from '../../utils/cn';
+import { ImportModal } from './ImportModal';
 
 export function TopBar() {
+  const [importModalOpen, setImportModalOpen] = useState(false);
   const timePeriod = useAppStore((state) => state.timePeriod);
   const setTimePeriod = useAppStore((state) => state.setTimePeriod);
   const isPlaying = useAppStore((state) => state.isPlaying);
@@ -53,7 +55,8 @@ export function TopBar() {
   const warningCount = anomalies.filter((a) => !a.resolved && a.severity === 'warning').length;
 
   return (
-    <div className="h-14 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50 flex items-center px-4 gap-6">
+    <>
+      <div className="h-14 bg-slate-900/95 backdrop-blur-sm border-b border-slate-700/50 flex items-center px-4 gap-6">
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
           <Wind className="w-5 h-5 text-white" />
@@ -152,7 +155,18 @@ export function TopBar() {
           <Download className="w-3.5 h-3.5" />
           导出报告
         </button>
+
+        <button
+          onClick={() => setImportModalOpen(true)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-white transition-colors text-xs"
+        >
+          <Upload className="w-3.5 h-3.5" />
+          导入数据
+        </button>
       </div>
     </div>
+
+    <ImportModal isOpen={importModalOpen} onClose={() => setImportModalOpen(false)} />
+    </>
   );
 }

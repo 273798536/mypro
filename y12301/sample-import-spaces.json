@@ -1,0 +1,11 @@
+[
+  {
+    "id": "space-004",
+    "name": "运动公园",
+    "position": { "x": -40, "y": 0, "z": -40 },
+    "dimensions": { "width": 25, "depth": 20 },
+    "area": 500,
+    "type": "park",
+    "visible": true
+  }
+]

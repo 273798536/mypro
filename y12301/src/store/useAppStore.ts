@@ -71,6 +71,12 @@ interface AppState {
   addBuildingRemark: (buildingId: string, remark: string) => void;
   saveRemarksToStorage: () => void;
   exportReport: () => void;
+
+  importBuildings: (newBuildings: BuildingBlock[], mode: 'replace' | 'merge') => void;
+  importWindData: (period: TimePeriod, newWindData: WindDirection[]) => void;
+  importOpenSpaces: (newSpaces: OpenSpace[], mode: 'replace' | 'merge') => void;
+
+  resetToDefaults: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -145,7 +151,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   runAnomalyDetection: () => {
-    const { buildings, windData, timePeriod } = get();
+    const { buildings, windData, timePeriod, anomalies: currentAnomalies } = get();
+
+    const resolvedIds = new Set(
+      currentAnomalies.filter((a) => a.resolved).map((a) => a.id)
+    );
 
     const overlapAnomalies = detectOverlaps(buildings);
     const setbackAnomalies = detectSetbackErrors(buildings);
@@ -155,19 +165,28 @@ export const useAppStore = create<AppState>((set, get) => ({
       ...overlapAnomalies,
       ...setbackAnomalies,
       ...windGapAnomalies,
-    ];
+    ].map((a) => ({
+      ...a,
+      resolved: resolvedIds.has(a.id),
+    }));
 
     set({ anomalies: allAnomalies });
 
     const anomalyBuildingIds = new Set<string>();
     allAnomalies.forEach((a) => {
-      a.relatedEntities.forEach((id) => anomalyBuildingIds.add(id));
+      if (!a.resolved) {
+        a.relatedEntities.forEach((id) => anomalyBuildingIds.add(id));
+      }
     });
 
     set((state) => ({
       buildings: state.buildings.map((b) => ({
         ...b,
-        status: anomalyBuildingIds.has(b.id) ? 'anomaly' : b.status === 'pending' ? 'pending' : 'normal',
+        status: anomalyBuildingIds.has(b.id)
+          ? 'anomaly'
+          : b.status === 'pending'
+          ? 'pending'
+          : 'normal',
       })),
     }));
   },
@@ -262,5 +281,82 @@ export const useAppStore = create<AppState>((set, get) => ({
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  },
+
+  importBuildings: (newBuildings, mode) => {
+    const { buildings: existingBuildings, saveRemarksToStorage } = get();
+
+    if (mode === 'replace') {
+      const buildingsWithRemarks = applyPersistedRemarks(newBuildings);
+      set({ buildings: buildingsWithRemarks });
+    } else {
+      const existingMap = new Map(existingBuildings.map((b) => [b.id, b]));
+      const merged: BuildingBlock[] = [...existingBuildings];
+
+      newBuildings.forEach((nb) => {
+        const existing = existingMap.get(nb.id);
+        if (existing) {
+          const idx = merged.findIndex((b) => b.id === nb.id);
+          merged[idx] = {
+            ...nb,
+            remarks: existing.remarks || nb.remarks || '',
+            status: existing.status,
+          };
+        } else {
+          merged.push(applyPersistedRemarks([nb])[0]);
+        }
+      });
+
+      set({ buildings: merged });
+    }
+
+    saveRemarksToStorage();
+    get().runAnomalyDetection();
+  },
+
+  importWindData: (period, newWindData) => {
+    set((state) => ({
+      windData: {
+        ...state.windData,
+        [period]: newWindData,
+      },
+    }));
+    get().runAnomalyDetection();
+  },
+
+  importOpenSpaces: (newSpaces, mode) => {
+    const { openSpaces: existingSpaces } = get();
+
+    if (mode === 'replace') {
+      set({ openSpaces: newSpaces });
+    } else {
+      const existingMap = new Map(existingSpaces.map((s) => [s.id, s]));
+      const merged: OpenSpace[] = [...existingSpaces];
+
+      newSpaces.forEach((ns) => {
+        if (existingMap.has(ns.id)) {
+          const idx = merged.findIndex((s) => s.id === ns.id);
+          merged[idx] = { ...merged[idx], ...ns };
+        } else {
+          merged.push(ns);
+        }
+      });
+
+      set({ openSpaces: merged });
+    }
+  },
+
+  resetToDefaults: () => {
+    localStorage.removeItem(REMARKS_STORAGE_KEY);
+    set({
+      buildings: mockBuildings,
+      windData: mockWindData,
+      openSpaces: mockOpenSpaces,
+      anomalies: [],
+      selectedEntity: null,
+      focusedAnomaly: null,
+      timePeriod: 'morning',
+    });
+    get().runAnomalyDetection();
   },
 }));

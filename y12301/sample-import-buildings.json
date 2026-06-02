@@ -1,0 +1,26 @@
+[
+  {
+    "id": "bld-008",
+    "name": "H座实验楼",
+    "position": { "x": 60, "y": 0, "z": -30 },
+    "dimensions": { "width": 18, "depth": 18, "height": 35 },
+    "color": "#10B981",
+    "opacity": 0.85,
+    "setbackDistance": 15,
+    "requiredSetback": 10,
+    "remarks": "",
+    "status": "normal"
+  },
+  {
+    "id": "bld-009",
+    "name": "I座数据中心",
+    "position": { "x": 60, "y": 0, "z": 20 },
+    "dimensions": { "width": 20, "depth": 12, "height": 25 },
+    "color": "#6366F1",
+    "opacity": 0.85,
+    "setbackDistance": 8,
+    "requiredSetback": 10,
+    "remarks": "",
+    "status": "pending"
+  }
+]
