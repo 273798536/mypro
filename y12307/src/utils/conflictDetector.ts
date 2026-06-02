@@ -64,6 +64,52 @@ export function detectCalibrationConflicts(
   return conflicts
 }
 
+export function detectReportRankingConflicts(
+  reports: LocalizationReport[]
+): CalibrationConflict[] {
+  const conflicts: CalibrationConflict[] = []
+  let cId = 0
+
+  const componentProbMap = new Map<string, { reportId: string; source: string; probability: number }[]>()
+
+  for (const report of reports) {
+    for (const ranking of report.componentRanking) {
+      const existing = componentProbMap.get(ranking.component) ?? []
+      existing.push({
+        reportId: report.id,
+        source: report.source,
+        probability: ranking.probability,
+      })
+      componentProbMap.set(ranking.component, existing)
+    }
+  }
+
+  for (const [component, entries] of componentProbMap) {
+    if (entries.length < 2) continue
+
+    for (let i = 0; i < entries.length; i++) {
+      for (let j = i + 1; j < entries.length; j++) {
+        const a = entries[i]
+        const b = entries[j]
+        const diff = Math.abs(a.probability - b.probability)
+        if (diff > 0.2) {
+          conflicts.push({
+            id: `cc-${cId++}`,
+            field: `${component} 概率排序`,
+            existingCalibration: `${a.source}: ${(a.probability * 100).toFixed(1)}%`,
+            incomingCalibration: `${b.source}: ${(b.probability * 100).toFixed(1)}%`,
+            autoModified: false,
+            sourceType: 'report',
+            sourceId: b.reportId,
+          })
+        }
+      }
+    }
+  }
+
+  return conflicts
+}
+
 export function detectAllConflicts(
   alarms: AlarmRecord[],
   newAlarm?: AlarmRecord,
@@ -80,6 +126,7 @@ export function detectAllConflicts(
     for (const report of reports) {
       calibrationConflicts.push(...detectCalibrationConflicts(alarms, report))
     }
+    calibrationConflicts.push(...detectReportRankingConflicts(reports))
   }
 
   return { unitConflicts, calibrationConflicts }

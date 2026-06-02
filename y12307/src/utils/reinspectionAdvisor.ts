@@ -1,9 +1,10 @@
-import type { ReinspectionSuggestion, ComponentProbability, BoundaryWarning, EvidenceItem } from '@/types'
+import type { ReinspectionSuggestion, ComponentProbability, BoundaryWarning, EvidenceItem, LocalizationReport } from '@/types'
 
 export function generateReinspectionSuggestions(
   probabilities: ComponentProbability[],
   warnings: BoundaryWarning[],
-  evidenceChain: EvidenceItem[]
+  evidenceChain: EvidenceItem[],
+  reports: LocalizationReport[]
 ): ReinspectionSuggestion[] {
   const suggestions: ReinspectionSuggestion[] = []
   let sId = 0
@@ -19,6 +20,10 @@ export function generateReinspectionSuggestions(
     const sampleWarning = relatedWarnings.find(w => w.type === 'sample_too_small')
     const priorWarning = relatedWarnings.find(w => w.type === 'prior_too_strong')
 
+    const reportSources = reports
+      .filter(r => r.componentRanking.some(cr => cr.component === prob.component))
+      .map(r => r.source)
+
     let reason = ''
     if (sampleWarning && priorWarning) {
       reason = `${prob.material}/${prob.object}的"${prob.component}"概率 ${(prob.probability * 100).toFixed(1)}% 但样本不足且先验过强，结论不可靠，建议重新采样并审查先验设定`
@@ -26,6 +31,10 @@ export function generateReinspectionSuggestions(
       reason = `${prob.material}/${prob.object}的"${prob.component}"概率 ${(prob.probability * 100).toFixed(1)}% 但样本不足，建议补充观测后再判断`
     } else if (priorWarning) {
       reason = `${prob.material}/${prob.object}的"${prob.component}"概率 ${(prob.probability * 100).toFixed(1)}% 但先验主导，建议审查先验来源或增加独立证据`
+    }
+
+    if (reportSources.length > 0 && priorWarning) {
+      reason += `（报告来源: ${reportSources.join('、')}）`
     }
 
     const relatedIds = evidenceChain
@@ -69,6 +78,28 @@ export function generateReinspectionSuggestions(
         priority: 'high',
         relatedEvidenceIds: evidenceChain.slice(0, 3).map(e => e.sourceId),
       })
+    }
+  }
+
+  for (const report of reports) {
+    if (report.priorStrength > 0.8) {
+      const hasRelatedSuggestion = suggestions.some(s =>
+        report.componentRanking.some(cr => cr.component === s.component)
+      )
+      if (!hasRelatedSuggestion) {
+        const topRanking = report.componentRanking[0]
+        if (topRanking) {
+          suggestions.push({
+            id: `rs-${sId++}`,
+            component: topRanking.component,
+            material: topRanking.material,
+            object: topRanking.object,
+            reason: `${topRanking.material}/${topRanking.object}的"${topRanking.component}"受报告"${report.source}"强先验驱动（先验 ${(report.priorStrength * 100).toFixed(0)}%），独立观测不足，建议对报告结论做独立验证`,
+            priority: 'medium',
+            relatedEvidenceIds: [report.id],
+          })
+        }
+      }
     }
   }
 

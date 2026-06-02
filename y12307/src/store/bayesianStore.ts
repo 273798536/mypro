@@ -62,8 +62,8 @@ function recalculate(state: Partial<BayesianState>): {
 
   const { probabilities: rawProbs, evidenceChain } = bayesianUpdate(priors, alarms, maintenances, reports)
   const probabilities = computeRankChanges(prevProbs, rawProbs)
-  const boundaryWarnings = detectBoundaryWarnings(alarms, maintenances, probabilities)
-  const reinspectionSuggestions = generateReinspectionSuggestions(probabilities, boundaryWarnings, evidenceChain)
+  const boundaryWarnings = detectBoundaryWarnings(alarms, maintenances, probabilities, reports)
+  const reinspectionSuggestions = generateReinspectionSuggestions(probabilities, boundaryWarnings, evidenceChain, reports)
   const traceLinks = buildTraceLinks(alarms, maintenances, probabilities, reports)
 
   return { probabilities, evidenceChain, boundaryWarnings, reinspectionSuggestions, traceLinks }
@@ -195,7 +195,21 @@ export const useBayesianStore = create<BayesianState>((set, get) => ({
   removeReport: (id) => {
     set((state) => {
       const updatedReports = state.reports.filter(r => r.id !== id)
-      const updated = { ...state, reports: updatedReports }
+      const rebuiltPriors: ComponentPrior[] = []
+      for (const report of updatedReports) {
+        for (const ranking of report.componentRanking) {
+          const existing = rebuiltPriors.find(p => p.component === ranking.component)
+          if (!existing) {
+            rebuiltPriors.push({
+              component: ranking.component,
+              prior: ranking.probability * report.priorStrength,
+              material: ranking.material,
+              object: ranking.object,
+            })
+          }
+        }
+      }
+      const updated = { ...state, reports: updatedReports, priors: rebuiltPriors }
       const recalced = recalculate(updated)
       return { ...updated, ...recalced }
     })
