@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "queue-scheduler"
+version = "1.0.0"
+description = "排队论客服排班CLI - 基于M/M/c模型的客服排班优化工具"
+requires-python = ">=3.9"
+authors = [{ name = "Queue Scheduler Team" }]
+dependencies = [
+    "click>=8.1.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "rich>=13.0.0",
+    "jinja2>=3.1.0",
+    "openpyxl>=3.1.0",
+    "scipy>=1.10.0",
+]
+
+[project.scripts]
+qs = "queue_scheduler.__main__:main"
+queue-scheduler = "queue_scheduler.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["queue_scheduler*"]

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客服排班分析报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+               background: #f5f7fa; color: #2c3e50; line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #3498db, #2980b9); color: white;
+                  padding: 30px; border-radius: 10px; margin-bottom: 20px; }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header .sub { opacity: 0.9; font-size: 14px; }
+        .card { background: white; border-radius: 10px; padding: 20px; margin-bottom: 20px;
+                 box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .card h2 { color: #3498db; margin-bottom: 15px; font-size: 20px;
+                   border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                         gap: 15px; }
+        .metric { background: #f8f9fa; padding: 15px; border-radius: 8px;
+                  border-left: 4px solid #3498db; }
+        .metric .label { font-size: 12px; color: #7f8c8d; margin-bottom: 5px; }
+        .metric .value { font-size: 24px; font-weight: bold; color: #2c3e50; }
+        .metric.success { border-left-color: #2ecc71; }
+        .metric.warning { border-left-color: #f39c12; }
+        .metric.danger { border-left-color: #e74c3c; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+        th { background: #f8f9fa; font-weight: 600; color: #34495e; }
+        tr:hover { background: #f8f9fa; }
+        .sl-good { color: #2ecc71; font-weight: bold; }
+        .sl-bad { color: #e74c3c; font-weight: bold; }
+        .recommendations { list-style: none; }
+        .recommendations li { padding: 10px; margin-bottom: 8px; background: #fff9e6;
+                              border-radius: 6px; border-left: 4px solid #f39c12; }
+        .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+                   gap: 20px; }
+        .chart img { width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .chart h3 { margin: 10px 0; font-size: 16px; color: #34495e; }
+        .config-note { background: #e8f5e9; padding: 15px; border-radius: 8px;
+                       border-left: 4px solid #2ecc71; white-space: pre-line; font-size: 14px; }
+        .tag { display: inline-block; padding: 3px 10px; border-radius: 12px;
+               font-size: 12px; margin-right: 5px; }
+        .tag.green { background: #d5f4e6; color: #2ecc71; }
+        .tag.orange { background: #feefd6; color: #f39c12; }
+        .tag.red { background: #fde2e2; color: #e74c3c; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 客服排班分析报告</h1>
+            <div class="sub">
+                统计时段：2026-06-01 09:00 - 19:00 | 生成时间：2026-06-02 12:18:39
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 核心指标</h2>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="label">总来电量</div>
+                    <div class="value">91</div>
+                </div>
+                <div class="metric">
+                    <div class="label">总接听量</div>
+                    <div class="value">91</div>
+                </div>
+                <div class="metric">
+                    <div class="label">放弃率</div>
+                    <div class="value">0.0%</div>
+                </div>
+                <div class="metric">
+                    <div class="label">平均等待时间</div>
+                    <div class="value">0.6秒</div>
+                </div>
+                <div class="metric">
+                    <div class="label">最大等待时间</div>
+                    <div class="value">180.0秒</div>
+                </div>
+                <div class="metric success">
+                    <div class="label">平均服务水平</div>
+                    <div class="value">99.3%</div>
+                </div>
+                <div class="metric">
+                    <div class="label">达标时段数</div>
+                    <div class="value">18/18</div>
+                </div>
+                <div class="metric">
+                    <div class="label">平均坐席利用率</div>
+                    <div class="value">14.8%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⏱️ 等待时间分布</h2>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="label">P50 (中位数)</div>
+                    <div class="value">0.0秒</div>
+                </div>
+                <div class="metric">
+                    <div class="label">P80 (80%客户)</div>
+                    <div class="value">0.0秒</div>
+                </div>
+                <div class="metric">
+                    <div class="label">P95 (95%客户)</div>
+                    <div class="value">0.0秒</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💡 优化建议</h2>
+            <ul class="recommendations">
+                <li>📊 有 18 个时段坐席利用率低于30%，可考虑安排培训或其他行政工作提高效率</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>📈 可视化图表</h2>
+            <div class="charts">
+
+                <div class="chart">
+                    <h3>等待时间分布</h3>
+                    <img src="wait_time_distribution.png" alt="等待时间分布">
+                </div>
+
+                <div class="chart">
+                    <h3>服务水平时间线</h3>
+                    <img src="service_level_timeline.png" alt="服务水平时间线">
+                </div>
+
+                <div class="chart">
+                    <h3>每日排班汇总</h3>
+                    <img src="daily_summary.png" alt="每日排班汇总">
+                </div>
+
+                <div class="chart">
+                    <h3>来电规律热力图</h3>
+                    <img src="call_pattern_heatmap.png" alt="来电规律热力图">
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📋 时段明细</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>时段</th>
+                            <th>坐席数</th>
+                            <th>来电数</th>
+                            <th>接听数</th>
+                            <th>放弃数</th>
+                            <th>平均等待</th>
+                            <th>最大等待</th>
+                            <th>服务水平</th>
+                            <th>坐席利用率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        <tr>
+                            <td>2026-06-01 09:00</td>
+                            <td><span class="tag orange">3人</span></td>
+                            <td>6</td>
+                            <td>6</td>
+                            <td>0</td>
+                            <td>0.2s</td>
+                            <td>46.6s</td>
+                            <td class="sl-good">99.7%</td>
+                            <td class="sl-good">21.2%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 09:30</td>
+                            <td><span class="tag orange">3人</span></td>
+                            <td>6</td>
+                            <td>6</td>
+                            <td>0</td>
+                            <td>1.6s</td>
+                            <td>180.0s</td>
+                            <td class="sl-good">98.8%</td>
+                            <td class="sl-good">21.2%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 10:00</td>
+                            <td><span class="tag orange">4人</span></td>
+                            <td>6</td>
+                            <td>6</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">16.2%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 10:30</td>
+                            <td><span class="tag orange">4人</span></td>
+                            <td>6</td>
+                            <td>6</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">16.2%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 11:00</td>
+                            <td><span class="tag orange">4人</span></td>
+                            <td>5</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">11.5%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 11:30</td>
+                            <td><span class="tag orange">4人</span></td>
+                            <td>4</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">11.5%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 13:00</td>
+                            <td><span class="tag orange">3人</span></td>
+                            <td>6</td>
+                            <td>6</td>
+                            <td>0</td>
+                            <td>1.0s</td>
+                            <td>79.4s</td>
+                            <td class="sl-good">98.2%</td>
+                            <td class="sl-good">18.3%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 13:30</td>
+                            <td><span class="tag orange">4人</span></td>
+                            <td>5</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">13.7%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 14:00</td>
+                            <td><span class="tag orange">4人</span></td>
+                            <td>6</td>
+                            <td>6</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">13.8%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 14:30</td>
+                            <td><span class="tag orange">4人</span></td>
+                            <td>5</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>0.4s</td>
+                            <td>77.2s</td>
+                            <td class="sl-good">99.2%</td>
+                            <td class="sl-good">13.8%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 15:00</td>
+                            <td><span class="tag orange">5人</span></td>
+                            <td>5</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">9.5%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 15:30</td>
+                            <td><span class="tag orange">5人</span></td>
+                            <td>5</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">9.5%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 16:00</td>
+                            <td><span class="tag orange">5人</span></td>
+                            <td>4</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">7.7%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 16:30</td>
+                            <td><span class="tag orange">5人</span></td>
+                            <td>4</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>0.0s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">7.7%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 17:00</td>
+                            <td><span class="tag orange">3人</span></td>
+                            <td>5</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>0.0s</td>
+                            <td>2.7s</td>
+                            <td class="sl-good">100.0%</td>
+                            <td class="sl-good">15.3%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 17:30</td>
+                            <td><span class="tag orange">3人</span></td>
+                            <td>4</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>0.2s</td>
+                            <td>22.8s</td>
+                            <td class="sl-good">99.5%</td>
+                            <td class="sl-good">15.3%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 18:00</td>
+                            <td><span class="tag orange">2人</span></td>
+                            <td>4</td>
+                            <td>4</td>
+                            <td>0</td>
+                            <td>1.6s</td>
+                            <td>132.7s</td>
+                            <td class="sl-good">98.2%</td>
+                            <td class="sl-good">21.6%</td>
+                        </tr>
+
+                        <tr>
+                            <td>2026-06-01 18:30</td>
+                            <td><span class="tag orange">2人</span></td>
+                            <td>5</td>
+                            <td>5</td>
+                            <td>0</td>
+                            <td>5.4s</td>
+                            <td>180.0s</td>
+                            <td class="sl-good">94.4%</td>
+                            <td class="sl-good">21.6%</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📝 坐席配置口径说明</h2>
+            <div class="config-note">📋 坐席配置口径说明：
+• 服务水平目标：80% 的电话在 20秒内接听
+• 坐席数量范围：2 - 5 人，平均 3.7 人
+• 总计坐席工时：33.5 人·小时
+• 模拟假设：通话时长服从指数分布，到达服从泊松分布，客户等待超过3分钟可能放弃
+• 数据来源：基于历史来电规律和节假日调整系数计算</div>
+        </div>
+
+        <div class="card">
+            <h2>⚙️ 配置参数</h2>
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="label">目标服务水平</div>
+                    <div class="value">80%</div>
+                </div>
+                <div class="metric">
+                    <div class="label">目标等待时间</div>
+                    <div class="value">20秒</div>
+                </div>
+                <div class="metric">
+                    <div class="label">最大放弃率</div>
+                    <div class="value">5.0%</div>
+                </div>
+                <div class="metric">
+                    <div class="label">模拟迭代次数</div>
+                    <div class="value">500</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
