@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { 
   Download, 
   FileText, 
@@ -10,14 +10,23 @@ import {
   Radiation,
   Calendar,
   User,
-  Eye
+  Eye,
+  XCircle,
+  CheckCircle
 } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { formatDate } from '../utils/colorUtils';
 import { cn } from '../lib/utils';
+import { 
+  exportToPDF, 
+  exportToHTML, 
+  exportToJSON, 
+  generateSummary,
+  type ExportOptions 
+} from '../utils/exportUtils';
 
 export function Export() {
-  const { organs, doses, issues, screenshots, notes } = useAppStore();
+  const { organs, doses, issues, screenshots, notes, addLog } = useAppStore();
   const [exportFormat, setExportFormat] = useState<'pdf' | 'html' | 'json'>('pdf');
   const [includeOrgans, setIncludeOrgans] = useState(true);
   const [includeDoses, setIncludeDoses] = useState(true);
@@ -26,66 +35,147 @@ export function Export() {
   const [includeNotes, setIncludeNotes] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [exportProgress, setExportProgress] = useState(0);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportSuccess, setExportSuccess] = useState(false);
 
   const unresolvedIssues = issues.filter((i) => !i.resolved).length;
   const selectedOrgans = organs.filter((o) => o.visible);
   const selectedDoses = doses.filter((d) => d.visible);
 
-  const handleExport = () => {
+  const handleExport = useCallback(async () => {
+    if (isExporting) return;
+
     setIsExporting(true);
     setExportProgress(0);
+    setExportError(null);
+    setExportSuccess(false);
 
-    const interval = setInterval(() => {
-      setExportProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            setIsExporting(false);
-            setExportProgress(0);
-          }, 1000);
-          return 100;
-        }
-        return prev + Math.random() * 15;
-      });
-    }, 200);
-  };
+    const options: ExportOptions = {
+      includeOrgans,
+      includeDoses,
+      includeIssues,
+      includeScreenshots,
+      includeNotes,
+    };
 
-  const generateSummary = () => {
-    const summary = [];
-    summary.push('=== 医学剂量云图报告摘要 ===');
-    summary.push(`生成时间: ${new Date().toLocaleString('zh-CN')}`);
-    summary.push('');
-    summary.push('【器官模型】');
-    organs.forEach((o) => {
-      summary.push(`  - ${o.name} (${o.version}) - ${o.importedBy}`);
-      summary.push(`    位置: (${o.position.map(p => p.toFixed(1)).join(', ')})`);
-    });
-    summary.push('');
-    summary.push('【剂量网格】');
-    doses.forEach((d) => {
-      const organ = organs.find(o => o.id === d.organId);
-      summary.push(`  - ${d.name} (${d.version}) - 关联: ${organ?.name || '未知'}`);
-      summary.push(`    范围: ${d.minDose.toFixed(1)}Gy - ${d.maxDose.toFixed(1)}Gy`);
-      summary.push(`    平均: ${d.meanDose.toFixed(1)}Gy, 阈值: ${d.threshold}Gy`);
-    });
-    summary.push('');
-    summary.push('【检测问题】');
-    summary.push(`  未解决问题: ${unresolvedIssues} 个`);
-    issues.filter(i => !i.resolved).forEach((issue) => {
-      const typeMap: Record<string, string> = {
-        misalignment: '器官错位',
-        overdose: '剂量超限',
-        version_conflict: '版本混用'
+    const exportOrgans = includeOrgans ? organs : [];
+    const exportDoses = includeDoses ? doses : [];
+    const exportIssues = includeIssues ? issues : [];
+    const exportScreenshots = includeScreenshots ? screenshots : [];
+    const exportNotes = includeNotes ? notes : [];
+
+    const organIds = exportOrgans.map(o => o.id);
+    const doseIds = exportDoses.map(d => d.id);
+
+    try {
+      console.log('=== 导出报告开始 ===');
+      console.log(`格式: ${exportFormat.toUpperCase()}`);
+      console.log(`器官模型: ${exportOrgans.length}个`);
+      console.log(`剂量网格: ${exportDoses.length}个`);
+      console.log(`检测问题: ${exportIssues.length}个 (未解决: ${unresolvedIssues}个)`);
+      console.log(`截图: ${exportScreenshots.length}张`);
+      console.log(`备注: ${exportNotes.length}条`);
+
+      const summary = generateSummary(exportOrgans, exportDoses, exportIssues, exportScreenshots, exportNotes);
+      console.log('\n报告摘要:');
+      console.log(summary);
+      console.log('\n====================');
+
+      const progressCallback = (progress: number) => {
+        setExportProgress(progress);
       };
-      summary.push(`  - [${typeMap[issue.type] || issue.type}] ${issue.description}`);
-    });
-    summary.push('');
-    summary.push('【截图记录】');
-    screenshots.forEach((s) => {
-      summary.push(`  - ${s.name} (${formatDate(s.createTime)})`);
-    });
 
-    return summary.join('\n');
+      progressCallback(5);
+
+      switch (exportFormat) {
+        case 'pdf':
+          await exportToPDF(
+            exportOrgans,
+            exportDoses,
+            exportIssues,
+            exportScreenshots,
+            exportNotes,
+            options,
+            progressCallback
+          );
+          break;
+        case 'html':
+          progressCallback(30);
+          exportToHTML(
+            exportOrgans,
+            exportDoses,
+            exportIssues,
+            exportScreenshots,
+            exportNotes,
+            options
+          );
+          progressCallback(100);
+          break;
+        case 'json':
+          progressCallback(30);
+          exportToJSON(
+            exportOrgans,
+            exportDoses,
+            exportIssues,
+            exportScreenshots,
+            exportNotes,
+            options
+          );
+          progressCallback(100);
+          break;
+      }
+
+      setExportSuccess(true);
+      setExportError(null);
+
+      addLog({
+        type: 'export',
+        description: `导出${exportFormat.toUpperCase()}报告成功 (${exportOrgans.length}个器官, ${exportDoses.length}个剂量, ${exportIssues.length}个问题)`,
+        organIds,
+        doseIds,
+        userId: 'current-user',
+        userName: '当前用户',
+        timestamp: new Date(),
+      });
+
+      console.log('✓ 导出报告完成');
+
+      setTimeout(() => {
+        setIsExporting(false);
+        setExportProgress(0);
+        setExportSuccess(false);
+      }, 2000);
+
+    } catch (error) {
+      console.error('✗ 导出报告失败:', error);
+      
+      let errorMessage = '导出失败，请重试';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      setExportError(errorMessage);
+      setIsExporting(false);
+      setExportProgress(0);
+
+      addLog({
+        type: 'export',
+        description: `导出${exportFormat.toUpperCase()}报告失败: ${errorMessage}`,
+        organIds,
+        doseIds,
+        userId: 'current-user',
+        userName: '当前用户',
+        timestamp: new Date(),
+      });
+
+      setTimeout(() => {
+        setExportError(null);
+      }, 5000);
+    }
+  }, [exportFormat, includeOrgans, includeDoses, includeIssues, includeScreenshots, includeNotes, organs, doses, issues, screenshots, notes, isExporting, unresolvedIssues, addLog]);
+
+  const generateSummaryText = () => {
+    return generateSummary(organs, doses, issues, screenshots, notes);
   };
 
   return (
@@ -229,7 +319,7 @@ export function Export() {
           <div className="bg-slate-800/30 rounded-xl border border-slate-700 p-6">
             <h3 className="font-semibold text-white mb-4">报告摘要</h3>
             <pre className="p-4 bg-slate-900 rounded-lg text-xs text-slate-400 overflow-auto max-h-48 font-mono">
-              {generateSummary()}
+              {generateSummaryText()}
             </pre>
           </div>
         </div>
@@ -308,10 +398,30 @@ export function Export() {
           )}
 
           <div className="space-y-3">
+            {exportSuccess && (
+              <div className="p-4 bg-teal-500/20 border border-teal-500/30 rounded-xl flex items-center gap-3">
+                <CheckCircle size={20} className="text-teal-400 flex-shrink-0" />
+                <div>
+                  <div className="text-teal-400 font-medium text-sm">导出成功</div>
+                  <div className="text-teal-400/70 text-xs">报告已下载，请检查浏览器下载目录</div>
+                </div>
+              </div>
+            )}
+
+            {exportError && (
+              <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-xl flex items-center gap-3">
+                <XCircle size={20} className="text-red-400 flex-shrink-0" />
+                <div>
+                  <div className="text-red-400 font-medium text-sm">导出失败</div>
+                  <div className="text-red-400/70 text-xs">{exportError}</div>
+                </div>
+              </div>
+            )}
+
             {isExporting && (
               <div className="p-4 bg-slate-800/50 rounded-xl">
                 <div className="flex items-center justify-between text-sm text-slate-400 mb-2">
-                  <span>正在生成报告...</span>
+                  <span>正在生成{exportFormat.toUpperCase()}报告...</span>
                   <span>{Math.round(exportProgress)}%</span>
                 </div>
                 <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -319,6 +429,11 @@ export function Export() {
                     className="h-full bg-teal-500 transition-all duration-300"
                     style={{ width: `${exportProgress}%` }}
                   />
+                </div>
+                <div className="text-xs text-slate-500 mt-2">
+                  {exportProgress < 30 ? '正在准备数据...' : 
+                   exportProgress < 60 ? '正在渲染内容...' : 
+                   exportProgress < 95 ? '正在生成文件...' : '正在下载...'}
                 </div>
               </div>
             )}
@@ -330,12 +445,34 @@ export function Export() {
                 'w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium text-white transition-all',
                 isExporting
                   ? 'bg-slate-700 cursor-not-allowed'
-                  : 'bg-teal-500 hover:bg-teal-600'
+                  : 'bg-teal-500 hover:bg-teal-600 active:scale-98'
               )}
             >
-              <Download size={20} />
-              {isExporting ? '导出中...' : `导出${exportFormat.toUpperCase()}报告`}
+              {exportSuccess ? (
+                <>
+                  <CheckCircle size={20} />
+                  导出成功
+                </>
+              ) : isExporting ? (
+                <>
+                  <Download size={20} className="animate-pulse" />
+                  导出中... {Math.round(exportProgress)}%
+                </>
+              ) : (
+                <>
+                  <Download size={20} />
+                  导出{exportFormat.toUpperCase()}报告
+                </>
+              )}
             </button>
+
+            <div className="text-xs text-slate-500 text-center pt-2">
+              报告包含：{includeOrgans ? `${organs.length}个器官 · ` : ''}
+              {includeDoses ? `${doses.length}个剂量 · ` : ''}
+              {includeIssues ? `${issues.length}个问题 · ` : ''}
+              {includeScreenshots ? `${screenshots.length}张截图 · ` : ''}
+              {includeNotes ? `${notes.length}条备注` : ''}
+            </div>
           </div>
         </div>
       </div>
