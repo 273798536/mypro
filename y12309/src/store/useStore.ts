@@ -26,6 +26,19 @@ import type { RescheduleResult } from '@/utils/scheduleEngine';
 export interface RescheduleResultWithMeta extends RescheduleResult {
   runAt: string;
   reason: string;
+  date: string;
+}
+
+function getDatesInRange(startDate: string, endDate: string): string[] {
+  const dates: string[] = [];
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const current = new Date(start);
+  while (current <= end) {
+    dates.push(current.toISOString().split('T')[0]);
+    current.setDate(current.getDate() + 1);
+  }
+  return dates;
 }
 
 interface AppState {
@@ -53,10 +66,10 @@ interface AppState {
 
   approveLeave: (leaveId: string) => void;
   addLeave: (record: Omit<LeaveRecord, 'id'>) => void;
-  toggleBuildingAccess: (buildingId: string) => void;
-  toggleRouteEdge: (edgeId: string) => void;
+  toggleBuildingAccess: (buildingId: string, date?: string) => void;
+  toggleRouteEdge: (edgeId: string, date?: string) => void;
   addManualWorkOrder: (order: Omit<WorkOrder, 'id'>) => void;
-  runReschedule: (reason: string) => RescheduleResultWithMeta;
+  runReschedule: (reason: string, date?: string) => RescheduleResultWithMeta;
   redetectAnomalies: () => void;
 }
 
@@ -139,9 +152,6 @@ export const useStore = create<AppState>((set, get) => ({
       leaveRecords: state.leaveRecords.map(l =>
         l.id === leaveId ? { ...l, status: 'approved' as const } : l
       ),
-      inspectors: state.inspectors.map(ins =>
-        ins.id === leave.inspectorId ? { ...ins, onDuty: false } : ins
-      ),
     }));
 
     const insName = inspectors.find(i => i.id === leave.inspectorId)?.name || leave.inspectorId;
@@ -153,10 +163,16 @@ export const useStore = create<AppState>((set, get) => ({
       newValue: 'approved',
       operator: '当前用户',
       timestamp: new Date().toISOString(),
-      reason: `批准${insName}请假`,
+      reason: `批准${insName}请假（${leave.startDate} 至 ${leave.endDate}）`,
     });
 
-    get().runReschedule(`${insName}请假获批，自动重排巡检`);
+    const datesToReschedule = getDatesInRange(leave.startDate, leave.endDate);
+    const store = get();
+    datesToReschedule.forEach((date, idx) => {
+      setTimeout(() => {
+        store.runReschedule(`${insName}请假获批，${date}巡检自动重排`, date);
+      }, idx * 50);
+    });
   },
 
   addLeave: (record) => {
@@ -166,8 +182,8 @@ export const useStore = create<AppState>((set, get) => ({
     }));
   },
 
-  toggleBuildingAccess: (buildingId) => {
-    const { buildings } = get();
+  toggleBuildingAccess: (buildingId, date?) => {
+    const { buildings, schedules } = get();
     const building = buildings.find(b => b.id === buildingId);
     if (!building) return;
 
@@ -191,15 +207,21 @@ export const useStore = create<AppState>((set, get) => ({
       reason: `${building.name}门禁${wasOpen ? '关闭' : '恢复'}`,
     });
 
-    if (wasOpen) {
-      get().runReschedule(`${building.name}门禁关闭，需移除巡检安排`);
+    const store = get();
+    if (date) {
+      store.runReschedule(`${building.name}门禁${wasOpen ? '关闭' : '恢复'}，需调整巡检安排`, date);
     } else {
-      get().runReschedule(`${building.name}门禁恢复，可纳入巡检`);
+      const uniqueDates = Array.from(new Set(schedules.map(s => s.date))).sort();
+      uniqueDates.forEach((d, idx) => {
+        setTimeout(() => {
+          store.runReschedule(`${building.name}门禁${wasOpen ? '关闭' : '恢复'}，${d}巡检安排调整`, d);
+        }, idx * 50);
+      });
     }
   },
 
-  toggleRouteEdge: (edgeId) => {
-    const { routeEdges, buildings } = get();
+  toggleRouteEdge: (edgeId, date?) => {
+    const { routeEdges, buildings, schedules } = get();
     const edge = routeEdges.find(e => e.id === edgeId);
     if (!edge) return;
 
@@ -223,7 +245,17 @@ export const useStore = create<AppState>((set, get) => ({
       reason: `${fromName}→${toName}路线${wasActive ? '停用' : '恢复'}`,
     });
 
-    get().runReschedule(`${fromName}→${toName}路线${wasActive ? '中断' : '恢复'}，重新计算巡检路线`);
+    const store = get();
+    if (date) {
+      store.runReschedule(`${fromName}→${toName}路线${wasActive ? '中断' : '恢复'}，重新计算巡检路线`, date);
+    } else {
+      const uniqueDates = Array.from(new Set(schedules.map(s => s.date))).sort();
+      uniqueDates.forEach((d, idx) => {
+        setTimeout(() => {
+          store.runReschedule(`${fromName}→${toName}路线${wasActive ? '中断' : '恢复'}，${d}巡检路线重算`, d);
+        }, idx * 50);
+      });
+    }
   },
 
   addManualWorkOrder: (order) => {
@@ -245,11 +277,14 @@ export const useStore = create<AppState>((set, get) => ({
       reason: `人工插单：${buildingName} - ${order.description}`,
     });
 
-    get().runReschedule(`人工插单【${buildingName}-${order.description}】，触发排程重算`);
+    const orderDate = order.scheduledTime.split(' ')[0].split('T')[0];
+    get().runReschedule(`人工插单【${buildingName}-${order.description}】，触发排程重算`, orderDate);
   },
 
-  runReschedule: (reason) => {
-    const { buildings, routeEdges, inspectors, schedules, leaveRecords, workOrders, selectedDate, anomalies, changeLogs } = get();
+  runReschedule: (reason, date?) => {
+    const state = get();
+    const { buildings, routeEdges, inspectors, schedules, leaveRecords, workOrders, selectedDate, anomalies, changeLogs } = state;
+    const targetDate = date || selectedDate;
 
     const result = reschedule({
       buildings,
@@ -258,7 +293,7 @@ export const useStore = create<AppState>((set, get) => ({
       schedules,
       leaveRecords,
       workOrders,
-      date: selectedDate,
+      date: targetDate,
       reason,
       operator: '当前用户',
     });
@@ -280,14 +315,21 @@ export const useStore = create<AppState>((set, get) => ({
       }),
     ];
 
+    const mergedSchedules = [
+      ...schedules.filter(s => s.date !== targetDate),
+      ...result.schedules.filter(s => s.date === targetDate),
+    ];
+
     const resultWithMeta: RescheduleResultWithMeta = {
       ...result,
+      schedules: mergedSchedules,
       runAt: new Date().toISOString(),
       reason,
+      date: targetDate,
     };
 
     set({
-      schedules: result.schedules,
+      schedules: mergedSchedules,
       anomalies: mergedAnomalies,
       changeLogs: [...changeLogs, ...result.changeLogs],
       lastRescheduleResult: resultWithMeta,
