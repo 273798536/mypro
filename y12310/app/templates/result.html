@@ -11,7 +11,15 @@
         </div>
         <div class="stat-card">
             <div class="number">{{ result.total_cost }}</div>
-            <div class="label">总运输成本</div>
+            <div class="label">总成本</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ result.transport_cost|default(0) }}</div>
+            <div class="label">运输成本</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ result.penalty_cost|default(0) }}</div>
+            <div class="label">时限惩罚</div>
         </div>
         <div class="stat-card">
             <div class="number">{{ result.solve_time|round(3) }}s</div>
@@ -20,6 +28,14 @@
         <div class="stat-card">
             <div class="number">{{ result.assignments|length }}</div>
             <div class="label">分拨条数</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ result.vehicle_assignments|length if result.vehicle_assignments else 0 }}</div>
+            <div class="label">车辆配送</div>
+        </div>
+        <div class="stat-card">
+            <div class="number">{{ result.conflicts|length }}</div>
+            <div class="label">冲突提示</div>
         </div>
     </div>
     
@@ -62,9 +78,48 @@
 </div>
 {% endif %}
 
+{% if result.vehicle_assignments %}
+<div class="card">
+    <h2>� 车辆分配 ({{ result.vehicle_assignments|length }} 条路线)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>车牌号</th>
+                <th>出库仓库</th>
+                <th>收货门店</th>
+                <th>装载量</th>
+                <th>最大容量</th>
+                <th>利用率</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for va in result.vehicle_assignments %}
+            <tr>
+                <td><strong>{{ va.plate_number }}</strong></td>
+                <td>{{ va.warehouse_name }}</td>
+                <td>{{ va.store_name }}</td>
+                <td>{{ va.load }}</td>
+                <td>{{ va.max_capacity }}</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="flex: 1; background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                            <div style="width: {{ va.utilization_rate }}%; 
+                                        background: {% if va.utilization_rate > 90 %}#f56565{% elif va.utilization_rate > 70 %}#ed8936{% else %}#48bb78{% endif %}; 
+                                        height: 100%;"></div>
+                        </div>
+                        <span>{{ va.utilization_rate }}%</span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
 {% if result.assignments %}
 <div class="card">
-    <h2>📋 分拨明细</h2>
+    <h2>�📋 分拨明细</h2>
     <table>
         <thead>
             <tr>
@@ -72,7 +127,10 @@
                 <th>收货门店</th>
                 <th>商品名称</th>
                 <th>分拨数量</th>
+                <th>距离(km)</th>
                 <th>运输成本</th>
+                <th>时限惩罚</th>
+                <th>总成本</th>
             </tr>
         </thead>
         <tbody>
@@ -82,7 +140,12 @@
                 <td>{{ assign.store_name }}</td>
                 <td>{{ assign.sku_name }}</td>
                 <td>{{ assign.quantity }}</td>
+                <td>{{ assign.distance_km|default('-') }}</td>
                 <td>{{ assign.transport_cost|round(2) }}</td>
+                <td style="color: {% if assign.penalty_cost and assign.penalty_cost > 0 %}#f56565{% else %}#718096{% endif %};">
+                    {{ assign.penalty_cost|default(0)|round(2) }}
+                </td>
+                <td><strong>{{ assign.total_cost|default(assign.transport_cost)|round(2) }}</strong></td>
             </tr>
             {% endfor %}
         </tbody>

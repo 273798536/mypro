@@ -32,24 +32,41 @@ class ReportGenerator:
             df_summary = pd.DataFrame([{
                 "方案名称": filename.replace(".xlsx", ""),
                 "优化状态": "成功" if result.success else "失败",
-                "总运输成本": result.total_cost,
+                "总成本": result.total_cost,
+                "运输成本": getattr(result, 'transport_cost', result.total_cost),
+                "时限惩罚成本": getattr(result, 'penalty_cost', 0),
                 "求解时间(秒)": round(result.solve_time, 3),
                 "分拨条数": len(result.assignments),
+                "车辆配送条数": len(getattr(result, 'vehicle_assignments', [])),
                 "冲突条数": len(result.conflicts),
                 "数据版本": data_manager.current_version or "未知"
             }])
             df_summary.to_excel(writer, sheet_name="方案概览", index=False)
             
+            if getattr(result, 'vehicle_assignments', []):
+                df_vehicles = pd.DataFrame(result.vehicle_assignments)
+                df_vehicles = df_vehicles[[
+                    "plate_number", "warehouse_name", "store_name",
+                    "load", "max_capacity", "utilization_rate"
+                ]]
+                df_vehicles.columns = [
+                    "车牌号", "出库仓库", "收货门店",
+                    "装载量", "最大容量", "利用率(%)"
+                ]
+                df_vehicles.to_excel(writer, sheet_name="车辆分配", index=False)
+            
             if result.assignments:
                 df_assignments = pd.DataFrame(result.assignments)
-                df_assignments = df_assignments[[
-                    "warehouse_name", "store_name", "sku_name", 
-                    "quantity", "transport_cost"
-                ]]
-                df_assignments.columns = [
-                    "出库仓库", "收货门店", "商品名称", 
-                    "分拨数量", "运输成本"
-                ]
+                cols = ["warehouse_name", "store_name", "sku_name", "quantity", "distance_km", "transport_cost"]
+                if "penalty_cost" in df_assignments.columns:
+                    cols.append("penalty_cost")
+                    cols.append("total_cost")
+                df_assignments = df_assignments[cols]
+                col_names = ["出库仓库", "收货门店", "商品名称", "分拨数量", "距离(km)", "运输成本"]
+                if "penalty_cost" in df_assignments.columns:
+                    col_names.append("时限惩罚")
+                    col_names.append("总成本")
+                df_assignments.columns = col_names
                 df_assignments.to_excel(writer, sheet_name="分拨明细", index=False)
             
             if result.conflicts:
@@ -76,10 +93,16 @@ class ReportGenerator:
     
     def _get_conflict_type_name(self, conflict_type: str) -> str:
         type_names = {
-            "capacity_violation": "仓库容量超限",
+            "warehouse_capacity_violation": "仓库容量超限",
+            "vehicle_capacity_insufficient": "车辆运力不足",
+            "vehicle_capacity_exceeded": "路线运力不足",
+            "vehicle_overload": "车辆超载",
+            "no_available_vehicles": "无可用车辆",
+            "excessive_trips": "趟次超限",
             "zero_demand": "零需求",
             "zero_inventory": "零库存",
             "insufficient_inventory": "库存不足",
+            "urgent_delivery": "紧急配送提醒",
             "time_constraint": "时限约束"
         }
         return type_names.get(conflict_type, conflict_type)
