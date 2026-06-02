@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Link2, ChevronDown, ChevronRight, Download, FileJson, FileSpreadsheet, ArrowRight, Database, Cpu, Shield } from 'lucide-react'
 import { useStore } from '@/store'
 import { exportToCSV, exportToJSON, formatCommunityResults, formatTraceResults } from '@/utils/export'
-import type { TraceChain, DataSourceMeta, AnomalyRecord } from '@/types'
+import type { TraceChain } from '@/types'
 
 const scoreBadge: Record<string, string> = {
   A: 'bg-green-500/20 text-green-400',
@@ -42,12 +42,16 @@ export default function TracePage() {
   const toggleChain = (id: string) => {
     setExpandedChains(prev => {
       const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       return next
     })
   }
 
-  const getPreviewRows = (data: any[]) => {
+  const getPreviewRows = (data: Record<string, string | number | boolean | null | undefined>[]) => {
     if (data.length === 0) return '无数据'
     const preview = data.slice(0, 3)
     if (exportFormat === 'json') {

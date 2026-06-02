@@ -31,7 +31,7 @@ npm install
 npm run dev
 ```
 
-启动后访问 `http://localhost:5188`
+启动后访问 `http://localhost:5173`
 
 ### 类型检查
 
