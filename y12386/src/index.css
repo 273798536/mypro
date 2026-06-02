@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #0F172A;
+  --color-secondary: #1E293B;
+  --color-accent: #D97706;
+  --color-accent-light: #F59E0B;
+  --color-success: #059669;
+  --color-danger: #DC2626;
+  --color-warning: #D97706;
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+  --color-border: #334155;
+  --color-card-bg: #1E293B;
+  --color-card-hover: #334155;
+  
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  background-attachment: fixed;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1E293B;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
+}
+
+/* 按钮基础样式 */
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-btn font-medium transition-all duration-200 shadow-btn hover:shadow-btn-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-midnight-900 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply btn bg-amber-gold-600 text-white hover:bg-amber-gold-500 focus:ring-amber-gold-500;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-midnight-700 text-midnight-100 hover:bg-midnight-600 focus:ring-midnight-500 border border-midnight-600;
+  }
+  
+  .btn-success {
+    @apply btn bg-success-green text-white hover:opacity-90 focus:ring-success-green;
+  }
+  
+  .btn-danger {
+    @apply btn bg-alert-red text-white hover:opacity-90 focus:ring-alert-red;
+  }
+  
+  .btn-ghost {
+    @apply btn bg-transparent text-midnight-300 hover:bg-midnight-800 hover:text-white border border-transparent hover:border-midnight-600;
+  }
+  
+  .card {
+    @apply bg-midnight-800/80 backdrop-blur-sm rounded-lg border border-midnight-700 shadow-card transition-all duration-300 hover:shadow-card-hover;
+  }
+  
+  .card-hover {
+    @apply hover:bg-midnight-700/50 hover:border-amber-gold-600/30 cursor-pointer;
+  }
+  
+  .input {
+    @apply w-full px-3 py-2 bg-midnight-800 border border-midnight-600 rounded-btn text-midnight-100 placeholder-midnight-500 focus:outline-none focus:ring-2 focus:ring-amber-gold-500 focus:border-transparent transition-all duration-200;
+  }
+  
+  .label {
+    @apply block text-sm font-medium text-midnight-300 mb-1;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply badge bg-success-green/20 text-success-green;
+  }
+  
+  .badge-warning {
+    @apply badge bg-amber-gold-600/20 text-amber-gold-400;
+  }
+  
+  .badge-danger {
+    @apply badge bg-alert-red/20 text-alert-red;
+  }
+  
+  .badge-info {
+    @apply badge bg-midnight-600 text-midnight-300;
+  }
+  
+  .title-display {
+    @apply font-display text-2xl font-semibold text-midnight-100;
+  }
+  
+  .title-section {
+    @apply font-display text-lg font-medium text-midnight-100;
+  }
+  
+  .text-body {
+    @apply text-midnight-200;
+  }
+  
+  .text-muted {
+    @apply text-midnight-400;
+  }
+  
+  .divider {
+    @apply border-midnight-700;
+  }
+  
+  .gold-gradient {
+    @apply bg-gradient-to-r from-amber-gold-600 to-amber-gold-400;
+  }
+}
+
+/* 动画效果 */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(217, 119, 6, 0.3);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 表格样式 */
+table.data-table {
+  @apply w-full border-collapse;
+}
+
+table.data-table th {
+  @apply px-4 py-3 text-left text-xs font-medium text-midnight-400 uppercase tracking-wider bg-midnight-800/50 border-b border-midnight-700;
+}
+
+table.data-table td {
+  @apply px-4 py-3 border-b border-midnight-700/50;
+}
+
+table.data-table tr:hover td {
+  @apply bg-midnight-800/30;
+}
+
+/* 时间轴样式 */
+.timeline-line {
+  @apply absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-amber-gold-600 via-midnight-600 to-midnight-800;
+}
+
+.timeline-dot {
+  @apply absolute left-0 w-8 h-8 rounded-full border-4 flex items-center justify-center;
+}
+
+/* 冲突闪烁动画 */
+@keyframes conflict-pulse {
+  0%, 100% {
+    background-color: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.3);
+  }
+  50% {
+    background-color: rgba(220, 38, 38, 0.2);
+    border-color: rgba(220, 38, 38, 0.6);
+  }
+}
+
+.conflict-row {
+  animation: conflict-pulse 2s ease-in-out infinite;
+}
+
+/* 选中高亮 */
+.row-selected {
+  @apply bg-amber-gold-600/10 border-l-4 border-l-amber-gold-500;
+}
+
+/* 拖拽调整大小的手柄 */
+.resize-handle {
+  @apply absolute top-0 bottom-0 w-1 cursor-col-resize hover:bg-amber-gold-500/50 transition-colors;
+}
+
+/* 照片画廊 */
+.photo-item {
+  @apply relative overflow-hidden rounded-lg transition-transform duration-300 hover:scale-105 cursor-pointer;
+}
+
+.photo-item img {
+  @apply w-full h-full object-cover;
+}
+
+.photo-overlay {
+  @apply absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity duration-300;
+}
+
+.photo-item:hover .photo-overlay {
+  @apply opacity-100;
+}
