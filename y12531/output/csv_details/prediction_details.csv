@@ -1,0 +1,5 @@
+﻿equipment_id,predicted_remaining_life_hours,confidence_lower,confidence_upper,curve_type,r_squared,sample_count,missing_sample_count,affected_by_model_backfill
+PUMP-001,904.50,904.50,904.50,linear,1.0000,20,1,False
+PUMP-002,735.36,729.99,740.74,linear,0.1734,20,0,True
+PUMP-003,1129.50,1129.50,1129.50,linear,1.0000,20,1,False
+PUMP-004,849.38,841.42,857.34,linear,0.1296,20,0,False

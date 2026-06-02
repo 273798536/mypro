@@ -1,0 +1,34 @@
+[
+  {
+    "equipment_id": "PUMP-001",
+    "model": "Model-X1",
+    "model_backfilled": false,
+    "model_backfill_time": null,
+    "installation_date": "2025-06-02T14:51:56.249074",
+    "location": "车间A-1号位"
+  },
+  {
+    "equipment_id": "PUMP-002",
+    "model": "Model-Y2",
+    "model_backfilled": true,
+    "model_backfill_time": "2026-05-23T14:51:56.249074",
+    "installation_date": "2025-06-02T14:51:56.249074",
+    "location": "车间A-2号位"
+  },
+  {
+    "equipment_id": "PUMP-003",
+    "model": "Model-X3",
+    "model_backfilled": false,
+    "model_backfill_time": null,
+    "installation_date": "2025-06-02T14:51:56.249074",
+    "location": "车间A-3号位"
+  },
+  {
+    "equipment_id": "PUMP-004",
+    "model": "Model-X4",
+    "model_backfilled": false,
+    "model_backfill_time": null,
+    "installation_date": "2025-06-02T14:51:56.249074",
+    "location": "车间A-4号位"
+  }
+]

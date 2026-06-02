@@ -1,0 +1,1032 @@
+{
+  "report_id": "RPT-20260602145156",
+  "generated_at": "2026-06-02T14:51:56.263707",
+  "summary": {
+    "total_equipment": 4,
+    "total_samples": 80,
+    "missing_sample_count": 2,
+    "missing_sample_ids": [
+      "PUMP-001(缺1次)",
+      "PUMP-003(缺1次)"
+    ],
+    "anomaly_spike_count": 2,
+    "anomaly_spike_from_backfill": 1,
+    "anomaly_spike_from_original": 1,
+    "model_backfill_affected_equipment": [
+      "PUMP-002"
+    ],
+    "avg_predicted_life": 904.6855521603611,
+    "avg_confidence_lower": 901.3521493546539,
+    "avg_confidence_upper": 908.0189549660683
+  },
+  "vibration_details": [
+    2.5,
+    2.58,
+    2.66,
+    2.74,
+    2.82,
+    2.9,
+    2.98,
+    3.06,
+    0.0,
+    3.2199999999999998,
+    3.3,
+    3.38,
+    3.46,
+    3.54,
+    3.62,
+    3.7,
+    3.7800000000000002,
+    3.8600000000000003,
+    3.94,
+    4.02,
+    3.0,
+    3.08,
+    3.16,
+    3.24,
+    3.32,
+    3.4,
+    3.48,
+    3.56,
+    3.64,
+    3.7199999999999998,
+    3.8,
+    3.88,
+    9.9,
+    4.04,
+    4.12,
+    4.2,
+    4.28,
+    4.36,
+    4.4399999999999995,
+    4.52,
+    3.5,
+    3.58,
+    3.66,
+    3.74,
+    3.82,
+    3.9,
+    3.98,
+    4.0600000000000005,
+    0.0,
+    4.22,
+    4.3,
+    4.38,
+    4.46,
+    4.54,
+    4.62,
+    4.7,
+    4.78,
+    4.86,
+    4.9399999999999995,
+    5.02,
+    4.0,
+    4.08,
+    4.16,
+    4.24,
+    4.32,
+    4.4,
+    4.48,
+    4.5600000000000005,
+    4.64,
+    4.72,
+    4.8,
+    4.88,
+    12.4,
+    5.04,
+    5.12,
+    5.2,
+    5.28,
+    5.36,
+    5.4399999999999995,
+    5.52
+  ],
+  "maintenance_details": [
+    {
+      "equipment_id": "PUMP-001",
+      "date": "2026-05-03T14:51:56.249074",
+      "maintenance_type": "定期保养",
+      "description": "更换轴承，检查密封",
+      "source": "original",
+      "note": ""
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "date": "2026-04-03T14:51:56.249074",
+      "maintenance_type": "定期保养",
+      "description": "更换轴承，检查密封",
+      "source": "backfill",
+      "note": ""
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "date": "2026-03-04T14:51:56.249074",
+      "maintenance_type": "定期保养",
+      "description": "更换轴承，检查密封",
+      "source": "original",
+      "note": ""
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "date": "2026-02-02T14:51:56.249074",
+      "maintenance_type": "定期保养",
+      "description": "更换轴承，检查密封",
+      "source": "original",
+      "note": ""
+    }
+  ],
+  "prediction_details": [
+    {
+      "equipment_id": "PUMP-001",
+      "predicted_remaining_life_hours": 904.5000000000005,
+      "confidence_lower": 904.5000000000005,
+      "confidence_upper": 904.5000000000005,
+      "curve_type": "linear",
+      "sample_count": 20,
+      "missing_sample_count": 1,
+      "affected_by_model_backfill": false,
+      "r_squared": 1.0,
+      "prediction_timestamp": "2026-06-02T14:51:56.263442"
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "predicted_remaining_life_hours": 735.3628214548141,
+      "confidence_lower": 729.9858390088893,
+      "confidence_upper": 740.7398039007389,
+      "curve_type": "linear",
+      "sample_count": 20,
+      "missing_sample_count": 0,
+      "affected_by_model_backfill": true,
+      "r_squared": 0.1734337859521501,
+      "prediction_timestamp": "2026-06-02T14:51:56.263489"
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "predicted_remaining_life_hours": 1129.4999999999975,
+      "confidence_lower": 1129.4999999999975,
+      "confidence_upper": 1129.4999999999975,
+      "curve_type": "linear",
+      "sample_count": 20,
+      "missing_sample_count": 1,
+      "affected_by_model_backfill": false,
+      "r_squared": 1.0,
+      "prediction_timestamp": "2026-06-02T14:51:56.263530"
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "predicted_remaining_life_hours": 849.3793871866326,
+      "confidence_lower": 841.4227584097282,
+      "confidence_upper": 857.336015963537,
+      "curve_type": "linear",
+      "sample_count": 20,
+      "missing_sample_count": 0,
+      "affected_by_model_backfill": false,
+      "r_squared": 0.12959729461512104,
+      "prediction_timestamp": "2026-06-02T14:51:56.263572"
+    }
+  ],
+  "flags": [
+    {
+      "equipment_id": "PUMP-001",
+      "flag_type": "missing_sample",
+      "source": "original",
+      "message": "缺采样(来源:原始材料), 时刻=2026-05-27T14:51:56.249074",
+      "sample_timestamp": "2026-05-27T14:51:56.249074",
+      "detail_id": null
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "flag_type": "missing_sample",
+      "source": "original",
+      "message": "缺采样(来源:原始材料), 时刻=2026-05-27T14:51:56.249074",
+      "sample_timestamp": "2026-05-27T14:51:56.249074",
+      "detail_id": null
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "flag_type": "anomaly_spike",
+      "source": "backfill",
+      "message": "异常尖峰(来源:补录), 值=9.90, 阈值=8.42",
+      "sample_timestamp": "2026-05-29T14:51:56.249074",
+      "detail_id": null
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "flag_type": "anomaly_spike",
+      "source": "original",
+      "message": "异常尖峰(来源:原始材料), 值=12.40, 阈值=10.46",
+      "sample_timestamp": "2026-05-29T14:51:56.249074",
+      "detail_id": null
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "flag_type": "model_backfill",
+      "source": "backfill",
+      "message": "设备型号为补录(型号=Model-Y2), 补录时间=2026-05-23T14:51:56.249074, 影响范围: 该设备所有振动采样与预测明细",
+      "sample_timestamp": null,
+      "detail_id": null
+    }
+  ],
+  "sample_review": [
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-23T14:51:56.249074",
+      "original_value": 2.5,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-24T02:51:56.249074",
+      "original_value": 2.58,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-24T14:51:56.249074",
+      "original_value": 2.66,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-25T02:51:56.249074",
+      "original_value": 2.74,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-25T14:51:56.249074",
+      "original_value": 2.82,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-26T02:51:56.249074",
+      "original_value": 2.9,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-26T14:51:56.249074",
+      "original_value": 2.98,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-27T02:51:56.249074",
+      "original_value": 3.06,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-27T14:51:56.249074",
+      "original_value": null,
+      "imputed_value": 0.0,
+      "was_missing": true,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-28T02:51:56.249074",
+      "original_value": 3.2199999999999998,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-28T14:51:56.249074",
+      "original_value": 3.3,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-29T02:51:56.249074",
+      "original_value": 3.38,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-29T14:51:56.249074",
+      "original_value": 3.46,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-30T02:51:56.249074",
+      "original_value": 3.54,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-30T14:51:56.249074",
+      "original_value": 3.62,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-31T02:51:56.249074",
+      "original_value": 3.7,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-05-31T14:51:56.249074",
+      "original_value": 3.7800000000000002,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-06-01T02:51:56.249074",
+      "original_value": 3.8600000000000003,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-06-01T14:51:56.249074",
+      "original_value": 3.94,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-001",
+      "sample_timestamp": "2026-06-02T02:51:56.249074",
+      "original_value": 4.02,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-23T14:51:56.249074",
+      "original_value": 3.0,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-24T02:51:56.249074",
+      "original_value": 3.08,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-24T14:51:56.249074",
+      "original_value": 3.16,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-25T02:51:56.249074",
+      "original_value": 3.24,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-25T14:51:56.249074",
+      "original_value": 3.32,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-26T02:51:56.249074",
+      "original_value": 3.4,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-26T14:51:56.249074",
+      "original_value": 3.48,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-27T02:51:56.249074",
+      "original_value": 3.56,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-27T14:51:56.249074",
+      "original_value": 3.64,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-28T02:51:56.249074",
+      "original_value": 3.7199999999999998,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-28T14:51:56.249074",
+      "original_value": 3.8,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-29T02:51:56.249074",
+      "original_value": 3.88,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-29T14:51:56.249074",
+      "original_value": 9.9,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": true,
+      "anomaly_source": "backfill",
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-30T02:51:56.249074",
+      "original_value": 4.04,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-30T14:51:56.249074",
+      "original_value": 4.12,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-31T02:51:56.249074",
+      "original_value": 4.2,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-05-31T14:51:56.249074",
+      "original_value": 4.28,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-06-01T02:51:56.249074",
+      "original_value": 4.36,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-06-01T14:51:56.249074",
+      "original_value": 4.4399999999999995,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-002",
+      "sample_timestamp": "2026-06-02T02:51:56.249074",
+      "original_value": 4.52,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": true
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-23T14:51:56.249074",
+      "original_value": 3.5,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-24T02:51:56.249074",
+      "original_value": 3.58,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-24T14:51:56.249074",
+      "original_value": 3.66,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-25T02:51:56.249074",
+      "original_value": 3.74,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-25T14:51:56.249074",
+      "original_value": 3.82,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-26T02:51:56.249074",
+      "original_value": 3.9,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-26T14:51:56.249074",
+      "original_value": 3.98,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-27T02:51:56.249074",
+      "original_value": 4.0600000000000005,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-27T14:51:56.249074",
+      "original_value": null,
+      "imputed_value": 0.0,
+      "was_missing": true,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-28T02:51:56.249074",
+      "original_value": 4.22,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-28T14:51:56.249074",
+      "original_value": 4.3,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-29T02:51:56.249074",
+      "original_value": 4.38,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-29T14:51:56.249074",
+      "original_value": 4.46,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-30T02:51:56.249074",
+      "original_value": 4.54,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-30T14:51:56.249074",
+      "original_value": 4.62,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-31T02:51:56.249074",
+      "original_value": 4.7,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-05-31T14:51:56.249074",
+      "original_value": 4.78,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-06-01T02:51:56.249074",
+      "original_value": 4.86,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-06-01T14:51:56.249074",
+      "original_value": 4.9399999999999995,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-003",
+      "sample_timestamp": "2026-06-02T02:51:56.249074",
+      "original_value": 5.02,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-23T14:51:56.249074",
+      "original_value": 4.0,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-24T02:51:56.249074",
+      "original_value": 4.08,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-24T14:51:56.249074",
+      "original_value": 4.16,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-25T02:51:56.249074",
+      "original_value": 4.24,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-25T14:51:56.249074",
+      "original_value": 4.32,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-26T02:51:56.249074",
+      "original_value": 4.4,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-26T14:51:56.249074",
+      "original_value": 4.48,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-27T02:51:56.249074",
+      "original_value": 4.5600000000000005,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-27T14:51:56.249074",
+      "original_value": 4.64,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-28T02:51:56.249074",
+      "original_value": 4.72,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-28T14:51:56.249074",
+      "original_value": 4.8,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-29T02:51:56.249074",
+      "original_value": 4.88,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-29T14:51:56.249074",
+      "original_value": 12.4,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": true,
+      "anomaly_source": "original",
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-30T02:51:56.249074",
+      "original_value": 5.04,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-30T14:51:56.249074",
+      "original_value": 5.12,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-31T02:51:56.249074",
+      "original_value": 5.2,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-05-31T14:51:56.249074",
+      "original_value": 5.28,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-06-01T02:51:56.249074",
+      "original_value": 5.36,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-06-01T14:51:56.249074",
+      "original_value": 5.4399999999999995,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    },
+    {
+      "equipment_id": "PUMP-004",
+      "sample_timestamp": "2026-06-02T02:51:56.249074",
+      "original_value": 5.52,
+      "imputed_value": null,
+      "was_missing": false,
+      "anomaly_spike": false,
+      "anomaly_source": null,
+      "affected_by_model_backfill": false
+    }
+  ]
+}
