@@ -68,7 +68,7 @@ class TorqueCalculator:
             dt = time_steps[i + 1] - time_steps[i - 1]
             if dt > 0:
                 vel = (angles[i + 1] - angles[i - 1]) / dt
-                velocities.append(math.degrees(vel))
+                velocities.append(vel)
             else:
                 velocities.append(0.0)
 
