@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink-blue: #1a1f36;
+  --ink-blue-light: #232947;
+  --ink-blue-lighter: #2d345a;
+  --amber-gold: #d4a853;
+  --amber-gold-light: #e0be7a;
+  --cool-gray: #6b7280;
+  --cool-gray-light: #9ca3af;
+  --emerald: #10b981;
+  --coral: #ef4444;
+  --bg-primary: #0f1225;
+  --bg-card: #1e2340;
+  --bg-card-hover: #252b4a;
+  --border-color: #2d345a;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--cool-gray);
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 600;
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg border p-5;
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+  }
+
+  .card-hover {
+    @apply card transition-colors duration-200 cursor-pointer;
+  }
+
+  .card-hover:hover {
+    background-color: var(--bg-card-hover);
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-green {
+    @apply badge;
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+  }
+
+  .badge-red {
+    @apply badge;
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+
+  .badge-yellow {
+    @apply badge;
+    background-color: rgba(212, 168, 83, 0.15);
+    color: #e0be7a;
+  }
+
+  .badge-blue {
+    @apply badge;
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+  }
+
+  .badge-purple {
+    @apply badge;
+    background-color: rgba(139, 92, 246, 0.15);
+    color: #a78bfa;
+  }
+
+  .badge-orange {
+    @apply badge;
+    background-color: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+  }
+
+  .btn-primary {
+    @apply rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200;
+    background-color: var(--amber-gold);
+    color: var(--ink-blue);
+  }
+
+  .btn-primary:hover {
+    background-color: var(--amber-gold-light);
+  }
+
+  .btn-secondary {
+    @apply rounded-lg border px-4 py-2 text-sm font-medium transition-colors duration-200;
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    background-color: transparent;
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--bg-card);
+  }
+
+  .input {
+    @apply rounded-lg border px-3 py-2 text-sm outline-none transition-colors duration-200;
+    background-color: var(--bg-primary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .input:focus {
+    border-color: var(--amber-gold);
+  }
+
+  .table-row {
+    @apply border-b transition-colors duration-150;
+    border-color: var(--border-color);
+  }
+
+  .table-row:hover {
+    background-color: var(--bg-card-hover);
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded;
+    background-color: var(--ink-blue-lighter);
+  }
+}
