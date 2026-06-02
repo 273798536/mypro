@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AHP 供应商评分器</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f6fa;--card:#fff;--border:#dcdde1;--primary:#2c3e50;--accent:#2980b9;--danger:#c0392b;--warn:#e67e22;--ok:#27ae60;--dim:#7f8c8d;--tag-bg:#ecf0f1}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--primary);line-height:1.6}
+header{background:var(--primary);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+header h1{font-size:18px;font-weight:600}
+header .subtitle{font-size:12px;opacity:.7}
+nav{background:#34495e;display:flex;flex-wrap:wrap;gap:0}
+nav button{background:none;border:none;color:#bbb;padding:10px 18px;cursor:pointer;font-size:13px;transition:.2s;border-bottom:2px solid transparent}
+nav button:hover{color:#fff;background:rgba(255,255,255,.05)}
+nav button.active{color:#fff;border-bottom-color:var(--accent);background:rgba(255,255,255,.08)}
+main{max-width:1200px;margin:0 auto;padding:20px}
+.tab{display:none}.tab.active{display:block}
+.card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.card h2{font-size:16px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.card h3{font-size:14px;margin:12px 0 8px;color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--border);padding:8px 10px;text-align:center}
+th{background:#f0f2f5;font-weight:600;white-space:nowrap}
+td input,td select{width:100%;border:1px solid var(--border);border-radius:3px;padding:4px 6px;font-size:13px;text-align:center}
+td input:focus,td select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(41,128,185,.15)}
+.btn{display:inline-block;padding:6px 16px;border:none;border-radius:4px;cursor:pointer;font-size:13px;transition:.2s}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#2471a3}
+.btn-danger{background:var(--danger);color:#fff}.btn-danger:hover{background:#a93226}
+.btn-warn{background:var(--warn);color:#fff}.btn-warn:hover{background:#cf6d17}
+.btn-ok{background:var(--ok);color:#fff}.btn-ok:hover{background:#1e8449}
+.btn-outline{background:none;border:1px solid var(--border);color:var(--primary)}.btn-outline:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-ok{background:#d5f5e3;color:var(--ok)}.badge-warn{background:#fdebd0;color:var(--warn)}.badge-danger{background:#fadbd8;color:var(--danger)}.badge-dim{background:var(--tag-bg);color:var(--dim)}
+.formula-box{background:#f8f9fa;border:1px dashed var(--border);border-radius:4px;padding:12px;margin:10px 0;font-family:monospace;font-size:12px;white-space:pre-wrap;color:#555}
+.trace-link{color:var(--accent);cursor:pointer;text-decoration:underline;font-size:12px}
+.missing-mark{color:var(--danger);font-weight:700;font-size:13px}
+.audit-log{max-height:300px;overflow-y:auto;font-size:12px}
+.audit-log .entry{padding:6px 10px;border-bottom:1px solid #eee;display:flex;gap:10px}
+.audit-log .ts{color:var(--dim);white-space:nowrap;min-width:140px}
+.audit-log .act{font-weight:600;min-width:80px}.audit-log .detail{flex:1;word-break:break-all}
+.summary-block{border-left:4px solid var(--accent);padding:12px 16px;margin:10px 0;background:#f8f9fa;border-radius:0 4px 4px 0}
+.summary-block.inconsistent{border-left-color:var(--danger);background:#fef5f5}
+.summary-block.consistent{border-left-color:var(--ok);background:#f0faf3}
+.cr-display{font-size:14px;font-weight:700;padding:4px 8px;border-radius:4px;display:inline-block}
+.cr-ok{background:#d5f5e3;color:var(--ok)}.cr-fail{background:#fadbd8;color:var(--danger)}
+canvas{border:1px solid var(--border);border-radius:4px;background:#fff;display:block;margin:10px auto}
+.weight-bar{height:20px;border-radius:3px;transition:width .3s}
+.rank-1{color:var(--ok);font-weight:700}.rank-2{color:var(--accent);font-weight:600}.rank-3{color:var(--warn)}
+.score-missing{background:#fef5f5}
+.dialog-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:1000}
+.dialog-overlay.active{display:flex;align-items:center;justify-content:center}
+.dialog{background:#fff;border-radius:8px;padding:24px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto}
+.dialog h3{margin-bottom:16px}.dialog .btn-row{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+@media print{nav,header,.toolbar,.btn{display:none!important}.tab{display:block!important}.card{break-inside:avoid;box-shadow:none;border:1px solid #ccc}}
+</style>
+</head>
+<body>
+<header>
+<div><h1>AHP 供应商评分器</h1><span class="subtitle">层次分析法 · 权重校验 · 敏感性分析 · 修改可追溯</span></div>
+<div style="font-size:12px;opacity:.6" id="headerTime"></div>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<div class="dialog-overlay" id="dialogOverlay"><div class="dialog" id="dialogContent"></div></div>
+<script src="ahp-core.js"></script>
+<script src="ahp-ui.js"></script>
+</body>
+</html>
