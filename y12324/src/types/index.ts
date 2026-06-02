@@ -168,6 +168,25 @@ export function cloneCandidates(candidates: Set<number>[][]): Set<number>[][] {
   );
 }
 
+export function normalizeCandidates(raw: any): Set<number>[][] {
+  const result: Set<number>[][] = createEmptyCandidates();
+  if (!raw || !Array.isArray(raw)) return result;
+  for (let r = 0; r < 9 && r < raw.length; r++) {
+    if (!Array.isArray(raw[r])) continue;
+    for (let c = 0; c < 9 && c < raw[r].length; c++) {
+      const val = raw[r][c];
+      if (val instanceof Set) {
+        result[r][c] = new Set(val);
+      } else if (Array.isArray(val)) {
+        result[r][c] = new Set(val as number[]);
+      } else {
+        result[r][c] = new Set<number>();
+      }
+    }
+  }
+  return result;
+}
+
 export function cloneBoard(board: (number | null)[][]): (number | null)[][] {
   return board.map(row => [...row]);
 }

@@ -10,6 +10,7 @@ import {
   ImportedMaterial,
   initializeCandidates,
   MaterialType,
+  normalizeCandidates,
   SolutionStep,
   SudokuPuzzle,
 } from '../types';
@@ -285,7 +286,7 @@ export const usePuzzleStore = create<PuzzleState>((set, get) => {
         if (candidateMaterials.length > 0) {
           for (const cm of candidateMaterials) {
             if (cm.data) {
-              const srcCands = cm.data as Set<number>[][];
+              const srcCands = normalizeCandidates(cm.data);
               for (let r = 0; r < 9; r++) {
                 for (let c = 0; c < 9; c++) {
                   if (mergedBoard[r][c] === null) {

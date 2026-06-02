@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { SudokuGrid } from '../components/SudokuGrid/SudokuGrid';
 import { usePuzzleStore } from '../stores/usePuzzleStore';
 import { mockDataSets } from '../data/mockData';
-import { initializeCandidates, MaterialType } from '../types';
+import { initializeCandidates, MaterialType, normalizeCandidates } from '../types';
 import { parseBoardFromString } from '../engine/sudokuCore';
 
 const materialTypeIcons: Record<MaterialType, React.ReactNode> = {
@@ -84,8 +84,9 @@ export const ImportPage: React.FC = () => {
           importMaterial('steps', importName || '导入步骤', importSource || '文本导入', steps);
         }
       } else if (importType === 'candidates') {
-        const data = JSON.parse(inputText);
-        importMaterial('candidates', importName || '导入候选数', importSource || '文本导入', data);
+        const raw = JSON.parse(inputText);
+        const normalized = normalizeCandidates(raw);
+        importMaterial('candidates', importName || '导入候选数', importSource || '文本导入', normalized);
       }
       setInputText('');
       setImportName('');
@@ -107,6 +108,9 @@ export const ImportPage: React.FC = () => {
         
         if (data.board) {
           importMaterial('board', file.name.replace('.json', ''), file.name, data);
+        } else if (importType === 'candidates') {
+          const normalized = normalizeCandidates(data);
+          importMaterial('candidates', file.name.replace('.json', ''), file.name, normalized);
         } else if (Array.isArray(data)) {
           importMaterial('steps', file.name.replace('.json', ''), file.name, data);
         } else {
