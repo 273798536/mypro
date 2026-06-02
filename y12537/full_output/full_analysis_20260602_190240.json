@@ -1,0 +1,4639 @@
+{
+  "generated_at": "2026-06-02T19:02:40.412516",
+  "timestamp": "20260602_190240",
+  "records": [
+    {
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "original_class_name": "完整测试-正常收敛",
+      "loss_function": "MSELoss",
+      "loss_function_note": "标准回归任务",
+      "learning_rate": 0.01,
+      "learning_rate_source": "json",
+      "iterations": 100,
+      "actual_iterations": 100,
+      "source_file": "test_full_v2.json",
+      "is_learning_rate_missing": false,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 9.51,
+          "raw_line": "{\"iteration\": 1, \"loss\": 9.51}",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 9.035,
+          "raw_line": "{\"iteration\": 2, \"loss\": 9.035}",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 8.5837,
+          "raw_line": "{\"iteration\": 3, \"loss\": 8.5837}",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 8.1551,
+          "raw_line": "{\"iteration\": 4, \"loss\": 8.1551}",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 7.7478,
+          "raw_line": "{\"iteration\": 5, \"loss\": 7.7478}",
+          "note": ""
+        },
+        {
+          "iteration": 6,
+          "loss_value": 7.3609,
+          "raw_line": "{\"iteration\": 6, \"loss\": 7.3609}",
+          "note": ""
+        },
+        {
+          "iteration": 7,
+          "loss_value": 6.9934,
+          "raw_line": "{\"iteration\": 7, \"loss\": 6.9934}",
+          "note": ""
+        },
+        {
+          "iteration": 8,
+          "loss_value": 6.6442,
+          "raw_line": "{\"iteration\": 8, \"loss\": 6.6442}",
+          "note": ""
+        },
+        {
+          "iteration": 9,
+          "loss_value": 6.3125,
+          "raw_line": "{\"iteration\": 9, \"loss\": 6.3125}",
+          "note": ""
+        },
+        {
+          "iteration": 10,
+          "loss_value": 5.9974,
+          "raw_line": "{\"iteration\": 10, \"loss\": 5.9974}",
+          "note": ""
+        },
+        {
+          "iteration": 11,
+          "loss_value": 5.698,
+          "raw_line": "{\"iteration\": 11, \"loss\": 5.698}",
+          "note": ""
+        },
+        {
+          "iteration": 12,
+          "loss_value": 5.4136,
+          "raw_line": "{\"iteration\": 12, \"loss\": 5.4136}",
+          "note": ""
+        },
+        {
+          "iteration": 13,
+          "loss_value": 5.1434,
+          "raw_line": "{\"iteration\": 13, \"loss\": 5.1434}",
+          "note": ""
+        },
+        {
+          "iteration": 14,
+          "loss_value": 4.8867,
+          "raw_line": "{\"iteration\": 14, \"loss\": 4.8867}",
+          "note": ""
+        },
+        {
+          "iteration": 15,
+          "loss_value": 4.6429,
+          "raw_line": "{\"iteration\": 15, \"loss\": 4.6429}",
+          "note": ""
+        },
+        {
+          "iteration": 16,
+          "loss_value": 4.4113,
+          "raw_line": "{\"iteration\": 16, \"loss\": 4.4113}",
+          "note": ""
+        },
+        {
+          "iteration": 17,
+          "loss_value": 4.1912,
+          "raw_line": "{\"iteration\": 17, \"loss\": 4.1912}",
+          "note": ""
+        },
+        {
+          "iteration": 18,
+          "loss_value": 3.9821,
+          "raw_line": "{\"iteration\": 18, \"loss\": 3.9821}",
+          "note": ""
+        },
+        {
+          "iteration": 19,
+          "loss_value": 3.7835,
+          "raw_line": "{\"iteration\": 19, \"loss\": 3.7835}",
+          "note": ""
+        },
+        {
+          "iteration": 20,
+          "loss_value": 3.5949,
+          "raw_line": "{\"iteration\": 20, \"loss\": 3.5949}",
+          "note": ""
+        },
+        {
+          "iteration": 21,
+          "loss_value": 3.4156,
+          "raw_line": "{\"iteration\": 21, \"loss\": 3.4156}",
+          "note": ""
+        },
+        {
+          "iteration": 22,
+          "loss_value": 3.2453,
+          "raw_line": "{\"iteration\": 22, \"loss\": 3.2453}",
+          "note": ""
+        },
+        {
+          "iteration": 23,
+          "loss_value": 3.0836,
+          "raw_line": "{\"iteration\": 23, \"loss\": 3.0836}",
+          "note": ""
+        },
+        {
+          "iteration": 24,
+          "loss_value": 2.9299,
+          "raw_line": "{\"iteration\": 24, \"loss\": 2.9299}",
+          "note": ""
+        },
+        {
+          "iteration": 25,
+          "loss_value": 2.7839,
+          "raw_line": "{\"iteration\": 25, \"loss\": 2.7839}",
+          "note": ""
+        },
+        {
+          "iteration": 26,
+          "loss_value": 2.6452,
+          "raw_line": "{\"iteration\": 26, \"loss\": 2.6452}",
+          "note": ""
+        },
+        {
+          "iteration": 27,
+          "loss_value": 2.5134,
+          "raw_line": "{\"iteration\": 27, \"loss\": 2.5134}",
+          "note": ""
+        },
+        {
+          "iteration": 28,
+          "loss_value": 2.3883,
+          "raw_line": "{\"iteration\": 28, \"loss\": 2.3883}",
+          "note": ""
+        },
+        {
+          "iteration": 29,
+          "loss_value": 2.2694,
+          "raw_line": "{\"iteration\": 29, \"loss\": 2.2694}",
+          "note": ""
+        },
+        {
+          "iteration": 30,
+          "loss_value": 2.1564,
+          "raw_line": "{\"iteration\": 30, \"loss\": 2.1564}",
+          "note": ""
+        },
+        {
+          "iteration": 31,
+          "loss_value": 2.0491,
+          "raw_line": "{\"iteration\": 31, \"loss\": 2.0491}",
+          "note": ""
+        },
+        {
+          "iteration": 32,
+          "loss_value": 1.9471,
+          "raw_line": "{\"iteration\": 32, \"loss\": 1.9471}",
+          "note": ""
+        },
+        {
+          "iteration": 33,
+          "loss_value": 1.8503,
+          "raw_line": "{\"iteration\": 33, \"loss\": 1.8503}",
+          "note": ""
+        },
+        {
+          "iteration": 34,
+          "loss_value": 1.7582,
+          "raw_line": "{\"iteration\": 34, \"loss\": 1.7582}",
+          "note": ""
+        },
+        {
+          "iteration": 35,
+          "loss_value": 1.6708,
+          "raw_line": "{\"iteration\": 35, \"loss\": 1.6708}",
+          "note": ""
+        },
+        {
+          "iteration": 36,
+          "loss_value": 1.5878,
+          "raw_line": "{\"iteration\": 36, \"loss\": 1.5878}",
+          "note": ""
+        },
+        {
+          "iteration": 37,
+          "loss_value": 1.5089,
+          "raw_line": "{\"iteration\": 37, \"loss\": 1.5089}",
+          "note": ""
+        },
+        {
+          "iteration": 38,
+          "loss_value": 1.434,
+          "raw_line": "{\"iteration\": 38, \"loss\": 1.434}",
+          "note": ""
+        },
+        {
+          "iteration": 39,
+          "loss_value": 1.3628,
+          "raw_line": "{\"iteration\": 39, \"loss\": 1.3628}",
+          "note": ""
+        },
+        {
+          "iteration": 40,
+          "loss_value": 1.2951,
+          "raw_line": "{\"iteration\": 40, \"loss\": 1.2951}",
+          "note": ""
+        },
+        {
+          "iteration": 41,
+          "loss_value": 1.2309,
+          "raw_line": "{\"iteration\": 41, \"loss\": 1.2309}",
+          "note": ""
+        },
+        {
+          "iteration": 42,
+          "loss_value": 1.1698,
+          "raw_line": "{\"iteration\": 42, \"loss\": 1.1698}",
+          "note": ""
+        },
+        {
+          "iteration": 43,
+          "loss_value": 1.1118,
+          "raw_line": "{\"iteration\": 43, \"loss\": 1.1118}",
+          "note": ""
+        },
+        {
+          "iteration": 44,
+          "loss_value": 1.0567,
+          "raw_line": "{\"iteration\": 44, \"loss\": 1.0567}",
+          "note": ""
+        },
+        {
+          "iteration": 45,
+          "loss_value": 1.0044,
+          "raw_line": "{\"iteration\": 45, \"loss\": 1.0044}",
+          "note": ""
+        },
+        {
+          "iteration": 46,
+          "loss_value": 0.9547,
+          "raw_line": "{\"iteration\": 46, \"loss\": 0.9547}",
+          "note": ""
+        },
+        {
+          "iteration": 47,
+          "loss_value": 0.9074,
+          "raw_line": "{\"iteration\": 47, \"loss\": 0.9074}",
+          "note": ""
+        },
+        {
+          "iteration": 48,
+          "loss_value": 0.8626,
+          "raw_line": "{\"iteration\": 48, \"loss\": 0.8626}",
+          "note": ""
+        },
+        {
+          "iteration": 49,
+          "loss_value": 0.8199,
+          "raw_line": "{\"iteration\": 49, \"loss\": 0.8199}",
+          "note": ""
+        },
+        {
+          "iteration": 50,
+          "loss_value": 0.7794,
+          "raw_line": "{\"iteration\": 50, \"loss\": 0.7794}",
+          "note": ""
+        },
+        {
+          "iteration": 51,
+          "loss_value": 0.741,
+          "raw_line": "{\"iteration\": 51, \"loss\": 0.741}",
+          "note": ""
+        },
+        {
+          "iteration": 52,
+          "loss_value": 0.7044,
+          "raw_line": "{\"iteration\": 52, \"loss\": 0.7044}",
+          "note": ""
+        },
+        {
+          "iteration": 53,
+          "loss_value": 0.6697,
+          "raw_line": "{\"iteration\": 53, \"loss\": 0.6697}",
+          "note": ""
+        },
+        {
+          "iteration": 54,
+          "loss_value": 0.6367,
+          "raw_line": "{\"iteration\": 54, \"loss\": 0.6367}",
+          "note": ""
+        },
+        {
+          "iteration": 55,
+          "loss_value": 0.6054,
+          "raw_line": "{\"iteration\": 55, \"loss\": 0.6054}",
+          "note": ""
+        },
+        {
+          "iteration": 56,
+          "loss_value": 0.5756,
+          "raw_line": "{\"iteration\": 56, \"loss\": 0.5756}",
+          "note": ""
+        },
+        {
+          "iteration": 57,
+          "loss_value": 0.5473,
+          "raw_line": "{\"iteration\": 57, \"loss\": 0.5473}",
+          "note": ""
+        },
+        {
+          "iteration": 58,
+          "loss_value": 0.5205,
+          "raw_line": "{\"iteration\": 58, \"loss\": 0.5205}",
+          "note": ""
+        },
+        {
+          "iteration": 59,
+          "loss_value": 0.4949,
+          "raw_line": "{\"iteration\": 59, \"loss\": 0.4949}",
+          "note": ""
+        },
+        {
+          "iteration": 60,
+          "loss_value": 0.4707,
+          "raw_line": "{\"iteration\": 60, \"loss\": 0.4707}",
+          "note": ""
+        },
+        {
+          "iteration": 61,
+          "loss_value": 0.4477,
+          "raw_line": "{\"iteration\": 61, \"loss\": 0.4477}",
+          "note": ""
+        },
+        {
+          "iteration": 62,
+          "loss_value": 0.4258,
+          "raw_line": "{\"iteration\": 62, \"loss\": 0.4258}",
+          "note": ""
+        },
+        {
+          "iteration": 63,
+          "loss_value": 0.405,
+          "raw_line": "{\"iteration\": 63, \"loss\": 0.405}",
+          "note": ""
+        },
+        {
+          "iteration": 64,
+          "loss_value": 0.3852,
+          "raw_line": "{\"iteration\": 64, \"loss\": 0.3852}",
+          "note": ""
+        },
+        {
+          "iteration": 65,
+          "loss_value": 0.3665,
+          "raw_line": "{\"iteration\": 65, \"loss\": 0.3665}",
+          "note": ""
+        },
+        {
+          "iteration": 66,
+          "loss_value": 0.3487,
+          "raw_line": "{\"iteration\": 66, \"loss\": 0.3487}",
+          "note": ""
+        },
+        {
+          "iteration": 67,
+          "loss_value": 0.3317,
+          "raw_line": "{\"iteration\": 67, \"loss\": 0.3317}",
+          "note": ""
+        },
+        {
+          "iteration": 68,
+          "loss_value": 0.3156,
+          "raw_line": "{\"iteration\": 68, \"loss\": 0.3156}",
+          "note": ""
+        },
+        {
+          "iteration": 69,
+          "loss_value": 0.3004,
+          "raw_line": "{\"iteration\": 69, \"loss\": 0.3004}",
+          "note": ""
+        },
+        {
+          "iteration": 70,
+          "loss_value": 0.2858,
+          "raw_line": "{\"iteration\": 70, \"loss\": 0.2858}",
+          "note": ""
+        },
+        {
+          "iteration": 71,
+          "loss_value": 0.272,
+          "raw_line": "{\"iteration\": 71, \"loss\": 0.272}",
+          "note": ""
+        },
+        {
+          "iteration": 72,
+          "loss_value": 0.2589,
+          "raw_line": "{\"iteration\": 72, \"loss\": 0.2589}",
+          "note": ""
+        },
+        {
+          "iteration": 73,
+          "loss_value": 0.2465,
+          "raw_line": "{\"iteration\": 73, \"loss\": 0.2465}",
+          "note": ""
+        },
+        {
+          "iteration": 74,
+          "loss_value": 0.2347,
+          "raw_line": "{\"iteration\": 74, \"loss\": 0.2347}",
+          "note": ""
+        },
+        {
+          "iteration": 75,
+          "loss_value": 0.2234,
+          "raw_line": "{\"iteration\": 75, \"loss\": 0.2234}",
+          "note": ""
+        },
+        {
+          "iteration": 76,
+          "loss_value": 0.2128,
+          "raw_line": "{\"iteration\": 76, \"loss\": 0.2128}",
+          "note": ""
+        },
+        {
+          "iteration": 77,
+          "loss_value": 0.2026,
+          "raw_line": "{\"iteration\": 77, \"loss\": 0.2026}",
+          "note": ""
+        },
+        {
+          "iteration": 78,
+          "loss_value": 0.193,
+          "raw_line": "{\"iteration\": 78, \"loss\": 0.193}",
+          "note": ""
+        },
+        {
+          "iteration": 79,
+          "loss_value": 0.1838,
+          "raw_line": "{\"iteration\": 79, \"loss\": 0.1838}",
+          "note": ""
+        },
+        {
+          "iteration": 80,
+          "loss_value": 0.1752,
+          "raw_line": "{\"iteration\": 80, \"loss\": 0.1752}",
+          "note": ""
+        },
+        {
+          "iteration": 81,
+          "loss_value": 0.1669,
+          "raw_line": "{\"iteration\": 81, \"loss\": 0.1669}",
+          "note": ""
+        },
+        {
+          "iteration": 82,
+          "loss_value": 0.1591,
+          "raw_line": "{\"iteration\": 82, \"loss\": 0.1591}",
+          "note": ""
+        },
+        {
+          "iteration": 83,
+          "loss_value": 0.1516,
+          "raw_line": "{\"iteration\": 83, \"loss\": 0.1516}",
+          "note": ""
+        },
+        {
+          "iteration": 84,
+          "loss_value": 0.1445,
+          "raw_line": "{\"iteration\": 84, \"loss\": 0.1445}",
+          "note": ""
+        },
+        {
+          "iteration": 85,
+          "loss_value": 0.1378,
+          "raw_line": "{\"iteration\": 85, \"loss\": 0.1378}",
+          "note": ""
+        },
+        {
+          "iteration": 86,
+          "loss_value": 0.1314,
+          "raw_line": "{\"iteration\": 86, \"loss\": 0.1314}",
+          "note": ""
+        },
+        {
+          "iteration": 87,
+          "loss_value": 0.1253,
+          "raw_line": "{\"iteration\": 87, \"loss\": 0.1253}",
+          "note": ""
+        },
+        {
+          "iteration": 88,
+          "loss_value": 0.1196,
+          "raw_line": "{\"iteration\": 88, \"loss\": 0.1196}",
+          "note": ""
+        },
+        {
+          "iteration": 89,
+          "loss_value": 0.1141,
+          "raw_line": "{\"iteration\": 89, \"loss\": 0.1141}",
+          "note": ""
+        },
+        {
+          "iteration": 90,
+          "loss_value": 0.1089,
+          "raw_line": "{\"iteration\": 90, \"loss\": 0.1089}",
+          "note": ""
+        },
+        {
+          "iteration": 91,
+          "loss_value": 0.1039,
+          "raw_line": "{\"iteration\": 91, \"loss\": 0.1039}",
+          "note": ""
+        },
+        {
+          "iteration": 92,
+          "loss_value": 0.0992,
+          "raw_line": "{\"iteration\": 92, \"loss\": 0.0992}",
+          "note": ""
+        },
+        {
+          "iteration": 93,
+          "loss_value": 0.0948,
+          "raw_line": "{\"iteration\": 93, \"loss\": 0.0948}",
+          "note": ""
+        },
+        {
+          "iteration": 94,
+          "loss_value": 0.0905,
+          "raw_line": "{\"iteration\": 94, \"loss\": 0.0905}",
+          "note": ""
+        },
+        {
+          "iteration": 95,
+          "loss_value": 0.0865,
+          "raw_line": "{\"iteration\": 95, \"loss\": 0.0865}",
+          "note": ""
+        },
+        {
+          "iteration": 96,
+          "loss_value": 0.0827,
+          "raw_line": "{\"iteration\": 96, \"loss\": 0.0827}",
+          "note": ""
+        },
+        {
+          "iteration": 97,
+          "loss_value": 0.0791,
+          "raw_line": "{\"iteration\": 97, \"loss\": 0.0791}",
+          "note": ""
+        },
+        {
+          "iteration": 98,
+          "loss_value": 0.0756,
+          "raw_line": "{\"iteration\": 98, \"loss\": 0.0756}",
+          "note": ""
+        },
+        {
+          "iteration": 99,
+          "loss_value": 0.0723,
+          "raw_line": "{\"iteration\": 99, \"loss\": 0.0723}",
+          "note": ""
+        },
+        {
+          "iteration": 100,
+          "loss_value": 0.0692,
+          "raw_line": "{\"iteration\": 100, \"loss\": 0.0692}",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "original_class_name": "完整测试-学习率爆炸",
+      "loss_function": "CrossEntropyLoss",
+      "loss_function_note": "",
+      "learning_rate": 0.5,
+      "learning_rate_source": "json",
+      "iterations": 50,
+      "actual_iterations": 10,
+      "source_file": "test_full_v2.json",
+      "is_learning_rate_missing": false,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 2.5,
+          "raw_line": "{\"iteration\": 1, \"loss\": 2.5}",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 2.3,
+          "raw_line": "{\"iteration\": 2, \"loss\": 2.3}",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 2.1,
+          "raw_line": "{\"iteration\": 3, \"loss\": 2.1}",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 3.5,
+          "raw_line": "{\"iteration\": 4, \"loss\": 3.5}",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 6.8,
+          "raw_line": "{\"iteration\": 5, \"loss\": 6.8}",
+          "note": ""
+        },
+        {
+          "iteration": 6,
+          "loss_value": 12.4,
+          "raw_line": "{\"iteration\": 6, \"loss\": 12.4}",
+          "note": ""
+        },
+        {
+          "iteration": 7,
+          "loss_value": 25.6,
+          "raw_line": "{\"iteration\": 7, \"loss\": 25.6}",
+          "note": ""
+        },
+        {
+          "iteration": 8,
+          "loss_value": 52.1,
+          "raw_line": "{\"iteration\": 8, \"loss\": 52.1}",
+          "note": ""
+        },
+        {
+          "iteration": 9,
+          "loss_value": 105.3,
+          "raw_line": "{\"iteration\": 9, \"loss\": 105.3}",
+          "note": ""
+        },
+        {
+          "iteration": 10,
+          "loss_value": 210.8,
+          "raw_line": "{\"iteration\": 10, \"loss\": 210.8}",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "original_class_name": "完整测试-局部极小",
+      "loss_function": "BCEWithLogitsLoss",
+      "loss_function_note": "二分类任务",
+      "learning_rate": 0.001,
+      "learning_rate_source": "json",
+      "iterations": 120,
+      "actual_iterations": 120,
+      "source_file": "test_full_v2.json",
+      "is_learning_rate_missing": false,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 4.5,
+          "raw_line": "{\"iteration\": 1, \"loss\": 4.5}",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 4.05,
+          "raw_line": "{\"iteration\": 2, \"loss\": 4.05}",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 3.645,
+          "raw_line": "{\"iteration\": 3, \"loss\": 3.645}",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 3.2805,
+          "raw_line": "{\"iteration\": 4, \"loss\": 3.2805}",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 2.9525,
+          "raw_line": "{\"iteration\": 5, \"loss\": 2.9525}",
+          "note": ""
+        },
+        {
+          "iteration": 6,
+          "loss_value": 2.6572,
+          "raw_line": "{\"iteration\": 6, \"loss\": 2.6572}",
+          "note": ""
+        },
+        {
+          "iteration": 7,
+          "loss_value": 2.3915,
+          "raw_line": "{\"iteration\": 7, \"loss\": 2.3915}",
+          "note": ""
+        },
+        {
+          "iteration": 8,
+          "loss_value": 2.1523,
+          "raw_line": "{\"iteration\": 8, \"loss\": 2.1523}",
+          "note": ""
+        },
+        {
+          "iteration": 9,
+          "loss_value": 1.9371,
+          "raw_line": "{\"iteration\": 9, \"loss\": 1.9371}",
+          "note": ""
+        },
+        {
+          "iteration": 10,
+          "loss_value": 1.7434,
+          "raw_line": "{\"iteration\": 10, \"loss\": 1.7434}",
+          "note": ""
+        },
+        {
+          "iteration": 11,
+          "loss_value": 1.5691,
+          "raw_line": "{\"iteration\": 11, \"loss\": 1.5691}",
+          "note": ""
+        },
+        {
+          "iteration": 12,
+          "loss_value": 1.4121,
+          "raw_line": "{\"iteration\": 12, \"loss\": 1.4121}",
+          "note": ""
+        },
+        {
+          "iteration": 13,
+          "loss_value": 1.2709,
+          "raw_line": "{\"iteration\": 13, \"loss\": 1.2709}",
+          "note": ""
+        },
+        {
+          "iteration": 14,
+          "loss_value": 1.1438,
+          "raw_line": "{\"iteration\": 14, \"loss\": 1.1438}",
+          "note": ""
+        },
+        {
+          "iteration": 15,
+          "loss_value": 1.0295,
+          "raw_line": "{\"iteration\": 15, \"loss\": 1.0295}",
+          "note": ""
+        },
+        {
+          "iteration": 16,
+          "loss_value": 0.9265,
+          "raw_line": "{\"iteration\": 16, \"loss\": 0.9265}",
+          "note": ""
+        },
+        {
+          "iteration": 17,
+          "loss_value": 0.8339,
+          "raw_line": "{\"iteration\": 17, \"loss\": 0.8339}",
+          "note": ""
+        },
+        {
+          "iteration": 18,
+          "loss_value": 0.7505,
+          "raw_line": "{\"iteration\": 18, \"loss\": 0.7505}",
+          "note": ""
+        },
+        {
+          "iteration": 19,
+          "loss_value": 0.6754,
+          "raw_line": "{\"iteration\": 19, \"loss\": 0.6754}",
+          "note": ""
+        },
+        {
+          "iteration": 20,
+          "loss_value": 0.6079,
+          "raw_line": "{\"iteration\": 20, \"loss\": 0.6079}",
+          "note": ""
+        },
+        {
+          "iteration": 21,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 21, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 22,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 22, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 23,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 23, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 24,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 24, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 25,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 25, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 26,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 26, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 27,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 27, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 28,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 28, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 29,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 29, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 30,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 30, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 31,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 31, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 32,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 32, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 33,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 33, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 34,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 34, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 35,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 35, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 36,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 36, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 37,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 37, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 38,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 38, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 39,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 39, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 40,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 40, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 41,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 41, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 42,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 42, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 43,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 43, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 44,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 44, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 45,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 45, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 46,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 46, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 47,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 47, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 48,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 48, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 49,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 49, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 50,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 50, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 51,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 51, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 52,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 52, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 53,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 53, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 54,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 54, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 55,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 55, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 56,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 56, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 57,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 57, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 58,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 58, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 59,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 59, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 60,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 60, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 61,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 61, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 62,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 62, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 63,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 63, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 64,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 64, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 65,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 65, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 66,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 66, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 67,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 67, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 68,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 68, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 69,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 69, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 70,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 70, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 71,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 71, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 72,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 72, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 73,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 73, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 74,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 74, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 75,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 75, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 76,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 76, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 77,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 77, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 78,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 78, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 79,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 79, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 80,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 80, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 81,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 81, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 82,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 82, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 83,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 83, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 84,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 84, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 85,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 85, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 86,
+          "loss_value": 0.848,
+          "raw_line": "{\"iteration\": 86, \"loss\": 0.848}",
+          "note": ""
+        },
+        {
+          "iteration": 87,
+          "loss_value": 0.85,
+          "raw_line": "{\"iteration\": 87, \"loss\": 0.85}",
+          "note": ""
+        },
+        {
+          "iteration": 88,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 88, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 89,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 89, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 90,
+          "loss_value": 0.846,
+          "raw_line": "{\"iteration\": 90, \"loss\": 0.846}",
+          "note": ""
+        },
+        {
+          "iteration": 91,
+          "loss_value": 0.851,
+          "raw_line": "{\"iteration\": 91, \"loss\": 0.851}",
+          "note": ""
+        },
+        {
+          "iteration": 92,
+          "loss_value": 0.852,
+          "raw_line": "{\"iteration\": 92, \"loss\": 0.852}",
+          "note": ""
+        },
+        {
+          "iteration": 93,
+          "loss_value": 0.853,
+          "raw_line": "{\"iteration\": 93, \"loss\": 0.853}",
+          "note": ""
+        },
+        {
+          "iteration": 94,
+          "loss_value": 0.854,
+          "raw_line": "{\"iteration\": 94, \"loss\": 0.854}",
+          "note": ""
+        },
+        {
+          "iteration": 95,
+          "loss_value": 0.855,
+          "raw_line": "{\"iteration\": 95, \"loss\": 0.855}",
+          "note": ""
+        },
+        {
+          "iteration": 96,
+          "loss_value": 0.856,
+          "raw_line": "{\"iteration\": 96, \"loss\": 0.856}",
+          "note": ""
+        },
+        {
+          "iteration": 97,
+          "loss_value": 0.857,
+          "raw_line": "{\"iteration\": 97, \"loss\": 0.857}",
+          "note": ""
+        },
+        {
+          "iteration": 98,
+          "loss_value": 0.858,
+          "raw_line": "{\"iteration\": 98, \"loss\": 0.858}",
+          "note": ""
+        },
+        {
+          "iteration": 99,
+          "loss_value": 0.859,
+          "raw_line": "{\"iteration\": 99, \"loss\": 0.859}",
+          "note": ""
+        },
+        {
+          "iteration": 100,
+          "loss_value": 0.86,
+          "raw_line": "{\"iteration\": 100, \"loss\": 0.86}",
+          "note": ""
+        },
+        {
+          "iteration": 101,
+          "loss_value": 0.861,
+          "raw_line": "{\"iteration\": 101, \"loss\": 0.861}",
+          "note": ""
+        },
+        {
+          "iteration": 102,
+          "loss_value": 0.862,
+          "raw_line": "{\"iteration\": 102, \"loss\": 0.862}",
+          "note": ""
+        },
+        {
+          "iteration": 103,
+          "loss_value": 0.863,
+          "raw_line": "{\"iteration\": 103, \"loss\": 0.863}",
+          "note": ""
+        },
+        {
+          "iteration": 104,
+          "loss_value": 0.864,
+          "raw_line": "{\"iteration\": 104, \"loss\": 0.864}",
+          "note": ""
+        },
+        {
+          "iteration": 105,
+          "loss_value": 0.865,
+          "raw_line": "{\"iteration\": 105, \"loss\": 0.865}",
+          "note": ""
+        },
+        {
+          "iteration": 106,
+          "loss_value": 0.866,
+          "raw_line": "{\"iteration\": 106, \"loss\": 0.866}",
+          "note": ""
+        },
+        {
+          "iteration": 107,
+          "loss_value": 0.867,
+          "raw_line": "{\"iteration\": 107, \"loss\": 0.867}",
+          "note": ""
+        },
+        {
+          "iteration": 108,
+          "loss_value": 0.868,
+          "raw_line": "{\"iteration\": 108, \"loss\": 0.868}",
+          "note": ""
+        },
+        {
+          "iteration": 109,
+          "loss_value": 0.869,
+          "raw_line": "{\"iteration\": 109, \"loss\": 0.869}",
+          "note": ""
+        },
+        {
+          "iteration": 110,
+          "loss_value": 0.87,
+          "raw_line": "{\"iteration\": 110, \"loss\": 0.87}",
+          "note": ""
+        },
+        {
+          "iteration": 111,
+          "loss_value": 0.871,
+          "raw_line": "{\"iteration\": 111, \"loss\": 0.871}",
+          "note": ""
+        },
+        {
+          "iteration": 112,
+          "loss_value": 0.872,
+          "raw_line": "{\"iteration\": 112, \"loss\": 0.872}",
+          "note": ""
+        },
+        {
+          "iteration": 113,
+          "loss_value": 0.873,
+          "raw_line": "{\"iteration\": 113, \"loss\": 0.873}",
+          "note": ""
+        },
+        {
+          "iteration": 114,
+          "loss_value": 0.874,
+          "raw_line": "{\"iteration\": 114, \"loss\": 0.874}",
+          "note": ""
+        },
+        {
+          "iteration": 115,
+          "loss_value": 0.875,
+          "raw_line": "{\"iteration\": 115, \"loss\": 0.875}",
+          "note": ""
+        },
+        {
+          "iteration": 116,
+          "loss_value": 0.876,
+          "raw_line": "{\"iteration\": 116, \"loss\": 0.876}",
+          "note": ""
+        },
+        {
+          "iteration": 117,
+          "loss_value": 0.877,
+          "raw_line": "{\"iteration\": 117, \"loss\": 0.877}",
+          "note": ""
+        },
+        {
+          "iteration": 118,
+          "loss_value": 0.878,
+          "raw_line": "{\"iteration\": 118, \"loss\": 0.878}",
+          "note": ""
+        },
+        {
+          "iteration": 119,
+          "loss_value": 0.879,
+          "raw_line": "{\"iteration\": 119, \"loss\": 0.879}",
+          "note": ""
+        },
+        {
+          "iteration": 120,
+          "loss_value": 0.88,
+          "raw_line": "{\"iteration\": 120, \"loss\": 0.88}",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "original_class_name": "完整测试-迭代严重不足",
+      "loss_function": "SmoothL1Loss",
+      "loss_function_note": "对异常值稳健",
+      "learning_rate": 0.01,
+      "learning_rate_source": "json",
+      "iterations": 200,
+      "actual_iterations": 20,
+      "source_file": "test_full_v2.json",
+      "is_learning_rate_missing": false,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 7.82,
+          "raw_line": "{\"iteration\": 1, \"loss\": 7.82}",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 7.1944,
+          "raw_line": "{\"iteration\": 2, \"loss\": 7.1944}",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 6.6188,
+          "raw_line": "{\"iteration\": 3, \"loss\": 6.6188}",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 6.0893,
+          "raw_line": "{\"iteration\": 4, \"loss\": 6.0893}",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 5.6022,
+          "raw_line": "{\"iteration\": 5, \"loss\": 5.6022}",
+          "note": ""
+        },
+        {
+          "iteration": 6,
+          "loss_value": 5.154,
+          "raw_line": "{\"iteration\": 6, \"loss\": 5.154}",
+          "note": ""
+        },
+        {
+          "iteration": 7,
+          "loss_value": 4.7417,
+          "raw_line": "{\"iteration\": 7, \"loss\": 4.7417}",
+          "note": ""
+        },
+        {
+          "iteration": 8,
+          "loss_value": 4.3624,
+          "raw_line": "{\"iteration\": 8, \"loss\": 4.3624}",
+          "note": ""
+        },
+        {
+          "iteration": 9,
+          "loss_value": 4.0134,
+          "raw_line": "{\"iteration\": 9, \"loss\": 4.0134}",
+          "note": ""
+        },
+        {
+          "iteration": 10,
+          "loss_value": 3.6923,
+          "raw_line": "{\"iteration\": 10, \"loss\": 3.6923}",
+          "note": ""
+        },
+        {
+          "iteration": 11,
+          "loss_value": 3.3969,
+          "raw_line": "{\"iteration\": 11, \"loss\": 3.3969}",
+          "note": ""
+        },
+        {
+          "iteration": 12,
+          "loss_value": 3.1252,
+          "raw_line": "{\"iteration\": 12, \"loss\": 3.1252}",
+          "note": ""
+        },
+        {
+          "iteration": 13,
+          "loss_value": 2.8752,
+          "raw_line": "{\"iteration\": 13, \"loss\": 2.8752}",
+          "note": ""
+        },
+        {
+          "iteration": 14,
+          "loss_value": 2.6451,
+          "raw_line": "{\"iteration\": 14, \"loss\": 2.6451}",
+          "note": ""
+        },
+        {
+          "iteration": 15,
+          "loss_value": 2.4335,
+          "raw_line": "{\"iteration\": 15, \"loss\": 2.4335}",
+          "note": ""
+        },
+        {
+          "iteration": 16,
+          "loss_value": 2.2388,
+          "raw_line": "{\"iteration\": 16, \"loss\": 2.2388}",
+          "note": ""
+        },
+        {
+          "iteration": 17,
+          "loss_value": 2.0597,
+          "raw_line": "{\"iteration\": 17, \"loss\": 2.0597}",
+          "note": ""
+        },
+        {
+          "iteration": 18,
+          "loss_value": 1.895,
+          "raw_line": "{\"iteration\": 18, \"loss\": 1.895}",
+          "note": ""
+        },
+        {
+          "iteration": 19,
+          "loss_value": 1.7434,
+          "raw_line": "{\"iteration\": 19, \"loss\": 1.7434}",
+          "note": ""
+        },
+        {
+          "iteration": 20,
+          "loss_value": 1.6039,
+          "raw_line": "{\"iteration\": 20, \"loss\": 1.6039}",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "original_class_name": "完整测试-缺少学习率",
+      "loss_function": "L1Loss",
+      "loss_function_note": "",
+      "learning_rate": null,
+      "learning_rate_source": "json",
+      "iterations": 100,
+      "actual_iterations": 30,
+      "source_file": "test_full_v2.json",
+      "is_learning_rate_missing": true,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 4.7,
+          "raw_line": "{\"iteration\": 1, \"loss\": 4.7}",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 4.418,
+          "raw_line": "{\"iteration\": 2, \"loss\": 4.418}",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 4.1529,
+          "raw_line": "{\"iteration\": 3, \"loss\": 4.1529}",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 3.9037,
+          "raw_line": "{\"iteration\": 4, \"loss\": 3.9037}",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 3.6695,
+          "raw_line": "{\"iteration\": 5, \"loss\": 3.6695}",
+          "note": ""
+        },
+        {
+          "iteration": 6,
+          "loss_value": 3.4493,
+          "raw_line": "{\"iteration\": 6, \"loss\": 3.4493}",
+          "note": ""
+        },
+        {
+          "iteration": 7,
+          "loss_value": 3.2424,
+          "raw_line": "{\"iteration\": 7, \"loss\": 3.2424}",
+          "note": ""
+        },
+        {
+          "iteration": 8,
+          "loss_value": 3.0478,
+          "raw_line": "{\"iteration\": 8, \"loss\": 3.0478}",
+          "note": ""
+        },
+        {
+          "iteration": 9,
+          "loss_value": 2.865,
+          "raw_line": "{\"iteration\": 9, \"loss\": 2.865}",
+          "note": ""
+        },
+        {
+          "iteration": 10,
+          "loss_value": 2.6931,
+          "raw_line": "{\"iteration\": 10, \"loss\": 2.6931}",
+          "note": ""
+        },
+        {
+          "iteration": 11,
+          "loss_value": 2.5315,
+          "raw_line": "{\"iteration\": 11, \"loss\": 2.5315}",
+          "note": ""
+        },
+        {
+          "iteration": 12,
+          "loss_value": 2.3796,
+          "raw_line": "{\"iteration\": 12, \"loss\": 2.3796}",
+          "note": ""
+        },
+        {
+          "iteration": 13,
+          "loss_value": 2.2368,
+          "raw_line": "{\"iteration\": 13, \"loss\": 2.2368}",
+          "note": ""
+        },
+        {
+          "iteration": 14,
+          "loss_value": 2.1026,
+          "raw_line": "{\"iteration\": 14, \"loss\": 2.1026}",
+          "note": ""
+        },
+        {
+          "iteration": 15,
+          "loss_value": 1.9765,
+          "raw_line": "{\"iteration\": 15, \"loss\": 1.9765}",
+          "note": ""
+        },
+        {
+          "iteration": 16,
+          "loss_value": 1.8579,
+          "raw_line": "{\"iteration\": 16, \"loss\": 1.8579}",
+          "note": ""
+        },
+        {
+          "iteration": 17,
+          "loss_value": 1.7464,
+          "raw_line": "{\"iteration\": 17, \"loss\": 1.7464}",
+          "note": ""
+        },
+        {
+          "iteration": 18,
+          "loss_value": 1.6416,
+          "raw_line": "{\"iteration\": 18, \"loss\": 1.6416}",
+          "note": ""
+        },
+        {
+          "iteration": 19,
+          "loss_value": 1.5431,
+          "raw_line": "{\"iteration\": 19, \"loss\": 1.5431}",
+          "note": ""
+        },
+        {
+          "iteration": 20,
+          "loss_value": 1.4505,
+          "raw_line": "{\"iteration\": 20, \"loss\": 1.4505}",
+          "note": ""
+        },
+        {
+          "iteration": 21,
+          "loss_value": 1.3635,
+          "raw_line": "{\"iteration\": 21, \"loss\": 1.3635}",
+          "note": ""
+        },
+        {
+          "iteration": 22,
+          "loss_value": 1.2817,
+          "raw_line": "{\"iteration\": 22, \"loss\": 1.2817}",
+          "note": ""
+        },
+        {
+          "iteration": 23,
+          "loss_value": 1.2048,
+          "raw_line": "{\"iteration\": 23, \"loss\": 1.2048}",
+          "note": ""
+        },
+        {
+          "iteration": 24,
+          "loss_value": 1.1325,
+          "raw_line": "{\"iteration\": 24, \"loss\": 1.1325}",
+          "note": ""
+        },
+        {
+          "iteration": 25,
+          "loss_value": 1.0646,
+          "raw_line": "{\"iteration\": 25, \"loss\": 1.0646}",
+          "note": ""
+        },
+        {
+          "iteration": 26,
+          "loss_value": 1.0007,
+          "raw_line": "{\"iteration\": 26, \"loss\": 1.0007}",
+          "note": ""
+        },
+        {
+          "iteration": 27,
+          "loss_value": 0.9406,
+          "raw_line": "{\"iteration\": 27, \"loss\": 0.9406}",
+          "note": ""
+        },
+        {
+          "iteration": 28,
+          "loss_value": 0.8842,
+          "raw_line": "{\"iteration\": 28, \"loss\": 0.8842}",
+          "note": ""
+        },
+        {
+          "iteration": 29,
+          "loss_value": 0.8311,
+          "raw_line": "{\"iteration\": 29, \"loss\": 0.8311}",
+          "note": ""
+        },
+        {
+          "iteration": 30,
+          "loss_value": 0.7813,
+          "raw_line": "{\"iteration\": 30, \"loss\": 0.7813}",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "original_class_name": "完整测试-多问题叠加",
+      "loss_function": "PoissonNLLLoss",
+      "loss_function_note": "计数预测任务",
+      "learning_rate": 0.3,
+      "learning_rate_source": "json",
+      "iterations": 200,
+      "actual_iterations": 6,
+      "source_file": "test_full_v2.json",
+      "is_learning_rate_missing": false,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 4.5,
+          "raw_line": "{\"iteration\": 1, \"loss\": 4.5}",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 4.2,
+          "raw_line": "{\"iteration\": 2, \"loss\": 4.2}",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 8.8,
+          "raw_line": "{\"iteration\": 3, \"loss\": 8.8}",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 18.9,
+          "raw_line": "{\"iteration\": 4, \"loss\": 18.9}",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 40.2,
+          "raw_line": "{\"iteration\": 5, \"loss\": 40.2}",
+          "note": ""
+        },
+        {
+          "iteration": 6,
+          "loss_value": 85.7,
+          "raw_line": "{\"iteration\": 6, \"loss\": 85.7}",
+          "note": ""
+        }
+      ]
+    }
+  ],
+  "check_results": [
+    {
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "learning_rate_ok": true,
+      "convergence_ok": true,
+      "iteration_ok": true,
+      "loss_trend": [
+        9.51,
+        9.035,
+        8.5837,
+        8.1551,
+        7.7478,
+        7.3609,
+        6.9934,
+        6.6442,
+        6.3125,
+        5.9974,
+        5.698,
+        5.4136,
+        5.1434,
+        4.8867,
+        4.6429,
+        4.4113,
+        4.1912,
+        3.9821,
+        3.7835,
+        3.5949,
+        3.4156,
+        3.2453,
+        3.0836,
+        2.9299,
+        2.7839,
+        2.6452,
+        2.5134,
+        2.3883,
+        2.2694,
+        2.1564,
+        2.0491,
+        1.9471,
+        1.8503,
+        1.7582,
+        1.6708,
+        1.5878,
+        1.5089,
+        1.434,
+        1.3628,
+        1.2951,
+        1.2309,
+        1.1698,
+        1.1118,
+        1.0567,
+        1.0044,
+        0.9547,
+        0.9074,
+        0.8626,
+        0.8199,
+        0.7794,
+        0.741,
+        0.7044,
+        0.6697,
+        0.6367,
+        0.6054,
+        0.5756,
+        0.5473,
+        0.5205,
+        0.4949,
+        0.4707,
+        0.4477,
+        0.4258,
+        0.405,
+        0.3852,
+        0.3665,
+        0.3487,
+        0.3317,
+        0.3156,
+        0.3004,
+        0.2858,
+        0.272,
+        0.2589,
+        0.2465,
+        0.2347,
+        0.2234,
+        0.2128,
+        0.2026,
+        0.193,
+        0.1838,
+        0.1752,
+        0.1669,
+        0.1591,
+        0.1516,
+        0.1445,
+        0.1378,
+        0.1314,
+        0.1253,
+        0.1196,
+        0.1141,
+        0.1089,
+        0.1039,
+        0.0992,
+        0.0948,
+        0.0905,
+        0.0865,
+        0.0827,
+        0.0791,
+        0.0756,
+        0.0723,
+        0.0692
+      ],
+      "explosive_points": [],
+      "plateau_points": [],
+      "issues": []
+    },
+    {
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "learning_rate_ok": false,
+      "convergence_ok": true,
+      "iteration_ok": false,
+      "loss_trend": [
+        2.5,
+        2.3,
+        2.1,
+        3.5,
+        6.8,
+        12.4,
+        25.6,
+        52.1,
+        105.3,
+        210.8
+      ],
+      "explosive_points": [
+        6,
+        7,
+        8,
+        9
+      ],
+      "plateau_points": [],
+      "issues": [
+        {
+          "issue_type": "learning_rate_explosion",
+          "severity": "high",
+          "message": "班级 完整测试-学习率爆炸 在第 7 次迭代检测到学习率爆炸：损失从 12.400000 跃升至 25.600000，单次涨幅 2.1 倍。当前学习率 0.5 可能过大。",
+          "suggestion": "🔧 修正建议 - 针对【CrossEntropyLoss 损失函数下的训练数据】\n\n问题定位：\n  - 涉及对象：完整测试-学习率爆炸 班\n  - 损失函数：CrossEntropyLoss\n  - 当前学习率：0.5\n  - 爆炸位置：第 7 轮\n  - 爆炸前损失：12.400000\n  - 爆炸后损失：25.600000\n  - 单次涨幅：2.1 倍\n  - 数据来源：test_full_v2.json\n\n发生了什么：\n  学习率太大了，就像下山的时候步子迈得太大，\n  一步跨出去直接迈过了山谷，冲到了对面的山坡上，\n  而且越冲越高，损失反而越来越大。\n  第 7 轮就是那一步迈太大的地方。\n\n具体修正步骤：\n  1. 降低学习率：从 0.5 降到 0.050000\n     （乘以 0.1，降一个数量级）\n  2. 如果还是爆炸，继续降到 0.005000\n  3. 建议使用学习率衰减：每跑 50 轮乘以 0.5\n  4. 或者改用 Adam 优化器，它会自动调整学习率\n  5. 重新训练后检查：损失曲线应该是平稳下降的，\n     不能有突然跳升的情况\n\n给业务同事的解释参考：\n  「这个班的学习进度调得太快了，就像学开车一上来就踩油门到 200 码，\n  结果直接冲出赛道了。我们已经把油门松了松，让它慢慢学，\n  虽然慢一点但能真正学到东西。」",
+          "details": {
+            "learning_rate": 0.5,
+            "explosion_iteration": 7,
+            "loss_before": 12.4,
+            "loss_after": 25.6,
+            "growth_ratio": 2.064516129032258,
+            "explosive_points": [
+              6,
+              7,
+              8,
+              9
+            ],
+            "material": "CrossEntropyLoss 损失函数下的训练数据"
+          }
+        },
+        {
+          "issue_type": "insufficient_iterations",
+          "severity": "high",
+          "message": "⚠️ 迭代次数不足警告\n\n这个训练记录只跑了 10 轮就停了。\n\n打个比方：你让学生做一套 100 道题的练习册来检验他有没有掌握知识点，\n结果他做了 10 道就说做完了。\n他可能是真的全都会了所以不用做了，但更可能是\n做了几题嫌麻烦就交了，或者中间被打断了。\n\n问题在于：只看前 10 道题的正确率，\n你没法判断他是真的掌握了，还是刚好前 10 题简单，\n或者他根本没认真做。\n\n回到梯度下降的问题上：\n- 梯度下降就像下山，要一步步走到谷底\n- 前几步可能只是在找方向，还没开始真正下坡\n- 如果走到第 10 步就停了，可能还在半山腰\n- 这时候的损失值不是真正的最小值，而是『走到这儿了』的值\n\n具体问题：实际迭代 10 轮少于最低要求 50 轮\n- 原定计划：50 轮\n- 实际完成：10 轮\n- 损失下降：2.5000 → 210.8000 （下降 -208.3000，-8332%）\n\n⚠️ 风险提醒：如果把这 10 轮的结果当成最终结果，会严重高估模型的训练效果，就像学生没做完题你给他打满分一样。",
+          "suggestion": "🔧 修正建议 - 针对【完整测试-学习率爆炸 的 CrossEntropyLoss 训练记录】\n\n问题定位：\n  - 涉及对象：完整测试-学习率爆炸 班\n  - 损失函数：CrossEntropyLoss\n  - 数据来源：test_full_v2.json\n  - 实际迭代：10 轮\n  - 预期迭代：50 轮\n  - 最低要求：50 轮\n  - 损失变化：2.5000 → 210.8000 （下降 -208.3000，-8332%）\n\n为什么不能接受这个结果：\n  梯度下降的前几步通常是在『找方向』，还没进入『真正学习』的阶段。\n  就像考试只做了前 10 道选择题就交卷，\n  你没法知道学生是不是真的掌握了全部知识点。\n  这时候的损失值 210.8000 不是『模型能达到的最低损失』，\n  而是『训练到第 10 轮时的损失』——两个完全不同的概念。\n\n具体修正步骤：\n  1. 补跑训练：至少跑到 50 轮\n  2. 检查学习率：当前 0.5，如果损失下降太慢可适当调大，如果震荡可调小\n  3. 验证标准：等到损失曲线连续 10-20 轮下降不超过 0.1%，\n     才算真正收敛，这时候再停止训练\n  4. 对比验证：补跑后导出新的损失曲线，\n     和当前 10 轮的曲线对比，确认下降趋势\n\n给业务同事的解释参考：\n  「这个班的训练没跑完，目前的数据只能看出模型在学习，\n  但还没学到最好状态。就像跑马拉松只跑了 5 公里，\n  虽然在前进但还没到终点，这时候的成绩不算数。\n  我们已经让它继续跑了，等跑到 50 公里再看最终成绩。」",
+          "details": {
+            "actual_iterations": 10,
+            "expected_iterations": 50,
+            "min_required": 50,
+            "initial_loss": 2.5,
+            "final_loss": 210.8,
+            "material": "完整测试-学习率爆炸 的 CrossEntropyLoss 训练记录",
+            "raw_record": [
+              {
+                "iter": 1,
+                "loss": 2.5
+              },
+              {
+                "iter": 2,
+                "loss": 2.3
+              },
+              {
+                "iter": 3,
+                "loss": 2.1
+              },
+              {
+                "iter": 4,
+                "loss": 3.5
+              },
+              {
+                "iter": 5,
+                "loss": 6.8
+              },
+              {
+                "iter": 6,
+                "loss": 12.4
+              },
+              {
+                "iter": 7,
+                "loss": 25.6
+              },
+              {
+                "iter": 8,
+                "loss": 52.1
+              },
+              {
+                "iter": 9,
+                "loss": 105.3
+              },
+              {
+                "iter": 10,
+                "loss": 210.8
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "learning_rate_ok": true,
+      "convergence_ok": true,
+      "iteration_ok": true,
+      "loss_trend": [
+        4.5,
+        4.05,
+        3.645,
+        3.2805,
+        2.9525,
+        2.6572,
+        2.3915,
+        2.1523,
+        1.9371,
+        1.7434,
+        1.5691,
+        1.4121,
+        1.2709,
+        1.1438,
+        1.0295,
+        0.9265,
+        0.8339,
+        0.7505,
+        0.6754,
+        0.6079,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.848,
+        0.85,
+        0.852,
+        0.854,
+        0.846,
+        0.851,
+        0.852,
+        0.853,
+        0.854,
+        0.855,
+        0.856,
+        0.857,
+        0.858,
+        0.859,
+        0.86,
+        0.861,
+        0.862,
+        0.863,
+        0.864,
+        0.865,
+        0.866,
+        0.867,
+        0.868,
+        0.869,
+        0.87,
+        0.871,
+        0.872,
+        0.873,
+        0.874,
+        0.875,
+        0.876,
+        0.877,
+        0.878,
+        0.879,
+        0.88
+      ],
+      "explosive_points": [],
+      "plateau_points": [],
+      "issues": []
+    },
+    {
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "learning_rate_ok": true,
+      "convergence_ok": true,
+      "iteration_ok": false,
+      "loss_trend": [
+        7.82,
+        7.1944,
+        6.6188,
+        6.0893,
+        5.6022,
+        5.154,
+        4.7417,
+        4.3624,
+        4.0134,
+        3.6923,
+        3.3969,
+        3.1252,
+        2.8752,
+        2.6451,
+        2.4335,
+        2.2388,
+        2.0597,
+        1.895,
+        1.7434,
+        1.6039
+      ],
+      "explosive_points": [],
+      "plateau_points": [],
+      "issues": [
+        {
+          "issue_type": "insufficient_iterations",
+          "severity": "high",
+          "message": "⚠️ 迭代次数不足警告\n\n这个训练记录只跑了 20 轮就停了。\n\n打个比方：你让学生做一套 100 道题的练习册来检验他有没有掌握知识点，\n结果他做了 20 道就说做完了。\n他可能是真的全都会了所以不用做了，但更可能是\n做了几题嫌麻烦就交了，或者中间被打断了。\n\n问题在于：只看前 20 道题的正确率，\n你没法判断他是真的掌握了，还是刚好前 20 题简单，\n或者他根本没认真做。\n\n回到梯度下降的问题上：\n- 梯度下降就像下山，要一步步走到谷底\n- 前几步可能只是在找方向，还没开始真正下坡\n- 如果走到第 20 步就停了，可能还在半山腰\n- 这时候的损失值不是真正的最小值，而是『走到这儿了』的值\n\n具体问题：实际迭代 20 轮少于最低要求 50 轮\n- 原定计划：200 轮\n- 实际完成：20 轮\n- 损失下降：7.8200 → 1.6039 （下降 6.2161，79%）\n\n⚠️ 风险提醒：如果把这 20 轮的结果当成最终结果，会严重高估模型的训练效果，就像学生没做完题你给他打满分一样。",
+          "suggestion": "🔧 修正建议 - 针对【完整测试-迭代严重不足 的 SmoothL1Loss 训练记录】\n\n问题定位：\n  - 涉及对象：完整测试-迭代严重不足 班\n  - 损失函数：SmoothL1Loss（备注：对异常值稳健）\n  - 数据来源：test_full_v2.json\n  - 实际迭代：20 轮\n  - 预期迭代：200 轮\n  - 最低要求：50 轮\n  - 损失变化：7.8200 → 1.6039 （下降 6.2161，79%）\n\n为什么不能接受这个结果：\n  梯度下降的前几步通常是在『找方向』，还没进入『真正学习』的阶段。\n  就像考试只做了前 20 道选择题就交卷，\n  你没法知道学生是不是真的掌握了全部知识点。\n  这时候的损失值 1.6039 不是『模型能达到的最低损失』，\n  而是『训练到第 20 轮时的损失』——两个完全不同的概念。\n\n具体修正步骤：\n  1. 补跑训练：至少跑到 200 轮\n  2. 检查学习率：当前 0.01，如果损失下降太慢可适当调大，如果震荡可调小\n  3. 验证标准：等到损失曲线连续 10-20 轮下降不超过 0.1%，\n     才算真正收敛，这时候再停止训练\n  4. 对比验证：补跑后导出新的损失曲线，\n     和当前 20 轮的曲线对比，确认下降趋势\n\n给业务同事的解释参考：\n  「这个班的训练没跑完，目前的数据只能看出模型在学习，\n  但还没学到最好状态。就像跑马拉松只跑了 5 公里，\n  虽然在前进但还没到终点，这时候的成绩不算数。\n  我们已经让它继续跑了，等跑到 200 公里再看最终成绩。」",
+          "details": {
+            "actual_iterations": 20,
+            "expected_iterations": 200,
+            "min_required": 50,
+            "initial_loss": 7.82,
+            "final_loss": 1.6039,
+            "material": "完整测试-迭代严重不足 的 SmoothL1Loss 训练记录",
+            "raw_record": [
+              {
+                "iter": 1,
+                "loss": 7.82
+              },
+              {
+                "iter": 2,
+                "loss": 7.1944
+              },
+              {
+                "iter": 3,
+                "loss": 6.6188
+              },
+              {
+                "iter": 4,
+                "loss": 6.0893
+              },
+              {
+                "iter": 5,
+                "loss": 5.6022
+              },
+              {
+                "iter": 6,
+                "loss": 5.154
+              },
+              {
+                "iter": 7,
+                "loss": 4.7417
+              },
+              {
+                "iter": 8,
+                "loss": 4.3624
+              },
+              {
+                "iter": 9,
+                "loss": 4.0134
+              },
+              {
+                "iter": 10,
+                "loss": 3.6923
+              },
+              {
+                "iter": 11,
+                "loss": 3.3969
+              },
+              {
+                "iter": 12,
+                "loss": 3.1252
+              },
+              {
+                "iter": 13,
+                "loss": 2.8752
+              },
+              {
+                "iter": 14,
+                "loss": 2.6451
+              },
+              {
+                "iter": 15,
+                "loss": 2.4335
+              },
+              {
+                "iter": 16,
+                "loss": 2.2388
+              },
+              {
+                "iter": 17,
+                "loss": 2.0597
+              },
+              {
+                "iter": 18,
+                "loss": 1.895
+              },
+              {
+                "iter": 19,
+                "loss": 1.7434
+              },
+              {
+                "iter": 20,
+                "loss": 1.6039
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "learning_rate_ok": true,
+      "convergence_ok": true,
+      "iteration_ok": false,
+      "loss_trend": [
+        4.7,
+        4.418,
+        4.1529,
+        3.9037,
+        3.6695,
+        3.4493,
+        3.2424,
+        3.0478,
+        2.865,
+        2.6931,
+        2.5315,
+        2.3796,
+        2.2368,
+        2.1026,
+        1.9765,
+        1.8579,
+        1.7464,
+        1.6416,
+        1.5431,
+        1.4505,
+        1.3635,
+        1.2817,
+        1.2048,
+        1.1325,
+        1.0646,
+        1.0007,
+        0.9406,
+        0.8842,
+        0.8311,
+        0.7813
+      ],
+      "explosive_points": [],
+      "plateau_points": [],
+      "issues": [
+        {
+          "issue_type": "insufficient_iterations",
+          "severity": "high",
+          "message": "⚠️ 迭代次数不足警告\n\n这个训练记录只跑了 30 轮就停了。\n\n打个比方：你让学生做一套 100 道题的练习册来检验他有没有掌握知识点，\n结果他做了 30 道就说做完了。\n他可能是真的全都会了所以不用做了，但更可能是\n做了几题嫌麻烦就交了，或者中间被打断了。\n\n问题在于：只看前 30 道题的正确率，\n你没法判断他是真的掌握了，还是刚好前 30 题简单，\n或者他根本没认真做。\n\n回到梯度下降的问题上：\n- 梯度下降就像下山，要一步步走到谷底\n- 前几步可能只是在找方向，还没开始真正下坡\n- 如果走到第 30 步就停了，可能还在半山腰\n- 这时候的损失值不是真正的最小值，而是『走到这儿了』的值\n\n具体问题：实际迭代 30 轮少于最低要求 50 轮\n- 原定计划：100 轮\n- 实际完成：30 轮\n- 损失下降：4.7000 → 0.7813 （下降 3.9187，83%）\n\n⚠️ 风险提醒：如果把这 30 轮的结果当成最终结果，会严重高估模型的训练效果，就像学生没做完题你给他打满分一样。",
+          "suggestion": "🔧 修正建议 - 针对【完整测试-缺少学习率 的 L1Loss 训练记录】\n\n问题定位：\n  - 涉及对象：完整测试-缺少学习率 班\n  - 损失函数：L1Loss\n  - 数据来源：test_full_v2.json\n  - 实际迭代：30 轮\n  - 预期迭代：100 轮\n  - 最低要求：50 轮\n  - 损失变化：4.7000 → 0.7813 （下降 3.9187，83%）\n\n为什么不能接受这个结果：\n  梯度下降的前几步通常是在『找方向』，还没进入『真正学习』的阶段。\n  就像考试只做了前 30 道选择题就交卷，\n  你没法知道学生是不是真的掌握了全部知识点。\n  这时候的损失值 0.7813 不是『模型能达到的最低损失』，\n  而是『训练到第 30 轮时的损失』——两个完全不同的概念。\n\n具体修正步骤：\n  1. 补跑训练：至少跑到 100 轮\n  2. ⚠️ 学习率缺失，请先补填学习率后再跑\n  3. 验证标准：等到损失曲线连续 10-20 轮下降不超过 0.1%，\n     才算真正收敛，这时候再停止训练\n  4. 对比验证：补跑后导出新的损失曲线，\n     和当前 30 轮的曲线对比，确认下降趋势\n\n给业务同事的解释参考：\n  「这个班的训练没跑完，目前的数据只能看出模型在学习，\n  但还没学到最好状态。就像跑马拉松只跑了 5 公里，\n  虽然在前进但还没到终点，这时候的成绩不算数。\n  我们已经让它继续跑了，等跑到 100 公里再看最终成绩。」",
+          "details": {
+            "actual_iterations": 30,
+            "expected_iterations": 100,
+            "min_required": 50,
+            "initial_loss": 4.7,
+            "final_loss": 0.7813,
+            "material": "完整测试-缺少学习率 的 L1Loss 训练记录",
+            "raw_record": [
+              {
+                "iter": 1,
+                "loss": 4.7
+              },
+              {
+                "iter": 2,
+                "loss": 4.418
+              },
+              {
+                "iter": 3,
+                "loss": 4.1529
+              },
+              {
+                "iter": 4,
+                "loss": 3.9037
+              },
+              {
+                "iter": 5,
+                "loss": 3.6695
+              },
+              {
+                "iter": 6,
+                "loss": 3.4493
+              },
+              {
+                "iter": 7,
+                "loss": 3.2424
+              },
+              {
+                "iter": 8,
+                "loss": 3.0478
+              },
+              {
+                "iter": 9,
+                "loss": 2.865
+              },
+              {
+                "iter": 10,
+                "loss": 2.6931
+              },
+              {
+                "iter": 11,
+                "loss": 2.5315
+              },
+              {
+                "iter": 12,
+                "loss": 2.3796
+              },
+              {
+                "iter": 13,
+                "loss": 2.2368
+              },
+              {
+                "iter": 14,
+                "loss": 2.1026
+              },
+              {
+                "iter": 15,
+                "loss": 1.9765
+              },
+              {
+                "iter": 16,
+                "loss": 1.8579
+              },
+              {
+                "iter": 17,
+                "loss": 1.7464
+              },
+              {
+                "iter": 18,
+                "loss": 1.6416
+              },
+              {
+                "iter": 19,
+                "loss": 1.5431
+              },
+              {
+                "iter": 20,
+                "loss": 1.4505
+              },
+              {
+                "iter": 21,
+                "loss": 1.3635
+              },
+              {
+                "iter": 22,
+                "loss": 1.2817
+              },
+              {
+                "iter": 23,
+                "loss": 1.2048
+              },
+              {
+                "iter": 24,
+                "loss": 1.1325
+              },
+              {
+                "iter": 25,
+                "loss": 1.0646
+              },
+              {
+                "iter": 26,
+                "loss": 1.0007
+              },
+              {
+                "iter": 27,
+                "loss": 0.9406
+              },
+              {
+                "iter": 28,
+                "loss": 0.8842
+              },
+              {
+                "iter": 29,
+                "loss": 0.8311
+              },
+              {
+                "iter": 30,
+                "loss": 0.7813
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "learning_rate_ok": false,
+      "convergence_ok": true,
+      "iteration_ok": false,
+      "loss_trend": [
+        4.5,
+        4.2,
+        8.8,
+        18.9,
+        40.2,
+        85.7
+      ],
+      "explosive_points": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "plateau_points": [],
+      "issues": [
+        {
+          "issue_type": "learning_rate_explosion",
+          "severity": "high",
+          "message": "班级 完整测试-多问题叠加 在第 3 次迭代检测到学习率爆炸：损失从 4.200000 跃升至 8.800000，单次涨幅 2.1 倍。当前学习率 0.3 可能过大。",
+          "suggestion": "🔧 修正建议 - 针对【PoissonNLLLoss 损失函数下的训练数据】\n\n问题定位：\n  - 涉及对象：完整测试-多问题叠加 班\n  - 损失函数：PoissonNLLLoss（备注：计数预测任务）\n  - 当前学习率：0.3\n  - 爆炸位置：第 3 轮\n  - 爆炸前损失：4.200000\n  - 爆炸后损失：8.800000\n  - 单次涨幅：2.1 倍\n  - 数据来源：test_full_v2.json\n\n发生了什么：\n  学习率太大了，就像下山的时候步子迈得太大，\n  一步跨出去直接迈过了山谷，冲到了对面的山坡上，\n  而且越冲越高，损失反而越来越大。\n  第 3 轮就是那一步迈太大的地方。\n\n具体修正步骤：\n  1. 降低学习率：从 0.3 降到 0.030000\n     （乘以 0.1，降一个数量级）\n  2. 如果还是爆炸，继续降到 0.003000\n  3. 建议使用学习率衰减：每跑 50 轮乘以 0.5\n  4. 或者改用 Adam 优化器，它会自动调整学习率\n  5. 重新训练后检查：损失曲线应该是平稳下降的，\n     不能有突然跳升的情况\n\n给业务同事的解释参考：\n  「这个班的学习进度调得太快了，就像学开车一上来就踩油门到 200 码，\n  结果直接冲出赛道了。我们已经把油门松了松，让它慢慢学，\n  虽然慢一点但能真正学到东西。」",
+          "details": {
+            "learning_rate": 0.3,
+            "explosion_iteration": 3,
+            "loss_before": 4.2,
+            "loss_after": 8.8,
+            "growth_ratio": 2.0952380952380953,
+            "explosive_points": [
+              2,
+              3,
+              4,
+              5
+            ],
+            "material": "PoissonNLLLoss 损失函数下的训练数据"
+          }
+        },
+        {
+          "issue_type": "insufficient_iterations",
+          "severity": "high",
+          "message": "⚠️ 迭代次数不足警告\n\n这个训练记录只跑了 6 轮就停了。\n\n打个比方：你让学生做一套 100 道题的练习册来检验他有没有掌握知识点，\n结果他做了 6 道就说做完了。\n他可能是真的全都会了所以不用做了，但更可能是\n做了几题嫌麻烦就交了，或者中间被打断了。\n\n问题在于：只看前 6 道题的正确率，\n你没法判断他是真的掌握了，还是刚好前 6 题简单，\n或者他根本没认真做。\n\n回到梯度下降的问题上：\n- 梯度下降就像下山，要一步步走到谷底\n- 前几步可能只是在找方向，还没开始真正下坡\n- 如果走到第 6 步就停了，可能还在半山腰\n- 这时候的损失值不是真正的最小值，而是『走到这儿了』的值\n\n具体问题：实际迭代 6 轮少于最低要求 50 轮\n- 原定计划：200 轮\n- 实际完成：6 轮\n- 损失下降：4.5000 → 85.7000 （下降 -81.2000，-1804%）\n\n⚠️ 风险提醒：如果把这 6 轮的结果当成最终结果，会严重高估模型的训练效果，就像学生没做完题你给他打满分一样。",
+          "suggestion": "🔧 修正建议 - 针对【完整测试-多问题叠加 的 PoissonNLLLoss 训练记录】\n\n问题定位：\n  - 涉及对象：完整测试-多问题叠加 班\n  - 损失函数：PoissonNLLLoss（备注：计数预测任务）\n  - 数据来源：test_full_v2.json\n  - 实际迭代：6 轮\n  - 预期迭代：200 轮\n  - 最低要求：50 轮\n  - 损失变化：4.5000 → 85.7000 （下降 -81.2000，-1804%）\n\n为什么不能接受这个结果：\n  梯度下降的前几步通常是在『找方向』，还没进入『真正学习』的阶段。\n  就像考试只做了前 6 道选择题就交卷，\n  你没法知道学生是不是真的掌握了全部知识点。\n  这时候的损失值 85.7000 不是『模型能达到的最低损失』，\n  而是『训练到第 6 轮时的损失』——两个完全不同的概念。\n\n具体修正步骤：\n  1. 补跑训练：至少跑到 200 轮\n  2. 检查学习率：当前 0.3，如果损失下降太慢可适当调大，如果震荡可调小\n  3. 验证标准：等到损失曲线连续 10-20 轮下降不超过 0.1%，\n     才算真正收敛，这时候再停止训练\n  4. 对比验证：补跑后导出新的损失曲线，\n     和当前 6 轮的曲线对比，确认下降趋势\n\n给业务同事的解释参考：\n  「这个班的训练没跑完，目前的数据只能看出模型在学习，\n  但还没学到最好状态。就像跑马拉松只跑了 5 公里，\n  虽然在前进但还没到终点，这时候的成绩不算数。\n  我们已经让它继续跑了，等跑到 200 公里再看最终成绩。」",
+          "details": {
+            "actual_iterations": 6,
+            "expected_iterations": 200,
+            "min_required": 50,
+            "initial_loss": 4.5,
+            "final_loss": 85.7,
+            "material": "完整测试-多问题叠加 的 PoissonNLLLoss 训练记录",
+            "raw_record": [
+              {
+                "iter": 1,
+                "loss": 4.5
+              },
+              {
+                "iter": 2,
+                "loss": 4.2
+              },
+              {
+                "iter": 3,
+                "loss": 8.8
+              },
+              {
+                "iter": 4,
+                "loss": 18.9
+              },
+              {
+                "iter": 5,
+                "loss": 40.2
+              },
+              {
+                "iter": 6,
+                "loss": 85.7
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "advisor_result": {
+    "summary": {
+      "total_records_analyzed": 0,
+      "total_issues_found": 6,
+      "issues_by_type": {
+        "learning_rate_explosion": 2,
+        "insufficient_iterations": 4
+      },
+      "high_severity_count": 6,
+      "medium_severity_count": 0,
+      "low_severity_count": 0
+    },
+    "prioritized_actions": [
+      {
+        "priority": "P0",
+        "type": "learning_rate_explosion",
+        "count": 2,
+        "message": "立即处理：2 个高优先级问题（learning_rate_explosion）",
+        "affected_classes": [
+          "完整测试-学习率爆炸",
+          "完整测试-多问题叠加"
+        ]
+      },
+      {
+        "priority": "P0",
+        "type": "insufficient_iterations",
+        "count": 4,
+        "message": "立即处理：4 个高优先级问题（insufficient_iterations）",
+        "affected_classes": [
+          "完整测试-学习率爆炸",
+          "完整测试-迭代严重不足",
+          "完整测试-缺少学习率",
+          "完整测试-多问题叠加"
+        ]
+      },
+      {
+        "priority": "P0",
+        "type": "cross_record",
+        "count": 4,
+        "message": "超过一半的班级（4/6）存在迭代不足问题，可能是训练流程配置有问题",
+        "suggestion": "检查训练脚本的 early stopping 条件和最大迭代数配置，建议统一设置最低迭代次数为 100 轮"
+      },
+      {
+        "priority": "P0",
+        "type": "cross_record",
+        "count": 2,
+        "message": "有 2 个班级出现学习率爆炸，建议检查默认学习率设置是否过大",
+        "suggestion": "建议将默认学习率降低一个数量级，或统一使用学习率衰减策略"
+      },
+      {
+        "priority": "P1",
+        "type": "cross_record",
+        "count": 5,
+        "message": "不同班级学习率差异过大（0.001000 ~ 0.500000，相差 500 倍），建议统一实验条件后再对比",
+        "suggestion": "将所有班级的学习率设置在同一数量级，或在报告中说明学习率不同的原因"
+      }
+    ],
+    "recommended_fixes": [
+      {
+        "type": "lr_inconsistency",
+        "severity": "medium",
+        "message": "不同班级学习率差异过大（0.001000 ~ 0.500000，相差 500 倍），建议统一实验条件后再对比",
+        "affected_records": [
+          "完整测试-正常收敛",
+          "完整测试-学习率爆炸",
+          "完整测试-局部极小",
+          "完整测试-迭代严重不足",
+          "完整测试-多问题叠加"
+        ],
+        "suggestion": "将所有班级的学习率设置在同一数量级，或在报告中说明学习率不同的原因"
+      },
+      {
+        "type": "systemic_insufficient_iterations",
+        "severity": "high",
+        "message": "超过一半的班级（4/6）存在迭代不足问题，可能是训练流程配置有问题",
+        "affected_records": [
+          "完整测试-学习率爆炸",
+          "完整测试-迭代严重不足",
+          "完整测试-缺少学习率",
+          "完整测试-多问题叠加"
+        ],
+        "suggestion": "检查训练脚本的 early stopping 条件和最大迭代数配置，建议统一设置最低迭代次数为 100 轮"
+      },
+      {
+        "type": "lr_explosion_pattern",
+        "severity": "high",
+        "message": "有 2 个班级出现学习率爆炸，建议检查默认学习率设置是否过大",
+        "affected_count": 2,
+        "suggestion": "建议将默认学习率降低一个数量级，或统一使用学习率衰减策略"
+      }
+    ]
+  },
+  "process_audit_trail": [
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "data_before": {
+        "raw_item": {
+          "class_name": "完整测试-正常收敛",
+          "loss_function": "MSELoss() # 标准回归任务",
+          "learning_rate": 0.01,
+          "iterations": 100,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 9.51
+            },
+            {
+              "iteration": 2,
+              "loss": 9.035
+            },
+            {
+              "iteration": 3,
+              "loss": 8.5837
+            },
+            {
+              "iteration": 4,
+              "loss": 8.1551
+            },
+            {
+              "iteration": 5,
+              "loss": 7.7478
+            },
+            {
+              "iteration": 6,
+              "loss": 7.3609
+            },
+            {
+              "iteration": 7,
+              "loss": 6.9934
+            },
+            {
+              "iteration": 8,
+              "loss": 6.6442
+            },
+            {
+              "iteration": 9,
+              "loss": 6.3125
+            },
+            {
+              "iteration": 10,
+              "loss": 5.9974
+            },
+            {
+              "iteration": 11,
+              "loss": 5.698
+            },
+            {
+              "iteration": 12,
+              "loss": 5.4136
+            },
+            {
+              "iteration": 13,
+              "loss": 5.1434
+            },
+            {
+              "iteration": 14,
+              "loss": 4.8867
+            },
+            {
+              "iteration": 15,
+              "loss": 4.6429
+            },
+            {
+              "iteration": 16,
+              "loss": 4.4113
+            },
+            {
+              "iteration": 17,
+              "loss": 4.1912
+            },
+            {
+              "iteration": 18,
+              "loss": 3.9821
+            },
+            {
+              "iteration": 19,
+              "loss": 3.7835
+            },
+            {
+              "iteration": 20,
+              "loss": 3.5949
+            },
+            {
+              "iteration": 21,
+              "loss": 3.4156
+            },
+            {
+              "iteration": 22,
+              "loss": 3.2453
+            },
+            {
+              "iteration": 23,
+              "loss": 3.0836
+            },
+            {
+              "iteration": 24,
+              "loss": 2.9299
+            },
+            {
+              "iteration": 25,
+              "loss": 2.7839
+            },
+            {
+              "iteration": 26,
+              "loss": 2.6452
+            },
+            {
+              "iteration": 27,
+              "loss": 2.5134
+            },
+            {
+              "iteration": 28,
+              "loss": 2.3883
+            },
+            {
+              "iteration": 29,
+              "loss": 2.2694
+            },
+            {
+              "iteration": 30,
+              "loss": 2.1564
+            },
+            {
+              "iteration": 31,
+              "loss": 2.0491
+            },
+            {
+              "iteration": 32,
+              "loss": 1.9471
+            },
+            {
+              "iteration": 33,
+              "loss": 1.8503
+            },
+            {
+              "iteration": 34,
+              "loss": 1.7582
+            },
+            {
+              "iteration": 35,
+              "loss": 1.6708
+            },
+            {
+              "iteration": 36,
+              "loss": 1.5878
+            },
+            {
+              "iteration": 37,
+              "loss": 1.5089
+            },
+            {
+              "iteration": 38,
+              "loss": 1.434
+            },
+            {
+              "iteration": 39,
+              "loss": 1.3628
+            },
+            {
+              "iteration": 40,
+              "loss": 1.2951
+            },
+            {
+              "iteration": 41,
+              "loss": 1.2309
+            },
+            {
+              "iteration": 42,
+              "loss": 1.1698
+            },
+            {
+              "iteration": 43,
+              "loss": 1.1118
+            },
+            {
+              "iteration": 44,
+              "loss": 1.0567
+            },
+            {
+              "iteration": 45,
+              "loss": 1.0044
+            },
+            {
+              "iteration": 46,
+              "loss": 0.9547
+            },
+            {
+              "iteration": 47,
+              "loss": 0.9074
+            },
+            {
+              "iteration": 48,
+              "loss": 0.8626
+            },
+            {
+              "iteration": 49,
+              "loss": 0.8199
+            },
+            {
+              "iteration": 50,
+              "loss": 0.7794
+            },
+            {
+              "iteration": 51,
+              "loss": 0.741
+            },
+            {
+              "iteration": 52,
+              "loss": 0.7044
+            },
+            {
+              "iteration": 53,
+              "loss": 0.6697
+            },
+            {
+              "iteration": 54,
+              "loss": 0.6367
+            },
+            {
+              "iteration": 55,
+              "loss": 0.6054
+            },
+            {
+              "iteration": 56,
+              "loss": 0.5756
+            },
+            {
+              "iteration": 57,
+              "loss": 0.5473
+            },
+            {
+              "iteration": 58,
+              "loss": 0.5205
+            },
+            {
+              "iteration": 59,
+              "loss": 0.4949
+            },
+            {
+              "iteration": 60,
+              "loss": 0.4707
+            },
+            {
+              "iteration": 61,
+              "loss": 0.4477
+            },
+            {
+              "iteration": 62,
+              "loss": 0.4258
+            },
+            {
+              "iteration": 63,
+              "loss": 0.405
+            },
+            {
+              "iteration": 64,
+              "loss": 0.3852
+            },
+            {
+              "iteration": 65,
+              "loss": 0.3665
+            },
+            {
+              "iteration": 66,
+              "loss": 0.3487
+            },
+            {
+              "iteration": 67,
+              "loss": 0.3317
+            },
+            {
+              "iteration": 68,
+              "loss": 0.3156
+            },
+            {
+              "iteration": 69,
+              "loss": 0.3004
+            },
+            {
+              "iteration": 70,
+              "loss": 0.2858
+            },
+            {
+              "iteration": 71,
+              "loss": 0.272
+            },
+            {
+              "iteration": 72,
+              "loss": 0.2589
+            },
+            {
+              "iteration": 73,
+              "loss": 0.2465
+            },
+            {
+              "iteration": 74,
+              "loss": 0.2347
+            },
+            {
+              "iteration": 75,
+              "loss": 0.2234
+            },
+            {
+              "iteration": 76,
+              "loss": 0.2128
+            },
+            {
+              "iteration": 77,
+              "loss": 0.2026
+            },
+            {
+              "iteration": 78,
+              "loss": 0.193
+            },
+            {
+              "iteration": 79,
+              "loss": 0.1838
+            },
+            {
+              "iteration": 80,
+              "loss": 0.1752
+            },
+            {
+              "iteration": 81,
+              "loss": 0.1669
+            },
+            {
+              "iteration": 82,
+              "loss": 0.1591
+            },
+            {
+              "iteration": 83,
+              "loss": 0.1516
+            },
+            {
+              "iteration": 84,
+              "loss": 0.1445
+            },
+            {
+              "iteration": 85,
+              "loss": 0.1378
+            },
+            {
+              "iteration": 86,
+              "loss": 0.1314
+            },
+            {
+              "iteration": 87,
+              "loss": 0.1253
+            },
+            {
+              "iteration": 88,
+              "loss": 0.1196
+            },
+            {
+              "iteration": 89,
+              "loss": 0.1141
+            },
+            {
+              "iteration": 90,
+              "loss": 0.1089
+            },
+            {
+              "iteration": 91,
+              "loss": 0.1039
+            },
+            {
+              "iteration": 92,
+              "loss": 0.0992
+            },
+            {
+              "iteration": 93,
+              "loss": 0.0948
+            },
+            {
+              "iteration": 94,
+              "loss": 0.0905
+            },
+            {
+              "iteration": 95,
+              "loss": 0.0865
+            },
+            {
+              "iteration": 96,
+              "loss": 0.0827
+            },
+            {
+              "iteration": 97,
+              "loss": 0.0791
+            },
+            {
+              "iteration": 98,
+              "loss": 0.0756
+            },
+            {
+              "iteration": 99,
+              "loss": 0.0723
+            },
+            {
+              "iteration": 100,
+              "loss": 0.0692
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "MSELoss",
+        "loss_function_note": "标准回归任务",
+        "learning_rate": 0.01,
+        "iterations": 100,
+        "loss_points_count": 100
+      },
+      "timestamp": "2026-06-02T19:02:40.404812"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "data_before": {
+        "raw_item": {
+          "class_name": "完整测试-学习率爆炸",
+          "loss_function": "CrossEntropyLoss()",
+          "learning_rate": 0.5,
+          "iterations": 50,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 2.5
+            },
+            {
+              "iteration": 2,
+              "loss": 2.3
+            },
+            {
+              "iteration": 3,
+              "loss": 2.1
+            },
+            {
+              "iteration": 4,
+              "loss": 3.5
+            },
+            {
+              "iteration": 5,
+              "loss": 6.8
+            },
+            {
+              "iteration": 6,
+              "loss": 12.4
+            },
+            {
+              "iteration": 7,
+              "loss": 25.6
+            },
+            {
+              "iteration": 8,
+              "loss": 52.1
+            },
+            {
+              "iteration": 9,
+              "loss": 105.3
+            },
+            {
+              "iteration": 10,
+              "loss": 210.8
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "CrossEntropyLoss",
+        "loss_function_note": "",
+        "learning_rate": 0.5,
+        "iterations": 50,
+        "loss_points_count": 10
+      },
+      "timestamp": "2026-06-02T19:02:40.404853"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "data_before": {
+        "raw_item": {
+          "class_name": "完整测试-局部极小",
+          "loss_function": "BCEWithLogitsLoss() # 二分类任务",
+          "learning_rate": 0.001,
+          "iterations": 120,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 4.5
+            },
+            {
+              "iteration": 2,
+              "loss": 4.05
+            },
+            {
+              "iteration": 3,
+              "loss": 3.645
+            },
+            {
+              "iteration": 4,
+              "loss": 3.2805
+            },
+            {
+              "iteration": 5,
+              "loss": 2.9525
+            },
+            {
+              "iteration": 6,
+              "loss": 2.6572
+            },
+            {
+              "iteration": 7,
+              "loss": 2.3915
+            },
+            {
+              "iteration": 8,
+              "loss": 2.1523
+            },
+            {
+              "iteration": 9,
+              "loss": 1.9371
+            },
+            {
+              "iteration": 10,
+              "loss": 1.7434
+            },
+            {
+              "iteration": 11,
+              "loss": 1.5691
+            },
+            {
+              "iteration": 12,
+              "loss": 1.4121
+            },
+            {
+              "iteration": 13,
+              "loss": 1.2709
+            },
+            {
+              "iteration": 14,
+              "loss": 1.1438
+            },
+            {
+              "iteration": 15,
+              "loss": 1.0295
+            },
+            {
+              "iteration": 16,
+              "loss": 0.9265
+            },
+            {
+              "iteration": 17,
+              "loss": 0.8339
+            },
+            {
+              "iteration": 18,
+              "loss": 0.7505
+            },
+            {
+              "iteration": 19,
+              "loss": 0.6754
+            },
+            {
+              "iteration": 20,
+              "loss": 0.6079
+            },
+            {
+              "iteration": 21,
+              "loss": 0.848
+            },
+            {
+              "iteration": 22,
+              "loss": 0.85
+            },
+            {
+              "iteration": 23,
+              "loss": 0.852
+            },
+            {
+              "iteration": 24,
+              "loss": 0.854
+            },
+            {
+              "iteration": 25,
+              "loss": 0.846
+            },
+            {
+              "iteration": 26,
+              "loss": 0.848
+            },
+            {
+              "iteration": 27,
+              "loss": 0.85
+            },
+            {
+              "iteration": 28,
+              "loss": 0.852
+            },
+            {
+              "iteration": 29,
+              "loss": 0.854
+            },
+            {
+              "iteration": 30,
+              "loss": 0.846
+            },
+            {
+              "iteration": 31,
+              "loss": 0.848
+            },
+            {
+              "iteration": 32,
+              "loss": 0.85
+            },
+            {
+              "iteration": 33,
+              "loss": 0.852
+            },
+            {
+              "iteration": 34,
+              "loss": 0.854
+            },
+            {
+              "iteration": 35,
+              "loss": 0.846
+            },
+            {
+              "iteration": 36,
+              "loss": 0.848
+            },
+            {
+              "iteration": 37,
+              "loss": 0.85
+            },
+            {
+              "iteration": 38,
+              "loss": 0.852
+            },
+            {
+              "iteration": 39,
+              "loss": 0.854
+            },
+            {
+              "iteration": 40,
+              "loss": 0.846
+            },
+            {
+              "iteration": 41,
+              "loss": 0.848
+            },
+            {
+              "iteration": 42,
+              "loss": 0.85
+            },
+            {
+              "iteration": 43,
+              "loss": 0.852
+            },
+            {
+              "iteration": 44,
+              "loss": 0.854
+            },
+            {
+              "iteration": 45,
+              "loss": 0.846
+            },
+            {
+              "iteration": 46,
+              "loss": 0.848
+            },
+            {
+              "iteration": 47,
+              "loss": 0.85
+            },
+            {
+              "iteration": 48,
+              "loss": 0.852
+            },
+            {
+              "iteration": 49,
+              "loss": 0.854
+            },
+            {
+              "iteration": 50,
+              "loss": 0.846
+            },
+            {
+              "iteration": 51,
+              "loss": 0.848
+            },
+            {
+              "iteration": 52,
+              "loss": 0.85
+            },
+            {
+              "iteration": 53,
+              "loss": 0.852
+            },
+            {
+              "iteration": 54,
+              "loss": 0.854
+            },
+            {
+              "iteration": 55,
+              "loss": 0.846
+            },
+            {
+              "iteration": 56,
+              "loss": 0.848
+            },
+            {
+              "iteration": 57,
+              "loss": 0.85
+            },
+            {
+              "iteration": 58,
+              "loss": 0.852
+            },
+            {
+              "iteration": 59,
+              "loss": 0.854
+            },
+            {
+              "iteration": 60,
+              "loss": 0.846
+            },
+            {
+              "iteration": 61,
+              "loss": 0.848
+            },
+            {
+              "iteration": 62,
+              "loss": 0.85
+            },
+            {
+              "iteration": 63,
+              "loss": 0.852
+            },
+            {
+              "iteration": 64,
+              "loss": 0.854
+            },
+            {
+              "iteration": 65,
+              "loss": 0.846
+            },
+            {
+              "iteration": 66,
+              "loss": 0.848
+            },
+            {
+              "iteration": 67,
+              "loss": 0.85
+            },
+            {
+              "iteration": 68,
+              "loss": 0.852
+            },
+            {
+              "iteration": 69,
+              "loss": 0.854
+            },
+            {
+              "iteration": 70,
+              "loss": 0.846
+            },
+            {
+              "iteration": 71,
+              "loss": 0.848
+            },
+            {
+              "iteration": 72,
+              "loss": 0.85
+            },
+            {
+              "iteration": 73,
+              "loss": 0.852
+            },
+            {
+              "iteration": 74,
+              "loss": 0.854
+            },
+            {
+              "iteration": 75,
+              "loss": 0.846
+            },
+            {
+              "iteration": 76,
+              "loss": 0.848
+            },
+            {
+              "iteration": 77,
+              "loss": 0.85
+            },
+            {
+              "iteration": 78,
+              "loss": 0.852
+            },
+            {
+              "iteration": 79,
+              "loss": 0.854
+            },
+            {
+              "iteration": 80,
+              "loss": 0.846
+            },
+            {
+              "iteration": 81,
+              "loss": 0.848
+            },
+            {
+              "iteration": 82,
+              "loss": 0.85
+            },
+            {
+              "iteration": 83,
+              "loss": 0.852
+            },
+            {
+              "iteration": 84,
+              "loss": 0.854
+            },
+            {
+              "iteration": 85,
+              "loss": 0.846
+            },
+            {
+              "iteration": 86,
+              "loss": 0.848
+            },
+            {
+              "iteration": 87,
+              "loss": 0.85
+            },
+            {
+              "iteration": 88,
+              "loss": 0.852
+            },
+            {
+              "iteration": 89,
+              "loss": 0.854
+            },
+            {
+              "iteration": 90,
+              "loss": 0.846
+            },
+            {
+              "iteration": 91,
+              "loss": 0.851
+            },
+            {
+              "iteration": 92,
+              "loss": 0.852
+            },
+            {
+              "iteration": 93,
+              "loss": 0.853
+            },
+            {
+              "iteration": 94,
+              "loss": 0.854
+            },
+            {
+              "iteration": 95,
+              "loss": 0.855
+            },
+            {
+              "iteration": 96,
+              "loss": 0.856
+            },
+            {
+              "iteration": 97,
+              "loss": 0.857
+            },
+            {
+              "iteration": 98,
+              "loss": 0.858
+            },
+            {
+              "iteration": 99,
+              "loss": 0.859
+            },
+            {
+              "iteration": 100,
+              "loss": 0.86
+            },
+            {
+              "iteration": 101,
+              "loss": 0.861
+            },
+            {
+              "iteration": 102,
+              "loss": 0.862
+            },
+            {
+              "iteration": 103,
+              "loss": 0.863
+            },
+            {
+              "iteration": 104,
+              "loss": 0.864
+            },
+            {
+              "iteration": 105,
+              "loss": 0.865
+            },
+            {
+              "iteration": 106,
+              "loss": 0.866
+            },
+            {
+              "iteration": 107,
+              "loss": 0.867
+            },
+            {
+              "iteration": 108,
+              "loss": 0.868
+            },
+            {
+              "iteration": 109,
+              "loss": 0.869
+            },
+            {
+              "iteration": 110,
+              "loss": 0.87
+            },
+            {
+              "iteration": 111,
+              "loss": 0.871
+            },
+            {
+              "iteration": 112,
+              "loss": 0.872
+            },
+            {
+              "iteration": 113,
+              "loss": 0.873
+            },
+            {
+              "iteration": 114,
+              "loss": 0.874
+            },
+            {
+              "iteration": 115,
+              "loss": 0.875
+            },
+            {
+              "iteration": 116,
+              "loss": 0.876
+            },
+            {
+              "iteration": 117,
+              "loss": 0.877
+            },
+            {
+              "iteration": 118,
+              "loss": 0.878
+            },
+            {
+              "iteration": 119,
+              "loss": 0.879
+            },
+            {
+              "iteration": 120,
+              "loss": 0.88
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "BCEWithLogitsLoss",
+        "loss_function_note": "二分类任务",
+        "learning_rate": 0.001,
+        "iterations": 120,
+        "loss_points_count": 120
+      },
+      "timestamp": "2026-06-02T19:02:40.405174"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "data_before": {
+        "raw_item": {
+          "class_name": "完整测试-迭代严重不足",
+          "loss_function": "SmoothL1Loss() # 对异常值稳健",
+          "learning_rate": 0.01,
+          "iterations": 200,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 7.82
+            },
+            {
+              "iteration": 2,
+              "loss": 7.1944
+            },
+            {
+              "iteration": 3,
+              "loss": 6.6188
+            },
+            {
+              "iteration": 4,
+              "loss": 6.0893
+            },
+            {
+              "iteration": 5,
+              "loss": 5.6022
+            },
+            {
+              "iteration": 6,
+              "loss": 5.154
+            },
+            {
+              "iteration": 7,
+              "loss": 4.7417
+            },
+            {
+              "iteration": 8,
+              "loss": 4.3624
+            },
+            {
+              "iteration": 9,
+              "loss": 4.0134
+            },
+            {
+              "iteration": 10,
+              "loss": 3.6923
+            },
+            {
+              "iteration": 11,
+              "loss": 3.3969
+            },
+            {
+              "iteration": 12,
+              "loss": 3.1252
+            },
+            {
+              "iteration": 13,
+              "loss": 2.8752
+            },
+            {
+              "iteration": 14,
+              "loss": 2.6451
+            },
+            {
+              "iteration": 15,
+              "loss": 2.4335
+            },
+            {
+              "iteration": 16,
+              "loss": 2.2388
+            },
+            {
+              "iteration": 17,
+              "loss": 2.0597
+            },
+            {
+              "iteration": 18,
+              "loss": 1.895
+            },
+            {
+              "iteration": 19,
+              "loss": 1.7434
+            },
+            {
+              "iteration": 20,
+              "loss": 1.6039
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "SmoothL1Loss",
+        "loss_function_note": "对异常值稳健",
+        "learning_rate": 0.01,
+        "iterations": 200,
+        "loss_points_count": 20
+      },
+      "timestamp": "2026-06-02T19:02:40.405232"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "data_before": {
+        "raw_item": {
+          "class_name": "完整测试-缺少学习率",
+          "loss_function": "L1Loss()",
+          "iterations": 100,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 4.7
+            },
+            {
+              "iteration": 2,
+              "loss": 4.418
+            },
+            {
+              "iteration": 3,
+              "loss": 4.1529
+            },
+            {
+              "iteration": 4,
+              "loss": 3.9037
+            },
+            {
+              "iteration": 5,
+              "loss": 3.6695
+            },
+            {
+              "iteration": 6,
+              "loss": 3.4493
+            },
+            {
+              "iteration": 7,
+              "loss": 3.2424
+            },
+            {
+              "iteration": 8,
+              "loss": 3.0478
+            },
+            {
+              "iteration": 9,
+              "loss": 2.865
+            },
+            {
+              "iteration": 10,
+              "loss": 2.6931
+            },
+            {
+              "iteration": 11,
+              "loss": 2.5315
+            },
+            {
+              "iteration": 12,
+              "loss": 2.3796
+            },
+            {
+              "iteration": 13,
+              "loss": 2.2368
+            },
+            {
+              "iteration": 14,
+              "loss": 2.1026
+            },
+            {
+              "iteration": 15,
+              "loss": 1.9765
+            },
+            {
+              "iteration": 16,
+              "loss": 1.8579
+            },
+            {
+              "iteration": 17,
+              "loss": 1.7464
+            },
+            {
+              "iteration": 18,
+              "loss": 1.6416
+            },
+            {
+              "iteration": 19,
+              "loss": 1.5431
+            },
+            {
+              "iteration": 20,
+              "loss": 1.4505
+            },
+            {
+              "iteration": 21,
+              "loss": 1.3635
+            },
+            {
+              "iteration": 22,
+              "loss": 1.2817
+            },
+            {
+              "iteration": 23,
+              "loss": 1.2048
+            },
+            {
+              "iteration": 24,
+              "loss": 1.1325
+            },
+            {
+              "iteration": 25,
+              "loss": 1.0646
+            },
+            {
+              "iteration": 26,
+              "loss": 1.0007
+            },
+            {
+              "iteration": 27,
+              "loss": 0.9406
+            },
+            {
+              "iteration": 28,
+              "loss": 0.8842
+            },
+            {
+              "iteration": 29,
+              "loss": 0.8311
+            },
+            {
+              "iteration": 30,
+              "loss": 0.7813
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "L1Loss",
+        "loss_function_note": "",
+        "learning_rate": null,
+        "iterations": 100,
+        "loss_points_count": 30
+      },
+      "timestamp": "2026-06-02T19:02:40.405335"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "data_before": {
+        "raw_item": {
+          "class_name": "完整测试-多问题叠加",
+          "loss_function": "PoissonNLLLoss() # 计数预测任务",
+          "learning_rate": 0.3,
+          "iterations": 200,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 4.5
+            },
+            {
+              "iteration": 2,
+              "loss": 4.2
+            },
+            {
+              "iteration": 3,
+              "loss": 8.8
+            },
+            {
+              "iteration": 4,
+              "loss": 18.9
+            },
+            {
+              "iteration": 5,
+              "loss": 40.2
+            },
+            {
+              "iteration": 6,
+              "loss": 85.7
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "PoissonNLLLoss",
+        "loss_function_note": "计数预测任务",
+        "learning_rate": 0.3,
+        "iterations": 200,
+        "loss_points_count": 6
+      },
+      "timestamp": "2026-06-02T19:02:40.405356"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "loss_count": 100,
+        "first_loss": 9.51,
+        "last_loss": 0.0692
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 100
+      },
+      "timestamp": "2026-06-02T19:02:40.405395"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 100
+      },
+      "timestamp": "2026-06-02T19:02:40.405411"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 100
+      },
+      "timestamp": "2026-06-02T19:02:40.405463"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "final_loss": 0.0692
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 100
+      },
+      "timestamp": "2026-06-02T19:02:40.405467"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.5,
+        "recorded_iterations": 50,
+        "loss_count": 10,
+        "first_loss": 2.5,
+        "last_loss": 210.8
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:02:40.405472"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.5,
+        "recorded_iterations": 50,
+        "learning_rate_ok": false,
+        "explosive_points_count": 4
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:02:40.405487"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.5,
+        "recorded_iterations": 50,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:02:40.405489"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.5,
+        "recorded_iterations": 50,
+        "iteration_ok": false,
+        "issues_count": 2,
+        "final_loss": 210.8
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 2,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:02:40.405508"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": 0.001,
+        "recorded_iterations": 120,
+        "loss_count": 120,
+        "first_loss": 4.5,
+        "last_loss": 0.88
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 120
+      },
+      "timestamp": "2026-06-02T19:02:40.405522"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": 0.001,
+        "recorded_iterations": 120,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 120
+      },
+      "timestamp": "2026-06-02T19:02:40.405536"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": 0.001,
+        "recorded_iterations": 120,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 120
+      },
+      "timestamp": "2026-06-02T19:02:40.405592"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": 0.001,
+        "recorded_iterations": 120,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "final_loss": 0.88
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 120
+      },
+      "timestamp": "2026-06-02T19:02:40.405595"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "data_before": {
+        "loss_function": "SmoothL1Loss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 200,
+        "loss_count": 20,
+        "first_loss": 7.82,
+        "last_loss": 1.6039
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 20
+      },
+      "timestamp": "2026-06-02T19:02:40.405599"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "data_before": {
+        "loss_function": "SmoothL1Loss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 200,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 20
+      },
+      "timestamp": "2026-06-02T19:02:40.405603"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "data_before": {
+        "loss_function": "SmoothL1Loss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 200,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 20
+      },
+      "timestamp": "2026-06-02T19:02:40.405610"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "data_before": {
+        "loss_function": "SmoothL1Loss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 200,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 1.6039
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 20
+      },
+      "timestamp": "2026-06-02T19:02:40.405623"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "data_before": {
+        "loss_function": "L1Loss",
+        "learning_rate": null,
+        "recorded_iterations": 100,
+        "loss_count": 30,
+        "first_loss": 4.7,
+        "last_loss": 0.7813
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 30
+      },
+      "timestamp": "2026-06-02T19:02:40.405628"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "data_before": {
+        "loss_function": "L1Loss",
+        "learning_rate": null,
+        "recorded_iterations": 100,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 30
+      },
+      "timestamp": "2026-06-02T19:02:40.405630"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "data_before": {
+        "loss_function": "L1Loss",
+        "learning_rate": null,
+        "recorded_iterations": 100,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 30
+      },
+      "timestamp": "2026-06-02T19:02:40.405641"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "data_before": {
+        "loss_function": "L1Loss",
+        "learning_rate": null,
+        "recorded_iterations": 100,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 0.7813
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 30
+      },
+      "timestamp": "2026-06-02T19:02:40.405653"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "data_before": {
+        "loss_function": "PoissonNLLLoss",
+        "learning_rate": 0.3,
+        "recorded_iterations": 200,
+        "loss_count": 6,
+        "first_loss": 4.5,
+        "last_loss": 85.7
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 6
+      },
+      "timestamp": "2026-06-02T19:02:40.405656"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "data_before": {
+        "loss_function": "PoissonNLLLoss",
+        "learning_rate": 0.3,
+        "recorded_iterations": 200,
+        "learning_rate_ok": false,
+        "explosive_points_count": 4
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 1,
+        "loss_trend_length": 6
+      },
+      "timestamp": "2026-06-02T19:02:40.405663"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "data_before": {
+        "loss_function": "PoissonNLLLoss",
+        "learning_rate": 0.3,
+        "recorded_iterations": 200,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 1,
+        "loss_trend_length": 6
+      },
+      "timestamp": "2026-06-02T19:02:40.405664"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "data_before": {
+        "loss_function": "PoissonNLLLoss",
+        "learning_rate": 0.3,
+        "recorded_iterations": 200,
+        "iteration_ok": false,
+        "issues_count": 2,
+        "final_loss": 85.7
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 2,
+        "loss_trend_length": 6
+      },
+      "timestamp": "2026-06-02T19:02:40.405674"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "data_before": {
+        "issues_count": 0,
+        "issue_types": []
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 0
+      },
+      "timestamp": "2026-06-02T19:02:40.405694"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_full_v2.json_item0",
+      "class_name": "完整测试-正常收敛",
+      "data_before": {
+        "issues_count": 0,
+        "issue_types": []
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 0
+      },
+      "timestamp": "2026-06-02T19:02:40.405696"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "data_before": {
+        "issues_count": 2,
+        "issue_types": [
+          "learning_rate_explosion",
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 2
+      },
+      "timestamp": "2026-06-02T19:02:40.405698"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_full_v2.json_item1",
+      "class_name": "完整测试-学习率爆炸",
+      "data_before": {
+        "issues_count": 2,
+        "issue_types": [
+          "learning_rate_explosion",
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 2
+      },
+      "timestamp": "2026-06-02T19:02:40.405719"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "data_before": {
+        "issues_count": 0,
+        "issue_types": []
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 0
+      },
+      "timestamp": "2026-06-02T19:02:40.405721"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_full_v2.json_item2",
+      "class_name": "完整测试-局部极小",
+      "data_before": {
+        "issues_count": 0,
+        "issue_types": []
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 0
+      },
+      "timestamp": "2026-06-02T19:02:40.405723"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:02:40.405728"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_full_v2.json_item3",
+      "class_name": "完整测试-迭代严重不足",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:02:40.405737"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:02:40.405739"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_full_v2.json_item4",
+      "class_name": "完整测试-缺少学习率",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:02:40.405746"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "data_before": {
+        "issues_count": 2,
+        "issue_types": [
+          "learning_rate_explosion",
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 2
+      },
+      "timestamp": "2026-06-02T19:02:40.405748"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_full_v2.json_item5",
+      "class_name": "完整测试-多问题叠加",
+      "data_before": {
+        "issues_count": 2,
+        "issue_types": [
+          "learning_rate_explosion",
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 2
+      },
+      "timestamp": "2026-06-02T19:02:40.405759"
+    }
+  ]
+}

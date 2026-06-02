@@ -1,0 +1,1032 @@
+{
+  "generated_at": "2026-06-02T19:13:10.929320",
+  "timestamp": "20260602_191310",
+  "records": [
+    {
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "original_class_name": "高三5班",
+      "loss_function": "MSELoss",
+      "loss_function_note": "标准回归任务，注意标签归一化到0-1",
+      "learning_rate": 0.01,
+      "learning_rate_source": "text",
+      "iterations": 1,
+      "actual_iterations": 20,
+      "source_file": "test_data.txt",
+      "is_learning_rate_missing": false,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 12.3456,
+          "raw_line": "iter: 1, loss: 12.3456",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 11.892,
+          "raw_line": "iter: 2, loss: 11.8920",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 11.456,
+          "raw_line": "iter: 3, loss: 11.4560",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 11.037,
+          "raw_line": "iter: 4, loss: 11.0370",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 10.635,
+          "raw_line": "iter: 5, loss: 10.6350",
+          "note": ""
+        },
+        {
+          "iteration": 10,
+          "loss_value": 8.923,
+          "raw_line": "iter: 10, loss: 8.9230",
+          "note": ""
+        },
+        {
+          "iteration": 20,
+          "loss_value": 6.543,
+          "raw_line": "iter: 20, loss: 6.5430",
+          "note": ""
+        },
+        {
+          "iteration": 30,
+          "loss_value": 4.876,
+          "raw_line": "iter: 30, loss: 4.8760",
+          "note": ""
+        },
+        {
+          "iteration": 40,
+          "loss_value": 3.721,
+          "raw_line": "iter: 40, loss: 3.7210",
+          "note": ""
+        },
+        {
+          "iteration": 50,
+          "loss_value": 2.893,
+          "raw_line": "iter: 50, loss: 2.8930",
+          "note": ""
+        },
+        {
+          "iteration": 60,
+          "loss_value": 2.301,
+          "raw_line": "iter: 60, loss: 2.3010",
+          "note": ""
+        },
+        {
+          "iteration": 70,
+          "loss_value": 1.865,
+          "raw_line": "iter: 70, loss: 1.8650",
+          "note": ""
+        },
+        {
+          "iteration": 80,
+          "loss_value": 1.534,
+          "raw_line": "iter: 80, loss: 1.5340",
+          "note": ""
+        },
+        {
+          "iteration": 90,
+          "loss_value": 1.282,
+          "raw_line": "iter: 90, loss: 1.2820",
+          "note": ""
+        },
+        {
+          "iteration": 100,
+          "loss_value": 1.087,
+          "raw_line": "iter: 100, loss: 1.0870",
+          "note": ""
+        },
+        {
+          "iteration": 110,
+          "loss_value": 0.935,
+          "raw_line": "iter: 110, loss: 0.9350",
+          "note": ""
+        },
+        {
+          "iteration": 120,
+          "loss_value": 0.816,
+          "raw_line": "iter: 120, loss: 0.8160",
+          "note": ""
+        },
+        {
+          "iteration": 130,
+          "loss_value": 0.722,
+          "raw_line": "iter: 130, loss: 0.7220",
+          "note": ""
+        },
+        {
+          "iteration": 140,
+          "loss_value": 0.648,
+          "raw_line": "iter: 140, loss: 0.6480",
+          "note": ""
+        },
+        {
+          "iteration": 150,
+          "loss_value": 0.59,
+          "raw_line": "iter: 150, loss: 0.5900",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "original_class_name": "高三6班",
+      "loss_function": "CrossEntropyLoss",
+      "loss_function_note": "多分类任务，共10类",
+      "learning_rate": null,
+      "learning_rate_source": "text",
+      "iterations": 1,
+      "actual_iterations": 10,
+      "source_file": "test_data.txt",
+      "is_learning_rate_missing": true,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 3.4521,
+          "raw_line": "iter: 1, loss: 3.4521",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 3.21,
+          "raw_line": "iter: 2, loss: 3.2100",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 2.987,
+          "raw_line": "iter: 3, loss: 2.9870",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 2.783,
+          "raw_line": "iter: 4, loss: 2.7830",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 2.596,
+          "raw_line": "iter: 5, loss: 2.5960",
+          "note": ""
+        },
+        {
+          "iteration": 10,
+          "loss_value": 1.923,
+          "raw_line": "iter: 10, loss: 1.9230",
+          "note": ""
+        },
+        {
+          "iteration": 20,
+          "loss_value": 1.234,
+          "raw_line": "iter: 20, loss: 1.2340",
+          "note": ""
+        },
+        {
+          "iteration": 30,
+          "loss_value": 0.876,
+          "raw_line": "iter: 30, loss: 0.8760",
+          "note": ""
+        },
+        {
+          "iteration": 40,
+          "loss_value": 0.654,
+          "raw_line": "iter: 40, loss: 0.6540",
+          "note": ""
+        },
+        {
+          "iteration": 50,
+          "loss_value": 0.512,
+          "raw_line": "iter: 50, loss: 0.5120",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "original_class_name": "高三7班",
+      "loss_function": "BCELoss",
+      "loss_function_note": "二分类，使用sigmoid",
+      "learning_rate": 0.02,
+      "learning_rate_source": "text",
+      "iterations": 0,
+      "actual_iterations": 10,
+      "source_file": "test_data.txt",
+      "is_learning_rate_missing": false,
+      "loss_history": [
+        {
+          "iteration": 1,
+          "loss_value": 4.321,
+          "raw_line": "1, 4.3210",
+          "note": ""
+        },
+        {
+          "iteration": 2,
+          "loss_value": 4.156,
+          "raw_line": "2, 4.1560",
+          "note": ""
+        },
+        {
+          "iteration": 3,
+          "loss_value": 3.998,
+          "raw_line": "3, 3.9980",
+          "note": ""
+        },
+        {
+          "iteration": 4,
+          "loss_value": 3.847,
+          "raw_line": "4, 3.8470",
+          "note": ""
+        },
+        {
+          "iteration": 5,
+          "loss_value": 3.703,
+          "raw_line": "5, 3.7030",
+          "note": ""
+        },
+        {
+          "iteration": 10,
+          "loss_value": 3.056,
+          "raw_line": "10, 3.0560",
+          "note": ""
+        },
+        {
+          "iteration": 20,
+          "loss_value": 2.123,
+          "raw_line": "20, 2.1230",
+          "note": ""
+        },
+        {
+          "iteration": 30,
+          "loss_value": 1.567,
+          "raw_line": "30, 1.5670",
+          "note": ""
+        },
+        {
+          "iteration": 40,
+          "loss_value": 1.203,
+          "raw_line": "40, 1.2030",
+          "note": ""
+        },
+        {
+          "iteration": 50,
+          "loss_value": 0.956,
+          "raw_line": "50, 0.9560",
+          "note": ""
+        }
+      ]
+    }
+  ],
+  "check_results": [
+    {
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "learning_rate_ok": true,
+      "convergence_ok": true,
+      "iteration_ok": false,
+      "loss_trend": [
+        12.3456,
+        11.892,
+        11.456,
+        11.037,
+        10.635,
+        8.923,
+        6.543,
+        4.876,
+        3.721,
+        2.893,
+        2.301,
+        1.865,
+        1.534,
+        1.282,
+        1.087,
+        0.935,
+        0.816,
+        0.722,
+        0.648,
+        0.59
+      ],
+      "explosive_points": [],
+      "plateau_points": [],
+      "issues": [
+        {
+          "issue_type": "insufficient_iterations",
+          "severity": "high",
+          "message": "⚠️ 迭代次数不足警告\n\n这个训练记录只跑了 20 轮就停了。\n\n打个比方：你让学生做一套 100 道题的练习册来检验他有没有掌握知识点，\n结果他做了 20 道就说做完了。\n他可能是真的全都会了所以不用做了，但更可能是\n做了几题嫌麻烦就交了，或者中间被打断了。\n\n问题在于：只看前 20 道题的正确率，\n你没法判断他是真的掌握了，还是刚好前 20 题简单，\n或者他根本没认真做。\n\n回到梯度下降的问题上：\n- 梯度下降就像下山，要一步步走到谷底\n- 前几步可能只是在找方向，还没开始真正下坡\n- 如果走到第 20 步就停了，可能还在半山腰\n- 这时候的损失值不是真正的最小值，而是『走到这儿了』的值\n\n具体问题：实际迭代 20 轮少于最低要求 30 轮\n- 原定计划：1 轮\n- 实际完成：20 轮\n- 损失下降：12.3456 → 0.5900 （下降 11.7556，95%）\n\n⚠️ 风险提醒：如果把这 20 轮的结果当成最终结果，会严重高估模型的训练效果，就像学生没做完题你给他打满分一样。",
+          "suggestion": "🔧 修正建议 - 针对【高三5班 的 MSELoss 训练记录】\n\n问题定位：\n  - 涉及对象：高三5班 班\n  - 损失函数：MSELoss（备注：标准回归任务，注意标签归一化到0-1）\n  - 数据来源：test_data.txt\n  - 实际迭代：20 轮\n  - 预期迭代：1 轮\n  - 最低要求：30 轮\n  - 损失变化：12.3456 → 0.5900 （下降 11.7556，95%）\n\n为什么不能接受这个结果：\n  梯度下降的前几步通常是在『找方向』，还没进入『真正学习』的阶段。\n  就像考试只做了前 20 道选择题就交卷，\n  你没法知道学生是不是真的掌握了全部知识点。\n  这时候的损失值 0.5900 不是『模型能达到的最低损失』，\n  而是『训练到第 20 轮时的损失』——两个完全不同的概念。\n\n具体修正步骤：\n  1. 补跑训练：至少跑到 30 轮\n  2. 检查学习率：当前 0.01，如果损失下降太慢可适当调大，如果震荡可调小\n  3. 验证标准：等到损失曲线连续 10-20 轮下降不超过 0.1%，\n     才算真正收敛，这时候再停止训练\n  4. 对比验证：补跑后导出新的损失曲线，\n     和当前 20 轮的曲线对比，确认下降趋势\n\n给业务同事的解释参考：\n  「这个班的训练没跑完，目前的数据只能看出模型在学习，\n  但还没学到最好状态。就像跑马拉松只跑了 5 公里，\n  虽然在前进但还没到终点，这时候的成绩不算数。\n  我们已经让它继续跑了，等跑到 30 公里再看最终成绩。」",
+          "details": {
+            "actual_iterations": 20,
+            "expected_iterations": 1,
+            "min_required": 30,
+            "initial_loss": 12.3456,
+            "final_loss": 0.59,
+            "material": "高三5班 的 MSELoss 训练记录",
+            "raw_record": [
+              {
+                "iter": 1,
+                "loss": 12.3456
+              },
+              {
+                "iter": 2,
+                "loss": 11.892
+              },
+              {
+                "iter": 3,
+                "loss": 11.456
+              },
+              {
+                "iter": 4,
+                "loss": 11.037
+              },
+              {
+                "iter": 5,
+                "loss": 10.635
+              },
+              {
+                "iter": 10,
+                "loss": 8.923
+              },
+              {
+                "iter": 20,
+                "loss": 6.543
+              },
+              {
+                "iter": 30,
+                "loss": 4.876
+              },
+              {
+                "iter": 40,
+                "loss": 3.721
+              },
+              {
+                "iter": 50,
+                "loss": 2.893
+              },
+              {
+                "iter": 60,
+                "loss": 2.301
+              },
+              {
+                "iter": 70,
+                "loss": 1.865
+              },
+              {
+                "iter": 80,
+                "loss": 1.534
+              },
+              {
+                "iter": 90,
+                "loss": 1.282
+              },
+              {
+                "iter": 100,
+                "loss": 1.087
+              },
+              {
+                "iter": 110,
+                "loss": 0.935
+              },
+              {
+                "iter": 120,
+                "loss": 0.816
+              },
+              {
+                "iter": 130,
+                "loss": 0.722
+              },
+              {
+                "iter": 140,
+                "loss": 0.648
+              },
+              {
+                "iter": 150,
+                "loss": 0.59
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "learning_rate_ok": true,
+      "convergence_ok": true,
+      "iteration_ok": false,
+      "loss_trend": [
+        3.4521,
+        3.21,
+        2.987,
+        2.783,
+        2.596,
+        1.923,
+        1.234,
+        0.876,
+        0.654,
+        0.512
+      ],
+      "explosive_points": [],
+      "plateau_points": [],
+      "issues": [
+        {
+          "issue_type": "insufficient_iterations",
+          "severity": "high",
+          "message": "⚠️ 迭代次数不足警告\n\n这个训练记录只跑了 10 轮就停了。\n\n打个比方：你让学生做一套 100 道题的练习册来检验他有没有掌握知识点，\n结果他做了 10 道就说做完了。\n他可能是真的全都会了所以不用做了，但更可能是\n做了几题嫌麻烦就交了，或者中间被打断了。\n\n问题在于：只看前 10 道题的正确率，\n你没法判断他是真的掌握了，还是刚好前 10 题简单，\n或者他根本没认真做。\n\n回到梯度下降的问题上：\n- 梯度下降就像下山，要一步步走到谷底\n- 前几步可能只是在找方向，还没开始真正下坡\n- 如果走到第 10 步就停了，可能还在半山腰\n- 这时候的损失值不是真正的最小值，而是『走到这儿了』的值\n\n具体问题：实际迭代 10 轮少于最低要求 30 轮\n- 原定计划：1 轮\n- 实际完成：10 轮\n- 损失下降：3.4521 → 0.5120 （下降 2.9401，85%）\n\n⚠️ 风险提醒：如果把这 10 轮的结果当成最终结果，会严重高估模型的训练效果，就像学生没做完题你给他打满分一样。",
+          "suggestion": "🔧 修正建议 - 针对【高三6班 的 CrossEntropyLoss 训练记录】\n\n问题定位：\n  - 涉及对象：高三6班 班\n  - 损失函数：CrossEntropyLoss（备注：多分类任务，共10类）\n  - 数据来源：test_data.txt\n  - 实际迭代：10 轮\n  - 预期迭代：1 轮\n  - 最低要求：30 轮\n  - 损失变化：3.4521 → 0.5120 （下降 2.9401，85%）\n\n为什么不能接受这个结果：\n  梯度下降的前几步通常是在『找方向』，还没进入『真正学习』的阶段。\n  就像考试只做了前 10 道选择题就交卷，\n  你没法知道学生是不是真的掌握了全部知识点。\n  这时候的损失值 0.5120 不是『模型能达到的最低损失』，\n  而是『训练到第 10 轮时的损失』——两个完全不同的概念。\n\n具体修正步骤：\n  1. 补跑训练：至少跑到 30 轮\n  2. ⚠️ 学习率缺失，请先补填学习率后再跑\n  3. 验证标准：等到损失曲线连续 10-20 轮下降不超过 0.1%，\n     才算真正收敛，这时候再停止训练\n  4. 对比验证：补跑后导出新的损失曲线，\n     和当前 10 轮的曲线对比，确认下降趋势\n\n给业务同事的解释参考：\n  「这个班的训练没跑完，目前的数据只能看出模型在学习，\n  但还没学到最好状态。就像跑马拉松只跑了 5 公里，\n  虽然在前进但还没到终点，这时候的成绩不算数。\n  我们已经让它继续跑了，等跑到 30 公里再看最终成绩。」",
+          "details": {
+            "actual_iterations": 10,
+            "expected_iterations": 1,
+            "min_required": 30,
+            "initial_loss": 3.4521,
+            "final_loss": 0.512,
+            "material": "高三6班 的 CrossEntropyLoss 训练记录",
+            "raw_record": [
+              {
+                "iter": 1,
+                "loss": 3.4521
+              },
+              {
+                "iter": 2,
+                "loss": 3.21
+              },
+              {
+                "iter": 3,
+                "loss": 2.987
+              },
+              {
+                "iter": 4,
+                "loss": 2.783
+              },
+              {
+                "iter": 5,
+                "loss": 2.596
+              },
+              {
+                "iter": 10,
+                "loss": 1.923
+              },
+              {
+                "iter": 20,
+                "loss": 1.234
+              },
+              {
+                "iter": 30,
+                "loss": 0.876
+              },
+              {
+                "iter": 40,
+                "loss": 0.654
+              },
+              {
+                "iter": 50,
+                "loss": 0.512
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "learning_rate_ok": true,
+      "convergence_ok": true,
+      "iteration_ok": false,
+      "loss_trend": [
+        4.321,
+        4.156,
+        3.998,
+        3.847,
+        3.703,
+        3.056,
+        2.123,
+        1.567,
+        1.203,
+        0.956
+      ],
+      "explosive_points": [],
+      "plateau_points": [],
+      "issues": [
+        {
+          "issue_type": "insufficient_iterations",
+          "severity": "high",
+          "message": "⚠️ 迭代次数不足警告\n\n这个训练记录只跑了 10 轮就停了。\n\n打个比方：你让学生做一套 100 道题的练习册来检验他有没有掌握知识点，\n结果他做了 10 道就说做完了。\n他可能是真的全都会了所以不用做了，但更可能是\n做了几题嫌麻烦就交了，或者中间被打断了。\n\n问题在于：只看前 10 道题的正确率，\n你没法判断他是真的掌握了，还是刚好前 10 题简单，\n或者他根本没认真做。\n\n回到梯度下降的问题上：\n- 梯度下降就像下山，要一步步走到谷底\n- 前几步可能只是在找方向，还没开始真正下坡\n- 如果走到第 10 步就停了，可能还在半山腰\n- 这时候的损失值不是真正的最小值，而是『走到这儿了』的值\n\n具体问题：实际迭代 10 轮少于最低要求 30 轮\n- 实际完成：10 轮\n- 损失下降：4.3210 → 0.9560 （下降 3.3650，78%）\n\n⚠️ 风险提醒：如果把这 10 轮的结果当成最终结果，会严重高估模型的训练效果，就像学生没做完题你给他打满分一样。",
+          "suggestion": "🔧 修正建议 - 针对【高三7班 的 BCELoss 训练记录】\n\n问题定位：\n  - 涉及对象：高三7班 班\n  - 损失函数：BCELoss（备注：二分类，使用sigmoid）\n  - 数据来源：test_data.txt\n  - 实际迭代：10 轮\n  - 预期迭代：未填写 轮\n  - 最低要求：30 轮\n  - 损失变化：4.3210 → 0.9560 （下降 3.3650，78%）\n\n为什么不能接受这个结果：\n  梯度下降的前几步通常是在『找方向』，还没进入『真正学习』的阶段。\n  就像考试只做了前 10 道选择题就交卷，\n  你没法知道学生是不是真的掌握了全部知识点。\n  这时候的损失值 0.9560 不是『模型能达到的最低损失』，\n  而是『训练到第 10 轮时的损失』——两个完全不同的概念。\n\n具体修正步骤：\n  1. 补跑训练：至少跑到 60 轮\n     （原始记录没填预期迭代数，建议补填后再跑）\n  2. 检查学习率：当前 0.02，如果损失下降太慢可适当调大，如果震荡可调小\n  3. 验证标准：等到损失曲线连续 10-20 轮下降不超过 0.1%，\n     才算真正收敛，这时候再停止训练\n  4. 对比验证：补跑后导出新的损失曲线，\n     和当前 10 轮的曲线对比，确认下降趋势\n\n给业务同事的解释参考：\n  「这个班的训练没跑完，目前的数据只能看出模型在学习，\n  但还没学到最好状态。就像跑马拉松只跑了 5 公里，\n  虽然在前进但还没到终点，这时候的成绩不算数。\n  我们已经让它继续跑了，等跑到 60 公里再看最终成绩。」",
+          "details": {
+            "actual_iterations": 10,
+            "expected_iterations": 0,
+            "min_required": 30,
+            "initial_loss": 4.321,
+            "final_loss": 0.956,
+            "material": "高三7班 的 BCELoss 训练记录",
+            "raw_record": [
+              {
+                "iter": 1,
+                "loss": 4.321
+              },
+              {
+                "iter": 2,
+                "loss": 4.156
+              },
+              {
+                "iter": 3,
+                "loss": 3.998
+              },
+              {
+                "iter": 4,
+                "loss": 3.847
+              },
+              {
+                "iter": 5,
+                "loss": 3.703
+              },
+              {
+                "iter": 10,
+                "loss": 3.056
+              },
+              {
+                "iter": 20,
+                "loss": 2.123
+              },
+              {
+                "iter": 30,
+                "loss": 1.567
+              },
+              {
+                "iter": 40,
+                "loss": 1.203
+              },
+              {
+                "iter": 50,
+                "loss": 0.956
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "advisor_result": {
+    "summary": {
+      "total_records_analyzed": 0,
+      "total_issues_found": 3,
+      "issues_by_type": {
+        "insufficient_iterations": 3
+      },
+      "high_severity_count": 3,
+      "medium_severity_count": 0,
+      "low_severity_count": 0
+    },
+    "prioritized_actions": [
+      {
+        "priority": "P0",
+        "type": "insufficient_iterations",
+        "count": 3,
+        "message": "立即处理：3 个高优先级问题（insufficient_iterations）",
+        "affected_classes": [
+          "高三5班",
+          "高三6班",
+          "高三7班"
+        ]
+      },
+      {
+        "priority": "P0",
+        "type": "cross_record",
+        "count": 3,
+        "message": "超过一半的班级（3/3）存在迭代不足问题，可能是训练流程配置有问题",
+        "suggestion": "检查训练脚本的 early stopping 条件和最大迭代数配置，建议统一设置最低迭代次数为 100 轮"
+      }
+    ],
+    "recommended_fixes": [
+      {
+        "type": "systemic_insufficient_iterations",
+        "severity": "high",
+        "message": "超过一半的班级（3/3）存在迭代不足问题，可能是训练流程配置有问题",
+        "affected_records": [
+          "高三5班",
+          "高三6班",
+          "高三7班"
+        ],
+        "suggestion": "检查训练脚本的 early stopping 条件和最大迭代数配置，建议统一设置最低迭代次数为 100 轮"
+      }
+    ]
+  },
+  "process_audit_trail": [
+    {
+      "stage": "import",
+      "operation": "text_new_record",
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "data_before": {
+        "line": "班级：高三5班"
+      },
+      "data_after": {
+        "loss_function": "",
+        "loss_function_note": "",
+        "learning_rate": null,
+        "iterations": 0,
+        "loss_points_count": 0
+      },
+      "timestamp": "2026-06-02T19:13:10.922607"
+    },
+    {
+      "stage": "import",
+      "operation": "text_new_record",
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "data_before": {
+        "line": "班级：高三6班--临时改名测试"
+      },
+      "data_after": {
+        "loss_function": "",
+        "loss_function_note": "",
+        "learning_rate": null,
+        "iterations": 0,
+        "loss_points_count": 0
+      },
+      "timestamp": "2026-06-02T19:13:10.924411"
+    },
+    {
+      "stage": "import",
+      "operation": "text_new_record",
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "data_before": {
+        "line": "班级：高三7班"
+      },
+      "data_after": {
+        "loss_function": "",
+        "loss_function_note": "",
+        "learning_rate": null,
+        "iterations": 0,
+        "loss_points_count": 0
+      },
+      "timestamp": "2026-06-02T19:13:10.924510"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 1,
+        "loss_count": 20,
+        "first_loss": 12.3456,
+        "last_loss": 0.59
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 20
+      },
+      "timestamp": "2026-06-02T19:13:10.924702"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 1,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 20
+      },
+      "timestamp": "2026-06-02T19:13:10.924709"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 1,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 20
+      },
+      "timestamp": "2026-06-02T19:13:10.924718"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 1,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 0.59
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 20
+      },
+      "timestamp": "2026-06-02T19:13:10.924739"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": null,
+        "recorded_iterations": 1,
+        "loss_count": 10,
+        "first_loss": 3.4521,
+        "last_loss": 0.512
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:13:10.924744"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": null,
+        "recorded_iterations": 1,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:13:10.924746"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": null,
+        "recorded_iterations": 1,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:13:10.924748"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": null,
+        "recorded_iterations": 1,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 0.512
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:13:10.924758"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "data_before": {
+        "loss_function": "BCELoss",
+        "learning_rate": 0.02,
+        "recorded_iterations": 0,
+        "loss_count": 10,
+        "first_loss": 4.321,
+        "last_loss": 0.956
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:13:10.924762"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "data_before": {
+        "loss_function": "BCELoss",
+        "learning_rate": 0.02,
+        "recorded_iterations": 0,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:13:10.924776"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "data_before": {
+        "loss_function": "BCELoss",
+        "learning_rate": 0.02,
+        "recorded_iterations": 0,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:13:10.924778"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "data_before": {
+        "loss_function": "BCELoss",
+        "learning_rate": 0.02,
+        "recorded_iterations": 0,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 0.956
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:13:10.924787"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:13:10.924800"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.txt_line1",
+      "class_name": "高三5班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:13:10.924819"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:13:10.924821"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.txt_line27",
+      "class_name": "高三6班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:13:10.924828"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:13:10.924830"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.txt_line43",
+      "class_name": "高三7班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:13:10.924837"
+    }
+  ]
+}

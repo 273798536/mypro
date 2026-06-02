@@ -1,0 +1,1908 @@
+{
+  "generated_at": "2026-06-02T18:41:58.762897",
+  "snapshot_count": 35,
+  "stages": {
+    "import": [
+      {
+        "stage": "import",
+        "operation": "json_parse",
+        "record_id": "test_data.json_item0",
+        "class_name": "实验班-正常收敛",
+        "data_before": {
+          "raw_item": {
+            "class_name": "实验班-正常收敛",
+            "loss_function": "MSELoss() # 标准回归任务",
+            "学习率": 0.01,
+            "iterations": 100,
+            "loss_history": [
+              {
+                "iteration": 1,
+                "loss": 10.5
+              },
+              {
+                "iteration": 2,
+                "loss": 9.8
+              },
+              {
+                "iteration": 3,
+                "loss": 9.2
+              },
+              {
+                "iteration": 4,
+                "loss": 8.7
+              },
+              {
+                "iteration": 5,
+                "loss": 8.3
+              },
+              {
+                "iteration": 6,
+                "loss": 7.9
+              },
+              {
+                "iteration": 7,
+                "loss": 7.6
+              },
+              {
+                "iteration": 8,
+                "loss": 7.3
+              },
+              {
+                "iteration": 9,
+                "loss": 7.0
+              },
+              {
+                "iteration": 10,
+                "loss": 6.8
+              },
+              {
+                "iteration": 20,
+                "loss": 5.2
+              },
+              {
+                "iteration": 30,
+                "loss": 4.1
+              },
+              {
+                "iteration": 40,
+                "loss": 3.3
+              },
+              {
+                "iteration": 50,
+                "loss": 2.7
+              },
+              {
+                "iteration": 60,
+                "loss": 2.3
+              },
+              {
+                "iteration": 70,
+                "loss": 2.0
+              },
+              {
+                "iteration": 80,
+                "loss": 1.8
+              },
+              {
+                "iteration": 90,
+                "loss": 1.7
+              },
+              {
+                "iteration": 100,
+                "loss": 1.65
+              }
+            ]
+          }
+        },
+        "data_after": {
+          "loss_function": "MSELoss",
+          "loss_function_note": "标准回归任务",
+          "learning_rate": 0.01,
+          "iterations": 100,
+          "loss_points_count": 19
+        },
+        "timestamp": "2026-06-02T18:41:58.759005"
+      },
+      {
+        "stage": "import",
+        "operation": "json_parse",
+        "record_id": "test_data.json_item1",
+        "class_name": "实验班-学习率爆炸",
+        "data_before": {
+          "raw_item": {
+            "class_name": "实验班-学习率爆炸",
+            "loss_function": "CrossEntropyLoss()",
+            "learning_rate": 0.8,
+            "迭代次数": 50,
+            "损失曲线": [
+              [
+                1,
+                2.5
+              ],
+              [
+                2,
+                2.3
+              ],
+              [
+                3,
+                2.1
+              ],
+              [
+                4,
+                3.5
+              ],
+              [
+                5,
+                6.8
+              ],
+              [
+                6,
+                12.4
+              ],
+              [
+                7,
+                25.6
+              ],
+              [
+                8,
+                52.1
+              ]
+            ]
+          }
+        },
+        "data_after": {
+          "loss_function": "CrossEntropyLoss",
+          "loss_function_note": "",
+          "learning_rate": 0.8,
+          "iterations": 50,
+          "loss_points_count": 8
+        },
+        "timestamp": "2026-06-02T18:41:58.759085"
+      },
+      {
+        "stage": "import",
+        "operation": "json_parse",
+        "record_id": "test_data.json_item2",
+        "class_name": "实验班-局部极小",
+        "data_before": {
+          "raw_item": {
+            "class_name": "实验班-局部极小",
+            "loss_function": "BCEWithLogitsLoss() # 二分类任务",
+            "learning_rate": 0.001,
+            "iterations": 200,
+            "loss_history": [
+              {
+                "iter": 1,
+                "loss": 5.0
+              },
+              {
+                "iter": 2,
+                "loss": 4.8
+              },
+              {
+                "iter": 3,
+                "loss": 4.6
+              },
+              {
+                "iter": 4,
+                "loss": 4.4
+              },
+              {
+                "iter": 5,
+                "loss": 4.2
+              },
+              {
+                "iter": 10,
+                "loss": 3.5
+              },
+              {
+                "iter": 20,
+                "loss": 3.2
+              },
+              {
+                "iter": 30,
+                "loss": 3.15
+              },
+              {
+                "iter": 40,
+                "loss": 3.18
+              },
+              {
+                "iter": 50,
+                "loss": 3.12
+              },
+              {
+                "iter": 60,
+                "loss": 3.16
+              },
+              {
+                "iter": 70,
+                "loss": 3.14
+              },
+              {
+                "iter": 80,
+                "loss": 3.17
+              },
+              {
+                "iter": 90,
+                "loss": 3.13
+              },
+              {
+                "iter": 100,
+                "loss": 3.15
+              },
+              {
+                "iter": 110,
+                "loss": 3.16
+              },
+              {
+                "iter": 120,
+                "loss": 3.14
+              }
+            ]
+          }
+        },
+        "data_after": {
+          "loss_function": "BCEWithLogitsLoss",
+          "loss_function_note": "二分类任务",
+          "learning_rate": 0.001,
+          "iterations": 200,
+          "loss_points_count": 17
+        },
+        "timestamp": "2026-06-02T18:41:58.759135"
+      },
+      {
+        "stage": "import",
+        "operation": "json_parse",
+        "record_id": "test_data.json_item3",
+        "class_name": "实验班-迭代严重不足",
+        "data_before": {
+          "raw_item": {
+            "class_name": "实验班-迭代严重不足",
+            "loss_function": "SmoothL1Loss() # 对异常值稳健",
+            "learning_rate": 0.01,
+            "iterations": 200,
+            "loss_history": [
+              {
+                "iteration": 1,
+                "loss": 8.5
+              },
+              {
+                "iteration": 2,
+                "loss": 8.2
+              },
+              {
+                "iteration": 3,
+                "loss": 7.9
+              },
+              {
+                "iteration": 4,
+                "loss": 7.6
+              },
+              {
+                "iteration": 5,
+                "loss": 7.3
+              },
+              {
+                "iteration": 6,
+                "loss": 7.1
+              },
+              {
+                "iteration": 7,
+                "loss": 6.9
+              },
+              {
+                "iteration": 8,
+                "loss": 6.7
+              },
+              {
+                "iteration": 9,
+                "loss": 6.5
+              },
+              {
+                "iteration": 10,
+                "loss": 6.3
+              }
+            ]
+          }
+        },
+        "data_after": {
+          "loss_function": "SmoothL1Loss",
+          "loss_function_note": "对异常值稳健",
+          "learning_rate": 0.01,
+          "iterations": 200,
+          "loss_points_count": 10
+        },
+        "timestamp": "2026-06-02T18:41:58.759216"
+      },
+      {
+        "stage": "import",
+        "operation": "json_parse",
+        "record_id": "test_data.json_item4",
+        "class_name": "实验班-缺少学习率",
+        "data_before": {
+          "raw_item": {
+            "class": "实验班-缺少学习率",
+            "loss_function": "L1Loss()",
+            "iterations": 100,
+            "loss_history": [
+              {
+                "iteration": 1,
+                "loss": 5.0
+              },
+              {
+                "iteration": 5,
+                "loss": 4.5
+              },
+              {
+                "iteration": 10,
+                "loss": 4.0
+              },
+              {
+                "iteration": 15,
+                "loss": 3.6
+              },
+              {
+                "iteration": 20,
+                "loss": 3.3
+              }
+            ]
+          }
+        },
+        "data_after": {
+          "loss_function": "L1Loss",
+          "loss_function_note": "",
+          "learning_rate": null,
+          "iterations": 100,
+          "loss_points_count": 5
+        },
+        "timestamp": "2026-06-02T18:41:58.759264"
+      }
+    ],
+    "check": [
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.json_item0",
+        "class_name": "实验班-正常收敛",
+        "data_before": {
+          "loss_function": "MSELoss",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "loss_count": 19,
+          "first_loss": 10.5,
+          "last_loss": 1.65
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 19
+        },
+        "timestamp": "2026-06-02T18:41:58.759315"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.json_item0",
+        "class_name": "实验班-正常收敛",
+        "data_before": {
+          "loss_function": "MSELoss",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "learning_rate_ok": true,
+          "explosive_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 19
+        },
+        "timestamp": "2026-06-02T18:41:58.759323"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.json_item0",
+        "class_name": "实验班-正常收敛",
+        "data_before": {
+          "loss_function": "MSELoss",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 19
+        },
+        "timestamp": "2026-06-02T18:41:58.759326"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.json_item0",
+        "class_name": "实验班-正常收敛",
+        "data_before": {
+          "loss_function": "MSELoss",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "final_loss": 1.65
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "loss_trend_length": 19
+        },
+        "timestamp": "2026-06-02T18:41:58.759347"
+      },
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.json_item1",
+        "class_name": "实验班-学习率爆炸",
+        "data_before": {
+          "loss_function": "CrossEntropyLoss",
+          "learning_rate": 0.8,
+          "recorded_iterations": 50,
+          "loss_count": 8,
+          "first_loss": 2.5,
+          "last_loss": 52.1
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 8
+        },
+        "timestamp": "2026-06-02T18:41:58.759352"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.json_item1",
+        "class_name": "实验班-学习率爆炸",
+        "data_before": {
+          "loss_function": "CrossEntropyLoss",
+          "learning_rate": 0.8,
+          "recorded_iterations": 50,
+          "learning_rate_ok": false,
+          "explosive_points_count": 2
+        },
+        "data_after": {
+          "learning_rate_ok": false,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 1,
+          "loss_trend_length": 8
+        },
+        "timestamp": "2026-06-02T18:41:58.759360"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.json_item1",
+        "class_name": "实验班-学习率爆炸",
+        "data_before": {
+          "loss_function": "CrossEntropyLoss",
+          "learning_rate": 0.8,
+          "recorded_iterations": 50,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": false,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 1,
+          "loss_trend_length": 8
+        },
+        "timestamp": "2026-06-02T18:41:58.759363"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.json_item1",
+        "class_name": "实验班-学习率爆炸",
+        "data_before": {
+          "loss_function": "CrossEntropyLoss",
+          "learning_rate": 0.8,
+          "recorded_iterations": 50,
+          "iteration_ok": false,
+          "issues_count": 2,
+          "final_loss": 52.1
+        },
+        "data_after": {
+          "learning_rate_ok": false,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 2,
+          "loss_trend_length": 8
+        },
+        "timestamp": "2026-06-02T18:41:58.759374"
+      },
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.json_item2",
+        "class_name": "实验班-局部极小",
+        "data_before": {
+          "loss_function": "BCEWithLogitsLoss",
+          "learning_rate": 0.001,
+          "recorded_iterations": 200,
+          "loss_count": 17,
+          "first_loss": 5.0,
+          "last_loss": 3.14
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 17
+        },
+        "timestamp": "2026-06-02T18:41:58.759380"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.json_item2",
+        "class_name": "实验班-局部极小",
+        "data_before": {
+          "loss_function": "BCEWithLogitsLoss",
+          "learning_rate": 0.001,
+          "recorded_iterations": 200,
+          "learning_rate_ok": true,
+          "explosive_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 17
+        },
+        "timestamp": "2026-06-02T18:41:58.759383"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.json_item2",
+        "class_name": "实验班-局部极小",
+        "data_before": {
+          "loss_function": "BCEWithLogitsLoss",
+          "learning_rate": 0.001,
+          "recorded_iterations": 200,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 17
+        },
+        "timestamp": "2026-06-02T18:41:58.759386"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.json_item2",
+        "class_name": "实验班-局部极小",
+        "data_before": {
+          "loss_function": "BCEWithLogitsLoss",
+          "learning_rate": 0.001,
+          "recorded_iterations": 200,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "final_loss": 3.14
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "loss_trend_length": 17
+        },
+        "timestamp": "2026-06-02T18:41:58.759396"
+      },
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.json_item3",
+        "class_name": "实验班-迭代严重不足",
+        "data_before": {
+          "loss_function": "SmoothL1Loss",
+          "learning_rate": 0.01,
+          "recorded_iterations": 200,
+          "loss_count": 10,
+          "first_loss": 8.5,
+          "last_loss": 6.3
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T18:41:58.759399"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.json_item3",
+        "class_name": "实验班-迭代严重不足",
+        "data_before": {
+          "loss_function": "SmoothL1Loss",
+          "learning_rate": 0.01,
+          "recorded_iterations": 200,
+          "learning_rate_ok": true,
+          "explosive_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T18:41:58.759403"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.json_item3",
+        "class_name": "实验班-迭代严重不足",
+        "data_before": {
+          "loss_function": "SmoothL1Loss",
+          "learning_rate": 0.01,
+          "recorded_iterations": 200,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T18:41:58.759405"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.json_item3",
+        "class_name": "实验班-迭代严重不足",
+        "data_before": {
+          "loss_function": "SmoothL1Loss",
+          "learning_rate": 0.01,
+          "recorded_iterations": 200,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "final_loss": 6.3
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T18:41:58.759413"
+      },
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.json_item4",
+        "class_name": "实验班-缺少学习率",
+        "data_before": {
+          "loss_function": "L1Loss",
+          "learning_rate": null,
+          "recorded_iterations": 100,
+          "loss_count": 5,
+          "first_loss": 5.0,
+          "last_loss": 3.3
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 5
+        },
+        "timestamp": "2026-06-02T18:41:58.759416"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.json_item4",
+        "class_name": "实验班-缺少学习率",
+        "data_before": {
+          "loss_function": "L1Loss",
+          "learning_rate": null,
+          "recorded_iterations": 100,
+          "learning_rate_ok": true,
+          "explosive_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 5
+        },
+        "timestamp": "2026-06-02T18:41:58.759418"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.json_item4",
+        "class_name": "实验班-缺少学习率",
+        "data_before": {
+          "loss_function": "L1Loss",
+          "learning_rate": null,
+          "recorded_iterations": 100,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 5
+        },
+        "timestamp": "2026-06-02T18:41:58.759419"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.json_item4",
+        "class_name": "实验班-缺少学习率",
+        "data_before": {
+          "loss_function": "L1Loss",
+          "learning_rate": null,
+          "recorded_iterations": 100,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "final_loss": 3.3
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "loss_trend_length": 5
+        },
+        "timestamp": "2026-06-02T18:41:58.759427"
+      }
+    ],
+    "advise": [
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.json_item0",
+        "class_name": "实验班-正常收敛",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T18:41:58.759455"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.json_item0",
+        "class_name": "实验班-正常收敛",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T18:41:58.759469"
+      },
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.json_item1",
+        "class_name": "实验班-学习率爆炸",
+        "data_before": {
+          "issues_count": 2,
+          "issue_types": [
+            "learning_rate_explosion",
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 2
+        },
+        "timestamp": "2026-06-02T18:41:58.759472"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.json_item1",
+        "class_name": "实验班-学习率爆炸",
+        "data_before": {
+          "issues_count": 2,
+          "issue_types": [
+            "learning_rate_explosion",
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 2
+        },
+        "timestamp": "2026-06-02T18:41:58.759488"
+      },
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.json_item2",
+        "class_name": "实验班-局部极小",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T18:41:58.759490"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.json_item2",
+        "class_name": "实验班-局部极小",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T18:41:58.759497"
+      },
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.json_item3",
+        "class_name": "实验班-迭代严重不足",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T18:41:58.759500"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.json_item3",
+        "class_name": "实验班-迭代严重不足",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T18:41:58.759507"
+      },
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.json_item4",
+        "class_name": "实验班-缺少学习率",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T18:41:58.759509"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.json_item4",
+        "class_name": "实验班-缺少学习率",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T18:41:58.759515"
+      }
+    ]
+  },
+  "snapshots": [
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_data.json_item0",
+      "class_name": "实验班-正常收敛",
+      "data_before": {
+        "raw_item": {
+          "class_name": "实验班-正常收敛",
+          "loss_function": "MSELoss() # 标准回归任务",
+          "学习率": 0.01,
+          "iterations": 100,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 10.5
+            },
+            {
+              "iteration": 2,
+              "loss": 9.8
+            },
+            {
+              "iteration": 3,
+              "loss": 9.2
+            },
+            {
+              "iteration": 4,
+              "loss": 8.7
+            },
+            {
+              "iteration": 5,
+              "loss": 8.3
+            },
+            {
+              "iteration": 6,
+              "loss": 7.9
+            },
+            {
+              "iteration": 7,
+              "loss": 7.6
+            },
+            {
+              "iteration": 8,
+              "loss": 7.3
+            },
+            {
+              "iteration": 9,
+              "loss": 7.0
+            },
+            {
+              "iteration": 10,
+              "loss": 6.8
+            },
+            {
+              "iteration": 20,
+              "loss": 5.2
+            },
+            {
+              "iteration": 30,
+              "loss": 4.1
+            },
+            {
+              "iteration": 40,
+              "loss": 3.3
+            },
+            {
+              "iteration": 50,
+              "loss": 2.7
+            },
+            {
+              "iteration": 60,
+              "loss": 2.3
+            },
+            {
+              "iteration": 70,
+              "loss": 2.0
+            },
+            {
+              "iteration": 80,
+              "loss": 1.8
+            },
+            {
+              "iteration": 90,
+              "loss": 1.7
+            },
+            {
+              "iteration": 100,
+              "loss": 1.65
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "MSELoss",
+        "loss_function_note": "标准回归任务",
+        "learning_rate": 0.01,
+        "iterations": 100,
+        "loss_points_count": 19
+      },
+      "timestamp": "2026-06-02T18:41:58.759005"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_data.json_item1",
+      "class_name": "实验班-学习率爆炸",
+      "data_before": {
+        "raw_item": {
+          "class_name": "实验班-学习率爆炸",
+          "loss_function": "CrossEntropyLoss()",
+          "learning_rate": 0.8,
+          "迭代次数": 50,
+          "损失曲线": [
+            [
+              1,
+              2.5
+            ],
+            [
+              2,
+              2.3
+            ],
+            [
+              3,
+              2.1
+            ],
+            [
+              4,
+              3.5
+            ],
+            [
+              5,
+              6.8
+            ],
+            [
+              6,
+              12.4
+            ],
+            [
+              7,
+              25.6
+            ],
+            [
+              8,
+              52.1
+            ]
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "CrossEntropyLoss",
+        "loss_function_note": "",
+        "learning_rate": 0.8,
+        "iterations": 50,
+        "loss_points_count": 8
+      },
+      "timestamp": "2026-06-02T18:41:58.759085"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_data.json_item2",
+      "class_name": "实验班-局部极小",
+      "data_before": {
+        "raw_item": {
+          "class_name": "实验班-局部极小",
+          "loss_function": "BCEWithLogitsLoss() # 二分类任务",
+          "learning_rate": 0.001,
+          "iterations": 200,
+          "loss_history": [
+            {
+              "iter": 1,
+              "loss": 5.0
+            },
+            {
+              "iter": 2,
+              "loss": 4.8
+            },
+            {
+              "iter": 3,
+              "loss": 4.6
+            },
+            {
+              "iter": 4,
+              "loss": 4.4
+            },
+            {
+              "iter": 5,
+              "loss": 4.2
+            },
+            {
+              "iter": 10,
+              "loss": 3.5
+            },
+            {
+              "iter": 20,
+              "loss": 3.2
+            },
+            {
+              "iter": 30,
+              "loss": 3.15
+            },
+            {
+              "iter": 40,
+              "loss": 3.18
+            },
+            {
+              "iter": 50,
+              "loss": 3.12
+            },
+            {
+              "iter": 60,
+              "loss": 3.16
+            },
+            {
+              "iter": 70,
+              "loss": 3.14
+            },
+            {
+              "iter": 80,
+              "loss": 3.17
+            },
+            {
+              "iter": 90,
+              "loss": 3.13
+            },
+            {
+              "iter": 100,
+              "loss": 3.15
+            },
+            {
+              "iter": 110,
+              "loss": 3.16
+            },
+            {
+              "iter": 120,
+              "loss": 3.14
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "BCEWithLogitsLoss",
+        "loss_function_note": "二分类任务",
+        "learning_rate": 0.001,
+        "iterations": 200,
+        "loss_points_count": 17
+      },
+      "timestamp": "2026-06-02T18:41:58.759135"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_data.json_item3",
+      "class_name": "实验班-迭代严重不足",
+      "data_before": {
+        "raw_item": {
+          "class_name": "实验班-迭代严重不足",
+          "loss_function": "SmoothL1Loss() # 对异常值稳健",
+          "learning_rate": 0.01,
+          "iterations": 200,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 8.5
+            },
+            {
+              "iteration": 2,
+              "loss": 8.2
+            },
+            {
+              "iteration": 3,
+              "loss": 7.9
+            },
+            {
+              "iteration": 4,
+              "loss": 7.6
+            },
+            {
+              "iteration": 5,
+              "loss": 7.3
+            },
+            {
+              "iteration": 6,
+              "loss": 7.1
+            },
+            {
+              "iteration": 7,
+              "loss": 6.9
+            },
+            {
+              "iteration": 8,
+              "loss": 6.7
+            },
+            {
+              "iteration": 9,
+              "loss": 6.5
+            },
+            {
+              "iteration": 10,
+              "loss": 6.3
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "SmoothL1Loss",
+        "loss_function_note": "对异常值稳健",
+        "learning_rate": 0.01,
+        "iterations": 200,
+        "loss_points_count": 10
+      },
+      "timestamp": "2026-06-02T18:41:58.759216"
+    },
+    {
+      "stage": "import",
+      "operation": "json_parse",
+      "record_id": "test_data.json_item4",
+      "class_name": "实验班-缺少学习率",
+      "data_before": {
+        "raw_item": {
+          "class": "实验班-缺少学习率",
+          "loss_function": "L1Loss()",
+          "iterations": 100,
+          "loss_history": [
+            {
+              "iteration": 1,
+              "loss": 5.0
+            },
+            {
+              "iteration": 5,
+              "loss": 4.5
+            },
+            {
+              "iteration": 10,
+              "loss": 4.0
+            },
+            {
+              "iteration": 15,
+              "loss": 3.6
+            },
+            {
+              "iteration": 20,
+              "loss": 3.3
+            }
+          ]
+        }
+      },
+      "data_after": {
+        "loss_function": "L1Loss",
+        "loss_function_note": "",
+        "learning_rate": null,
+        "iterations": 100,
+        "loss_points_count": 5
+      },
+      "timestamp": "2026-06-02T18:41:58.759264"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.json_item0",
+      "class_name": "实验班-正常收敛",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "loss_count": 19,
+        "first_loss": 10.5,
+        "last_loss": 1.65
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 19
+      },
+      "timestamp": "2026-06-02T18:41:58.759315"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.json_item0",
+      "class_name": "实验班-正常收敛",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 19
+      },
+      "timestamp": "2026-06-02T18:41:58.759323"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.json_item0",
+      "class_name": "实验班-正常收敛",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 19
+      },
+      "timestamp": "2026-06-02T18:41:58.759326"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.json_item0",
+      "class_name": "实验班-正常收敛",
+      "data_before": {
+        "loss_function": "MSELoss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 1.65
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 19
+      },
+      "timestamp": "2026-06-02T18:41:58.759347"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.json_item1",
+      "class_name": "实验班-学习率爆炸",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.8,
+        "recorded_iterations": 50,
+        "loss_count": 8,
+        "first_loss": 2.5,
+        "last_loss": 52.1
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 8
+      },
+      "timestamp": "2026-06-02T18:41:58.759352"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.json_item1",
+      "class_name": "实验班-学习率爆炸",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.8,
+        "recorded_iterations": 50,
+        "learning_rate_ok": false,
+        "explosive_points_count": 2
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 1,
+        "loss_trend_length": 8
+      },
+      "timestamp": "2026-06-02T18:41:58.759360"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.json_item1",
+      "class_name": "实验班-学习率爆炸",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.8,
+        "recorded_iterations": 50,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 1,
+        "loss_trend_length": 8
+      },
+      "timestamp": "2026-06-02T18:41:58.759363"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.json_item1",
+      "class_name": "实验班-学习率爆炸",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.8,
+        "recorded_iterations": 50,
+        "iteration_ok": false,
+        "issues_count": 2,
+        "final_loss": 52.1
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 2,
+        "loss_trend_length": 8
+      },
+      "timestamp": "2026-06-02T18:41:58.759374"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.json_item2",
+      "class_name": "实验班-局部极小",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": 0.001,
+        "recorded_iterations": 200,
+        "loss_count": 17,
+        "first_loss": 5.0,
+        "last_loss": 3.14
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 17
+      },
+      "timestamp": "2026-06-02T18:41:58.759380"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.json_item2",
+      "class_name": "实验班-局部极小",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": 0.001,
+        "recorded_iterations": 200,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 17
+      },
+      "timestamp": "2026-06-02T18:41:58.759383"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.json_item2",
+      "class_name": "实验班-局部极小",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": 0.001,
+        "recorded_iterations": 200,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 17
+      },
+      "timestamp": "2026-06-02T18:41:58.759386"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.json_item2",
+      "class_name": "实验班-局部极小",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": 0.001,
+        "recorded_iterations": 200,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 3.14
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 17
+      },
+      "timestamp": "2026-06-02T18:41:58.759396"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.json_item3",
+      "class_name": "实验班-迭代严重不足",
+      "data_before": {
+        "loss_function": "SmoothL1Loss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 200,
+        "loss_count": 10,
+        "first_loss": 8.5,
+        "last_loss": 6.3
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T18:41:58.759399"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.json_item3",
+      "class_name": "实验班-迭代严重不足",
+      "data_before": {
+        "loss_function": "SmoothL1Loss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 200,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T18:41:58.759403"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.json_item3",
+      "class_name": "实验班-迭代严重不足",
+      "data_before": {
+        "loss_function": "SmoothL1Loss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 200,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T18:41:58.759405"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.json_item3",
+      "class_name": "实验班-迭代严重不足",
+      "data_before": {
+        "loss_function": "SmoothL1Loss",
+        "learning_rate": 0.01,
+        "recorded_iterations": 200,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 6.3
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T18:41:58.759413"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.json_item4",
+      "class_name": "实验班-缺少学习率",
+      "data_before": {
+        "loss_function": "L1Loss",
+        "learning_rate": null,
+        "recorded_iterations": 100,
+        "loss_count": 5,
+        "first_loss": 5.0,
+        "last_loss": 3.3
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 5
+      },
+      "timestamp": "2026-06-02T18:41:58.759416"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.json_item4",
+      "class_name": "实验班-缺少学习率",
+      "data_before": {
+        "loss_function": "L1Loss",
+        "learning_rate": null,
+        "recorded_iterations": 100,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 5
+      },
+      "timestamp": "2026-06-02T18:41:58.759418"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.json_item4",
+      "class_name": "实验班-缺少学习率",
+      "data_before": {
+        "loss_function": "L1Loss",
+        "learning_rate": null,
+        "recorded_iterations": 100,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 5
+      },
+      "timestamp": "2026-06-02T18:41:58.759419"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.json_item4",
+      "class_name": "实验班-缺少学习率",
+      "data_before": {
+        "loss_function": "L1Loss",
+        "learning_rate": null,
+        "recorded_iterations": 100,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 3.3
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 5
+      },
+      "timestamp": "2026-06-02T18:41:58.759427"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.json_item0",
+      "class_name": "实验班-正常收敛",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T18:41:58.759455"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.json_item0",
+      "class_name": "实验班-正常收敛",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T18:41:58.759469"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.json_item1",
+      "class_name": "实验班-学习率爆炸",
+      "data_before": {
+        "issues_count": 2,
+        "issue_types": [
+          "learning_rate_explosion",
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 2
+      },
+      "timestamp": "2026-06-02T18:41:58.759472"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.json_item1",
+      "class_name": "实验班-学习率爆炸",
+      "data_before": {
+        "issues_count": 2,
+        "issue_types": [
+          "learning_rate_explosion",
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 2
+      },
+      "timestamp": "2026-06-02T18:41:58.759488"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.json_item2",
+      "class_name": "实验班-局部极小",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T18:41:58.759490"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.json_item2",
+      "class_name": "实验班-局部极小",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T18:41:58.759497"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.json_item3",
+      "class_name": "实验班-迭代严重不足",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T18:41:58.759500"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.json_item3",
+      "class_name": "实验班-迭代严重不足",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T18:41:58.759507"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.json_item4",
+      "class_name": "实验班-缺少学习率",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T18:41:58.759509"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.json_item4",
+      "class_name": "实验班-缺少学习率",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T18:41:58.759515"
+    }
+  ]
+}

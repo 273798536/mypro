@@ -1,0 +1,100 @@
+[
+  {
+    "class_name": "实验班-正常收敛",
+    "loss_function": "MSELoss() # 标准回归任务",
+    "学习率": 0.01,
+    "iterations": 100,
+    "loss_history": [
+      {"iteration": 1, "loss": 10.5},
+      {"iteration": 2, "loss": 9.8},
+      {"iteration": 3, "loss": 9.2},
+      {"iteration": 4, "loss": 8.7},
+      {"iteration": 5, "loss": 8.3},
+      {"iteration": 6, "loss": 7.9},
+      {"iteration": 7, "loss": 7.6},
+      {"iteration": 8, "loss": 7.3},
+      {"iteration": 9, "loss": 7.0},
+      {"iteration": 10, "loss": 6.8},
+      {"iteration": 20, "loss": 5.2},
+      {"iteration": 30, "loss": 4.1},
+      {"iteration": 40, "loss": 3.3},
+      {"iteration": 50, "loss": 2.7},
+      {"iteration": 60, "loss": 2.3},
+      {"iteration": 70, "loss": 2.0},
+      {"iteration": 80, "loss": 1.8},
+      {"iteration": 90, "loss": 1.7},
+      {"iteration": 100, "loss": 1.65}
+    ]
+  },
+  {
+    "class_name": "实验班-学习率爆炸",
+    "loss_function": "CrossEntropyLoss()",
+    "learning_rate": 0.8,
+    "迭代次数": 50,
+    "损失曲线": [
+      [1, 2.5],
+      [2, 2.3],
+      [3, 2.1],
+      [4, 3.5],
+      [5, 6.8],
+      [6, 12.4],
+      [7, 25.6],
+      [8, 52.1]
+    ]
+  },
+  {
+    "class_name": "实验班-局部极小",
+    "loss_function": "BCEWithLogitsLoss() # 二分类任务",
+    "learning_rate": 0.001,
+    "iterations": 200,
+    "loss_history": [
+      {"iter": 1, "loss": 5.0},
+      {"iter": 2, "loss": 4.8},
+      {"iter": 3, "loss": 4.6},
+      {"iter": 4, "loss": 4.4},
+      {"iter": 5, "loss": 4.2},
+      {"iter": 10, "loss": 3.5},
+      {"iter": 20, "loss": 3.2},
+      {"iter": 30, "loss": 3.15},
+      {"iter": 40, "loss": 3.18},
+      {"iter": 50, "loss": 3.12},
+      {"iter": 60, "loss": 3.16},
+      {"iter": 70, "loss": 3.14},
+      {"iter": 80, "loss": 3.17},
+      {"iter": 90, "loss": 3.13},
+      {"iter": 100, "loss": 3.15},
+      {"iter": 110, "loss": 3.16},
+      {"iter": 120, "loss": 3.14}
+    ]
+  },
+  {
+    "class_name": "实验班-迭代严重不足",
+    "loss_function": "SmoothL1Loss() # 对异常值稳健",
+    "learning_rate": 0.01,
+    "iterations": 200,
+    "loss_history": [
+      {"iteration": 1, "loss": 8.5},
+      {"iteration": 2, "loss": 8.2},
+      {"iteration": 3, "loss": 7.9},
+      {"iteration": 4, "loss": 7.6},
+      {"iteration": 5, "loss": 7.3},
+      {"iteration": 6, "loss": 7.1},
+      {"iteration": 7, "loss": 6.9},
+      {"iteration": 8, "loss": 6.7},
+      {"iteration": 9, "loss": 6.5},
+      {"iteration": 10, "loss": 6.3}
+    ]
+  },
+  {
+    "class": "实验班-缺少学习率",
+    "loss_function": "L1Loss()",
+    "iterations": 100,
+    "loss_history": [
+      {"iteration": 1, "loss": 5.0},
+      {"iteration": 5, "loss": 4.5},
+      {"iteration": 10, "loss": 4.0},
+      {"iteration": 15, "loss": 3.6},
+      {"iteration": 20, "loss": 3.3}
+    ]
+  }
+]

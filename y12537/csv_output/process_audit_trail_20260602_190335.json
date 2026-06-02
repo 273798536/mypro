@@ -1,0 +1,1618 @@
+{
+  "generated_at": "2026-06-02T19:03:35.337311",
+  "snapshot_count": 35,
+  "stages": {
+    "import": [
+      {
+        "stage": "import",
+        "operation": "csv_parse",
+        "record_id": "test_data.csv_row2",
+        "class_name": "高三1班",
+        "data_before": {
+          "raw_row": {
+            "class_name": "高三1班",
+            "loss_function": "MSE() # 使用均方误差，注意数据归一化",
+            "learning_rate": "0.01",
+            "iterations": "100",
+            "iter_1": "1",
+            "loss_1": "2.5431",
+            "iter_2": "2",
+            "loss_2": "2.3120",
+            "iter_3": "3",
+            "loss_3": "2.1045",
+            "iter_4": "4",
+            "loss_4": "1.9201",
+            "iter_5": "5",
+            "loss_5": "1.7562",
+            "iter_6": "6",
+            "loss_6": "1.6110",
+            "iter_7": "7",
+            "loss_7": "1.4825",
+            "iter_8": "8",
+            "loss_8": "1.3692",
+            "iter_9": "9",
+            "loss_9": "1.2695",
+            "iter_10": "10",
+            "loss_10": "1.1819"
+          }
+        },
+        "data_after": {
+          "loss_function": "MSE",
+          "loss_function_note": "使用均方误差，注意数据归一化",
+          "learning_rate": 0.01,
+          "iterations": 100,
+          "loss_points_count": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.335503"
+      },
+      {
+        "stage": "import",
+        "operation": "csv_parse",
+        "record_id": "test_data.csv_row3",
+        "class_name": "高三2班",
+        "data_before": {
+          "raw_row": {
+            "class_name": "高三2班",
+            "loss_function": "CrossEntropyLoss() # 交叉熵，处理分类问题",
+            "learning_rate": "0.5",
+            "iterations": "100",
+            "iter_1": "1",
+            "loss_1": "3.1200",
+            "iter_2": "2",
+            "loss_2": "5.8900",
+            "iter_3": "3",
+            "loss_3": "12.4500",
+            "iter_4": "4",
+            "loss_4": "28.9000",
+            "iter_5": "5",
+            "loss_5": "65.2000",
+            "iter_6": "6",
+            "loss_6": "",
+            "iter_7": "",
+            "loss_7": "",
+            "iter_8": "",
+            "loss_8": "",
+            "iter_9": "",
+            "loss_9": "",
+            "iter_10": "",
+            "loss_10": null
+          }
+        },
+        "data_after": {
+          "loss_function": "CrossEntropyLoss",
+          "loss_function_note": "交叉熵，处理分类问题",
+          "learning_rate": 0.5,
+          "iterations": 100,
+          "loss_points_count": 5
+        },
+        "timestamp": "2026-06-02T19:03:35.335573"
+      },
+      {
+        "stage": "import",
+        "operation": "csv_parse",
+        "record_id": "test_data.csv_row4",
+        "class_name": "高三3班",
+        "data_before": {
+          "raw_row": {
+            "class_name": "高三3班",
+            "loss_function": "MSE",
+            "learning_rate": "0.001",
+            "iterations": "100",
+            "iter_1": "1",
+            "loss_1": "2.5431",
+            "iter_2": "2",
+            "loss_2": "2.5389",
+            "iter_3": "3",
+            "loss_3": "2.5347",
+            "iter_4": "4",
+            "loss_4": "2.5306",
+            "iter_5": "5",
+            "loss_5": "2.5265",
+            "iter_6": "6",
+            "loss_6": "2.5224",
+            "iter_7": "7",
+            "loss_7": "2.5183",
+            "iter_8": "8",
+            "loss_8": "2.5142",
+            "iter_9": "9",
+            "loss_9": "2.5102",
+            "iter_10": "10",
+            "loss_10": "2.5061"
+          }
+        },
+        "data_after": {
+          "loss_function": "MS",
+          "loss_function_note": "E",
+          "learning_rate": 0.001,
+          "iterations": 100,
+          "loss_points_count": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.335799"
+      },
+      {
+        "stage": "import",
+        "operation": "csv_parse",
+        "record_id": "test_data.csv_row5",
+        "class_name": "高三4班",
+        "data_before": {
+          "raw_row": {
+            "class_name": "高三4班",
+            "loss_function": "BCEWithLogitsLoss()",
+            "learning_rate": "",
+            "iterations": "50",
+            "iter_1": "1",
+            "loss_1": "1.8920",
+            "iter_2": "2",
+            "loss_2": "1.7560",
+            "iter_3": "3",
+            "loss_3": "1.6340",
+            "iter_4": "4",
+            "loss_4": "1.5240",
+            "iter_5": "5",
+            "loss_5": "1.4250",
+            "iter_6": "6",
+            "loss_6": "1.3350",
+            "iter_7": "7",
+            "loss_7": "1.2540",
+            "iter_8": "8",
+            "loss_8": "1.1800",
+            "iter_9": "9",
+            "loss_9": "1.1130",
+            "iter_10": "10",
+            "loss_10": "1.0520"
+          }
+        },
+        "data_after": {
+          "loss_function": "BCEWithLogitsLoss",
+          "loss_function_note": "",
+          "learning_rate": null,
+          "iterations": 50,
+          "loss_points_count": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.335863"
+      },
+      {
+        "stage": "import",
+        "operation": "csv_parse",
+        "record_id": "test_data.csv_row6",
+        "class_name": "实验A班",
+        "data_before": {
+          "raw_row": {
+            "class_name": "实验A班",
+            "loss_function": "MAE() # 平均绝对误差，稳健性好",
+            "learning_rate": "0.01",
+            "iterations": "100",
+            "iter_1": "1",
+            "loss_1": "1.2340",
+            "iter_2": "2",
+            "loss_2": "1.1560",
+            "iter_3": "3",
+            "loss_3": "1.0890",
+            "iter_4": "4",
+            "loss_4": "1.0320",
+            "iter_5": "5",
+            "loss_5": "0.9830",
+            "iter_6": "6",
+            "loss_6": "0.9410",
+            "iter_7": "7",
+            "loss_7": "0.9050",
+            "iter_8": "8",
+            "loss_8": "0.8740",
+            "iter_9": "9",
+            "loss_9": "0.8470",
+            "iter_10": "10",
+            "loss_10": "0.8240"
+          }
+        },
+        "data_after": {
+          "loss_function": "MAE",
+          "loss_function_note": "平均绝对误差，稳健性好",
+          "learning_rate": 0.01,
+          "iterations": 100,
+          "loss_points_count": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.335917"
+      }
+    ],
+    "check": [
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.csv_row2",
+        "class_name": "高三1班",
+        "data_before": {
+          "loss_function": "MSE",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "loss_count": 10,
+          "first_loss": 2.5431,
+          "last_loss": 1.1819
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.335970"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.csv_row2",
+        "class_name": "高三1班",
+        "data_before": {
+          "loss_function": "MSE",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "learning_rate_ok": true,
+          "explosive_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.335975"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.csv_row2",
+        "class_name": "高三1班",
+        "data_before": {
+          "loss_function": "MSE",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.335978"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.csv_row2",
+        "class_name": "高三1班",
+        "data_before": {
+          "loss_function": "MSE",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "final_loss": 1.1819
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336000"
+      },
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.csv_row3",
+        "class_name": "高三2班",
+        "data_before": {
+          "loss_function": "CrossEntropyLoss",
+          "learning_rate": 0.5,
+          "recorded_iterations": 100,
+          "loss_count": 5,
+          "first_loss": 3.12,
+          "last_loss": 65.2
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 5
+        },
+        "timestamp": "2026-06-02T19:03:35.336005"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.csv_row3",
+        "class_name": "高三2班",
+        "data_before": {
+          "loss_function": "CrossEntropyLoss",
+          "learning_rate": 0.5,
+          "recorded_iterations": 100,
+          "learning_rate_ok": false,
+          "explosive_points_count": 3
+        },
+        "data_after": {
+          "learning_rate_ok": false,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 1,
+          "loss_trend_length": 5
+        },
+        "timestamp": "2026-06-02T19:03:35.336015"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.csv_row3",
+        "class_name": "高三2班",
+        "data_before": {
+          "loss_function": "CrossEntropyLoss",
+          "learning_rate": 0.5,
+          "recorded_iterations": 100,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": false,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 1,
+          "loss_trend_length": 5
+        },
+        "timestamp": "2026-06-02T19:03:35.336017"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.csv_row3",
+        "class_name": "高三2班",
+        "data_before": {
+          "loss_function": "CrossEntropyLoss",
+          "learning_rate": 0.5,
+          "recorded_iterations": 100,
+          "iteration_ok": false,
+          "issues_count": 2,
+          "final_loss": 65.2
+        },
+        "data_after": {
+          "learning_rate_ok": false,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 2,
+          "loss_trend_length": 5
+        },
+        "timestamp": "2026-06-02T19:03:35.336028"
+      },
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.csv_row4",
+        "class_name": "高三3班",
+        "data_before": {
+          "loss_function": "MS",
+          "learning_rate": 0.001,
+          "recorded_iterations": 100,
+          "loss_count": 10,
+          "first_loss": 2.5431,
+          "last_loss": 2.5061
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336032"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.csv_row4",
+        "class_name": "高三3班",
+        "data_before": {
+          "loss_function": "MS",
+          "learning_rate": 0.001,
+          "recorded_iterations": 100,
+          "learning_rate_ok": true,
+          "explosive_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336035"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.csv_row4",
+        "class_name": "高三3班",
+        "data_before": {
+          "loss_function": "MS",
+          "learning_rate": 0.001,
+          "recorded_iterations": 100,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336037"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.csv_row4",
+        "class_name": "高三3班",
+        "data_before": {
+          "loss_function": "MS",
+          "learning_rate": 0.001,
+          "recorded_iterations": 100,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "final_loss": 2.5061
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336047"
+      },
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.csv_row5",
+        "class_name": "高三4班",
+        "data_before": {
+          "loss_function": "BCEWithLogitsLoss",
+          "learning_rate": null,
+          "recorded_iterations": 50,
+          "loss_count": 10,
+          "first_loss": 1.892,
+          "last_loss": 1.052
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336051"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.csv_row5",
+        "class_name": "高三4班",
+        "data_before": {
+          "loss_function": "BCEWithLogitsLoss",
+          "learning_rate": null,
+          "recorded_iterations": 50,
+          "learning_rate_ok": true,
+          "explosive_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336053"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.csv_row5",
+        "class_name": "高三4班",
+        "data_before": {
+          "loss_function": "BCEWithLogitsLoss",
+          "learning_rate": null,
+          "recorded_iterations": 50,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336054"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.csv_row5",
+        "class_name": "高三4班",
+        "data_before": {
+          "loss_function": "BCEWithLogitsLoss",
+          "learning_rate": null,
+          "recorded_iterations": 50,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "final_loss": 1.052
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336063"
+      },
+      {
+        "stage": "check",
+        "operation": "before_check",
+        "record_id": "test_data.csv_row6",
+        "class_name": "实验A班",
+        "data_before": {
+          "loss_function": "MAE",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "loss_count": 10,
+          "first_loss": 1.234,
+          "last_loss": 0.824
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336066"
+      },
+      {
+        "stage": "check",
+        "operation": "after_lr_check",
+        "record_id": "test_data.csv_row6",
+        "class_name": "实验A班",
+        "data_before": {
+          "loss_function": "MAE",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "learning_rate_ok": true,
+          "explosive_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336069"
+      },
+      {
+        "stage": "check",
+        "operation": "after_conv_check",
+        "record_id": "test_data.csv_row6",
+        "class_name": "实验A班",
+        "data_before": {
+          "loss_function": "MAE",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "convergence_ok": true,
+          "plateau_points_count": 0
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": true,
+          "issues_count": 0,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336071"
+      },
+      {
+        "stage": "check",
+        "operation": "after_iter_check",
+        "record_id": "test_data.csv_row6",
+        "class_name": "实验A班",
+        "data_before": {
+          "loss_function": "MAE",
+          "learning_rate": 0.01,
+          "recorded_iterations": 100,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "final_loss": 0.824
+        },
+        "data_after": {
+          "learning_rate_ok": true,
+          "convergence_ok": true,
+          "iteration_ok": false,
+          "issues_count": 1,
+          "loss_trend_length": 10
+        },
+        "timestamp": "2026-06-02T19:03:35.336080"
+      }
+    ],
+    "advise": [
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.csv_row2",
+        "class_name": "高三1班",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T19:03:35.336095"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.csv_row2",
+        "class_name": "高三1班",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T19:03:35.336109"
+      },
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.csv_row3",
+        "class_name": "高三2班",
+        "data_before": {
+          "issues_count": 2,
+          "issue_types": [
+            "learning_rate_explosion",
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 2
+        },
+        "timestamp": "2026-06-02T19:03:35.336111"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.csv_row3",
+        "class_name": "高三2班",
+        "data_before": {
+          "issues_count": 2,
+          "issue_types": [
+            "learning_rate_explosion",
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 2
+        },
+        "timestamp": "2026-06-02T19:03:35.336125"
+      },
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.csv_row4",
+        "class_name": "高三3班",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T19:03:35.336127"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.csv_row4",
+        "class_name": "高三3班",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T19:03:35.336134"
+      },
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.csv_row5",
+        "class_name": "高三4班",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T19:03:35.336136"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.csv_row5",
+        "class_name": "高三4班",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T19:03:35.336146"
+      },
+      {
+        "stage": "advise",
+        "operation": "before_analysis",
+        "record_id": "test_data.csv_row6",
+        "class_name": "实验A班",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T19:03:35.336147"
+      },
+      {
+        "stage": "advise",
+        "operation": "after_analysis",
+        "record_id": "test_data.csv_row6",
+        "class_name": "实验A班",
+        "data_before": {
+          "issues_count": 1,
+          "issue_types": [
+            "insufficient_iterations"
+          ]
+        },
+        "data_after": {
+          "detailed_suggestions_generated": 1
+        },
+        "timestamp": "2026-06-02T19:03:35.336154"
+      }
+    ]
+  },
+  "snapshots": [
+    {
+      "stage": "import",
+      "operation": "csv_parse",
+      "record_id": "test_data.csv_row2",
+      "class_name": "高三1班",
+      "data_before": {
+        "raw_row": {
+          "class_name": "高三1班",
+          "loss_function": "MSE() # 使用均方误差，注意数据归一化",
+          "learning_rate": "0.01",
+          "iterations": "100",
+          "iter_1": "1",
+          "loss_1": "2.5431",
+          "iter_2": "2",
+          "loss_2": "2.3120",
+          "iter_3": "3",
+          "loss_3": "2.1045",
+          "iter_4": "4",
+          "loss_4": "1.9201",
+          "iter_5": "5",
+          "loss_5": "1.7562",
+          "iter_6": "6",
+          "loss_6": "1.6110",
+          "iter_7": "7",
+          "loss_7": "1.4825",
+          "iter_8": "8",
+          "loss_8": "1.3692",
+          "iter_9": "9",
+          "loss_9": "1.2695",
+          "iter_10": "10",
+          "loss_10": "1.1819"
+        }
+      },
+      "data_after": {
+        "loss_function": "MSE",
+        "loss_function_note": "使用均方误差，注意数据归一化",
+        "learning_rate": 0.01,
+        "iterations": 100,
+        "loss_points_count": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.335503"
+    },
+    {
+      "stage": "import",
+      "operation": "csv_parse",
+      "record_id": "test_data.csv_row3",
+      "class_name": "高三2班",
+      "data_before": {
+        "raw_row": {
+          "class_name": "高三2班",
+          "loss_function": "CrossEntropyLoss() # 交叉熵，处理分类问题",
+          "learning_rate": "0.5",
+          "iterations": "100",
+          "iter_1": "1",
+          "loss_1": "3.1200",
+          "iter_2": "2",
+          "loss_2": "5.8900",
+          "iter_3": "3",
+          "loss_3": "12.4500",
+          "iter_4": "4",
+          "loss_4": "28.9000",
+          "iter_5": "5",
+          "loss_5": "65.2000",
+          "iter_6": "6",
+          "loss_6": "",
+          "iter_7": "",
+          "loss_7": "",
+          "iter_8": "",
+          "loss_8": "",
+          "iter_9": "",
+          "loss_9": "",
+          "iter_10": "",
+          "loss_10": null
+        }
+      },
+      "data_after": {
+        "loss_function": "CrossEntropyLoss",
+        "loss_function_note": "交叉熵，处理分类问题",
+        "learning_rate": 0.5,
+        "iterations": 100,
+        "loss_points_count": 5
+      },
+      "timestamp": "2026-06-02T19:03:35.335573"
+    },
+    {
+      "stage": "import",
+      "operation": "csv_parse",
+      "record_id": "test_data.csv_row4",
+      "class_name": "高三3班",
+      "data_before": {
+        "raw_row": {
+          "class_name": "高三3班",
+          "loss_function": "MSE",
+          "learning_rate": "0.001",
+          "iterations": "100",
+          "iter_1": "1",
+          "loss_1": "2.5431",
+          "iter_2": "2",
+          "loss_2": "2.5389",
+          "iter_3": "3",
+          "loss_3": "2.5347",
+          "iter_4": "4",
+          "loss_4": "2.5306",
+          "iter_5": "5",
+          "loss_5": "2.5265",
+          "iter_6": "6",
+          "loss_6": "2.5224",
+          "iter_7": "7",
+          "loss_7": "2.5183",
+          "iter_8": "8",
+          "loss_8": "2.5142",
+          "iter_9": "9",
+          "loss_9": "2.5102",
+          "iter_10": "10",
+          "loss_10": "2.5061"
+        }
+      },
+      "data_after": {
+        "loss_function": "MS",
+        "loss_function_note": "E",
+        "learning_rate": 0.001,
+        "iterations": 100,
+        "loss_points_count": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.335799"
+    },
+    {
+      "stage": "import",
+      "operation": "csv_parse",
+      "record_id": "test_data.csv_row5",
+      "class_name": "高三4班",
+      "data_before": {
+        "raw_row": {
+          "class_name": "高三4班",
+          "loss_function": "BCEWithLogitsLoss()",
+          "learning_rate": "",
+          "iterations": "50",
+          "iter_1": "1",
+          "loss_1": "1.8920",
+          "iter_2": "2",
+          "loss_2": "1.7560",
+          "iter_3": "3",
+          "loss_3": "1.6340",
+          "iter_4": "4",
+          "loss_4": "1.5240",
+          "iter_5": "5",
+          "loss_5": "1.4250",
+          "iter_6": "6",
+          "loss_6": "1.3350",
+          "iter_7": "7",
+          "loss_7": "1.2540",
+          "iter_8": "8",
+          "loss_8": "1.1800",
+          "iter_9": "9",
+          "loss_9": "1.1130",
+          "iter_10": "10",
+          "loss_10": "1.0520"
+        }
+      },
+      "data_after": {
+        "loss_function": "BCEWithLogitsLoss",
+        "loss_function_note": "",
+        "learning_rate": null,
+        "iterations": 50,
+        "loss_points_count": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.335863"
+    },
+    {
+      "stage": "import",
+      "operation": "csv_parse",
+      "record_id": "test_data.csv_row6",
+      "class_name": "实验A班",
+      "data_before": {
+        "raw_row": {
+          "class_name": "实验A班",
+          "loss_function": "MAE() # 平均绝对误差，稳健性好",
+          "learning_rate": "0.01",
+          "iterations": "100",
+          "iter_1": "1",
+          "loss_1": "1.2340",
+          "iter_2": "2",
+          "loss_2": "1.1560",
+          "iter_3": "3",
+          "loss_3": "1.0890",
+          "iter_4": "4",
+          "loss_4": "1.0320",
+          "iter_5": "5",
+          "loss_5": "0.9830",
+          "iter_6": "6",
+          "loss_6": "0.9410",
+          "iter_7": "7",
+          "loss_7": "0.9050",
+          "iter_8": "8",
+          "loss_8": "0.8740",
+          "iter_9": "9",
+          "loss_9": "0.8470",
+          "iter_10": "10",
+          "loss_10": "0.8240"
+        }
+      },
+      "data_after": {
+        "loss_function": "MAE",
+        "loss_function_note": "平均绝对误差，稳健性好",
+        "learning_rate": 0.01,
+        "iterations": 100,
+        "loss_points_count": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.335917"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.csv_row2",
+      "class_name": "高三1班",
+      "data_before": {
+        "loss_function": "MSE",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "loss_count": 10,
+        "first_loss": 2.5431,
+        "last_loss": 1.1819
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.335970"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.csv_row2",
+      "class_name": "高三1班",
+      "data_before": {
+        "loss_function": "MSE",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.335975"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.csv_row2",
+      "class_name": "高三1班",
+      "data_before": {
+        "loss_function": "MSE",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.335978"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.csv_row2",
+      "class_name": "高三1班",
+      "data_before": {
+        "loss_function": "MSE",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 1.1819
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336000"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.csv_row3",
+      "class_name": "高三2班",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.5,
+        "recorded_iterations": 100,
+        "loss_count": 5,
+        "first_loss": 3.12,
+        "last_loss": 65.2
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 5
+      },
+      "timestamp": "2026-06-02T19:03:35.336005"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.csv_row3",
+      "class_name": "高三2班",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.5,
+        "recorded_iterations": 100,
+        "learning_rate_ok": false,
+        "explosive_points_count": 3
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 1,
+        "loss_trend_length": 5
+      },
+      "timestamp": "2026-06-02T19:03:35.336015"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.csv_row3",
+      "class_name": "高三2班",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.5,
+        "recorded_iterations": 100,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 1,
+        "loss_trend_length": 5
+      },
+      "timestamp": "2026-06-02T19:03:35.336017"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.csv_row3",
+      "class_name": "高三2班",
+      "data_before": {
+        "loss_function": "CrossEntropyLoss",
+        "learning_rate": 0.5,
+        "recorded_iterations": 100,
+        "iteration_ok": false,
+        "issues_count": 2,
+        "final_loss": 65.2
+      },
+      "data_after": {
+        "learning_rate_ok": false,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 2,
+        "loss_trend_length": 5
+      },
+      "timestamp": "2026-06-02T19:03:35.336028"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.csv_row4",
+      "class_name": "高三3班",
+      "data_before": {
+        "loss_function": "MS",
+        "learning_rate": 0.001,
+        "recorded_iterations": 100,
+        "loss_count": 10,
+        "first_loss": 2.5431,
+        "last_loss": 2.5061
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336032"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.csv_row4",
+      "class_name": "高三3班",
+      "data_before": {
+        "loss_function": "MS",
+        "learning_rate": 0.001,
+        "recorded_iterations": 100,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336035"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.csv_row4",
+      "class_name": "高三3班",
+      "data_before": {
+        "loss_function": "MS",
+        "learning_rate": 0.001,
+        "recorded_iterations": 100,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336037"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.csv_row4",
+      "class_name": "高三3班",
+      "data_before": {
+        "loss_function": "MS",
+        "learning_rate": 0.001,
+        "recorded_iterations": 100,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 2.5061
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336047"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.csv_row5",
+      "class_name": "高三4班",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": null,
+        "recorded_iterations": 50,
+        "loss_count": 10,
+        "first_loss": 1.892,
+        "last_loss": 1.052
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336051"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.csv_row5",
+      "class_name": "高三4班",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": null,
+        "recorded_iterations": 50,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336053"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.csv_row5",
+      "class_name": "高三4班",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": null,
+        "recorded_iterations": 50,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336054"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.csv_row5",
+      "class_name": "高三4班",
+      "data_before": {
+        "loss_function": "BCEWithLogitsLoss",
+        "learning_rate": null,
+        "recorded_iterations": 50,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 1.052
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336063"
+    },
+    {
+      "stage": "check",
+      "operation": "before_check",
+      "record_id": "test_data.csv_row6",
+      "class_name": "实验A班",
+      "data_before": {
+        "loss_function": "MAE",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "loss_count": 10,
+        "first_loss": 1.234,
+        "last_loss": 0.824
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336066"
+    },
+    {
+      "stage": "check",
+      "operation": "after_lr_check",
+      "record_id": "test_data.csv_row6",
+      "class_name": "实验A班",
+      "data_before": {
+        "loss_function": "MAE",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "learning_rate_ok": true,
+        "explosive_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336069"
+    },
+    {
+      "stage": "check",
+      "operation": "after_conv_check",
+      "record_id": "test_data.csv_row6",
+      "class_name": "实验A班",
+      "data_before": {
+        "loss_function": "MAE",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "convergence_ok": true,
+        "plateau_points_count": 0
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": true,
+        "issues_count": 0,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336071"
+    },
+    {
+      "stage": "check",
+      "operation": "after_iter_check",
+      "record_id": "test_data.csv_row6",
+      "class_name": "实验A班",
+      "data_before": {
+        "loss_function": "MAE",
+        "learning_rate": 0.01,
+        "recorded_iterations": 100,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "final_loss": 0.824
+      },
+      "data_after": {
+        "learning_rate_ok": true,
+        "convergence_ok": true,
+        "iteration_ok": false,
+        "issues_count": 1,
+        "loss_trend_length": 10
+      },
+      "timestamp": "2026-06-02T19:03:35.336080"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.csv_row2",
+      "class_name": "高三1班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:03:35.336095"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.csv_row2",
+      "class_name": "高三1班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:03:35.336109"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.csv_row3",
+      "class_name": "高三2班",
+      "data_before": {
+        "issues_count": 2,
+        "issue_types": [
+          "learning_rate_explosion",
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 2
+      },
+      "timestamp": "2026-06-02T19:03:35.336111"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.csv_row3",
+      "class_name": "高三2班",
+      "data_before": {
+        "issues_count": 2,
+        "issue_types": [
+          "learning_rate_explosion",
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 2
+      },
+      "timestamp": "2026-06-02T19:03:35.336125"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.csv_row4",
+      "class_name": "高三3班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:03:35.336127"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.csv_row4",
+      "class_name": "高三3班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:03:35.336134"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.csv_row5",
+      "class_name": "高三4班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:03:35.336136"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.csv_row5",
+      "class_name": "高三4班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:03:35.336146"
+    },
+    {
+      "stage": "advise",
+      "operation": "before_analysis",
+      "record_id": "test_data.csv_row6",
+      "class_name": "实验A班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:03:35.336147"
+    },
+    {
+      "stage": "advise",
+      "operation": "after_analysis",
+      "record_id": "test_data.csv_row6",
+      "class_name": "实验A班",
+      "data_before": {
+        "issues_count": 1,
+        "issue_types": [
+          "insufficient_iterations"
+        ]
+      },
+      "data_after": {
+        "detailed_suggestions_generated": 1
+      },
+      "timestamp": "2026-06-02T19:03:35.336154"
+    }
+  ]
+}

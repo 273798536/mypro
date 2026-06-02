@@ -1,0 +1,117 @@
+[
+  {
+    "class_name": "完整测试-正常收敛",
+    "loss_function": "MSELoss() # 标准回归任务",
+    "learning_rate": 0.01,
+    "iterations": 100,
+    "loss_history": [
+      {"iteration": 1, "loss": 9.5},
+      {"iteration": 2, "loss": 9.03},
+      {"iteration": 3, "loss": 8.58},
+      {"iteration": 4, "loss": 8.15},
+      {"iteration": 5, "loss": 7.74},
+      {"iteration": 10, "loss": 5.99},
+      {"iteration": 20, "loss": 3.58},
+      {"iteration": 30, "loss": 2.15},
+      {"iteration": 40, "loss": 1.28},
+      {"iteration": 50, "loss": 0.77},
+      {"iteration": 60, "loss": 0.46},
+      {"iteration": 70, "loss": 0.27},
+      {"iteration": 80, "loss": 0.16},
+      {"iteration": 90, "loss": 0.1},
+      {"iteration": 100, "loss": 0.06}
+    ]
+  },
+  {
+    "class_name": "完整测试-学习率爆炸",
+    "loss_function": "CrossEntropyLoss()",
+    "learning_rate": 0.5,
+    "iterations": 50,
+    "loss_history": [
+      {"iteration": 1, "loss": 2.5},
+      {"iteration": 2, "loss": 2.3},
+      {"iteration": 3, "loss": 2.1},
+      {"iteration": 4, "loss": 3.5},
+      {"iteration": 5, "loss": 6.8},
+      {"iteration": 6, "loss": 12.4},
+      {"iteration": 7, "loss": 25.6},
+      {"iteration": 8, "loss": 52.1},
+      {"iteration": 9, "loss": 105.3},
+      {"iteration": 10, "loss": 210.8}
+    ]
+  },
+  {
+    "class_name": "完整测试-局部极小",
+    "loss_function": "BCEWithLogitsLoss() # 二分类任务",
+    "learning_rate": 0.001,
+    "iterations": 150,
+    "loss_history": [
+      {"iteration": 1, "loss": 4.5},
+      {"iteration": 2, "loss": 4.05},
+      {"iteration": 3, "loss": 3.65},
+      {"iteration": 4, "loss": 3.28},
+      {"iteration": 5, "loss": 2.95},
+      {"iteration": 10, "loss": 1.85},
+      {"iteration": 20, "loss": 1.21},
+      {"iteration": 30, "loss": 0.95},
+      {"iteration": 40, "loss": 0.88},
+      {"iteration": 50, "loss": 0.91},
+      {"iteration": 60, "loss": 0.87},
+      {"iteration": 70, "loss": 0.90},
+      {"iteration": 80, "loss": 0.86},
+      {"iteration": 90, "loss": 0.89},
+      {"iteration": 100, "loss": 0.87},
+      {"iteration": 110, "loss": 0.88},
+      {"iteration": 120, "loss": 0.86},
+      {"iteration": 130, "loss": 0.89},
+      {"iteration": 140, "loss": 0.87},
+      {"iteration": 150, "loss": 0.88}
+    ]
+  },
+  {
+    "class_name": "完整测试-迭代严重不足",
+    "loss_function": "SmoothL1Loss() # 对异常值稳健",
+    "learning_rate": 0.01,
+    "iterations": 200,
+    "loss_history": [
+      {"iteration": 1, "loss": 8.5},
+      {"iteration": 2, "loss": 7.82},
+      {"iteration": 3, "loss": 7.19},
+      {"iteration": 4, "loss": 6.62},
+      {"iteration": 5, "loss": 6.09},
+      {"iteration": 10, "loss": 3.97},
+      {"iteration": 20, "loss": 1.85}
+    ]
+  },
+  {
+    "class_name": "完整测试-缺少学习率",
+    "loss_function": "L1Loss()",
+    "iterations": 100,
+    "loss_history": [
+      {"iteration": 1, "loss": 5.0},
+      {"iteration": 2, "loss": 4.7},
+      {"iteration": 3, "loss": 4.42},
+      {"iteration": 4, "loss": 4.15},
+      {"iteration": 5, "loss": 3.9},
+      {"iteration": 10, "loss": 2.87},
+      {"iteration": 20, "loss": 1.65},
+      {"iteration": 30, "loss": 0.95}
+    ]
+  },
+  {
+    "class_name": "完整测试-多问题叠加",
+    "loss_function": "PoissonNLLLoss() # 计数预测任务",
+    "learning_rate": 0.3,
+    "iterations": 200,
+    "loss_history": [
+      {"iteration": 1, "loss": 4.5},
+      {"iteration": 2, "loss": 4.2},
+      {"iteration": 3, "loss": 5.8},
+      {"iteration": 4, "loss": 8.9},
+      {"iteration": 5, "loss": 15.2},
+      {"iteration": 6, "loss": 28.7},
+      {"iteration": 7, "loss": 54.1},
+      {"iteration": 8, "loss": 98.3}
+    ]
+  }
+]
