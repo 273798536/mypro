@@ -445,7 +445,7 @@ export function ParameterInput({ flywheel }: ParameterInputProps) {
               <div className="flex-1">
                 <div className="data-label mb-1">支持格式</div>
                 <div className="text-xs text-industrial-400">
-                  <div>• JSON: [{'"timestamp": 0, "omega": 100, "alpha": 5, "torque": 50}]</div>
+                  <div>• JSON: {`[{"timestamp": 0, "omega": 100, "alpha": 5, "torque": 50}]`}</div>
                   <div>• CSV: timestamp,omega,alpha,torque</div>
                 </div>
               </div>
