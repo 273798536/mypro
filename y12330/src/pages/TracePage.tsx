@@ -134,7 +134,7 @@ export default function TracePage() {
                           <Database className="w-4 h-4 text-accent" />数据源版本
                         </div>
                         <div className="ml-6 space-y-1">
-                          {chain.dataSourceMetas.map((ds: DataSourceMeta) => (
+                          {chain.dataSourceMetas.map(ds => (
                             <div key={ds.id} className="text-xs text-muted bg-bg rounded px-2 py-1.5 flex items-center justify-between">
                               <span>{ds.fileName} <span className="text-muted/60">({ds.version})</span></span>
                               <span className="text-muted/60">{ds.rowCount} 行 · {ds.type}</span>
@@ -149,7 +149,7 @@ export default function TracePage() {
                           <Shield className="w-4 h-4 text-accent" />质量检测记录
                         </div>
                         <div className="ml-6 space-y-1">
-                          {chain.qualityRecords.map((rec: AnomalyRecord, idx: number) => (
+                          {chain.qualityRecords.map((rec, idx) => (
                             <div key={`${rec.nodeId}-${rec.type}-${idx}`} className="text-xs bg-bg rounded px-2 py-1.5 flex items-center gap-2">
                               <span className={`rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${anomalyTypeBadge[rec.type]}`}>
                                 {rec.type}

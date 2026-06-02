@@ -258,36 +258,50 @@ export default function ClusterPage() {
         </div>
       )}
 
-      {!isClustering && clusterResult && (() => {
-        const allAnomaly: AnomalyRecord[] = clusterResult.communities.flatMap(c => c.anomalies)
-        const unique = new Map<string, AnomalyRecord>()
-        allAnomaly.forEach(a => unique.set(`${a.nodeId}-${a.type}`, a))
-        const items = Array.from(unique.values())
-        if (items.length === 0) return null
-        return (
-          <div className="bg-bg-card rounded-xl p-5">
-            <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-warn" />异常节点
-            </h2>
-            <div className="space-y-2">
-              {items.map(a => (
-                <div key={`${a.nodeId}-${a.type}`}
-                  className="flex items-center gap-3 bg-bg rounded-lg p-3">
-                  <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${anomalyBadge[a.type]}`}>
-                    {a.type}
-                  </span>
-                  <button onClick={() => { setSelectedNodeId(a.nodeId); navigate('/graph') }}
-                    className="text-accent hover:underline text-sm">
-                    {a.nodeId}
-                  </button>
-                  <span className="text-muted text-xs flex-1">{explainImpact(a.type, a.nodeId, a.affectedCommunities)}</span>
-                  <ArrowRight className="w-4 h-4 text-muted" />
-                </div>
-              ))}
-            </div>
+      {!isClustering && clusterResult && <AnomalySection
+        clusterResult={clusterResult}
+        onNodeClick={setSelectedNodeId}
+        navigate={navigate}
+      />}
+    </div>
+  )
+}
+
+interface AnomalySectionProps {
+  clusterResult: ClusterResult
+  onNodeClick: (id: string | null) => void
+  navigate: (path: string) => void
+}
+
+function AnomalySection({ clusterResult, onNodeClick, navigate }: AnomalySectionProps) {
+  const allAnomaly: AnomalyRecord[] = clusterResult.communities.flatMap(c => c.anomalies)
+  const unique = new Map<string, AnomalyRecord>()
+  allAnomaly.forEach(a => unique.set(`${a.nodeId}-${a.type}`, a))
+  const items = Array.from(unique.values())
+
+  if (items.length === 0) return null
+
+  return (
+    <div className="bg-bg-card rounded-xl p-5">
+      <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
+        <AlertTriangle className="w-5 h-5 text-warn" />异常节点
+      </h2>
+      <div className="space-y-2">
+        {items.map(a => (
+          <div key={`${a.nodeId}-${a.type}`}
+            className="flex items-center gap-3 bg-bg rounded-lg p-3">
+            <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${anomalyBadge[a.type]}`}>
+              {a.type}
+            </span>
+            <button onClick={() => { onNodeClick(a.nodeId); navigate('/graph') }}
+              className="text-accent hover:underline text-sm">
+              {a.nodeId}
+            </button>
+            <span className="text-muted text-xs flex-1">{explainImpact(a.type, a.nodeId, a.affectedCommunities)}</span>
+            <ArrowRight className="w-4 h-4 text-muted" />
           </div>
-        )
-      })()}
+        ))}
+      </div>
     </div>
   )
 }

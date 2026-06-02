@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import * as d3 from 'd3'
 import { useStore } from '@/store'
-import type { GraphNode, GraphEdge } from '@/types'
+import type { GraphNode } from '@/types'
 import { GitBranch, X, Eye, EyeOff, AlertTriangle, AlertCircle, FileWarning, ArrowRight } from 'lucide-react'
 
 const PALETTE = ['#00d4aa', '#6366f1', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']
