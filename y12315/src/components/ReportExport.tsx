@@ -10,7 +10,6 @@ const ReportExport: React.FC = () => {
     criteria, 
     scores,
     criteriaMatrix,
-    subMatrices,
     weightModifications,
     versionHistory 
   } = useAppStore();
@@ -22,7 +21,7 @@ const ReportExport: React.FC = () => {
   const exportToExcel = () => {
     const wb = XLSX.utils.book_new();
 
-    const rankingData = rankings.map((r, i) => ({
+    const rankingData = rankings.map((r) => ({
       '排名': r.rank,
       '供应商名称': r.supplierName,
       '综合得分': (r.totalScore * 100).toFixed(2),

@@ -20,7 +20,7 @@ export const calculateEigenvector = (matrix: number[][]): number[] => {
   let maxIterations = 100;
   
   while (maxIterations > 0) {
-    const newEigenvector = matrix.map((row, i) => 
+    const newEigenvector = matrix.map((row) => 
       row.reduce((sum, val, j) => sum + val * eigenvector[j], 0)
     );
     
@@ -49,7 +49,7 @@ export const calculateConsistencyRatio = (matrix: number[][], weights: number[])
     return { consistencyRatio: 0, isConsistent: true, lambdaMax: n };
   }
   
-  const weightedSum = matrix.map((row, i) => 
+  const weightedSum = matrix.map((row) => 
     row.reduce((sum, val, j) => sum + val * weights[j], 0)
   );
   

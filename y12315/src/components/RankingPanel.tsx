@@ -350,7 +350,7 @@ const RankingPanel: React.FC = () => {
               <div style={{ marginTop: '12px' }}>
                 <strong>当时排名：</strong>
                 <div style={{ display: 'flex', gap: '16px', marginTop: '8px', flexWrap: 'wrap' }}>
-                  {version.rankings.slice(0, 3).map((r, i) => (
+                  {version.rankings.slice(0, 3).map((r) => (
                     <span key={r.supplierId} style={{ fontSize: '13px' }}>
                       第{r.rank}名：{r.supplierName} ({(r.totalScore * 100).toFixed(2)}分)
                     </span>

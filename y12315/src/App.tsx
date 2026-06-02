@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useAppStore } from './store';
 import SupplierList from './components/SupplierList';
 import CriteriaMatrix from './components/CriteriaMatrix';

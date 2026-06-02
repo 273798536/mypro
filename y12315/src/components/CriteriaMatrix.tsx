@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useAppStore } from '../store';
 
-const SAATY_SCALE = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
 const CriteriaMatrix: React.FC = () => {
   const {
     criteria,
@@ -35,10 +33,6 @@ const CriteriaMatrix: React.FC = () => {
   const currentCriteria = activeSubMatrix
     ? criteria.filter(c => c.parentId === activeSubMatrix)
     : rootCriteria;
-
-  const getCriterionName = (id: string) => {
-    return criteria.find(c => c.id === id)?.name || id;
-  };
 
   return (
     <div>
