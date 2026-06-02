@@ -137,6 +137,8 @@ export const ManualCorrection = () => {
     return <span className="flex items-center gap-1 text-slate-500"><Minus className="w-4 h-4" />无变化</span>;
   };
 
+  const sortedHistories = histories.length > 0 ? [...histories].sort((a, b) => b.version - a.version) : [];
+
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -172,7 +174,7 @@ export const ManualCorrection = () => {
         />
       </div>
 
-      {selectedParam && (
+      {selectedParam ? (
         <>
           <div className="grid grid-cols-2 gap-6">
             <Card
@@ -399,83 +401,78 @@ export const ManualCorrection = () => {
             </Card>
           )}
 
-          {histories.length > 0 && (
+          {sortedHistories.length > 0 && (
             <Card title="版本历史">
-              <Timeline
-                items={histories
-                  .sort((a, b) => b.version - a.version)
-                  .map((h) => ({
-                    color: 'blue',
-                    children: (
-                      <div className="pb-4">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Tag color="blue">版本 {h.version}</Tag>
-                          <span className="text-sm text-slate-500 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {new Date(h.createdAt).toLocaleString()}
-                          </span>
-                        </div>
-                        <p className="text-sm text-slate-700 mb-2">
-                          <strong>修改人：</strong>{h.modifiedBy}
-                        </p>
-                        {h.changeReason && (
-                          <p className="text-sm text-slate-600 mb-3">
-                            <strong>原因：</strong>{h.changeReason}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg mb-3">
-                          <div>
-                            <span className="text-xs text-slate-500">修改前</span>
-                            <p className="font-medium text-slate-700">
-                              {labelOfBefore(h)}
-                            </p>
-                          </div>
-                          <ArrowLeftRight className="w-4 h-4 text-slate-400" />
-                          <div>
-                            <span className="text-xs text-slate-500">修改后</span>
-                            <p className="font-medium text-blue-600">
-                              {labelOfAfter(h)}
-                            </p>
-                          </div>
-                        </div>
-                        {h.impactAnalysis && (
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className="p-2 bg-white rounded border">
-                              <p className="text-xs text-slate-500">伪影解释变化</p>
-                              <p className="text-sm mt-1">
-                                {h.impactAnalysis.artifactInterpretationChange ? (
-                                  <span className="flex items-center gap-1 text-amber-600"><AlertTriangle className="w-3 h-3" />有变化</span>
-                                ) : (
-                                  <span className="flex items-center gap-1 text-green-600"><CheckCircle className="w-3 h-3" />无变化</span>
-                                )}
-                              </p>
-                            </div>
-                            <div className="p-2 bg-white rounded border">
-                              <p className="text-xs text-slate-500">质量分数变化</p>
-                              <p className="text-sm mt-1">{formatImpact(h.impactAnalysis.qualityScoreChange)}</p>
-                            </div>
-                            <div className="p-2 bg-white rounded border">
-                              <p className="text-xs text-slate-500">推荐状态变化</p>
-                              <p className="text-sm mt-1">
-                                {h.impactAnalysis.recommendationChange ? (
-                                  <Tag color="orange">有变化</Tag>
-                                ) : (
-                                  <Tag color="green">无变化</Tag>
-                                )}
-                              </p>
-                            </div>
-                          </div>
-                        )}
+              <Timeline mode="left">
+                {sortedHistories.map((h) => (
+                  <Timeline.Item key={h.id} color="blue">
+                    <div className="pb-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <Tag color="blue">版本 {h.version}</Tag>
+                        <span className="text-sm text-slate-500 flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {new Date(h.createdAt).toLocaleString()}
+                        </span>
                       </div>
-                    ),
-                  }))}
+                      <p className="text-sm text-slate-700 mb-2">
+                        <strong>修改人：</strong>{h.modifiedBy}
+                      </p>
+                      {h.changeReason && (
+                        <p className="text-sm text-slate-600 mb-3">
+                          <strong>原因：</strong>{h.changeReason}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg mb-3">
+                        <div>
+                          <span className="text-xs text-slate-500">修改前</span>
+                          <p className="font-medium text-slate-700">
+                            {labelOfBefore(h)}
+                          </p>
+                        </div>
+                        <ArrowLeftRight className="w-4 h-4 text-slate-400" />
+                        <div>
+                          <span className="text-xs text-slate-500">修改后</span>
+                          <p className="font-medium text-blue-600">
+                            {labelOfAfter(h)}
+                          </p>
+                        </div>
+                      </div>
+                      {h.impactAnalysis && (
+                        <div className="grid grid-cols-3 gap-3">
+                          <div className="p-2 bg-white rounded border">
+                            <p className="text-xs text-slate-500">伪影解释变化</p>
+                            <p className="text-sm mt-1">
+                              {h.impactAnalysis.artifactInterpretationChange ? (
+                                <span className="flex items-center gap-1 text-amber-600"><AlertTriangle className="w-3 h-3" />有变化</span>
+                              ) : (
+                                <span className="flex items-center gap-1 text-green-600"><CheckCircle className="w-3 h-3" />无变化</span>
+                              )}
+                            </p>
+                          </div>
+                          <div className="p-2 bg-white rounded border">
+                            <p className="text-xs text-slate-500">质量分数变化</p>
+                            <p className="text-sm mt-1">{formatImpact(h.impactAnalysis.qualityScoreChange)}</p>
+                          </div>
+                          <div className="p-2 bg-white rounded border">
+                            <p className="text-xs text-slate-500">推荐状态变化</p>
+                            <p className="text-sm mt-1">
+                              {h.impactAnalysis.recommendationChange ? (
+                                <Tag color="orange">有变化</Tag>
+                              ) : (
+                                <Tag color="green">无变化</Tag>
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Timeline.Item>
+                ))}
               </Timeline>
             </Card>
           )}
         </>
-      )}
-
-      {!selectedParam && (
+      ) : (
         <Card className="text-center py-12">
           <p className="text-slate-500">请选择一个扫描参数进行手动修正</p>
         </Card>

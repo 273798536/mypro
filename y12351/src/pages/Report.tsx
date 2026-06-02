@@ -467,11 +467,11 @@ export const Report = () => {
                       </div>
                     </div>
 
-                    <Timeline
-                      items={histories
+                    <Timeline mode="left">
+                      {histories
                         .sort((a, b) => b.version - a.version)
-                        .map((h) => ({
-                          children: (
+                        .map((h) => (
+                          <Timeline.Item key={h.id} color="blue">
                             <div className="pb-4">
                               <div className="flex items-center gap-3 mb-2">
                                 <Tag color="purple">版本 {h.version}</Tag>
@@ -550,9 +550,9 @@ export const Report = () => {
                                 </div>
                               )}
                             </div>
-                          ),
-                        }))}
-                    />
+                          </Timeline.Item>
+                        ))}
+                    </Timeline>
                   </section>
                 </>
               )}
