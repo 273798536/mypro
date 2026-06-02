@@ -30,6 +30,7 @@ class DataService {
   private anomalies: AnomalyRecord[] = [];
   private correctionLogs: CorrectionLog[] = [];
   private anomalyTrend: { date: string; count: number }[] = [];
+  private importHistory: { date: string; type: string; fileName: string; rows: number; status: string; operator: string }[] = [];
   private initialized = false;
 
   async initialize(): Promise<void> {
@@ -221,6 +222,36 @@ class DataService {
       }
       return true;
     });
+  }
+
+  importVoltageData(data: VoltageCurrentData[]): void {
+    this.ensureInitialized();
+    this.voltageData.push(...data);
+  }
+
+  importTemperatureData(data: TemperatureData[]): void {
+    this.ensureInitialized();
+    this.temperatureData.push(...data);
+  }
+
+  importSpeedTorqueData(data: SpeedTorqueData[]): void {
+    this.ensureInitialized();
+    this.speedData.push(...data);
+  }
+
+  importEfficiencyReports(data: EfficiencyReport[]): void {
+    this.ensureInitialized();
+    this.efficiencyReports.push(...data);
+  }
+
+  addImportHistory(record: { date: string; type: string; fileName: string; rows: number; status: string; operator: string }): void {
+    this.ensureInitialized();
+    this.importHistory.unshift(record);
+  }
+
+  getImportHistory(): typeof this.importHistory {
+    this.ensureInitialized();
+    return this.importHistory;
   }
 
   updateSegments(segments: WorkingConditionSegment[]): void {

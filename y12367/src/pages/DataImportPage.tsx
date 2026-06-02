@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
+import * as XLSX from 'xlsx';
 import {
   Upload,
   FileSpreadsheet,
@@ -22,12 +23,86 @@ import { Progress } from '@/components/ui/Progress';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { Select } from '@/components/ui/Select';
 import { Checkbox } from '@/components/ui/Checkbox';
-import type { DataCaliberType, UploadValidationResult, FieldMapping, ConflictInfo } from '@/types';
+import type {
+  DataCaliberType,
+  UploadValidationResult,
+  FieldMapping,
+  ConflictInfo,
+  VoltageCurrentData,
+  TemperatureData,
+  EfficiencyReport,
+} from '@/types';
 import { useAnalysisStore } from '@/stores/useAnalysisStore';
+import { dataService } from '@/services/dataService';
 import { caliberEngine } from '@/engines/CaliberConsistencyEngine';
+import { generateId } from '@/utils/helpers';
+
+interface TargetFieldDef {
+  targetField: string;
+  label: string;
+  required: boolean;
+  keywords: string[];
+}
+
+const TARGET_FIELDS: Record<DataCaliberType, TargetFieldDef[]> = {
+  voltage_current: [
+    { targetField: 'timestamp', label: '时间戳', required: true, keywords: ['时间', 'timestamp', 'time', '日期', 'date'] },
+    { targetField: 'testBenchId', label: '测试台ID', required: true, keywords: ['测试台', 'testbench', 'test_bench', '台号', '设备'] },
+    { targetField: 'materialId', label: '材料ID', required: true, keywords: ['材料', 'material', '材质', '料号'] },
+    { targetField: 'voltage', label: '电压', required: true, keywords: ['电压', 'voltage', 'U', 'V'] },
+    { targetField: 'current', label: '电流', required: true, keywords: ['电流', 'current', 'I', 'A'] },
+    { targetField: 'power', label: '功率', required: true, keywords: ['功率', 'power', 'P', 'kW'] },
+    { targetField: 'segmentId', label: '工况段', required: false, keywords: ['工况段', 'segment', '段号', '分段'] },
+  ],
+  temperature: [
+    { targetField: 'timestamp', label: '时间戳', required: true, keywords: ['时间', 'timestamp', 'time', '日期', 'date'] },
+    { targetField: 'testBenchId', label: '测试台ID', required: true, keywords: ['测试台', 'testbench', 'test_bench', '台号', '设备'] },
+    { targetField: 'materialId', label: '材料ID', required: true, keywords: ['材料', 'material', '材质', '料号'] },
+    { targetField: 'objectType', label: '对象类型', required: true, keywords: ['对象类型', 'objecttype', 'object_type', '部位', '测点类型'] },
+    { targetField: 'temperature', label: '温度', required: true, keywords: ['温度', 'temperature', 'temp', 'T', '°C'] },
+    { targetField: 'segmentId', label: '工况段', required: false, keywords: ['工况段', 'segment', '段号', '分段'] },
+  ],
+  efficiency: [
+    { targetField: 'testBenchId', label: '测试台ID', required: true, keywords: ['测试台', 'testbench', 'test_bench', '台号', '设备'] },
+    { targetField: 'materialId', label: '材料ID', required: true, keywords: ['材料', 'material', '材质', '料号'] },
+    { targetField: 'segmentId', label: '工况段', required: false, keywords: ['工况段', 'segment', '段号', '分段'] },
+    { targetField: 'startTime', label: '开始时间', required: true, keywords: ['开始时间', 'starttime', 'start_time', '起始'] },
+    { targetField: 'endTime', label: '结束时间', required: true, keywords: ['结束时间', 'endtime', 'end_time', '终止'] },
+    { targetField: 'inputPower', label: '输入功率', required: true, keywords: ['输入功率', 'inputpower', 'input_power', 'Pin'] },
+    { targetField: 'outputPower', label: '输出功率', required: true, keywords: ['输出功率', 'outputpower', 'output_power', 'Pout'] },
+    { targetField: 'efficiency', label: '效率', required: false, keywords: ['效率', 'efficiency', 'η', 'eta'] },
+  ],
+  all: [],
+};
+
+const RANGE_RULES: Record<string, { min: number; max: number; unit: string }> = {
+  voltage: { min: 0, max: 1000, unit: 'V' },
+  current: { min: 0, max: 500, unit: 'A' },
+  power: { min: -500, max: 500, unit: 'kW' },
+  temperature: { min: -50, max: 300, unit: '°C' },
+  inputPower: { min: 0, max: 1000, unit: 'kW' },
+  outputPower: { min: 0, max: 1000, unit: 'kW' },
+  efficiency: { min: 0, max: 100, unit: '%' },
+};
+
+function getSegmentForValue(
+  speed: number,
+  torque: number,
+  segments: { id: string; speedRange: [number, number]; torqueRange: [number, number] }[]
+): string {
+  for (const seg of segments) {
+    if (
+      speed >= seg.speedRange[0] && speed < seg.speedRange[1] &&
+      torque >= seg.torqueRange[0] && torque < seg.torqueRange[1]
+    ) {
+      return seg.id;
+    }
+  }
+  return segments.length > 0 ? segments[segments.length - 1].id : '';
+}
 
 export const DataImportPage: React.FC = () => {
-  const { initialize, materials, testBenches, segments } = useAnalysisStore();
+  const { initialize, materials, testBenches, segments, recalculateAll } = useAnalysisStore();
   const [activeTab, setActiveTab] = React.useState('upload');
   const [fileType, setFileType] = React.useState<DataCaliberType>('voltage_current');
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
@@ -36,18 +111,164 @@ export const DataImportPage: React.FC = () => {
   const [validationResult, setValidationResult] = React.useState<UploadValidationResult | null>(null);
   const [fieldMappings, setFieldMappings] = React.useState<FieldMapping[]>([]);
   const [conflicts, setConflicts] = React.useState<ConflictInfo[]>([]);
-  const [previewData, setPreviewData] = React.useState<any[]>([]);
+  const [previewData, setPreviewData] = React.useState<Record<string, unknown>[]>([]);
   const [importSuccess, setImportSuccess] = React.useState(false);
+  const [parsedRows, setParsedRows] = React.useState<Record<string, unknown>[]>([]);
+  const [importHistory, setImportHistory] = React.useState<
+    { date: string; type: string; fileName: string; rows: number; status: string; operator: string }[]
+  >([]);
 
   React.useEffect(() => {
     initialize();
   }, [initialize]);
+
+  React.useEffect(() => {
+    setImportHistory(dataService.getImportHistory());
+  }, [importSuccess]);
 
   const fileTypeOptions = [
     { value: 'voltage_current', label: '电压电流数据' },
     { value: 'temperature', label: '温度序列数据' },
     { value: 'efficiency', label: '效率报告数据' },
   ];
+
+  const detectFieldMapping = (headers: string[], type: DataCaliberType): FieldMapping[] => {
+    const targetFields = TARGET_FIELDS[type] ?? [];
+    return targetFields.map((tf) => {
+      const lowerHeaders = headers.map((h) => h.toLowerCase().trim());
+      let matchedSource = '';
+      for (const kw of tf.keywords) {
+        const idx = lowerHeaders.findIndex((h) => h.includes(kw.toLowerCase()));
+        if (idx !== -1) {
+          matchedSource = headers[idx];
+          break;
+        }
+      }
+      return {
+        sourceField: matchedSource || tf.label,
+        targetField: tf.targetField,
+        required: tf.required,
+        detected: matchedSource !== '',
+      };
+    });
+  };
+
+  const mapRow = (
+    row: Record<string, unknown>,
+    mappings: FieldMapping[]
+  ): Record<string, unknown> => {
+    const result: Record<string, unknown> = {};
+    for (const m of mappings) {
+      if (m.sourceField && m.sourceField in row) {
+        result[m.targetField] = row[m.sourceField];
+      }
+    }
+    return result;
+  };
+
+  const resolveTestBenchId = (raw: unknown): string => {
+    const code = String(raw).trim();
+    const tb = testBenches.find((t) => t.code === code);
+    return tb ? tb.id : code;
+  };
+
+  const resolveMaterialId = (raw: unknown): string => {
+    const code = String(raw).trim();
+    const mat = materials.find((m) => m.code === code);
+    return mat ? mat.id : code;
+  };
+
+  const parseFile = async (file: File) => {
+    const ab = await file.arrayBuffer();
+    const workbook = XLSX.read(ab);
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rawData: Record<string, unknown>[] = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+    if (rawData.length === 0) {
+      setValidationResult({
+        valid: false,
+        errors: [{ row: 0, field: '', message: '文件为空或无法解析' }],
+        warnings: [],
+        totalRows: 0,
+        validRows: 0,
+      });
+      return;
+    }
+
+    const headers = Object.keys(rawData[0]);
+    const mappings = detectFieldMapping(headers, fileType);
+    setFieldMappings(mappings);
+
+    const mappedRows = rawData.map((row) => mapRow(row, mappings));
+    setParsedRows(mappedRows);
+
+    setPreviewData(mappedRows.slice(0, 5));
+
+    const errors: UploadValidationResult['errors'] = [];
+    const warnings: UploadValidationResult['warnings'] = [];
+
+    mappedRows.forEach((row, idx) => {
+      const rowNum = idx + 2;
+      const fieldDefs = TARGET_FIELDS[fileType] ?? [];
+
+      for (const fd of fieldDefs) {
+        const val = row[fd.targetField];
+        if (fd.required && (val === undefined || val === null || String(val).trim() === '')) {
+          errors.push({ row: rowNum, field: fd.targetField, message: `必填字段 ${fd.label} 缺失` });
+        }
+      }
+
+      for (const [field, rule] of Object.entries(RANGE_RULES)) {
+        const val = row[field];
+        if (val !== undefined && val !== null && String(val).trim() !== '' && !isNaN(Number(val))) {
+          const num = Number(val);
+          if (num < rule.min || num > rule.max) {
+            warnings.push({
+              row: rowNum,
+              field,
+              message: `${field}值 ${num} 超出正常范围(${rule.min}~${rule.max}${rule.unit})`,
+            });
+          }
+        }
+      }
+    });
+
+    const validRows = mappedRows.length - errors.length;
+    setValidationResult({
+      valid: errors.length === 0,
+      errors,
+      warnings,
+      totalRows: mappedRows.length,
+      validRows,
+    });
+
+    if (fileType === 'voltage_current' && mappedRows.length > 0) {
+      const existingVoltageData = dataService.getVoltageData();
+      const existingEfficiency = dataService.getEfficiencyReports();
+      if (existingVoltageData.length > 0 && existingEfficiency.length > 0) {
+        const avgImportPower = mappedRows
+          .filter((r) => r.power !== undefined && !isNaN(Number(r.power)))
+          .reduce((s, r) => s + Math.abs(Number(r.power)), 0) / Math.max(1, mappedRows.length);
+        const avgExistingPower = existingVoltageData
+          .slice(-mappedRows.length)
+          .reduce((s, r) => s + Math.abs(r.power), 0) / Math.max(1, existingVoltageData.length);
+        const avgEffPower = existingEfficiency
+          .reduce((s, r) => s + r.inputPower, 0) / Math.max(1, existingEfficiency.length);
+
+        const conflictResults = caliberEngine.detectConflict([
+          { name: '导入数据口径', data: { voltage: 380, current: 25, power: avgImportPower }, type: 'power' },
+          { name: '现有数据口径', data: { voltage: 380, current: 25, power: avgExistingPower }, type: 'power' },
+          { name: '效率报告口径', data: { inputPower: avgEffPower, outputPower: avgEffPower * 0.9 }, type: 'efficiency' },
+        ]);
+        setConflicts(conflictResults);
+      } else {
+        setConflicts([]);
+      }
+    } else {
+      setConflicts([]);
+    }
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -57,73 +278,100 @@ export const DataImportPage: React.FC = () => {
       setConflicts([]);
       setPreviewData([]);
       setImportSuccess(false);
-      simulatePreview(file);
+      setParsedRows([]);
+      parseFile(file);
     }
   };
 
-  const simulatePreview = async (file: File) => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    const mockMappings: FieldMapping[] = [
-      { sourceField: '时间', targetField: 'timestamp', required: true, detected: true },
-      { sourceField: '测试台', targetField: 'testBenchId', required: true, detected: true },
-      { sourceField: '材料', targetField: 'materialId', required: true, detected: true },
-      { sourceField: '电压(V)', targetField: 'voltage', required: true, detected: true },
-      { sourceField: '电流(A)', targetField: 'current', required: true, detected: true },
-      { sourceField: '功率(kW)', targetField: 'power', required: true, detected: true },
-    ];
-    setFieldMappings(mockMappings);
-
-    const mockPreview = Array.from({ length: 5 }, (_, i) => ({
-      timestamp: `2024-01-${15 + i} 14:30:${i * 10}`,
-      testBenchId: 'TB-001',
-      materialId: 'CU-001',
-      voltage: (380 + i * 0.5).toFixed(1),
-      current: (25.5 + i * 0.3).toFixed(2),
-      power: (9.69 + i * 0.1).toFixed(2),
-    }));
-    setPreviewData(mockPreview);
-
-    const mockResult: UploadValidationResult = {
-      valid: true,
-      errors: [],
-      warnings: [
-        { row: 23, field: 'voltage', message: '电压值超出正常范围(360-400V)' },
-        { row: 156, field: 'current', message: '电流值缺失，将使用插值填充' },
-      ],
-      totalRows: 1000,
-      validRows: 998,
-    };
-    setValidationResult(mockResult);
-
-    const mockConflicts: ConflictInfo[] = [
-      {
-        type: 'caliber',
-        field: 'power',
-        source1: { name: '电压电流口径', value: 9.69 },
-        source2: { name: '效率报告口径', value: 9.72 },
-        description: '功率计算口径存在差异，相差0.03 kW (0.31%)',
-      },
-    ];
-    setConflicts(mockConflicts);
-  };
-
   const handleUpload = async () => {
-    if (!selectedFile) return;
+    if (!selectedFile || !validationResult) return;
 
     setIsUploading(true);
     setUploadProgress(0);
     setImportSuccess(false);
 
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      setUploadProgress(i);
+    const fieldDefs = TARGET_FIELDS[fileType] ?? [];
+    const mappingMap: Record<string, string> = {};
+    for (const fd of fieldDefs) {
+      mappingMap[fd.targetField] = fd.targetField;
     }
 
-    setIsUploading(false);
-    setImportSuccess(true);
-    setSelectedFile(null);
-    setUploadProgress(0);
+    const total = parsedRows.length;
+    const batchSize = Math.max(1, Math.ceil(total / 10));
+
+    try {
+      for (let i = 0; i < total; i += batchSize) {
+        const batch = parsedRows.slice(i, i + batchSize);
+        const end = Math.min(i + batchSize, total);
+
+        if (fileType === 'voltage_current') {
+          const data: VoltageCurrentData[] = batch.map((row) => ({
+            id: generateId(),
+            testBenchId: resolveTestBenchId(row.testBenchId),
+            materialId: resolveMaterialId(row.materialId),
+            timestamp: row.timestamp ? new Date(String(row.timestamp)) : new Date(),
+            voltage: Number(row.voltage) || 0,
+            current: Number(row.current) || 0,
+            power: Number(row.power) || 0,
+            segmentId: row.segmentId ? String(row.segmentId) : getSegmentForValue(0, 0, segments),
+          }));
+          dataService.importVoltageData(data);
+        } else if (fileType === 'temperature') {
+          const data: TemperatureData[] = batch.map((row) => ({
+            id: generateId(),
+            testBenchId: resolveTestBenchId(row.testBenchId),
+            materialId: resolveMaterialId(row.materialId),
+            timestamp: row.timestamp ? new Date(String(row.timestamp)) : new Date(),
+            objectType: (String(row.objectType || 'winding') as TemperatureData['objectType']),
+            temperature: Number(row.temperature) || 0,
+            segmentId: row.segmentId ? String(row.segmentId) : getSegmentForValue(0, 0, segments),
+          }));
+          dataService.importTemperatureData(data);
+        } else if (fileType === 'efficiency') {
+          const data: EfficiencyReport[] = batch.map((row) => ({
+            id: generateId(),
+            testBenchId: resolveTestBenchId(row.testBenchId),
+            materialId: resolveMaterialId(row.materialId),
+            segmentId: row.segmentId ? String(row.segmentId) : getSegmentForValue(0, 0, segments),
+            startTime: row.startTime ? new Date(String(row.startTime)) : new Date(),
+            endTime: row.endTime ? new Date(String(row.endTime)) : new Date(),
+            inputPower: Number(row.inputPower) || 0,
+            outputPower: Number(row.outputPower) || 0,
+            efficiency: Number(row.efficiency) || (Number(row.inputPower) > 0
+              ? (Number(row.outputPower) / Number(row.inputPower)) * 100
+              : 0),
+            isCorrected: false,
+          }));
+          dataService.importEfficiencyReports(data);
+        }
+
+        setUploadProgress(Math.round((end / total) * 100));
+      }
+
+      await recalculateAll();
+
+      dataService.addImportHistory({
+        date: new Date().toISOString().replace('T', ' ').slice(0, 19),
+        type: fileTypeOptions.find((o) => o.value === fileType)?.label ?? fileType,
+        fileName: selectedFile.name,
+        rows: validationResult.validRows,
+        status: validationResult.errors.length > 0
+          ? 'warning'
+          : validationResult.warnings.length > 0
+            ? 'warning'
+            : 'success',
+        operator: '当前用户',
+      });
+
+      setIsUploading(false);
+      setImportSuccess(true);
+      setSelectedFile(null);
+      setUploadProgress(0);
+      setParsedRows([]);
+    } catch {
+      setIsUploading(false);
+      setUploadProgress(0);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -135,15 +383,25 @@ export const DataImportPage: React.FC = () => {
     const file = e.dataTransfer.files?.[0];
     if (file) {
       setSelectedFile(file);
-      simulatePreview(file);
+      setValidationResult(null);
+      setConflicts([]);
+      setPreviewData([]);
+      setImportSuccess(false);
+      setParsedRows([]);
+      parseFile(file);
     }
   };
 
-  const resolveConflict = (index: number, choice: 'source1' | 'source2') => {
+  const resolveConflict = (index: number, _choice: 'source1' | 'source2') => {
     const newConflicts = [...conflicts];
     newConflicts.splice(index, 1);
     setConflicts(newConflicts);
   };
+
+  const dynamicTargetOptions = React.useMemo(() => {
+    const fields = TARGET_FIELDS[fileType] ?? [];
+    return fields.map((f) => ({ value: f.targetField, label: f.label }));
+  }, [fileType]);
 
   return (
     <div className="space-y-6">
@@ -217,7 +475,14 @@ export const DataImportPage: React.FC = () => {
                     <Select
                       label="数据类型"
                       value={fileType}
-                      onChange={(e) => setFileType(e.target.value as DataCaliberType)}
+                      onChange={(e) => {
+                        setFileType(e.target.value as DataCaliberType);
+                        setSelectedFile(null);
+                        setValidationResult(null);
+                        setConflicts([]);
+                        setPreviewData([]);
+                        setParsedRows([]);
+                      }}
                       options={fileTypeOptions}
                     />
                   </div>
@@ -253,6 +518,7 @@ export const DataImportPage: React.FC = () => {
                             setValidationResult(null);
                             setConflicts([]);
                             setPreviewData([]);
+                            setParsedRows([]);
                           }}
                         >
                           <X className="w-4 h-4" />
@@ -272,7 +538,7 @@ export const DataImportPage: React.FC = () => {
                   {isUploading && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm text-industrial-text-muted">
-                        <span>正在上传...</span>
+                        <span>正在导入...</span>
                         <span>{uploadProgress}%</span>
                       </div>
                       <Progress value={uploadProgress} max={100} />
@@ -314,6 +580,21 @@ export const DataImportPage: React.FC = () => {
                           <p className="text-xs text-industrial-text-muted">警告数</p>
                         </div>
                       </div>
+                      {validationResult.errors.length > 0 && (
+                        <div className="p-3 bg-red-500/10 border border-red-500/30 rounded">
+                          <p className="text-sm font-medium text-red-400 mb-2">错误详情：</p>
+                          {validationResult.errors.slice(0, 3).map((e, i) => (
+                            <p key={i} className="text-xs text-red-400/80">
+                              第 {e.row} 行 {e.field}: {e.message}
+                            </p>
+                          ))}
+                          {validationResult.errors.length > 3 && (
+                            <p className="text-xs text-red-400/60 mt-1">
+                              ...还有 {validationResult.errors.length - 3} 条错误
+                            </p>
+                          )}
+                        </div>
+                      )}
                       {validationResult.warnings.length > 0 && (
                         <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded">
                           <p className="text-sm font-medium text-yellow-400 mb-2">警告详情：</p>
@@ -342,6 +623,7 @@ export const DataImportPage: React.FC = () => {
                           setValidationResult(null);
                           setConflicts([]);
                           setPreviewData([]);
+                          setParsedRows([]);
                         }}
                       >
                         重新选择
@@ -422,7 +704,7 @@ export const DataImportPage: React.FC = () => {
                       {previewData.map((row, i) => (
                         <TableRow key={i}>
                           {Object.values(row).map((val, j) => (
-                            <TableCell key={j}>{String(val)}</TableCell>
+                            <TableCell key={j}>{String(val ?? '')}</TableCell>
                           ))}
                         </TableRow>
                       ))}
@@ -455,17 +737,7 @@ export const DataImportPage: React.FC = () => {
                           <TableCell>
                             <Select
                               value={mapping.targetField}
-                              options={[
-                                { value: 'timestamp', label: '时间戳' },
-                                { value: 'testBenchId', label: '测试台ID' },
-                                { value: 'materialId', label: '材料ID' },
-                                { value: 'voltage', label: '电压' },
-                                { value: 'current', label: '电流' },
-                                { value: 'power', label: '功率' },
-                                { value: 'temperature', label: '温度' },
-                                { value: 'speed', label: '转速' },
-                                { value: 'torque', label: '扭矩' },
-                              ]}
+                              options={dynamicTargetOptions}
                               className="w-48"
                             />
                           </TableCell>
@@ -512,81 +784,55 @@ export const DataImportPage: React.FC = () => {
 
             <TabsContent value="history" className="p-6">
               <div className="space-y-4">
-                {[
-                  {
-                    date: '2024-01-15 14:30:00',
-                    type: '电压电流',
-                    fileName: 'voltage_data_0115.xlsx',
-                    rows: 1000,
-                    status: 'success',
-                    operator: '张工',
-                  },
-                  {
-                    date: '2024-01-15 10:15:00',
-                    type: '温度序列',
-                    fileName: 'temp_data_0115.csv',
-                    rows: 3000,
-                    status: 'success',
-                    operator: '李工',
-                  },
-                  {
-                    date: '2024-01-14 16:45:00',
-                    type: '效率报告',
-                    fileName: 'efficiency_report_0114.xlsx',
-                    rows: 48,
-                    status: 'warning',
-                    operator: '王工',
-                  },
-                  {
-                    date: '2024-01-14 09:00:00',
-                    type: '电压电流',
-                    fileName: 'voltage_data_0114.xlsx',
-                    rows: 0,
-                    status: 'error',
-                    operator: '赵工',
-                  },
-                ].map((record, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-4 bg-industrial-bg-dark rounded"
-                  >
-                    <div className="flex items-center gap-4">
-                      {record.type === '电压电流' ? (
-                        <Zap className="w-5 h-5 text-blue-400" />
-                      ) : record.type === '温度序列' ? (
-                        <Thermometer className="w-5 h-5 text-orange-400" />
-                      ) : (
-                        <FileText className="w-5 h-5 text-green-400" />
-                      )}
-                      <div>
-                        <p className="font-medium text-industrial-text">{record.fileName}</p>
-                        <p className="text-xs text-industrial-text-muted">
-                          {record.date} · {record.operator} · {record.rows} 行
-                        </p>
+                {importHistory.length > 0 ? (
+                  importHistory.map((record, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center justify-between p-4 bg-industrial-bg-dark rounded"
+                    >
+                      <div className="flex items-center gap-4">
+                        {record.type === '电压电流数据' ? (
+                          <Zap className="w-5 h-5 text-blue-400" />
+                        ) : record.type === '温度序列数据' ? (
+                          <Thermometer className="w-5 h-5 text-orange-400" />
+                        ) : (
+                          <FileText className="w-5 h-5 text-green-400" />
+                        )}
+                        <div>
+                          <p className="font-medium text-industrial-text">{record.fileName}</p>
+                          <p className="text-xs text-industrial-text-muted">
+                            {record.date} · {record.operator} · {record.rows} 行
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Badge
+                          variant={
+                            record.status === 'success'
+                              ? 'green'
+                              : record.status === 'warning'
+                                ? 'orange'
+                                : 'red'
+                          }
+                        >
+                          {record.status === 'success'
+                            ? '成功'
+                            : record.status === 'warning'
+                              ? '有警告'
+                              : '失败'}
+                        </Badge>
+                        <Button variant="ghost" size="sm">
+                          详情
+                        </Button>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Badge
-                        variant={
-                          record.status === 'success'
-                            ? 'green'
-                            : record.status === 'warning'
-                            ? 'orange'
-                            : 'red'
-                        }
-                      >
-                        {record.status === 'success'
-                          ? '成功'
-                          : record.status === 'warning'
-                          ? '有警告'
-                          : '失败'}
-                      </Badge>
-                      <Button variant="ghost" size="sm">
-                        详情
-                      </Button>
-                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-12 text-industrial-text-muted">
+                    <Database className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>暂无导入历史</p>
                   </div>
-                ))}
+                )}
               </div>
             </TabsContent>
           </Tabs>

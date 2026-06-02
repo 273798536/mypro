@@ -118,29 +118,49 @@ export const AnalysisPage: React.FC = () => {
 
   const efficiencyScatterData = React.useMemo(() => {
     return filteredReports.map((r) => {
-      const segSpeed = segments.find((s) => s.id === r.segmentId)?.speedRange[0] || 0;
-      const segTorque = segments.find((s) => s.id === r.segmentId)?.torqueRange[0] || 0;
+      const seg = segments.find((s) => s.id === r.segmentId);
+      const speedPoints = filteredSpeedData.filter(
+        (d) => d.segmentId === r.segmentId && !d.isMissing
+      );
+      const avgSpeed =
+        speedPoints.length > 0
+          ? speedPoints.reduce((s, d) => s + d.speed, 0) / speedPoints.length
+          : (seg ? (seg.speedRange[0] + seg.speedRange[1]) / 2 : 0);
+      const avgTorque =
+        speedPoints.length > 0
+          ? speedPoints.reduce((s, d) => s + d.torque, 0) / speedPoints.length
+          : (seg ? (seg.torqueRange[0] + seg.torqueRange[1]) / 2 : 0);
       return {
-        x: segSpeed + Math.random() * 500,
-        y: segTorque + Math.random() * 20,
+        x: avgSpeed,
+        y: avgTorque,
         value: r.efficiency,
         segmentId: r.segmentId,
       };
     });
-  }, [filteredReports, segments]);
+  }, [filteredReports, segments, filteredSpeedData]);
 
   const efficiencyMapData = React.useMemo(() => {
     return filteredReports.map((r) => {
-      const segSpeed = segments.find((s) => s.id === r.segmentId)?.speedRange[0] || 0;
-      const segTorque = segments.find((s) => s.id === r.segmentId)?.torqueRange[0] || 0;
+      const seg = segments.find((s) => s.id === r.segmentId);
+      const speedPoints = filteredSpeedData.filter(
+        (d) => d.segmentId === r.segmentId && !d.isMissing
+      );
+      const avgSpeed =
+        speedPoints.length > 0
+          ? speedPoints.reduce((s, d) => s + d.speed, 0) / speedPoints.length
+          : (seg ? (seg.speedRange[0] + seg.speedRange[1]) / 2 : 0);
+      const avgTorque =
+        speedPoints.length > 0
+          ? speedPoints.reduce((s, d) => s + d.torque, 0) / speedPoints.length
+          : (seg ? (seg.torqueRange[0] + seg.torqueRange[1]) / 2 : 0);
       return {
-        speed: segSpeed + Math.random() * 800,
-        torque: segTorque + Math.random() * 30,
+        speed: avgSpeed,
+        torque: avgTorque,
         efficiency: r.efficiency,
         segmentId: r.segmentId,
       };
     });
-  }, [filteredReports, segments]);
+  }, [filteredReports, segments, filteredSpeedData]);
 
   const criticalAnomalies = React.useMemo(() => {
     return filteredAnomalies.filter((a) => a.severity === 'critical' && !a.resolved);

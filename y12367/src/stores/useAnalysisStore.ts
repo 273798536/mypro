@@ -293,32 +293,47 @@ export const useAnalysisStore = create<AnalysisState>((set, get) => ({
     set({ isLoading: true });
     
     try {
+      const voltageData = dataService.getVoltageData();
+      const temperatureData = dataService.getTemperatureData();
+      const speedData = dataService.getSpeedData();
+      const efficiencyReports = dataService.getEfficiencyReports();
+      const anomalies = dataService.getAnomalies();
+      
       const newReports = efficiencyEngine.calculateAllSegments(state.segments, {
-        voltageData: state.voltageData,
-        temperatureData: state.temperatureData,
-        speedData: state.speedData,
-        efficiencyReports: state.efficiencyReports,
-        anomalies: state.anomalies,
+        voltageData,
+        temperatureData,
+        speedData,
+        efficiencyReports,
+        anomalies,
       });
       
       const newAnomalies = anomalyEngine.recalculateAll(state.segments, {
-        voltageData: state.voltageData,
-        temperatureData: state.temperatureData,
-        speedData: state.speedData,
+        voltageData,
+        temperatureData,
+        speedData,
         efficiencyReports: newReports,
-        anomalies: state.anomalies,
+        anomalies,
       });
       
       dataService.recalculateEfficiencyReports(newReports);
       dataService.recalculateAnomalies(newAnomalies);
       
       const filters = state.filters;
+      const filteredVoltageData = dataService.getVoltageData(filters);
+      const filteredTemperatureData = dataService.getTemperatureData(filters);
+      const filteredSpeedData = dataService.getSpeedData(filters);
       const filteredReports = dataService.getEfficiencyReports(filters);
       const filteredAnomalies = dataService.getAnomalies(filters);
       
       set({
+        voltageData,
+        temperatureData,
+        speedData,
         efficiencyReports: newReports,
         anomalies: newAnomalies,
+        filteredVoltageData,
+        filteredTemperatureData,
+        filteredSpeedData,
         filteredReports,
         filteredAnomalies,
         isLoading: false,
