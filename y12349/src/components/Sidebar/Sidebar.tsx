@@ -1,16 +1,25 @@
-import { useState } from 'react';
+import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Battery, Activity, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { CycleList } from './CycleList';
-import { CapacityChart } from './CapacityChart';
+import { CapacityChart, CapacityChartHandle } from './CapacityChart';
 import { AnomalyList } from './AnomalyList';
 import { useBatteryStore } from '../../store/useBatteryStore';
 
 type TabType = 'cycles' | 'chart' | 'anomalies';
 
-export const Sidebar = () => {
+export interface SidebarHandle {
+  getChartRef: () => HTMLDivElement | null;
+}
+
+export const Sidebar = forwardRef<SidebarHandle>((_, ref) => {
   const [activeTab, setActiveTab] = useState<TabType>('cycles');
   const [isExpanded, setIsExpanded] = useState(true);
   const { currentBatch } = useBatteryStore();
+  const chartRef = useRef<CapacityChartHandle>(null);
+
+  useImperativeHandle(ref, () => ({
+    getChartRef: () => chartRef.current?.getChartRef() || null
+  }));
 
   if (!currentBatch) return null;
 
@@ -74,10 +83,12 @@ export const Sidebar = () => {
       {isExpanded && (
         <div className="flex-1 overflow-hidden">
           {activeTab === 'cycles' && <CycleList />}
-          {activeTab === 'chart' && <CapacityChart />}
+          {activeTab === 'chart' && <CapacityChart ref={chartRef} />}
           {activeTab === 'anomalies' && <AnomalyList />}
         </div>
       )}
     </div>
   );
-};
+});
+
+Sidebar.displayName = 'Sidebar';

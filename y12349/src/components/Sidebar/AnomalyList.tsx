@@ -2,11 +2,27 @@ import { useBatteryStore } from '../../store/useBatteryStore';
 import { AlertTriangle, Zap, Thermometer, X } from 'lucide-react';
 
 export const AnomalyList = () => {
-  const { currentBatch, selectedAnomaly, selectAnomaly, setCycleIndex } = useBatteryStore();
+  const { 
+    currentBatch, 
+    selectedAnomaly, 
+    selectAnomaly, 
+    setCycleIndex,
+    filteredCycles,
+    filters
+  } = useBatteryStore();
 
   if (!currentBatch) return null;
 
-  const allAnomalies = currentBatch.cycles.flatMap((cycle) =>
+  const isFiltered = 
+    filters.chargeRateRange[0] !== 0 ||
+    filters.chargeRateRange[1] !== 5 ||
+    filters.temperatureRange[0] !== 20 ||
+    filters.temperatureRange[1] !== 50 ||
+    filters.anomalyTypes.length > 0;
+
+  const sourceCycles = isFiltered ? filteredCycles : currentBatch.cycles;
+
+  const allAnomalies = sourceCycles.flatMap((cycle) =>
     cycle.anomalies.map((anomaly) => ({
       ...anomaly,
       cycleData: cycle
@@ -52,11 +68,20 @@ export const AnomalyList = () => {
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-3 border-b border-dark-lighter flex items-center justify-between">
-        <h3 className="font-semibold text-sm text-gray-300">异常事件</h3>
-        <span className="text-xs bg-dark-lighter px-2 py-1 rounded-full">
-          {allAnomalies.length} 条
-        </span>
+      <div className="p-3 border-b border-dark-lighter">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold text-sm text-gray-300">异常事件</h3>
+          <span className={`text-xs px-2 py-1 rounded-full ${
+            isFiltered ? 'bg-yellow-500/20 text-yellow-400' : 'bg-dark-lighter'
+          }`}>
+            {allAnomalies.length} 条
+          </span>
+        </div>
+        {isFiltered && (
+          <p className="text-xs text-yellow-500/70">
+            显示筛选后数据中的异常事件
+          </p>
+        )}
       </div>
       <div className="flex-1 overflow-y-auto">
         {allAnomalies.map((anomaly) => {

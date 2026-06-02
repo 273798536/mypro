@@ -52,6 +52,7 @@ export interface BatteryState {
   isPlaying: boolean;
   playbackSpeed: number;
   filters: Filters;
+  filteredCycles: CycleRecord[];
   fittingParams: FittingParams | null;
   selectedAnomaly: Anomaly | null;
   showDetailModal: boolean;
@@ -63,5 +64,7 @@ export interface BatteryState {
   selectAnomaly: (anomaly: Anomaly | null) => void;
   setShowDetailModal: (show: boolean) => void;
   calculateFitting: () => void;
-  exportReport: (format: 'csv' | 'png') => void;
+  applyFilters: () => void;
+  exportReport: (format: 'csv' | 'png', chartRef?: React.RefObject<HTMLDivElement>) => void;
+  resetFilters: () => void;
 }

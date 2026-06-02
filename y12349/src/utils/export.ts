@@ -1,8 +1,9 @@
-import { BatteryBatch, FittingParams } from '../types';
+import { BatteryBatch, FittingParams, Filters } from '../types';
 
 export const exportToCSV = (
   batch: BatteryBatch,
-  fittingParams: FittingParams | null
+  fittingParams: FittingParams | null,
+  summary?: string
 ): void => {
   const headers = [
     '循环次数',
@@ -33,8 +34,16 @@ export const exportToCSV = (
   let csvContent = headers.join(',') + '\n';
   csvContent += rows.map(row => row.join(',')).join('\n');
   
+  csvContent += '\n\n========== 报告说明 ==========\n';
+  csvContent += `导出时间: ${new Date().toLocaleString('zh-CN')}\n`;
+  csvContent += `数据范围: ${batch.cycles.length} 条循环记录\n`;
+  
+  if (summary) {
+    csvContent += '\n' + summary + '\n';
+  }
+  
   if (fittingParams) {
-    csvContent += '\n\n衰减拟合参数\n';
+    csvContent += '\n衰减拟合参数\n';
     csvContent += `模型: f(x) = ${fittingParams.a.toFixed(4)} * exp(-${fittingParams.b.toFixed(6)} * x) + ${fittingParams.c.toFixed(4)}\n`;
     csvContent += `R²: ${fittingParams.rSquared.toFixed(4)}\n`;
   }
@@ -50,46 +59,158 @@ export const exportToCSV = (
   URL.revokeObjectURL(url);
 };
 
-export const exportChartAsPNG = (chartRef: React.RefObject<HTMLDivElement>): void => {
+export const exportChartAsPNG = (
+  chartRef: React.RefObject<HTMLDivElement>,
+  fittingParams: FittingParams | null,
+  filters: Filters
+): void => {
   if (!chartRef.current) return;
   
+  const rect = chartRef.current.getBoundingClientRect();
+  const width = Math.max(800, rect.width * 2);
+  const height = Math.max(400, rect.height * 2);
+  
   const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  
   const ctx = canvas.getContext('2d');
   if (!ctx) return;
   
-  const element = chartRef.current;
-  const rect = element.getBoundingClientRect();
-  
-  canvas.width = rect.width * 2;
-  canvas.height = rect.height * 2;
-  ctx.scale(2, 2);
-  
   ctx.fillStyle = '#0F172A';
-  ctx.fillRect(0, 0, rect.width, rect.height);
+  ctx.fillRect(0, 0, width, height);
   
-  const link = document.createElement('a');
-  link.download = `容量衰减曲线_${new Date().toISOString().split('T')[0]}.png`;
-  
-  html2canvasFallback(element, canvas, () => {
+  const svgElement = chartRef.current.querySelector('svg');
+  if (svgElement) {
+    const svgData = new XMLSerializer().serializeToString(svgElement);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(svgBlob);
+    
+    const img = new Image();
+    img.onload = () => {
+      const padding = 60;
+      const chartWidth = width - padding * 2;
+      const chartHeight = height - padding * 2;
+      
+      ctx.fillStyle = '#0F172A';
+      ctx.fillRect(0, 0, width, height);
+      
+      ctx.drawImage(img, padding, padding, chartWidth, chartHeight);
+      
+      ctx.fillStyle = '#E2E8F0';
+      ctx.font = 'bold 20px Inter';
+      ctx.textAlign = 'center';
+      ctx.fillText('电池容量衰减曲线图', width / 2, 35);
+      
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '12px Inter';
+      ctx.textAlign = 'left';
+      ctx.fillText(`生成时间: ${new Date().toLocaleString('zh-CN')}`, padding, height - 25);
+      
+      const filterText = `筛选条件: 充电倍率 ${filters.chargeRateRange[0]}C-${filters.chargeRateRange[1]}C, 温度 ${filters.temperatureRange[0]}°C-${filters.temperatureRange[1]}°C`;
+      ctx.fillText(filterText, padding, height - 8);
+      
+      if (fittingParams) {
+        ctx.textAlign = 'right';
+        ctx.fillText(`R² = ${fittingParams.rSquared.toFixed(4)}`, width - padding, height - 8);
+      }
+      
+      const link = document.createElement('a');
+      link.download = `容量衰减曲线_${new Date().toISOString().split('T')[0]}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      URL.revokeObjectURL(url);
+    };
+    img.onerror = () => {
+      drawFallbackChart(ctx, width, height, fittingParams, filters);
+      const link = document.createElement('a');
+      link.download = `容量衰减曲线_${new Date().toISOString().split('T')[0]}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  } else {
+    drawFallbackChart(ctx, width, height, fittingParams, filters);
+    const link = document.createElement('a');
+    link.download = `容量衰减曲线_${new Date().toISOString().split('T')[0]}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
-  });
+  }
 };
 
-const html2canvasFallback = (
-  _element: HTMLElement,
-  canvas: HTMLCanvasElement,
-  callback: () => void
+const drawFallbackChart = (
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  fittingParams: FittingParams | null,
+  filters: Filters
 ) => {
-  setTimeout(() => {
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.font = '14px Inter';
-      ctx.fillStyle = '#94A3B8';
-      ctx.fillText('容量衰减曲线图 (详细数据请下载CSV)', 10, 25);
+  const padding = 60;
+  const chartWidth = width - padding * 2;
+  const chartHeight = height - padding * 2;
+  
+  ctx.fillStyle = '#0F172A';
+  ctx.fillRect(0, 0, width, height);
+  
+  ctx.fillStyle = '#E2E8F0';
+  ctx.font = 'bold 20px Inter';
+  ctx.textAlign = 'center';
+  ctx.fillText('电池容量衰减曲线图', width / 2, 35);
+  
+  ctx.strokeStyle = '#334155';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = padding + (chartHeight / 4) * i;
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(width - padding, y);
+    ctx.stroke();
+    
+    ctx.fillStyle = '#64748B';
+    ctx.font = '11px Inter';
+    ctx.textAlign = 'right';
+    const value = 100 - i * 10;
+    ctx.fillText(`${value}%`, padding - 8, y + 4);
+  }
+  
+  ctx.fillStyle = '#94A3B8';
+  ctx.font = '12px Inter';
+  ctx.textAlign = 'left';
+  ctx.fillText(`生成时间: ${new Date().toLocaleString('zh-CN')}`, padding, height - 25);
+  
+  const filterText = `筛选条件: 充电倍率 ${filters.chargeRateRange[0]}C-${filters.chargeRateRange[1]}C, 温度 ${filters.temperatureRange[0]}°C-${filters.temperatureRange[1]}°C`;
+  ctx.fillText(filterText, padding, height - 8);
+  
+  if (fittingParams) {
+    ctx.textAlign = 'right';
+    ctx.fillText(`R² = ${fittingParams.rSquared.toFixed(4)}`, width - padding, height - 8);
+    
+    ctx.strokeStyle = '#F59E0B';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    for (let i = 0; i <= 100; i++) {
+      const cycle = (i / 100) * 500;
+      const retention = fittingParams.a * Math.exp(-fittingParams.b * cycle) + fittingParams.c;
+      const x = padding + (i / 100) * chartWidth;
+      const y = padding + chartHeight - ((Math.max(60, Math.min(100, retention)) - 60) / 40) * chartHeight;
+      
+      if (i === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
     }
-    callback();
-  }, 100);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  
+  ctx.fillStyle = '#06B6D4';
+  ctx.font = '14px Inter';
+  ctx.textAlign = 'center';
+  ctx.fillText('(完整图表请在应用中查看或下载CSV数据)', width / 2, height / 2);
 };
 
 export const generateReportSummary = (
