@@ -45,6 +45,7 @@ export function TerrainCanvas({ cracks, onCrackClick, selectedCrackId }: Terrain
             <CrackMarker
               key={crack.id}
               crack={crack}
+              allCracks={displayCracks}
               isSelected={selectedId === crack.id}
               onClick={() => handleCrackClick(crack)}
             />
