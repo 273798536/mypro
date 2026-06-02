@@ -810,32 +810,69 @@
         }
 
         async function saveExperiment() {
-            const res = await fetch(`/api/v1/experiments/${currentExperimentId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: document.getElementById('edit-name').value,
-                    description: document.getElementById('edit-description').value,
-                    mass: parseFloat(document.getElementById('edit-mass').value),
-                    mass_unit: document.getElementById('edit-mass-unit').value,
-                    status: document.getElementById('edit-status').value,
-                    data_points: dataPoints,
-                    change_description: '更新实验数据'
-                })
-            });
-            
-            if (res.ok) {
+            try {
+                if (dataPoints.length === 0) {
+                    alert('至少需要一个数据点才能保存');
+                    return;
+                }
+                
+                const name = document.getElementById('edit-name').value.trim();
+                if (!name) {
+                    alert('请输入实验名称');
+                    return;
+                }
+                
+                const mass = parseFloat(document.getElementById('edit-mass').value);
+                if (isNaN(mass) || mass <= 0) {
+                    alert('请输入有效的质量数值');
+                    return;
+                }
+                
+                const res = await fetch(`/api/v1/experiments/${currentExperimentId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        description: document.getElementById('edit-description').value,
+                        mass: mass,
+                        mass_unit: document.getElementById('edit-mass-unit').value,
+                        status: document.getElementById('edit-status').value,
+                        data_points: dataPoints,
+                        change_description: '更新实验数据'
+                    })
+                });
+                
+                if (!res.ok) {
+                    const error = await res.json();
+                    alert(`保存失败：${error.detail || '未知错误'}`);
+                    return;
+                }
+                
                 alert('保存成功');
                 showDetailView(currentExperimentId);
+            } catch (e) {
+                alert(`保存出错：${e.message}`);
             }
         }
 
         async function validateExperiment() {
-            const res = await fetch(`/api/v1/experiments/${currentExperimentId}/validate`, {
-                method: 'POST'
-            });
-            await loadValidationResults();
-            switchTab('validation');
+            try {
+                const res = await fetch(`/api/v1/experiments/${currentExperimentId}/validate`, {
+                    method: 'POST'
+                });
+                
+                if (!res.ok) {
+                    const error = await res.json();
+                    alert(`校验失败：${error.detail || '未知错误'}`);
+                    return;
+                }
+                
+                await loadValidationResults();
+                await refreshExperimentStatus();
+                switchTab('validation');
+            } catch (e) {
+                alert(`校验出错：${e.message}`);
+            }
         }
 
         async function loadValidationResults() {
@@ -872,11 +909,33 @@
         }
 
         async function fitExperiment() {
-            const res = await fetch(`/api/v1/experiments/${currentExperimentId}/fit`, {
-                method: 'POST'
-            });
-            await loadFittingResults();
-            switchTab('fitting');
+            try {
+                const res = await fetch(`/api/v1/experiments/${currentExperimentId}/fit`, {
+                    method: 'POST'
+                });
+                
+                if (!res.ok) {
+                    const error = await res.json();
+                    alert(`拟合失败：${error.detail || '未知错误'}`);
+                    return;
+                }
+                
+                await loadFittingResults();
+                await refreshExperimentStatus();
+                switchTab('fitting');
+            } catch (e) {
+                alert(`拟合出错：${e.message}`);
+            }
+        }
+
+        async function refreshExperimentStatus() {
+            const res = await fetch(`/api/v1/experiments/${currentExperimentId}`);
+            if (res.ok) {
+                const exp = await res.json();
+                document.getElementById('detail-status').textContent = getStatusText(exp.status);
+                document.getElementById('detail-status').className = `status-badge status-${exp.status}`;
+                document.getElementById('edit-status').value = exp.status;
+            }
         }
 
         async function loadFittingResults() {
@@ -1016,7 +1075,10 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
-            event.target.classList.add('active');
+            const tabElement = document.querySelector(`.tab[onclick="switchTab('${tabName}')"]`);
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
             document.getElementById(`tab-${tabName}`).classList.add('active');
         }
 

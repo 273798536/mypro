@@ -88,6 +88,8 @@ class FittingResultResponse(BaseModel):
     damping_ratio: Optional[float]
     r_squared: Optional[float]
     fitted_equation: Optional[str]
+    initial_amplitude: Optional[float]
+    phase: Optional[float]
     created_at: datetime
 
     class Config:

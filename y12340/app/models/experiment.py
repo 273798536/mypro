@@ -69,6 +69,8 @@ class FittingResult(Base):
     damping_ratio = Column(Float)
     r_squared = Column(Float)
     fitted_equation = Column(Text)
+    initial_amplitude = Column(Float)
+    phase = Column(Float)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     experiment = relationship("Experiment", back_populates="fitting_results")
