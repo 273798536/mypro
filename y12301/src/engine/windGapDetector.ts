@@ -37,7 +37,7 @@ function pointToLineDistance(
 
   const dot = A * C + B * D;
   const lenSq = C * C + D * D;
-  let param = lenSq !== 0 ? dot / lenSq : -1;
+  const param = lenSq !== 0 ? dot / lenSq : -1;
 
   let xx, zz;
 

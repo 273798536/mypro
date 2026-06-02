@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Play, Pause, SkipBack, SkipForward, Wind, RefreshCw, Download, Upload } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
-import { TIME_PERIODS, TimePeriod } from '../../types';
+import { TIME_PERIODS } from '../../types';
 import { cn } from '../../utils/cn';
 import { ImportModal } from './ImportModal';
 
@@ -37,7 +37,7 @@ export function TopBar() {
         clearTimeout(animationRef.current);
       }
     };
-  }, [isPlaying, setTimePeriod]);
+  }, [isPlaying, setTimePeriod, timePeriod]);
 
   const currentIndex = TIME_PERIODS.findIndex((p) => p.key === timePeriod);
 
@@ -77,7 +77,7 @@ export function TopBar() {
         </button>
 
         <div className="flex items-center gap-2 bg-slate-800/50 rounded-lg p-1">
-          {TIME_PERIODS.map((period, index) => (
+          {TIME_PERIODS.map((period) => (
             <button
               key={period.key}
               onClick={() => setTimePeriod(period.key)}

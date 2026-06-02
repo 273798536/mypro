@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertTriangle, AlertCircle, CheckCircle, ChevronDown, ChevronUp, X, Layers, MapPin, Lightbulb, Eye } from 'lucide-react';
+import { AlertTriangle, AlertCircle, CheckCircle, ChevronDown, ChevronUp, Layers, MapPin, Lightbulb, Eye } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { AnomalyItem, AnomalyType } from '../../types';
 import { cn } from '../../utils/cn';

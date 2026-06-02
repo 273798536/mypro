@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Settings, Building2, Wind, AlertTriangle, Save, CheckCircle, X } from 'lucide-react';
+import { Settings, Building2, Wind, AlertTriangle, Save, CheckCircle } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
 import { cn } from '../../utils/cn';
 

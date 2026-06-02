@@ -26,7 +26,9 @@ function loadPersistedRemarks(): Record<string, string> {
 function persistRemarks(remarks: Record<string, string>) {
   try {
     localStorage.setItem(REMARKS_STORAGE_KEY, JSON.stringify(remarks));
-  } catch {}
+  } catch {
+    return;
+  }
 }
 
 function applyPersistedRemarks(buildings: BuildingBlock[]): BuildingBlock[] {

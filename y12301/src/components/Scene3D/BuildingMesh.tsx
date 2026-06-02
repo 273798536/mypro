@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, ThreeEvent } from '@react-three/fiber';
 import * as THREE from 'three';
 import { BuildingBlock } from '../../types';
 import { useAppStore } from '../../store/useAppStore';
@@ -51,7 +51,7 @@ export function BuildingMesh({ building, globalOpacity }: BuildingMeshProps) {
     }
   });
 
-  const handleClick = (e: any) => {
+  const handleClick = (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     setSelectedEntity(isSelected ? null : building.id);
   };

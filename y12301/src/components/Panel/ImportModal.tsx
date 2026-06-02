@@ -1,22 +1,67 @@
 import { useState, useRef, useCallback } from 'react';
 import { X, Upload, FileJson, Building2, Wind, TreeDeciduous, AlertCircle, CheckCircle, Merge, Replace } from 'lucide-react';
 import { useAppStore } from '../../store/useAppStore';
-import { TimePeriod, TIME_PERIODS } from '../../types';
+import { TimePeriod, TIME_PERIODS, BuildingBlock, WindDirection, OpenSpace } from '../../types';
 import { cn } from '../../utils/cn';
 
 type ImportType = 'buildings' | 'wind' | 'openSpaces';
 type ImportMode = 'replace' | 'merge';
+
+interface PreviewData {
+  count: number;
+  type: string;
+}
 
 interface ImportModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const MAX_IMPORT_COUNT = 500;
+const MAX_JSON_SIZE = 1024 * 1024; // 1MB
+
 const importTypeConfigs: { key: ImportType; label: string; icon: React.ElementType; description: string }[] = [
   { key: 'buildings', label: '建筑体块', icon: Building2, description: '导入建筑位置、尺寸、退界等数据' },
   { key: 'wind', label: '风向数据', icon: Wind, description: '导入各时段风向玫瑰数据' },
   { key: 'openSpaces', label: '开敞空间', icon: TreeDeciduous, description: '导入公园、广场、河道等开敞空间' },
 ];
+
+function isValidBuilding(b: unknown): b is BuildingBlock {
+  return (
+    typeof b === 'object' &&
+    b !== null &&
+    'id' in b &&
+    typeof (b as Record<string, unknown>).id === 'string' &&
+    'name' in b &&
+    typeof (b as Record<string, unknown>).name === 'string' &&
+    'position' in b &&
+    typeof (b as Record<string, unknown>).position === 'object' &&
+    'dimensions' in b &&
+    typeof (b as Record<string, unknown>).dimensions === 'object'
+  );
+}
+
+function isValidWind(w: unknown): w is WindDirection {
+  return (
+    typeof w === 'object' &&
+    w !== null &&
+    'angle' in w &&
+    typeof (w as Record<string, unknown>).angle === 'number' &&
+    'speed' in w &&
+    typeof (w as Record<string, unknown>).speed === 'number'
+  );
+}
+
+function isValidOpenSpace(s: unknown): s is OpenSpace {
+  return (
+    typeof s === 'object' &&
+    s !== null &&
+    'id' in s &&
+    typeof (s as Record<string, unknown>).id === 'string' &&
+    'name' in s &&
+    typeof (s as Record<string, unknown>).name === 'string'
+  );
+}
 
 export function ImportModal({ isOpen, onClose }: ImportModalProps) {
   const [importType, setImportType] = useState<ImportType>('buildings');
@@ -25,30 +70,22 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
   const [jsonText, setJsonText] = useState('');
   const [parseError, setParseError] = useState<string | null>(null);
   const [parseSuccess, setParseSuccess] = useState(false);
-  const [previewData, setPreviewData] = useState<any>(null);
+  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const importBuildings = useAppStore((state) => state.importBuildings);
   const importWindData = useAppStore((state) => state.importWindData);
   const importOpenSpaces = useAppStore((state) => state.importOpenSpaces);
 
-  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      setJsonText(text);
-      validateJson(text);
-    };
-    reader.readAsText(file);
-  }, []);
-
   const validateJson = useCallback((text: string) => {
     setParseError(null);
     setParseSuccess(false);
     setPreviewData(null);
+
+    if (text.length > MAX_JSON_SIZE) {
+      setParseError(`JSON 数据过大，最大支持 ${MAX_JSON_SIZE / 1024}KB`);
+      return;
+    }
 
     try {
       const data = JSON.parse(text);
@@ -60,16 +97,31 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
         if (data.length === 0) {
           throw new Error('建筑数据不能为空');
         }
-        const invalid = data.find((b: any) => !b.id || !b.name || !b.position || !b.dimensions);
+        if (data.length > MAX_IMPORT_COUNT) {
+          throw new Error(`建筑数据过多，单次最多导入 ${MAX_IMPORT_COUNT} 条`);
+        }
+        const invalid = data.find((b) => !isValidBuilding(b));
         if (invalid) {
           throw new Error('建筑数据缺少必要字段: id, name, position, dimensions');
+        }
+        const dupIds = new Set<string>();
+        const dupCheck = new Set<string>();
+        data.forEach((b: BuildingBlock) => {
+          if (dupCheck.has(b.id)) dupIds.add(b.id);
+          dupCheck.add(b.id);
+        });
+        if (dupIds.size > 0) {
+          throw new Error(`导入数据中存在重复ID: ${Array.from(dupIds).join(', ')}`);
         }
         setPreviewData({ count: data.length, type: '建筑体块' });
       } else if (importType === 'wind') {
         if (!Array.isArray(data)) {
           throw new Error('风向数据应为数组格式');
         }
-        const invalid = data.find((w: any) => typeof w.angle !== 'number' || typeof w.speed !== 'number');
+        if (data.length > MAX_IMPORT_COUNT) {
+          throw new Error(`风向数据过多，单次最多导入 ${MAX_IMPORT_COUNT} 条`);
+        }
+        const invalid = data.find((w) => !isValidWind(w));
         if (invalid) {
           throw new Error('风向数据缺少必要字段: angle, speed');
         }
@@ -78,7 +130,10 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
         if (!Array.isArray(data)) {
           throw new Error('开敞空间数据应为数组格式');
         }
-        const invalid = data.find((s: any) => !s.id || !s.name);
+        if (data.length > MAX_IMPORT_COUNT) {
+          throw new Error(`开敞空间数据过多，单次最多导入 ${MAX_IMPORT_COUNT} 条`);
+        }
+        const invalid = data.find((s) => !isValidOpenSpace(s));
         if (invalid) {
           throw new Error('开敞空间数据缺少必要字段: id, name');
         }
@@ -86,10 +141,32 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
       }
 
       setParseSuccess(true);
-    } catch (err: any) {
-      setParseError(err.message || 'JSON 格式错误');
+    } catch (err) {
+      if (err instanceof Error) {
+        setParseError(err.message || 'JSON 格式错误');
+      } else {
+        setParseError('JSON 格式错误');
+      }
     }
   }, [importType]);
+
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > MAX_JSON_SIZE) {
+      setParseError(`文件过大，最大支持 ${MAX_JSON_SIZE / 1024}KB`);
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      setJsonText(text);
+      validateJson(text);
+    };
+    reader.readAsText(file);
+  }, [validateJson]);
 
   const handleImport = useCallback(() => {
     if (!parseSuccess || !jsonText) return;
@@ -97,11 +174,11 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
     try {
       const data = JSON.parse(jsonText);
 
-      if (importType === 'buildings') {
+      if (importType === 'buildings' && Array.isArray(data) && data.every(isValidBuilding)) {
         importBuildings(data, importMode);
-      } else if (importType === 'wind') {
+      } else if (importType === 'wind' && Array.isArray(data) && data.every(isValidWind)) {
         importWindData(windPeriod, data);
-      } else if (importType === 'openSpaces') {
+      } else if (importType === 'openSpaces' && Array.isArray(data) && data.every(isValidOpenSpace)) {
         importOpenSpaces(data, importMode);
       }
 
@@ -109,10 +186,14 @@ export function ImportModal({ isOpen, onClose }: ImportModalProps) {
       setJsonText('');
       setParseSuccess(false);
       setPreviewData(null);
-    } catch (err: any) {
-      setParseError(err.message || '导入失败');
+    } catch (err) {
+      if (err instanceof Error) {
+        setParseError(err.message || '导入失败');
+      } else {
+        setParseError('导入失败');
+      }
     }
-  }, [jsonText, parseSuccess, importType, importMode, windPeriod, importBuildings, importWindData, importOpenSpaces, onClose]);
+  }, [parseSuccess, jsonText, importType, importMode, windPeriod, importBuildings, importWindData, importOpenSpaces, onClose]);
 
   const handleClose = useCallback(() => {
     onClose();

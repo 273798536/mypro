@@ -17,7 +17,7 @@ function CameraController({
   targetPosition: { x: number; y: number; z: number } | null;
 }) {
   const { camera } = useThree();
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<typeof OrbitControls.prototype | null>(null);
 
   useEffect(() => {
     if (targetPosition && controlsRef.current) {
