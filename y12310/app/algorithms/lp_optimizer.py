@@ -478,11 +478,14 @@ class LinearProgrammingOptimizer:
         assignments = []
         vehicle_assignments = []
         route_sku_totals = defaultdict(lambda: defaultdict(float))
+        route_sku_penalty = defaultdict(lambda: defaultdict(float))
         vehicle_trip_loads = defaultdict(float)
 
         for vh in vehicles:
             vh_wh = self._get_vehicle_warehouse(vh, warehouses)
             wh_obj = next((w for w in warehouses if w.id == vh_wh), None)
+            if not wh_obj:
+                continue
             for trip in trips:
                 for st in stores:
                     route_used = use_route.get((vh.id, trip, vh_wh, st.id))
@@ -492,6 +495,8 @@ class LinearProgrammingOptimizer:
                             qty = x[(vh.id, trip, vh_wh, st.id, sku)].varValue
                             if qty is not None and qty > 0.01:
                                 route_sku_totals[(vh_wh, st.id)][sku] += qty
+                                unit_pen = self._compute_unit_penalty(wh_obj, st, sku)
+                                route_sku_penalty[(vh_wh, st.id)][sku] += unit_pen * qty
                                 trip_total += qty
                         if trip_total > 0.01:
                             st_obj = next((s for s in stores if s.id == st.id), None)
@@ -527,8 +532,9 @@ class LinearProgrammingOptimizer:
                         st_obj.latitude, st_obj.longitude
                     ) if wh_obj and st_obj else 0
                     transport_cost = self._get_transport_cost(wh_obj, st_obj) * quantity if wh_obj and st_obj else 0
+                    penalty_cost = route_sku_penalty[(wh_id, st_id)][sku]
 
-                    deadline_info = self._get_deadline_info(st_obj, sku)
+                    deadline_info = self._get_deadline_info(wh_obj, st_obj, sku)
 
                     assignments.append({
                         "warehouse_id": wh_id,
@@ -540,8 +546,8 @@ class LinearProgrammingOptimizer:
                         "quantity": round(quantity, 2),
                         "distance_km": round(distance, 2),
                         "transport_cost": round(transport_cost, 2),
-                        "penalty_cost": 0,
-                        "total_cost": round(transport_cost, 2),
+                        "penalty_cost": round(penalty_cost, 2),
+                        "total_cost": round(transport_cost + penalty_cost, 2),
                         "deadline": deadline_info.get("deadline"),
                         "deadline_feasible": deadline_info.get("feasible", True),
                         "delivery_hours": round(self._get_route_delivery_hours(wh_obj, st_obj) if wh_obj and st_obj else 0, 2)
@@ -559,14 +565,15 @@ class LinearProgrammingOptimizer:
 
         return self.result
 
-    def _get_deadline_info(self, store, sku):
+    def _get_deadline_info(self, warehouse, store, sku):
         store_demands = self.dm.demands.get(store.id, [])
         for dem in store_demands:
             if dem.sku == sku and dem.deadline:
+                feasible = self._is_route_feasible_for_deadline(warehouse, store, dem.deadline)
                 return {
                     "deadline": dem.deadline.isoformat(),
                     "urgency": dem.urgency,
-                    "feasible": True
+                    "feasible": feasible
                 }
         return {}
 

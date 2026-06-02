@@ -45,14 +45,15 @@ class ReportGenerator:
             
             if getattr(result, 'vehicle_assignments', []):
                 df_vehicles = pd.DataFrame(result.vehicle_assignments)
-                df_vehicles = df_vehicles[[
-                    "plate_number", "warehouse_name", "store_name",
-                    "load", "max_capacity", "utilization_rate"
-                ]]
-                df_vehicles.columns = [
-                    "车牌号", "出库仓库", "收货门店",
-                    "装载量", "最大容量", "利用率(%)"
-                ]
+                vehicle_cols = ["plate_number", "warehouse_name", "store_name", "trip_number",
+                                "load", "max_capacity", "utilization_rate"]
+                vehicle_col_names = ["车牌号", "出库仓库", "收货门店", "趟次",
+                                     "装载量", "最大容量", "利用率(%)"]
+                if "delivery_hours" in df_vehicles.columns:
+                    vehicle_cols.append("delivery_hours")
+                    vehicle_col_names.append("配送时长(h)")
+                df_vehicles = df_vehicles[vehicle_cols]
+                df_vehicles.columns = vehicle_col_names
                 df_vehicles.to_excel(writer, sheet_name="车辆分配", index=False)
             
             if result.assignments:
