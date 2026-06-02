@@ -1,6 +1,7 @@
-import { Download, FileJson, FileSpreadsheet, AlertCircle, Search } from 'lucide-react';
+import { Download, FileJson, FileSpreadsheet, AlertCircle, Search, Upload, Edit3, Database } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { TIME_SLOTS } from '@/data/mockData';
+import type { DataSource } from '@/types';
 
 function downloadFile(content: string, filename: string, mimeType: string) {
   const blob = new Blob([content], { type: mimeType });
@@ -25,6 +26,20 @@ function exportCSV(headers: string[], rows: string[][]) {
 function exportJSON(data: unknown, filename: string) {
   const jsonContent = JSON.stringify(data, null, 2);
   downloadFile(jsonContent, filename, 'application/json');
+}
+
+function getSourceLabel(source: DataSource | undefined): string {
+  if (!source) return '未知';
+  switch (source.type) {
+    case 'import':
+      return `导入：${source.filename} 第${source.rowIndex}行`;
+    case 'manual':
+      return `手动：${source.manualEditTimestamp?.slice(0, 16) || ''}`;
+    case 'system':
+      return '系统样例';
+    default:
+      return '未知';
+  }
 }
 
 export default function Export() {
@@ -69,27 +84,57 @@ export default function Export() {
   const traceData = volunteers.map(v => {
     const volAssignments = currentResult.assignments.filter(a => a.volunteerId === v.id);
     const skillNames = v.skillIds.map(sid => getSkillById(sid)?.name ?? sid).join('、');
-    const anomalyAssignment = volAssignments.find(a => a.isAnomaly);
-    const posName = anomalyAssignment
-      ? (() => {
-          const sh = getShiftById(anomalyAssignment.shiftId);
-          return sh ? getPositionById(sh.positionId)?.name ?? '—' : '—';
-        })()
-      : volAssignments.length > 0
-        ? (() => {
-            const sh = getShiftById(volAssignments[0].shiftId);
-            return sh ? getPositionById(sh.positionId)?.name ?? '—' : '—';
-          })()
-        : '未分配';
+    
+    const positions: string[] = [];
+    const shiftDetails: string[] = [];
+    const anomalyTypes: string[] = [];
+    const anomalyDetails: string[] = [];
+
+    for (const a of volAssignments) {
+      const sh = getShiftById(a.shiftId);
+      const pos = sh ? getPositionById(sh.positionId) : undefined;
+      const ts = TIME_SLOTS.find(t => t.id === sh?.timeSlot);
+      const posName = pos?.name ?? '未知岗位';
+      const tsLabel = ts?.label ?? sh?.timeSlot ?? '未知时段';
+      
+      if (pos && !positions.includes(posName)) {
+        positions.push(posName);
+      }
+      shiftDetails.push(`${posName}（${tsLabel}）`);
+      
+      if (a.isAnomaly && a.anomalyType) {
+        if (!anomalyTypes.includes(a.anomalyType)) {
+          anomalyTypes.push(a.anomalyType);
+        }
+        anomalyDetails.push(`[${tsLabel}] ${a.constraintExplanation || a.anomalyType}`);
+      }
+    }
 
     return {
       volunteerName: v.name,
       skills: skillNames || '无',
-      position: posName,
-      anomalyType: anomalyAssignment?.anomalyType ?? '',
-      anomalyDesc: anomalyAssignment?.constraintExplanation ?? '',
+      positions: positions.length > 0 ? positions : ['未分配'],
+      shiftCount: volAssignments.length,
+      shiftDetails,
+      anomalyTypes: anomalyTypes.length > 0 ? anomalyTypes : ['—'],
+      anomalyCount: anomalyDetails.length,
+      anomalyDetails: anomalyDetails.length > 0 ? anomalyDetails : ['—'],
+      sourceType: v.source?.type === 'import' ? '导入' : v.source?.type === 'manual' ? '手动' : v.source?.type === 'system' ? '系统' : '未知',
+      sourceDetail: getSourceLabel(v.source),
     };
   });
+
+  const traceTableRows = traceData.flatMap(t => 
+    t.shiftDetails.map((sd, idx) => ({
+      volunteerName: idx === 0 ? t.volunteerName : '',
+      skills: idx === 0 ? t.skills : '',
+      shiftDetail: sd,
+      hasAnomaly: t.anomalyCount > 0 && t.anomalyDetails[idx] && t.anomalyDetails[idx] !== '—',
+      anomalyDetail: t.anomalyCount > 0 ? (t.anomalyDetails[idx] || '') : '',
+      sourceType: idx === 0 ? t.sourceType : '',
+      sourceDetail: idx === 0 ? t.sourceDetail : '',
+    }))
+  );
 
   const handleExportScheduleCSV = () => {
     exportCSV(
@@ -110,9 +155,24 @@ export default function Export() {
 
   const handleExportTraceCSV = () => {
     exportCSV(
-      ['志愿者', '技能标签', '分配岗位', '异常类型', '异常说明'],
-      traceData.map(r => [r.volunteerName, r.skills, r.position, r.anomalyType, r.anomalyDesc]),
+      ['志愿者', '技能标签', '分配班次', '异常说明', '来源类型', '来源详情'],
+      traceTableRows.map(r => [r.volunteerName, r.skills, r.shiftDetail, r.anomalyDetail, r.sourceType, r.sourceDetail]),
     );
+  };
+
+  const handleExportTraceJSON = () => {
+    exportJSON(traceData.map(t => ({
+      志愿者: t.volunteerName,
+      技能标签: t.skills,
+      分配岗位: t.positions,
+      班次数: t.shiftCount,
+      分配班次详情: t.shiftDetails,
+      异常类型: t.anomalyTypes,
+      异常数: t.anomalyCount,
+      异常详情: t.anomalyDetails,
+      来源类型: t.sourceType,
+      来源详情: t.sourceDetail,
+    })), 'trace_report.json');
   };
 
   return (
@@ -127,7 +187,7 @@ export default function Export() {
           <div className="max-h-72 overflow-y-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-surface-700 text-gray-400 bg-surface-800/80">
+                <tr className="border-b border-surface-700 text-gray-400 bg-surface-800/80 sticky top-0">
                   <th className="py-2 px-3 text-left font-medium">志愿者</th>
                   <th className="py-2 px-3 text-left font-medium">岗位</th>
                   <th className="py-2 px-3 text-left font-medium">时段</th>
@@ -181,37 +241,47 @@ export default function Export() {
         <div className="flex items-center gap-2 mb-4">
           <Search size={18} className="text-brand-400" />
           <h2 className="text-base font-semibold text-gray-200">来源追溯报告</h2>
+          <span className="text-xs text-gray-500">同一志愿者多班次、多异常完整对应</span>
         </div>
 
         <div className="rounded-xl bg-surface-800 border border-surface-700 overflow-hidden">
-          <div className="max-h-72 overflow-y-auto">
+          <div className="max-h-96 overflow-y-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-surface-700 text-gray-400 bg-surface-800/80">
-                  <th className="py-2 px-3 text-left font-medium">志愿者</th>
-                  <th className="py-2 px-3 text-left font-medium">技能标签</th>
-                  <th className="py-2 px-3 text-left font-medium">分配岗位</th>
-                  <th className="py-2 px-3 text-left font-medium">异常类型</th>
+                <tr className="border-b border-surface-700 text-gray-400 bg-surface-800/80 sticky top-0">
+                  <th className="py-2 px-3 text-left font-medium w-24">志愿者</th>
+                  <th className="py-2 px-3 text-left font-medium w-36">技能标签</th>
+                  <th className="py-2 px-3 text-left font-medium w-40">分配班次</th>
                   <th className="py-2 px-3 text-left font-medium">异常说明</th>
+                  <th className="py-2 px-3 text-left font-medium w-16">来源</th>
+                  <th className="py-2 px-3 text-left font-medium">来源详情</th>
                 </tr>
               </thead>
               <tbody>
-                {traceData.map((row, idx) => (
+                {traceTableRows.map((row, idx) => (
                   <tr
                     key={idx}
-                    className={`border-b border-surface-700/50 ${row.anomalyType ? 'bg-warn/5' : ''}`}
+                    className={`border-b border-surface-700/50 ${row.hasAnomaly ? 'bg-warn/5' : ''}`}
                   >
                     <td className="py-1.5 px-3 font-mono">{row.volunteerName}</td>
                     <td className="py-1.5 px-3">{row.skills}</td>
-                    <td className="py-1.5 px-3">{row.position}</td>
+                    <td className="py-1.5 px-3">{row.shiftDetail}</td>
+                    <td className="py-1.5 px-3 text-gray-500">{row.anomalyDetail || '—'}</td>
                     <td className="py-1.5 px-3">
-                      {row.anomalyType ? (
-                        <span className="text-warn">{row.anomalyType}</span>
-                      ) : (
-                        <span className="text-gray-600">—</span>
+                      {row.sourceType && (
+                        <span className={`inline-flex items-center gap-1 ${
+                          row.sourceType === '导入' ? 'text-brand-400' :
+                          row.sourceType === '手动' ? 'text-amber-400' :
+                          'text-gray-500'
+                        }`}>
+                          {row.sourceType === '导入' && <Upload size={10} />}
+                          {row.sourceType === '手动' && <Edit3 size={10} />}
+                          {row.sourceType === '系统' && <Database size={10} />}
+                          {row.sourceType}
+                        </span>
                       )}
                     </td>
-                    <td className="py-1.5 px-3 text-gray-500">{row.anomalyDesc || '—'}</td>
+                    <td className="py-1.5 px-3 text-gray-600 text-[10px]">{row.sourceDetail}</td>
                   </tr>
                 ))}
               </tbody>
@@ -219,14 +289,28 @@ export default function Export() {
           </div>
         </div>
 
-        <div className="flex gap-3 mt-4">
-          <button
-            onClick={handleExportTraceCSV}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium transition-colors"
-          >
-            <Download size={14} />
-            导出 CSV
-          </button>
+        <div className="flex items-center gap-4 mt-4">
+          <div className="flex gap-3">
+            <button
+              onClick={handleExportTraceCSV}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-sm font-medium transition-colors"
+            >
+              <Download size={14} />
+              导出 CSV
+            </button>
+            <button
+              onClick={handleExportTraceJSON}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-700 hover:bg-surface-600 text-gray-200 text-sm font-medium border border-surface-600 transition-colors"
+            >
+              <FileJson size={14} />
+              导出 JSON
+            </button>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-gray-500">
+            <span>志愿者: {traceData.length} 人</span>
+            <span>班次: {traceData.reduce((s, t) => s + t.shiftCount, 0)} 次</span>
+            <span>异常: {traceData.reduce((s, t) => s + t.anomalyCount, 0)} 处</span>
+          </div>
         </div>
       </div>
     </div>

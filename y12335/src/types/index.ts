@@ -1,7 +1,18 @@
+export type DataSourceType = 'import' | 'manual' | 'system';
+
+export interface DataSource {
+  type: DataSourceType;
+  filename?: string;
+  importTimestamp?: string;
+  manualEditTimestamp?: string;
+  rowIndex?: number;
+}
+
 export interface Skill {
   id: string;
   name: string;
   category: string;
+  source?: DataSource;
 }
 
 export interface Volunteer {
@@ -9,6 +20,7 @@ export interface Volunteer {
   name: string;
   skillIds: string[];
   leaveSlots: string[];
+  source?: DataSource;
 }
 
 export interface Position {
@@ -16,6 +28,7 @@ export interface Position {
   name: string;
   requiredSkillIds: string[];
   headcount: number;
+  source?: DataSource;
 }
 
 export interface Shift {
@@ -23,6 +36,7 @@ export interface Shift {
   positionId: string;
   timeSlot: string;
   requiredCount: number;
+  source?: DataSource;
 }
 
 export interface LeaveRecord {
@@ -30,6 +44,7 @@ export interface LeaveRecord {
   volunteerId: string;
   timeSlot: string;
   reason: string;
+  source?: DataSource;
 }
 
 export interface Assignment {
@@ -89,4 +104,26 @@ export interface AssignmentResult {
     mismatchCount: number;
     conflictCount: number;
   };
+}
+
+export interface ImportLog {
+  id: string;
+  filename: string;
+  importType: 'volunteers' | 'skills' | 'leave' | 'positions' | 'shifts';
+  timestamp: string;
+  recordCount: number;
+  successCount: number;
+  errorCount: number;
+  errors: string[];
+}
+
+export interface TraceItem {
+  volunteerName: string;
+  skills: string;
+  positions: string[];
+  shiftCount: number;
+  anomalyTypes: string[];
+  anomalyCount: number;
+  sourceType: string;
+  sourceDetail: string;
 }
