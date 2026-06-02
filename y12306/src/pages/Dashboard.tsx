@@ -6,11 +6,16 @@ import { useOptimizerStore } from '../store/optimizerStore';
 
 export const Dashboard: React.FC = () => {
   const { dishes, loadDishes } = useDishStore();
-  const { history, currentResult } = useOptimizerStore();
+  const { history, currentResult, isLoaded, loadHistory } = useOptimizerStore();
 
   useEffect(() => {
-    loadDishes();
-  }, [loadDishes]);
+    if (dishes.length === 0) {
+      loadDishes();
+    }
+    if (!isLoaded) {
+      loadHistory();
+    }
+  }, [loadDishes, loadHistory, isLoaded, dishes.length]);
 
   const stats = [
     {

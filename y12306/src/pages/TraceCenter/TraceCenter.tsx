@@ -11,16 +11,21 @@ type FilterType = 'all' | ConflictType;
 type FilterSeverity = 'all' | ConflictSeverity;
 
 export const TraceCenter: React.FC = () => {
-  const { loadDishes } = useDishStore();
-  const { history, currentResult } = useOptimizerStore();
+  const { loadDishes, dishes } = useDishStore();
+  const { history, currentResult, isLoaded, loadHistory } = useOptimizerStore();
 
   const [selectedResult, setSelectedResult] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [filterSeverity, setFilterSeverity] = useState<FilterSeverity>('all');
 
   useEffect(() => {
-    loadDishes();
-  }, [loadDishes]);
+    if (dishes.length === 0) {
+      loadDishes();
+    }
+    if (!isLoaded) {
+      loadHistory();
+    }
+  }, [loadDishes, loadHistory, isLoaded, dishes.length]);
 
   const activeResult = selectedResult
     ? history.find((r) => r.id === selectedResult)

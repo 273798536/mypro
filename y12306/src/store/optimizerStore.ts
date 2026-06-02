@@ -15,6 +15,7 @@ interface OptimizerStore {
   currentResult: OptimizationResult | null;
   history: OptimizationResult[];
   solverState: SolverState;
+  isLoaded: boolean;
 
   setConfigName: (name: string) => void;
   setBudget: (budget: number) => void;
@@ -29,10 +30,13 @@ interface OptimizerStore {
   setPriorityRules: (rules: PriorityRule[]) => void;
   resetConfig: () => void;
 
+  loadHistory: () => void;
   runOptimization: () => Promise<void>;
   setCurrentResult: (result: OptimizationResult | null) => void;
   clearHistory: () => void;
 }
+
+const STORAGE_KEY = 'optimizer-history';
 
 const defaultNutritionTargets: NutritionTarget[] = [
   { nutrient: 'calories', min: 800, weight: 1 },
@@ -68,6 +72,62 @@ const createDefaultConfig = (): OptimizationConfig => ({
   createdAt: new Date(),
 });
 
+function deserializeResult(data: unknown): OptimizationResult | null {
+  if (!data || typeof data !== 'object') return null;
+  const obj = data as Record<string, unknown>;
+  if (
+    typeof obj.id !== 'string' ||
+    typeof obj.configId !== 'string' ||
+    typeof obj.configName !== 'string' ||
+    !Array.isArray(obj.selectedDishes) ||
+    typeof obj.totalCost !== 'number' ||
+    typeof obj.totalNutrition !== 'object' ||
+    !Array.isArray(obj.conflicts) ||
+    !Array.isArray(obj.traceLogs) ||
+    typeof obj.score !== 'number' ||
+    typeof obj.status !== 'string'
+  ) {
+    return null;
+  }
+  return {
+    id: obj.id,
+    configId: obj.configId,
+    configName: obj.configName,
+    selectedDishes: obj.selectedDishes,
+    totalCost: obj.totalCost,
+    totalNutrition: obj.totalNutrition as OptimizationResult['totalNutrition'],
+    conflicts: obj.conflicts,
+    traceLogs: obj.traceLogs,
+    alternativePlans: Array.isArray(obj.alternativePlans) ? obj.alternativePlans : [],
+    score: obj.score,
+    status: obj.status as OptimizationResult['status'],
+    createdAt: obj.createdAt ? new Date(obj.createdAt as string) : new Date(),
+  };
+}
+
+function loadHistoryFromStorage(): OptimizationResult[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .map(deserializeResult)
+      .filter((r): r is OptimizationResult => r !== null)
+      .slice(0, 10);
+  } catch {
+    return [];
+  }
+}
+
+function saveHistoryToStorage(history: OptimizationResult[]) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  } catch {
+    console.error('Failed to save history to localStorage');
+  }
+}
+
 export const useOptimizerStore = create<OptimizerStore>((set, get) => ({
   config: createDefaultConfig(),
   currentResult: null,
@@ -78,6 +138,7 @@ export const useOptimizerStore = create<OptimizerStore>((set, get) => ({
     currentStep: '',
     logs: [],
   },
+  isLoaded: false,
 
   setConfigName: (name) =>
     set((state) => ({ config: { ...state.config, name } })),
@@ -142,9 +203,27 @@ export const useOptimizerStore = create<OptimizerStore>((set, get) => ({
 
   resetConfig: () => set({ config: createDefaultConfig() }),
 
+  loadHistory: () => {
+    const history = loadHistoryFromStorage();
+    const currentResult = history.length > 0 ? history[0] : null;
+    set({ history, currentResult, isLoaded: true });
+  },
+
   runOptimization: async () => {
     const { config } = get();
     const dishes = useDishStore.getState().dishes;
+
+    if (dishes.length === 0) {
+      set({
+        solverState: {
+          isRunning: false,
+          progress: 0,
+          currentStep: '',
+          logs: ['菜品库为空，请先导入或添加菜品'],
+        },
+      });
+      return;
+    }
 
     set({
       solverState: {
@@ -187,19 +266,25 @@ export const useOptimizerStore = create<OptimizerStore>((set, get) => ({
       configName: config.name,
     };
 
-    set((state) => ({
+    const newHistory = [finalResult, ...get().history].slice(0, 10);
+    saveHistoryToStorage(newHistory);
+
+    set({
       currentResult: finalResult,
-      history: [finalResult, ...state.history].slice(0, 10),
+      history: newHistory,
       solverState: {
         isRunning: false,
         progress: 100,
         currentStep: '完成',
-        logs: [...state.solverState.logs, '求解完成！'],
+        logs: [...get().solverState.logs, '求解完成！'],
       },
-    }));
+    });
   },
 
   setCurrentResult: (result) => set({ currentResult: result }),
 
-  clearHistory: () => set({ history: [] }),
+  clearHistory: () => {
+    saveHistoryToStorage([]);
+    set({ history: [], currentResult: null });
+  },
 }));

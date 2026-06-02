@@ -18,13 +18,18 @@ import jsPDF from 'jspdf';
 
 export const Report: React.FC = () => {
   const { loadDishes, dishes } = useDishStore();
-  const { history, currentResult } = useOptimizerStore();
+  const { history, currentResult, isLoaded, loadHistory } = useOptimizerStore();
 
   const [selectedResultId, setSelectedResultId] = useState<string | null>(null);
 
   useEffect(() => {
-    loadDishes();
-  }, [loadDishes]);
+    if (dishes.length === 0) {
+      loadDishes();
+    }
+    if (!isLoaded) {
+      loadHistory();
+    }
+  }, [loadDishes, loadHistory, isLoaded, dishes.length]);
 
   const selectedResult = selectedResultId
     ? history.find((r) => r.id === selectedResultId)

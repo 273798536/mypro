@@ -8,6 +8,7 @@ const categories: (DishCategory | 'all')[] = ['all', '主食', '荤菜', '素菜
 
 export const DishList: React.FC = () => {
   const {
+    dishes,
     loadDishes,
     getFilteredDishes,
     searchQuery,
@@ -42,8 +43,10 @@ export const DishList: React.FC = () => {
   });
 
   useEffect(() => {
-    loadDishes();
-  }, [loadDishes]);
+    if (dishes.length === 0) {
+      loadDishes();
+    }
+  }, [loadDishes, dishes.length]);
 
   const filteredDishes = getFilteredDishes();
 

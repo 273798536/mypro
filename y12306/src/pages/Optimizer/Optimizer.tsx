@@ -23,6 +23,7 @@ export const Optimizer: React.FC = () => {
     config,
     currentResult,
     solverState,
+    isLoaded,
     setConfigName,
     setBudget,
     setPortionCount,
@@ -31,13 +32,19 @@ export const Optimizer: React.FC = () => {
     setExcludedAllergens,
     resetConfig,
     runOptimization,
+    loadHistory,
   } = useOptimizerStore();
 
   const [activeTab, setActiveTab] = useState<'config' | 'result' | 'trace'>('config');
 
   useEffect(() => {
-    loadDishes();
-  }, [loadDishes]);
+    if (dishes.length === 0) {
+      loadDishes();
+    }
+    if (!isLoaded) {
+      loadHistory();
+    }
+  }, [loadDishes, loadHistory, isLoaded, dishes.length]);
 
   const handleRun = async () => {
     setActiveTab('result');
