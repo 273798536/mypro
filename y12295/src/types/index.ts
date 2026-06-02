@@ -36,6 +36,18 @@ export interface CameraState {
   target: [number, number, number];
 }
 
+export interface VectorQualityStats {
+  nanCount: number;
+  infinityCount: number;
+  outlierCount: number;
+  zeroVectorCount: number;
+  inconsistentDimensionCount: number;
+  expectedDimension: number;
+  validVectorRate: number;
+  outlierPointIds: string[];
+  invalidPointIds: string[];
+}
+
 export interface DataQualityReport {
   hasMissingVectors: boolean;
   missingVectorCount: number;
@@ -45,6 +57,10 @@ export interface DataQualityReport {
   groupDistribution: Record<string, number>;
   overlapScore: number;
   stabilityScore: number;
+  vectorStats: VectorQualityStats;
+  hasInvalidVectors: boolean;
+  hasOutliers: boolean;
+  hasDimensionIssues: boolean;
 }
 
 export interface FilterState {

@@ -1,12 +1,12 @@
 import { useState, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Upload, Database, Camera, RotateCcw, Eye, EyeOff, Layers, ChevronDown, FileJson, Table } from 'lucide-react';
-import type { ExampleType } from '../types';
+import { Upload, Database, Camera, RotateCcw, Eye, EyeOff, Layers, ChevronDown, FileJson, Table, AlertTriangle, Check } from 'lucide-react';
+import type { ExampleType, DataQualityReport } from '../types';
 import { EXAMPLE_METADATA } from '../data/exampleData';
 import { useStarmapStore } from '../store/useStarmapStore';
 import { generateExample } from '../data/exampleData';
-import { analyzeDataQuality } from '../utils/dataQuality';
+import { analyzeDataQuality, getQualityWarnings, getCriticalQualityIssues } from '../utils/dataQuality';
 import { detectOverlaps } from '../utils/overlapDetection';
 import { parseCSV, parseJSON, convertToDataPoints, autoDetectFields, downloadScreenshot, type ImportConfig } from '../utils/dataImport';
 
@@ -19,6 +19,8 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
   const [importFile, setImportFile] = useState<File | null>(null);
   const [importConfig, setImportConfig] = useState<Partial<ImportConfig>>({});
   const [previewData, setPreviewData] = useState<Record<string, unknown>[] | null>(null);
+  const [previewQualityReport, setPreviewQualityReport] = useState<DataQualityReport | null>(null);
+  const [showQualityConfirm, setShowQualityConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const setDataPoints = useStarmapStore(s => s.setDataPoints);
@@ -59,12 +61,32 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
     }
     
     setPreviewData(rawData.slice(0, 5));
+    setPreviewQualityReport(null);
     
     if (rawData.length > 0) {
       const headers = Object.keys(rawData[0]);
       const detected = autoDetectFields(headers);
       setImportConfig(detected);
     }
+  };
+  
+  const runPreviewQualityCheck = () => {
+    if (!previewData || !importConfig.vectorFields || !importConfig.labelField || !importConfig.groupField) {
+      return;
+    }
+    
+    const config: ImportConfig = {
+      vectorFields: importConfig.vectorFields,
+      labelField: importConfig.labelField,
+      groupField: importConfig.groupField,
+      confidenceField: importConfig.confidenceField,
+      predictedLabelField: importConfig.predictedLabelField,
+      fileName: importFile?.name || 'preview',
+    };
+    
+    const previewPoints = convertToDataPoints(previewData, config);
+    const qualityReport = analyzeDataQuality(previewPoints);
+    setPreviewQualityReport(qualityReport);
   };
   
   const handleImport = () => {
@@ -82,6 +104,20 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
       fileName: importFile.name,
     };
     
+    const checkConfig: ImportConfig = {
+      ...config,
+      vectorFields: config.vectorFields.slice(0, Math.min(config.vectorFields.length, 8)),
+    };
+    const previewPoints = convertToDataPoints(previewData.slice(0, 50), checkConfig);
+    const qualityReport = analyzeDataQuality(previewPoints);
+    
+    const criticalIssues = getCriticalQualityIssues(qualityReport);
+    if (criticalIssues.length > 0 && !showQualityConfirm) {
+      setPreviewQualityReport(qualityReport);
+      setShowQualityConfirm(true);
+      return;
+    }
+    
     if (importFile.name.endsWith('.csv')) {
       parseCSV(importFile).then(data => {
         processImportData(data, config, importFile.name);
@@ -95,6 +131,8 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
     setShowImportDialog(false);
     setImportFile(null);
     setPreviewData(null);
+    setPreviewQualityReport(null);
+    setShowQualityConfirm(false);
   };
   
   const processImportData = (data: Record<string, unknown>[], config: ImportConfig, filename: string) => {
@@ -405,12 +443,106 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
                       </div>
                     </div>
                   )}
+
+                  {previewQualityReport && (
+                    <div className={showQualityConfirm ? 'bg-red-900/30 border border-red-700' : 'bg-gray-800/50 border border-gray-700'}>
+                      <div className="px-4 py-3 border-b border-gray-700/50 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className={`w-4 h-4 ${showQualityConfirm ? 'text-red-400' : 'text-yellow-400'}`} />
+                          <span className={`text-sm font-medium ${showQualityConfirm ? 'text-red-300' : 'text-yellow-300'}`}>
+                            数据质量检查结果
+                          </span>
+                        </div>
+                        {!showQualityConfirm && (
+                          <button
+                            onClick={runPreviewQualityCheck}
+                            className="text-xs text-blue-400 hover:text-blue-300"
+                          >
+                            重新检查
+                          </button>
+                        )}
+                      </div>
+                      <div className="p-4">
+                        {showQualityConfirm ? (
+                          <div className="space-y-3">
+                            <p className="text-red-300 text-sm font-medium">
+                              检测到严重数据问题，可能影响 3D 可视化效果：
+                            </p>
+                            <div className="space-y-2">
+                              {getCriticalQualityIssues(previewQualityReport).map((issue, i) => (
+                                <div key={i} className="flex items-center gap-2 text-sm text-red-200">
+                                  <span className="text-red-500">•</span>
+                                  <span>{issue}</span>
+                                </div>
+                              ))}
+                            </div>
+                            <p className="text-gray-400 text-xs mt-3">
+                              是否确认继续导入？导入后可在左侧面板查看详细质量报告。
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="space-y-2">
+                            {getQualityWarnings(previewQualityReport).slice(0, 5).map((warning, i) => (
+                              <div key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                <span className="text-yellow-500 mt-0.5">•</span>
+                                <span>{warning}</span>
+                              </div>
+                            ))}
+                            {getQualityWarnings(previewQualityReport).length === 0 && (
+                              <div className="flex items-center gap-2 text-sm text-green-400">
+                                <Check className="w-4 h-4" />
+                                <span>数据质量良好，未检测到明显问题</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <div className="mt-3 pt-3 border-t border-gray-700/50 grid grid-cols-2 gap-4 text-xs">
+                          <div>
+                            <span className="text-gray-500">向量维度:</span>
+                            <span className="text-white ml-1">{previewQualityReport.vectorStats.expectedDimension}D</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">向量有效率:</span>
+                            <span className={`ml-1 ${previewQualityReport.vectorStats.validVectorRate >= 0.95 ? 'text-green-400' : 'text-yellow-400'}`}>
+                              {(previewQualityReport.vectorStats.validVectorRate * 100).toFixed(1)}%
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">NaN 计数:</span>
+                            <span className={`ml-1 ${previewQualityReport.vectorStats.nanCount > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                              {previewQualityReport.vectorStats.nanCount}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">异常点:</span>
+                            <span className={`ml-1 ${previewQualityReport.vectorStats.outlierCount > 0 ? 'text-yellow-400' : 'text-green-400'}`}>
+                              {previewQualityReport.vectorStats.outlierCount}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {!previewQualityReport && importFile && importConfig.vectorFields && importConfig.labelField && importConfig.groupField && (
+                    <button
+                      onClick={runPreviewQualityCheck}
+                      className="w-full py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm rounded-md border border-gray-700 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <AlertTriangle className="w-4 h-4" />
+                      <span>运行数据质量检查</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>
             
             <div className="px-6 py-4 border-t border-gray-700 flex justify-end gap-3">
-              <Dialog.Close className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm rounded-md transition-colors">
+              <Dialog.Close
+                onClick={() => setShowQualityConfirm(false)}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 text-sm rounded-md transition-colors"
+              >
                 取消
               </Dialog.Close>
               <button
@@ -418,7 +550,7 @@ export function TopToolbar({ onTakeScreenshot }: TopToolbarProps) {
                 disabled={!importFile || !importConfig.vectorFields?.length || !importConfig.labelField || !importConfig.groupField}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                导入
+                {showQualityConfirm ? '确认导入' : '导入'}
               </button>
             </div>
           </Dialog.Content>
