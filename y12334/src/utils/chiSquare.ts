@@ -100,9 +100,11 @@ export function performChiSquareTest(
   records: DefectRecord[],
   projectId: string,
   teamSummary: string,
-  alpha: SignificanceLevel = 0.05
+  alpha: SignificanceLevel = 0.05,
+  rowField: keyof DefectRecord = 'defectType',
+  colField: keyof DefectRecord = 'category'
 ): ChiSquareResult {
-  const { table: contingencyTable, rowLabels, colLabels } = buildContingencyTable(records);
+  const { table: contingencyTable, rowLabels, colLabels } = buildContingencyTable(records, rowField, colField);
   const expectedTable = calculateExpectedTable(contingencyTable);
   const chiSquareValue = calculateChiSquare(contingencyTable, expectedTable);
   const degreesOfFreedom = calculateDegreesOfFreedom(contingencyTable);

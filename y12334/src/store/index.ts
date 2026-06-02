@@ -13,7 +13,7 @@ import type {
 import { performChiSquareTest } from '../utils/chiSquare';
 import { detectAllAbnormalities } from '../utils/anomalyDetection';
 import { generateReviewAdvice, generateTeamSummary } from '../utils/reportGenerator';
-import { generateRecordsHash, generateParamsHash, deduplicateRecords } from '../utils/classification';
+import { generateRecordsHash, generateParamsHash, deduplicateRecords, autoClassifyRecords } from '../utils/classification';
 
 interface AppState {
   projects: Project[];
@@ -28,10 +28,27 @@ interface AppState {
   colField: keyof DefectRecord;
   isLoading: boolean;
   error: string | null;
+  lastAutoClassifyResult: {
+    matchedProjectId: string | null;
+    matchedProjectName: string | null;
+    confidence: number;
+    matchedFields: string[];
+    isNewProject: boolean;
+    recordsCount: number;
+  } | null;
   createProject: (name: string, description: string, teamInfo: TeamInfo) => Project;
   setCurrentProject: (projectId: string | null) => void;
   updateProject: (projectId: string, updates: Partial<Project>) => void;
   addDefectRecords: (projectId: string, records: DefectRecord[]) => { added: number; duplicates: number };
+  addDefectRecordsWithAutoClassify: (records: DefectRecord[], targetProjectId?: string) => {
+    added: number;
+    duplicates: number;
+    matchedProjectId: string | null;
+    matchedProjectName: string | null;
+    confidence: number;
+    matchedFields: string[];
+    isNewProject: boolean;
+  };
   addBatch: (projectId: string, batch: Batch) => void;
   setRowField: (field: keyof DefectRecord) => void;
   setColField: (field: keyof DefectRecord) => void;
@@ -40,6 +57,7 @@ interface AppState {
   generateReview: (projectId: string) => ReviewAdvice | null;
   deleteProject: (projectId: string) => void;
   clearError: () => void;
+  clearAutoClassifyResult: () => void;
   getCurrentProject: () => Project | null;
   getCurrentRecords: () => DefectRecord[];
   getCurrentBatches: () => Batch[];
@@ -70,6 +88,7 @@ export const useAppStore = create<AppState>()(
       colField: 'category',
       isLoading: false,
       error: null,
+      lastAutoClassifyResult: null,
 
       createProject: (name, description, teamInfo = initialTeamInfo) => {
         const newProject: Project = {
@@ -131,6 +150,82 @@ export const useAppStore = create<AppState>()(
         return { added: uniqueRecords.length, duplicates: duplicateCount };
       },
 
+      addDefectRecordsWithAutoClassify: (records, targetProjectId) => {
+        const state = get();
+        const projectRecordsMap = new Map<string, DefectRecord[]>();
+        state.projects.forEach(p => {
+          projectRecordsMap.set(p.id, state.defectRecords.get(p.id) || []);
+        });
+
+        const classifyResult = autoClassifyRecords(records, state.projects, projectRecordsMap);
+        const matchedProject = classifyResult.projectId
+          ? state.projects.find(p => p.id === classifyResult.projectId)
+          : null;
+
+        const actualProjectId = targetProjectId || classifyResult.projectId || state.currentProjectId;
+
+        if (!actualProjectId) {
+          set({
+            error: '请先选择或创建一个项目',
+            lastAutoClassifyResult: {
+              matchedProjectId: null,
+              matchedProjectName: null,
+              confidence: classifyResult.match?.confidence || 0,
+              matchedFields: classifyResult.match?.matchedFields || [],
+              isNewProject: true,
+              recordsCount: records.length
+            }
+          });
+          return {
+            added: 0,
+            duplicates: 0,
+            matchedProjectId: null,
+            matchedProjectName: null,
+            confidence: 0,
+            matchedFields: [],
+            isNewProject: true
+          };
+        }
+
+        const existingRecords = state.defectRecords.get(actualProjectId) || [];
+        const { uniqueRecords, duplicateCount } = deduplicateRecords(records, existingRecords);
+
+        const recordsWithProjectId = uniqueRecords.map((r) => ({
+          ...r,
+          projectId: actualProjectId
+        }));
+
+        const newRecords = [...existingRecords, ...recordsWithProjectId];
+        const newDefectRecords = new Map(state.defectRecords).set(actualProjectId, newRecords);
+
+        const autoClassifyResult = {
+          matchedProjectId: classifyResult.projectId,
+          matchedProjectName: matchedProject?.name || null,
+          confidence: classifyResult.match?.confidence || 0,
+          matchedFields: classifyResult.match?.matchedFields || [],
+          isNewProject: classifyResult.isNewProject,
+          recordsCount: records.length
+        };
+
+        set({
+          defectRecords: newDefectRecords,
+          lastAutoClassifyResult: autoClassifyResult,
+          projects: state.projects.map((p) =>
+            p.id === actualProjectId ? { ...p, updatedAt: new Date(), status: 'draft' } : p
+          )
+        });
+
+        return {
+          added: uniqueRecords.length,
+          duplicates: duplicateCount,
+          matchedProjectId: classifyResult.projectId,
+          matchedProjectName: matchedProject?.name || null,
+          confidence: classifyResult.match?.confidence || 0,
+          matchedFields: classifyResult.match?.matchedFields || [],
+          isNewProject: classifyResult.isNewProject
+        };
+      },
+
       addBatch: (projectId, batch) => {
         set((state) => {
           const projectBatches = state.batches.get(projectId) || [];
@@ -179,7 +274,9 @@ export const useAppStore = create<AppState>()(
           records,
           projectId,
           teamSummary,
-          project.significanceLevel as SignificanceLevel
+          project.significanceLevel as SignificanceLevel,
+          state.rowField,
+          state.colField
         );
 
         const detectedAbnormalities = detectAllAbnormalities(records, batches);
@@ -261,6 +358,10 @@ export const useAppStore = create<AppState>()(
 
       clearError: () => {
         set({ error: null });
+      },
+
+      clearAutoClassifyResult: () => {
+        set({ lastAutoClassifyResult: null });
       },
 
       getCurrentProject: () => {

@@ -10,7 +10,8 @@ import {
   CheckCircle,
   X,
   Info,
-  Trash2
+  Trash2,
+  Link2
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useAppStore } from '../store';
@@ -25,13 +26,16 @@ export default function Workbench() {
     getCurrentRecords,
     getCurrentResult,
     getCurrentAbnormalities,
-    addDefectRecords,
+    addDefectRecordsWithAutoClassify,
     performAnalysis,
     updateProject,
     setRowField,
     setColField,
     rowField,
-    colField
+    colField,
+    lastAutoClassifyResult,
+    clearAutoClassifyResult,
+    setCurrentProject
   } = useAppStore();
   
   const project = getCurrentProject();
@@ -65,11 +69,6 @@ export default function Workbench() {
   };
 
   const processFile = async (file: File) => {
-    if (!currentProjectId) {
-      setImportErrors(['请先选择或创建一个项目']);
-      return;
-    }
-
     const result = await importFile(file);
     
     if (result.errors.length > 0) {
@@ -84,13 +83,37 @@ export default function Workbench() {
       setImportWarnings([]);
     }
 
-    if (result.success && currentProjectId) {
-      const { added, duplicates } = addDefectRecords(currentProjectId, result.records);
-      setImportWarnings(prev => [...prev, `成功导入 ${added} 条记录${duplicates > 0 ? `，跳过 ${duplicates} 条重复记录` : ''}`]);
+    if (result.success) {
+      const classifyResult = addDefectRecordsWithAutoClassify(result.records, currentProjectId || undefined);
+      
+      if (classifyResult.added > 0) {
+        setImportWarnings(prev => [...prev, `成功导入 ${classifyResult.added} 条记录${classifyResult.duplicates > 0 ? `，跳过 ${classifyResult.duplicates} 条重复记录` : ''}`]);
+        
+        if (classifyResult.matchedProjectId && classifyResult.confidence >= 0.6) {
+          setImportWarnings(prev => [...prev, 
+            `智能归类：已自动关联到项目「${classifyResult.matchedProjectName}」，匹配度 ${(classifyResult.confidence * 100).toFixed(0)}%`,
+            `匹配线索：${classifyResult.matchedFields.join('、')}`
+          ]);
+          
+          if (classifyResult.matchedProjectId !== currentProjectId) {
+            setCurrentProject(classifyResult.matchedProjectId);
+            setImportWarnings(prev => [...prev, `已自动切换到匹配的项目`]);
+          }
+        } else if (classifyResult.isNewProject) {
+          setImportWarnings(prev => [...prev, '未找到匹配项目，记录已添加到当前项目']);
+        }
+      }
+      
+      if (classifyResult.added === 0 && classifyResult.duplicates > 0) {
+        setImportErrors(prev => [...prev, `所有 ${classifyResult.duplicates} 条记录均为重复，已跳过`]);
+      }
     }
     
     setShowImportResult(true);
-    setTimeout(() => setShowImportResult(false), 5000);
+    setTimeout(() => {
+      setShowImportResult(false);
+      clearAutoClassifyResult();
+    }, 8000);
   };
 
   const handleAnalyze = () => {
@@ -341,6 +364,25 @@ export default function Workbench() {
         </div>
 
         <div className="space-y-6">
+          {lastAutoClassifyResult && lastAutoClassifyResult.matchedProjectId && (
+            <div className="bg-gradient-to-r from-violet-50 to-blue-50 rounded-xl border border-violet-200 p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm flex-shrink-0">
+                  <Link2 size={16} className="text-violet-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-violet-800">智能归类成功</p>
+                  <p className="text-xs text-violet-600 mt-1">
+                    已关联到「{lastAutoClassifyResult.matchedProjectName}」
+                  </p>
+                  <p className="text-xs text-violet-600 mt-0.5">
+                    匹配度 {(lastAutoClassifyResult.confidence * 100).toFixed(0)}% · 线索：{lastAutoClassifyResult.matchedFields.join('、')}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-5">
             <div className="flex items-center gap-2 mb-4">
               <Settings size={18} className="text-slate-500" />
@@ -348,6 +390,18 @@ export default function Workbench() {
             </div>
             
             <div className="space-y-4">
+              <div className="bg-blue-50 rounded-lg p-3 border border-blue-100">
+                <p className="text-xs text-blue-700 font-medium mb-1">当前分析维度</p>
+                <p className="text-sm text-blue-800">
+                  行：<span className="font-semibold">{rowField === 'defectType' ? '缺陷类型' : rowField === 'category' ? '类别' : rowField === 'materialSource' ? '材料来源' : rowField === 'productionLine' ? '生产线' : '班次'}</span>
+                  {' × '}
+                  列：<span className="font-semibold">{colField === 'defectType' ? '缺陷类型' : colField === 'category' ? '类别' : colField === 'materialSource' ? '材料来源' : colField === 'productionLine' ? '生产线' : '班次'}</span>
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  点击「执行检验」将按此维度重新计算卡方值
+                </p>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
                   显著性水平 α
