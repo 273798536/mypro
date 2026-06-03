@@ -22,6 +22,7 @@ import {
   sampleDataSources,
 } from '../data/sampleData';
 import { generateId } from '../utils/dateUtils';
+import { registerStore } from './registry';
 
 interface DataState {
   sources: DataSource[];
@@ -266,3 +267,5 @@ export const useDataStore = create<DataState>((set, get) => ({
     return get().sources.find(s => s.id === id);
   },
 }));
+
+registerStore('data', useDataStore);

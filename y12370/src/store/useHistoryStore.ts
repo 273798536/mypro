@@ -7,6 +7,7 @@ import {
   getAllFromStore,
   saveSingleToStore,
 } from '../utils/storage';
+import { registerStore } from './registry';
 
 interface HistoryState {
   history: ChangeHistory[];
@@ -71,3 +72,5 @@ export const useHistoryStore = create<HistoryState>((set, get) => ({
     });
   },
 }));
+
+registerStore('history', useHistoryStore);

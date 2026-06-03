@@ -2,6 +2,12 @@ import { create } from 'zustand';
 import type {
   Booking,
   DataChainNode,
+  Room,
+  Band,
+  Course,
+  DataSource,
+  TeacherLeave,
+  ChangeHistory,
 } from '../types';
 import {
   saveToStore,
@@ -18,6 +24,7 @@ import {
   createConflictDetectChainNode,
   addChainNode,
 } from '../engine/chainTracker';
+import { getStore, registerStore } from './registry';
 
 interface BookingState {
   bookings: Booking[];
@@ -35,16 +42,20 @@ interface BookingState {
   addConflictDetectNode: (bookingId: string, conflictCount: number) => void;
 }
 
+type DataStoreApi = { getState: () => { rooms: Room[]; bands: Band[]; courses: Course[]; sources: DataSource[]; teacherLeaves: TeacherLeave[] } };
+type ConflictStoreApi = { getState: () => { detectConflicts: () => void } };
+type HistoryStoreApi = { getState: () => { addHistory: (h: ChangeHistory) => void } };
+
 function getDataStore() {
-  return require('./useDataStore').useDataStore;
+  return getStore<DataStoreApi>('data');
 }
 
 function getConflictStore() {
-  return require('./useConflictStore').useConflictStore;
+  return getStore<ConflictStoreApi>('conflict');
 }
 
 function getHistoryStore() {
-  return require('./useHistoryStore').useHistoryStore;
+  return getStore<HistoryStoreApi>('history');
 }
 
 export const useBookingStore = create<BookingState>((set, get) => ({
@@ -195,3 +206,5 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     set({ bookings: updatedBookings });
   },
 }));
+
+registerStore('booking', useBookingStore);

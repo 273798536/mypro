@@ -2,6 +2,11 @@ import { create } from 'zustand';
 import type {
   Conflict,
   ConflictType,
+  Room,
+  Band,
+  Course,
+  TeacherLeave,
+  Booking,
 } from '../types';
 import {
   saveToStore,
@@ -12,6 +17,7 @@ import {
   detectConflictsForAllBookings,
   type ConflictDetectionContext,
 } from '../engine/conflictDetector';
+import { getStore, registerStore } from './registry';
 
 interface ConflictState {
   conflicts: Conflict[];
@@ -29,12 +35,18 @@ interface ConflictState {
   clearConflicts: () => Promise<void>;
 }
 
+type DataStoreApi = { getState: () => { rooms: Room[]; bands: Band[]; courses: Course[]; teacherLeaves: TeacherLeave[] } };
+type BookingStoreApi = {
+  getState: () => { bookings: Booking[]; getBookingById: (id: string) => Booking | undefined; resolveConflict: (id: string, solution: string) => void; addConflictDetectNode: (id: string, count: number) => void };
+  setState: (partial: Record<string, unknown>) => void;
+};
+
 function getDataStore() {
-  return require('./useDataStore').useDataStore;
+  return getStore<DataStoreApi>('data');
 }
 
 function getBookingStore() {
-  return require('./useBookingStore').useBookingStore;
+  return getStore<BookingStoreApi>('booking');
 }
 
 export const useConflictStore = create<ConflictState>((set, get) => ({
@@ -144,3 +156,5 @@ export const useConflictStore = create<ConflictState>((set, get) => ({
     set({ conflicts: [] });
   },
 }));
+
+registerStore('conflict', useConflictStore);
