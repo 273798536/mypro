@@ -1,0 +1,4 @@
+title,authors,platform,usageCount,period,isrc
+测试歌曲,测试作者,short_video,5000,2026-Q1,CN-T01-00-001
+漏报曲目,张三,ktv,3000,2026-Q1,
+无效数据,李四,invalid_platform,1000,2026-Q1,CN-T01-00-003

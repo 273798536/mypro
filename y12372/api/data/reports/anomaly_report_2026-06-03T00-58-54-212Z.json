@@ -1,0 +1,149 @@
+{
+  "anomalyCount": 5,
+  "typeBreakdown": {
+    "under_report": 3,
+    "proportion_change": 2,
+    "duplicate_use": 1
+  },
+  "details": [
+    {
+      "workId": "aba65d7d-55d7-4139-8b25-5864b3a21a34",
+      "title": "夜曲",
+      "authors": "周杰伦/方文山",
+      "anomalyTypes": [
+        "under_report"
+      ],
+      "corrections": [
+        {
+          "id": "68b0e4d2-f07c-4723-b2fc-5712e556b114",
+          "workId": "aba65d7d-55d7-4139-8b25-5864b3a21a34",
+          "type": "under_report",
+          "beforeValue": "52300",
+          "afterValue": "89200",
+          "explanation": "夜曲在短视频平台使用量被低估，实际播放量远高于报告数据",
+          "createdAt": "2026-06-01T16:44:05.486Z"
+        }
+      ],
+      "appeals": [
+        {
+          "id": "e96349e9-1cec-4a7b-b440-5c0a91be8ccd",
+          "status": "pending",
+          "explanation": "对\"under_report\"类纠正提出申诉，请平台重新核实"
+        }
+      ]
+    },
+    {
+      "workId": "c0879aa9-e5b7-441d-a93e-0b6b6fe80912",
+      "title": "光年之外",
+      "authors": "邓紫棋",
+      "anomalyTypes": [
+        "proportion_change"
+      ],
+      "corrections": [
+        {
+          "id": "3c9051c7-d843-4a1a-91c9-95110788fbcd",
+          "workId": "c0879aa9-e5b7-441d-a93e-0b6b6fe80912",
+          "type": "proportion_change",
+          "beforeValue": "{\"composer\":0.3,\"lyricist\":0.25}",
+          "afterValue": "{\"composer\":0.4,\"lyricist\":0.15}",
+          "explanation": "光年之外词曲作者分成比例经核实需调整",
+          "createdAt": "2026-06-01T16:44:05.486Z"
+        }
+      ],
+      "appeals": [
+        {
+          "id": "81d0b9ac-1e0d-4070-b578-d56703013746",
+          "status": "platform_replied",
+          "explanation": "对\"proportion_change\"类纠正提出申诉，请平台重新核实"
+        }
+      ]
+    },
+    {
+      "workId": "83fc6f59-d2e1-44a4-95b6-5dad79778b30",
+      "title": "起风了",
+      "authors": "买辣椒也用券",
+      "anomalyTypes": [
+        "duplicate_use"
+      ],
+      "corrections": [
+        {
+          "id": "1e7b3716-559b-4cc1-865b-f44809517545",
+          "workId": "83fc6f59-d2e1-44a4-95b6-5dad79778b30",
+          "type": "duplicate_use",
+          "beforeValue": "2条重复记录",
+          "afterValue": "去重后1条",
+          "explanation": "起风了在KTV平台存在重复使用记录，需去重处理",
+          "createdAt": "2026-06-01T16:44:05.486Z"
+        }
+      ],
+      "appeals": [
+        {
+          "id": "f06cfe62-312b-42e3-9c22-4b6e1e2c8da1",
+          "status": "confirmed",
+          "explanation": "对\"duplicate_use\"类纠正提出申诉，请平台重新核实"
+        }
+      ]
+    },
+    {
+      "workId": "ab9f8f83-476a-42f5-834f-264b1cb598ad",
+      "title": "漠河舞厅",
+      "authors": "柳爽",
+      "anomalyTypes": [
+        "under_report",
+        "proportion_change"
+      ],
+      "corrections": [
+        {
+          "id": "c6a7388d-8246-4dd0-8194-133c4c54af6c",
+          "workId": "ab9f8f83-476a-42f5-834f-264b1cb598ad",
+          "type": "under_report",
+          "beforeValue": "52300",
+          "afterValue": "89200",
+          "explanation": "漠河舞厅在短视频平台使用量被低估，实际播放量远高于报告数据",
+          "createdAt": "2026-06-01T16:44:05.486Z"
+        },
+        {
+          "id": "9b53f9ab-b08d-4bcf-a74f-fd8e1e992aec",
+          "workId": "ab9f8f83-476a-42f5-834f-264b1cb598ad",
+          "type": "proportion_change",
+          "beforeValue": "{\"composer\":0.3,\"lyricist\":0.25}",
+          "afterValue": "{\"composer\":0.4,\"lyricist\":0.15}",
+          "explanation": "漠河舞厅词曲作者分成比例经核实需调整",
+          "createdAt": "2026-06-01T16:44:05.486Z"
+        }
+      ],
+      "appeals": [
+        {
+          "id": "9d5db87b-44e8-4ff0-91a3-3ed93d7ea636",
+          "status": "pending",
+          "explanation": "对\"under_report\"类纠正提出申诉，请平台重新核实"
+        },
+        {
+          "id": "f029ca59-2733-4193-a006-1237ffb75188",
+          "status": "platform_replied",
+          "explanation": "对\"proportion_change\"类纠正提出申诉，请平台重新核实"
+        }
+      ]
+    },
+    {
+      "workId": "ce4541c6-eeef-45f2-b777-70f5d0f09d8b",
+      "title": "测试歌曲",
+      "authors": "测试作者",
+      "anomalyTypes": [
+        "under_report"
+      ],
+      "corrections": [
+        {
+          "id": "dcc2acae-f949-4703-aa0c-b4c52edebffe",
+          "workId": "ce4541c6-eeef-45f2-b777-70f5d0f09d8b",
+          "type": "under_report",
+          "beforeValue": "使用量5000次",
+          "afterValue": "使用量8000次",
+          "explanation": "短视频平台漏报3000次使用，经核实确认为平台数据同步延迟导致",
+          "createdAt": "2026-06-03T00:58:47.970Z"
+        }
+      ],
+      "appeals": []
+    }
+  ]
+}

@@ -229,7 +229,7 @@ export const useStore = create<StoreState>((set, get) => ({
       const form = new FormData()
       form.append('file', file)
       form.append('fileType', fileType)
-      const data = await api<{ importId: string; fileName: string; totalRows: number; validCount: number; issues: string[]; preview: any[] }>('/api/import/upload', {
+      const data = await api<{ importId: string; original: any[]; processed: any[]; issues: { row: number; type: string; message: string }[] }>('/api/import/upload', {
         method: 'POST',
         body: form,
       })
@@ -237,8 +237,8 @@ export const useStore = create<StoreState>((set, get) => ({
         importState: {
           uploading: false,
           importId: data.importId,
-          preview: { original: data.preview, processed: data.preview },
-          issues: data.issues.map((msg: string, i: number) => ({ row: i + 1, type: 'warning', message: msg })),
+          preview: { original: data.original, processed: data.processed },
+          issues: data.issues,
         },
       })
     } catch {
@@ -276,7 +276,7 @@ export const useStore = create<StoreState>((set, get) => ({
       await api('/api/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        body: JSON.stringify({ type: params.type }),
       })
       get().fetchReports()
     } catch {}
@@ -290,9 +290,9 @@ export const useStore = create<StoreState>((set, get) => ({
         body: JSON.stringify({
           workId: data.workId,
           type: data.type,
-          beforeValue: data.before,
-          afterValue: data.after,
-          plainExplanation: data.explanation,
+          before: data.before,
+          after: data.after,
+          explanation: data.explanation,
         }),
       })
       get().fetchCorrections()
