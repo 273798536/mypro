@@ -366,6 +366,7 @@ export const useSeismicStore = create<SeismicState>()(
         traceLinks: state.traceLinks,
         displacementConclusion: state.displacementConclusion,
         dataLoaded: state.dataLoaded,
+        playback: state.playback,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
