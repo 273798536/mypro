@@ -38,7 +38,7 @@ class MicrowaveVisualizer {
         this.camera.position.set(0, 80, 100);
         this.camera.lookAt(0, 0, 0);
         
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
         this.renderer.setSize(width, height);
         this.renderer.shadowMap.enabled = true;
         container.appendChild(this.renderer.domElement);
@@ -645,18 +645,26 @@ class MicrowaveVisualizer {
     
     generateReport() {
         const data = sampleData[this.currentSample];
+        if (!data) return;
         const params = this.getCurrentSliderParams();
-        const currentPts = this.getCurrentInterpolatedPoints();
         const allInterpPts = this.interpolateTemperature(data.temperaturePoints, this.currentTime);
-        const filterLabel = this.currentFilter === 'hot' ? '高温区' :
-                            this.currentFilter === 'cold' ? '低温区' : '全部';
+        const filteredPts = this.getCurrentInterpolatedPoints();
+        const filterLabel = this.currentFilter === 'hot' ? '高温区(≥70°C)' :
+                            this.currentFilter === 'cold' ? '低温区(<50°C)' : '全部';
+        const isFiltered = this.currentFilter !== 'all';
 
-        const avgTemp = allInterpPts.reduce((s, p) => s + p.temp, 0) / allInterpPts.length;
-        const maxTemp = Math.max(...allInterpPts.map(p => p.temp));
-        const minTemp = Math.min(...allInterpPts.map(p => p.temp));
-        const flaggedPts = allInterpPts.filter(p => p.flagged);
+        const allAvg = allInterpPts.reduce((s, p) => s + p.temp, 0) / allInterpPts.length;
+        const allMax = Math.max(...allInterpPts.map(p => p.temp));
+        const allMin = Math.min(...allInterpPts.map(p => p.temp));
+        const allFlagged = allInterpPts.filter(p => p.flagged);
 
-        const traceLines = allInterpPts.map(p => {
+        const fAvg = filteredPts.length > 0 ? filteredPts.reduce((s, p) => s + p.temp, 0) / filteredPts.length : 0;
+        const fMax = filteredPts.length > 0 ? Math.max(...filteredPts.map(p => p.temp)) : 0;
+        const fMin = filteredPts.length > 0 ? Math.min(...filteredPts.map(p => p.temp)) : 0;
+        const fFlagged = filteredPts.filter(p => p.flagged);
+
+        const displayPts = isFiltered ? filteredPts : allInterpPts;
+        const traceLines = displayPts.map(p => {
             const pos = data.turntablePositions.find(t => Math.abs(t.time - this.currentTime) < 15);
             return `  ${p.id}: 温度=${p.temp.toFixed(1)}°C, 位置=(${p.x},${p.y}), 转盘角度=${pos ? pos.angle + '°' : 'N/A'}${p.flagged ? ' [异常: ' + p.flagReason + ']' : ''}`;
         });
@@ -684,19 +692,18 @@ class MicrowaveVisualizer {
 ----------------------------------------
 时间位置: ${Math.floor(this.currentTime)} 秒
 筛选模式: ${filterLabel}
-平均温度: ${avgTemp.toFixed(1)} °C
-最高温度: ${maxTemp.toFixed(1)} °C
-最低温度: ${minTemp.toFixed(1)} °C
+${isFiltered ? `筛选后统计 — 平均: ${fAvg.toFixed(1)}°C, 最高: ${fMax.toFixed(1)}°C, 最低: ${fMin.toFixed(1)}°C, 异常: ${fFlagged.length}个` : ''}
+全量统计 — 平均: ${allAvg.toFixed(1)}°C, 最高: ${allMax.toFixed(1)}°C, 最低: ${allMin.toFixed(1)}°C
 
 ----------------------------------------
 数据摘要
 ----------------------------------------
 原始温度点总数: ${data.temperaturePoints.length} 个
 当前时间插值点数: ${allInterpPts.length} 个
-筛选后显示点数: ${currentPts.length} 个
+${isFiltered ? `筛选后显示点数: ${filteredPts.length} 个 (被筛除: ${allInterpPts.length - filteredPts.length}个)` : '筛选后显示点数: ' + allInterpPts.length + ' 个 (未筛选)'}
 转盘位置记录: ${data.turntablePositions.length} 条
 初始温度: ${data.metadata.initialTemp} °C
-异常标记点数: ${flaggedPts.length} 个
+全量异常标记: ${allFlagged.length} 个${isFiltered ? '\n筛选后异常标记: ' + fFlagged.length + ' 个' : ''}
 
 ----------------------------------------
 数据质量检测
@@ -711,7 +718,7 @@ ${data.errors.map(e => `  ${e.suggestion}`).join('\n')}` :
 }
 
 ----------------------------------------
-温度点与转盘位置对应关系 (t=${Math.floor(this.currentTime)}s)
+温度点与转盘位置对应关系 (t=${Math.floor(this.currentTime)}s${isFiltered ? ', ' + filterLabel : ''})
 ----------------------------------------
 ${traceLines.join('\n')}
 
@@ -748,16 +755,29 @@ ${data.notes}
     
     exportCSV() {
         const data = sampleData[this.currentSample];
+        if (!data) return;
         const params = this.getCurrentSliderParams();
-        const filterLabel = this.currentFilter === 'hot' ? '高温区' :
-                            this.currentFilter === 'cold' ? '低温区' : '全部';
+        const filterLabel = this.currentFilter === 'hot' ? '高温区(≥70°C)' :
+                            this.currentFilter === 'cold' ? '低温区(<50°C)' : '全部';
+        const isFiltered = this.currentFilter !== 'all';
         const allInterpPts = this.interpolateTemperature(data.temperaturePoints, this.currentTime);
-        const filteredPts = this.getCurrentInterpolatedPoints();
+        const filteredIds = new Set(this.getCurrentInterpolatedPoints().map(p => p.id));
 
-        let csv = 'ID,时间(秒),X坐标,Y坐标,温度(°C),来源,标记,插值\n';
+        const formatRow = (p, status) => {
+            const originalMatch = data.temperaturePoints.find(op => op.id === p.id && op.time === this.getCurrentTimePoint());
+            const isInterpolated = !originalMatch || Math.abs(p.temp - originalMatch.temp) > 0.05;
+            return `${p.id},${Math.floor(this.currentTime)},${p.x},${p.y},${p.temp.toFixed(2)},${p.source},${p.flagged ? p.flagReason : ''},${isInterpolated ? '插值' : '原始'},${status}`;
+        };
+
+        let csv = 'ID,时间(秒),X坐标,Y坐标,温度(°C),来源,标记,数据类型,筛选状态\n';
 
         allInterpPts.forEach(p => {
-            csv += `${p.id},${Math.floor(this.currentTime)},${p.x},${p.y},${p.temp.toFixed(2)},${p.source},${p.flagged ? p.flagReason : ''},${Math.abs(p.temp - (data.temperaturePoints.find(op => op.id === p.id && op.time === this.getCurrentTimePoint()) || {}).temp || 0) > 0.05 ? '插值' : '原始'}\n`;
+            const inFilter = filteredIds.has(p.id);
+            if (isFiltered && !inFilter) {
+                csv += '#' + formatRow(p, '已筛除') + '\n';
+            } else {
+                csv += formatRow(p, isFiltered ? '保留' : '-');
+            }
         });
 
         csv += `\n元数据\n`;
@@ -771,9 +791,11 @@ ${data.notes}
         csv += `频率(GHz),${params.frequency}\n`;
         csv += `转速(rpm),${params.speed}\n`;
         csv += `功率(W),${params.power}\n`;
-        csv += `总点数,${allInterpPts.length}\n`;
-        csv += `筛选后点数,${filteredPts.length}\n`;
+        csv += `全量点数,${allInterpPts.length}\n`;
+        csv += `筛选后点数,${filteredIds.size}\n`;
         csv += `异常点数,${allInterpPts.filter(p => p.flagged).length}\n`;
+        csv += `\n说明\n`;
+        csv += `以#开头的行表示被当前筛选条件排除的数据点，可追溯但不应纳入筛选统计\n`;
 
         const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);
