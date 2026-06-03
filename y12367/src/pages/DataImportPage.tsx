@@ -115,6 +115,7 @@ export const DataImportPage: React.FC = () => {
   const [importSuccess, setImportSuccess] = React.useState(false);
   const [parsedRows, setParsedRows] = React.useState<Record<string, unknown>[]>([]);
   const [rawRows, setRawRows] = React.useState<Record<string, unknown>[]>([]);
+  const [csvHeaders, setCsvHeaders] = React.useState<string[]>([]);
   const [importHistory, setImportHistory] = React.useState<
     { date: string; type: string; fileName: string; rows: number; status: string; operator: string }[]
   >([]);
@@ -146,7 +147,7 @@ export const DataImportPage: React.FC = () => {
         }
       }
       return {
-        sourceField: matchedSource || tf.label,
+        sourceField: matchedSource,
         targetField: tf.targetField,
         required: tf.required,
         detected: matchedSource !== '',
@@ -183,12 +184,44 @@ export const DataImportPage: React.FC = () => {
     (mappings: FieldMapping[], rawData: Record<string, unknown>[]) => {
       if (rawData.length === 0) return;
 
-      const mappedRows = rawData.map((row) => mapRow(row, mappings));
-      setParsedRows(mappedRows);
-      setPreviewData(mappedRows.slice(0, 5));
+      const targetFieldCount: Record<string, number> = {};
+      const sourceFieldSet = new Set<string>();
+      for (const m of mappings) {
+        if (m.sourceField && m.sourceField.trim() !== '') {
+          targetFieldCount[m.targetField] = (targetFieldCount[m.targetField] || 0) + 1;
+          sourceFieldSet.add(m.sourceField);
+        }
+      }
 
       const errors: UploadValidationResult['errors'] = [];
       const warnings: UploadValidationResult['warnings'] = [];
+
+      for (const [targetField, count] of Object.entries(targetFieldCount)) {
+        if (count > 1) {
+          const sourceFields = mappings
+            .filter((m) => m.targetField === targetField && m.sourceField)
+            .map((m) => `'${m.sourceField}'`)
+            .join('、');
+          warnings.push({
+            row: 0,
+            field: targetField,
+            message: `字段映射冲突：${count} 个源字段(${sourceFields})同时映射到目标字段'${targetField}'，后导入的数据将覆盖先导入的数据`,
+          });
+        }
+      }
+
+      const unusedHeaders = csvHeaders.filter((h) => !sourceFieldSet.has(h));
+      if (unusedHeaders.length > 0) {
+        warnings.push({
+          row: 0,
+          field: 'mapping',
+          message: `存在 ${unusedHeaders.length} 个未映射的源字段：${unusedHeaders.map((h) => `'${h}'`).join('、')}，这些数据将被忽略`,
+        });
+      }
+
+      const mappedRows = rawData.map((row) => mapRow(row, mappings));
+      setParsedRows(mappedRows);
+      setPreviewData(mappedRows.slice(0, 5));
 
       mappedRows.forEach((row, idx) => {
         const rowNum = idx + 2;
@@ -251,7 +284,7 @@ export const DataImportPage: React.FC = () => {
         setConflicts([]);
       }
     },
-    [fileType]
+    [fileType, csvHeaders]
   );
 
   const parseFile = async (file: File) => {
@@ -278,12 +311,24 @@ export const DataImportPage: React.FC = () => {
 
     setRawRows(rawData);
     const headers = Object.keys(rawData[0]);
+    setCsvHeaders(headers);
     const mappings = detectFieldMapping(headers, fileType);
     setFieldMappings(mappings);
     remapAndValidate(mappings, rawData);
   };
 
-  const handleMappingChange = (index: number, newTargetField: string) => {
+  const handleSourceChange = (index: number, newSourceField: string) => {
+    const newMappings = [...fieldMappings];
+    newMappings[index] = {
+      ...newMappings[index],
+      sourceField: newSourceField,
+      detected: false,
+    };
+    setFieldMappings(newMappings);
+    remapAndValidate(newMappings, rawRows);
+  };
+
+  const handleTargetChange = (index: number, newTargetField: string) => {
     const newMappings = [...fieldMappings];
     newMappings[index] = {
       ...newMappings[index],
@@ -304,6 +349,7 @@ export const DataImportPage: React.FC = () => {
       setImportSuccess(false);
       setParsedRows([]);
       setRawRows([]);
+      setCsvHeaders([]);
       setFieldMappings([]);
       parseFile(file);
     }
@@ -414,6 +460,9 @@ export const DataImportPage: React.FC = () => {
       setPreviewData([]);
       setImportSuccess(false);
       setParsedRows([]);
+      setRawRows([]);
+      setCsvHeaders([]);
+      setFieldMappings([]);
       parseFile(file);
     }
   };
@@ -508,6 +557,9 @@ export const DataImportPage: React.FC = () => {
                         setConflicts([]);
                         setPreviewData([]);
                         setParsedRows([]);
+                        setRawRows([]);
+                        setCsvHeaders([]);
+                        setFieldMappings([]);
                       }}
                       options={fileTypeOptions}
                     />
@@ -650,6 +702,9 @@ export const DataImportPage: React.FC = () => {
                           setConflicts([]);
                           setPreviewData([]);
                           setParsedRows([]);
+                          setRawRows([]);
+                          setCsvHeaders([]);
+                          setFieldMappings([]);
                         }}
                       >
                         重新选择
@@ -750,8 +805,8 @@ export const DataImportPage: React.FC = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>源字段</TableHead>
-                        <TableHead>目标字段</TableHead>
+                        <TableHead>源字段 (CSV/XLSX列名)</TableHead>
+                        <TableHead>目标字段 (系统字段)</TableHead>
                         <TableHead>必填</TableHead>
                         <TableHead>检测状态</TableHead>
                       </TableRow>
@@ -759,13 +814,23 @@ export const DataImportPage: React.FC = () => {
                     <TableBody>
                       {fieldMappings.map((mapping, i) => (
                         <TableRow key={i}>
-                          <TableCell>{mapping.sourceField}</TableCell>
+                          <TableCell>
+                            <Select
+                              value={mapping.sourceField}
+                              options={[
+                                { value: '', label: '-- 请选择源字段 --' },
+                                ...csvHeaders.map((h) => ({ value: h, label: h })),
+                              ]}
+                              className="w-48"
+                              onChange={(e) => handleSourceChange(i, e.target.value)}
+                            />
+                          </TableCell>
                           <TableCell>
                             <Select
                               value={mapping.targetField}
                               options={dynamicTargetOptions}
                               className="w-48"
-                              onChange={(e) => handleMappingChange(i, e.target.value)}
+                              onChange={(e) => handleTargetChange(i, e.target.value)}
                             />
                           </TableCell>
                           <TableCell>
