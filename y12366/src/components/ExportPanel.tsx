@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
-import { FileJson, FileSpreadsheet, Download, Check, X } from 'lucide-react'
+import { FileJson, FileSpreadsheet, Download, Check, X, Eye, EyeOff, AlertTriangle } from 'lucide-react'
 import { useSeismicStore } from '@/store/useSeismicStore'
-import { generateExportReport, downloadJSON, downloadCSV, checkConsistency } from '@/utils/exportReport'
+import { generateExportReport, downloadJSON, downloadCSV, checkConsistency, validateExportContent } from '@/utils/exportReport'
 
 type ExportFormat = 'json' | 'csv'
 
@@ -13,6 +13,7 @@ export default function ExportPanel() {
   const setDisplacementConclusion = useSeismicStore((s) => s.setDisplacementConclusion)
 
   const [format, setFormat] = useState<ExportFormat>('json')
+  const [showPreview, setShowPreview] = useState(false)
 
   const pageSummary = useMemo(() => {
     const peakCount = traceLinks.length
@@ -30,6 +31,33 @@ export default function ExportPanel() {
     () => checkConsistency(report, pageSummary),
     [report, pageSummary],
   )
+
+  const validation = useMemo(
+    () => validateExportContent(report, displacementConclusion),
+    [report, displacementConclusion],
+  )
+
+  const previewContent = useMemo(() => {
+    if (format === 'json') {
+      return JSON.stringify(report, null, 2)
+    } else {
+      const headers = ['结果ID', '对齐方法', '漂移量(ms)', '峰值通道', '峰值时间', '峰值大小', '饱和', '关联照片数', '冲突数', '位移结论']
+      const rows = report.traceLinks.slice(0, 3).map(link => [
+        link.resultId,
+        link.alignment.method,
+        link.alignment.driftMs,
+        link.peakExtraction.channel,
+        new Date(link.peakExtraction.timestamp).toISOString(),
+        link.peakExtraction.value,
+        link.peakExtraction.saturated ? '是' : '否',
+        link.damageAssociation.length,
+        link.conflicts.length,
+        report.displacementConclusion.slice(0, 20) + '...',
+      ])
+      return [headers.join(','), ...rows.map(r => r.join(','))].join('\n') +
+        (report.traceLinks.length > 3 ? `\n... 还有 ${report.traceLinks.length - 3} 条记录` : '')
+    }
+  }, [format, report])
 
   const handleDownload = () => {
     if (format === 'json') {
@@ -117,7 +145,7 @@ export default function ExportPanel() {
               )}
             </div>
             <span className={`font-mono text-[10px] ${isConsistent ? 'text-signal' : 'text-saturated'}`}>
-              {isConsistent ? '与摘要一致' : '与摘要不一致'}
+              {isConsistent ? '结构完整' : '结构不完整'}
             </span>
           </div>
         </div>
@@ -128,6 +156,55 @@ export default function ExportPanel() {
           rows={3}
           className="w-full resize-none rounded-md border border-steel-700 bg-steel-800 px-3 py-2 font-sans text-sm text-slate-200 placeholder:text-steel-600 focus:border-signal/50 focus:outline-none focus:ring-1 focus:ring-signal/30"
         />
+        {!validation.valid && (
+          <div className="rounded-md border border-warn/40 bg-warn/10 p-2">
+            <div className="flex items-start gap-2">
+              <AlertTriangle size={12} className="text-warn mt-0.5 shrink-0" />
+              <div className="space-y-1">
+                {validation.errors.map((err, i) => (
+                  <p key={i} className="font-mono text-[10px] text-warn">
+                    ⚠ {err}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {validation.valid && (
+          <div className="rounded-md border border-signal/40 bg-signal/10 p-2">
+            <div className="flex items-center gap-2">
+              <Check size={12} className="text-signal shrink-0" />
+              <p className="font-mono text-[10px] text-signal">
+                ✓ 导出内容结构完整，包含 {traceLinks.length} 条溯源记录
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <button
+          onClick={() => setShowPreview(!showPreview)}
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-steel-700 bg-steel-800 px-4 py-2 font-mono text-xs text-steel-400 transition-colors hover:bg-steel-700 hover:text-slate-300"
+        >
+          {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
+          {showPreview ? '隐藏' : '显示'}导出内容预览
+        </button>
+        {showPreview && (
+          <div className="rounded-md border border-steel-700 bg-steel-950 p-3">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-steel-500">
+                预览内容（{format.toUpperCase()}）
+              </span>
+              <span className="font-mono text-[10px] text-steel-500">
+                共 {previewContent.length} 字符
+              </span>
+            </div>
+            <pre className="overflow-x-auto font-mono text-[10px] text-steel-400 whitespace-pre-wrap break-all">
+{previewContent}
+            </pre>
+          </div>
+        )}
       </div>
 
       <div className="rounded-md border border-steel-700 bg-steel-800 px-3 py-2">
@@ -139,7 +216,7 @@ export default function ExportPanel() {
 
       <button
         onClick={handleDownload}
-        disabled={traceLinks.length === 0}
+        disabled={traceLinks.length === 0 || !validation.valid}
         className="flex w-full items-center justify-center gap-2 rounded-md bg-signal/20 px-4 py-2.5 font-mono text-sm font-medium text-signal transition-colors hover:bg-signal/30 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-signal/20"
       >
         <Download size={16} />
