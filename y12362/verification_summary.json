@@ -1,0 +1,28 @@
+{
+  "velocity_sane": true,
+  "load_violation_visible": true,
+  "error_handling_works": true,
+  "html_opening_works": true,
+  "all_passed": true,
+  "velocities_exceeded": {
+    "1": 50.00000000000018,
+    "2": 100.00000000000036,
+    "3": 200.00000000000026
+  },
+  "velocities_colleague": {
+    "1": 75.00000000000001,
+    "2": 100.00000000000003
+  },
+  "fix_comparison": {
+    "before": {
+      "1": 2864.79,
+      "2": 5729.58,
+      "3": 11459.16
+    },
+    "after": {
+      "1": 50.00000000000018,
+      "2": 100.00000000000036,
+      "3": 200.00000000000026
+    }
+  }
+}

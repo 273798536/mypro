@@ -105,40 +105,87 @@ def main():
         format=args.format,
     )
 
-    workflow = JointCheckWorkflow(
-        output_dir=args.output,
-        report_config=report_config,
-    )
+    try:
+        workflow = JointCheckWorkflow(
+            output_dir=args.output,
+            report_config=report_config,
+        )
 
-    result = workflow.run_full_workflow(
-        joint_config_file=joint_file,
-        load_config_file=load_file,
-        motion_sequence_file=motion_file,
-        generate_plots=not args.no_plots,
-    )
+        result = workflow.run_full_workflow(
+            joint_config_file=joint_file,
+            load_config_file=load_file,
+            motion_sequence_file=motion_file,
+            generate_plots=not args.no_plots,
+        )
 
-    print()
-    print("=" * 60)
-    print("检查总结")
-    print("=" * 60)
-    print(f"  输出目录: {os.path.abspath(args.output)}")
-    print(f"  总超限数: {result['violation_summary']['total_violations']}")
-    print(f"  严重超限: {result['violation_summary']['critical_count']}")
-    print(f"  警告: {result['violation_summary']['warning_count']}")
-
-    if result["has_load_violation"]:
         print()
-        print("  🔴 检测到载荷越界! 这是关键失败路径!")
-        print("     请查看报告获取详细信息。")
+        print("=" * 60)
+        print("检查总结")
+        print("=" * 60)
+        print(f"  输出目录: {os.path.abspath(args.output)}")
+        print(f"  总超限数: {result['violation_summary']['total_violations']}")
+        print(f"  严重超限: {result['violation_summary']['critical_count']}")
+        print(f"  警告: {result['violation_summary']['warning_count']}")
 
-    if result["has_critical_violations"]:
+        if result["has_load_violation"]:
+            print()
+            print("  🔴 检测到载荷越界! 这是关键失败路径!")
+            print("     请查看报告获取详细信息。")
+
+        if result["has_critical_violations"]:
+            print()
+            print("  ⚠️  存在严重超限，请务必检查!")
+            sys.exit(2)
+
         print()
-        print("  ⚠️  存在严重超限，请务必检查!")
-        sys.exit(2)
+        print("✅ 检查完成!")
+        sys.exit(0)
 
-    print()
-    print("✅ 检查完成!")
-    sys.exit(0)
+    except FileNotFoundError as e:
+        print()
+        print("❌ 文件错误")
+        print("=" * 60)
+        print(str(e))
+        print()
+        print("💡 解决方法:")
+        print("  1. 检查文件路径是否正确")
+        print("  2. 确认文件是否存在")
+        print("  3. 使用相对路径时注意当前工作目录")
+        print(f"  4. 当前工作目录: {os.getcwd()}")
+        print()
+        print("📝 如需帮助，运行: python run_check.py --help")
+        sys.exit(1)
+
+    except ValueError as e:
+        print()
+        print("❌ 数据格式错误")
+        print("=" * 60)
+        print(str(e))
+        print()
+        print("💡 解决方法:")
+        print("  1. 检查JSON格式是否正确（可用在线JSON校验工具）")
+        print("  2. 确认文件编码为UTF-8")
+        print("  3. 检查是否包含所有必需字段")
+        print("  4. 参考 examples/ 目录下的样例文件格式")
+        print()
+        print("📝 如需帮助，运行: python run_check.py --help")
+        sys.exit(1)
+
+    except Exception as e:
+        print()
+        print("❌ 运行错误")
+        print("=" * 60)
+        print(f"错误类型: {type(e).__name__}")
+        print(f"错误信息: {str(e)}")
+        print()
+        print("💡 这可能是程序内部错误，请检查:")
+        print("  1. 输入数据类型是否正确")
+        print("  2. 数值范围是否合理")
+        print("  3. 必要的依赖是否已安装")
+        print()
+        print("📝 如需帮助，运行: python run_check.py --help")
+        print("   或查看 examples/ 目录下的样例文件")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

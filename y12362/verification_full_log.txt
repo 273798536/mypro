@@ -1,0 +1,50 @@
+
+============================================================
+  场景1: 载荷越界 (exceeded)
+============================================================
+  最大速度 (°/s):
+    关节1: 50.00 / 60.0 ✓
+    关节2: 100.00 / 80.0 ✗
+    关节3: 200.00 / 120.0 ✗
+  最大力矩 (Nm):
+    关节1: 19.62 / 50.0 ✓
+    关节2: 17.66 / 40.0 ✓
+    关节3: 15.50 / 20.0 ✓
+  超限: 总96 严重85 警告11
+  载荷越界: YES
+  报告:
+    json: joint_check_report_20260603_083857.json ✓
+    text: joint_check_report_20260603_083857.txt ✓
+    html: joint_check_report_20260603_083857.html ✓
+  JSON速度与控制台一致: YES
+  HTML可打开: YES (34881 bytes)
+
+============================================================
+  场景2: 同事测试 (test_colleague)
+============================================================
+  最大速度 (°/s):
+    关节1: 75.00 / 60.0 ✗
+    关节2: 100.00 / 80.0 ✗
+  最大力矩 (Nm):
+    关节1: 23.30 / 50.0 ✓
+    关节2: 21.34 / 40.0 ✓
+  超限: 总19 严重17 警告2
+  载荷越界: YES
+  报告:
+    json: joint_check_report_20260603_083857.json ✓
+    text: joint_check_report_20260603_083857.txt ✓
+    html: joint_check_report_20260603_083857.html ✓
+  JSON速度与控制台一致: YES
+  HTML可打开: YES (13111 bytes)
+  命令: /Library/Developer/CommandLineTools/usr/bin/python3 /Users/mac/pro/solo/workspaces/y12362/robot_joint_checker/run_check.py --joint nonexistent.json --load nonexistent.json --motion nonexistent.json --no-plots
+  退出码: 1
+  包含友好提示: YES
+  无traceback: YES
+  修复前 → 修复后 (exceeded):
+    关节1: 2864.79 → 50.00 °/s
+    关节2: 5729.58 → 100.00 °/s
+    关节3: 11459.16 → 200.00 °/s
+  HTTP服务器已启动: http://localhost:8766/
+  访问URL: http://localhost:8766/joint_check_report_20260603_082312.html
+  HTTP状态码: 200
+  HTML有效: YES

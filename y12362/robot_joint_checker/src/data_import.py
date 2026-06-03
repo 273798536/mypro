@@ -21,16 +21,23 @@ class DataImporter:
         )
         self.check_result.add_source(source)
 
-        raw_data = self._read_file(file_path, ext)
-        self.check_result.raw_data[f"joint_config_{len(self.check_result.sources)}"] = raw_data
+        try:
+            raw_data = self._read_file(file_path, ext)
+            self.check_result.raw_data[f"joint_config_{len(self.check_result.sources)}"] = raw_data
 
-        joint_configs = self._parse_joint_config(raw_data)
-        self.check_result.joint_configs.update(joint_configs)
-        self.check_result.processed_data["joint_configs"] = {
-            k: v.to_dict() for k, v in joint_configs.items()
-        }
+            joint_configs = self._parse_joint_config(raw_data)
+            self.check_result.joint_configs.update(joint_configs)
+            self.check_result.processed_data["joint_configs"] = {
+                k: v.to_dict() for k, v in joint_configs.items()
+            }
 
-        return joint_configs
+            return joint_configs
+        except (ValueError, KeyError, TypeError) as e:
+            raise ValueError(
+                f"解析关节配置文件失败: {file_path}\n"
+                f"  错误: {str(e)}\n"
+                f"  请检查文件内容是否包含必需字段: joint_id, link_length, min_angle, max_angle, max_angular_velocity, max_torque"
+            ) from e
 
     def import_load_config(self, file_path: str) -> LoadConfig:
         _, ext = os.path.splitext(file_path)
@@ -43,14 +50,21 @@ class DataImporter:
         )
         self.check_result.add_source(source)
 
-        raw_data = self._read_file(file_path, ext)
-        self.check_result.raw_data[f"load_config_{len(self.check_result.sources)}"] = raw_data
+        try:
+            raw_data = self._read_file(file_path, ext)
+            self.check_result.raw_data[f"load_config_{len(self.check_result.sources)}"] = raw_data
 
-        load_config = self._parse_load_config(raw_data)
-        self.check_result.load_config = load_config
-        self.check_result.processed_data["load_config"] = load_config.to_dict()
+            load_config = self._parse_load_config(raw_data)
+            self.check_result.load_config = load_config
+            self.check_result.processed_data["load_config"] = load_config.to_dict()
 
-        return load_config
+            return load_config
+        except (ValueError, KeyError, TypeError) as e:
+            raise ValueError(
+                f"解析载荷配置文件失败: {file_path}\n"
+                f"  错误: {str(e)}\n"
+                f"  请检查文件内容是否包含必需字段: load_mass, load_position, max_load_mass, max_load_radius"
+            ) from e
 
     def import_motion_sequence(self, file_path: str) -> MotionConfig:
         _, ext = os.path.splitext(file_path)
@@ -63,28 +77,75 @@ class DataImporter:
         )
         self.check_result.add_source(source)
 
-        raw_data = self._read_file(file_path, ext)
-        self.check_result.raw_data[f"motion_sequence_{len(self.check_result.sources)}"] = raw_data
+        try:
+            raw_data = self._read_file(file_path, ext)
+            self.check_result.raw_data[f"motion_sequence_{len(self.check_result.sources)}"] = raw_data
 
-        motion_config = self._parse_motion_sequence(raw_data)
-        self.check_result.motion_config = motion_config
-        self.check_result.processed_data["motion_config"] = motion_config.to_dict()
+            motion_config = self._parse_motion_sequence(raw_data)
+            self.check_result.motion_config = motion_config
+            self.check_result.processed_data["motion_config"] = motion_config.to_dict()
 
-        return motion_config
+            return motion_config
+        except (ValueError, KeyError, TypeError) as e:
+            raise ValueError(
+                f"解析动作序列文件失败: {file_path}\n"
+                f"  错误: {str(e)}\n"
+                f"  请检查文件内容是否包含必需字段: time_steps, joint_angles"
+            ) from e
 
     def _read_file(self, file_path: str, ext: str) -> Any:
+        if not os.path.exists(file_path):
+            raise FileNotFoundError(
+                f"文件不存在: {file_path}\n"
+                f"  请检查文件路径是否正确，或确认文件已上传。"
+            )
+
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(
+                f"路径不是文件: {file_path}"
+            )
+
         if ext == ".json":
-            with open(file_path, "r", encoding="utf-8") as f:
-                return json.load(f)
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except json.JSONDecodeError as e:
+                raise ValueError(
+                    f"JSON格式错误: {file_path}\n"
+                    f"  错误位置: 第{e.lineno}行, 第{e.colno}列\n"
+                    f"  错误信息: {e.msg}\n"
+                    f"  请检查文件格式是否符合JSON规范。"
+                ) from e
+            except UnicodeDecodeError as e:
+                raise ValueError(
+                    f"文件编码错误: {file_path}\n"
+                    f"  请确保文件使用UTF-8编码。"
+                ) from e
+
         elif ext in [".csv", ".txt"]:
-            rows = []
-            with open(file_path, "r", encoding="utf-8") as f:
-                reader = csv.DictReader(f)
-                for row in reader:
-                    rows.append(row)
-            return rows
+            try:
+                rows = []
+                with open(file_path, "r", encoding="utf-8") as f:
+                    reader = csv.DictReader(f)
+                    for row in reader:
+                        rows.append(row)
+                return rows
+            except UnicodeDecodeError as e:
+                raise ValueError(
+                    f"文件编码错误: {file_path}\n"
+                    f"  请确保文件使用UTF-8编码。"
+                ) from e
+            except csv.Error as e:
+                raise ValueError(
+                    f"CSV格式错误: {file_path}\n"
+                    f"  错误信息: {str(e)}\n"
+                    f"  请检查CSV格式是否正确。"
+                ) from e
         else:
-            raise ValueError(f"不支持的文件格式: {ext}")
+            raise ValueError(
+                f"不支持的文件格式: {ext}\n"
+                f"  支持的格式: .json, .csv, .txt"
+            )
 
     def _parse_joint_config(self, raw_data: Any) -> Dict[int, JointConfig]:
         joint_configs = {}

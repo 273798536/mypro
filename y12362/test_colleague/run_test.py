@@ -26,56 +26,81 @@ def main():
     print(f"📁 输出目录: {output_dir}")
     print()
 
-    workflow = JointCheckWorkflow(output_dir=output_dir)
+    try:
+        workflow = JointCheckWorkflow(output_dir=output_dir)
 
-    result = workflow.run_full_workflow(
-        joint_config_file=joint_file,
-        load_config_file=load_file,
-        motion_sequence_file=motion_file,
-        generate_plots=False,
-    )
+        result = workflow.run_full_workflow(
+            joint_config_file=joint_file,
+            load_config_file=load_file,
+            motion_sequence_file=motion_file,
+            generate_plots=False,
+        )
 
-    print()
-    print("=" * 60)
-    print("测试结果验证")
-    print("=" * 60)
+        print()
+        print("=" * 60)
+        print("测试结果验证")
+        print("=" * 60)
 
-    if result["has_load_violation"]:
-        print("✅ 成功检测到载荷越界!")
-        print("   (关键失败路径验证通过)")
-    else:
-        print("❌ 未检测到载荷越界!")
-        print("   (请检查载荷配置文件)")
+        if result["has_load_violation"]:
+            print("✅ 成功检测到载荷越界!")
+            print("   (关键失败路径验证通过)")
+        else:
+            print("❌ 未检测到载荷越界!")
+            print("   (请检查载荷配置文件)")
 
-    if result["violation_summary"]["has_angle_violation"]:
-        print("✅ 成功检测到角度超限!")
-    else:
-        print("❌ 未检测到角度超限!")
+        if result["violation_summary"]["has_angle_violation"]:
+            print("✅ 成功检测到角度超限!")
+        else:
+            print("❌ 未检测到角度超限!")
 
-    if result["violation_summary"]["has_velocity_violation"]:
-        print("✅ 成功检测到速度超限!")
-    else:
-        print("❌ 未检测到速度超限!")
+        if result["violation_summary"]["has_velocity_violation"]:
+            print("✅ 成功检测到速度超限!")
+        else:
+            print("❌ 未检测到速度超限!")
 
-    print()
-    print(f"📊 超限总数: {result['violation_summary']['total_violations']}")
-    print(f"   - 严重: {result['violation_summary']['critical_count']}")
-    print(f"   - 警告: {result['violation_summary']['warning_count']}")
+        print()
+        print(f"📊 超限总数: {result['violation_summary']['total_violations']}")
+        print(f"   - 严重: {result['violation_summary']['critical_count']}")
+        print(f"   - 警告: {result['violation_summary']['warning_count']}")
 
-    print()
-    print(f"📄 报告文件:")
-    for name, path in result["reports"].items():
-        if not name.endswith("_error"):
-            print(f"   - {name}: {path}")
+        print()
+        print(f"📄 报告文件:")
+        for name, path in result["reports"].items():
+            if not name.endswith("_error"):
+                print(f"   - {name}: {path}")
 
-    print()
-    print("=" * 60)
-    if result["has_load_violation"]:
-        print("✅ 测试成功! 载荷越界的失败路径清晰可见。")
-        print("   请查看报告获取详细信息。")
-        sys.exit(0)
-    else:
-        print("❌ 测试失败! 未检测到预期的载荷越界。")
+        print()
+        print("=" * 60)
+        if result["has_load_violation"]:
+            print("✅ 测试成功! 载荷越界的失败路径清晰可见。")
+            print("   请查看报告获取详细信息。")
+            sys.exit(0)
+        else:
+            print("❌ 测试失败! 未检测到预期的载荷越界。")
+            sys.exit(1)
+
+    except FileNotFoundError as e:
+        print()
+        print("❌ 文件错误")
+        print("=" * 60)
+        print(str(e))
+        print()
+        print("💡 请检查 data/ 目录下的文件是否存在")
+        sys.exit(1)
+
+    except ValueError as e:
+        print()
+        print("❌ 数据格式错误")
+        print("=" * 60)
+        print(str(e))
+        sys.exit(1)
+
+    except Exception as e:
+        print()
+        print("❌ 运行错误")
+        print("=" * 60)
+        print(f"错误类型: {type(e).__name__}")
+        print(f"错误信息: {str(e)}")
         sys.exit(1)
 
 
