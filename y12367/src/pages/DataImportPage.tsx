@@ -114,6 +114,7 @@ export const DataImportPage: React.FC = () => {
   const [previewData, setPreviewData] = React.useState<Record<string, unknown>[]>([]);
   const [importSuccess, setImportSuccess] = React.useState(false);
   const [parsedRows, setParsedRows] = React.useState<Record<string, unknown>[]>([]);
+  const [rawRows, setRawRows] = React.useState<Record<string, unknown>[]>([]);
   const [importHistory, setImportHistory] = React.useState<
     { date: string; type: string; fileName: string; rows: number; status: string; operator: string }[]
   >([]);
@@ -178,6 +179,81 @@ export const DataImportPage: React.FC = () => {
     return mat ? mat.id : code;
   };
 
+  const remapAndValidate = React.useCallback(
+    (mappings: FieldMapping[], rawData: Record<string, unknown>[]) => {
+      if (rawData.length === 0) return;
+
+      const mappedRows = rawData.map((row) => mapRow(row, mappings));
+      setParsedRows(mappedRows);
+      setPreviewData(mappedRows.slice(0, 5));
+
+      const errors: UploadValidationResult['errors'] = [];
+      const warnings: UploadValidationResult['warnings'] = [];
+
+      mappedRows.forEach((row, idx) => {
+        const rowNum = idx + 2;
+        const fieldDefs = TARGET_FIELDS[fileType] ?? [];
+
+        for (const fd of fieldDefs) {
+          const val = row[fd.targetField];
+          if (fd.required && (val === undefined || val === null || String(val).trim() === '')) {
+            errors.push({ row: rowNum, field: fd.targetField, message: `必填字段 ${fd.label} 缺失` });
+          }
+        }
+
+        for (const [field, rule] of Object.entries(RANGE_RULES)) {
+          const val = row[field];
+          if (val !== undefined && val !== null && String(val).trim() !== '' && !isNaN(Number(val))) {
+            const num = Number(val);
+            if (num < rule.min || num > rule.max) {
+              warnings.push({
+                row: rowNum,
+                field,
+                message: `${field}值 ${num} 超出正常范围(${rule.min}~${rule.max}${rule.unit})`,
+              });
+            }
+          }
+        }
+      });
+
+      const validRows = mappedRows.length - errors.length;
+      setValidationResult({
+        valid: errors.length === 0,
+        errors,
+        warnings,
+        totalRows: mappedRows.length,
+        validRows,
+      });
+
+      if (fileType === 'voltage_current' && mappedRows.length > 0) {
+        const existingVoltageData = dataService.getVoltageData();
+        const existingEfficiency = dataService.getEfficiencyReports();
+        if (existingVoltageData.length > 0 && existingEfficiency.length > 0) {
+          const avgImportPower = mappedRows
+            .filter((r) => r.power !== undefined && !isNaN(Number(r.power)))
+            .reduce((s, r) => s + Math.abs(Number(r.power)), 0) / Math.max(1, mappedRows.length);
+          const avgExistingPower = existingVoltageData
+            .slice(-mappedRows.length)
+            .reduce((s, r) => s + Math.abs(r.power), 0) / Math.max(1, existingVoltageData.length);
+          const avgEffPower = existingEfficiency
+            .reduce((s, r) => s + r.inputPower, 0) / Math.max(1, existingEfficiency.length);
+
+          const conflictResults = caliberEngine.detectConflict([
+            { name: '导入数据口径', data: { voltage: 380, current: 25, power: avgImportPower }, type: 'power' },
+            { name: '现有数据口径', data: { voltage: 380, current: 25, power: avgExistingPower }, type: 'power' },
+            { name: '效率报告口径', data: { inputPower: avgEffPower, outputPower: avgEffPower * 0.9 }, type: 'efficiency' },
+          ]);
+          setConflicts(conflictResults);
+        } else {
+          setConflicts([]);
+        }
+      } else {
+        setConflicts([]);
+      }
+    },
+    [fileType]
+  );
+
   const parseFile = async (file: File) => {
     const ab = await file.arrayBuffer();
     const workbook = XLSX.read(ab);
@@ -193,81 +269,29 @@ export const DataImportPage: React.FC = () => {
         totalRows: 0,
         validRows: 0,
       });
+      setRawRows([]);
+      setParsedRows([]);
+      setPreviewData([]);
+      setFieldMappings([]);
       return;
     }
 
+    setRawRows(rawData);
     const headers = Object.keys(rawData[0]);
     const mappings = detectFieldMapping(headers, fileType);
     setFieldMappings(mappings);
+    remapAndValidate(mappings, rawData);
+  };
 
-    const mappedRows = rawData.map((row) => mapRow(row, mappings));
-    setParsedRows(mappedRows);
-
-    setPreviewData(mappedRows.slice(0, 5));
-
-    const errors: UploadValidationResult['errors'] = [];
-    const warnings: UploadValidationResult['warnings'] = [];
-
-    mappedRows.forEach((row, idx) => {
-      const rowNum = idx + 2;
-      const fieldDefs = TARGET_FIELDS[fileType] ?? [];
-
-      for (const fd of fieldDefs) {
-        const val = row[fd.targetField];
-        if (fd.required && (val === undefined || val === null || String(val).trim() === '')) {
-          errors.push({ row: rowNum, field: fd.targetField, message: `必填字段 ${fd.label} 缺失` });
-        }
-      }
-
-      for (const [field, rule] of Object.entries(RANGE_RULES)) {
-        const val = row[field];
-        if (val !== undefined && val !== null && String(val).trim() !== '' && !isNaN(Number(val))) {
-          const num = Number(val);
-          if (num < rule.min || num > rule.max) {
-            warnings.push({
-              row: rowNum,
-              field,
-              message: `${field}值 ${num} 超出正常范围(${rule.min}~${rule.max}${rule.unit})`,
-            });
-          }
-        }
-      }
-    });
-
-    const validRows = mappedRows.length - errors.length;
-    setValidationResult({
-      valid: errors.length === 0,
-      errors,
-      warnings,
-      totalRows: mappedRows.length,
-      validRows,
-    });
-
-    if (fileType === 'voltage_current' && mappedRows.length > 0) {
-      const existingVoltageData = dataService.getVoltageData();
-      const existingEfficiency = dataService.getEfficiencyReports();
-      if (existingVoltageData.length > 0 && existingEfficiency.length > 0) {
-        const avgImportPower = mappedRows
-          .filter((r) => r.power !== undefined && !isNaN(Number(r.power)))
-          .reduce((s, r) => s + Math.abs(Number(r.power)), 0) / Math.max(1, mappedRows.length);
-        const avgExistingPower = existingVoltageData
-          .slice(-mappedRows.length)
-          .reduce((s, r) => s + Math.abs(r.power), 0) / Math.max(1, existingVoltageData.length);
-        const avgEffPower = existingEfficiency
-          .reduce((s, r) => s + r.inputPower, 0) / Math.max(1, existingEfficiency.length);
-
-        const conflictResults = caliberEngine.detectConflict([
-          { name: '导入数据口径', data: { voltage: 380, current: 25, power: avgImportPower }, type: 'power' },
-          { name: '现有数据口径', data: { voltage: 380, current: 25, power: avgExistingPower }, type: 'power' },
-          { name: '效率报告口径', data: { inputPower: avgEffPower, outputPower: avgEffPower * 0.9 }, type: 'efficiency' },
-        ]);
-        setConflicts(conflictResults);
-      } else {
-        setConflicts([]);
-      }
-    } else {
-      setConflicts([]);
-    }
+  const handleMappingChange = (index: number, newTargetField: string) => {
+    const newMappings = [...fieldMappings];
+    newMappings[index] = {
+      ...newMappings[index],
+      targetField: newTargetField,
+      detected: false,
+    };
+    setFieldMappings(newMappings);
+    remapAndValidate(newMappings, rawRows);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -279,6 +303,8 @@ export const DataImportPage: React.FC = () => {
       setPreviewData([]);
       setImportSuccess(false);
       setParsedRows([]);
+      setRawRows([]);
+      setFieldMappings([]);
       parseFile(file);
     }
   };
@@ -739,6 +765,7 @@ export const DataImportPage: React.FC = () => {
                               value={mapping.targetField}
                               options={dynamicTargetOptions}
                               className="w-48"
+                              onChange={(e) => handleMappingChange(i, e.target.value)}
                             />
                           </TableCell>
                           <TableCell>
