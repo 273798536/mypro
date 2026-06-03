@@ -1,6 +1,5 @@
 import { Router, type Request, type Response } from 'express'
 import db from '../db.js'
-import { v4 as uuidv4 } from 'uuid'
 
 const router = Router()
 

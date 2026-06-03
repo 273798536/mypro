@@ -16,7 +16,7 @@ const nextStatusMap: Record<string, string> = {
 export default function BatchDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { currentBatch, fetchBatchDetail, advanceStatus, fetchCalculation, calculation } = useBatchStore()
+  const { currentBatch, fetchBatchDetail, advanceStatus, fetchCalculation } = useBatchStore()
   const [confirming, setConfirming] = useState(false)
 
   useEffect(() => {
