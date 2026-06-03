@@ -202,10 +202,10 @@ export const DataImportPage: React.FC = () => {
             .filter((m) => m.targetField === targetField && m.sourceField)
             .map((m) => `'${m.sourceField}'`)
             .join('、');
-          warnings.push({
+          errors.push({
             row: 0,
             field: targetField,
-            message: `字段映射冲突：${count} 个源字段(${sourceFields})同时映射到目标字段'${targetField}'，后导入的数据将覆盖先导入的数据`,
+            message: `字段映射冲突：${count} 个源字段(${sourceFields})同时映射到目标字段'${targetField}'，请调整映射关系后再导入`,
           });
         }
       }

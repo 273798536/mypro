@@ -1,57 +1,172 @@
-# React + TypeScript + Vite
+# 电机效率测试台 - Motor Efficiency Test System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+面向电气实验员的电机效率测试数据分析系统，解决数据口径不一致、异常检测不精确、分段计算联动等核心业务痛点。
 
-Currently, two official plugins are available:
+## 业务场景
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+电气实验员在电机效率测试中遇到的典型问题：
+- **转速缺采**和**温升超限**同时出现时难以定位
+- 筛选条件一变，图表和明细不同步
+- 不同来源的**数据口径打架**，系统偷偷改口径
+- 异常提示太笼统，只说"处理失败"不说具体哪个材料/测试台
+- 工况分段调整后，异常和曲线不跟着变
+- 手动修正转速扭矩后，看不到新旧对比
 
-## Expanding the ESLint configuration
+## 核心功能
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 1. 三类数据导入
+- **电压电流数据**：时间戳、测试台、材料、电压、电流、功率
+- **温度序列数据**：时间戳、测试台、材料、对象类型(绕组/轴承/机壳)、温度
+- **效率报告数据**：测试台、材料、开始/结束时间、输入功率、输出功率、效率
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 2. 字段智能映射
+- 上传 CSV/XLSX 自动识别表头（中英文关键词匹配）
+- 源字段和目标字段**双向可编辑**下拉框
+- 重复目标字段自动检测并**阻止导入**（不覆盖）
+- 未映射字段警告提示
+
+### 3. 三类异常精确检测
+| 异常类型 | 提示精度 | 颜色 |
+|---------|---------|------|
+| 转速缺采 | 精确到材料、测试台、时间、工况段、持续时长 | 🔵 蓝 |
+| 温升超限 | 精确到材料、测试台、测温对象、实际值/阈值 | 🟠 橙 |
+| 功率反号 | 精确到材料、测试台、时间、实际值/正常范围 | 🔴 红 |
+
+### 4. 工况分段联动
+- 4个标准工况段：启动区 / 低速区 / 中速区 / 高速区
+- 调整分段边界后，**异常检测、效率计算、曲线图表同步重算**
+- 效率散点图 / MAP 图使用**真实数据**，刷新后位置不变
+
+### 5. 手动修正与对比
+- 转速扭矩手动修正入口
+- 修正前后数据**并排对比**
+- 修正日志完整记录（操作人、原因、时间、审核状态）
+
+### 6. 数据导出
+- 导出当前筛选条件下的**效率报告、异常记录、原始数据**
+- 格式：CSV / Excel（可正常打开）
+- 导出内容与页面显示完全一致
+
+## 技术栈
+
+| 层 | 选型 |
+|---|---|
+| 前端框架 | React 18 + TypeScript |
+| 构建工具 | Vite 5 |
+| 状态管理 | Zustand |
+| 样式 | TailwindCSS 3（工业深色主题） |
+| 图表 | ECharts 5 |
+| 表格 | TanStack Table 8 |
+| 文件处理 | xlsx（SheetJS） |
+| 图标 | lucide-react |
+| 动画 | Framer Motion |
+| 日期 | date-fns |
+
+## 快速开始
+
+### 安装依赖
+
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 启动开发服务器
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm run dev
 ```
+
+访问 http://localhost:5173/
+
+### 类型检查
+
+```bash
+npm run check
+```
+
+### 构建生产版本
+
+```bash
+npm run build
+```
+
+## 页面导航
+
+| 页面 | 路径 | 功能 |
+|------|------|------|
+| 数据概览 | `/` | 统计卡片、效率趋势、异常分布、最近异常 |
+| 数据分析 | `/analysis` | 筛选联动、效率散点/MAP、温度序列、电压电流、异常记录、效率报告 |
+| 数据导入 | `/import` | 三类数据上传、字段映射、口径冲突、导入历史 |
+| 手动修正 | `/correction` | 待修正报告、原始/修正数据对比、修正审核日志 |
+| 配置管理 | `/config` | 数据口径配置、阈值配置、工况分段编辑、测试台管理 |
+
+## 测试数据
+
+项目根目录提供测试数据文件：
+
+- `test-voltage-current.csv` - 电压电流测试数据（含故意异常值）
+
+### 导入流程验证
+
+1. 打开 **数据导入** 页
+2. 选择「电压电流数据」类型
+3. 上传 `test-voltage-current.csv`
+4. 查看字段映射自动识别结果
+5. 校验结果应显示：
+   - 4 个未映射字段警告（转速、扭矩、备注、操作人员）
+   - 1 行电压超出范围警告（第 12 行 9999V）
+6. 确认导入成功
+7. 切到 **数据分析** 页，确认新数据已在图表中显示
+8. 刷新页面，确认数据点位置不变（无 Math.random）
+
+## 工业风设计规范
+
+- **背景色**：`#0F172A`（深空蓝）
+- **边框色**：`#334155`
+- **异常色**：
+  - 转速缺采：`#3B82F6`（提示蓝）
+  - 温升超限：`#F59E0B`（警示橙）
+  - 功率反号：`#EF4444`（危险红）
+  - 正常：`#10B981`（正常绿）
+- **字体**：
+  - 等宽：JetBrains Mono
+  - 中文：Noto Sans SC
+  - 显示：Orbitron
+
+## 目录结构
+
+```
+src/
+├── types/index.ts              # TypeScript 类型定义
+├── engines/                    # 4 个核心业务引擎
+│   ├── CaliberConsistencyEngine.ts   # 口径一致性
+│   ├── AnomalyDetectionEngine.ts     # 异常检测
+│   ├── SegmentCalculationEngine.ts   # 分段计算
+│   └── EfficiencyCalculationEngine.ts # 效率计算
+├── stores/                     # Zustand 状态管理
+│   ├── useAnalysisStore.ts
+│   └── useCorrectionStore.ts
+├── components/
+│   ├── ui/                     # 工业风 UI 组件库
+│   └── charts/                 # ECharts 图表封装
+├── pages/                      # 5 个业务页面
+├── services/
+│   ├── dataService.ts          # 数据服务层
+│   └── mockData.ts             # Mock 数据生成
+├── utils/helpers.ts            # 工具函数
+├── App.tsx                     # 路由 + 导航布局
+└── main.tsx                    # 入口文件
+```
+
+## 业务约束
+
+- **口径一致性优先**：材料数据冲突时**不自动修改**，由用户决定
+- **异常提示必须精确**：精确到材料、测试台、测温对象等具体对象
+- **分段联动必同步**：分段调整后所有依赖数据必须同步重算
+- **操作留痕**：所有手动修正和配置变更要有日志记录
+
+## 已知风险
+
+- Excel 日期序列号可能解析失败，建议使用文本格式 `YYYY-MM-DD HH:mm:ss`
+- 大数据量导入时异常检测可能较慢，建议分批导入
+- 字段映射配置页面刷新后丢失，相同格式文件需重新映射

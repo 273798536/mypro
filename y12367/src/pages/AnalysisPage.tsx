@@ -1,15 +1,19 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
+import * as XLSX from 'xlsx';
 import {
   AlertTriangle,
   BarChart3,
   Clock,
   Download,
+  FileSpreadsheet,
   RefreshCw,
   Settings,
   Thermometer,
   Zap,
   Gauge,
+  X,
+  Check,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
@@ -19,6 +23,8 @@ import { Button } from '@/components/ui/Button';
 import { Badge, AnomalyBadge, SeverityBadge } from '@/components/ui/Badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { Alert } from '@/components/ui/Alert';
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from '@/components/ui/Modal';
+import { Checkbox } from '@/components/ui/Checkbox';
 import { LineChart } from '@/components/charts/LineChart';
 import { ScatterChart } from '@/components/charts/ScatterChart';
 import { EfficiencyMapChart } from '@/components/charts/EfficiencyMapChart';
@@ -48,6 +54,16 @@ export const AnalysisPage: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState('efficiency');
   const [selectedSegmentId, setSelectedSegmentId] = React.useState<string | undefined>();
   const [showSegmentEditor, setShowSegmentEditor] = React.useState(false);
+  const [showExportModal, setShowExportModal] = React.useState(false);
+  const [exportOptions, setExportOptions] = React.useState({
+    efficiencyReports: true,
+    anomalyRecords: true,
+    voltageData: false,
+    temperatureData: false,
+    speedData: false,
+    format: 'xlsx' as 'xlsx' | 'csv',
+  });
+  const [isExporting, setIsExporting] = React.useState(false);
 
   React.useEffect(() => {
     initialize();
@@ -70,6 +86,143 @@ export const AnalysisPage: React.FC = () => {
       dataCaliber: 'all',
     });
   }, [setFilters]);
+
+  const formatDate = (date: Date | string): string => {
+    const d = new Date(date);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+
+  const handleExport = async () => {
+    setIsExporting(true);
+    try {
+      const wb = XLSX.utils.book_new();
+      const testBenchMap = new Map(testBenches.map((t) => [t.id, t.code]));
+      const materialMap = new Map(materials.map((m) => [m.id, m.code]));
+      const segmentMap = new Map(segments.map((s) => [s.id, s.name]));
+
+      if (exportOptions.efficiencyReports && filteredReports.length > 0) {
+        const rows = filteredReports.map((r) => ({
+          报告ID: r.id,
+          测试台: testBenchMap.get(r.testBenchId) ?? r.testBenchId,
+          材料: materialMap.get(r.materialId) ?? r.materialId,
+          工况段: segmentMap.get(r.segmentId) ?? r.segmentId,
+          开始时间: formatDate(r.startTime),
+          结束时间: formatDate(r.endTime),
+          输入功率_kW: Number(r.inputPower.toFixed(2)),
+          输出功率_kW: Number(r.outputPower.toFixed(2)),
+          效率_: Number(r.efficiency.toFixed(2)),
+          是否修正: r.isCorrected ? '是' : '否',
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = [
+          { wch: 18 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+          { wch: 20 }, { wch: 20 }, { wch: 12 }, { wch: 12 }, { wch: 10 }, { wch: 10 },
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, '效率报告');
+      }
+
+      if (exportOptions.anomalyRecords && filteredAnomalies.length > 0) {
+        const rows = filteredAnomalies.map((a) => ({
+          异常ID: a.id,
+          类型: a.type === 'speed_missing' ? '转速缺采' : a.type === 'temp_overlimit' ? '温升超限' : '功率反号',
+          严重程度: a.severity,
+          测试台: testBenchMap.get(a.testBenchId) ?? a.testBenchId,
+          材料: materialMap.get(a.materialId) ?? a.materialId,
+          工况段: segmentMap.get(a.segmentId) ?? a.segmentId,
+          时间: formatDate(a.timestamp),
+          实际值: a.actualValue,
+          阈值: a.threshold,
+          持续时间_ms: a.duration,
+          是否已处理: a.resolved ? '是' : '否',
+          详情: a.message,
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = [
+          { wch: 18 }, { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+          { wch: 20 }, { wch: 10 }, { wch: 10 }, { wch: 14 }, { wch: 12 }, { wch: 50 },
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, '异常记录');
+      }
+
+      if (exportOptions.voltageData && filteredVoltageData.length > 0) {
+        const rows = filteredVoltageData.map((v) => ({
+          记录ID: v.id,
+          测试台: testBenchMap.get(v.testBenchId) ?? v.testBenchId,
+          材料: materialMap.get(v.materialId) ?? v.materialId,
+          工况段: segmentMap.get(v.segmentId) ?? v.segmentId,
+          时间: formatDate(v.timestamp),
+          电压_V: Number(v.voltage.toFixed(2)),
+          电流_A: Number(v.current.toFixed(2)),
+          功率_W: Number(v.power.toFixed(2)),
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = [
+          { wch: 18 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+          { wch: 20 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, '电压电流');
+      }
+
+      if (exportOptions.temperatureData && filteredTemperatureData.length > 0) {
+        const objectTypeMap: Record<string, string> = {
+          winding: '绕组',
+          bearing: '轴承',
+          housing: '机壳',
+        };
+        const rows = filteredTemperatureData.map((t) => ({
+          记录ID: t.id,
+          测试台: testBenchMap.get(t.testBenchId) ?? t.testBenchId,
+          材料: materialMap.get(t.materialId) ?? t.materialId,
+          工况段: segmentMap.get(t.segmentId) ?? t.segmentId,
+          时间: formatDate(t.timestamp),
+          测温对象: objectTypeMap[t.objectType] ?? t.objectType,
+          温度_: Number(t.temperature.toFixed(2)),
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = [
+          { wch: 18 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+          { wch: 20 }, { wch: 10 }, { wch: 10 },
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, '温度序列');
+      }
+
+      if (exportOptions.speedData && filteredSpeedData.length > 0) {
+        const rows = filteredSpeedData.map((s) => ({
+          记录ID: s.id,
+          测试台: testBenchMap.get(s.testBenchId) ?? s.testBenchId,
+          材料: materialMap.get(s.materialId) ?? s.materialId,
+          工况段: segmentMap.get(s.segmentId) ?? s.segmentId,
+          时间: formatDate(s.timestamp),
+          转速_rpm: Number(s.speed.toFixed(2)),
+          扭矩_Nm: Number(s.torque.toFixed(2)),
+          是否缺采: s.isMissing ? '是' : '否',
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = [
+          { wch: 18 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+          { wch: 20 }, { wch: 12 }, { wch: 12 }, { wch: 10 },
+        ];
+        XLSX.utils.book_append_sheet(wb, ws, '转速扭矩');
+      }
+
+      const timestamp = format(new Date(), 'yyyyMMdd_HHmmss');
+      const fileName = `电机效率测试数据_${timestamp}.${exportOptions.format}`;
+
+      if (exportOptions.format === 'csv') {
+        const firstSheet = wb.SheetNames[0];
+        if (firstSheet) {
+          XLSX.writeFile(wb, fileName, { bookType: 'csv' });
+        }
+      } else {
+        XLSX.writeFile(wb, fileName);
+      }
+
+      setShowExportModal(false);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const temperatureChartData = React.useMemo(() => {
     const windingData = filteredTemperatureData
@@ -209,11 +362,113 @@ export const AnalysisPage: React.FC = () => {
             variant="primary"
             size="sm"
             icon={<Download className="w-4 h-4" />}
+            onClick={() => setShowExportModal(true)}
           >
             导出报告
           </Button>
         </div>
       </div>
+
+      <Modal open={showExportModal} onClose={() => !isExporting && setShowExportModal(false)}>
+        <ModalContent maxWidth="md">
+          <ModalHeader>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-industrial-text">导出数据</h3>
+              {!isExporting && (
+                <button
+                  onClick={() => setShowExportModal(false)}
+                  className="text-industrial-text-muted hover:text-industrial-text"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-industrial-text mb-3">选择导出内容</label>
+                <div className="space-y-3">
+                  <Checkbox
+                    label={`效率报告 (${filteredReports.length} 条)`}
+                    checked={exportOptions.efficiencyReports}
+                    onChange={(e) => setExportOptions({ ...exportOptions, efficiencyReports: e.target.checked })}
+                  />
+                  <Checkbox
+                    label={`异常记录 (${filteredAnomalies.length} 条)`}
+                    checked={exportOptions.anomalyRecords}
+                    onChange={(e) => setExportOptions({ ...exportOptions, anomalyRecords: e.target.checked })}
+                  />
+                  <Checkbox
+                    label={`电压电流数据 (${filteredVoltageData.length} 条)`}
+                    checked={exportOptions.voltageData}
+                    onChange={(e) => setExportOptions({ ...exportOptions, voltageData: e.target.checked })}
+                  />
+                  <Checkbox
+                    label={`温度序列数据 (${filteredTemperatureData.length} 条)`}
+                    checked={exportOptions.temperatureData}
+                    onChange={(e) => setExportOptions({ ...exportOptions, temperatureData: e.target.checked })}
+                  />
+                  <Checkbox
+                    label={`转速扭矩数据 (${filteredSpeedData.length} 条)`}
+                    checked={exportOptions.speedData}
+                    onChange={(e) => setExportOptions({ ...exportOptions, speedData: e.target.checked })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-industrial-text mb-3">导出格式</label>
+                <div className="flex gap-4">
+                  <Button
+                    variant={exportOptions.format === 'xlsx' ? 'primary' : 'default'}
+                    size="sm"
+                    icon={<FileSpreadsheet className="w-4 h-4" />}
+                    onClick={() => setExportOptions({ ...exportOptions, format: 'xlsx' })}
+                  >
+                    Excel (.xlsx)
+                  </Button>
+                  <Button
+                    variant={exportOptions.format === 'csv' ? 'primary' : 'default'}
+                    size="sm"
+                    icon={<FileSpreadsheet className="w-4 h-4" />}
+                    onClick={() => setExportOptions({ ...exportOptions, format: 'csv' })}
+                  >
+                    CSV (.csv)
+                  </Button>
+                </div>
+              </div>
+              {exportOptions.format === 'csv' && (
+                <Alert variant="info" title="CSV 格式说明">
+                  多工作表数据将只导出第一个选中的工作表。如需导出全部数据，请选择 Excel 格式。
+                </Alert>
+              )}
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="default"
+              onClick={() => setShowExportModal(false)}
+              disabled={isExporting}
+            >
+              取消
+            </Button>
+            <Button
+              variant="primary"
+              icon={isExporting ? undefined : <Check className="w-4 h-4" />}
+              onClick={handleExport}
+              disabled={isExporting || !(
+                exportOptions.efficiencyReports ||
+                exportOptions.anomalyRecords ||
+                exportOptions.voltageData ||
+                exportOptions.temperatureData ||
+                exportOptions.speedData
+              )}
+            >
+              {isExporting ? '导出中...' : '开始导出'}
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
       {error && (
         <Alert variant="danger" title="错误">
