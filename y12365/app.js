@@ -763,10 +763,28 @@ ${data.notes}
         const allInterpPts = this.interpolateTemperature(data.temperaturePoints, this.currentTime);
         const filteredIds = new Set(this.getCurrentInterpolatedPoints().map(p => p.id));
 
+        const quote = (val) => {
+            const str = String(val === null || val === undefined ? '' : val);
+            if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                return '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        };
+
         const formatRow = (p, status) => {
             const originalMatch = data.temperaturePoints.find(op => op.id === p.id && op.time === this.getCurrentTimePoint());
             const isInterpolated = !originalMatch || Math.abs(p.temp - originalMatch.temp) > 0.05;
-            return `${p.id},${Math.floor(this.currentTime)},${p.x},${p.y},${p.temp.toFixed(2)},${p.source},${p.flagged ? p.flagReason : ''},${isInterpolated ? '插值' : '原始'},${status}`;
+            return [
+                quote(p.id),
+                quote(Math.floor(this.currentTime)),
+                quote(p.x),
+                quote(p.y),
+                quote(p.temp.toFixed(2)),
+                quote(p.source),
+                quote(p.flagged ? p.flagReason : ''),
+                quote(isInterpolated ? '插值' : '原始'),
+                quote(status)
+            ].join(',');
         };
 
         let csv = 'ID,时间(秒),X坐标,Y坐标,温度(°C),来源,标记,数据类型,筛选状态\n';
@@ -776,11 +794,11 @@ ${data.notes}
             if (isFiltered && !inFilter) {
                 csv += '#' + formatRow(p, '已筛除') + '\n';
             } else {
-                csv += formatRow(p, isFiltered ? '保留' : '-');
+                csv += formatRow(p, isFiltered ? '保留' : '-') + '\n';
             }
         });
 
-        csv += `\n元数据\n`;
+        csv += '\n元数据\n';
         csv += `实验编号,${data.metadata.sampleId}\n`;
         csv += `实验日期,${data.metadata.date}\n`;
         csv += `操作人员,${data.metadata.operator}\n`;
@@ -794,8 +812,8 @@ ${data.notes}
         csv += `全量点数,${allInterpPts.length}\n`;
         csv += `筛选后点数,${filteredIds.size}\n`;
         csv += `异常点数,${allInterpPts.filter(p => p.flagged).length}\n`;
-        csv += `\n说明\n`;
-        csv += `以#开头的行表示被当前筛选条件排除的数据点，可追溯但不应纳入筛选统计\n`;
+        csv += '\n说明\n';
+        csv += '以#开头的行表示被当前筛选条件排除的数据点,可追溯但不应纳入筛选统计\n';
 
         const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);
