@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Button, Card, Upload, Progress, Tag, Tooltip, Row, Col, Statistic, Divider, message, Alert } from 'antd';
+import { Button, Card, Upload, Progress, Tag, Tooltip, Row, Col, Statistic, Divider, message, Alert, Select } from 'antd';
 import { UploadOutlined, PlayCircleOutlined, ReloadOutlined, InfoCircleOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import type { UploadProps } from 'antd';
 import { useAppStore } from '../store/appStore';
-import { generateMockCurveData, diagnoseCurve, calculateHash, generateId, parseIVCurveCSV, parseIVCurveJSON, verifyDiagnosisConsistency, exportDiagnosisToCSV, exportDiagnosisToJSON, downloadFile } from '../utils/diagnosis';
-import type { IVCurveData, DiagnosisResult } from '../types';
+import { generateMockCurveData, diagnoseCurve, calculateHash, generateId, parseIVCurveCSV, parseIVCurveJSON, verifyDiagnosisConsistency, exportDiagnosisToCSV, exportDiagnosisToJSON, downloadFile, getAverageTemperature } from '../utils/diagnosis';
+import type { IVCurveData, DiagnosisResult, DiagnosisContext } from '../types';
+
+const { Option } = Select;
 
 const parameterLabels: Record<string, string> = {
   voc: '开路电压(Voc)',
@@ -28,10 +30,30 @@ const parameterUnits: Record<string, string> = {
 };
 
 export default function DiagnosisPage() {
-  const { curves, addCurve, selectedCurve, setSelectedCurve, addDiagnosis, diagnoses, setSelectedDiagnosis } = useAppStore();
+  const { curves, addCurve, selectedCurve, setSelectedCurve, addDiagnosis, diagnoses, setSelectedDiagnosis, events } = useAppStore();
   const [loading, setLoading] = useState(false);
   const [diagnosisResult, setDiagnosisResult] = useState<DiagnosisResult | null>(null);
   const [reverifyResult, setReverifyResult] = useState<{ isConsistent: boolean; differences: string[] } | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
+  const selectedEvent = events.find(e => e.id === selectedEventId) || null;
+
+  const buildDiagnosisContext = (): DiagnosisContext | undefined => {
+    if (!selectedEvent) return undefined;
+    
+    const tempRecords = selectedEvent.clues
+      .filter(c => c.type === 'temperature' && c.temperatureRecords)
+      .flatMap(c => c.temperatureRecords || []);
+    
+    const hasShadingPhoto = selectedEvent.clues.some(c => c.type === 'photo' && c.photoData);
+    
+    return {
+      eventId: selectedEvent.id,
+      eventTitle: selectedEvent.title,
+      temperatureRecords: tempRecords.length > 0 ? tempRecords : undefined,
+      hasShadingPhoto,
+    };
+  };
 
   const handleGenerateMock = () => {
     const curve = generateMockCurveData();
@@ -95,8 +117,11 @@ export default function DiagnosisPage() {
     setLoading(true);
     setReverifyResult(null);
     
+    const context = buildDiagnosisContext();
+    const contextInfo = context?.eventTitle ? `（关联事件：${context.eventTitle}）` : '';
+    
     setTimeout(() => {
-      const result = diagnoseCurve(selectedCurve);
+      const result = diagnoseCurve(selectedCurve, context);
       const diagnosis: DiagnosisResult = {
         id: generateId(),
         curveId: selectedCurve.id,
@@ -106,13 +131,14 @@ export default function DiagnosisPage() {
         abnormalities: result.abnormalities,
         traceNodes: result.traceNodes,
         faultLevel: result.faultLevel,
+        context: result.context,
         createdAt: Date.now(),
       };
       addDiagnosis(diagnosis);
       setDiagnosisResult(diagnosis);
       setSelectedDiagnosis(diagnosis);
       setLoading(false);
-      message.success('诊断完成');
+      message.success(`诊断完成${contextInfo}`);
     }, 1500);
   };
 
@@ -121,8 +147,10 @@ export default function DiagnosisPage() {
     
     setLoading(true);
     
+    const context = buildDiagnosisContext();
+    
     setTimeout(() => {
-      const result = diagnoseCurve(selectedCurve);
+      const result = diagnoseCurve(selectedCurve, context);
       const newDiagnosis: DiagnosisResult = {
         id: generateId(),
         curveId: selectedCurve.id,
@@ -248,6 +276,35 @@ export default function DiagnosisPage() {
         </div>
       </div>
 
+      {events.length > 0 && (
+        <Card size="small" title="关联诊断事件（可选）">
+          <div className="flex items-center gap-4">
+            <Select
+              style={{ width: 300 }}
+              placeholder="选择要关联的诊断事件"
+              value={selectedEventId || undefined}
+              onChange={(value) => {
+                setSelectedEventId(value);
+                setDiagnosisResult(null);
+              }}
+              allowClear
+            >
+              {events.map((event) => (
+                <Option key={event.id} value={event.id}>
+                  {event.title} ({event.clues.length}条线索)
+                </Option>
+              ))}
+            </Select>
+            {selectedEvent && (
+              <div className="text-sm text-gray-500">
+                温度记录: {selectedEvent.clues.filter(c => c.type === 'temperature').length}份 | 
+                遮挡照片: {selectedEvent.clues.filter(c => c.type === 'photo').length}张
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
       <Row gutter={16}>
         <Col span={8}>
           <Card title="IV曲线列表" size="small" className="h-64 overflow-auto">
@@ -371,17 +428,35 @@ export default function DiagnosisPage() {
 
         {diagnosisResult && !loading && (
           <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <span className="text-gray-600">诊断结果:</span>
-              <Tag color={getFaultLevelColor(diagnosisResult.faultLevel)}>
-                {getFaultLevelText(diagnosisResult.faultLevel)}
-              </Tag>
-              <span className="text-gray-400 text-sm">
-                输入校验哈希: {diagnosisResult.inputHash}
-              </span>
-              <span className="text-gray-400 text-sm">
-                输出校验哈希: {diagnosisResult.outputHash}
-              </span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="text-gray-600">诊断结果:</span>
+                <Tag color={getFaultLevelColor(diagnosisResult.faultLevel)}>
+                  {getFaultLevelText(diagnosisResult.faultLevel)}
+                </Tag>
+                <span className="text-gray-400 text-sm">
+                  输入校验哈希: {diagnosisResult.inputHash}
+                </span>
+                <span className="text-gray-400 text-sm">
+                  输出校验哈希: {diagnosisResult.outputHash}
+                </span>
+              </div>
+              {diagnosisResult.context && (
+                <div className="flex items-center gap-4 flex-wrap text-sm">
+                  <span className="text-gray-500">关联上下文:</span>
+                  {diagnosisResult.context.eventTitle && (
+                    <Tag color="blue">事件: {diagnosisResult.context.eventTitle}</Tag>
+                  )}
+                  {diagnosisResult.context.temperatureRecords && diagnosisResult.context.temperatureRecords.length > 0 && (
+                    <Tag color="green">
+                      温度记录: {diagnosisResult.context.temperatureRecords.length}条
+                    </Tag>
+                  )}
+                  {diagnosisResult.context.hasShadingPhoto && (
+                    <Tag color="orange">存在遮挡照片</Tag>
+                  )}
+                </div>
+              )}
             </div>
 
             <Divider orientation="left">特征参数</Divider>

@@ -30,6 +30,13 @@ export interface Abnormality {
   explanation: string;
 }
 
+export interface DiagnosisContext {
+  temperatureRecords?: TemperatureRecord[];
+  hasShadingPhoto?: boolean;
+  eventId?: string;
+  eventTitle?: string;
+}
+
 export interface DiagnosisResult {
   id: string;
   curveId: string;
@@ -47,6 +54,7 @@ export interface DiagnosisResult {
   abnormalities: Abnormality[];
   traceNodes: TraceNode[];
   faultLevel: 'normal' | 'warning' | 'error';
+  context?: DiagnosisContext;
   createdAt: number;
 }
 

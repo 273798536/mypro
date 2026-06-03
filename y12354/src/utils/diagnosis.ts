@@ -1,4 +1,4 @@
-import type { IVCurveData, TraceNode, Abnormality, DiagnosisResult, TemperatureRecord } from '../types';
+import type { IVCurveData, TraceNode, Abnormality, DiagnosisResult, TemperatureRecord, DiagnosisContext } from '../types';
 
 export function calculateHash(data: any): string {
   const str = JSON.stringify(data);
@@ -197,7 +197,7 @@ export function faultClassification(
   };
 }
 
-export function diagnoseCurve(curve: IVCurveData): {
+export function diagnoseCurve(curve: IVCurveData, context?: DiagnosisContext): {
   parameters: {
     voc: number;
     isc: number;
@@ -211,11 +211,17 @@ export function diagnoseCurve(curve: IVCurveData): {
   traceNodes: TraceNode[];
   faultLevel: 'normal' | 'warning' | 'error';
   outputHash: string;
+  context?: DiagnosisContext;
 } {
   const traceNodes: TraceNode[] = [];
   
   const fittingResult = curveFitting(curve.voltage, curve.current);
   traceNodes.push(fittingResult.traceNode);
+  
+  let effectiveTemperature = curve.temperature;
+  if (context?.temperatureRecords && context.temperatureRecords.length > 0) {
+    effectiveTemperature = getAverageTemperature(context.temperatureRecords);
+  }
   
   const correctionResult = temperatureCorrection(
     {
@@ -224,7 +230,7 @@ export function diagnoseCurve(curve: IVCurveData): {
       vm: fittingResult.vm,
       im: fittingResult.im,
     },
-    curve.temperature
+    effectiveTemperature
   );
   traceNodes.push(correctionResult.traceNode);
   
@@ -235,6 +241,19 @@ export function diagnoseCurve(curve: IVCurveData): {
     rs: fittingResult.rs,
     rsh: fittingResult.rsh,
   });
+  
+  if (context?.hasShadingPhoto) {
+    classificationResult.abnormalities.push({
+      id: generateId(),
+      parameter: 'shading',
+      value: 1,
+      threshold: 0,
+      severity: 'warning',
+      description: '存在遮挡照片佐证',
+      explanation: '已上传遮挡现场照片，建议结合图像进一步确认遮挡程度和对发电效率的影响。',
+    });
+  }
+  
   traceNodes.push(classificationResult.traceNode);
   
   const parameters = {
@@ -247,7 +266,7 @@ export function diagnoseCurve(curve: IVCurveData): {
     rsh: fittingResult.rsh,
   };
   
-  const outputHash = calculateHash(parameters);
+  const outputHash = calculateHash({ parameters, context });
   
   return {
     parameters,
@@ -255,6 +274,7 @@ export function diagnoseCurve(curve: IVCurveData): {
     traceNodes,
     faultLevel: classificationResult.faultLevel,
     outputHash,
+    context,
   };
 }
 
@@ -489,6 +509,20 @@ export function exportDiagnosisToCSV(diagnosis: DiagnosisResult, curve: IVCurveD
   csv += `输出哈希,${diagnosis.outputHash}\n`;
   csv += `异常数量,${diagnosis.abnormalities.length}\n`;
   
+  if (diagnosis.context) {
+    csv += '\n';
+    csv += '关联线索\n';
+    if (diagnosis.context.eventTitle) {
+      csv += `关联事件,${diagnosis.context.eventTitle}\n`;
+    }
+    if (diagnosis.context.temperatureRecords) {
+      csv += `温度记录,${diagnosis.context.temperatureRecords.length}条\n`;
+    }
+    if (diagnosis.context.hasShadingPhoto) {
+      csv += `遮挡照片,已上传\n`;
+    }
+  }
+  
   if (diagnosis.abnormalities.length > 0) {
     csv += '\n';
     csv += '异常参数\n';
@@ -509,8 +543,8 @@ export function exportDiagnosisToCSV(diagnosis: DiagnosisResult, curve: IVCurveD
 }
 
 export function exportDiagnosisToJSON(diagnosis: DiagnosisResult, curve: IVCurveData): string {
-  const exportData = {
-    exportVersion: '1.0',
+  const exportData: any = {
+    exportVersion: '1.1',
     exportTime: new Date().toISOString(),
     curve: {
       serialNumber: curve.serialNumber,
@@ -546,6 +580,16 @@ export function exportDiagnosisToJSON(diagnosis: DiagnosisResult, curve: IVCurve
       })),
     },
   };
+  
+  if (diagnosis.context) {
+    exportData.context = {
+      eventId: diagnosis.context.eventId,
+      eventTitle: diagnosis.context.eventTitle,
+      hasShadingPhoto: diagnosis.context.hasShadingPhoto,
+      temperatureRecordCount: diagnosis.context.temperatureRecords?.length || 0,
+      temperatureRecords: diagnosis.context.temperatureRecords,
+    };
+  }
   
   return JSON.stringify(exportData, null, 2);
 }
