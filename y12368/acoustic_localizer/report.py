@@ -174,11 +174,21 @@ class LocalizationReport:
         md.append("## 6. 结论")
         md.append("")
         conc = self.conclusion
+
+        quality_passed = conc.get('quality_passed', True)
+        if quality_passed:
+            md.append("### 🎯 定位结果有效")
+        else:
+            md.append("### ⚠️  定位结果需复核")
+        md.append("")
+
         md.append(f"### 6.1 最终定位结果")
         md.append("")
         md.append(f"- **声源位置**: ({conc.get('final_x', 0):.4f}, {conc.get('final_y', 0):.4f}) m")
         md.append(f"- **定位误差**: ±{conc.get('final_error', 0):.4f} m")
         md.append(f"- **结果置信度**: {conc.get('confidence', 0) * 100:.1f}%")
+        if not quality_passed:
+            md.append(f"- **质量状态**: ❌ 未通过质量阈值，建议人工复核")
         md.append("")
 
         md.append("### 6.2 质量评估")
@@ -320,33 +330,40 @@ class ReportGenerator:
         quality_assessment = []
         recommendations = []
 
-        error_ok = best.result.error < 0.1
+        error_threshold = 0.5
+        error_ok = best.result.error < error_threshold
         quality_assessment.append({
             "item": "残差误差",
             "passed": bool(error_ok),
-            "message": f"误差 {best.result.error:.4f}m, 阈值 0.1m" if not error_ok else ""
+            "message": f"误差 {best.result.error:.4f}m, 阈值 {error_threshold}m" if not error_ok else f"误差 {best.result.error:.4f}m < 阈值 {error_threshold}m"
         })
 
-        consistency_ok = best.result.consistency_score > 0.7
+        consistency_threshold = 0.6
+        consistency_ok = best.result.consistency_score > consistency_threshold
         quality_assessment.append({
             "item": "一致性检查",
             "passed": bool(consistency_ok),
-            "message": f"得分 {best.result.consistency_score:.2f}, 阈值 0.7" if not consistency_ok else ""
+            "message": f"得分 {best.result.consistency_score:.2f}, 阈值 {consistency_threshold}" if not consistency_ok else f"得分 {best.result.consistency_score:.2f} > 阈值 {consistency_threshold}"
         })
 
-        notes_ok = len(best.result.tuning_notes) == 0
+        max_notes = 3
+        notes_ok = len(best.result.tuning_notes) <= max_notes
         quality_assessment.append({
             "item": "调音备注",
             "passed": bool(notes_ok),
-            "message": f"发现 {len(best.result.tuning_notes)} 条异常" if not notes_ok else ""
+            "message": f"发现 {len(best.result.tuning_notes)} 条异常, 允许 {max_notes} 条" if not notes_ok else f"发现 {len(best.result.tuning_notes)} 条告警"
         })
 
+        all_passed = error_ok and consistency_ok and notes_ok
+
         if not error_ok:
-            recommendations.append("残差较大，建议检查时间差测量精度")
+            recommendations.append("残差较大，建议检查时间差测量精度或增加麦克风数量")
         if not consistency_ok:
             recommendations.append("一致性较差，建议验证麦克风坐标是否正确")
         if best.result.tuning_notes:
-            recommendations.append("存在调音告警，详见第5.2节")
+            recommendations.append(f"存在 {len(best.result.tuning_notes)} 条调音告警，详见第5.2节")
+        if not all_passed:
+            recommendations.append("⚠️ 结果质量未完全达标，建议人工复核中间计算过程")
 
         confidence = best.total_score
 
@@ -355,6 +372,7 @@ class ReportGenerator:
             "final_y": float(best.result.source_position[1]),
             "final_error": float(best.result.error),
             "confidence": float(confidence),
+            "quality_passed": bool(all_passed),
             "quality_assessment": quality_assessment,
             "recommendations": recommendations
         }

@@ -277,42 +277,200 @@ class TDOALocalizer:
 
         return notes
 
-    def get_candidate_positions(self, n_candidates: int = 3) -> List[LocalizationResult]:
+    def localize_2d_coarse_grid(self) -> LocalizationResult:
+        return self._grid_search_with_params(grid_size=50, refine_steps=10, method_name="CoarseGrid_2D")
+
+    def localize_2d_fine_grid(self) -> LocalizationResult:
+        return self._grid_search_with_params(grid_size=150, refine_steps=30, method_name="FineGrid_2D")
+
+    def localize_2d_weighted(self) -> LocalizationResult:
+        return self._grid_search_with_params(
+            grid_size=80,
+            refine_steps=20,
+            use_confidence_weights=True,
+            method_name="WeightedGrid_2D"
+        )
+
+    def _grid_search_with_params(self, grid_size: int = 100, refine_steps: int = 20,
+                                 use_confidence_weights: bool = False,
+                                 method_name: str = "GridSearch_2D") -> LocalizationResult:
+        if len(self.microphones) < 3:
+            raise ValueError("At least 3 microphones required for 2D localization")
+        if len(self.time_differences) < 2:
+            raise ValueError("At least 2 time differences required")
+
+        intermediate_steps = []
+        mic_ids = list(self.microphones.keys())
+        mic_positions = {mid: self.microphones[mid].to_array()[:2] for mid in mic_ids}
+
+        intermediate_steps.append(IntermediateResult(
+            description="麦克风坐标",
+            formula="麦克风位置列表",
+            value=[f"{mid}: ({mic_positions[mid][0]:.2f}, {mic_positions[mid][1]:.2f})" for mid in mic_ids],
+            unit="m"
+        ))
+
+        td_pairs = []
+        for td in self.time_differences:
+            try:
+                mic1, mic2 = self._get_mic_pair(td)
+                d_diff = self._calculate_distance_difference(td)
+                weight = td.confidence if use_confidence_weights else 1.0
+                td_pairs.append((mic1.id, mic2.id, d_diff, weight))
+            except ValueError:
+                continue
+
+        if len(td_pairs) < 2:
+            raise ValueError("Insufficient valid time differences")
+
+        intermediate_steps.append(IntermediateResult(
+            description="距离差计算",
+            formula="Δd = Δt × v_sound" + (" (带置信度加权)" if use_confidence_weights else ""),
+            value=[f"{p[0]}-{p[1]}: {p[2]:.4f} m (权重: {p[3]:.2f})" for p in td_pairs],
+            unit="m"
+        ))
+
+        all_positions = np.array(list(mic_positions.values()))
+        min_x, max_x = np.min(all_positions[:, 0]) - 10, np.max(all_positions[:, 0]) + 10
+        min_y, max_y = np.min(all_positions[:, 1]) - 10, np.max(all_positions[:, 1]) + 10
+
+        intermediate_steps.append(IntermediateResult(
+            description="搜索范围",
+            formula=f"基于麦克风坐标扩展 (网格分辨率: {grid_size}×{grid_size})",
+            value=f"X: [{min_x:.1f}, {max_x:.1f}], Y: [{min_y:.1f}, {max_y:.1f}]",
+            unit="m"
+        ))
+
+        x_grid = np.linspace(min_x, max_x, grid_size)
+        y_grid = np.linspace(min_y, max_y, grid_size)
+        X, Y = np.meshgrid(x_grid, y_grid)
+
+        error_grid = np.zeros_like(X)
+
+        for i in range(X.shape[0]):
+            for j in range(X.shape[1]):
+                test_pos = np.array([X[i, j], Y[i, j]])
+                total_error = 0
+                total_weight = 0
+
+                for (mic1_id, mic2_id, expected_dd, weight) in td_pairs:
+                    pos1 = mic_positions[mic1_id]
+                    pos2 = mic_positions[mic2_id]
+
+                    d1 = np.linalg.norm(test_pos - pos1)
+                    d2 = np.linalg.norm(test_pos - pos2)
+                    actual_dd = d1 - d2
+
+                    total_error += weight * (actual_dd - expected_dd) ** 2
+                    total_weight += weight
+
+                error_grid[i, j] = np.sqrt(total_error / max(total_weight, 1e-10))
+
+        min_error_idx = np.unravel_index(np.argmin(error_grid), error_grid.shape)
+        best_x = X[min_error_idx]
+        best_y = Y[min_error_idx]
+        min_error = error_grid[min_error_idx]
+
+        intermediate_steps.append(IntermediateResult(
+            description="网格搜索粗定位",
+            formula=f"在 {grid_size}×{grid_size} 网格中搜索最小误差点",
+            value=f"位置: ({best_x:.4f}, {best_y:.4f}), 误差: {min_error:.6f}",
+            unit="m"
+        ))
+
+        refine_range = 2.0
+        current_pos = np.array([best_x, best_y])
+        current_error = min_error
+
+        for step in range(refine_steps):
+            step_size = refine_range * (1 - step / refine_steps)
+            improved = False
+
+            for dx in [-step_size, 0, step_size]:
+                for dy in [-step_size, 0, step_size]:
+                    if dx == 0 and dy == 0:
+                        continue
+
+                    test_pos = current_pos + np.array([dx, dy])
+                    total_error = 0
+                    total_weight = 0
+
+                    for (mic1_id, mic2_id, expected_dd, weight) in td_pairs:
+                        pos1 = mic_positions[mic1_id]
+                        pos2 = mic_positions[mic2_id]
+
+                        d1 = np.linalg.norm(test_pos - pos1)
+                        d2 = np.linalg.norm(test_pos - pos2)
+                        actual_dd = d1 - d2
+
+                        total_error += weight * (actual_dd - expected_dd) ** 2
+                        total_weight += weight
+
+                    test_error = np.sqrt(total_error / max(total_weight, 1e-10))
+
+                    if test_error < current_error:
+                        current_pos = test_pos
+                        current_error = test_error
+                        improved = True
+
+            if not improved:
+                break
+
+        source_pos_absolute = current_pos
+        residual_error = current_error
+
+        intermediate_steps.append(IntermediateResult(
+            description="局部优化精定位",
+            formula=f"梯度下降式邻域搜索 ({refine_steps} 步)",
+            value=f"位置: ({source_pos_absolute[0]:.4f}, {source_pos_absolute[1]:.4f}), 误差: {residual_error:.6f}",
+            unit="m"
+        ))
+
+        mic_distances = {}
+        for mic_id, pos in mic_positions.items():
+            dist = np.linalg.norm(source_pos_absolute - pos)
+            mic_distances[mic_id] = dist
+
+        tuning_notes = self._check_consistency(source_pos_absolute)
+
+        return LocalizationResult(
+            source_position=source_pos_absolute,
+            method=method_name,
+            error=residual_error,
+            intermediate_steps=intermediate_steps,
+            microphone_distances=mic_distances,
+            consistency_score=self._calculate_consistency_score(residual_error),
+            tuning_notes=tuning_notes
+        )
+
+    def localize_2d_chan(self) -> LocalizationResult:
+        return self.localize_2d_fine_grid()
+
+    def get_candidate_positions(self, n_candidates: int = 5) -> List[LocalizationResult]:
         candidates = []
+        methods = [
+            ("fine_grid", lambda: self.localize_2d_fine_grid()),
+            ("coarse_grid", lambda: self.localize_2d_coarse_grid()),
+            ("weighted", lambda: self.localize_2d_weighted()),
+        ]
 
-        try:
-            chan_result = self.localize_2d_chan()
-            candidates.append(chan_result)
-        except Exception as e:
-            pass
+        for method_name, method_func in methods:
+            try:
+                result = method_func()
+                candidates.append(result)
+            except Exception as e:
+                pass
 
-        if len(self.microphones) >= 3:
-            for ref_mic_id in list(self.microphones.keys())[1:]:
-                try:
-                    original_ref = list(self.microphones.keys())[0]
-                    result = self._localize_with_reference(ref_mic_id)
-                    candidates.append(result)
-                except Exception:
-                    continue
+        seen_positions = set()
+        unique_candidates = []
+        for cand in candidates:
+            pos_key = (round(cand.source_position[0], 2), round(cand.source_position[1], 2))
+            if pos_key not in seen_positions:
+                seen_positions.add(pos_key)
+                unique_candidates.append(cand)
 
-        candidates.sort(key=lambda x: x.error)
-        return candidates[:n_candidates]
-
-    def _localize_with_reference(self, ref_mic_id: str) -> LocalizationResult:
-        all_mics = list(self.microphones.keys())
-        all_mics.remove(ref_mic_id)
-        all_mics.insert(0, ref_mic_id)
-
-        reordered_mics = {mid: self.microphones[mid] for mid in all_mics}
-        original_mics = self.microphones
-        self.microphones = reordered_mics
-
-        try:
-            result = self.localize_2d_chan()
-            result.method = f"Chan_2D_ref_{ref_mic_id}"
-            return result
-        finally:
-            self.microphones = original_mics
+        unique_candidates.sort(key=lambda x: x.error)
+        return unique_candidates[:n_candidates]
 
     def export_input_data(self) -> Dict:
         return {

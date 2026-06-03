@@ -1,0 +1,29 @@
+description: 质量不通过的测试数据 - 用于验证边界情况
+speed_of_sound: 343.0
+microphones:
+- id: MIC1
+  x: 0.0
+  y: 0.0
+- id: MIC2
+  x: 10.0
+  y: 0.0
+- id: MIC3
+  x: 5.0
+  y: 8.0
+time_differences:
+- mic1: MIC1
+  mic2: MIC2
+  delta_t: 0.020
+  confidence: 0.5
+  notes: 故意设置错误的时间差数据
+- mic1: MIC1
+  mic2: MIC3
+  delta_t: -0.015
+  confidence: 0.4
+  notes: 故意设置错误的时间差数据
+tuning_notes:
+- author: 系统
+  category: calibration
+  severity: warning
+  content: 时间差数据存在异常，可能影响定位精度
+  resolved: false

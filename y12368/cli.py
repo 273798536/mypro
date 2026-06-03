@@ -118,7 +118,16 @@ def locate(config, output, name, description, formats):
                    f"得分: {cand['score']:.4f}")
 
     click.echo("")
-    click.echo("✅ 完成!")
+    quality_passed = report.conclusion.get('quality_passed', True)
+    if quality_passed:
+        click.echo("✅ 质量评估通过，定位结果有效")
+    else:
+        click.echo("⚠️  质量评估未完全通过，建议人工复核报告")
+        for rec in report.conclusion.get('recommendations', []):
+            click.echo(f"   - {rec}")
+
+    click.echo("")
+    click.echo("📍 定位流程完成!")
 
 
 @cli.command()
