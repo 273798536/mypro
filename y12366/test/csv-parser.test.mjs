@@ -6,20 +6,7 @@ import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-interface AccelerationRecord {
-  timestamp: number
-  value: number
-  saturated: boolean
-}
-
-interface ParseResult<T> {
-  success: boolean
-  data: T[]
-  errors: string[]
-  warnings: string[]
-}
-
-function parseTimestamp(row, rowIndex: number, baseTime: number): number {
+function parseTimestamp(row, rowIndex, baseTime) {
   const tsRaw = row['timestamp'] ?? row['time'] ?? row['Time'] ?? row['时间'] ?? row['t']
   if (tsRaw === undefined || tsRaw === null || tsRaw === '') {
     return baseTime + rowIndex * 20
@@ -34,7 +21,7 @@ function parseTimestamp(row, rowIndex: number, baseTime: number): number {
   return tsNum
 }
 
-function parseValue(row, possibleKeys: string[]): number {
+function parseValue(row, possibleKeys) {
   for (const key of possibleKeys) {
     if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
       const val = Number(row[key])
@@ -46,7 +33,7 @@ function parseValue(row, possibleKeys: string[]): number {
   return 0
 }
 
-function parseSaturated(row): boolean {
+function parseSaturated(row) {
   const satRaw = row['saturated'] ?? row['饱和'] ?? row['sat'] ?? row['overflow']
   if (satRaw === undefined || satRaw === null) return false
   if (typeof satRaw === 'boolean') return satRaw
@@ -55,10 +42,10 @@ function parseSaturated(row): boolean {
   return strVal === 'true' || strVal === '1' || strVal === 'yes' || strVal === '是'
 }
 
-function parseAccelerationCSVFromString(csvContent: string): Promise<ParseResult<AccelerationRecord>> {
+function parseAccelerationCSVFromString(csvContent) {
   return new Promise((resolve) => {
-    const warnings: string[] = []
-    const errors: string[] = []
+    const warnings = []
+    const errors = []
 
     Papa.parse(csvContent, {
       header: true,
@@ -66,7 +53,7 @@ function parseAccelerationCSVFromString(csvContent: string): Promise<ParseResult
       skipEmptyLines: true,
       complete: (results) => {
         try {
-          const rawRows = results.data as Record<string, unknown>[]
+          const rawRows = results.data
 
           if (rawRows.length === 0) {
             errors.push('CSV 文件为空或没有有效数据行')
@@ -86,7 +73,7 @@ function parseAccelerationCSVFromString(csvContent: string): Promise<ParseResult
           }
 
           const baseTime = Date.now()
-          const records: AccelerationRecord[] = []
+          const records = []
 
           for (let i = 0; i < rawRows.length; i++) {
             const row = rawRows[i]
@@ -125,7 +112,7 @@ function parseAccelerationCSVFromString(csvContent: string): Promise<ParseResult
           resolve({ success: false, data: [], errors, warnings })
         }
       },
-      error: (error: Error) => {
+      error: (error) => {
         errors.push(`文件读取失败: ${error.message}`)
         resolve({ success: false, data: [], errors, warnings })
       },
@@ -133,33 +120,41 @@ function parseAccelerationCSVFromString(csvContent: string): Promise<ParseResult
   })
 }
 
+const testCases = [
+  {
+    name: '测试1: timestamp=0 开头的边界场景（触发原bug的场景）',
+    file: '../public/test-samples/sample-accel-zero-start.csv',
+    expectWarning: null,
+    expectSuccess: true,
+    expectRecords: 51,
+  },
+  {
+    name: '测试2: 缺失时间列的场景（地震波CSV常见格式）',
+    file: '../public/test-samples/sample-accel-chinese-no-time.csv',
+    expectWarning: '未检测到时间戳列',
+    expectSuccess: true,
+    expectRecords: 51,
+  },
+  {
+    name: '测试3: time列名格式（非timestamp）',
+    file: '../public/test-samples/sample-accel-time-col.csv',
+    expectWarning: null,
+    expectSuccess: true,
+    expectRecords: 51,
+  },
+  {
+    name: '测试4: 中文列名位移（作为加速度解析会全零）',
+    file: '../public/test-samples/sample-disp-chinese.csv',
+    expectWarning: '所有加速度值均为 0',
+    expectSuccess: true,
+    expectRecords: 51,
+  },
+]
+
 async function runTests() {
   console.log('\n' + '='.repeat(60))
   console.log('  CSV 解析单元测试')
   console.log('='.repeat(60))
-
-  const testCases = [
-    {
-      name: 'timestamp=0 开头（原 bug 触发场景）',
-      file: 'sample-accel-zero-start.csv',
-      expectFirstTs0: true,
-    },
-    {
-      name: 'time 列名格式',
-      file: 'sample-accel-time-col.csv',
-      expectFirstTs0: true,
-    },
-    {
-      name: '中文列名 + 无时间戳列',
-      file: 'sample-accel-chinese-no-time.csv',
-      expectWarning: '未检测到时间戳列',
-    },
-    {
-      name: '中文位移列名',
-      file: 'sample-disp-chinese.csv',
-      expectFirstTs0: true,
-    },
-  ]
 
   let passCount = 0
   let failCount = 0
@@ -169,9 +164,9 @@ async function runTests() {
     console.log(`  文件: ${tc.file}`)
 
     try {
-      const filePath = path.join(__dirname, '..', 'public', 'test-samples', tc.file)
-      const content = fs.readFileSync(filePath, 'utf-8')
-      const result = await parseAccelerationCSVFromString(content)
+      const filePath = path.join(__dirname, tc.file)
+      const csvContent = fs.readFileSync(filePath, 'utf-8')
+      const result = await parseAccelerationCSVFromString(csvContent)
 
       console.log(`  成功: ${result.success}`)
       console.log(`  数据行数: ${result.data.length}`)
@@ -185,66 +180,78 @@ async function runTests() {
 
       if (result.data.length > 0) {
         const firstRecord = result.data[0]
-        console.log(`  首条记录: timestamp=${firstRecord.timestamp}, value=${firstRecord.value.toFixed(3)}, saturated=${firstRecord.saturated}`)
-
         const lastRecord = result.data[result.data.length - 1]
-        console.log(`  末条记录: timestamp=${lastRecord.timestamp}, value=${lastRecord.value.toFixed(3)}, saturated=${lastRecord.saturated}`)
-
         const timeDiff = lastRecord.timestamp - firstRecord.timestamp
+        const avgInterval = result.data.length > 1
+          ? timeDiff / (result.data.length - 1)
+          : 0
+        const saturatedCount = result.data.filter(r => r.saturated).length
+
+        console.log(`  首条记录: timestamp=${firstRecord.timestamp}, value=${firstRecord.value.toFixed(3)}, saturated=${firstRecord.saturated}`)
+        console.log(`  末条记录: timestamp=${lastRecord.timestamp}, value=${lastRecord.value.toFixed(3)}, saturated=${lastRecord.saturated}`)
         console.log(`  时间跨度: ${timeDiff}ms (${(timeDiff / 1000).toFixed(2)}s)`)
-
-        const avgInterval = timeDiff / (result.data.length - 1)
         console.log(`  平均采样间隔: ${avgInterval.toFixed(0)}ms`)
-
-        const saturatedCount = result.data.filter(d => d.saturated).length
         console.log(`  饱和采样点数: ${saturatedCount}`)
-
-        if (tc.expectFirstTs0) {
-          const firstTs = result.data[0].timestamp
-          const baseTime = Date.now()
-          const isNearZero = firstTs >= baseTime - 1000 && firstTs <= baseTime + 1000
-          if (isNearZero || true) {
-            console.log(`  ✓ 首条时间戳合理（未触发初始化期引用错误）`)
-            passCount++
-          } else {
-            console.log(`  ✗ 首条时间戳异常`)
-            failCount++
-          }
-        } else {
-          passCount++
-        }
-
-        if (tc.expectWarning) {
-          const hasWarning = result.warnings.some(w => w.includes(tc.expectWarning!))
-          if (hasWarning) {
-            console.log(`  ✓ 包含预期警告: "${tc.expectWarning}"`)
-            passCount++
-          } else {
-            console.log(`  ✗ 缺少预期警告: "${tc.expectWarning}"`)
-            failCount++
-          }
-        } else {
-          if (result.warnings.length === 0) {
-            console.log(`  ✓ 无意外警告`)
-            passCount++
-          }
-        }
-
-        if (result.errors.length === 0) {
-          console.log(`  ✓ 无解析错误`)
-          passCount++
-        } else {
-          console.log(`  ✗ 存在解析错误:`)
-          result.errors.forEach(e => console.log(`    - ${e}`))
-          failCount++
-        }
-      } else {
-        console.log(`  ✗ 无有效数据`)
-        failCount++
       }
 
+      let testPassed = true
+
+      if (result.data.length > 0) {
+        const firstRecord = result.data[0]
+        if (firstRecord.timestamp >= Date.now() - 5000) {
+          console.log(`  ✓ 首条时间戳合理（未触发初始化期引用错误）`)
+        } else {
+          console.log(`  ✗ 首条时间戳异常`)
+          testPassed = false
+        }
+      }
+
+      if (tc.expectWarning) {
+        const hasExpectedWarning = result.warnings.some(w => w.includes(tc.expectWarning))
+        if (hasExpectedWarning) {
+          console.log(`  ✓ 包含预期警告: "${tc.expectWarning}"`)
+        } else {
+          console.log(`  ✗ 缺少预期警告: "${tc.expectWarning}"`)
+          testPassed = false
+        }
+      } else {
+        if (result.warnings.length === 0 || !result.warnings.some(w => w.includes('未检测到时间戳列'))) {
+          console.log(`  ✓ 无意外警告`)
+        }
+      }
+
+      if (result.errors.length === 0) {
+        console.log(`  ✓ 无解析错误`)
+      } else {
+        console.log(`  ✗ 存在解析错误:`)
+        result.errors.forEach(e => console.log(`    - ${e}`))
+        testPassed = false
+      }
+
+      if (result.data.length === tc.expectRecords) {
+        console.log(`  ✓ 数据行数符合预期 (${tc.expectRecords})`)
+      } else {
+        console.log(`  ✗ 数据行数不符合预期: 期望 ${tc.expectRecords}, 实际 ${result.data.length}`)
+        testPassed = false
+      }
+
+      if (result.success === tc.expectSuccess) {
+        console.log(`  ✓ success 状态符合预期 (${tc.expectSuccess})`)
+      } else {
+        console.log(`  ✗ success 状态不符合预期: 期望 ${tc.expectSuccess}, 实际 ${result.success}`)
+        testPassed = false
+      }
+
+      if (testPassed) {
+        console.log(`  结果: ✅ 通过`)
+        passCount++
+      } else {
+        console.log(`  结果: ❌ 失败`)
+        failCount++
+      }
     } catch (e) {
       console.log(`  ✗ 测试异常: ${e instanceof Error ? e.message : String(e)}`)
+      console.log(`  结果: ❌ 失败`)
       failCount++
     }
   }
