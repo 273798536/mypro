@@ -14,11 +14,13 @@ import {
 } from 'lucide-react'
 import { useScoreStore } from '../store/scoreStore'
 import { formatDate, getStatusLabel, getStatusColor } from '../utils/helpers'
+import ReverseTraceModal from '../components/ReverseTraceModal'
 
 export default function Trace() {
   const { scores, getVersionsByScoreId, getPartsByScoreId, getAnnotationsByScoreId, getAnomaliesByScoreId } = useScoreStore()
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedScoreId, setSelectedScoreId] = useState<string | null>(null)
+  const [reverseTraceModalOpen, setReverseTraceModalOpen] = useState(false)
 
   const filteredScores = scores.filter(
     (score) =>
@@ -343,7 +345,10 @@ export default function Trace() {
                         从最终结果、批注或异常反查原始声部清单和PDF来源
                       </p>
                     </div>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-navy-700 text-white rounded-lg hover:bg-navy-600 transition-colors">
+                    <button
+                      onClick={() => setReverseTraceModalOpen(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-navy-700 text-white rounded-lg hover:bg-navy-600 transition-colors"
+                    >
                       <GitBranch className="w-4 h-4" />
                       开始反向追溯
                     </button>
@@ -362,6 +367,14 @@ export default function Trace() {
           </div>
         </div>
       </div>
+
+      {selectedScoreId && (
+        <ReverseTraceModal
+          isOpen={reverseTraceModalOpen}
+          onClose={() => setReverseTraceModalOpen(false)}
+          scoreId={selectedScoreId}
+        />
+      )}
     </div>
   )
 }

@@ -25,12 +25,16 @@ import {
   getStatusLabel,
   getStatusColor,
 } from '../utils/helpers'
+import RunSyncModal from '../components/RunSyncModal'
+import AddPartsModal from '../components/AddPartsModal'
 
 type TabType = 'versions' | 'annotations' | 'parts' | 'anomalies'
 
 export default function ScoreDetail() {
   const { id } = useParams<{ id: string }>()
   const [activeTab, setActiveTab] = useState<TabType>('versions')
+  const [syncModalOpen, setSyncModalOpen] = useState(false)
+  const [partsModalOpen, setPartsModalOpen] = useState(false)
 
   const {
     getScoreById,
@@ -92,7 +96,10 @@ export default function ScoreDetail() {
             </div>
             <p className="text-navy-400 mt-1">{score.composer}</p>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 rounded-lg text-navy-900 font-medium hover:from-gold-400 hover:to-gold-500 transition-all">
+          <button
+            onClick={() => setSyncModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-gold-500 to-gold-600 rounded-lg text-navy-900 font-medium hover:from-gold-400 hover:to-gold-500 transition-all"
+          >
             <Play className="w-4 h-4" />
             执行同步
           </button>
@@ -131,7 +138,10 @@ export default function ScoreDetail() {
               </div>
             )}
             {!score.partListUrl && (
-              <button className="flex items-center gap-2 px-4 py-3 bg-navy-900/30 rounded-lg border border-dashed border-navy-600 text-navy-400 hover:text-gold-400 hover:border-gold-500/50 transition-colors">
+              <button
+                onClick={() => setPartsModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-3 bg-navy-900/30 rounded-lg border border-dashed border-navy-600 text-navy-400 hover:text-gold-400 hover:border-gold-500/50 transition-colors"
+              >
                 <FilePlus className="w-5 h-5" />
                 <span className="text-sm">补充声部清单</span>
               </button>
@@ -384,6 +394,21 @@ export default function ScoreDetail() {
           )}
         </div>
       </div>
+
+      {id && (
+        <>
+          <RunSyncModal
+            isOpen={syncModalOpen}
+            onClose={() => setSyncModalOpen(false)}
+            scoreId={id}
+          />
+          <AddPartsModal
+            isOpen={partsModalOpen}
+            onClose={() => setPartsModalOpen(false)}
+            scoreId={id}
+          />
+        </>
+      )}
     </div>
   )
 }

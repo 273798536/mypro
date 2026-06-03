@@ -1,12 +1,15 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, Upload } from 'lucide-react'
 import { useScoreStore } from '../store/scoreStore'
 import { initMockData } from '../data/mockData'
 import StatsCard from '../components/StatsCard'
 import FilterPanel from '../components/FilterPanel'
 import ScoreCard from '../components/ScoreCard'
+import NewScoreModal from '../components/NewScoreModal'
 
 export default function Home() {
+  const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [importModalOpen, setImportModalOpen] = useState(false)
   const {
     scores,
     setScores,
@@ -48,11 +51,17 @@ export default function Home() {
             <p className="text-navy-400 mt-1">管理曲谱版本、批注和声部信息</p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white hover:bg-navy-700 transition-colors">
+            <button
+              onClick={() => setImportModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white hover:bg-navy-700 transition-colors"
+            >
               <Upload className="w-4 h-4" />
               导入曲谱
             </button>
-            <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 rounded-lg text-navy-900 font-medium hover:from-gold-400 hover:to-gold-500 transition-all shadow-lg shadow-gold-500/20">
+            <button
+              onClick={() => setCreateModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 rounded-lg text-navy-900 font-medium hover:from-gold-400 hover:to-gold-500 transition-all shadow-lg shadow-gold-500/20"
+            >
               <Plus className="w-4 h-4" />
               新建曲谱
             </button>
@@ -107,6 +116,17 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      <NewScoreModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        mode="create"
+      />
+      <NewScoreModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+        mode="import"
+      />
     </div>
   )
 }
