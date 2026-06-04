@@ -1,0 +1,10 @@
+{
+  "name": "pipeline-conflict",
+  "version": "1.0.0",
+  "private": true,
+  "description": "城市管网平面冲突图 - 浏览器交互式冲突检测工具",
+  "scripts": {
+    "dev": "npx serve . -p 3000 -s",
+    "start": "npx serve . -p 3000 -s"
+  }
+}

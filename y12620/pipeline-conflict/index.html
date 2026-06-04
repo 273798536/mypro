@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>城市管网平面冲突图</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <header class="top-bar">
+      <h1>城市管网平面冲突图</h1>
+      <div class="separator"></div>
+      <div class="game-controls">
+        <button id="btn-start" class="btn btn-primary btn-sm">▶ 开始</button>
+        <button id="btn-pause" class="btn btn-warning btn-sm" style="display:none">⏸ 暂停</button>
+        <button id="btn-resume" class="btn btn-success btn-sm" style="display:none">▶ 继续</button>
+        <button id="btn-restart" class="btn btn-danger btn-sm" style="display:none">↻ 重开</button>
+        <button id="btn-settle" class="btn btn-sm" style="display:none">🏁 结算</button>
+        <button id="btn-replay" class="btn btn-sm" style="display:none">⟲ 复盘</button>
+      </div>
+      <div class="game-info">
+        <span id="game-progress">就绪</span>
+        <span id="game-timer">00:00</span>
+      </div>
+    </header>
+
+    <aside class="left-panel">
+      <div class="panel-title">记录列表</div>
+      <div class="panel-actions">
+        <button id="btn-load-sample" class="btn btn-sm btn-primary">📂 加载样例</button>
+        <button id="btn-flip-y" class="btn btn-sm">🔄 切换Y轴翻转</button>
+      </div>
+      <div class="import-section">
+        <input type="file" id="file-input" accept="image/*" class="hidden">
+        <button id="btn-import" class="btn btn-sm">🖼 导入截图</button>
+      </div>
+      <div class="record-list" id="record-list"></div>
+    </aside>
+
+    <main class="canvas-area">
+      <div id="canvas-container">
+        <canvas id="main-canvas"></canvas>
+      </div>
+      <div class="replay-controls" id="replay-controls">
+        <span class="replay-label">复盘</span>
+        <span class="replay-progress" id="replay-progress">0/0</span>
+        <button id="btn-replay-stop" class="btn btn-sm btn-danger">停止</button>
+        <button id="btn-replay-export" class="btn btn-sm">导出复盘</button>
+        <input type="file" id="replay-import-input" accept=".json" class="hidden">
+        <button id="btn-replay-import" class="btn btn-sm">导入复盘</button>
+      </div>
+      <div class="canvas-tools">
+        <button id="btn-reset-view" class="btn btn-sm">⊙ 重置视图</button>
+      </div>
+    </main>
+
+    <aside class="right-panel">
+      <div class="panel-title">记录详情</div>
+      <div id="error-container" class="error-container"></div>
+      <div class="record-detail" id="record-detail">
+        <div style="padding:40px 16px; text-align:center; color:var(--text-dim); font-size:13px;">
+          点击左侧记录查看详情<br>或点击「加载样例」开始
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="settlement-panel" class="settlement-overlay"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
