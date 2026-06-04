@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>无人机航片拼接复核系统</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1>🛩️ 无人机航片拼接复核系统</h1>
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="anomaly">异常标注（日常）</button>
+        <button class="nav-btn" data-tab="review">缩放平移复核（月底/课前）</button>
+        <button class="nav-btn" data-tab="trace">追溯倒查</button>
+        <button class="nav-btn" data-tab="export">导出报告</button>
+      </nav>
+    </header>
+
+    <main class="main-content">
+      <div class="summary-cards">
+        <div class="summary-card">
+          <span class="card-label">总记录数</span>
+          <span class="card-value" id="totalCount">0</span>
+        </div>
+        <div class="summary-card pass">
+          <span class="card-label">通过</span>
+          <span class="card-value" id="passCount">0</span>
+        </div>
+        <div class="summary-card fail">
+          <span class="card-label">不通过</span>
+          <span class="card-value" id="failCount">0</span>
+        </div>
+        <div class="summary-card pending">
+          <span class="card-label">待复核</span>
+          <span class="card-value" id="pendingCount">0</span>
+        </div>
+        <div class="summary-card avg">
+          <span class="card-label">平均评分</span>
+          <span class="card-value" id="avgScore">-</span>
+        </div>
+      </div>
+
+      <div class="tab-content active" id="tab-anomaly">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>异常标注列表</h2>
+            <div class="filters">
+              <select id="filterBatch">
+                <option value="">全部批次</option>
+              </select>
+              <select id="filterStatus">
+                <option value="">全部状态</option>
+                <option value="pending">待复核</option>
+                <option value="pass">通过</option>
+                <option value="fail">不通过</option>
+              </select>
+              <button class="btn-primary" onclick="showImportModal()">批量导入</button>
+              <button class="btn-secondary" onclick="loadAnnotations()">刷新</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="chart-container">
+              <canvas id="anomalyChart"></canvas>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>批次号</th>
+                    <th>图片ID</th>
+                    <th>异常类型</th>
+                    <th>坐标</th>
+                    <th>标注人</th>
+                    <th>状态</th>
+                    <th>评分</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="anomalyTableBody">
+                  <tr><td colspan="9" class="loading">加载中...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-review">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>缩放平移复核</h2>
+            <div class="filters">
+              <select id="reviewBatch">
+                <option value="">选择批次</option>
+              </select>
+              <button class="btn-secondary" onclick="loadReviewData()">加载待复核数据</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="review-layout">
+              <div class="review-image-area">
+                <div class="image-mock" id="reviewImage">
+                  <div class="image-placeholder">
+                    <span>📷 航片预览区域</span>
+                    <small>点击异常点查看详情</small>
+                  </div>
+                  <div class="anomaly-markers" id="anomalyMarkers"></div>
+                  <div class="zoom-controls">
+                    <button onclick="zoomIn()">+</button>
+                    <span id="zoomLevel">缩放: 1x</span>
+                    <button onclick="zoomOut()">-</button>
+                    <button onclick="resetView()">重置</button>
+                  </div>
+                  <div class="pan-info" id="panInfo">
+                    平移: X=0, Y=0
+                  </div>
+                </div>
+              </div>
+              <div class="review-detail-area">
+                <div class="detail-card" id="reviewDetail">
+                  <h3>选择左侧异常点进行复核</h3>
+                  <p class="hint">缩放验证：确认缩放后异常是否清晰可见</p>
+                  <p class="hint">平移验证：确认平移后异常位置是否准确</p>
+                </div>
+                <div class="review-form" id="reviewForm" style="display:none;">
+                  <h4>复核评分</h4>
+                  <div class="form-group">
+                    <label>缩放验证</label>
+                    <select id="zoomVerify">
+                      <option value="1">通过</option>
+                      <option value="0">不通过</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>平移验证</label>
+                    <select id="panVerify">
+                      <option value="1">通过</option>
+                      <option value="0">不通过</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>复核结果</label>
+                    <select id="reviewResult">
+                      <option value="pass">通过</option>
+                      <option value="fail">不通过</option>
+                      <option value="pending">待确认</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>评分 (0-100)</label>
+                    <input type="number" id="reviewScore" min="0" max="100" value="80">
+                  </div>
+                  <div class="form-group">
+                    <label>复核备注</label>
+                    <textarea id="reviewComment" rows="3" placeholder="输入复核说明..."></textarea>
+                  </div>
+                  <div class="form-group">
+                    <label>复核人</label>
+                    <input type="text" id="reviewer" value="培训师">
+                  </div>
+                  <button class="btn-primary" onclick="submitReview()">提交复核</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-trace">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>追溯倒查</h2>
+            <div class="filters">
+              <input type="text" id="traceSearch" placeholder="输入标注ID或图片ID查询...">
+              <button class="btn-primary" onclick="searchTrace()">查询</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="trace-container" id="traceContainer">
+              <div class="trace-placeholder">
+                <p>🔍 输入标注ID（如：1）进行追溯</p>
+                <p class="hint">验收测试：输入ID=1，查看是否能从复核结果回溯到原始导入记录</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-export">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>导出复核报告</h2>
+            <div class="filters">
+              <select id="exportBatch">
+                <option value="">全部批次</option>
+              </select>
+              <button class="btn-secondary" onclick="loadExportSummary()">预览导出内容</button>
+              <button class="btn-primary" onclick="exportData()">导出CSV</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="export-summary" id="exportSummary">
+              <div class="summary-placeholder">
+                点击"预览导出内容"查看即将导出的数据摘要
+              </div>
+            </div>
+            <div class="consistency-check">
+              <h3>一致性校验</h3>
+              <div class="check-item">
+                <span class="check-icon" id="consistencyIcon">⏳</span>
+                <span id="consistencyText">等待校验...</span>
+              </div>
+              <p class="hint">确保界面显示状态与导出文件状态一致，不出现"页面通过、文件待确认"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal" id="importModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>批量导入标注</h3>
+        <button class="close-btn" onclick="closeImportModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>导入数据（JSON格式）</label>
+          <textarea id="importData" rows="10" placeholder='[{"batch_no": "UAV-001", "image_id": "DJI_0001", "anomaly_type": "拼接错位", ...}]'></textarea>
+        </div>
+        <div class="form-group">
+          <label>操作人员</label>
+          <input type="text" id="importOperator" value="导入员">
+        </div>
+        <div class="sample-data">
+          <button class="btn-secondary" onclick="loadSampleImport()">加载样例数据</button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeImportModal()">取消</button>
+        <button class="btn-primary" onclick="batchImport()">导入</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="detailModal">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h3>标注详情</h3>
+        <button class="close-btn" onclick="closeDetailModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="detailModalBody">
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
