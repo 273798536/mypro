@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-ink: #1a2f23;
+  --color-ink-light: #2a4a3a;
+  --color-ink-dark: #0f1d17;
+  --color-amber: #d4a847;
+  --color-amber-light: #e4c06a;
+  --color-amber-dark: #b08930;
+  --color-slate-custom: #4a5568;
+  --color-ivory: #faf8f0;
+  --color-ivory-dark: #f0ede0;
+  --color-terracotta: #c4533a;
+  --color-terracotta-light: #d47060;
+  --color-moss: #5a8a6e;
+  --color-moss-light: #6fa882;
+
+  font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer base {
+  body {
+    @apply bg-ivory text-ink font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .btn-emboss {
+    @apply rounded-lg px-4 py-2 font-medium transition-all duration-150
+           shadow-emboss active:shadow-emboss-active
+           hover:shadow-emboss-hover active:translate-y-px
+           select-none cursor-pointer;
+  }
+
+  .btn-emboss-primary {
+    @apply btn-emboss bg-amber text-ink hover:bg-amber-light active:bg-amber-dark;
+  }
+
+  .btn-emboss-secondary {
+    @apply btn-emboss bg-ink text-ivory hover:bg-ink-light active:bg-ink-dark;
+  }
+
+  .btn-emboss-danger {
+    @apply btn-emboss bg-terracotta text-white hover:bg-terracotta-light active:bg-terracotta-dark;
+  }
+
+  .btn-emboss-success {
+    @apply btn-emboss bg-moss text-white hover:bg-moss-light;
+  }
+
+  .btn-emboss-ghost {
+    @apply btn-emboss bg-transparent text-ink hover:bg-ink/5 shadow-none;
+  }
+
+  .card {
+    @apply bg-white rounded-xl border border-ink/10 p-5
+           transition-shadow duration-200 hover:shadow-md;
+  }
+
+  .card-violation {
+    @apply card border-terracotta/40 bg-terracotta/5;
+  }
+
+  .card-success {
+    @apply card border-moss/40 bg-moss/5;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-error {
+    @apply badge bg-terracotta/15 text-terracotta;
+  }
+
+  .badge-success {
+    @apply badge bg-moss/15 text-moss;
+  }
+
+  .badge-warning {
+    @apply badge bg-amber/15 text-amber-dark;
+  }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-ivory/70
+           transition-colors duration-150 hover:bg-ivory/10 hover:text-ivory;
+  }
+
+  .sidebar-link-active {
+    @apply sidebar-link bg-ivory/15 text-amber font-medium;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-ink/15 bg-white px-3 py-2
+           text-sm font-sans text-ink placeholder:text-slate-custom/50
+           focus:border-amber focus:outline-none focus:ring-2 focus:ring-amber/20
+           transition-colors duration-150;
+  }
+
+  .select-field {
+    @apply input-field appearance-none cursor-pointer;
+  }
+}
