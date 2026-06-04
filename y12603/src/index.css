@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-iron: #2D2D2D;
+  --color-warn: #E87722;
+  --color-pass: #4CAF50;
+  --color-danger: #D32F2F;
+  --color-muted: #607D8B;
+  --color-bg-main: #F5F5F5;
+
+  font-family: 'Noto Sans SC', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg-main);
+  color: #333;
+}
