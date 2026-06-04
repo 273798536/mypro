@@ -1,0 +1,115 @@
+import type { Device, Layer } from '@/types';
+import { generateId } from './helpers';
+
+export const mockLayers: Layer[] = [
+  { id: 'layer-equipment', name: '设备层', visible: true, zIndex: 10 },
+  { id: 'layer-annotations', name: '标注层', visible: true, zIndex: 20 },
+  { id: 'layer-heatmap', name: '风险热力层', visible: false, zIndex: 30 },
+];
+
+export const mockDevices: Device[] = [
+  {
+    id: generateId(),
+    name: '1号塔吊',
+    type: 'crane',
+    x: 121.4737,
+    y: 31.2304,
+    layerId: 'layer-equipment',
+    riskLevel: 'warning',
+    annotations: [],
+  },
+  {
+    id: generateId(),
+    name: '2号塔吊',
+    type: 'crane',
+    x: 31.2304,
+    y: 121.4737,
+    layerId: 'layer-equipment',
+    riskLevel: 'danger',
+    coordinateFlip: {
+      type: 'lat_lng_swapped',
+      originalX: 31.2304,
+      originalY: 121.4737,
+      correctedX: 121.4737,
+      correctedY: 31.2304,
+      reason: '经纬度数值颠倒：原始纬度31.23（正常值域-90~90）被误填为经度，经度121.47（正常值域-180~180）被误填为纬度，系统已自动交换两值位置。',
+      userConfirmed: false,
+    },
+    annotations: [],
+  },
+  {
+    id: generateId(),
+    name: 'A区脚手架',
+    type: 'scaffold',
+    x: 121.4742,
+    y: 31.2310,
+    layerId: 'layer-equipment',
+    riskLevel: 'danger',
+    annotations: [
+      {
+        id: generateId(),
+        deviceId: '',
+        type: 'comment',
+        content: '脚手架底部积水严重，扣件锈蚀',
+        riskLevel: 'danger',
+        opinion: '建议立即排水并更换锈蚀扣件，加装防滑垫板',
+        timestamp: Date.now() - 3600000,
+      },
+    ],
+  },
+  {
+    id: generateId(),
+    name: 'B区灭火器',
+    type: 'fire_extinguisher',
+    x: 121.4730,
+    y: 31.2308,
+    layerId: 'layer-equipment',
+    riskLevel: 'safe',
+    annotations: [],
+  },
+  {
+    id: generateId(),
+    name: 'C区配电箱',
+    type: 'electrical',
+    x: 121.4750,
+    y: 31.2298,
+    layerId: 'layer-equipment',
+    riskLevel: 'warning',
+    annotations: [
+      {
+        id: generateId(),
+        deviceId: '',
+        type: 'rectangle',
+        content: '箱门未关，存在触电风险',
+        riskLevel: 'warning',
+        opinion: '责令立即关闭箱门，加装挂锁，指定责任人每日巡查',
+        timestamp: Date.now() - 1800000,
+        x: 100,
+        y: 100,
+        width: 80,
+        height: 60,
+      },
+    ],
+  },
+  {
+    id: generateId(),
+    name: 'D区脚手架',
+    type: 'scaffold',
+    x: 200.5,
+    y: 31.2305,
+    layerId: 'layer-equipment',
+    riskLevel: 'warning',
+    coordinateFlip: {
+      type: 'out_of_range',
+      originalX: 200.5,
+      originalY: 31.2305,
+      correctedX: 121.4755,
+      correctedY: 31.2305,
+      reason: '经度值超出正常范围：输入经度200.5°，但经度正常值域为-180°~180°，推测为录入错误，已修正为工地附近合理坐标值。',
+      userConfirmed: false,
+    },
+    annotations: [],
+  },
+];
+
+export const mockOperator = '车间主管-张工';
