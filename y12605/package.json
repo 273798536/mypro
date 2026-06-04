@@ -1,0 +1,19 @@
+{
+  "name": "geometry-puzzle-classroom",
+  "version": "1.0.0",
+  "description": "儿童几何拼图课堂 - 安全培训审核系统",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"cd packages/server && npx tsx watch src/index.ts\" \"cd packages/client && npm run dev\"",
+    "dev:server": "cd packages/server && npx tsx watch src/index.ts",
+    "dev:client": "cd packages/client && npm run dev",
+    "build": "cd packages/shared && npm run build && cd ../server && npm run build && cd ../client && npm run build",
+    "seed": "cd packages/server && npx tsx src/seed.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
