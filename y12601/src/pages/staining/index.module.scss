@@ -1,0 +1,204 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f0ebf5 0%, $color-bg-page 100%);
+  padding: 0 $page-padding;
+  padding-bottom: 200rpx;
+}
+
+.levelInfo {
+  padding: $spacing-lg 0 $spacing-md;
+}
+
+.levelName {
+  display: block;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.levelDesc {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.gridSection {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+  @include flex-center;
+  flex-direction: column;
+}
+
+.gridLabel {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-md;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-md $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.snapToggle {
+  @include button-reset;
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  background-color: $color-bg-hover;
+  border-radius: $radius-round;
+  padding: 0 $spacing-md;
+  height: $button-height-sm;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  border: 2rpx solid $color-border;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.snapActive {
+  background-color: rgba($color-primary, 0.1);
+  color: $color-primary;
+  border-color: $color-primary;
+}
+
+.snapDot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: $radius-round;
+  background-color: $color-text-disabled;
+}
+
+.snapDotActive {
+  background-color: $color-primary;
+}
+
+.actionBtns {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.actionBtn {
+  @include button-reset;
+  background-color: $color-bg-hover;
+  border-radius: $radius-md;
+  padding: 0 $spacing-md;
+  height: $button-height-sm;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  border: 2rpx solid $color-border;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.undoBtn {
+  color: $color-warning;
+  border-color: rgba($color-warning, 0.3);
+}
+
+.restartBtn {
+  color: $color-error;
+  border-color: rgba($color-error, 0.3);
+}
+
+.paletteSection {
+  margin-bottom: $spacing-md;
+}
+
+.tipsCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-bottom: $spacing-md;
+}
+
+.tipsTitle {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-sm;
+}
+
+.tipItem {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-loose;
+  margin-bottom: $spacing-xs;
+}
+
+.syncWarning {
+  background-color: rgba($color-warning, 0.08);
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  margin-bottom: $spacing-md;
+  border-left: 6rpx solid $color-warning;
+}
+
+.syncWarningTitle {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-semibold;
+  color: $color-warning;
+  margin-bottom: $spacing-xs;
+}
+
+.syncWarningText {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+}
+
+.submitBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: $spacing-md $spacing-lg;
+  padding-bottom: calc(#{$spacing-md} + env(safe-area-inset-bottom));
+  background-color: $color-bg-card;
+  box-shadow: $shadow-float;
+  display: flex;
+  justify-content: center;
+}
+
+.submitBtn {
+  @include button-reset;
+  background: linear-gradient(135deg, $color-primary 0%, $color-primary-light 100%);
+  color: $color-text-white;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  height: $button-height-lg;
+  border-radius: $radius-button;
+  width: 100%;
+  max-width: $max-content-width;
+
+  &:active {
+    opacity: 0.9;
+  }
+}
+
+.submitBtnDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

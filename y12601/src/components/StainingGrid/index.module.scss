@@ -1,0 +1,87 @@
+@use '@/styles/variables.scss' as *;
+
+.gridWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+}
+
+.gridRow {
+  display: flex;
+  gap: 6rpx;
+}
+
+.cell {
+  @include flex-center;
+  position: relative;
+  border: 2rpx solid $color-border;
+  transition: all $transition-fast;
+  border-radius: $radius-xs;
+  box-sizing: border-box;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.95);
+  }
+}
+
+.cellNormal {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+.cellCompact {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 2rpx;
+}
+
+.boundaryCell {
+  border: 2rpx dashed $color-warning;
+  background-color: rgba($color-warning, 0.06);
+}
+
+.boundaryTouched {
+  border: 2rpx solid $color-error;
+  background-color: rgba($color-error, 0.1) !important;
+}
+
+.wrongCell {
+  border: 2rpx solid $color-error;
+  box-shadow: 0 0 0 2rpx rgba($color-error, 0.3);
+}
+
+.missedCell {
+  border: 2rpx dashed $color-warning;
+}
+
+.diffCell {
+  box-shadow: 0 0 0 3rpx rgba($color-info, 0.5);
+}
+
+.cellIcon {
+  font-size: 24rpx;
+  color: $color-error;
+  font-weight: $font-weight-bold;
+}
+
+.boundaryMark {
+  position: absolute;
+  top: 4rpx;
+  right: 4rpx;
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: $radius-round;
+  background-color: $color-warning;
+}
+
+.diffDot {
+  position: absolute;
+  bottom: 4rpx;
+  right: 4rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: $radius-round;
+  background-color: $color-info;
+}

@@ -1,0 +1,49 @@
+@use '@/styles/variables.scss' as *;
+
+.palette {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-lg;
+  padding: $spacing-md $spacing-lg;
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-card;
+}
+
+.colorItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $spacing-xs;
+  padding: $spacing-sm;
+  border-radius: $radius-md;
+  transition: all $transition-fast;
+
+  &:active {
+    opacity: 0.85;
+    transform: scale(0.95);
+  }
+}
+
+.selected {
+  background-color: rgba($color-primary, 0.08);
+  box-shadow: 0 0 0 3rpx rgba($color-primary, 0.4);
+}
+
+.colorCircle {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: $radius-round;
+  border: 3rpx solid $color-border;
+}
+
+.colorName {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+.selected .colorName {
+  color: $color-primary;
+  font-weight: $font-weight-medium;
+}

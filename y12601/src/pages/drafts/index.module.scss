@@ -1,0 +1,225 @@
+@use '@/styles/variables.scss' as *;
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f0ebf5 0%, $color-bg-page 100%);
+  padding: 0 $page-padding;
+  padding-bottom: 120rpx;
+}
+
+.header {
+  padding: $spacing-xl 0 $spacing-lg;
+}
+
+.headerTitle {
+  display: block;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.headerDesc {
+  display: block;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+}
+
+.draftList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.draftCard {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  transition: all $transition-base;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.draftHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-sm;
+}
+
+.draftLevel {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.draftAccuracy {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+}
+
+.accuracyHigh {
+  color: $color-success;
+}
+
+.accuracyMid {
+  color: $color-warning;
+}
+
+.accuracyLow {
+  color: $color-error;
+}
+
+.draftTime {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  margin-bottom: $spacing-sm;
+}
+
+.draftSummary {
+  display: block;
+  font-size: $font-size-md;
+  color: $color-text-secondary;
+  line-height: $line-height-normal;
+  @include text-ellipsis-multi(2);
+  margin-bottom: $spacing-md;
+}
+
+.draftFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.draftMeta {
+  display: flex;
+  gap: $spacing-md;
+}
+
+.metaItem {
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+}
+
+.draftActions {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.draftBtn {
+  @include button-reset;
+  padding: 0 $spacing-md;
+  height: $button-height-sm;
+  border-radius: $radius-round;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+
+  &:active {
+    opacity: 0.85;
+  }
+}
+
+.viewBtn {
+  background-color: rgba($color-primary, 0.1);
+  color: $color-primary;
+}
+
+.exportBtn {
+  background-color: rgba($color-success, 0.1);
+  color: $color-success;
+}
+
+.entrySection {
+  background-color: $color-bg-card;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  box-shadow: $shadow-card;
+  margin-top: $spacing-md;
+}
+
+.entrySectionTitle {
+  display: block;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  margin-bottom: $spacing-md;
+}
+
+.entryItem {
+  padding: $spacing-md 0;
+  border-bottom: 1rpx solid $color-divider;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.entryPos {
+  display: block;
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $color-primary;
+  margin-bottom: $spacing-xs;
+}
+
+.entryColor {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $spacing-xs;
+}
+
+.entryIssue {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-error;
+  line-height: $line-height-normal;
+  background-color: rgba($color-error, 0.06);
+  border-radius: $radius-sm;
+  padding: $spacing-sm;
+  margin-top: $spacing-xs;
+}
+
+.entryDuplicate {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-warning;
+  line-height: $line-height-normal;
+  background-color: rgba($color-warning, 0.06);
+  border-radius: $radius-sm;
+  padding: $spacing-sm;
+  margin-top: $spacing-xs;
+}
+
+.entryUnit {
+  display: block;
+  font-size: $font-size-sm;
+  color: $color-text-tertiary;
+  line-height: $line-height-normal;
+  background-color: rgba($color-info, 0.06);
+  border-radius: $radius-sm;
+  padding: $spacing-sm;
+  margin-top: $spacing-xs;
+}
+
+.exportPreview {
+  background-color: #1d2129;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin-top: $spacing-md;
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.exportText {
+  font-size: $font-size-sm;
+  color: #c9cdd4;
+  line-height: $line-height-loose;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
