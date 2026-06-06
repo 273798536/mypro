@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生物食物网连线器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div>
+                <h1>生物食物网连线器</h1>
+                <p class="subtitle">文保讲解员复盘专用 · 图表/明细/导出共用同一批数据</p>
+            </div>
+            <div class="batch-info">
+                <span id="batchId">批次号: 待生成</span>
+                <span id="timestamp">时间: -</span>
+                <span id="historyStep" class="history-step">历史: 1/1 步</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <section class="upload-section">
+                <h2>① 导入素材</h2>
+                <p class="section-hint">同一批截图第二次导入时，相同素材会自动跳过，不会产生两份冲突结论。</p>
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="fileInput" multiple accept="image/*">
+                    <div class="upload-placeholder">
+                        <p>拖拽图片到这里或点击选择</p>
+                        <p class="hint">支持同时导入多张截图 · 去重后统一批次处理</p>
+                    </div>
+                </div>
+                <div id="uploadedFiles" class="uploaded-files"></div>
+            </section>
+
+            <section class="tools-section">
+                <h2>② 操作工具</h2>
+                <p class="section-hint">撤销重做会同步还原连线、节点、备注和轨迹，全部来自同一批历史记录。</p>
+                <div class="tool-buttons">
+                    <button id="undoBtn" disabled>↶ 撤销</button>
+                    <button id="redoBtn" disabled>↷ 重做</button>
+                    <button id="clearBtn" disabled>清空连线</button>
+                    <button id="exportBtn" disabled>📥 导出复核报告</button>
+                </div>
+            </section>
+
+            <section class="workspace">
+                <div class="canvas-area">
+                    <h2>③ 画布（拖动物种节点连线）</h2>
+                    <p class="section-hint">异常连线会显示红色叹号标记。</p>
+                    <canvas id="mainCanvas"></canvas>
+                </div>
+
+                <div class="notes-area">
+                    <h2>④ 本轮复核三要素</h2>
+                    <p class="section-hint">标注草稿 / 讲解备注 / 图层遮挡 —— 和撤销重做联动，全部保存在同一轮里。</p>
+                    
+                    <div class="notes-group">
+                        <div class="notes-card">
+                            <div class="notes-card-title">📝 标注草稿</div>
+                            <textarea id="annotationNotes" placeholder="记录这批具体素材在标注过程中的想法和判断..."></textarea>
+                        </div>
+                        <div class="notes-card">
+                            <div class="notes-card-title">🎤 讲解备注</div>
+                            <textarea id="explanationNotes" placeholder="准备给观众讲解时的要点，对应眼前这批素材..."></textarea>
+                        </div>
+                        <div class="notes-card">
+                            <div class="notes-card-title">🗂 图层遮挡</div>
+                            <textarea id="layerNotes" placeholder="记录这批素材间的图层关系、遮挡问题和层级说明..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="data-section">
+                <div class="chart-container">
+                    <h2>⑤ 食物网图谱</h2>
+                    <p class="section-hint">与画布、明细、导出共用同一批数据。异常连线会以红色粗线加感叹号标注。</p>
+                    <svg id="foodWebChart" width="400" height="300"></svg>
+                </div>
+
+                <div class="detail-container">
+                    <h2>⑥ 连线明细（含颜色异常原因与处理建议）</h2>
+                    <p class="section-hint">点击最右侧轨迹编号按钮可以直接跳转到操作轨迹中对应的记录。</p>
+                    <div class="table-scroll">
+                        <table id="detailTable">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>来源</th>
+                                    <th>目标</th>
+                                    <th>关系</th>
+                                    <th>颜色状态</th>
+                                    <th>原因说明</th>
+                                    <th>处理建议</th>
+                                    <th>轨迹</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section class="trace-section">
+                <h2>⑦ 操作轨迹（顺着异常往回查）</h2>
+                <p class="section-hint">撤销重做后轨迹会同步还原。带 <code>Txxx</code> 编号的记录对应明细中的那一条连线。</p>
+                <div id="traceLog" class="trace-log"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
