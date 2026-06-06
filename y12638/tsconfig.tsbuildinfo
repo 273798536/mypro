@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/types.ts","./src/useappstate.ts","./src/components/batchlist.tsx","./src/components/errordisplay.tsx","./src/components/hitdetection.tsx","./src/components/layermanagement.tsx","./src/components/summary.tsx"],"version":"5.9.3"}
