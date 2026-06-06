@@ -1,0 +1,19 @@
+{
+  "name": "cold-chain-recall-api",
+  "version": "1.0.0",
+  "description": "连锁药房冷链温控断点召回处置后端API",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "test": "node tests/api-test.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7",
+    "cors": "^2.8.5",
+    "joi": "^17.12.2",
+    "dayjs": "^1.11.10"
+  }
+}
