@@ -1,0 +1,12 @@
+node_modules
+dist
+dist-ssr
+data
+*.db
+*.sqlite
+*.sqlite3
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+.env
+.env.local
