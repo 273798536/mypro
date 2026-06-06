@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机器人路径格子沙盘</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <h1>机器人路径格子沙盘</h1>
+            <div class="header-actions">
+                <button id="trialBtn" class="btn btn-warning">离线素材试用</button>
+                <button id="loadSampleBtn" class="btn btn-primary">加载样例</button>
+                <button id="exportReportBtn" class="btn btn-secondary">导出报告</button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="sidebar">
+                <div class="panel">
+                    <h3>月底转交 - 不可用记录</h3>
+                    <div id="unavailableList" class="unavailable-list">
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>图层管理</h3>
+                    <div id="layerList" class="layer-list">
+                    </div>
+                    <button id="addLayerBtn" class="btn btn-small">+ 新建图层</button>
+                </div>
+
+                <div class="panel">
+                    <h3>标注草稿补录</h3>
+                    <div id="draftList" class="draft-list">
+                    </div>
+                    <div style="display: flex; gap: 8px; margin-top: 8px;">
+                        <input type="text" id="draftInput" class="draft-input" placeholder="输入补录标注...">
+                        <button id="addDraftBtn" class="btn btn-small">补录</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>样例数据</h3>
+                    <div id="sampleList" class="sample-list">
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>操作日志</h3>
+                    <div id="logList" class="log-list">
+                    </div>
+                </div>
+            </aside>
+
+            <main class="workspace">
+                <div class="toolbar">
+                    <div class="tool-group">
+                        <button id="drawPathTool" class="tool-btn active" data-tool="path">绘制路径</button>
+                        <button id="drawObstacleTool" class="tool-btn" data-tool="obstacle">绘制障碍</button>
+                        <button id="eraseTool" class="tool-btn" data-tool="erase">橡皮擦</button>
+                    </div>
+                    <div class="tool-group">
+                        <button id="undoBtn" class="tool-btn">撤销</button>
+                        <button id="redoBtn" class="tool-btn">重做</button>
+                    </div>
+                    <div class="tool-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="snapGrid" checked>
+                            网格吸附
+                        </label>
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="gridCanvas"></canvas>
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+
+                <div id="statusBar" class="status-bar">
+                    <span id="statusText">就绪</span>
+                </div>
+            </main>
+
+            <aside class="inspector">
+                <div class="panel">
+                    <h3>评分表</h3>
+                    <div id="scorePanel" class="score-panel">
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>离线素材检查</h3>
+                    <div id="materialPanel" class="material-panel">
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h3>轨迹记录</h3>
+                    <div id="trajectoryPanel" class="trajectory-panel">
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <div id="trialModal" class="modal hidden">
+        <div class="modal-content modal-large">
+            <span class="close" onclick="app.closeTrialModal()">&times;</span>
+            <div id="trialModalBody"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
