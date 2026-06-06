@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-deck-surface text-gray-100 font-sans antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-deck-primary hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-all shadow-md hover:shadow-lg active:scale-[0.98];
+  }
+  .btn-danger {
+    @apply bg-deck-accent hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition-all shadow-md hover:shadow-lg active:scale-[0.98];
+  }
+  .btn-secondary {
+    @apply bg-deck-panel hover:bg-slate-700 text-white font-medium py-2 px-4 rounded-lg transition-all shadow-md hover:shadow-lg active:scale-[0.98] border border-slate-600;
+  }
+  .btn-success {
+    @apply bg-deck-success hover:bg-emerald-600 text-white font-medium py-2 px-4 rounded-lg transition-all shadow-md hover:shadow-lg active:scale-[0.98];
+  }
+  .card {
+    @apply bg-deck-panel rounded-xl shadow-lg border border-slate-700/50;
+  }
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+}
