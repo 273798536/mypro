@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: #f6f7f9;
+    color: #1f2024;
+  }
+
+  ::selection {
+    background-color: rgba(12, 142, 232, 0.18);
+    color: #072949;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl shadow-soft border border-ink-100/60;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-card hover:-translate-y-0.5;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl
+           bg-medical-600 text-white font-medium text-sm
+           transition-all duration-200
+           hover:bg-medical-700 hover:shadow-soft
+           active:scale-[0.98]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl
+           bg-white text-ink-700 font-medium text-sm border border-ink-200
+           transition-all duration-200
+           hover:bg-ink-50 hover:border-ink-300
+           active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg
+           text-ink-600 font-medium text-sm
+           transition-all duration-200
+           hover:bg-ink-100 hover:text-ink-800;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-sage-100 text-sage-700;
+  }
+
+  .badge-warning {
+    @apply badge bg-warm-100 text-warm-700;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-50 text-red-700;
+  }
+
+  .badge-info {
+    @apply badge bg-medical-50 text-medical-700;
+  }
+
+  .input-field {
+    @apply w-full px-3.5 py-2.5 rounded-xl border border-ink-200 bg-white
+           text-sm text-ink-900 placeholder:text-ink-400
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-medical-500/30 focus:border-medical-400;
+  }
+
+  .section-title {
+    @apply font-display text-lg font-semibold text-ink-900 tracking-tight;
+  }
+
+  .section-subtitle {
+    @apply text-sm text-ink-500 mt-1;
+  }
+
+  .nav-link {
+    @apply flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium
+           text-ink-500 transition-all duration-200
+           hover:bg-medical-50 hover:text-medical-700;
+  }
+
+  .nav-link-active {
+    @apply bg-medical-50 text-medical-700 shadow-soft;
+  }
+
+  .divider {
+    @apply h-px bg-ink-100;
+  }
+
+  .scroll-area {
+    @apply overflow-auto;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #c5c7cd;
+    border-radius: 9999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a3ac;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .mask-fade-b {
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  }
+}
