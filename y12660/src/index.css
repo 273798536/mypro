@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: #0B1B2E;
+  color: #E2E8F0;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2A4A73;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3A5A83;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded border transition-all duration-150 select-none;
+  }
+  .btn-primary {
+    @apply bg-hall-accent/15 border-hall-accent/40 text-hall-accent hover:bg-hall-accent/25 hover:border-hall-accent/60;
+  }
+  .btn-ghost {
+    @apply bg-transparent border-hall-border text-hall-text hover:bg-hall-bg3 hover:border-hall-border2;
+  }
+  .btn-danger {
+    @apply bg-status-unusable/10 border-status-unusable/40 text-status-unusable hover:bg-status-unusable/20;
+  }
+  .card {
+    @apply bg-hall-bg2 border border-hall-border rounded-lg shadow-card;
+  }
+  .input {
+    @apply w-full bg-hall-bg border border-hall-border rounded px-3 py-1.5 text-sm text-hall-text placeholder:text-hall-textMute focus:outline-none focus:border-hall-accent/60 focus:ring-1 focus:ring-hall-accent/30 transition;
+  }
+}
