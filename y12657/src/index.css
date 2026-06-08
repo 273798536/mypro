@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+    color: #1f2937;
+    background: #f8f8f5;
+  }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #f8f8f5 0%, #eef1ee 100%);
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    letter-spacing: -0.01em;
+  }
+  .font-mono {
+    font-family: 'JetBrains Mono', Menlo, monospace;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-brand text-white rounded-sm-2 text-sm font-medium
+           border-b-2 border-brand-700 transition-all duration-150
+           hover:bg-brand-600 hover:-translate-y-0.5 hover:shadow-card-hover
+           active:translate-y-0 active:border-b;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-white text-graphite rounded-sm-2 text-sm font-medium
+           border border-slate/30 transition-all duration-150
+           hover:bg-brand-50 hover:border-brand-300 hover:text-brand;
+  }
+  .btn-alert {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-alert text-white rounded-sm-2 text-sm font-medium
+           border-b-2 border-alert-600 transition-all duration-150
+           hover:bg-alert-600 hover:-translate-y-0.5;
+  }
+  .btn-success {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-success text-white rounded-sm-2 text-sm font-medium
+           border-b-2 border-success-600 transition-all duration-150
+           hover:bg-success-600 hover:-translate-y-0.5;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-3 py-1.5 text-slate hover:text-brand hover:bg-brand-50
+           rounded-sm-2 text-sm font-medium transition-all;
+  }
+  .card {
+    @apply bg-white border border-slate/15 rounded-sm-2 shadow-card transition-all duration-200;
+  }
+  .card-hover {
+    @apply hover:shadow-card-hover hover:-translate-y-0.5;
+  }
+  .input-field {
+    @apply w-full px-3 py-2 text-sm bg-white border border-slate/30 rounded-sm-2
+           focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand-100
+           transition-all placeholder:text-slate/50;
+  }
+  .status-badge {
+    @apply inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full;
+  }
+  .table-th {
+    @apply px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-slate bg-brand-50/50 border-b border-slate/10;
+  }
+  .table-td {
+    @apply px-4 py-3 text-sm text-graphite border-b border-slate/5 align-middle;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #9fd1df; border-radius: 3px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+}
