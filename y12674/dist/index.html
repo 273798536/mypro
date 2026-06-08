@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>水下机器人巡航视图</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="./assets/index-DlKVJiIo.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-BpLZG6ni.css">
+</head>
+<body>
+  <div id="app">
+    <div id="cruise-page" class="page active">
+      <div class="layout">
+        <div id="canvas-container" class="canvas-container">
+          <canvas id="three-canvas"></canvas>
+          <div id="coordinate-panel" class="coordinate-panel">
+            <div class="panel-title">坐标系与边界监控</div>
+            <div class="coordinate-group">
+              <div class="group-title world-title">🌐 世界坐标 (全局定位)</div>
+              <div class="coordinate-item">
+                <span class="label">数值:</span>
+                <span class="value mono" id="world-coord">X: 0.00 Y: 0.00 Z: 0.00</span>
+              </div>
+              <div class="coord-note">以场景原点为基准，用于边界检测</div>
+            </div>
+            <div class="coordinate-group">
+              <div class="group-title device-title">📡 设备坐标 (机身相对)</div>
+              <div class="coordinate-item">
+                <span class="label">数值:</span>
+                <span class="value mono" id="device-coord">X: 0.00 Y: 0.00 Z: 0.00</span>
+              </div>
+              <div class="coord-note">以初始位置为原点，用于内部控制</div>
+            </div>
+            <div class="divider"></div>
+            <div class="coordinate-item">
+              <span class="label">坐标同步:</span>
+              <span class="value" id="sync-indicator">已同步</span>
+            </div>
+            <div class="coordinate-item">
+              <span class="label">系统状态:</span>
+              <span class="value" id="coord-status">正常</span>
+            </div>
+            <div class="coordinate-item">
+              <span class="label">边界距离:</span>
+              <span class="value mono" id="boundary-distance">0.00 / 10</span>
+            </div>
+            <div class="explanation">
+              <div class="explanation-title">防混用机制：</div>
+              <div class="explanation-text">双系统独立存储，每次移动同步更新，偏差超过 0.01 单位自动拦截并记为不可用记录</div>
+            </div>
+          </div>
+          <div id="message-toast" class="message-toast hidden"></div>
+        </div>
+        <div class="control-panel">
+          <div class="panel-header">
+            <h2>水下机器人巡航</h2>
+            <div class="level-info">
+              <span class="level-label">当前关卡:</span>
+              <span class="level-value" id="current-level">关卡 1</span>
+            </div>
+          </div>
+          
+          <div class="control-buttons">
+            <button id="btn-start" class="btn btn-primary">开始巡航</button>
+            <button id="btn-pause" class="btn btn-secondary" disabled>暂停</button>
+            <button id="btn-undo" class="btn btn-warning" disabled>撤销</button>
+            <button id="btn-restart" class="btn btn-secondary">重开关卡</button>
+            <button id="btn-settlement" class="btn btn-success" disabled>完成结算</button>
+          </div>
+          
+          <div class="level-list">
+            <div class="list-title">关卡列表</div>
+            <div class="level-item active" data-level="1">
+              <div class="level-name">关卡 1: 边界测试</div>
+              <div class="level-desc">包含一次边界失败测试</div>
+            </div>
+            <div class="level-item" data-level="2">
+              <div class="level-name">关卡 2: 巡航路径</div>
+              <div class="level-desc">常规巡航任务</div>
+            </div>
+          </div>
+          
+          <div class="status-info">
+            <div class="status-item">
+              <span class="status-label">巡航时间:</span>
+              <span class="status-value mono" id="cruise-time">00:00</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">边界警告:</span>
+              <span class="status-value" id="boundary-warnings">0</span>
+            </div>
+            <div class="status-item">
+              <span class="status-label">状态:</span>
+              <span class="status-value" id="cruise-status">就绪</span>
+            </div>
+          </div>
+          
+          <div class="explanation-block">
+            <div class="explanation-title">功能说明</div>
+            <div class="explanation-item">
+              <span class="dot success"></span>
+              <span>绿色: 安全区域内巡航</span>
+            </div>
+            <div class="explanation-item">
+              <span class="dot warning"></span>
+              <span>黄色: 接近边界警告</span>
+            </div>
+            <div class="explanation-item">
+              <span class="dot error"></span>
+              <span>红色: 边界失败触发</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="settlement-page" class="page">
+      <div class="settlement-container">
+        <div class="settlement-header">
+          <h1>巡航结算</h1>
+          <button id="btn-back" class="btn btn-secondary">返回巡航</button>
+        </div>
+        
+        <div class="settlement-content">
+          <div class="result-card">
+            <div class="card-header">
+              <h2>巡航结果总览</h2>
+              <div class="result-badge" id="result-badge">部分完成</div>
+            </div>
+            <div class="result-summary">
+              <div class="summary-item">
+                <span class="summary-label">关卡:</span>
+                <span class="summary-value" id="summary-level">关卡 1</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">总耗时:</span>
+                <span class="summary-value mono" id="summary-time">00:00</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">边界失败:</span>
+                <span class="summary-value" id="summary-failures">1 次</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">撤销操作:</span>
+                <span class="summary-value" id="summary-undos">0 次</span>
+              </div>
+              <div class="summary-item summary-item-full invalid-highlight">
+                <span class="summary-label">⚠ 不可用记录:</span>
+                <span class="summary-value" id="summary-invalid">0 条</span>
+              </div>
+              <div class="summary-item summary-item-full">
+                <span class="summary-explanation">评审说明：不可用记录包含坐标系混用或边界越界等异常数据，月底转交评审会时需重点说明不可用原因</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="invalid-records-card" id="invalid-records-card">
+            <div class="card-header">
+              <h2>⚠ 不可用记录 (评审重点)</h2>
+              <div class="invalid-count-badge" id="invalid-count-badge">0 条</div>
+            </div>
+            <div class="invalid-list" id="invalid-list"></div>
+          </div>
+          
+          <div class="details-card">
+            <div class="card-header">
+              <h2>运行明细记录</h2>
+              <div class="card-subtitle">每条记录均附文字解释，不依赖颜色区分</div>
+            </div>
+            <div class="details-list" id="details-list"></div>
+          </div>
+          
+          <div class="export-section">
+            <div class="export-title">导出报告</div>
+            <div class="export-buttons">
+              <button id="btn-export-json" class="btn btn-primary">导出 JSON</button>
+              <button id="btn-export-txt" class="btn btn-secondary">导出文本</button>
+            </div>
+            <div class="export-hint">文件名包含时间戳，可区分每次运行</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+</html>
