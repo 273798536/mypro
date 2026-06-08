@@ -1,0 +1,116 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #e8edf3;
+  background-color: #0b1929;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: #0b1929;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b1929;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a4a6f;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3d5a7f;
+}
+
+@layer components {
+  .panel {
+    @apply bg-industrial-panel border border-industrial-border rounded;
+  }
+
+  .btn {
+    @apply px-3 py-1.5 text-sm font-medium rounded border transition-all duration-150;
+  }
+
+  .btn-primary {
+    @apply bg-status-safe/20 border-status-safe/40 text-status-safe hover:bg-status-safe/30 active:translate-y-px;
+  }
+
+  .btn-warning {
+    @apply bg-status-warning/20 border-status-warning/40 text-status-warning hover:bg-status-warning/30 active:translate-y-px;
+  }
+
+  .btn-danger {
+    @apply bg-status-danger/20 border-status-danger/40 text-status-danger hover:bg-status-danger/30 active:translate-y-px;
+  }
+
+  .btn-default {
+    @apply bg-industrial-panel border-industrial-border text-industrial-text hover:bg-industrial-border/30 active:translate-y-px;
+  }
+
+  .tag {
+    @apply inline-flex items-center px-2 py-0.5 text-2xs font-medium rounded border;
+  }
+
+  .tag-safe {
+    @apply bg-status-safe/15 border-status-safe/30 text-status-safe;
+  }
+
+  .tag-warning {
+    @apply bg-status-warning/15 border-status-warning/30 text-status-warning;
+  }
+
+  .tag-danger {
+    @apply bg-status-danger/15 border-status-danger/30 text-status-danger;
+  }
+
+  .tag-critical {
+    @apply bg-status-critical/15 border-status-critical/30 text-status-critical;
+  }
+
+  .tag-pending {
+    @apply bg-status-pending/15 border-status-pending/30 text-status-pending;
+  }
+
+  .status-dot {
+    @apply inline-block w-2 h-2 rounded-full;
+  }
+
+  .grid-bg {
+    background-image: linear-gradient(
+        rgba(42, 74, 111, 0.3) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(42, 74, 111, 0.3) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  .divider-line {
+    @apply border-t border-industrial-border/60;
+  }
+
+  .input-field {
+    @apply bg-industrial-bg border border-industrial-border rounded px-3 py-2 text-sm
+      text-industrial-text placeholder-industrial-muted focus:outline-none
+      focus:border-status-safe/50 transition-colors;
+  }
+}
