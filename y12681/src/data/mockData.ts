@@ -1,0 +1,211 @@
+import type { Sandbox, HistoryRecord } from '@/types';
+import { generateId } from '@/utils/helpers';
+
+const now = new Date();
+const hoursAgo = (h: number) => new Date(now.getTime() - h * 3600 * 1000).toISOString();
+const daysAgo = (d: number) => new Date(now.getTime() - d * 24 * 3600 * 1000).toISOString();
+
+const imgPrompt = (desc: string) =>
+  `https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(desc)}&image_size=landscape_16_9`;
+
+export const mockSandboxes: Sandbox[] = [
+  {
+    id: 'sb-case-unit-001',
+    name: '木卫四轨道倾角演示 - 课堂A版',
+    status: 'reviewing',
+    inclination: 23.5,
+    unit: 'radian',
+    cameraView: { x: 0, y: 15, z: 30, zoom: 1.2 },
+    modelOverlap: false,
+    notes: '⚠️ 边界案例：单位换算错误。数值 23.5 被误标记为弧度，但实际应为度。23.5弧度约等于1347°，远超合理范围。',
+    screenshots: [
+      {
+        id: 'sc-1',
+        url: imgPrompt('astronomical orbit visualization, Jupiter moon Callisto, orbital plane tilted, 3D render, dark space background, golden accent lines, scientific diagram style'),
+        description: '木卫四轨道全景 - 初版截图',
+        timestamp: hoursAgo(5),
+        judgment: '倾角看起来过大，轨道平面异常接近垂直',
+      },
+      {
+        id: 'sc-2',
+        url: imgPrompt('solar system orbit data visualization, angle measurement display 23.5 degrees, technical HUD overlay, space theme, dark blue background'),
+        description: '倾角读数特写 - 单位显示为rad',
+        timestamp: hoursAgo(4),
+        judgment: '读数23.5但单位标为rad，疑似单位混淆',
+      },
+    ],
+    createdAt: daysAgo(2),
+    updatedAt: hoursAgo(2),
+  },
+  {
+    id: 'sb-case-overlap-002',
+    name: '土星光环与卫星重叠演示',
+    status: 'draft',
+    inclination: 26.7,
+    unit: 'degree',
+    cameraView: { x: 5, y: 8, z: 20, zoom: 0.8 },
+    modelOverlap: true,
+    notes: '⚠️ 边界案例：模型重叠。土卫六Titan的轨道位置与光环内侧边缘发生视觉重叠，课堂演示时易造成误解。',
+    screenshots: [
+      {
+        id: 'sc-3',
+        url: imgPrompt('Saturn with rings, moon Titan overlapping inner ring edge, 3D render, astronomical visualization, dark space background, golden highlights'),
+        description: '土星系统 - 卫星Titan与光环重叠视图',
+        timestamp: hoursAgo(8),
+        judgment: 'Titan位置与C环内侧视觉上重叠，需要调整视角',
+      },
+      {
+        id: 'sc-4',
+        url: imgPrompt('Saturn rings close-up, data overlay showing satellite position coordinates, technical visualization, space blue theme'),
+        description: '重叠区域放大 - 坐标标注',
+        timestamp: hoursAgo(6),
+        judgment: 'Z轴方向坐标差小于模型半径之和',
+      },
+    ],
+    createdAt: daysAgo(1),
+    updatedAt: hoursAgo(5),
+  },
+  {
+    id: 'sb-case-camera-003',
+    name: '冥王星卡戎双星系统 - 极端视角',
+    status: 'confirmed',
+    inclination: 119.6,
+    unit: 'degree',
+    cameraView: { x: -500, y: 0.001, z: 0.5, zoom: 0.05 },
+    modelOverlap: false,
+    notes: '⚠️ 边界案例：视角参数异常。X坐标-500、Y坐标0.001、zoom 0.05均处于极不合理范围，实际可视画面几乎全黑。',
+    screenshots: [
+      {
+        id: 'sc-5',
+        url: imgPrompt('Pluto Charon binary system, nearly black screen, two distant dots barely visible, extreme camera angle, deep space'),
+        description: '当前视角渲染结果 - 几乎全黑',
+        timestamp: hoursAgo(12),
+        judgment: '画面几乎不可见，视角参数可能异常',
+      },
+      {
+        id: 'sc-6',
+        url: imgPrompt('Pluto and Charon orbiting barycenter, normal view, 3D astronomical render, clear visibility, dark space with stars, golden orbit lines'),
+        description: '正常视角参考图 - 对比用',
+        timestamp: hoursAgo(10),
+        judgment: '正常参数下可见双星系统完整结构',
+      },
+    ],
+    createdAt: daysAgo(3),
+    updatedAt: hoursAgo(8),
+  },
+  {
+    id: 'sb-demo-clean-004',
+    name: '地球黄道倾角标准演示',
+    status: 'confirmed',
+    inclination: 23.4393,
+    unit: 'degree',
+    cameraView: { x: 0, y: 10, z: 25, zoom: 1.0 },
+    modelOverlap: false,
+    notes: '标准演示用沙盘，数据全部校验通过。用于对照参考。',
+    screenshots: [
+      {
+        id: 'sc-7',
+        url: imgPrompt('Earth axial tilt 23.4 degrees, ecliptic plane visualization, 3D render, educational diagram, space background with stars, golden orbit path'),
+        description: '黄道倾角标准视图',
+        timestamp: hoursAgo(20),
+        judgment: '倾角数值和视觉效果一致',
+      },
+      {
+        id: 'sc-8',
+        url: imgPrompt('Earth seasons diagram, axial tilt demonstration, solstice and equinox positions, educational astronomy visualization'),
+        description: '四季成因补充视图',
+        timestamp: hoursAgo(18),
+        judgment: '辅助理解材料，无问题',
+      },
+    ],
+    createdAt: daysAgo(5),
+    updatedAt: daysAgo(1),
+  },
+];
+
+export const mockHistory: HistoryRecord[] = [
+  {
+    id: generateId(),
+    sandboxId: 'sb-case-unit-001',
+    version: 1,
+    data: {
+      ...mockSandboxes[0],
+      inclination: 23.5,
+      unit: 'degree',
+      updatedAt: daysAgo(2),
+    },
+    modifiedBy: '张统筹',
+    changeReason: '初次导入，单位为度，数值23.5°，数据来自教案原文。',
+    createdAt: daysAgo(2),
+    fieldsChanged: ['name', 'inclination', 'unit', 'screenshots'],
+  },
+  {
+    id: generateId(),
+    sandboxId: 'sb-case-unit-001',
+    version: 2,
+    data: mockSandboxes[0],
+    modifiedBy: '李助理',
+    changeReason: '误操作：将单位从度切换为弧度，但数值未同步换算。23.5°应为0.41rad左右。',
+    createdAt: hoursAgo(3),
+    fieldsChanged: ['unit'],
+  },
+  {
+    id: generateId(),
+    sandboxId: 'sb-case-overlap-002',
+    version: 1,
+    data: {
+      ...mockSandboxes[1],
+      cameraView: { x: 0, y: 10, z: 25, zoom: 1.0 },
+      modelOverlap: false,
+      updatedAt: daysAgo(1),
+    },
+    modifiedBy: '张统筹',
+    changeReason: '初始导入土星光环系统，视角正常。',
+    createdAt: daysAgo(1),
+    fieldsChanged: ['name', 'inclination', 'cameraView', 'screenshots'],
+  },
+  {
+    id: generateId(),
+    sandboxId: 'sb-case-overlap-002',
+    version: 2,
+    data: mockSandboxes[1],
+    modifiedBy: '王审核',
+    changeReason: '调整视角试图展示光环细节，不料拉近后Titan与光环边缘发生重叠。已标记modelOverlap=true。',
+    createdAt: hoursAgo(6),
+    fieldsChanged: ['cameraView', 'modelOverlap', 'notes'],
+  },
+  {
+    id: generateId(),
+    sandboxId: 'sb-case-camera-003',
+    version: 1,
+    data: {
+      ...mockSandboxes[2],
+      cameraView: { x: 0, y: 12, z: 30, zoom: 1.1 },
+      updatedAt: daysAgo(3),
+    },
+    modifiedBy: '张统筹',
+    changeReason: '冥王星卡戎双星系统初始配置，视角正常。',
+    createdAt: daysAgo(3),
+    fieldsChanged: ['name', 'inclination', 'cameraView', 'screenshots'],
+  },
+  {
+    id: generateId(),
+    sandboxId: 'sb-case-camera-003',
+    version: 2,
+    data: mockSandboxes[2],
+    modifiedBy: '李助理',
+    changeReason: '尝试极端侧视角度，参数调整过度导致画面几乎不可见。未回滚直接确认。',
+    createdAt: hoursAgo(10),
+    fieldsChanged: ['cameraView'],
+  },
+  {
+    id: generateId(),
+    sandboxId: 'sb-demo-clean-004',
+    version: 1,
+    data: mockSandboxes[3],
+    modifiedBy: '张统筹',
+    changeReason: '标准参考沙盘，确认无误。',
+    createdAt: daysAgo(5),
+    fieldsChanged: ['name', 'inclination', 'unit', 'cameraView', 'screenshots'],
+  },
+];

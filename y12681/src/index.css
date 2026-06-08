@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    background-color: #050B14;
+    color: #E8EEF7;
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0A1628;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2F4A80;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4A68A3;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-space-800/80 backdrop-blur-sm border border-space-600/50 rounded-xl;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:border-gold-500/50 hover:shadow-gold;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-gold-500 text-space-900 font-medium rounded-lg transition-all duration-200 hover:bg-gold-400 hover:shadow-gold active:bg-gold-600 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-space-700 text-space-100 font-medium rounded-lg border border-space-500 transition-all duration-200 hover:bg-space-600 hover:border-space-400;
+  }
+
+  .btn-ghost {
+    @apply px-3 py-1.5 text-space-200 rounded-lg transition-all duration-200 hover:bg-space-700 hover:text-gold-400;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 bg-space-900/80 border border-space-600 rounded-lg text-space-100 placeholder-space-400 focus:outline-none focus:border-gold-500 focus:ring-1 focus:ring-gold-500/50 transition-all duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-space-200 mb-1.5;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-space-100 mb-4 flex items-center gap-2;
+  }
+
+  .data-mono {
+    @apply font-mono text-sm text-gold-300;
+  }
+}
+
+.starfield-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.starfield-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 40px 70px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.4), transparent),
+    radial-gradient(2px 2px at 200px 50px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 250px 160px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 300px 90px, rgba(255,255,255,0.7), transparent);
+  background-repeat: repeat;
+  background-size: 320px 200px;
+  opacity: 0.4;
+  pointer-events: none;
+}
