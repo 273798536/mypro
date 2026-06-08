@@ -1,0 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #e4e4e7;
+  background-color: #0a0a0b;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #0a0a0b;
+  color: #e4e4e7;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #141416;
+}
+::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-track {
+  background: #27272a;
+  height: 4px;
+  border-radius: 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -5px;
+  background-color: #f59e0b;
+  height: 14px;
+  width: 14px;
+  border-radius: 0;
+  border: 2px solid #0a0a0b;
+}
+input[type="range"]::-moz-range-track {
+  background: #27272a;
+  height: 4px;
+  border-radius: 0;
+}
+input[type="range"]::-moz-range-thumb {
+  background-color: #f59e0b;
+  height: 14px;
+  width: 14px;
+  border-radius: 0;
+  border: 2px solid #0a0a0b;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-amber-500 text-zinc-900 font-medium text-sm border border-amber-500 hover:bg-amber-400 active:bg-amber-600 transition-colors;
+  }
+  .btn-secondary {
+    @apply px-4 py-2 bg-panel-surface text-zinc-200 font-medium text-sm border border-panel-border hover:bg-panel-hover transition-colors;
+  }
+  .btn-ghost {
+    @apply px-3 py-1.5 text-zinc-400 text-sm hover:text-zinc-100 hover:bg-panel-hover transition-colors;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium border;
+  }
+  .panel {
+    @apply bg-panel-surface border border-panel-border;
+  }
+  .data-mono {
+    @apply font-mono text-xs tracking-tight;
+  }
+  .label-sm {
+    @apply text-xs text-zinc-500 uppercase tracking-wider;
+  }
+}
