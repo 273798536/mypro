@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/mockdata.ts","./src/types.ts","./src/components/navbar.tsx","./src/context/appcontext.tsx","./src/pages/detectionpage.tsx","./src/pages/importpage.tsx","./src/pages/problemsolvingpage.tsx","./src/pages/reportpage.tsx","./src/pages/timelinepage.tsx","./src/pages/visualizationpage.tsx"],"version":"5.9.3"}
