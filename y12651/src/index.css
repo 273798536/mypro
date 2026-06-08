@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-deep: #0a1628;
+  --bg-dark: #0f1e36;
+  --bg-mid: #1a2d4a;
+  --cyber-cyan: #00e5ff;
+  --cyber-cyan-dim: #00a3b8;
+  --alert-orange: #ff6b35;
+  --success-green: #00ff88;
+  --warn-yellow: #ffd93d;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg-deep);
+  font-family: 'JetBrains Mono', monospace;
+  color: #b8d4e8;
+  -webkit-font-smoothing: antialiased;
+}
+
+@layer components {
+  .clip-chamfer {
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(15, 30, 54, 0.85), rgba(26, 45, 74, 0.65));
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 229, 255, 0.15);
+  }
+
+  .glow-border {
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.15), inset 0 0 10px rgba(0, 229, 255, 0.05);
+  }
+
+  .hud-text {
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .cyber-btn {
+    @apply clip-chamfer px-5 py-2.5 font-display text-sm font-semibold tracking-wider uppercase transition-all duration-200;
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(0, 163, 184, 0.1));
+    border: 1px solid rgba(0, 229, 255, 0.5);
+    color: var(--cyber-cyan);
+  }
+
+  .cyber-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.3), rgba(0, 163, 184, 0.2));
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .cyber-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .cyber-btn-primary {
+    background: linear-gradient(135deg, rgba(0, 229, 255, 0.35), rgba(0, 163, 184, 0.25));
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.3);
+  }
+
+  .cyber-btn-danger {
+    border-color: rgba(255, 107, 53, 0.5);
+    color: var(--alert-orange);
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.15), rgba(200, 80, 40, 0.1));
+  }
+
+  .cyber-btn-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(255, 107, 53, 0.3), rgba(200, 80, 40, 0.2));
+    box-shadow: 0 0 15px rgba(255, 107, 53, 0.4);
+  }
+
+  .cyber-btn-success {
+    border-color: rgba(0, 255, 136, 0.5);
+    color: var(--success-green);
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 180, 100, 0.1));
+  }
+
+  .cyber-btn-success:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.3), rgba(0, 180, 100, 0.2));
+    box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+  }
+
+  .cyber-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, rgba(0, 229, 255, 0.3), rgba(0, 229, 255, 0.6));
+    border-radius: 2px;
+    outline: none;
+  }
+
+  .cyber-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--cyber-cyan);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+    border: 2px solid var(--bg-deep);
+    transition: transform 0.15s;
+  }
+
+  .cyber-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .cyber-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--cyber-cyan);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.8);
+    border: 2px solid var(--bg-deep);
+  }
+
+  .diff-flash {
+    animation: diffFlash 0.8s ease-out;
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .scrollbar-cyber::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-cyber::-webkit-scrollbar-track {
+    background: rgba(0, 229, 255, 0.05);
+  }
+  .scrollbar-cyber::-webkit-scrollbar-thumb {
+    background: rgba(0, 229, 255, 0.3);
+    border-radius: 3px;
+  }
+  .scrollbar-cyber::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 229, 255, 0.5);
+  }
+}
+
+@keyframes diffFlash {
+  0% { background-color: rgba(255, 217, 61, 0.4); }
+  100% { background-color: transparent; }
+}
