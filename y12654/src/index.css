@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #E5E9EC;
+  background-color: #1F2A33;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #1F2A33;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-sm text-sm font-medium transition-colors shadow-subtle;
+  }
+  .btn-secondary {
+    @apply bg-surface-600 hover:bg-surface-500 text-surface-50 px-4 py-2 rounded-sm text-sm font-medium transition-colors border border-surface-500;
+  }
+  .btn-danger {
+    @apply bg-danger-500 hover:bg-danger-600 text-white px-4 py-2 rounded-sm text-sm font-medium transition-colors;
+  }
+  .btn-ghost {
+    @apply hover:bg-surface-600 text-surface-100 px-3 py-1.5 rounded-sm text-sm font-medium transition-colors;
+  }
+  .card {
+    @apply bg-surface-700 border border-surface-600 rounded-sm shadow-panel;
+  }
+  .input-field {
+    @apply bg-surface-800 border border-surface-500 rounded-sm px-3 py-2 text-sm text-surface-50 focus:border-primary-400 focus:outline-none focus:ring-1 focus:ring-primary-500;
+  }
+  .label-text {
+    @apply text-xs font-medium text-surface-300 uppercase tracking-wider;
+  }
+  .tag {
+    @apply inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium;
+  }
+  .divider {
+    @apply border-t border-surface-600 my-3;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #2C363E;
+}
+::-webkit-scrollbar-thumb {
+  background: #556573;
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7E8E9B;
+}
+
+table {
+  border-collapse: collapse;
+}
