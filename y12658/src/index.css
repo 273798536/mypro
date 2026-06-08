@@ -1,0 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #0A1628;
+  color: #E2E8F0;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(30, 58, 95, 0.3);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.7);
+}
+
+/* 细边框按钮通用样式 */
+@layer components {
+  .btn-ocean {
+    @apply px-3 py-1.5 border border-ocean-600 rounded text-sm text-slate-200 bg-ocean-800/50 hover:bg-ocean-700/70 hover:border-data-cyan/60 hover:shadow-glow-cyan transition-all duration-200;
+  }
+  .btn-ocean-primary {
+    @apply px-3 py-1.5 border border-data-cyan/40 rounded text-sm text-data-cyan bg-data-cyan/10 hover:bg-data-cyan/20 hover:shadow-glow-cyan transition-all duration-200;
+  }
+  .btn-ocean-danger {
+    @apply px-3 py-1.5 border border-data-red/40 rounded text-sm text-data-red bg-data-red/10 hover:bg-data-red/20 hover:shadow-glow-red transition-all duration-200;
+  }
+  .panel-ocean {
+    @apply bg-ocean-900/80 backdrop-blur-sm border border-ocean-700/60 rounded-md;
+  }
+  .chip-ocean {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-mono border border-ocean-600 bg-ocean-800/60 text-slate-300;
+  }
+}
