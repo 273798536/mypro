@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #0f172a;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-safety-orange text-white font-medium rounded hover:bg-orange-600 transition-colors;
+  }
+  .btn-secondary {
+    @apply px-4 py-2 bg-slate-700 text-slate-200 border border-slate-600 rounded hover:bg-slate-600 transition-colors;
+  }
+  .btn-danger {
+    @apply px-4 py-2 bg-safety-red text-white rounded hover:bg-red-600 transition-colors;
+  }
+  .input-field {
+    @apply w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded text-slate-200 focus:outline-none focus:border-safety-blue focus:ring-1 focus:ring-safety-blue;
+  }
+  .card {
+    @apply bg-slate-800 border border-slate-700 rounded-lg shadow-lg;
+  }
+  .stat-card {
+    @apply bg-slate-800 border border-slate-700 rounded-lg p-4 relative overflow-hidden;
+  }
+}
