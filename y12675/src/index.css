@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .slider::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 bg-cyan-400 rounded-full cursor-pointer;
+  }
+
+  .slider::-moz-range-thumb {
+    @apply w-4 h-4 bg-cyan-400 rounded-full cursor-pointer border-0;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply bg-gray-900 bg-opacity-95 backdrop-blur-sm rounded-lg border border-gray-800;
+  }
+
+  .cyber-button {
+    @apply px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition-all duration-200;
+    @apply hover:shadow-lg hover:shadow-cyan-600/30 active:scale-95;
+  }
+
+  .status-badge {
+    @apply px-2 py-1 text-xs rounded font-medium;
+  }
+
+  .status-badge-success {
+    @apply bg-green-600 text-white;
+  }
+
+  .status-badge-warning {
+    @apply bg-orange-600 text-white;
+  }
+
+  .status-badge-error {
+    @apply bg-red-600 text-white;
+  }
+}
+
+canvas {
+  display: block;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
