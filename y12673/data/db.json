@@ -1,0 +1,268 @@
+{
+  "records": [
+    {
+      "id": "rec-001",
+      "title": "火山地貌剖切分析 - 富士山北麓",
+      "location": "日本富士山",
+      "timestamp": "2025-06-01T10:30:00.000Z",
+      "batchId": "batch-fuji-2025-0601",
+      "screenshots": [
+        {
+          "id": "ss-001",
+          "url": "https://picsum.photos/seed/volcano1/600/400",
+          "deviceCoordinates": {
+            "x": 120.5,
+            "y": 35.3,
+            "z": 850
+          },
+          "timestamp": "2025-06-01T10:31:00.000Z",
+          "description": "主火山口剖面视图"
+        },
+        {
+          "id": "ss-002",
+          "url": "https://picsum.photos/seed/volcano2/600/400",
+          "deviceCoordinates": {
+            "x": 121.2,
+            "y": 35.5,
+            "z": 720
+          },
+          "timestamp": "2025-06-01T10:35:00.000Z",
+          "description": "熔岩流沉积层"
+        },
+        {
+          "id": "ss-003",
+          "url": "https://picsum.photos/seed/volcano3/600/400",
+          "deviceCoordinates": {
+            "x": 120.8,
+            "y": 35.1,
+            "z": 920
+          },
+          "timestamp": "2025-06-01T10:38:00.000Z",
+          "description": "火山碎屑岩分层"
+        }
+      ],
+      "currentConclusion": {
+        "id": "concl-001",
+        "content": "经分析，该剖面显示了富士山近2000年的三次主要喷发事件。最下层约为公元100年左右的喷发，中间层为公元800年左右，顶层为1707年宝永大喷发的沉积。各层厚度比例约为3:2:5，表明宝永喷发规模最大。",
+        "author": "地质调查组A",
+        "timestamp": "2025-06-01T15:40:00.000Z"
+      },
+      "history": [
+        {
+          "id": "hist-001",
+          "version": 1,
+          "conclusion": {
+            "id": "concl-001-v1",
+            "content": "初步分析显示该剖面有三层主要喷发沉积。",
+            "author": "地质调查组A",
+            "timestamp": "2025-06-01T12:20:00.000Z"
+          },
+          "reason": "初步结论，数据不完整",
+          "modifiedBy": "地质调查组A",
+          "modifiedAt": "2025-06-01T12:20:00.000Z"
+        },
+        {
+          "id": "hist-002",
+          "version": 2,
+          "conclusion": {
+            "id": "concl-001-v2",
+            "content": "经分析，该剖面显示了富士山近2000年的三次主要喷发事件。",
+            "author": "地质调查组A",
+            "timestamp": "2025-06-01T15:40:00.000Z"
+          },
+          "reason": "补充测年数据后更新",
+          "modifiedBy": "地质调查组A",
+          "modifiedAt": "2025-06-01T15:40:00.000Z"
+        }
+      ],
+      "perspectives": [
+        {
+          "id": "persp-001",
+          "name": "主视图",
+          "cameraPosition": {
+            "x": 120,
+            "y": 36,
+            "z": 1500
+          },
+          "cameraTarget": {
+            "x": 120.8,
+            "y": 35.3,
+            "z": 800
+          },
+          "timestamp": "2025-06-01T16:00:00.000Z"
+        }
+      ],
+      "createdAt": "2025-06-01T10:00:00.000Z",
+      "updatedAt": "2025-06-02T09:15:00.000Z"
+    },
+    {
+      "id": "rec-002",
+      "title": "长白山火山口西坡剖面",
+      "location": "中国长白山",
+      "timestamp": "2025-05-28T08:15:00.000Z",
+      "batchId": "batch-changbaishan-2025-0528",
+      "screenshots": [
+        {
+          "id": "ss-004",
+          "url": "https://picsum.photos/seed/volcano4/600/400",
+          "deviceCoordinates": {
+            "x": 128,
+            "y": 42,
+            "z": 2100
+          },
+          "timestamp": "2025-05-28T08:20:00.000Z",
+          "description": "天池西侧剖面"
+        }
+      ],
+      "currentConclusion": {
+        "id": "concl-002",
+        "content": "该剖面主要记录了公元946-947年天池大喷发的火山碎屑流沉积。",
+        "author": "地质调查组B",
+        "timestamp": "2025-05-28T14:30:00.000Z"
+      },
+      "history": [
+        {
+          "id": "hist-003",
+          "version": 1,
+          "conclusion": {
+            "id": "concl-002-v1",
+            "content": "剖面分析进行中...",
+            "author": "地质调查组B",
+            "timestamp": "2025-05-28T10:00:00.000Z"
+          },
+          "reason": "初始创建",
+          "modifiedBy": "地质调查组B",
+          "modifiedAt": "2025-05-28T10:00:00.000Z"
+        }
+      ],
+      "perspectives": [],
+      "createdAt": "2025-05-28T08:00:00.000Z",
+      "updatedAt": "2025-05-28T14:30:00.000Z"
+    },
+    {
+      "id": "rec-1f0e73c0-f200-44cf-97d9-41f02ae44023",
+      "title": "测试火山剖面 · 重复导入场景",
+      "location": "测试火山场",
+      "timestamp": "2026-06-08T20:19:43.807Z",
+      "batchId": "batch-test-duplicate-2026-06-08",
+      "screenshots": [
+        {
+          "id": "ss-test-1-1",
+          "url": "https://picsum.photos/seed/testvolc1a/600/400",
+          "deviceCoordinates": {
+            "x": 130.1,
+            "y": 32,
+            "z": 510
+          },
+          "timestamp": "2026-06-08T20:14:43.805Z",
+          "description": "测试剖面主视图 #1"
+        },
+        {
+          "id": "ss-test-1-2",
+          "url": "https://picsum.photos/seed/testvolc1b/600/400",
+          "deviceCoordinates": {
+            "x": 130.5,
+            "y": 32.15,
+            "z": 600
+          },
+          "timestamp": "2026-06-08T20:16:43.805Z",
+          "description": "次火山口沉积层 #1"
+        },
+        {
+          "id": "ss-test-2-1",
+          "url": "https://picsum.photos/seed/testvolc2a/600/400",
+          "deviceCoordinates": {
+            "x": 130.2,
+            "y": 32,
+            "z": 520
+          },
+          "timestamp": "2026-06-08T20:14:44.918Z",
+          "description": "测试剖面主视图 #2"
+        },
+        {
+          "id": "ss-test-2-2",
+          "url": "https://picsum.photos/seed/testvolc2b/600/400",
+          "deviceCoordinates": {
+            "x": 130.5,
+            "y": 32.2,
+            "z": 600
+          },
+          "timestamp": "2026-06-08T20:16:44.918Z",
+          "description": "次火山口沉积层 #2"
+        },
+        {
+          "id": "ss-test-3-1",
+          "url": "https://picsum.photos/seed/testvolc3a/600/400",
+          "deviceCoordinates": {
+            "x": 130.3,
+            "y": 32,
+            "z": 530
+          },
+          "timestamp": "2026-06-08T20:14:45.523Z",
+          "description": "测试剖面主视图 #3"
+        },
+        {
+          "id": "ss-test-3-2",
+          "url": "https://picsum.photos/seed/testvolc3b/600/400",
+          "deviceCoordinates": {
+            "x": 130.5,
+            "y": 32.25,
+            "z": 600
+          },
+          "timestamp": "2026-06-08T20:16:45.523Z",
+          "description": "次火山口沉积层 #3"
+        }
+      ],
+      "currentConclusion": {
+        "id": "concl-401d03bd-c6c6-4bc1-bc4a-c352917f1a80",
+        "content": "修正结论（第三次导入）：最新分析发现顶层沉积为1700年左右的小型喷发，之前的三次喷发结论保持不变。",
+        "author": "自动测试程序",
+        "timestamp": "2026-06-08T20:19:45.525Z"
+      },
+      "history": [
+        {
+          "id": "hist-4ccb6c6f-d41b-4784-a244-59f319d2a4f6",
+          "version": 1,
+          "conclusion": {
+            "id": "concl-feddb83a-594f-44b8-b80e-124eeffaf0e1-v1",
+            "content": "初始结论：该剖面显示火山经历了至少两次主要喷发活动，沉积层厚度约15米。",
+            "author": "自动测试程序",
+            "timestamp": "2026-06-08T20:19:43.807Z"
+          },
+          "reason": "初始创建",
+          "modifiedBy": "自动测试程序",
+          "modifiedAt": "2026-06-08T20:19:43.807Z"
+        },
+        {
+          "id": "hist-0fb17ec4-3735-4eb2-9867-32dc1b8215b5",
+          "version": 2,
+          "conclusion": {
+            "id": "concl-3b8b0289-7630-46bb-b96f-906418e26054",
+            "content": "初始结论：该剖面显示火山经历了至少两次主要喷发活动，沉积层厚度约15米。",
+            "author": "自动测试程序",
+            "timestamp": "2026-06-08T20:19:43.807Z"
+          },
+          "reason": "重复导入批次 batch-test-duplicate-2026-06-08，更新数据",
+          "modifiedBy": "自动测试程序",
+          "modifiedAt": "2026-06-08T20:19:44.920Z"
+        },
+        {
+          "id": "hist-fc9a4149-1f95-4331-8c08-0a1d1f24c7fd",
+          "version": 3,
+          "conclusion": {
+            "id": "concl-84e7fd3e-19c7-4f18-98a6-a19c718317f8",
+            "content": "修正结论（第二次导入）：补充测年数据后确认共有三次喷发事件，分别为公元200年、800年和1400年。",
+            "author": "自动测试程序",
+            "timestamp": "2026-06-08T20:19:44.920Z"
+          },
+          "reason": "重复导入批次 batch-test-duplicate-2026-06-08，更新数据",
+          "modifiedBy": "自动测试程序",
+          "modifiedAt": "2026-06-08T20:19:45.525Z"
+        }
+      ],
+      "perspectives": [],
+      "createdAt": "2026-06-08T20:19:43.807Z",
+      "updatedAt": "2026-06-08T20:19:45.525Z"
+    }
+  ]
+}
