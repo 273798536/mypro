@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #e2e8f0;
+  background-color: #0f172a;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0f172a;
+  background-image:
+    linear-gradient(rgba(100, 116, 139, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(100, 116, 139, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+@layer components {
+  .eng-panel {
+    @apply bg-eng-panel border border-eng-border rounded-sm shadow-eng;
+  }
+
+  .eng-card {
+    @apply bg-eng-card border border-eng-border rounded-sm;
+  }
+
+  .eng-btn {
+    @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium
+           border-2 border-eng-primary text-eng-text bg-transparent
+           transition-all duration-150 hover:bg-eng-primary hover:translate-y-[-1px]
+           active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .eng-btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-medium
+           border border-eng-border text-eng-dim bg-transparent
+           transition-all duration-150 hover:border-eng-muted hover:text-eng-text;
+  }
+
+  .eng-btn-warn {
+    @apply eng-btn border-eng-warn hover:bg-eng-warn;
+  }
+
+  .eng-btn-pass {
+    @apply eng-btn border-eng-pass hover:bg-eng-pass;
+  }
+
+  .eng-input {
+    @apply w-full bg-eng-bg border border-eng-border px-3 py-1.5 text-sm text-eng-text
+           focus:outline-none focus:border-eng-primary focus:ring-1 focus:ring-eng-primary
+           transition-colors duration-150 font-mono;
+  }
+
+  .eng-label {
+    @apply text-xs text-eng-muted uppercase tracking-wider font-mono mb-1 block;
+  }
+
+  .eng-tag {
+    @apply inline-flex items-center px-2 py-0.5 text-xs font-mono border rounded-sm;
+  }
+
+  .eng-divider {
+    @apply h-px bg-eng-border my-3;
+  }
+}
