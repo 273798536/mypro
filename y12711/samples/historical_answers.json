@@ -1,0 +1,55 @@
+[
+  {
+    "question_id": "Q1001",
+    "answer": "A",
+    "difficulty": 0.55,
+    "discrimination": 0.42,
+    "guess_rate": 0.25,
+    "correct_count": 550,
+    "total_count": 1000
+  },
+  {
+    "question_id": "Q1002",
+    "answer": "B",
+    "difficulty": 0.95,
+    "discrimination": 0.35,
+    "guess_rate": 0.25,
+    "correct_count": 950,
+    "total_count": 1000
+  },
+  {
+    "question_id": "Q1003",
+    "answer": "C",
+    "difficulty": 1.2,
+    "discrimination": 0.48,
+    "guess_rate": 0.25,
+    "note": "这条难度 P=1.2 明显是外推越界的脏数据"
+  },
+  {
+    "question_id": "Q1004",
+    "answer": "D",
+    "difficulty": 0.1,
+    "discrimination": 0.1,
+    "guess_rate": 0.5,
+    "correct_count": 100,
+    "total_count": 1000
+  },
+  {
+    "question_id": "Q1005",
+    "answer": "A",
+    "difficulty": 0.72,
+    "discrimination": 0.38,
+    "guess_rate": 0.25,
+    "correct_count": 0,
+    "total_count": 0,
+    "note": "这条 total_count=0 是除零边界案例"
+  },
+  {
+    "question_id": "Q1006",
+    "difficulty": 0.68,
+    "note": "这条缺少 answer，也没区分度，但有难度——边缘有效"
+  },
+  {
+    "note": "这条连 question_id 都缺失，应该被跳过但不影响其他记录"
+  }
+]
