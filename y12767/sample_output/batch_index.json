@@ -1,0 +1,15 @@
+{
+  "batches": {
+    "NH3N_20260610_053045_cba70252": {
+      "batch_name": "氨氮监测批次_20260610_053045",
+      "created_at": "2026-06-10 05:30:45.916592",
+      "input_hash": "cba70252c35bfb44",
+      "input_dir": "/Users/mac/pro/solo/workspaces/y12767/sample_input",
+      "status": "completed",
+      "data_file": "/Users/mac/pro/solo/workspaces/y12767/sample_output/.batch_data/NH3N_20260610_053045_cba70252.json",
+      "monitor_count": 10,
+      "reagent_count": 5,
+      "anomaly_count": 26
+    }
+  }
+}

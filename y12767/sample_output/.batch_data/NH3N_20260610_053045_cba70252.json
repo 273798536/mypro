@@ -1,0 +1,26 @@
+{
+  "batch_id": "NH3N_20260610_053045_cba70252",
+  "batch_name": "氨氮监测批次_20260610_053045",
+  "created_at": "2026-06-10T05:30:45.916592",
+  "input_dir": "/Users/mac/pro/solo/workspaces/y12767/sample_input",
+  "output_dir": "/Users/mac/pro/solo/workspaces/y12767/sample_output",
+  "status": "completed",
+  "monitor_count": 10,
+  "reagent_count": 5,
+  "anomaly_count": 26,
+  "processed_monitor_ids": [
+    "1",
+    "2",
+    "NH3N-2025-0601-001",
+    "NH3N-2025-0601-002",
+    "NH3N-2025-0601-003",
+    "NH3N-2025-0602-001",
+    "NH3N-2025-0602-002",
+    "NH3N-2025-0603-001",
+    "NH3N-2025-0603-002",
+    "NH3N-2025-0604-001"
+  ],
+  "extra": {
+    "results_file": "/Users/mac/pro/solo/workspaces/y12767/sample_output/.batch_data/NH3N_20260610_053045_cba70252_results.json"
+  }
+}

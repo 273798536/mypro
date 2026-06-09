@@ -1,0 +1,1525 @@
+{
+  "batch_id": "NH3N_20260610_053045_cba70252",
+  "batch_name": "氨氮监测批次_20260610_053045",
+  "created_at": "2026-06-10T05:30:45.916592",
+  "monitor_records": [
+    {
+      "record_id": "1",
+      "sample_id": "S-20250605-01",
+      "sample_name": "平行样-进水口",
+      "monitor_date": "2026-06-05T00:00:00",
+      "blank_control_value": 0.033,
+      "blank_control_unit": null,
+      "sample_value": 0.462,
+      "sample_unit": null,
+      "standard_curve_id": null,
+      "operator": "张工",
+      "reviewer": null,
+      "remarks": null,
+      "reagent_ids": [
+        "REAG-001",
+        "REAG-003"
+      ]
+    },
+    {
+      "record_id": "2",
+      "sample_id": "S-20250605-02",
+      "sample_name": "平行样-总排放口",
+      "monitor_date": "2026-06-05T00:00:00",
+      "blank_control_value": null,
+      "blank_control_unit": null,
+      "sample_value": 0.301,
+      "sample_unit": null,
+      "standard_curve_id": null,
+      "operator": "张工",
+      "reviewer": null,
+      "remarks": null,
+      "reagent_ids": [
+        "REAG-001",
+        "REAG-003"
+      ]
+    },
+    {
+      "record_id": "NH3N-2025-0601-001",
+      "sample_id": "S-20250601-01",
+      "sample_name": "进水口",
+      "monitor_date": "2026-06-01T00:00:00",
+      "blank_control_value": 0.032,
+      "blank_control_unit": "A",
+      "sample_value": 0.456,
+      "sample_unit": null,
+      "standard_curve_id": "CURVE-20250528",
+      "operator": "张工",
+      "reviewer": "陈主管",
+      "remarks": null,
+      "reagent_ids": [
+        "REAG-001",
+        "REAG-003"
+      ]
+    },
+    {
+      "record_id": "NH3N-2025-0601-002",
+      "sample_id": "S-20250601-02",
+      "sample_name": "生化池出水",
+      "monitor_date": "2026-06-01T00:00:00",
+      "blank_control_value": null,
+      "blank_control_unit": null,
+      "sample_value": 0.312,
+      "sample_unit": "A",
+      "standard_curve_id": "CURVE-20250528",
+      "operator": "李工",
+      "reviewer": null,
+      "remarks": "补录：原记录丢失，根据实验本补",
+      "reagent_ids": [
+        "REAG-001",
+        "REAG-003"
+      ]
+    },
+    {
+      "record_id": "NH3N-2025-0601-003",
+      "sample_id": "S-20250601-03",
+      "sample_name": "总排放口",
+      "monitor_date": "2026-06-01T00:00:00",
+      "blank_control_value": 0.158,
+      "blank_control_unit": "A",
+      "sample_value": 0.678,
+      "sample_unit": "A",
+      "standard_curve_id": null,
+      "operator": "李工",
+      "reviewer": "陈主管",
+      "remarks": null,
+      "reagent_ids": [
+        "REAG-002",
+        "REAG-003"
+      ]
+    },
+    {
+      "record_id": "NH3N-2025-0602-001",
+      "sample_id": "S-20250602-01",
+      "sample_name": "进水口",
+      "monitor_date": "2026-06-02T00:00:00",
+      "blank_control_value": 0.028,
+      "blank_control_unit": null,
+      "sample_value": 0.389,
+      "sample_unit": "A",
+      "standard_curve_id": "CURVE-20250602",
+      "operator": null,
+      "reviewer": null,
+      "remarks": "原记录空白漏填，补",
+      "reagent_ids": [
+        "REAG-001",
+        "REAG-004"
+      ]
+    },
+    {
+      "record_id": "NH3N-2025-0602-002",
+      "sample_id": "S-20250602-02",
+      "sample_name": "总排放口",
+      "monitor_date": "2026-06-02T00:00:00",
+      "blank_control_value": 0.001,
+      "blank_control_unit": "A",
+      "sample_value": 0.245,
+      "sample_unit": "A",
+      "standard_curve_id": "CURVE-20250602",
+      "operator": "王工",
+      "reviewer": "陈主管",
+      "remarks": "正常",
+      "reagent_ids": [
+        "REAG-999"
+      ]
+    },
+    {
+      "record_id": "NH3N-2025-0603-001",
+      "sample_id": "S-20250603-01",
+      "sample_name": "进水口",
+      "monitor_date": "2026-06-03T00:00:00",
+      "blank_control_value": 0.035,
+      "blank_control_unit": "A",
+      "sample_value": 0.512,
+      "sample_unit": null,
+      "standard_curve_id": "CURVE-20250603",
+      "operator": "张工",
+      "reviewer": "陈主管",
+      "remarks": null,
+      "reagent_ids": [
+        "REAG-001",
+        "REAG-003"
+      ]
+    },
+    {
+      "record_id": "NH3N-2025-0603-002",
+      "sample_id": "S-20250603-02",
+      "sample_name": "总排放口",
+      "monitor_date": "2026-06-03T00:00:00",
+      "blank_control_value": 0.04,
+      "blank_control_unit": "A",
+      "sample_value": 0.298,
+      "sample_unit": "A",
+      "standard_curve_id": "CURVE-20250603",
+      "operator": "张工",
+      "reviewer": null,
+      "remarks": "样品浊度较高，已絮凝处理，待",
+      "reagent_ids": []
+    },
+    {
+      "record_id": "NH3N-2025-0604-001",
+      "sample_id": "S-20250604-01",
+      "sample_name": "应急采样-1#",
+      "monitor_date": "2026-06-04T00:00:00",
+      "blank_control_value": 0.029,
+      "blank_control_unit": "A",
+      "sample_value": 1.876,
+      "sample_unit": "A",
+      "standard_curve_id": null,
+      "operator": "李工",
+      "reviewer": null,
+      "remarks": "应急监测，备注待补...",
+      "reagent_ids": [
+        "REAG-005",
+        "REAG-003"
+      ]
+    }
+  ],
+  "reagent_records": [
+    {
+      "reagent_id": "REAG-001",
+      "name": "纳氏试剂",
+      "batch_no": "B20250101",
+      "manufacturer": "国药集团",
+      "open_date": "2026-05-11T00:00:00",
+      "expiry_date": "2026-11-07T00:00:00",
+      "volume_used": 5.0,
+      "volume_unit": "mL",
+      "operator": "张工",
+      "remarks": null
+    },
+    {
+      "reagent_id": "REAG-002",
+      "name": "纳氏试剂",
+      "batch_no": "B20240301",
+      "manufacturer": "国药集团",
+      "open_date": "2026-02-10T00:00:00",
+      "expiry_date": "2026-05-11T00:00:00",
+      "volume_used": 5.0,
+      "volume_unit": "mL",
+      "operator": "李工",
+      "remarks": "颜色略深，注意观察"
+    },
+    {
+      "reagent_id": "REAG-003",
+      "name": "酒石酸钾钠溶液",
+      "batch_no": "C20250215",
+      "manufacturer": "阿拉丁试剂",
+      "open_date": "2026-05-21T00:00:00",
+      "expiry_date": "2026-12-27T00:00:00",
+      "volume_used": 10.0,
+      "volume_unit": "mL",
+      "operator": null,
+      "remarks": "配置时间2025-05-20"
+    },
+    {
+      "reagent_id": "REAG-004",
+      "name": "氨氮标准使用液",
+      "batch_no": "D20250401",
+      "manufacturer": "国家标准物质中心",
+      "open_date": "2026-05-31T00:00:00",
+      "expiry_date": "2027-05-06T00:00:00",
+      "volume_used": 2.0,
+      "volume_unit": "mL",
+      "operator": "王工",
+      "remarks": null
+    },
+    {
+      "reagent_id": "REAG-005",
+      "name": "纳氏试剂",
+      "batch_no": "B20250501",
+      "manufacturer": "国药集团",
+      "open_date": "2026-06-08T00:00:00",
+      "expiry_date": "2026-06-15T00:00:00",
+      "volume_used": 8.0,
+      "volume_unit": "mL",
+      "operator": "李工",
+      "remarks": "新到货，刚开瓶"
+    }
+  ],
+  "anomaly_records": [
+    {
+      "anomaly_id": "UNIT_1_0",
+      "monitor_record_id": "1",
+      "anomaly_type": "UNIT_MISSING",
+      "severity": "minor",
+      "description": "样品[平行样-进水口]样品检测值单位、空白对照单位未填写",
+      "plain_explanation": "平行样-进水口（编号S-20250605-01）的检测记录中，样品检测值单位和空白对照单位没有写。虽然数值填了，但没有单位就像说'身高170'却不说厘米还是毫米一样，别人无法判断这个数值合不合理。氨氮常用单位是mg/L（毫克每升），吸光度一般写'A'或不写单位。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "sample_unit",
+        "blank_control_unit"
+      ],
+      "retest_suggestion": "一般不需要复测，直接询问当时的检测人员补填单位即可。",
+      "balance_calc": {
+        "sample_id": "S-20250605-01",
+        "sample_name": "平行样-进水口",
+        "blank_absorbance": 0.033,
+        "blank_unit": "A",
+        "sample_absorbance": 0.462,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.429,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 56.447,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 2.8224,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查同批次其他记录的单位写法，保持一致；2. 若确实记不清，备注'单位为mg/L（根据本实验室常规标注补录）'；3. 提醒同事以后写完数值顺手把单位写上。",
+      "created_at": "2026-06-10T05:30:45.917882"
+    },
+    {
+      "anomaly_id": "REV_1_1",
+      "monitor_record_id": "1",
+      "anomaly_type": "REVIEWER_MISSING",
+      "severity": "info",
+      "description": "样品[平行样-进水口]未填写审核人员",
+      "plain_explanation": "平行样-进水口的检测结果已经填了，但还没有人审核签字。按规定检测记录需要第二个人复核，确认数值、单位、计算公式都没问题。请找质检主管或有资质的同事审一下。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "reviewer"
+      ],
+      "retest_suggestion": "不需要复测，走审核流程即可。",
+      "balance_calc": {
+        "sample_id": "S-20250605-01",
+        "sample_name": "平行样-进水口",
+        "blank_absorbance": 0.033,
+        "blank_unit": "A",
+        "sample_absorbance": 0.462,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.429,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 56.447,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 2.8224,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 把原始记录和计算过程一起交给审核人；2. 审核无误后签字；3. 如有修改请按规范划改并签名。",
+      "created_at": "2026-06-10T05:30:45.917895"
+    },
+    {
+      "anomaly_id": "CURVE_1_2",
+      "monitor_record_id": "1",
+      "anomaly_type": "STANDARD_CURVE_MISSING",
+      "severity": "major",
+      "description": "样品[平行样-进水口]未关联标准曲线编号",
+      "plain_explanation": "平行样-进水口的检测结果已经填了，但没写用了哪条标准曲线来计算浓度。不同日期做的标曲斜率和截距都不一样，没有标曲编号就没法复核这个数值是怎么算出来的。请查一下当天的标曲记录，把编号填上。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "standard_curve_id"
+      ],
+      "retest_suggestion": "如果能找到当天的标曲数据，直接补填编号即可；如果完全找不到标曲记录，原结果无法追溯，建议重做标曲并复测样品。",
+      "balance_calc": {
+        "sample_id": "S-20250605-01",
+        "sample_name": "平行样-进水口",
+        "blank_absorbance": 0.033,
+        "blank_unit": "A",
+        "sample_absorbance": 0.462,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.429,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 56.447,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 2.8224,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查标曲记录本或仪器打印记录；2. 确认日期一致后填入编号；3. 若标曲丢失，按规范重新配置标准系列并制作新曲线。",
+      "created_at": "2026-06-10T05:30:45.917899"
+    },
+    {
+      "anomaly_id": "BLANK_2_0",
+      "monitor_record_id": "2",
+      "anomaly_type": "BLANK_CONTROL_MISSING",
+      "severity": "critical",
+      "description": "样品[平行样-总排放口]空白对照值未填写",
+      "plain_explanation": "本次平行样-总排放口（样品编号S-20250605-02）的氨氮检测记录中，空白对照值这一栏没有填写。空白对照是判断试剂是否污染、操作是否规范的关键基线，没有这个数值，检测结果的可信度会大打折扣。本次实验使用了以下试剂：纳氏试剂(批号B20250101, 国药集团), 酒石酸钾钠溶液(批号C20250215, 阿拉丁试剂)，请核对这些试剂的领用记录和开瓶时间，看看是否有漏登的情况。",
+      "reagent_evidence": [
+        "REAG-001",
+        "REAG-003"
+      ],
+      "related_fields": [
+        "blank_control_value",
+        "blank_control_unit"
+      ],
+      "retest_suggestion": "建议立即使用同批次试剂重新做空白对照，确认试剂有效后再对原样品进行复测。如果原样品已耗尽，请重新采样，并在记录中注明'补样复测'。",
+      "balance_calc": {
+        "sample_id": "S-20250605-02",
+        "sample_name": "平行样-总排放口",
+        "blank_absorbance": 0.0,
+        "blank_unit": "A",
+        "sample_absorbance": 0.301,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.301,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 39.605,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 1.9803,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 先检查试剂台账，确认所用试剂是否在有效期内；2. 重新配置空白对照溶液并测定吸光度；3. 若空白值偏高，排查纯水、比色皿、纳氏试剂是否受污染；4. 将补测的空白值和复测结果一并补录到系统中，备注清楚原因。",
+      "created_at": "2026-06-10T05:30:45.917908"
+    },
+    {
+      "anomaly_id": "UNIT_2_1",
+      "monitor_record_id": "2",
+      "anomaly_type": "UNIT_MISSING",
+      "severity": "minor",
+      "description": "样品[平行样-总排放口]样品检测值单位未填写",
+      "plain_explanation": "平行样-总排放口（编号S-20250605-02）的检测记录中，样品检测值单位没有写。虽然数值填了，但没有单位就像说'身高170'却不说厘米还是毫米一样，别人无法判断这个数值合不合理。氨氮常用单位是mg/L（毫克每升），吸光度一般写'A'或不写单位。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "sample_unit",
+        "blank_control_unit"
+      ],
+      "retest_suggestion": "一般不需要复测，直接询问当时的检测人员补填单位即可。",
+      "balance_calc": {
+        "sample_id": "S-20250605-02",
+        "sample_name": "平行样-总排放口",
+        "blank_absorbance": 0.0,
+        "blank_unit": "A",
+        "sample_absorbance": 0.301,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.301,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 39.605,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 1.9803,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查同批次其他记录的单位写法，保持一致；2. 若确实记不清，备注'单位为mg/L（根据本实验室常规标注补录）'；3. 提醒同事以后写完数值顺手把单位写上。",
+      "created_at": "2026-06-10T05:30:45.917912"
+    },
+    {
+      "anomaly_id": "REV_2_2",
+      "monitor_record_id": "2",
+      "anomaly_type": "REVIEWER_MISSING",
+      "severity": "info",
+      "description": "样品[平行样-总排放口]未填写审核人员",
+      "plain_explanation": "平行样-总排放口的检测结果已经填了，但还没有人审核签字。按规定检测记录需要第二个人复核，确认数值、单位、计算公式都没问题。请找质检主管或有资质的同事审一下。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "reviewer"
+      ],
+      "retest_suggestion": "不需要复测，走审核流程即可。",
+      "balance_calc": {
+        "sample_id": "S-20250605-02",
+        "sample_name": "平行样-总排放口",
+        "blank_absorbance": 0.0,
+        "blank_unit": "A",
+        "sample_absorbance": 0.301,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.301,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 39.605,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 1.9803,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 把原始记录和计算过程一起交给审核人；2. 审核无误后签字；3. 如有修改请按规范划改并签名。",
+      "created_at": "2026-06-10T05:30:45.917916"
+    },
+    {
+      "anomaly_id": "CURVE_2_3",
+      "monitor_record_id": "2",
+      "anomaly_type": "STANDARD_CURVE_MISSING",
+      "severity": "major",
+      "description": "样品[平行样-总排放口]未关联标准曲线编号",
+      "plain_explanation": "平行样-总排放口的检测结果已经填了，但没写用了哪条标准曲线来计算浓度。不同日期做的标曲斜率和截距都不一样，没有标曲编号就没法复核这个数值是怎么算出来的。请查一下当天的标曲记录，把编号填上。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "standard_curve_id"
+      ],
+      "retest_suggestion": "如果能找到当天的标曲数据，直接补填编号即可；如果完全找不到标曲记录，原结果无法追溯，建议重做标曲并复测样品。",
+      "balance_calc": {
+        "sample_id": "S-20250605-02",
+        "sample_name": "平行样-总排放口",
+        "blank_absorbance": 0.0,
+        "blank_unit": "A",
+        "sample_absorbance": 0.301,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.301,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 39.605,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 1.9803,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查标曲记录本或仪器打印记录；2. 确认日期一致后填入编号；3. 若标曲丢失，按规范重新配置标准系列并制作新曲线。",
+      "created_at": "2026-06-10T05:30:45.917919"
+    },
+    {
+      "anomaly_id": "UNIT_NH3N-2025-0601-001_0",
+      "monitor_record_id": "NH3N-2025-0601-001",
+      "anomaly_type": "UNIT_MISSING",
+      "severity": "minor",
+      "description": "样品[进水口]样品检测值单位未填写",
+      "plain_explanation": "进水口（编号S-20250601-01）的检测记录中，样品检测值单位没有写。虽然数值填了，但没有单位就像说'身高170'却不说厘米还是毫米一样，别人无法判断这个数值合不合理。氨氮常用单位是mg/L（毫克每升），吸光度一般写'A'或不写单位。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "sample_unit",
+        "blank_control_unit"
+      ],
+      "retest_suggestion": "一般不需要复测，直接询问当时的检测人员补填单位即可。",
+      "balance_calc": {
+        "sample_id": "S-20250601-01",
+        "sample_name": "进水口",
+        "blank_absorbance": 0.032,
+        "blank_unit": "A",
+        "sample_absorbance": 0.456,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.424,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 55.789,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 2.7895,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查同批次其他记录的单位写法，保持一致；2. 若确实记不清，备注'单位为mg/L（根据本实验室常规标注补录）'；3. 提醒同事以后写完数值顺手把单位写上。",
+      "created_at": "2026-06-10T05:30:45.917923"
+    },
+    {
+      "anomaly_id": "BLANK_NH3N-2025-0601-002_0",
+      "monitor_record_id": "NH3N-2025-0601-002",
+      "anomaly_type": "BLANK_CONTROL_MISSING",
+      "severity": "critical",
+      "description": "样品[生化池出水]空白对照值未填写",
+      "plain_explanation": "本次生化池出水（样品编号S-20250601-02）的氨氮检测记录中，空白对照值这一栏没有填写。空白对照是判断试剂是否污染、操作是否规范的关键基线，没有这个数值，检测结果的可信度会大打折扣。本次实验使用了以下试剂：纳氏试剂(批号B20250101, 国药集团), 酒石酸钾钠溶液(批号C20250215, 阿拉丁试剂)，请核对这些试剂的领用记录和开瓶时间，看看是否有漏登的情况。",
+      "reagent_evidence": [
+        "REAG-001",
+        "REAG-003"
+      ],
+      "related_fields": [
+        "blank_control_value",
+        "blank_control_unit"
+      ],
+      "retest_suggestion": "建议立即使用同批次试剂重新做空白对照，确认试剂有效后再对原样品进行复测。如果原样品已耗尽，请重新采样，并在记录中注明'补样复测'。",
+      "balance_calc": {
+        "sample_id": "S-20250601-02",
+        "sample_name": "生化池出水",
+        "blank_absorbance": 0.0,
+        "blank_unit": "A",
+        "sample_absorbance": 0.312,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.312,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 41.053,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 2.0526,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 先检查试剂台账，确认所用试剂是否在有效期内；2. 重新配置空白对照溶液并测定吸光度；3. 若空白值偏高，排查纯水、比色皿、纳氏试剂是否受污染；4. 将补测的空白值和复测结果一并补录到系统中，备注清楚原因。",
+      "created_at": "2026-06-10T05:30:45.917928"
+    },
+    {
+      "anomaly_id": "REV_NH3N-2025-0601-002_1",
+      "monitor_record_id": "NH3N-2025-0601-002",
+      "anomaly_type": "REVIEWER_MISSING",
+      "severity": "info",
+      "description": "样品[生化池出水]未填写审核人员",
+      "plain_explanation": "生化池出水的检测结果已经填了，但还没有人审核签字。按规定检测记录需要第二个人复核，确认数值、单位、计算公式都没问题。请找质检主管或有资质的同事审一下。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "reviewer"
+      ],
+      "retest_suggestion": "不需要复测，走审核流程即可。",
+      "balance_calc": {
+        "sample_id": "S-20250601-02",
+        "sample_name": "生化池出水",
+        "blank_absorbance": 0.0,
+        "blank_unit": "A",
+        "sample_absorbance": 0.312,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.312,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 41.053,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 2.0526,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 把原始记录和计算过程一起交给审核人；2. 审核无误后签字；3. 如有修改请按规范划改并签名。",
+      "created_at": "2026-06-10T05:30:45.917932"
+    },
+    {
+      "anomaly_id": "RMK_NH3N-2025-0601-002_2",
+      "monitor_record_id": "NH3N-2025-0601-002",
+      "anomaly_type": "REMARK_INCOMPLETE",
+      "severity": "info",
+      "description": "样品[生化池出水]备注内容不完整（以'本补'结尾）",
+      "plain_explanation": "生化池出水的备注写了'补录：原记录丢失，根据实验本补'，看起来像是写了一半没写完。比如写了'补'却没说补什么，写了'待'却没说待什么。请把补录原因、异常情况说明白，不然过几个月再看谁也记不清当时是什么状况。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "remarks"
+      ],
+      "retest_suggestion": "不需要复测，把备注写完整就行。",
+      "balance_calc": {
+        "sample_id": "S-20250601-02",
+        "sample_name": "生化池出水",
+        "blank_absorbance": 0.0,
+        "blank_unit": "A",
+        "sample_absorbance": 0.312,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.312,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 41.053,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 2.0526,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 回忆当时为什么要写备注；2. 完整写明异常原因和处理方式，例如：'补录：原记录空白对照值漏填，已用同批次试剂补测，结果为0.032A'；3. 签上补录人姓名和日期。",
+      "created_at": "2026-06-10T05:30:45.917936"
+    },
+    {
+      "anomaly_id": "BLANK_ABN_NH3N-2025-0601-003_0",
+      "monitor_record_id": "NH3N-2025-0601-003",
+      "anomaly_type": "BLANK_CONTROL_ABNORMAL",
+      "severity": "major",
+      "description": "样品[总排放口]空白对照值0.158A偏高（正常范围约0.0-0.06）",
+      "plain_explanation": "本次总排放口的空白对照测得值为0.158A，偏高于常规范围。空白对照偏高通常意味着纯水受氨污染、纳氏试剂变质或比色皿未清洗干净；偏低则可能是试剂未充分混匀或仪器未校准。请核对本次使用的试剂：纳氏试剂(批号B20240301, 有效期至2026-05-11), 酒石酸钾钠溶液(批号C20250215, 有效期至2026-12-27)。",
+      "reagent_evidence": [
+        "REAG-002",
+        "REAG-003"
+      ],
+      "related_fields": [
+        "blank_control_value",
+        "blank_control_unit"
+      ],
+      "retest_suggestion": "更换新的无氨纯水，清洗比色皿后重新测定空白；如果使用的纳氏试剂已接近有效期或出现沉淀，建议更换新试剂后再测。",
+      "balance_calc": {
+        "sample_id": "S-20250601-03",
+        "sample_name": "总排放口",
+        "blank_absorbance": 0.158,
+        "blank_unit": "A",
+        "sample_absorbance": 0.678,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.52,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 68.421,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 3.4211,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 用新鲜无氨纯水做3次平行空白，取均值；2. 检查纳氏试剂是否有浑浊或变红，必要时重新配置；3. 校准分光光度计波长；4. 记录排查过程和结论，附在原始记录后。",
+      "created_at": "2026-06-10T05:30:45.917957"
+    },
+    {
+      "anomaly_id": "REAG_EXP_NH3N-2025-0601-003_1",
+      "monitor_record_id": "NH3N-2025-0601-003",
+      "anomaly_type": "REAGENT_EXPIRED",
+      "severity": "critical",
+      "description": "样品[总排放口]使用的试剂[纳氏试剂(REAG-002)]已于2026-05-11过期",
+      "plain_explanation": "本次检测用的纳氏试剂（编号REAG-002，批号B20240301）到2026年05月11日就过期了，而检测是在2026年06月01日做的。过期试剂尤其是纳氏试剂会导致显色异常，结果可能完全不准。",
+      "reagent_evidence": [
+        "REAG-002"
+      ],
+      "related_fields": [
+        "reagent_ids",
+        "expiry_date"
+      ],
+      "retest_suggestion": "必须使用在有效期内的新试剂对原样进行复测；如果原样品不够了，要重新采样并注明'因试剂过期重新采样'。",
+      "balance_calc": {
+        "sample_id": "S-20250601-03",
+        "sample_name": "总排放口",
+        "blank_absorbance": 0.158,
+        "blank_unit": "A",
+        "sample_absorbance": 0.678,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.52,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 68.421,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 3.4211,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 立即将过期试剂从实验台移走，贴'停用'标签；2. 开启新批次试剂，做好开瓶登记；3. 用新试剂重新做空白和样品；4. 在原始记录上标注'原结果因试剂过期作废'。",
+      "created_at": "2026-06-10T05:30:45.917973"
+    },
+    {
+      "anomaly_id": "CURVE_NH3N-2025-0601-003_2",
+      "monitor_record_id": "NH3N-2025-0601-003",
+      "anomaly_type": "STANDARD_CURVE_MISSING",
+      "severity": "major",
+      "description": "样品[总排放口]未关联标准曲线编号",
+      "plain_explanation": "总排放口的检测结果已经填了，但没写用了哪条标准曲线来计算浓度。不同日期做的标曲斜率和截距都不一样，没有标曲编号就没法复核这个数值是怎么算出来的。请查一下当天的标曲记录，把编号填上。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "standard_curve_id"
+      ],
+      "retest_suggestion": "如果能找到当天的标曲数据，直接补填编号即可；如果完全找不到标曲记录，原结果无法追溯，建议重做标曲并复测样品。",
+      "balance_calc": {
+        "sample_id": "S-20250601-03",
+        "sample_name": "总排放口",
+        "blank_absorbance": 0.158,
+        "blank_unit": "A",
+        "sample_absorbance": 0.678,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.52,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 68.421,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 3.4211,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查标曲记录本或仪器打印记录；2. 确认日期一致后填入编号；3. 若标曲丢失，按规范重新配置标准系列并制作新曲线。",
+      "created_at": "2026-06-10T05:30:45.917977"
+    },
+    {
+      "anomaly_id": "UNIT_NH3N-2025-0602-001_0",
+      "monitor_record_id": "NH3N-2025-0602-001",
+      "anomaly_type": "UNIT_MISSING",
+      "severity": "minor",
+      "description": "样品[进水口]空白对照单位未填写",
+      "plain_explanation": "进水口（编号S-20250602-01）的检测记录中，空白对照单位没有写。虽然数值填了，但没有单位就像说'身高170'却不说厘米还是毫米一样，别人无法判断这个数值合不合理。氨氮常用单位是mg/L（毫克每升），吸光度一般写'A'或不写单位。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "sample_unit",
+        "blank_control_unit"
+      ],
+      "retest_suggestion": "一般不需要复测，直接询问当时的检测人员补填单位即可。",
+      "balance_calc": {
+        "sample_id": "S-20250602-01",
+        "sample_name": "进水口",
+        "blank_absorbance": 0.028,
+        "blank_unit": "A",
+        "sample_absorbance": 0.389,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.361,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 47.5,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "氨氮标准使用液": {
+            "volume_used": 2.0,
+            "unit": "mL",
+            "cost_per_sample": 2.0
+          }
+        },
+        "uncertainty_mg_l": 2.375,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查同批次其他记录的单位写法，保持一致；2. 若确实记不清，备注'单位为mg/L（根据本实验室常规标注补录）'；3. 提醒同事以后写完数值顺手把单位写上。",
+      "created_at": "2026-06-10T05:30:45.917981"
+    },
+    {
+      "anomaly_id": "OP_NH3N-2025-0602-001_1",
+      "monitor_record_id": "NH3N-2025-0602-001",
+      "anomaly_type": "OPERATOR_MISSING",
+      "severity": "minor",
+      "description": "样品[进水口]未填写检测人员",
+      "plain_explanation": "进水口这份记录没写是谁做的。万一结果有疑问或者需要补测，找不到当事人就很麻烦。请尽快补填检测人姓名。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "operator"
+      ],
+      "retest_suggestion": "不需要复测，补填姓名即可。",
+      "balance_calc": {
+        "sample_id": "S-20250602-01",
+        "sample_name": "进水口",
+        "blank_absorbance": 0.028,
+        "blank_unit": "A",
+        "sample_absorbance": 0.389,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.361,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 47.5,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "氨氮标准使用液": {
+            "volume_used": 2.0,
+            "unit": "mL",
+            "cost_per_sample": 2.0
+          }
+        },
+        "uncertainty_mg_l": 2.375,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查当日值班表或问一下同事；2. 确认后把名字填上；3. 如果是多人协作，写主检人即可。",
+      "created_at": "2026-06-10T05:30:45.917984"
+    },
+    {
+      "anomaly_id": "REV_NH3N-2025-0602-001_2",
+      "monitor_record_id": "NH3N-2025-0602-001",
+      "anomaly_type": "REVIEWER_MISSING",
+      "severity": "info",
+      "description": "样品[进水口]未填写审核人员",
+      "plain_explanation": "进水口的检测结果已经填了，但还没有人审核签字。按规定检测记录需要第二个人复核，确认数值、单位、计算公式都没问题。请找质检主管或有资质的同事审一下。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "reviewer"
+      ],
+      "retest_suggestion": "不需要复测，走审核流程即可。",
+      "balance_calc": {
+        "sample_id": "S-20250602-01",
+        "sample_name": "进水口",
+        "blank_absorbance": 0.028,
+        "blank_unit": "A",
+        "sample_absorbance": 0.389,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.361,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 47.5,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "氨氮标准使用液": {
+            "volume_used": 2.0,
+            "unit": "mL",
+            "cost_per_sample": 2.0
+          }
+        },
+        "uncertainty_mg_l": 2.375,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 把原始记录和计算过程一起交给审核人；2. 审核无误后签字；3. 如有修改请按规范划改并签名。",
+      "created_at": "2026-06-10T05:30:45.917986"
+    },
+    {
+      "anomaly_id": "RMK_NH3N-2025-0602-001_3",
+      "monitor_record_id": "NH3N-2025-0602-001",
+      "anomaly_type": "REMARK_INCOMPLETE",
+      "severity": "info",
+      "description": "样品[进水口]备注内容不完整（以'，补'结尾）",
+      "plain_explanation": "进水口的备注写了'原记录空白漏填，补'，看起来像是写了一半没写完。比如写了'补'却没说补什么，写了'待'却没说待什么。请把补录原因、异常情况说明白，不然过几个月再看谁也记不清当时是什么状况。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "remarks"
+      ],
+      "retest_suggestion": "不需要复测，把备注写完整就行。",
+      "balance_calc": {
+        "sample_id": "S-20250602-01",
+        "sample_name": "进水口",
+        "blank_absorbance": 0.028,
+        "blank_unit": "A",
+        "sample_absorbance": 0.389,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.361,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 47.5,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "氨氮标准使用液": {
+            "volume_used": 2.0,
+            "unit": "mL",
+            "cost_per_sample": 2.0
+          }
+        },
+        "uncertainty_mg_l": 2.375,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 回忆当时为什么要写备注；2. 完整写明异常原因和处理方式，例如：'补录：原记录空白对照值漏填，已用同批次试剂补测，结果为0.032A'；3. 签上补录人姓名和日期。",
+      "created_at": "2026-06-10T05:30:45.917990"
+    },
+    {
+      "anomaly_id": "REAG_NOLOG_NH3N-2025-0602-002_0",
+      "monitor_record_id": "NH3N-2025-0602-002",
+      "anomaly_type": "REAGENT_NOT_LOGGED",
+      "severity": "major",
+      "description": "样品[总排放口]关联的试剂[REAG-999]在台账中找不到",
+      "plain_explanation": "记录里写了用试剂REAG-999，但试剂台账里根本没有这个编号。要么是编号写错了，要么是这瓶试剂领用的时候没登台账。请对照实物核对一下，把正确的试剂编号补上。",
+      "reagent_evidence": [
+        "REAG-999"
+      ],
+      "related_fields": [
+        "reagent_ids"
+      ],
+      "retest_suggestion": "无需复测，但必须核对清楚试剂信息。",
+      "balance_calc": {
+        "sample_id": "S-20250602-02",
+        "sample_name": "总排放口",
+        "blank_absorbance": 0.001,
+        "blank_unit": "A",
+        "sample_absorbance": 0.245,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.244,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 32.105,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {},
+        "uncertainty_mg_l": 1.6053,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查找试剂瓶实物标签上的批号；2. 检查台账是否有漏登；3. 修正编号或补登台账，并在备注中说明。",
+      "created_at": "2026-06-10T05:30:45.917994"
+    },
+    {
+      "anomaly_id": "UNIT_NH3N-2025-0603-001_0",
+      "monitor_record_id": "NH3N-2025-0603-001",
+      "anomaly_type": "UNIT_MISSING",
+      "severity": "minor",
+      "description": "样品[进水口]样品检测值单位未填写",
+      "plain_explanation": "进水口（编号S-20250603-01）的检测记录中，样品检测值单位没有写。虽然数值填了，但没有单位就像说'身高170'却不说厘米还是毫米一样，别人无法判断这个数值合不合理。氨氮常用单位是mg/L（毫克每升），吸光度一般写'A'或不写单位。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "sample_unit",
+        "blank_control_unit"
+      ],
+      "retest_suggestion": "一般不需要复测，直接询问当时的检测人员补填单位即可。",
+      "balance_calc": {
+        "sample_id": "S-20250603-01",
+        "sample_name": "进水口",
+        "blank_absorbance": 0.035,
+        "blank_unit": "A",
+        "sample_absorbance": 0.512,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.477,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 62.763,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 5.0,
+            "unit": "mL",
+            "cost_per_sample": 5.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 3.1382,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查同批次其他记录的单位写法，保持一致；2. 若确实记不清，备注'单位为mg/L（根据本实验室常规标注补录）'；3. 提醒同事以后写完数值顺手把单位写上。",
+      "created_at": "2026-06-10T05:30:45.917998"
+    },
+    {
+      "anomaly_id": "REAG_NOLOG_NH3N-2025-0603-002_0",
+      "monitor_record_id": "NH3N-2025-0603-002",
+      "anomaly_type": "REAGENT_NOT_LOGGED",
+      "severity": "major",
+      "description": "样品[总排放口]未关联试剂台账",
+      "plain_explanation": "总排放口的这份检测记录没有关联任何试剂台账编号。万一结果有争议，就没法追查到当时用了哪一批纳氏试剂、酒石酸钾钠有没有过期。请补录本次实验使用的试剂编号，尤其是纳氏试剂和标准溶液的批号。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "reagent_ids"
+      ],
+      "retest_suggestion": "无需复测，但必须补录试剂信息。",
+      "balance_calc": {
+        "sample_id": "S-20250603-02",
+        "sample_name": "总排放口",
+        "blank_absorbance": 0.04,
+        "blank_unit": "A",
+        "sample_absorbance": 0.298,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.258,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 33.947,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {},
+        "uncertainty_mg_l": 1.6974,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查看当日试剂领用登记本或出入库记录；2. 回忆当天实验台上开着哪几瓶试剂；3. 将试剂编号回填到记录中，备注'补录'。",
+      "created_at": "2026-06-10T05:30:45.918003"
+    },
+    {
+      "anomaly_id": "REV_NH3N-2025-0603-002_1",
+      "monitor_record_id": "NH3N-2025-0603-002",
+      "anomaly_type": "REVIEWER_MISSING",
+      "severity": "info",
+      "description": "样品[总排放口]未填写审核人员",
+      "plain_explanation": "总排放口的检测结果已经填了，但还没有人审核签字。按规定检测记录需要第二个人复核，确认数值、单位、计算公式都没问题。请找质检主管或有资质的同事审一下。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "reviewer"
+      ],
+      "retest_suggestion": "不需要复测，走审核流程即可。",
+      "balance_calc": {
+        "sample_id": "S-20250603-02",
+        "sample_name": "总排放口",
+        "blank_absorbance": 0.04,
+        "blank_unit": "A",
+        "sample_absorbance": 0.298,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.258,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 33.947,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {},
+        "uncertainty_mg_l": 1.6974,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 把原始记录和计算过程一起交给审核人；2. 审核无误后签字；3. 如有修改请按规范划改并签名。",
+      "created_at": "2026-06-10T05:30:45.918005"
+    },
+    {
+      "anomaly_id": "RMK_NH3N-2025-0603-002_2",
+      "monitor_record_id": "NH3N-2025-0603-002",
+      "anomaly_type": "REMARK_INCOMPLETE",
+      "severity": "info",
+      "description": "样品[总排放口]备注内容不完整（以'，待'结尾）",
+      "plain_explanation": "总排放口的备注写了'样品浊度较高，已絮凝处理，待'，看起来像是写了一半没写完。比如写了'补'却没说补什么，写了'待'却没说待什么。请把补录原因、异常情况说明白，不然过几个月再看谁也记不清当时是什么状况。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "remarks"
+      ],
+      "retest_suggestion": "不需要复测，把备注写完整就行。",
+      "balance_calc": {
+        "sample_id": "S-20250603-02",
+        "sample_name": "总排放口",
+        "blank_absorbance": 0.04,
+        "blank_unit": "A",
+        "sample_absorbance": 0.298,
+        "sample_unit": "A",
+        "corrected_absorbance": 0.258,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 33.947,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {},
+        "uncertainty_mg_l": 1.6974,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 回忆当时为什么要写备注；2. 完整写明异常原因和处理方式，例如：'补录：原记录空白对照值漏填，已用同批次试剂补测，结果为0.032A'；3. 签上补录人姓名和日期。",
+      "created_at": "2026-06-10T05:30:45.918009"
+    },
+    {
+      "anomaly_id": "REV_NH3N-2025-0604-001_0",
+      "monitor_record_id": "NH3N-2025-0604-001",
+      "anomaly_type": "REVIEWER_MISSING",
+      "severity": "info",
+      "description": "样品[应急采样-1#]未填写审核人员",
+      "plain_explanation": "应急采样-1#的检测结果已经填了，但还没有人审核签字。按规定检测记录需要第二个人复核，确认数值、单位、计算公式都没问题。请找质检主管或有资质的同事审一下。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "reviewer"
+      ],
+      "retest_suggestion": "不需要复测，走审核流程即可。",
+      "balance_calc": {
+        "sample_id": "S-20250604-01",
+        "sample_name": "应急采样-1#",
+        "blank_absorbance": 0.029,
+        "blank_unit": "A",
+        "sample_absorbance": 1.876,
+        "sample_unit": "A",
+        "corrected_absorbance": 1.847,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 243.026,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 8.0,
+            "unit": "mL",
+            "cost_per_sample": 8.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 12.1513,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 把原始记录和计算过程一起交给审核人；2. 审核无误后签字；3. 如有修改请按规范划改并签名。",
+      "created_at": "2026-06-10T05:30:45.918013"
+    },
+    {
+      "anomaly_id": "RMK_NH3N-2025-0604-001_1",
+      "monitor_record_id": "NH3N-2025-0604-001",
+      "anomaly_type": "REMARK_INCOMPLETE",
+      "severity": "info",
+      "description": "样品[应急采样-1#]备注内容不完整（以'..'结尾）",
+      "plain_explanation": "应急采样-1#的备注写了'应急监测，备注待补...'，看起来像是写了一半没写完。比如写了'补'却没说补什么，写了'待'却没说待什么。请把补录原因、异常情况说明白，不然过几个月再看谁也记不清当时是什么状况。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "remarks"
+      ],
+      "retest_suggestion": "不需要复测，把备注写完整就行。",
+      "balance_calc": {
+        "sample_id": "S-20250604-01",
+        "sample_name": "应急采样-1#",
+        "blank_absorbance": 0.029,
+        "blank_unit": "A",
+        "sample_absorbance": 1.876,
+        "sample_unit": "A",
+        "corrected_absorbance": 1.847,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 243.026,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 8.0,
+            "unit": "mL",
+            "cost_per_sample": 8.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 12.1513,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 回忆当时为什么要写备注；2. 完整写明异常原因和处理方式，例如：'补录：原记录空白对照值漏填，已用同批次试剂补测，结果为0.032A'；3. 签上补录人姓名和日期。",
+      "created_at": "2026-06-10T05:30:45.918016"
+    },
+    {
+      "anomaly_id": "CURVE_NH3N-2025-0604-001_2",
+      "monitor_record_id": "NH3N-2025-0604-001",
+      "anomaly_type": "STANDARD_CURVE_MISSING",
+      "severity": "major",
+      "description": "样品[应急采样-1#]未关联标准曲线编号",
+      "plain_explanation": "应急采样-1#的检测结果已经填了，但没写用了哪条标准曲线来计算浓度。不同日期做的标曲斜率和截距都不一样，没有标曲编号就没法复核这个数值是怎么算出来的。请查一下当天的标曲记录，把编号填上。",
+      "reagent_evidence": [],
+      "related_fields": [
+        "standard_curve_id"
+      ],
+      "retest_suggestion": "如果能找到当天的标曲数据，直接补填编号即可；如果完全找不到标曲记录，原结果无法追溯，建议重做标曲并复测样品。",
+      "balance_calc": {
+        "sample_id": "S-20250604-01",
+        "sample_name": "应急采样-1#",
+        "blank_absorbance": 0.029,
+        "blank_unit": "A",
+        "sample_absorbance": 1.876,
+        "sample_unit": "A",
+        "corrected_absorbance": 1.847,
+        "standard_curve": {
+          "slope": 0.0076,
+          "intercept": 0.002,
+          "source": "使用本实验室默认参数（建议填入实际标曲编号对应数值）"
+        },
+        "concentration_mg_l": 243.026,
+        "concentration_unit": "mg/L",
+        "dilution_factor": 5.0,
+        "reagent_cost_summary": {
+          "纳氏试剂": {
+            "volume_used": 8.0,
+            "unit": "mL",
+            "cost_per_sample": 8.0
+          },
+          "酒石酸钾钠溶液": {
+            "volume_used": 10.0,
+            "unit": "mL",
+            "cost_per_sample": 10.0
+          }
+        },
+        "uncertainty_mg_l": 12.1513,
+        "calculation_notes": [
+          "浓度超过线性范围上限，建议按1:5稀释后重测",
+          "不确定度按5%估算（实际需根据本实验室验证数据）"
+        ],
+        "formula": "浓度(mg/L) = (样品吸光度 - 空白吸光度) / 标曲斜率"
+      },
+      "action_suggestion": "1. 查标曲记录本或仪器打印记录；2. 确认日期一致后填入编号；3. 若标曲丢失，按规范重新配置标准系列并制作新曲线。",
+      "created_at": "2026-06-10T05:30:45.918019"
+    }
+  ]
+}
