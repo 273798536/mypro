@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>多项式外推警报系统</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f4f6fa;
+    color: #1f2937;
+  }
+  header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: #fff;
+    padding: 14px 28px;
+    box-shadow: 0 2px 6px rgba(79,70,229,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+  header .sub { font-size: 12px; opacity: 0.85; margin-top: 4px; }
+  nav {
+    display: flex;
+    gap: 6px;
+    background: #fff;
+    padding: 8px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    flex-wrap: wrap;
+  }
+  nav button {
+    border: none;
+    padding: 8px 16px;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 6px;
+    color: #4b5563;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  nav button:hover { background: #f3f4f6; }
+  nav button.active {
+    background: #eef2ff;
+    color: #4f46e5;
+    font-weight: 600;
+  }
+  main { padding: 20px 28px; }
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    margin-bottom: 18px;
+  }
+  .card h2 {
+    margin: 0 0 14px 0;
+    font-size: 16px;
+    color: #111827;
+    border-left: 3px solid #4f46e5;
+    padding-left: 10px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    color: #374151;
+    transition: all 0.2s;
+  }
+  .btn:hover { border-color: #4f46e5; color: #4f46e5; }
+  .btn-primary {
+    background: #4f46e5;
+    border-color: #4f46e5;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #4338ca; color: #fff; }
+  .btn-danger { background: #ef4444; border-color: #ef4444; color: #fff; }
+  .btn-success { background: #10b981; border-color: #10b981; color: #fff; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+  input[type="text"], input[type="number"], select, textarea {
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: #4f46e5; box-shadow: 0 0 0 2px rgba(79,70,229,0.15); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td {
+    padding: 8px 10px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  th { background: #f9fafb; font-weight: 600; color: #374151; }
+  tr:hover td { background: #fafbff; }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-pending { background: #fef3c7; color: #92400e; }
+  .badge-approved { background: #d1fae5; color: #065f46; }
+  .badge-rejected { background: #fee2e2; color: #991b1b; }
+  .badge-corrected { background: #dbeafe; color: #1e40af; }
+  .badge-duplicate { background: #fce7f3; color: #9d174d; }
+  .badge-issue { background: #fef9c3; color: #854d0e; }
+  .tag { display: inline-block; padding: 1px 6px; background: #f3f4f6; border-radius: 4px; font-size: 11px; margin-right: 4px; }
+  .pagination { display: flex; gap: 6px; justify-content: center; margin-top: 14px; }
+  .pagination button { padding: 4px 10px; font-size: 12px; }
+  .hidden { display: none; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 14px; }
+  .stat-box {
+    padding: 14px;
+    background: #f9fafb;
+    border-radius: 8px;
+    border-left: 3px solid #4f46e5;
+  }
+  .stat-box .num { font-size: 22px; font-weight: 700; color: #111827; }
+  .stat-box .label { font-size: 12px; color: #6b7280; margin-top: 3px; }
+  .modal-mask {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+  }
+  .modal {
+    background: #fff; border-radius: 10px; padding: 22px;
+    min-width: 520px; max-width: 80vw; max-height: 85vh; overflow: auto;
+  }
+  .modal h3 { margin: 0 0 14px 0; }
+  .close-x { float: right; cursor: pointer; font-size: 20px; color: #9ca3af; }
+  .diff-from { color: #991b1b; text-decoration: line-through; }
+  .diff-to { color: #065f46; font-weight: 600; }
+  .empty { padding: 30px; text-align: center; color: #9ca3af; font-size: 13px; }
+  .dropzone {
+    border: 2px dashed #c7d2fe;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    color: #6b7280;
+    cursor: pointer;
+    background: #fafbff;
+  }
+  .dropzone:hover { border-color: #4f46e5; background: #f5f3ff; }
+  .muted { color: #6b7280; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>📊 多项式外推警报系统</h1>
+    <div class="sub">导入 → 复核 → 状态推进 → 报告导出 · 全程留痕 · 可追溯</div>
+  </div>
+  <div class="muted" style="color:#e0e7ff;">操作人：<span id="operatorName">数学老师</span></div>
+</header>
+
+<nav>
+  <button class="tab-btn active" data-tab="import">📥 数据导入</button>
+  <button class="tab-btn" data-tab="records">📋 评分记录</button>
+  <button class="tab-btn" data-tab="history">📈 历史对比</button>
+  <button class="tab-btn" data-tab="trace">🔍 追溯查询</button>
+  <button class="tab-btn" data-tab="export">📤 报告导出</button>
+</nav>
+
+<main>
+
+<!-- 导入 -->
+<section id="tab-import" class="tab-pane">
+  <div class="card">
+    <h2>导入多项式外推参数表</h2>
+    <div class="row">
+      <input type="text" placeholder="备注（选填）" id="importRemark" style="min-width:300px;"/>
+    </div>
+    <div class="dropzone" id="dropzone">
+      <div style="font-size:32px;">📁</div>
+      <p style="margin:8px 0 4px 0;"><strong>点击或拖拽 Excel/CSV 文件到此处上传</strong></p>
+      <p class="muted">支持 .xlsx / .xls / .csv；导入时自动识别空值、重复、备注混写、单位缺失等问题</p>
+      <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display:none;"/>
+    </div>
+    <div id="importResult" style="margin-top:14px;"></div>
+  </div>
+
+  <div class="card">
+    <h2>历史批次</h2>
+    <div id="batchList"></div>
+  </div>
+</section>
+
+<!-- 评分记录 -->
+<section id="tab-records" class="tab-pane hidden">
+  <div class="card">
+    <h2>筛选条件</h2>
+    <div class="row">
+      <select id="filterBatch"><option value="">全部批次</option></select>
+      <select id="filterStatus">
+        <option value="">全部状态</option>
+        <option value="pending">待确认</option>
+        <option value="corrected">已修正待复核</option>
+        <option value="duplicate">重复待处理</option>
+        <option value="approved">通过</option>
+        <option value="rejected">驳回</option>
+      </select>
+      <label style="font-size:13px;color:#4b5563;"><input type="checkbox" id="filterIssue"/> 仅看有问题</label>
+      <label style="font-size:13px;color:#4b5563;"><input type="checkbox" id="filterMissingUnit"/> 仅看单位缺失</label>
+      <button class="btn btn-primary" onclick="loadRecords()">🔍 查询</button>
+      <button class="btn btn-success" onclick="batchApproveSelected()">✔ 批量通过</button>
+      <span class="muted">（选中下方复选框后批量通过）</span>
+    </div>
+    <div id="statGrid" class="stat-grid"></div>
+    <div id="recordList"></div>
+    <div id="pagination" class="pagination"></div>
+  </div>
+</section>
+
+<!-- 历史对比 -->
+<section id="tab-history" class="tab-pane hidden">
+  <div class="card">
+    <h2>历史批次对比（日常入口）</h2>
+    <div class="row">
+      <span class="muted">选择两个批次查看差异：</span>
+      <select id="cmpA"><option value="">选择批次A</option></select>
+      <select id="cmpB"><option value="">选择批次B</option></select>
+      <button class="btn btn-primary" onclick="compareBatches()">对比</button>
+    </div>
+    <div id="historyList"></div>
+  </div>
+  <div class="card" id="cmpResultCard" style="display:none;">
+    <h2>对比结果</h2>
+    <div id="cmpResult"></div>
+  </div>
+</section>
+
+<!-- 追溯 -->
+<section id="tab-trace" class="tab-pane hidden">
+  <div class="card">
+    <h2>追溯查询（从结果回到来源）</h2>
+    <div class="row">
+      <input type="text" id="traceStudentId" placeholder="学号"/>
+      <input type="text" id="traceSubject" placeholder="科目"/>
+      <input type="text" id="traceUnit" placeholder="单元"/>
+      <button class="btn btn-primary" onclick="traceSearch()">🔍 搜索</button>
+    </div>
+    <p class="muted">💡 验收场景：录入一条"单位缺失"记录，用学号/科目/单元搜索，可看到来源批次、问题详情、审核修改留痕、关联重复记录。</p>
+    <div id="traceResult"></div>
+  </div>
+</section>
+
+<!-- 导出 -->
+<section id="tab-export" class="tab-pane hidden">
+  <div class="card">
+    <h2>报告导出</h2>
+    <div class="row">
+      <select id="expBatch"><option value="">全部批次</option></select>
+      <select id="expStatus">
+        <option value="">全部状态</option>
+        <option value="pending">待确认</option>
+        <option value="approved">通过</option>
+        <option value="rejected">驳回</option>
+      </select>
+      <label style="font-size:13px;color:#4b5563;"><input type="checkbox" id="expIssue"/> 仅导出有问题</label>
+      <button class="btn btn-primary" onclick="doExport()">⬇ 导出 Excel 报告</button>
+    </div>
+    <p class="muted">导出内容三张表：① 多项式外推警报记录 ② 数据问题清单 ③ 审核修改留痕</p>
+  </div>
+</section>
+
+</main>
+
+<div id="modalRoot"></div>
+
+<script>
+/* ============= 基础工具 ============= */
+const API = "";
+const OPERATOR = "数学老师";
+let currentPage = 1, pageSize = 20;
+let selectedRecordIds = new Set();
+let currentFilter = {};
+
+function statusBadge(s) {
+  const map = {
+    pending: "待确认", corrected: "已修正待复核", duplicate: "重复待处理",
+    approved: "通过", rejected: "驳回", merged: "已合并"
+  };
+  const cls = "badge-" + (s || "pending");
+  return `<span class="badge ${cls}">${map[s] || s || "待确认"}</span>`;
+}
+function issueBadge(t) {
+  const map = {
+    unit_missing: "单元缺失", missing_identity: "身份缺失",
+    missing_score: "分数缺失", mixed_remark: "备注混写", duplicate_record: "重复记录"
+  };
+  return `<span class="badge badge-issue">${map[t] || t}</span>`;
+}
+async function api(url, opt = {}) {
+  const res = await fetch(API + url, { credentials: "include", ...opt,
+    headers: { "Accept": "application/json", ...(opt.headers || {}) } });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    alert("请求失败：" + (err.detail || res.statusText));
+    throw err;
+  }
+  const ct = res.headers.get("content-type") || "";
+  return ct.includes("json") ? res.json() : res;
+}
+function fmtTime(s) {
+  if (!s) return "-";
+  return String(s).replace("T", " ").substring(0, 19);
+}
+
+/* ============= Tabs ============= */
+document.querySelectorAll(".tab-btn").forEach(b => {
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(x => x.classList.remove("active"));
+    document.querySelectorAll(".tab-pane").forEach(x => x.classList.add("hidden"));
+    b.classList.add("active");
+    document.getElementById("tab-" + b.dataset.tab).classList.remove("hidden");
+    if (b.dataset.tab === "records") { loadBatchSelects(); loadRecords(); }
+    if (b.dataset.tab === "import") loadBatchList();
+    if (b.dataset.tab === "history") { loadBatchSelects(); loadHistoryList(); }
+    if (b.dataset.tab === "export") loadBatchSelects();
+  });
+});
+
+/* ============= 导入 ============= */
+const dz = document.getElementById("dropzone");
+const fileInput = document.getElementById("fileInput");
+dz.addEventListener("click", () => fileInput.click());
+dz.addEventListener("dragover", e => { e.preventDefault(); dz.style.background = "#eef2ff"; });
+dz.addEventListener("dragleave", () => dz.style.background = "#fafbff");
+dz.addEventListener("drop", e => {
+  e.preventDefault(); dz.style.background = "#fafbff";
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener("change", e => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+async function handleFile(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  fd.append("remark", document.getElementById("importRemark").value || "");
+  fd.append("uploaded_by", OPERATOR);
+  const resDiv = document.getElementById("importResult");
+  resDiv.innerHTML = `<p class="muted">⏳ 正在导入并校验：${file.name} ...</p>`;
+  try {
+    const data = await api("/api/import/upload", { method: "POST", body: fd });
+    resDiv.innerHTML = `
+      <div class="stat-grid">
+        <div class="stat-box"><div class="num">${data.total_rows}</div><div class="label">总行数</div></div>
+        <div class="stat-box" style="border-left-color:#10b981;"><div class="num">${data.valid_rows}</div><div class="label">有效记录</div></div>
+        <div class="stat-box" style="border-left-color:#f59e0b;"><div class="num">${data.issue_rows}</div><div class="label">发现问题</div></div>
+        <div class="stat-box" style="border-left-color:#ec4899;"><div class="num">${data.duplicate_rows}</div><div class="label">重复记录(自动标记)</div></div>
+      </div>
+      <p class="muted">批次号：<strong>${data.batch_no}</strong> &nbsp;|&nbsp; 已保留处理痕迹，重启服务可见。</p>
+      ${data.issues && data.issues.length ? `
+        <div style="max-height:220px;overflow:auto;margin-top:10px;">
+        <table>
+          <tr><th>行号</th><th>问题类型</th><th>详情</th></tr>
+          ${data.issues.map(i => `<tr><td>${i.row_no || "-"}</td><td>${issueBadge(i.issue_type)}</td><td>${i.issue_detail || ""}</td></tr>`).join("")}
+        </table></div>` : ""}
+    `;
+    loadBatchList(); loadBatchSelects();
+  } catch (e) {
+    resDiv.innerHTML = `<p style="color:#dc2626;">导入失败：${e.detail || e.message || e}</p>`;
+  }
+}
+
+async function loadBatchList() {
+  const batches = await api("/api/import/batches");
+  const el = document.getElementById("batchList");
+  if (!batches.length) { el.innerHTML = `<div class="empty">暂无导入记录</div>`; return; }
+  el.innerHTML = `<table>
+    <tr><th>批次号</th><th>文件</th><th>上传时间</th><th>总行数</th><th>有效</th><th>问题</th><th>重复</th><th>备注</th></tr>
+    ${batches.map(b => `<tr>
+      <td><code>${b.batch_no}</code></td>
+      <td>${b.file_name}</td>
+      <td>${fmtTime(b.created_at)}</td>
+      <td>${b.total_rows}</td>
+      <td>${b.valid_rows}</td>
+      <td><span class="badge badge-issue">${b.issue_rows}</span></td>
+      <td>${b.duplicate_rows}</td>
+      <td class="muted">${b.remark || "-"}</td>
+    </tr>`).join("")}
+  </table>`;
+}
+
+/* ============= 评分记录 ============= */
+async function loadBatchSelects() {
+  const batches = await api("/api/import/batches");
+  const opts = batches.map(b => `<option value="${b.id}">${b.batch_no} - ${b.file_name}</option>`).join("");
+  ["filterBatch", "cmpA", "cmpB", "expBatch"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<option value="">${id === "cmpA" ? "选择批次A" : id === "cmpB" ? "选择批次B" : id === "expBatch" ? "全部批次" : "全部批次"}</option>` + opts;
+  });
+}
+
+async function loadRecords() {
+  selectedRecordIds.clear();
+  currentPage = 1;
+  await fetchRecords();
+}
+async function fetchRecords() {
+  const p = { page: currentPage, page_size: pageSize };
+  if (document.getElementById("filterBatch").value) p.batch_id = document.getElementById("filterBatch").value;
+  if (document.getElementById("filterStatus").value) p.status = document.getElementById("filterStatus").value;
+  if (document.getElementById("filterIssue").checked) p.only_issues = 1;
+  if (document.getElementById("filterMissingUnit").checked) p.only_missing_unit = 1;
+  const qs = new URLSearchParams(p).toString();
+  const data = await api("/api/records?" + qs);
+
+  const byStatus = {};
+  const all = await api("/api/records?page_size=500&" + (p.batch_id ? `batch_id=${p.batch_id}` : "")).catch(() => ({ items: [] }));
+  all.items.forEach(r => byStatus[r.status] = (byStatus[r.status] || 0) + 1);
+  document.getElementById("statGrid").innerHTML = `
+    <div class="stat-box"><div class="num">${data.total}</div><div class="label">筛选后记录数</div></div>
+    <div class="stat-box" style="border-left-color:#f59e0b;"><div class="num">${byStatus.pending || 0}</div><div class="label">待确认</div></div>
+    <div class="stat-box" style="border-left-color:#2563eb;"><div class="num">${byStatus.corrected || 0}</div><div class="label">已修正待复核</div></div>
+    <div class="stat-box" style="border-left-color:#10b981;"><div class="num">${byStatus.approved || 0}</div><div class="label">已通过</div></div>
+    <div class="stat-box" style="border-left-color:#ec4899;"><div class="num">${byStatus.duplicate || 0}</div><div class="label">重复</div></div>
+  `;
+
+  if (!data.items.length) { document.getElementById("recordList").innerHTML = `<div class="empty">暂无数据</div>`; return; }
+  document.getElementById("recordList").innerHTML = `<table>
+    <tr>
+      <th style="width:30px;"><input type="checkbox" onclick="toggleAll(this)"/></th>
+      <th>ID</th><th>学号</th><th>姓名</th><th>科目</th><th>单元</th>
+      <th>原始分</th><th>修正分</th><th>外推分</th><th>警报</th><th>状态</th>
+      <th>标记</th><th>审核人</th><th>操作</th>
+    </tr>
+    ${data.items.map(r => `<tr>
+      <td><input type="checkbox" class="rec-chk" data-id="${r.id}" ${selectedRecordIds.has(r.id) ? "checked" : ""} onchange="onChg(${r.id}, this)"/></td>
+      <td>${r.id}</td>
+      <td>${r.student_id || "-"}</td>
+      <td>${r.student_name || "-"}</td>
+      <td>${r.subject || "-"}</td>
+      <td>${r.unit_name || '<span class="badge badge-issue">缺失</span>'}</td>
+      <td>${r.score_original_value != null ? r.score_original_value : "-"}</td>
+      <td>${r.score_corrected_value != null ? `<strong style="color:#2563eb;">${r.score_corrected_value}</strong>` : "-"}</td>
+      <td>${r.score_extrapolated != null ? r.score_extrapolated : "-"}</td>
+      <td>${r.alarm_level || (r.alarm_flag ? "⚠ 警报" : "-")}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td>${r.unit_missing ? '<span class="tag">缺单元</span>' : ""}${r.is_duplicate ? '<span class="tag" style="background:#fce7f3;color:#9d174d;">重复</span>' : ""}</td>
+      <td>${r.reviewed_by || "-"}</td>
+      <td>
+        <button class="btn btn-sm" onclick="openDetail(${r.id})">查看</button>
+        ${r.status !== "approved" ? `<button class="btn btn-sm btn-success" onclick="quickApprove(${r.id})">通过</button>` : ""}
+        ${r.status !== "rejected" ? `<button class="btn btn-sm btn-danger" onclick="quickReject(${r.id})">驳回</button>` : ""}
+        <button class="btn btn-sm" onclick="openCorrect(${r.id})">修正</button>
+        <button class="btn btn-sm" onclick="openTrace(${r.id})">追溯</button>
+      </td>
+    </tr>`).join("")}
+  </table>`;
+
+  const pages = Math.ceil(data.total / pageSize) || 1;
+  let pg = `<button class="btn btn-sm" onclick="gotoPage(1)" ${currentPage === 1 ? "disabled" : ""}>首页</button>`;
+  pg += `<button class="btn btn-sm" onclick="gotoPage(${currentPage - 1})" ${currentPage === 1 ? "disabled" : ""}>上一页</button>`;
+  pg += `<span class="muted" style="padding:0 8px;">第 ${currentPage} / ${pages} 页（共 ${data.total} 条）</span>`;
+  pg += `<button class="btn btn-sm" onclick="gotoPage(${currentPage + 1})" ${currentPage === pages ? "disabled" : ""}>下一页</button>`;
+  pg += `<button class="btn btn-sm" onclick="gotoPage(${pages})" ${currentPage === pages ? "disabled" : ""}>末页</button>`;
+  document.getElementById("pagination").innerHTML = pg;
+}
+function gotoPage(p) { currentPage = p; fetchRecords(); }
+function toggleAll(el) {
+  document.querySelectorAll(".rec-chk").forEach(c => {
+    c.checked = el.checked;
+    const id = Number(c.dataset.id);
+    if (el.checked) selectedRecordIds.add(id); else selectedRecordIds.delete(id);
+  });
+}
+function onChg(id, el) { if (el.checked) selectedRecordIds.add(id); else selectedRecordIds.delete(id); }
+
+async function quickApprove(id) {
+  await api(`/api/records/${id}/status`, {
+    method: "PUT", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "approved", operator: OPERATOR, review_note: "批量一键通过" })
+  });
+  fetchRecords();
+}
+async function quickReject(id) {
+  const note = prompt("驳回原因：") || "人工驳回";
+  await api(`/api/records/${id}/status`, {
+    method: "PUT", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ status: "rejected", operator: OPERATOR, review_note: note })
+  });
+  fetchRecords();
+}
+async function batchApproveSelected() {
+  if (!selectedRecordIds.size) { alert("请先勾选记录"); return; }
+  if (!confirm(`通过选中 ${selectedRecordIds.size} 条记录？`)) return;
+  await api("/api/records/batch-approve", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify([...selectedRecordIds])
+  });
+  fetchRecords();
+}
+
+/* ============= 详情 & 修正模态 ============= */
+function modal(html) {
+  document.getElementById("modalRoot").innerHTML = `<div class="modal-mask" onclick="if(event.target===this)closeModal()"><div class="modal"><span class="close-x" onclick="closeModal()">×</span>${html}</div></div>`;
+}
+function closeModal() { document.getElementById("modalRoot").innerHTML = ""; }
+
+async function openDetail(id) {
+  const r = await api(`/api/records/${id}`);
+  modal(`
+    <h3>记录 #${r.id} 详情</h3>
+    <div class="row"><strong>状态：</strong>${statusBadge(r.status)}</div>
+    <table>
+      <tr><th>字段</th><th>原始值</th><th>当前值</th></tr>
+      <tr><td>学号/姓名/班级</td><td colspan="2">${r.student_id || "-"} / ${r.student_name || "-"} / ${r.class_name || "-"}</td></tr>
+      <tr><td>科目 / 单元</td><td colspan="2">${r.subject || "-"} / ${r.unit_name || '<span class="badge badge-issue">缺失</span>'}</td></tr>
+      <tr><td>原始分</td><td>${r.score_original_value ?? "-"}</td><td>${r.score_corrected_value != null ? `<span class="diff-to">${r.score_corrected_value}</span>` : (r.score_original_value ?? "-")}</td></tr>
+      <tr><td>外推分</td><td colspan="2">${r.score_extrapolated ?? "-"}</td></tr>
+      <tr><td>警报等级</td><td>${r.alarm_original_level || "-"}</td><td>${r.alarm_corrected_level ? `<span class="diff-to">${r.alarm_corrected_level}</span>` : (r.alarm_level || "-")}</td></tr>
+      <tr><td>备注(原始)</td><td colspan="2" style="color:#6b7280;">${r.remark_raw || "-"}</td></tr>
+      <tr><td>备注(清洗)</td><td colspan="2">${r.remark_clean || "-"}</td></tr>
+      <tr><td>审核备注</td><td colspan="2">${r.review_note || "-"}</td></tr>
+    </table>
+    <h4 style="margin-top:14px;">数据问题</h4>
+    ${r.issues && r.issues.length ? `<table><tr><th>类型</th><th>详情</th><th>字段</th><th>是否解决</th></tr>
+      ${r.issues.map(i => `<tr><td>${issueBadge(i.issue_type)}</td><td>${i.issue_detail || ""}</td><td>${i.column_name || "-"}</td><td>${i.resolved ? "✅" : "❌"}</td></tr>`).join("")}</table>` : `<div class="empty">无</div>`}
+    <h4 style="margin-top:14px;">审核/修改留痕</h4>
+    ${r.review_logs && r.review_logs.length ? `<table><tr><th>时间</th><th>操作</th><th>字段</th><th>原值→新值</th><th>操作人</th><th>备注</th></tr>
+      ${r.review_logs.map(l => `<tr>
+        <td>${fmtTime(l.created_at)}</td>
+        <td>${l.action === "status_change" ? "状态流转" : l.action === "field_correction" ? "字段修正" : l.action}</td>
+        <td>${l.field_name || (l.from_status + "→" + l.to_status)}</td>
+        <td>${l.old_value != null ? `<span class="diff-from">${l.old_value}</span> → <span class="diff-to">${l.new_value}</span>` : "-"}</td>
+        <td>${l.operator}</td><td>${l.note || "-"}</td>
+      </tr>`).join("")}</table>` : `<div class="empty">暂无修改记录</div>`}
+  `);
+}
+
+async function openCorrect(id) {
+  const r = await api(`/api/records/${id}`);
+  modal(`
+    <h3>人工修正记录 #${r.id}</h3>
+    <p class="muted">修改将完整留痕，包含原值→新值、操作人和时间。</p>
+    <div class="row"><label>修正分数：<input type="number" step="0.01" id="corScore" value="${r.score_corrected_value ?? r.score_original_value ?? ""}"/></label></div>
+    <div class="row"><label>警报等级：<input type="text" id="corAlarm" value="${r.alarm_corrected_level || r.alarm_level || ""}"/></label></div>
+    <div class="row"><label>修正备注：<input type="text" id="corNote" style="min-width:360px;" placeholder="说明修改原因（必填）"/></label></div>
+    <div class="row">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="doCorrect(${r.id})">保存修正</button>
+    </div>
+  `);
+}
+async function doCorrect(id) {
+  const note = document.getElementById("corNote").value;
+  if (!note) { alert("请填写修正备注"); return; }
+  await api(`/api/records/${id}/correct?operator=${encodeURIComponent(OPERATOR)}`, {
+    method: "PUT", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      score_corrected_value: parseFloat(document.getElementById("corScore").value) || null,
+      alarm_corrected_level: document.getElementById("corAlarm").value || null,
+      review_note: note,
+    })
+  });
+  closeModal();
+  fetchRecords();
+}
+
+/* ============= 追溯 ============= */
+async function openTrace(id) {
+  const t = await api(`/api/trace/${id}`);
+  modal(`
+    <h3>🔍 追溯记录 #${id}</h3>
+    <h4 style="margin-top:10px;">来源批次</h4>
+    <p>批次号：<code>${t.source_batch.batch_no}</code> &nbsp; 文件：${t.source_batch.file_name} &nbsp; 导入时间：${fmtTime(t.source_batch.created_at)}</p>
+    <h4>数据问题</h4>
+    ${t.issues.length ? `<table><tr><th>类型</th><th>详情</th><th>字段</th></tr>
+      ${t.issues.map(i => `<tr><td>${issueBadge(i.issue_type)}</td><td>${i.issue_detail}</td><td>${i.column_name || "-"}</td></tr>`).join("")}</table>` : `<div class="empty">无</div>`}
+    <h4>处理/审核留痕</h4>
+    ${t.review_logs.length ? `<table><tr><th>时间</th><th>操作</th><th>变更</th><th>操作人</th></tr>
+      ${t.review_logs.map(l => `<tr><td>${fmtTime(l.created_at)}</td><td>${l.action}</td>
+        <td>${l.from_status ? l.from_status + "→" + l.to_status : (l.field_name + ": " + l.old_value + " → " + l.new_value)}</td>
+        <td>${l.operator}</td></tr>`).join("")}</table>` : `<div class="empty">暂无处理记录</div>`}
+    <h4>关联重复记录</h4>
+    ${t.related_duplicates.length ? `<table><tr><th>ID</th><th>批次</th><th>学号/姓名</th><th>科目/单元</th><th>状态</th></tr>
+      ${t.related_duplicates.map(d => `<tr><td>${d.id}</td><td>${d.batch_id}</td><td>${d.student_id}/${d.student_name}</td><td>${d.subject}/${d.unit_name}</td><td>${statusBadge(d.status)}</td></tr>`).join("")}</table>` : `<div class="empty">无</div>`}
+  `);
+}
+
+async function traceSearch() {
+  const p = {};
+  if (document.getElementById("traceStudentId").value) p.student_id = document.getElementById("traceStudentId").value;
+  if (document.getElementById("traceSubject").value) p.subject = document.getElementById("traceSubject").value;
+  if (document.getElementById("traceUnit").value) p.unit_name = document.getElementById("traceUnit").value;
+  if (!Object.keys(p).length) { alert("至少填一个条件"); return; }
+  const data = await api("/api/trace/search?" + new URLSearchParams(p));
+  const el = document.getElementById("traceResult");
+  if (!data.total) { el.innerHTML = `<div class="empty">未找到匹配记录</div>`; return; }
+  el.innerHTML = `<p>共找到 ${data.total} 条相关记录：</p>
+    <table>
+      <tr><th>ID</th><th>批次号</th><th>学号/姓名</th><th>科目/单元</th><th>分数/外推</th><th>警报</th><th>状态</th><th>操作</th></tr>
+      ${data.items.map(r => `<tr>
+        <td>${r.id}</td><td>批次${r.batch_id}</td>
+        <td>${r.student_id || "-"} / ${r.student_name || "-"}</td>
+        <td>${r.subject || "-"} / ${r.unit_name || '<span class="badge badge-issue">缺失</span>'}</td>
+        <td>${r.score_origin ?? "-"} / ${r.score_extrapolated ?? "-"}</td>
+        <td>${r.alarm_level || (r.alarm_flag ? "⚠" : "-")}</td>
+        <td>${statusBadge(r.status)}</td>
+        <td><button class="btn btn-sm" onclick="openTrace(${r.id})">追溯</button></td>
+      </tr>`).join("")}
+    </table>`;
+}
+
+/* ============= 历史对比 ============= */
+async function loadHistoryList() {
+  const data = await api("/api/history/compare-list?limit=30");
+  const el = document.getElementById("historyList");
+  if (!data.length) { el.innerHTML = `<div class="empty">暂无历史批次</div>`; return; }
+  el.innerHTML = `<table>
+    <tr><th>批次号</th><th>文件</th><th>导入时间</th><th>总记录</th><th>已通过</th><th>待处理</th><th>问题数</th></tr>
+    ${data.map(b => `<tr>
+      <td><code>${b.batch_no}</code></td><td>${b.file_name}</td>
+      <td>${fmtTime(b.created_at)}</td><td>${b.total_records}</td>
+      <td style="color:#065f46;">${b.pass_count}</td>
+      <td style="color:#92400e;">${b.pending_count}</td>
+      <td><span class="badge badge-issue">${b.issue_count}</span></td>
+    </tr>`).join("")}
+  </table>`;
+}
+async function compareBatches() {
+  const a = document.getElementById("cmpA").value;
+  const b = document.getElementById("cmpB").value;
+  if (!a || !b || a === b) { alert("请选择两个不同的批次"); return; }
+  const r = await api(`/api/history/compare?batch_a=${encodeURIComponent(a)}&batch_b=${encodeURIComponent(b)}`);
+  document.getElementById("cmpResultCard").style.display = "block";
+  document.getElementById("cmpResult").innerHTML = `
+    <p>A: <code>${r.batch_a.batch_no}</code> (${r.batch_a.file_name}, ${fmtTime(r.batch_a.created_at)})</p>
+    <p>B: <code>${r.batch_b.batch_no}</code> (${r.batch_b.file_name}, ${fmtTime(r.batch_b.created_at)})</p>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num">${r.common_count}</div><div class="label">共同记录数</div></div>
+      <div class="stat-box" style="border-left-color:#10b981;"><div class="num">${r.unchanged_count}</div><div class="label">未变化</div></div>
+      <div class="stat-box" style="border-left-color:#f59e0b;"><div class="num">${r.changed.length}</div><div class="label">有差异</div></div>
+      <div class="stat-box" style="border-left-color:#3b82f6;"><div class="num">${r.only_in_a.length}</div><div class="label">仅在A</div></div>
+      <div class="stat-box" style="border-left-color:#8b5cf6;"><div class="num">${r.only_in_b.length}</div><div class="label">仅在B</div></div>
+    </div>
+    ${r.changed.length ? `<h4>差异详情</h4><table>
+      <tr><th>Key</th><th>A</th><th>B</th><th>差异字段</th></tr>
+      ${r.changed.map(c => `<tr>
+        <td><code style="font-size:11px;">${c.key}</code></td>
+        <td>${c.record_a.student_name || "-"} / ${c.record_a.score_origin ?? "-"} / ${c.record_a.alarm_level || "-"}</td>
+        <td>${c.record_b.student_name || "-"} / ${c.record_b.score_origin ?? "-"} / ${c.record_b.alarm_level || "-"}</td>
+        <td>${Object.entries(c.diffs).map(([k, v]) => `${k}: <span class="diff-from">${v.from ?? "空"}</span> → <span class="diff-to">${v.to ?? "空"}</span>`).join("<br/>")}</td>
+      </tr>`).join("")}</table>` : ""}
+  `;
+}
+
+/* ============= 导出 ============= */
+function doExport() {
+  const p = {};
+  if (document.getElementById("expBatch").value) p.batch_id = document.getElementById("expBatch").value;
+  if (document.getElementById("expStatus").value) p.status = document.getElementById("expStatus").value;
+  if (document.getElementById("expIssue").checked) p.only_issues = 1;
+  const url = "/api/export?" + new URLSearchParams(p);
+  window.location.href = url;
+}
+
+/* ============= 初始化 ============= */
+loadBatchList();
+loadBatchSelects();
+</script>
+</body>
+</html>
