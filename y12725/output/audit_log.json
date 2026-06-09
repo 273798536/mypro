@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "version": "1.0",
+    "updated_at": "2026-06-09 19:30:43",
+    "total_records": 2
+  },
+  "records": [
+    {
+      "id": "21497027",
+      "timestamp": "2026-06-09 19:30:35",
+      "analyst": "张三",
+      "date_value": "2024-01-06",
+      "field_name": "value",
+      "old_value": 87.4,
+      "new_value": 87.4,
+      "old_status": "暂缓",
+      "new_status": "可用",
+      "reason": "与财务台账核对，春节调休数据无误",
+      "source_file": "examples/sample_data.csv"
+    },
+    {
+      "id": "0d9c682b",
+      "timestamp": "2026-06-09 19:30:43",
+      "analyst": "李四",
+      "date_value": "2024-01-26",
+      "field_name": "value",
+      "old_value": null,
+      "new_value": null,
+      "old_status": "暂缓",
+      "new_status": "需重新采集",
+      "reason": "系统异常期间数据不可信，需重新采集",
+      "source_file": "examples/sample_data.csv"
+    }
+  ]
+}
