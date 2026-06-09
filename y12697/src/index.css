@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  background-color: #111827;
+  color: #e5e7eb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 1280px;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-industrial-800 text-white border border-industrial-600 hover:border-alert-orange hover:shadow-glow-orange transition-all duration-200 font-medium text-sm;
+  }
+
+  .btn-warning {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-sm bg-alert-orange text-white border border-alert-orange hover:bg-orange-600 transition-all duration-200 font-medium text-sm;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-sm text-charcoal-300 hover:bg-charcoal-800 hover:text-white transition-all duration-200 text-sm;
+  }
+
+  .card-panel {
+    @apply bg-charcoal-900 border border-charcoal-800 rounded-sm shadow-industrial;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 bg-charcoal-800 border border-charcoal-700 rounded-sm text-white placeholder-charcoal-500 focus:border-alert-orange focus:outline-none focus:ring-1 focus:ring-alert-orange transition-colors text-sm;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium;
+  }
+
+  .tab-active {
+    @apply bg-industrial-800 text-white border-b-2 border-alert-orange;
+  }
+
+  .tab-inactive {
+    @apply text-charcoal-400 hover:text-white hover:bg-charcoal-800;
+  }
+}
