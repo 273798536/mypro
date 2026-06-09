@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>水质 COD 批量报告复核看板</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <div class="app-header">
+      <h1>
+        水质 COD 批量报告复核看板
+        <span class="header-badge" id="batchStatusBadge">待复核</span>
+      </h1>
+      <div class="header-meta">
+        <span id="batchInfo">批次号：--</span>
+        <span id="batchNameInfo">批次名称：--</span>
+        <span id="analystInfo">检测人：--</span>
+        <span id="reviewerInfo">复核人：--</span>
+        <span id="createTimeInfo">创建：--</span>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn btn-primary" id="btnLoadDemo">
+        <span>📂</span> 载入示例数据
+      </button>
+      <button class="btn" id="btnImport">
+        <span>📥</span> 导入数据
+      </button>
+      <input type="file" id="fileImport" accept=".json" style="display:none;">
+      <button class="btn btn-success" id="btnReprocess">
+        <span>🔄</span> 重新计算
+      </button>
+      <div class="toolbar-spacer"></div>
+      <div class="filter-group">
+        <span class="filter-label">筛选：</span>
+        <select class="filter-select" id="filterSeverity">
+          <option value="all">全部异常</option>
+          <option value="error">仅需重视</option>
+          <option value="warning">仅请关注</option>
+          <option value="info">仅提示</option>
+          <option value="none">无异常样品</option>
+        </select>
+        <select class="filter-select" id="filterAnomaly">
+          <option value="all">全部异常类型</option>
+        </select>
+      </div>
+      <button class="btn btn-warning" id="btnExportFull">
+        <span>📊</span> 导出完整报告
+      </button>
+      <button class="btn btn-warning" id="btnExportAnomaly">
+        <span>⚠️</span> 导出异常说明
+      </button>
+    </div>
+
+    <div class="instructions-panel" id="instructionsPanel">
+      <h3>📋 快速上手</h3>
+      <ol class="instructions-ol">
+        <li>点击 <code>载入示例数据</code> 查看演示效果，或点击 <code>导入数据</code> 上传 JSON 格式的批次数据</li>
+        <li>左侧看板查看 <b>质控情况</b>、<b>浓度趋势</b>、<b>异常分布</b>，下方表格查看每个样品的明细</li>
+        <li>右侧 <b>异常列表</b> 点击任意异常，可追溯从 <b>样品信息 → 称量 → 反应条件 → 谱图 → 浓度计算 → 异常结果</b> 的完整链路</li>
+        <li>点击 <code>导出完整报告</code> 下载 CSV 文件，内含通俗解释，可直接转发给不懂代码的同事</li>
+      </ol>
+    </div>
+
+    <div class="dashboard-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-title">样品总数</div>
+        <div class="stat-value" id="statTotal">--</div>
+        <div class="stat-sub">本批检测样品数</div>
+      </div>
+      <div class="stat-card stat-success">
+        <div class="stat-title">无异常样品</div>
+        <div class="stat-value" id="statClean">--</div>
+        <div class="stat-sub">数据完整可直接通过</div>
+      </div>
+      <div class="stat-card stat-warning">
+        <div class="stat-title">有异常样品</div>
+        <div class="stat-value" id="statDirty">--</div>
+        <div class="stat-sub">需人工复核或补充材料</div>
+      </div>
+      <div class="stat-card stat-error">
+        <div class="stat-title">异常总条数</div>
+        <div class="stat-value" id="statIssues">--</div>
+        <div class="stat-sub">含 error / warning / info</div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">📈 数据概览与明细</div>
+        </div>
+        <div class="panel-body">
+
+          <div class="unit-alert hidden" id="unitAlert">
+            <strong>⚠️ 检测到温度单位混用：</strong>
+            本批样品使用了 <span id="unitAlertUnits"></span> 等多种单位，系统已自动换算为摄氏度(℃)，请复核原始记录确认无误。
+          </div>
+
+          <div class="qc-section">
+            <div class="qc-card" id="qcBlank">
+              <div class="qc-card-title">空白试验</div>
+              <div class="qc-card-value" id="qcBlankValue">--</div>
+              <div class="qc-card-status" id="qcBlankStatus">--</div>
+            </div>
+            <div class="qc-card" id="qcStd">
+              <div class="qc-card-title">标准样品</div>
+              <div class="qc-card-value" id="qcStdValue">--</div>
+              <div class="qc-card-status" id="qcStdStatus">--</div>
+            </div>
+            <div class="qc-card" id="qcParallel">
+              <div class="qc-card-title">平行样精密度</div>
+              <div class="qc-card-value" id="qcParallelValue">--</div>
+              <div class="qc-card-status" id="qcParallelStatus">--</div>
+            </div>
+          </div>
+
+          <div class="chart-section">
+            <div class="chart-title">COD 浓度对比（单位：mg/L，按采样点）</div>
+            <div class="chart-container">
+              <div class="bar-chart" id="concentrationChart"></div>
+            </div>
+          </div>
+
+          <div class="chart-section">
+            <div class="chart-title">异常分布统计</div>
+            <div class="chart-container">
+              <div class="pie-chart" id="anomalyChart"></div>
+            </div>
+          </div>
+
+          <div style="margin-top:8px;">
+            <div class="chart-title">样品明细（点击行查看异常追溯）</div>
+            <div class="table-wrapper">
+              <table class="data-table" id="samplesTable">
+                <thead>
+                  <tr>
+                    <th>序号</th>
+                    <th>样品编号</th>
+                    <th>样品名称</th>
+                    <th>类型</th>
+                    <th>采样点</th>
+                    <th>吸光度</th>
+                    <th>稀释倍数</th>
+                    <th>COD浓度(mg/L)</th>
+                    <th>消解温度</th>
+                    <th>消解时间</th>
+                    <th>称量精度</th>
+                    <th>谱图</th>
+                    <th>异常</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody id="samplesTbody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">⚠️ 异常列表</div>
+          <span class="severity-tag" id="anomalyCountTag">0 条</span>
+        </div>
+        <div class="panel-body">
+          <div class="anomaly-list" id="anomalyList">
+            <div class="empty-state">
+              <div class="empty-state-icon">📋</div>
+              <div>请先载入数据</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-overlay hidden" id="traceModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="traceModalTitle">异常追溯</div>
+        <button class="modal-close" id="traceModalClose">×</button>
+      </div>
+      <div class="modal-body" id="traceModalBody">
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="traceModalExportBtn">导出该样品详情</button>
+        <button class="btn btn-primary" id="traceModalOkBtn">知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="core.js"></script>
+  <script src="exporter.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
