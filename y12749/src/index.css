@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #112137;
+  background-color: #e8eef5;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 1280px;
+  min-height: 100vh;
+}
+
+.font-serif {
+  font-family: 'Noto Serif SC', Georgia, serif;
+}
+
+.bg-duplicate-stripe {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(220, 38, 38, 0.08) 0px,
+    rgba(220, 38, 38, 0.08) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #adc5df;
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer components {
+  .card-base {
+    @apply bg-white rounded-md shadow-card border border-navy-100/60;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded text-sm font-medium text-white bg-navy-600 hover:bg-navy-700 hover:shadow-card-hover transition-all duration-200;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded text-sm font-medium text-navy-700 bg-white border border-navy-200 hover:bg-navy-50 hover:shadow-card-hover transition-all duration-200;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded text-sm font-medium text-red-700 bg-white border border-red-200 hover:bg-red-50 transition-all duration-200;
+  }
+  .tag-easy {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-teal-50 text-teal-600 border border-teal-200;
+  }
+  .tag-medium {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-50 text-amber-600 border border-amber-200;
+  }
+  .tag-hard {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-50 text-red-600 border border-red-200;
+  }
+  .tag-pending {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-500 border border-gray-200;
+  }
+  .input-base {
+    @apply w-full px-3 py-2 rounded border border-navy-200 text-sm text-navy-800 bg-white focus:outline-none focus:ring-2 focus:ring-navy-400/40 focus:border-navy-400 transition-all;
+  }
+  .label-base {
+    @apply block text-xs font-medium text-navy-700 mb-1;
+  }
+}
+
+@media print {
+  body {
+    background: white;
+    min-width: auto;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
