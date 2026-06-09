@@ -1,0 +1,24 @@
+[project]
+name = "ls-outlier-review"
+version = "0.1.0"
+description = "最小二乘异常点复核系统 - 约束校验、结果解释、人工复核留痕、导出一体化"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.6",
+    "pydantic>=2.9.2",
+    "pydantic-settings>=2.5.2",
+    "numpy>=1.26.4",
+    "scipy>=1.13.1",
+    "pandas>=2.2.2",
+    "openpyxl>=3.1.5",
+    "matplotlib>=3.9.2",
+    "python-multipart>=0.0.12",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
