@@ -1,0 +1,14 @@
+[
+    {
+        "question_db_id": 2,
+        "field": "correct_answer",
+        "new_value": "6",
+        "note": "复查发现原标准答案有误，x=6 才对"
+    },
+    {
+        "question_db_id": 4,
+        "field": "student_answer",
+        "new_value": "-2",
+        "note": "更正学生答案录入错误，学生原来写的是 -2"
+    }
+]

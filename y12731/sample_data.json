@@ -1,0 +1,72 @@
+[
+    {
+        "question_id": "MATH001",
+        "student_id": "S001",
+        "question_text": "计算: 10 / 2 + 3",
+        "student_answer": "8",
+        "correct_answer": "8"
+    },
+    {
+        "question_id": "MATH002",
+        "student_id": "S002",
+        "question_text": "解方程: 2x + 5 = 15，求 x 的值（x 取值范围为 1 到 10）",
+        "student_answer": "6",
+        "correct_answer": "5"
+    },
+    {
+        "question_id": "MATH003",
+        "student_id": "S003",
+        "question_text": "计算: 24 / (6 - 6)",
+        "student_answer": "24/0",
+        "correct_answer": "无意义（除零）"
+    },
+    {
+        "question_id": "MATH004",
+        "student_id": "S004",
+        "question_text": "计算: -5 + 3",
+        "student_answer": "2",
+        "correct_answer": "-2"
+    },
+    {
+        "question_id": "MATH005",
+        "student_id": "S005",
+        "question_text": "小明有 15 个苹果，分给 3 个同学，每人几个？",
+        "student_answer": "5",
+        "correct_answer": ""
+    },
+    {
+        "question_id": "MATH006",
+        "student_id": "S006",
+        "question_text": "",
+        "student_answer": "42",
+        "correct_answer": "42"
+    },
+    {
+        "question_id": "MATH007",
+        "student_id": "S007",
+        "question_text": "比较大小: -3 和 -5，哪个大？填入较大的数。",
+        "student_answer": "-5",
+        "correct_answer": "-3"
+    },
+    {
+        "question_id": "MATH008",
+        "student_id": "S008",
+        "question_text": "填空: 温度从零下 3 度上升 5 度后是多少度？",
+        "student_answer": "",
+        "correct_answer": "2"
+    },
+    {
+        "question_id": "MATH009",
+        "student_id": "S009",
+        "question_text": "  计算:  100/(4*5 - 20)  ",
+        "student_answer": " 100/0 ",
+        "correct_answer": "undefined"
+    },
+    {
+        "question_id": "MATH010",
+        "student_id": "S010",
+        "question_text": "一个数在 0 到 100 之间，比 50 大，比 52 小，这个数可能是？",
+        "student_answer": "50",
+        "correct_answer": "51"
+    }
+]
