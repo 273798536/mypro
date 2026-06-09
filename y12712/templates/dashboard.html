@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>蒙特卡洛误差看板</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #2c3e50; padding: 24px; }
+  h1 { font-size: 22px; margin-bottom: 8px; }
+  .subtitle { color: #7f8c8d; font-size: 13px; margin-bottom: 24px; }
+  .status-bar { background: #fff; border-left: 4px solid #3498db; padding: 12px 16px; border-radius: 4px; margin-bottom: 20px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px; }
+  .status-bar span strong { color: #2c3e50; }
+  .status-bar .rev-ctrl { margin-left: auto; }
+  .status-bar button { padding: 6px 14px; background: #e67e22; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; }
+  .status-bar button:hover { background: #d35400; }
+  .batch-list { display: grid; gap: 16px; }
+  .batch-card { background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); padding: 20px; }
+  .batch-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #ecf0f1; }
+  .batch-title { font-size: 15px; font-weight: 600; }
+  .batch-meta { font-size: 12px; color: #7f8c8d; margin-top: 4px; }
+  .status-tag { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+  .status-ok { background: #d4edda; color: #155724; }
+  .status-fail { background: #f8d7da; color: #721c24; }
+  .status-unit { background: #fff3cd; color: #856404; }
+  .status-review { background: #cce5ff; color: #004085; }
+  .status-pending { background: #e2e3e5; color: #383d41; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+  .section { background: #f8f9fa; border-radius: 6px; padding: 14px; }
+  .section h3 { font-size: 13px; margin-bottom: 10px; color: #34495e; border-left: 3px solid #3498db; padding-left: 8px; }
+  .formula-box { background: #fff; padding: 12px; border-radius: 4px; font-size: 14px; }
+  .formula-expr { font-size: 18px; font-weight: 600; color: #2980b9; font-family: "Cambria Math", "Times New Roman", serif; margin-bottom: 6px; }
+  .formula-meta { font-size: 12px; color: #7f8c8d; line-height: 1.7; }
+  .formula-meta strong { color: #2c3e50; }
+  .source-item { background: #fff; padding: 10px 12px; border-radius: 4px; margin-bottom: 8px; font-size: 13px; }
+  .source-item:last-child { margin-bottom: 0; }
+  .source-name { font-weight: 600; color: #2c3e50; }
+  .source-val { color: #2980b9; font-weight: 500; margin: 0 4px; }
+  .source-unit-missing { color: #e74c3c; font-weight: 600; }
+  .source-id { color: #95a5a6; font-size: 11px; }
+  .source-desc { color: #7f8c8d; font-size: 12px; margin-top: 4px; }
+  .result-box { background: #fff; padding: 12px; border-radius: 4px; }
+  .result-main { font-size: 20px; font-weight: 700; color: #27ae60; margin-bottom: 8px; }
+  .result-main.error { color: #e74c3c; }
+  .result-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; border-bottom: 1px dashed #ecf0f1; }
+  .result-row:last-child { border-bottom: none; }
+  .result-row .k { color: #7f8c8d; }
+  .result-row .v { color: #2c3e50; font-weight: 500; }
+  .warn-box { background: #fff8e1; border-left: 3px solid #f39c12; padding: 8px 12px; margin-top: 10px; border-radius: 4px; font-size: 12px; color: #856404; }
+  .constraint-pass { color: #27ae60; font-size: 13px; }
+  .constraint-fail { background: #fff; padding: 10px; border-radius: 4px; margin-bottom: 8px; border-left: 3px solid #e74c3c; }
+  .constraint-fail:last-child { margin-bottom: 0; }
+  .cf-title { font-weight: 600; color: #c0392b; font-size: 13px; }
+  .cf-meta { font-size: 12px; color: #7f8c8d; margin-top: 4px; line-height: 1.6; }
+  .cf-msg { font-size: 12px; color: #e74c3c; margin-top: 4px; font-weight: 500; }
+  .batch-actions { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { padding: 6px 14px; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500; }
+  .btn-primary { background: #3498db; color: #fff; }
+  .btn-primary:hover { background: #2980b9; }
+  .btn-outline { background: #fff; color: #3498db; border: 1px solid #3498db; }
+  .btn-outline:hover { background: #ecf0f1; }
+  .btn-warn { background: #e67e22; color: #fff; }
+  .btn-warn:hover { background: #d35400; }
+  .trace-panel { background: #1e272e; color: #d2dae2; padding: 14px; border-radius: 6px; margin-top: 14px; font-size: 12px; font-family: "SF Mono", Menlo, Consolas, monospace; display: none; }
+  .trace-panel.show { display: block; }
+  .trace-path { color: #4bcffa; margin-bottom: 8px; font-size: 13px; }
+  .trace-layer { margin-bottom: 10px; }
+  .trace-layer-title { color: #ffd32a; font-weight: 600; margin-bottom: 4px; }
+  .trace-line { padding-left: 16px; color: #d2dae2; line-height: 1.8; }
+  .trace-line strong { color: #808e9b; }
+  .review-panel { background: #fff; border: 1px solid #bdc3c7; border-radius: 6px; padding: 16px; margin-top: 14px; display: none; }
+  .review-panel.show { display: block; }
+  .review-panel h4 { font-size: 14px; margin-bottom: 12px; color: #2c3e50; }
+  .review-row { display: grid; grid-template-columns: 100px 1fr; gap: 10px; margin-bottom: 10px; align-items: center; }
+  .review-row label { font-size: 13px; color: #34495e; }
+  .review-row input, .review-row textarea { padding: 6px 10px; border: 1px solid #bdc3c7; border-radius: 4px; font-size: 13px; font-family: inherit; width: 100%; }
+  .review-row textarea { min-height: 60px; resize: vertical; }
+  .review-info { background: #eaf2f8; padding: 10px; border-radius: 4px; margin-bottom: 12px; font-size: 12px; color: #2c3e50; }
+  .review-info strong { color: #2980b9; }
+</style>
+</head>
+<body>
+
+<h1>📊 蒙特卡洛误差看板</h1>
+<p class="subtitle">处理记录统一存储，公式计算与约束校验共用同一批次，支持追溯与教师复核</p>
+
+<div class="status-bar">
+  <span>总批次数: <strong>{{ total }}</strong></span>
+  <span>已计算: <strong>{{ stats.calculated }}</strong></span>
+  <span>约束失败: <strong>{{ stats.failed }}</strong></span>
+  <span>单位缺失: <strong>{{ stats.unit_missing }}</strong></span>
+  <span>已复核: <strong>{{ stats.reviewed }}</strong></span>
+  <div class="rev-ctrl">
+    <button onclick="location.href='/review'">🔍 教师复核入口</button>
+  </div>
+</div>
+
+<div class="batch-list">
+{% for batch in batches %}
+  <div class="batch-card">
+    <div class="batch-header">
+      <div>
+        <div class="batch-title">批次 {{ batch.batch_id }}</div>
+        <div class="batch-meta">
+          运行时间: {{ batch.run_timestamp }}　
+          追溯链路: 来源({{ batch.sources|length }}) → 批次 → 结果
+          {% if batch.note %}<br>⚠️ {{ batch.note }}{% endif %}
+        </div>
+      </div>
+      <span class="status-tag {{ batch.status_class }}">{{ batch.status }}</span>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="section">
+          <h3>🧮 公式 · 单位 · 适用范围</h3>
+          {% if batch.calculation %}
+          <div class="formula-box">
+            <div class="formula-expr">{{ batch.calculation.formula.expression }}</div>
+            <div class="formula-meta">
+              <strong>说明：</strong>{{ batch.calculation.formula.description }}<br>
+              <strong>适用范围：</strong>{{ batch.calculation.formula.applicable_range }}<br>
+              <strong>结果单位：</strong>{{ batch.calculation.formula.units }}
+            </div>
+          </div>
+          {% else %}
+          <div class="formula-box" style="color:#95a5a6;">(公式未加载)</div>
+          {% endif %}
+        </div>
+
+        <div class="section" style="margin-top: 16px;">
+          <h3>📥 来源数据</h3>
+          {% for s in batch.sources %}
+          <div class="source-item">
+            <span class="source-name">{{ s.name }}</span> =
+            <span class="source-val">{{ s.value }}</span>
+            {% if s.unit %}
+              <span class="source-name">{{ s.unit }}</span>
+            {% else %}
+              <span class="source-unit-missing">(单位缺失)</span>
+            {% endif %}
+            <div><span class="source-id">来源ID: {{ s.source_id }}</span></div>
+            {% if s.description %}<div class="source-desc">{{ s.description }}</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <div class="section">
+          <h3>📈 蒙特卡洛计算结果</h3>
+          {% if batch.calculation and batch.calculation.value is not none %}
+          <div class="result-box">
+            <div class="result-main">{{ batch.calculation.value }} {{ batch.calculation.unit or '' }}</div>
+            <div class="result-row"><span class="k">结果ID</span><span class="v">{{ batch.calculation.result_id }}</span></div>
+            {% if batch.calculation.absolute_error is not none %}
+            <div class="result-row"><span class="k">绝对误差 σ</span><span class="v">{{ batch.calculation.absolute_error }}</span></div>
+            {% endif %}
+            {% if batch.calculation.relative_error is not none %}
+            <div class="result-row"><span class="k">相对误差</span><span class="v">{{ batch.calculation.relative_error }} %</span></div>
+            {% endif %}
+            {% if batch.calculation.confidence_interval %}
+            <div class="result-row"><span class="k">95% 置信区间</span>
+              <span class="v">[{{ batch.calculation.confidence_interval.low }}, {{ batch.calculation.confidence_interval.high }}]</span>
+            </div>
+            {% endif %}
+            <div class="result-row"><span class="k">抽样次数</span><span class="v">{{ batch.calculation.monte_carlo_samples }}</span></div>
+          </div>
+          {% else %}
+          <div class="result-box">
+            <div class="result-main error">计算中止</div>
+            <div style="font-size: 13px; color: #e74c3c;">
+              {{ batch.calculation.error_message if batch.calculation else '未知错误' }}
+            </div>
+          </div>
+          {% endif %}
+
+          {% if batch.calculation and batch.calculation.warnings %}
+            {% for w in batch.calculation.warnings %}
+            <div class="warn-box">⚠️ {{ w }}</div>
+            {% endfor %}
+          {% endif %}
+        </div>
+
+        <div class="section" style="margin-top: 16px;">
+          <h3>✅ 约束校验结果（与计算共用批次 {{ batch.batch_id }}）</h3>
+          {% if batch.constraint_check %}
+            {% if batch.constraint_check.status == '通过' %}
+            <div class="constraint-pass">✓ 所有约束校验通过（{{ batch.constraint_check.passed|length }} 项）</div>
+            {% elif batch.constraint_check.status == '跳过' %}
+            <div style="color:#95a5a6; font-size:13px;">⊘ 因前置失败，约束校验已跳过</div>
+            {% else %}
+              {% for v in batch.constraint_check.violations %}
+              <div class="constraint-fail">
+                <div class="cf-title">✗ {{ v.constraint_name }}（{{ v.constraint_expr }}）</div>
+                <div class="cf-meta">
+                  期望范围：{{ v.expected_range }}<br>
+                  实际取值：{{ v.actual_value }}
+                </div>
+                <div class="cf-msg">失败原因：{{ v.message }}</div>
+              </div>
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if batch.review %}
+    <div class="review-info" style="margin-top: 14px;">
+      <strong>✅ 已复核</strong>　
+      复核人：{{ batch.review.reviewer }}　
+      评分：{{ batch.review.score if batch.review.score is not none else '-' }}　
+      时间：{{ batch.review.reviewed_at }}<br>
+      评语：{{ batch.review.comment or '-' }}<br>
+      处理意见：{{ batch.review.handling_opinion or '-' }}
+    </div>
+    {% endif %}
+
+    <div class="batch-actions">
+      <button class="btn btn-primary" onclick="toggleTrace('{{ batch.batch_id }}')">🔗 追溯链路</button>
+      <button class="btn btn-outline" onclick="downloadReport('{{ batch.batch_id }}')">⬇️ 下载报告</button>
+      {% if not batch.review %}
+      <button class="btn btn-warn" onclick="toggleReview('{{ batch.batch_id }}')">✏️ 教师复核</button>
+      {% endif %}
+    </div>
+
+    <div class="trace-panel" id="trace-{{ batch.batch_id }}"></div>
+
+    <div class="review-panel" id="review-{{ batch.batch_id }}">
+      <h4>教师复核 · 批次 {{ batch.batch_id }}</h4>
+      <div class="review-row">
+        <label>复核人</label>
+        <input type="text" id="reviewer-{{ batch.batch_id }}" placeholder="请输入姓名" value="数学老师">
+      </div>
+      <div class="review-row">
+        <label>评分</label>
+        <input type="number" id="score-{{ batch.batch_id }}" placeholder="例如 85" step="0.5" min="0" max="100">
+      </div>
+      <div class="review-row">
+        <label>评语</label>
+        <textarea id="comment-{{ batch.batch_id }}" placeholder="对学生的评语"></textarea>
+      </div>
+      <div class="review-row">
+        <label>处理意见</label>
+        <textarea id="opinion-{{ batch.batch_id }}" placeholder="例如：单位缺失，责令学生补充后重新计算"></textarea>
+      </div>
+      <div class="batch-actions" style="margin-top: 0;">
+        <button class="btn btn-primary" onclick="submitReview('{{ batch.batch_id }}')">提交复核</button>
+        <button class="btn btn-outline" onclick="toggleReview('{{ batch.batch_id }}')">取消</button>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+<script>
+function toggleTrace(batchId) {
+  const el = document.getElementById('trace-' + batchId);
+  if (el.classList.contains('show')) {
+    el.classList.remove('show');
+    return;
+  }
+  el.innerHTML = '加载追溯链路...';
+  el.classList.add('show');
+  fetch('/api/trace/batch/' + batchId)
+    .then(r => r.json())
+    .then(data => {
+      if (!data) { el.innerHTML = '未找到追溯信息'; return; }
+      let html = `<div class="trace-path">📍 ${data.trace_path}</div>`;
+      html += `<div class="trace-layer"><div class="trace-layer-title">┌─ 来源层 (原始输入)</div>`;
+      (data.source_layer||[]).forEach(s=>{
+        html += `<div class="trace-line"><strong>${s.source_id}</strong> ${s.name}=${s.value} ${s.unit||'(单位缺失)'} ${s.description? '— '+s.description:''}</div>`;
+      });
+      html += `</div>`;
+      html += `<div class="trace-layer"><div class="trace-layer-title">├─ 处理层 (批次记录)</div>`;
+      const pl = data.processing_layer||{};
+      html += `<div class="trace-line"><strong>批次ID</strong> ${pl.batch_id}</div>`;
+      html += `<div class="trace-line"><strong>运行时间</strong> ${pl.run_timestamp}</div>`;
+      html += `<div class="trace-line"><strong>状态</strong> ${pl.status}</div>`;
+      if(pl.note) html += `<div class="trace-line"><strong>备注</strong> ${pl.note}</div>`;
+      if(pl.constraint_check){
+        const cc = pl.constraint_check;
+        html += `<div class="trace-line"><strong>约束校验</strong> ${cc.status}（通过 ${cc.passed.length} 项，失败 ${cc.violations.length} 项）</div>`;
+        cc.violations.forEach(v=>{
+          html += `<div class="trace-line" style="color:#ff6b6b;">  ✗ ${v.constraint_name}: ${v.message} (实际: ${v.actual_value})</div>`;
+        });
+      }
+      html += `</div>`;
+      if(data.result_layer){
+        const rl = data.result_layer;
+        html += `<div class="trace-layer"><div class="trace-layer-title">├─ 结果层 (蒙特卡洛输出)</div>`;
+        html += `<div class="trace-line"><strong>结果ID</strong> ${rl.result_id}</div>`;
+        html += `<div class="trace-line"><strong>名义值</strong> ${rl.value} ${rl.unit||''}</div>`;
+        if(rl.absolute_error!=null) html += `<div class="trace-line"><strong>绝对误差</strong> ${rl.absolute_error}</div>`;
+        if(rl.relative_error!=null) html += `<div class="trace-line"><strong>相对误差</strong> ${rl.relative_error}%</div>`;
+        html += `<div class="trace-line"><strong>公式</strong> ${rl.formula.expression}</div>`;
+        html += `<div class="trace-line"><strong>适用范围</strong> ${rl.formula.applicable_range}</div>`;
+        if(rl.error_message) html += `<div class="trace-line" style="color:#ff6b6b;"><strong>错误</strong> ${rl.error_message}</div>`;
+        rl.warnings.forEach(w=>{ html += `<div class="trace-line" style="color:#ffd32a;">⚠️ ${w}</div>`; });
+        html += `</div>`;
+      }
+      if(data.review_layer){
+        const rv = data.review_layer;
+        html += `<div class="trace-layer"><div class="trace-layer-title">└─ 复核层 (教师评分)</div>`;
+        html += `<div class="trace-line"><strong>复核ID</strong> ${rv.review_id}</div>`;
+        html += `<div class="trace-line"><strong>复核人</strong> ${rv.reviewer}</div>`;
+        if(rv.score!=null) html += `<div class="trace-line"><strong>评分</strong> ${rv.score}</div>`;
+        if(rv.comment) html += `<div class="trace-line"><strong>评语</strong> ${rv.comment}</div>`;
+        if(rv.handling_opinion) html += `<div class="trace-line"><strong>处理意见</strong> ${rv.handling_opinion}</div>`;
+        html += `</div>`;
+      } else {
+        html += `<div class="trace-layer"><div class="trace-layer-title">└─ 复核层</div><div class="trace-line">(尚未复核，可点击"教师复核"按钮)</div></div>`;
+      }
+      el.innerHTML = html;
+    });
+}
+
+function toggleReview(batchId) {
+  document.getElementById('review-' + batchId).classList.toggle('show');
+}
+
+function submitReview(batchId) {
+  const reviewer = document.getElementById('reviewer-' + batchId).value;
+  const scoreVal = document.getElementById('score-' + batchId).value;
+  const comment = document.getElementById('comment-' + batchId).value;
+  const opinion = document.getElementById('opinion-' + batchId).value;
+  if (!reviewer) { alert('请填写复核人'); return; }
+  fetch('/api/review', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      batch_id: batchId,
+      reviewer: reviewer,
+      score: scoreVal ? parseFloat(scoreVal) : null,
+      comment: comment,
+      handling_opinion: opinion,
+    })
+  }).then(r=>r.json()).then(d=>{
+    if (d.ok) { alert('复核已提交'); location.reload(); }
+    else alert('提交失败: ' + d.error);
+  });
+}
+
+function downloadReport(batchId) {
+  window.location.href = '/api/download/' + batchId;
+}
+</script>
+</body>
+</html>
