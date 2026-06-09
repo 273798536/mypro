@@ -1,0 +1,2512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>复杂曲面法线练习 - 本地工作台</title>
+    <style>
+        :root {
+            --primary: #1890ff;
+            --success: #52c41a;
+            --warning: #faad14;
+            --danger: #ff4d4f;
+            --bg-dark: #141414;
+            --bg-card: #1f1f1f;
+            --bg-hover: #262626;
+            --border: #303030;
+            --border-hover: #434343;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #666666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 14px;
+            line-height: 1.5;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .toolbar {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-shrink: 0;
+        }
+
+        .toolbar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .toolbar-filters {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .filter-select, .filter-input {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 6px 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .filter-select:hover, .filter-input:hover {
+            border-color: var(--border-hover);
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(24, 144, 255, 0.1);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #ff7875;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .list-panel {
+            width: 40%;
+            min-width: 400px;
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .list-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .list-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            font-family: "SF Mono", "Consolas", monospace;
+        }
+
+        .stat-value.danger { color: var(--danger); }
+        .stat-value.warning { color: var(--warning); }
+        .stat-value.success { color: var(--success); }
+        .stat-value.primary { color: var(--primary); }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            cursor: pointer;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .filter-tab:hover {
+            border-color: var(--border-hover);
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .filter-tab .count {
+            margin-left: 4px;
+            opacity: 0.8;
+        }
+
+        .record-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px;
+        }
+
+        .record-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .record-card:hover {
+            background: var(--bg-hover);
+            border-color: var(--border-hover);
+        }
+
+        .record-card.selected {
+            border-left-color: var(--primary);
+            background: var(--bg-hover);
+        }
+
+        .record-card.failed {
+            border-left-color: var(--danger);
+        }
+
+        .record-card.warning {
+            border-left-color: var(--warning);
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .record-id {
+            font-family: "SF Mono", "Consolas", monospace;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .record-status {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: rgba(24, 144, 255, 0.2);
+            color: var(--primary);
+        }
+
+        .status-passed {
+            background: rgba(82, 196, 26, 0.2);
+            color: var(--success);
+        }
+
+        .status-review {
+            background: rgba(250, 173, 20, 0.2);
+            color: var(--warning);
+        }
+
+        .status-failed {
+            background: rgba(255, 77, 79, 0.2);
+            color: var(--danger);
+        }
+
+        .record-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .record-meta-item {
+            display: flex;
+            gap: 4px;
+        }
+
+        .record-meta-label {
+            color: var(--text-muted);
+        }
+
+        .record-meta-value {
+            color: var(--text-secondary);
+            font-family: "SF Mono", "Consolas", monospace;
+        }
+
+        .record-indicator {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .indicator-tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            background: var(--bg-dark);
+            color: var(--text-secondary);
+        }
+
+        .indicator-tag.warning {
+            background: rgba(250, 173, 20, 0.15);
+            color: var(--warning);
+        }
+
+        .indicator-tag.danger {
+            background: rgba(255, 77, 79, 0.15);
+            color: var(--danger);
+        }
+
+        .detail-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-dark);
+        }
+
+        .detail-empty {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+        }
+
+        .detail-empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .detail-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-card);
+            flex-shrink: 0;
+        }
+
+        .detail-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+        }
+
+        .detail-meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .detail-meta-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .detail-meta-value {
+            font-family: "SF Mono", "Consolas", monospace;
+            color: var(--text-secondary);
+        }
+
+        .detail-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-card);
+            flex-shrink: 0;
+        }
+
+        .detail-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .detail-tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .detail-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title-icon {
+            width: 4px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .viewer-container {
+            background: #0a0a0a;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #three-canvas {
+            width: 100%;
+            height: 400px;
+            display: block;
+        }
+
+        .viewer-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .viewer-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            background: rgba(31, 31, 31, 0.9);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .viewer-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .slice-control {
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: 6px;
+            margin-top: 16px;
+        }
+
+        .slice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .slice-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .slice-axis {
+            display: flex;
+            gap: 8px;
+        }
+
+        .axis-btn {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .axis-btn:hover {
+            border-color: var(--border-hover);
+        }
+
+        .axis-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .slice-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .slice-slider-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            width: 40px;
+        }
+
+        .slice-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--bg-dark);
+            outline: none;
+        }
+
+        .slice-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .slice-slider-value {
+            font-family: "SF Mono", "Consolas", monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            width: 60px;
+            text-align: right;
+        }
+
+        .explanation-card {
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 20px;
+            border-left: 4px solid var(--danger);
+        }
+
+        .explanation-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .explanation-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: rgba(255, 77, 79, 0.2);
+            color: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .explanation-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .explanation-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .explanation-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .explanation-list {
+            margin-top: 16px;
+            padding-left: 20px;
+        }
+
+        .explanation-list li {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+
+        .explanation-highlight {
+            background: rgba(255, 77, 79, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--danger);
+            font-weight: 500;
+        }
+
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .screenshot-item {
+            background: var(--bg-card);
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+        }
+
+        .screenshot-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .screenshot-preview {
+            width: 100%;
+            height: 140px;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .screenshot-placeholder {
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .screenshot-annotation {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(255, 77, 79, 0.9);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .screenshot-info {
+            padding: 12px;
+        }
+
+        .screenshot-name {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .screenshot-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .history-timeline {
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .history-timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .history-item {
+            position: relative;
+            padding-bottom: 24px;
+        }
+
+        .history-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .history-dot {
+            position: absolute;
+            left: -20px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+        }
+
+        .history-item:first-child .history-dot {
+            background: var(--primary);
+        }
+
+        .history-content {
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .history-version {
+            font-weight: 600;
+            font-family: "SF Mono", "Consolas", monospace;
+        }
+
+        .history-time {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .history-operator {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .history-change {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+        }
+
+        .correction-form {
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: var(--danger);
+            margin-left: 4px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:hover, .form-select:hover, .form-textarea:hover {
+            border-color: var(--border-hover);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .playback-control {
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .playback-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .playback-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .playback-time {
+            font-family: "SF Mono", "Consolas", monospace;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .playback-timeline {
+            height: 8px;
+            background: var(--bg-dark);
+            border-radius: 4px;
+            margin-bottom: 12px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .playback-progress {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            transition: width 0.1s;
+        }
+
+        .playback-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .playback-marker {
+            width: 4px;
+            height: 16px;
+            background: var(--warning);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .playback-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .playback-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .playback-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+        }
+
+        .playback-btn.primary {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .playback-btn.primary:hover {
+            background: #40a9ff;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: calc(90vh - 140px);
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .status-bar {
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 8px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .status-info {
+            display: flex;
+            gap: 24px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, rgba(24, 144, 255, 0.1) 0%, rgba(24, 144, 255, 0.05) 100%);
+            border: 1px solid rgba(24, 144, 255, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .summary-stat {
+            text-align: center;
+        }
+
+        .summary-stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            font-family: "SF Mono", "Consolas", monospace;
+        }
+
+        .summary-stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .export-preview {
+            background: white;
+            color: #333;
+            padding: 32px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .export-header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #333;
+        }
+
+        .export-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .export-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .export-section {
+            margin-bottom: 24px;
+        }
+
+        .export-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .export-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .export-table th, .export-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .export-table th {
+            background: #f5f5f5;
+            font-weight: 600;
+        }
+
+        .export-reason {
+            margin-top: 12px;
+            padding: 12px;
+            background: #fff5f5;
+            border-left: 3px solid #ff4d4f;
+            border-radius: 4px;
+        }
+
+        .export-reason-title {
+            font-weight: 600;
+            color: #ff4d4f;
+            margin-bottom: 8px;
+        }
+
+        .export-reason-content {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--text-muted);
+        }
+
+        .no-data-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="toolbar">
+            <div class="toolbar-title">复杂曲面法线练习</div>
+            <div class="toolbar-filters">
+                <div class="filter-group">
+                    <span class="filter-label">时间范围</span>
+                    <input type="date" class="filter-input" id="filter-date-start">
+                    <span class="filter-label">至</span>
+                    <input type="date" class="filter-input" id="filter-date-end">
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">设备</span>
+                    <select class="filter-select" id="filter-device">
+                        <option value="">全部设备</option>
+                        <option value="DEV-001">DEV-001</option>
+                        <option value="DEV-002">DEV-002</option>
+                        <option value="DEV-003">DEV-003</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">严重程度</span>
+                    <select class="filter-select" id="filter-severity">
+                        <option value="">全部</option>
+                        <option value="high">高</option>
+                        <option value="medium">中</option>
+                        <option value="low">低</option>
+                    </select>
+                </div>
+            </div>
+            <div class="toolbar-actions">
+                <button class="btn btn-secondary" onclick="refreshData()">刷新</button>
+                <button class="btn btn-primary" onclick="openExportModal()">导出报告</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="list-panel">
+                <div class="list-header">
+                    <div class="list-stats">
+                        <div class="stat-item">
+                            <span class="stat-value danger" id="stat-failed">0</span>
+                            <span class="stat-label">不合格</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value warning" id="stat-review">0</span>
+                            <span class="stat-label">待复核</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value success" id="stat-passed">0</span>
+                            <span class="stat-label">已通过</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value primary" id="stat-total">0</span>
+                            <span class="stat-label">总计</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-tabs">
+                    <div class="filter-tab active" data-filter="all">
+                        全部 <span class="count" id="count-all">0</span>
+                    </div>
+                    <div class="filter-tab" data-filter="failed">
+                        不合格 <span class="count" id="count-failed">0</span>
+                    </div>
+                    <div class="filter-tab" data-filter="review">
+                        待复核 <span class="count" id="count-review">0</span>
+                    </div>
+                    <div class="filter-tab" data-filter="passed">
+                        已通过 <span class="count" id="count-passed">0</span>
+                    </div>
+                    <div class="filter-tab" data-filter="pending">
+                        待处理 <span class="count" id="count-pending">0</span>
+                    </div>
+                </div>
+
+                <div class="record-list" id="record-list">
+                </div>
+            </div>
+
+            <div class="detail-panel" id="detail-panel">
+                <div class="detail-empty">
+                    <div class="detail-empty-icon">📋</div>
+                    <div>选择左侧记录查看详情</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-bar">
+            <div class="status-info">
+                <div class="status-item">
+                    <span class="status-dot"></span>
+                    <span>系统正常</span>
+                </div>
+                <div class="status-item">
+                    <span>最后更新: </span>
+                    <span id="last-update-time">-</span>
+                </div>
+            </div>
+            <div>复杂曲面法线练习 v1.0 | 本地工作台</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="export-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">导出审查报告</h3>
+                <button class="modal-close" onclick="closeExportModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="summary-card">
+                    <div class="summary-title">📊 报告统计摘要</div>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <div class="summary-stat-value" style="color: var(--danger)" id="export-failed">0</div>
+                            <div class="summary-stat-label">不合格记录</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-stat-value" style="color: var(--warning)" id="export-review">0</div>
+                            <div class="summary-stat-label">待复核记录</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-stat-value" style="color: var(--success)" id="export-passed">0</div>
+                            <div class="summary-stat-label">已通过记录</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-stat-value" style="color: var(--primary)" id="export-total">0</div>
+                            <div class="summary-stat-label">总记录数</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-title">
+                        <span class="section-title-icon"></span>
+                        导出时间范围
+                    </div>
+                    <div style="display: flex; gap: 16px; align-items: center;">
+                        <input type="date" class="form-input" style="flex: 1;" id="export-date-start">
+                        <span>至</span>
+                        <input type="date" class="form-input" style="flex: 1;" id="export-date-end">
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-title">
+                        <span class="section-title-icon"></span>
+                        报告预览
+                    </div>
+                    <div class="export-preview" id="export-preview">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeExportModal()">取消</button>
+                <button class="btn btn-primary" onclick="downloadReport()">下载 PDF</button>
+                <button class="btn btn-secondary" onclick="downloadExcel()">下载 Excel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="screenshot-modal">
+        <div class="modal" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3 class="modal-title">截图详情</h3>
+                <button class="modal-close" onclick="closeScreenshotModal()">✕</button>
+            </div>
+            <div class="modal-body" id="screenshot-modal-body">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        const state = {
+            records: [],
+            selectedRecord: null,
+            currentFilter: 'all',
+            currentTab: 'viewer',
+            playbackState: {
+                playing: false,
+                currentTime: 0,
+                duration: 100
+            },
+            sliceAxis: 'x',
+            slicePosition: 0
+        };
+
+        let threeScene = null;
+        let threeCamera = null;
+        let threeRenderer = null;
+        let pointCloud = null;
+        let slicePlane = null;
+
+        const mockRecords = [
+            {
+                id: 'NX-2024-0601-001',
+                deviceCode: 'DEV-001',
+                coordinates: { x: 125.5, y: 87.3, z: 42.1 },
+                captureTime: '2024-06-01 09:15:32',
+                operator: '张工程师',
+                status: 'failed',
+                normalData: { pointCount: 15420, normalDeviation: 23.5 },
+                transparentOcclusion: {
+                    detected: true,
+                    reason: '透明材质反光导致法线计算出现明显偏差，在曲面拐角处产生误判。设备采集时光源角度不当，造成高光区域法线反转。',
+                    severity: 'high',
+                    affectedArea: { x: 45, y: 67, width: 28, height: 35 },
+                    relatedScreenshots: ['截图中标记的红框区域']
+                },
+                screenshots: [
+                    { id: 'SC-001', name: '整体点云', time: '09:15:32', coords: 'X:125.5 Y:87.3' },
+                    { id: 'SC-002', name: '问题区域A', time: '09:16:05', coords: 'X:138.2 Y:91.4', hasIssue: true },
+                    { id: 'SC-003', name: '剖切面B', time: '09:16:28', coords: 'X:152.7 Y:85.9', hasIssue: true },
+                    { id: 'SC-004', name: '对比参照', time: '09:17:01', coords: 'X:125.5 Y:87.3' }
+                ],
+                history: [
+                    { version: 'v1.0', time: '2024-06-01 09:15:32', operator: '系统', change: '初始记录' },
+                    { version: 'v1.1', time: '2024-06-01 10:23:45', operator: '李审核员', change: '标记透明遮挡问题' },
+                    { version: 'v1.2', time: '2024-06-01 14:05:12', operator: '张工程师', change: '上传修正说明' }
+                ]
+            },
+            {
+                id: 'NX-2024-0601-002',
+                deviceCode: 'DEV-002',
+                coordinates: { x: 98.2, y: 112.7, z: 55.8 },
+                captureTime: '2024-06-01 10:45:18',
+                operator: '王技术员',
+                status: 'review',
+                normalData: { pointCount: 18340, normalDeviation: 15.2 },
+                transparentOcclusion: {
+                    detected: true,
+                    reason: '曲面边缘存在轻微透明区域反光，法线方向在局部有轻微偏移。需要人工复核确认是否影响整体评估。',
+                    severity: 'medium',
+                    affectedArea: { x: 78, y: 45, width: 15, height: 22 }
+                },
+                screenshots: [
+                    { id: 'SC-005', name: '全景视图', time: '10:45:18', coords: 'X:98.2 Y:112.7' },
+                    { id: 'SC-006', name: '边缘区域', time: '10:46:02', coords: 'X:105.3 Y:118.6', hasIssue: true }
+                ],
+                history: [
+                    { version: 'v1.0', time: '2024-06-01 10:45:18', operator: '系统', change: '初始记录' },
+                    { version: 'v1.1', time: '2024-06-01 11:30:00', operator: '王技术员', change: '提交复核申请' }
+                ]
+            },
+            {
+                id: 'NX-2024-0602-001',
+                deviceCode: 'DEV-001',
+                coordinates: { x: 156.8, y: 73.2, z: 38.5 },
+                captureTime: '2024-06-02 08:30:45',
+                operator: '张工程师',
+                status: 'passed',
+                normalData: { pointCount: 21560, normalDeviation: 5.8 },
+                transparentOcclusion: { detected: false },
+                screenshots: [
+                    { id: 'SC-007', name: '合格点云', time: '08:30:45', coords: 'X:156.8 Y:73.2' }
+                ],
+                history: [
+                    { version: 'v1.0', time: '2024-06-02 08:30:45', operator: '系统', change: '初始记录' },
+                    { version: 'v1.1', time: '2024-06-02 09:15:00', operator: '自动检测', change: '法线偏差在允许范围内' }
+                ]
+            },
+            {
+                id: 'NX-2024-0602-002',
+                deviceCode: 'DEV-003',
+                coordinates: { x: 87.4, y: 145.9, z: 62.3 },
+                captureTime: '2024-06-02 14:20:33',
+                operator: '赵操作员',
+                status: 'pending',
+                normalData: { pointCount: 12680, normalDeviation: 0 },
+                transparentOcclusion: { detected: false },
+                screenshots: [
+                    { id: 'SC-008', name: '待处理数据', time: '14:20:33', coords: 'X:87.4 Y:145.9' }
+                ],
+                history: [
+                    { version: 'v1.0', time: '2024-06-02 14:20:33', operator: '系统', change: '数据采集中' }
+                ]
+            },
+            {
+                id: 'NX-2024-0603-001',
+                deviceCode: 'DEV-002',
+                coordinates: { x: 198.5, y: 92.1, z: 48.7 },
+                captureTime: '2024-06-03 11:05:22',
+                operator: '李审核员',
+                status: 'failed',
+                normalData: { pointCount: 16780, normalDeviation: 31.2 },
+                transparentOcclusion: {
+                    detected: true,
+                    reason: '透明遮挡误读：采集区域内存在多层透明材质叠加，光线穿透造成点云数据在Z轴方向产生重影，法线计算完全失效。',
+                    severity: 'high',
+                    affectedArea: { x: 25, y: 35, width: 50, height: 45 },
+                    relatedScreenshots: ['截图中大面积红框区域']
+                },
+                screenshots: [
+                    { id: 'SC-009', name: 'Z轴重影', time: '11:05:22', coords: 'X:198.5 Y:92.1', hasIssue: true },
+                    { id: 'SC-010', name: '透明叠加', time: '11:06:15', coords: 'X:205.2 Y:98.7', hasIssue: true },
+                    { id: 'SC-011', name: '法线失效区', time: '11:06:48', coords: 'X:195.3 Y:88.4', hasIssue: true }
+                ],
+                history: [
+                    { version: 'v1.0', time: '2024-06-03 11:05:22', operator: '系统', change: '初始记录' },
+                    { version: 'v1.1', time: '2024-06-03 12:30:00', operator: '李审核员', change: '判定透明遮挡误读' }
+                ]
+            }
+        ];
+
+        function init() {
+            state.records = mockRecords;
+            renderRecordList();
+            updateStatistics();
+            setupEventListeners();
+            updateLastUpdateTime();
+            initExportDates();
+        }
+
+        function initExportDates() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            document.getElementById('export-date-start').value = formatDate(firstDay);
+            document.getElementById('export-date-end').value = formatDate(today);
+            
+            const startInput = document.getElementById('filter-date-start');
+            const endInput = document.getElementById('filter-date-end');
+            if (startInput) startInput.value = formatDate(firstDay);
+            if (endInput) endInput.value = formatDate(today);
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function setupEventListeners() {
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    state.currentFilter = tab.dataset.filter;
+                    renderRecordList();
+                });
+            });
+        }
+
+        function renderRecordList() {
+            const list = document.getElementById('record-list');
+            let filtered = state.records;
+
+            if (state.currentFilter !== 'all') {
+                filtered = state.records.filter(r => r.status === state.currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="no-data">
+                        <div class="no-data-icon">📭</div>
+                        <div>暂无符合条件的记录</div>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = filtered.map(record => `
+                <div class="record-card ${record.status === 'failed' ? 'failed' : ''} ${record.status === 'review' ? 'warning' : ''} ${state.selectedRecord?.id === record.id ? 'selected' : ''}"
+                     onclick="selectRecord('${record.id}')">
+                    <div class="record-header">
+                        <span class="record-id">${record.id}</span>
+                        <span class="record-status status-${record.status}">${getStatusText(record.status)}</span>
+                    </div>
+                    <div class="record-meta">
+                        <div class="record-meta-item">
+                            <span class="record-meta-label">设备:</span>
+                            <span class="record-meta-value">${record.deviceCode}</span>
+                        </div>
+                        <div class="record-meta-item">
+                            <span class="record-meta-label">时间:</span>
+                            <span class="record-meta-value">${record.captureTime.split(' ')[1]}</span>
+                        </div>
+                        <div class="record-meta-item">
+                            <span class="record-meta-label">坐标:</span>
+                            <span class="record-meta-value">X${record.coordinates.x.toFixed(1)} Y${record.coordinates.y.toFixed(1)}</span>
+                        </div>
+                        <div class="record-meta-item">
+                            <span class="record-meta-label">点数:</span>
+                            <span class="record-meta-value">${record.normalData.pointCount.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <div class="record-indicator">
+                        ${record.transparentOcclusion.detected ? `
+                            <span class="indicator-tag danger">⚠ 透明遮挡</span>
+                            <span class="indicator-tag ${record.transparentOcclusion.severity === 'high' ? 'danger' : 'warning'}">
+                                严重度: ${getSeverityText(record.transparentOcclusion.severity)}
+                            </span>
+                        ` : ''}
+                        ${record.status === 'passed' ? '<span class="indicator-tag" style="color: var(--success);">✓ 法线正常</span>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusText(status) {
+            const map = {
+                pending: '待处理',
+                passed: '已通过',
+                review: '待复核',
+                failed: '不合格'
+            };
+            return map[status] || status;
+        }
+
+        function getSeverityText(severity) {
+            const map = { high: '高', medium: '中', low: '低' };
+            return map[severity] || severity;
+        }
+
+        function updateStatistics() {
+            const stats = {
+                failed: state.records.filter(r => r.status === 'failed').length,
+                review: state.records.filter(r => r.status === 'review').length,
+                passed: state.records.filter(r => r.status === 'passed').length,
+                pending: state.records.filter(r => r.status === 'pending').length
+            };
+            stats.total = state.records.length;
+
+            document.getElementById('stat-failed').textContent = stats.failed;
+            document.getElementById('stat-review').textContent = stats.review;
+            document.getElementById('stat-passed').textContent = stats.passed;
+            document.getElementById('stat-total').textContent = stats.total;
+
+            document.getElementById('count-all').textContent = stats.total;
+            document.getElementById('count-failed').textContent = stats.failed;
+            document.getElementById('count-review').textContent = stats.review;
+            document.getElementById('count-passed').textContent = stats.passed;
+            document.getElementById('count-pending').textContent = stats.pending;
+        }
+
+        function selectRecord(id) {
+            state.selectedRecord = state.records.find(r => r.id === id);
+            renderRecordList();
+            renderDetailPanel();
+        }
+
+        function renderDetailPanel() {
+            const panel = document.getElementById('detail-panel');
+            const record = state.selectedRecord;
+
+            if (!record) {
+                panel.innerHTML = `
+                    <div class="detail-empty">
+                        <div class="detail-empty-icon">📋</div>
+                        <div>选择左侧记录查看详情</div>
+                    </div>
+                `;
+                return;
+            }
+
+            panel.innerHTML = `
+                <div class="detail-content">
+                    <div class="detail-header">
+                        <div class="detail-header-top">
+                            <h2 class="detail-title">${record.id}</h2>
+                            <div class="detail-actions">
+                                <button class="btn btn-secondary" onclick="switchTab('history')">历史</button>
+                                <button class="btn btn-secondary" onclick="switchTab('correction')">修正</button>
+                                <button class="btn btn-danger" onclick="deleteRecord()">删除</button>
+                            </div>
+                        </div>
+                        <div class="detail-meta">
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">设备编号</span>
+                                <span class="detail-meta-value">${record.deviceCode}</span>
+                            </div>
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">采集时间</span>
+                                <span class="detail-meta-value">${record.captureTime}</span>
+                            </div>
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">操作员</span>
+                                <span class="detail-meta-value">${record.operator}</span>
+                            </div>
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">设备坐标</span>
+                                <span class="detail-meta-value">X:${record.coordinates.x} Y:${record.coordinates.y} Z:${record.coordinates.z}</span>
+                            </div>
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">点云数量</span>
+                                <span class="detail-meta-value">${record.normalData.pointCount.toLocaleString()}</span>
+                            </div>
+                            <div class="detail-meta-item">
+                                <span class="detail-meta-label">法线偏差</span>
+                                <span class="detail-meta-value" style="color: ${record.normalData.normalDeviation > 20 ? 'var(--danger)' : record.normalData.normalDeviation > 10 ? 'var(--warning)' : 'var(--success)'}">
+                                    ${record.normalData.normalDeviation}°
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-tabs">
+                        <div class="detail-tab ${state.currentTab === 'viewer' ? 'active' : ''}" onclick="switchTab('viewer')">三维视图</div>
+                        <div class="detail-tab ${state.currentTab === 'explanation' ? 'active' : ''}" onclick="switchTab('explanation')">问题说明</div>
+                        <div class="detail-tab ${state.currentTab === 'screenshots' ? 'active' : ''}" onclick="switchTab('screenshots')">截图清单</div>
+                        <div class="detail-tab ${state.currentTab === 'history' ? 'active' : ''}" onclick="switchTab('history')">历史版本</div>
+                        <div class="detail-tab ${state.currentTab === 'correction' ? 'active' : ''}" onclick="switchTab('correction')">修正</div>
+                    </div>
+
+                    <div class="detail-body" id="detail-body">
+                    </div>
+                </div>
+            `;
+
+            renderTabContent();
+        }
+
+        function switchTab(tab) {
+            state.currentTab = tab;
+            document.querySelectorAll('.detail-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.detail-tab:nth-child(${['viewer', 'explanation', 'screenshots', 'history', 'correction'].indexOf(tab) + 1})`).classList.add('active');
+            renderTabContent();
+        }
+
+        function renderTabContent() {
+            const body = document.getElementById('detail-body');
+            const record = state.selectedRecord;
+
+            switch (state.currentTab) {
+                case 'viewer':
+                    body.innerHTML = `
+                        <div class="detail-section">
+                            <div class="section-title">
+                                <span class="section-title-icon"></span>
+                                点云可视化
+                            </div>
+                            <div class="viewer-container">
+                                <canvas id="three-canvas"></canvas>
+                                <div class="viewer-controls">
+                                    <button class="viewer-btn" onclick="resetCamera()" title="重置视角">🔄</button>
+                                    <button class="viewer-btn" onclick="toggleFullscreen()" title="全屏">⛶</button>
+                                </div>
+                            </div>
+                            <div class="slice-control">
+                                <div class="slice-header">
+                                    <span class="slice-title">剖切控制</span>
+                                    <div class="slice-axis">
+                                        <button class="axis-btn ${state.sliceAxis === 'x' ? 'active' : ''}" onclick="setSliceAxis('x')">X轴</button>
+                                        <button class="axis-btn ${state.sliceAxis === 'y' ? 'active' : ''}" onclick="setSliceAxis('y')">Y轴</button>
+                                        <button class="axis-btn ${state.sliceAxis === 'z' ? 'active' : ''}" onclick="setSliceAxis('z')">Z轴</button>
+                                    </div>
+                                </div>
+                                <div class="slice-slider-container">
+                                    <span class="slice-slider-label">位置</span>
+                                    <input type="range" class="slice-slider" id="slice-slider" min="0" max="200" value="${state.slicePosition}" oninput="updateSlicePosition(this.value)">
+                                    <span class="slice-slider-value" id="slice-value">${state.slicePosition.toFixed(1)}</span>
+                                </div>
+                            </div>
+                            <div class="playback-control">
+                                <div class="playback-header">
+                                    <span class="playback-title">时间回放</span>
+                                    <span class="playback-time" id="playback-time">00:00 / 01:40</span>
+                                </div>
+                                <div class="playback-timeline" id="playback-timeline" onclick="seekPlayback(event)">
+                                    <div class="playback-progress" id="playback-progress" style="width: 0%"></div>
+                                    <div class="playback-markers">
+                                        <div class="playback-marker" style="left: 20%" title="切片A"></div>
+                                        <div class="playback-marker" style="left: 45%" title="切片B"></div>
+                                        <div class="playback-marker" style="left: 70%" title="切片C"></div>
+                                    </div>
+                                </div>
+                                <div class="playback-buttons">
+                                    <button class="playback-btn" onclick="skipBackward()">⏮</button>
+                                    <button class="playback-btn primary" id="play-btn" onclick="togglePlayback()">▶</button>
+                                    <button class="playback-btn" onclick="skipForward()">⏭</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="section-title">
+                                <span class="section-title-icon"></span>
+                                视图说明
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.8;">
+                                <p style="margin-bottom: 12px;"><strong>颜色编码说明：</strong></p>
+                                <ul style="padding-left: 20px; margin-bottom: 16px;">
+                                    <li style="margin-bottom: 6px;"><span style="color: #ff6b6b;">● 红色点</span> - 法线方向朝向X轴正方向，偏差较大区域</li>
+                                    <li style="margin-bottom: 6px;"><span style="color: #4ecdc4;">● 青色点</span> - 法线方向朝向Y轴正方向</li>
+                                    <li style="margin-bottom: 6px;"><span style="color: #45b7d1;">● 蓝色点</span> - 法线方向朝向Z轴正方向</li>
+                                    <li style="margin-bottom: 6px;"><span style="color: #96ceb4;">● 绿色点</span> - 法线方向正确，在允许偏差范围内</li>
+                                </ul>
+                                <p style="margin-bottom: 12px;"><strong>交互操作：</strong></p>
+                                <ul style="padding-left: 20px;">
+                                    <li style="margin-bottom: 6px;">鼠标左键拖拽 - 旋转视角</li>
+                                    <li style="margin-bottom: 6px;">鼠标滚轮 - 缩放视图</li>
+                                    <li style="margin-bottom: 6px;">鼠标右键拖拽 - 平移视图</li>
+                                    <li>剖切控制 - 拖动滑块查看指定位置的点云切片数据</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    setTimeout(initThreeJS, 50);
+                    break;
+
+                case 'explanation':
+                    if (record.transparentOcclusion.detected) {
+                        body.innerHTML = `
+                            <div class="explanation-card">
+                                <div class="explanation-header">
+                                    <div class="explanation-icon">⚠</div>
+                                    <div>
+                                        <div class="explanation-title">透明遮挡误读</div>
+                                        <div class="explanation-subtitle">严重程度: ${getSeverityText(record.transparentOcclusion.severity)} | 需要处理</div>
+                                    </div>
+                                </div>
+                                <div class="explanation-content">
+                                    <p><strong>误读原因分析：</strong></p>
+                                    <p style="margin-top: 8px;">${record.transparentOcclusion.reason}</p>
+                                    
+                                    <p style="margin-top: 16px;"><strong>为什么会被拦下来：</strong></p>
+                                    <ul class="explanation-list">
+                                        <li>法线方向偏差超过阈值（<span class="explanation-highlight">${record.normalData.normalDeviation}°</span>），正常范围应 ≤15°</li>
+                                        <li>透明材质导致光线穿透，产生<span class="explanation-highlight">重影数据</span></li>
+                                        <li>点云在剖切面上出现<span class="explanation-highlight">非连续跳跃</span>，无法正确计算曲面</li>
+                                        <li>设备坐标 (${record.coordinates.x}, ${record.coordinates.y}, ${record.coordinates.z}) 处于已知的透明区域采集带</li>
+                                    </ul>
+                                    
+                                    <p style="margin-top: 16px;"><strong>判定依据：</strong></p>
+                                    <ul class="explanation-list">
+                                        <li>《复杂曲面检测规范》第 4.2.3 条：透明材质区域需专项标记</li>
+                                        <li>《设备采集参数标准》：光源角度需在 30°-60° 范围内</li>
+                                        <li>《法线偏差阈值》：单点法线偏差超过 20° 即判定为异常</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            ${record.transparentOcclusion.relatedScreenshots?.length ? `
+                                <div class="detail-section" style="margin-top: 24px;">
+                                    <div class="section-title">
+                                        <span class="section-title-icon" style="background: var(--warning);"></span>
+                                        相关截图标注
+                                    </div>
+                                    <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.8;">
+                                        <p>${record.transparentOcclusion.relatedScreenshots.join('；')}</p>
+                                        <p style="margin-top: 12px; color: var(--text-muted);">请前往「截图清单」标签页查看带标注的详细截图。</p>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        `;
+                    } else {
+                        body.innerHTML = `
+                            <div class="explanation-card" style="border-left-color: var(--success);">
+                                <div class="explanation-header">
+                                    <div class="explanation-icon" style="background: rgba(82, 196, 26, 0.2); color: var(--success);">✓</div>
+                                    <div>
+                                        <div class="explanation-title">无异常</div>
+                                        <div class="explanation-subtitle">法线检测合格 | 状态正常</div>
+                                    </div>
+                                </div>
+                                <div class="explanation-content">
+                                    <p>该记录的透明遮挡检测结果为<span style="color: var(--success); font-weight: 600;">正常</span>，法线偏差在允许范围内。</p>
+                                    <ul class="explanation-list" style="margin-top: 16px;">
+                                        <li>法线方向偏差：<span style="color: var(--success);">${record.normalData.normalDeviation}°</span>（阈值 ≤15°）</li>
+                                        <li>点云数量：${record.normalData.pointCount.toLocaleString()}（充足）</li>
+                                        <li>透明遮挡：无检测到</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    break;
+
+                case 'screenshots':
+                    body.innerHTML = `
+                        <div class="detail-section">
+                            <div class="section-title">
+                                <span class="section-title-icon"></span>
+                                截图清单（共 ${record.screenshots.length} 张）
+                            </div>
+                            <div class="screenshot-grid">
+                                ${record.screenshots.map(sc => `
+                                    <div class="screenshot-item" onclick="openScreenshotDetail('${sc.id}')">
+                                        <div class="screenshot-preview">
+                                            <span class="screenshot-placeholder">📷 截图</span>
+                                            ${sc.hasIssue ? '<span class="screenshot-annotation">问题区域</span>' : ''}
+                                        </div>
+                                        <div class="screenshot-info">
+                                            <div class="screenshot-name">${sc.name}</div>
+                                            <div class="screenshot-meta">${sc.time} | ${sc.coords}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="section-title">
+                                <span class="section-title-icon" style="background: var(--text-muted);"></span>
+                                截图说明
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.8;">
+                                <p style="margin-bottom: 12px;">截图清单是透明遮挡误读分析的核心依据。每个截图都包含：</p>
+                                <ul style="padding-left: 20px;">
+                                    <li style="margin-bottom: 8px;"><strong>时间戳</strong> - 与点云采集时间同步，用于定位问题发生时刻</li>
+                                    <li style="margin-bottom: 8px;"><strong>设备坐标</strong> - 记录采集时的设备位置，帮助复现问题场景</li>
+                                    <li style="margin-bottom: 8px;"><strong>问题标注</strong> - 红色框标记的区域为检测到的异常区域</li>
+                                    <li><strong>剖切位置</strong> - 与三维视图中剖切平面联动的切片数据</li>
+                                </ul>
+                                <p style="margin-top: 16px; padding: 12px; background: var(--bg-card); border-radius: 6px; border-left: 3px solid var(--primary);">
+                                    💡 <strong>提示：</strong>评审会在查看导出报告时，截图清单配合问题说明，可以让未参与现场采集的人员也理解透明遮挡误读的判定逻辑。
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'history':
+                    body.innerHTML = `
+                        <div class="detail-section">
+                            <div class="section-title">
+                                <span class="section-title-icon"></span>
+                                版本历史（共 ${record.history.length} 个版本）
+                            </div>
+                            <div class="history-timeline">
+                                ${record.history.map((h, i) => `
+                                    <div class="history-item">
+                                        <div class="history-dot"></div>
+                                        <div class="history-content">
+                                            <div class="history-header">
+                                                <span class="history-version">${h.version}</span>
+                                                <span class="history-time">${h.time}</span>
+                                            </div>
+                                            <div class="history-operator">操作人: ${h.operator}</div>
+                                            <div class="history-change">${h.change}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="section-title">
+                                <span class="section-title-icon" style="background: var(--text-muted);"></span>
+                                版本对比说明
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.8;">
+                                <p style="margin-bottom: 12px;">时间回放不是一次性判断。每次对记录进行修正（如补充切片、调整判定参数）都会生成新版本，剖切视图会自动跟随当前选中的版本更新。</p>
+                                <p>最新版本显示在上方（<span style="color: var(--primary);">●</span> 标记），可通过点击版本切换查看历史状态。</p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+
+                case 'correction':
+                    body.innerHTML = `
+                        <div class="detail-section">
+                            <div class="section-title">
+                                <span class="section-title-icon"></span>
+                                提交修正
+                            </div>
+                            <div class="correction-form">
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        误读类型
+                                        <span class="required">*</span>
+                                    </label>
+                                    <select class="form-select" id="correction-type">
+                                        <option value="">请选择误读类型</option>
+                                        <option value="transparent">透明遮挡</option>
+                                        <option value="angle">角度偏差</option>
+                                        <option value="device">设备误差</option>
+                                        <option value="other">其他</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">
+                                        修正说明
+                                        <span class="required">*</span>
+                                    </label>
+                                    <textarea class="form-textarea" id="correction-reason" placeholder="请详细描述修正原因和处理方式..."></textarea>
+                                    <div class="form-hint">请详细说明为什么原判定需要修正，以及修正后的处理结果</div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">补充证据</label>
+                                    <input type="file" class="form-input" id="correction-files" multiple accept="image/*,.pdf">
+                                    <div class="form-hint">支持上传图片或PDF文件作为修正证据</div>
+                                </div>
+                                <div class="form-actions">
+                                    <button class="btn btn-secondary" onclick="switchTab('viewer')">取消</button>
+                                    <button class="btn btn-primary" onclick="submitCorrection()">提交修正</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <div class="section-title">
+                                <span class="section-title-icon" style="background: var(--text-muted);"></span>
+                                修正说明
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.8;">
+                                <p>提交修正后，系统将：</p>
+                                <ul style="padding-left: 20px; margin-top: 12px;">
+                                    <li style="margin-bottom: 8px;">创建新版本记录，保留修正历史</li>
+                                    <li style="margin-bottom: 8px;">更新状态为「待复核」，等待评审会确认</li>
+                                    <li style="margin-bottom: 8px;">修正证据将附加到导出报告中</li>
+                                    <li>剖切视图数据将根据新版本自动刷新</li>
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+
+        function initThreeJS() {
+            const canvas = document.getElementById('three-canvas');
+            if (!canvas) return;
+
+            if (threeRenderer) {
+                threeRenderer.dispose();
+            }
+
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a0a);
+
+            const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth / 400, 0.1, 1000);
+            camera.position.set(150, 100, 150);
+            camera.lookAt(100, 50, 0);
+
+            const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+            renderer.setSize(canvas.clientWidth, 400);
+
+            const gridHelper = new THREE.GridHelper(200, 20, 0x333333, 0x222222);
+            scene.add(gridHelper);
+
+            const axesHelper = new THREE.AxesHelper(50);
+            scene.add(axesHelper);
+
+            const points = [];
+            const colors = [];
+            const record = state.selectedRecord;
+
+            for (let i = 0; i < 3000; i++) {
+                const x = Math.random() * 200;
+                const y = Math.random() * 100;
+                const z = Math.random() * 100 - 50;
+
+                points.push(x, y, z);
+
+                const deviation = Math.random() * record.normalData.normalDeviation / 10;
+                if (deviation > 2) {
+                    colors.push(1, deviation / 10, deviation / 15);
+                } else {
+                    colors.push(0.4, 0.8, 0.5);
+                }
+            }
+
+            const geometry = new THREE.BufferGeometry();
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const pointCloud = new THREE.Points(geometry, material);
+            scene.add(pointCloud);
+
+            const planeGeometry = new THREE.PlaneGeometry(300, 150);
+            const planeMaterial = new THREE.MeshBasicMaterial({
+                color: 0x1890ff,
+                transparent: true,
+                opacity: 0.15,
+                side: THREE.DoubleSide
+            });
+            const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+            plane.position.set(state.slicePosition, 50, 0);
+            plane.rotation.y = Math.PI / 2;
+            if (state.sliceAxis === 'x') {
+                plane.position.set(state.slicePosition, 50, 0);
+                plane.rotation.set(0, Math.PI / 2, 0);
+            } else if (state.sliceAxis === 'y') {
+                plane.position.set(100, state.slicePosition / 2, 0);
+                plane.rotation.set(0, 0, 0);
+            } else {
+                plane.position.set(100, 50, state.slicePosition - 50);
+                plane.rotation.set(Math.PI / 2, 0, 0);
+            }
+            scene.add(plane);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(100, 100, 50);
+            scene.add(directionalLight);
+
+            let isDragging = false;
+            let previousMousePosition = { x: 0, y: 0 };
+
+            canvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            canvas.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+
+                const deltaX = e.clientX - previousMousePosition.x;
+                const deltaY = e.clientY - previousMousePosition.y;
+
+                pointCloud.rotation.y += deltaX * 0.01;
+                pointCloud.rotation.x += deltaY * 0.01;
+                plane.rotation.y += deltaX * 0.01;
+                plane.rotation.x += deltaY * 0.01;
+
+                previousMousePosition = { x: e.clientX, y: e.clientY };
+            });
+
+            canvas.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            canvas.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camera.position.z += e.deltaY * 0.5;
+                camera.position.z = Math.max(50, Math.min(500, camera.position.z));
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.threeScene = scene;
+            window.threeCamera = camera;
+            window.threeRenderer = renderer;
+            window.threePointCloud = pointCloud;
+            window.threeSlicePlane = plane;
+        }
+
+        function resetCamera() {
+            if (window.threeCamera) {
+                window.threeCamera.position.set(150, 100, 150);
+                window.threeCamera.lookAt(100, 50, 0);
+            }
+            if (window.threePointCloud) {
+                window.threePointCloud.rotation.set(0, 0, 0);
+            }
+        }
+
+        function toggleFullscreen() {
+            const canvas = document.getElementById('three-canvas');
+            if (!document.fullscreenElement) {
+                canvas.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function setSliceAxis(axis) {
+            state.sliceAxis = axis;
+            state.slicePosition = 100;
+            document.getElementById('slice-slider').value = 100;
+            document.getElementById('slice-value').textContent = '100.0';
+            renderTabContent();
+        }
+
+        function updateSlicePosition(value) {
+            state.slicePosition = parseFloat(value);
+            document.getElementById('slice-value').textContent = state.slicePosition.toFixed(1);
+
+            if (window.threeSlicePlane) {
+                if (state.sliceAxis === 'x') {
+                    window.threeSlicePlane.position.x = state.slicePosition;
+                } else if (state.sliceAxis === 'y') {
+                    window.threeSlicePlane.position.y = state.slicePosition / 2;
+                } else {
+                    window.threeSlicePlane.position.z = state.slicePosition - 50;
+                }
+            }
+        }
+
+        let playbackInterval = null;
+
+        function togglePlayback() {
+            state.playbackState.playing = !state.playbackState.playing;
+            const btn = document.getElementById('play-btn');
+            btn.textContent = state.playbackState.playing ? '⏸' : '▶';
+
+            if (state.playbackState.playing) {
+                playbackInterval = setInterval(() => {
+                    state.playbackState.currentTime += 1;
+                    if (state.playbackState.currentTime >= state.playbackState.duration) {
+                        state.playbackState.currentTime = 0;
+                    }
+                    updatePlaybackUI();
+                    updateSliceBasedOnTime();
+                }, 1000);
+            } else {
+                clearInterval(playbackInterval);
+            }
+        }
+
+        function updatePlaybackUI() {
+            const progress = (state.playbackState.currentTime / state.playbackState.duration) * 100;
+            document.getElementById('playback-progress').style.width = progress + '%';
+
+            const current = Math.floor(state.playbackState.currentTime / 60) + ':' + String(state.playbackState.currentTime % 60).padStart(2, '0');
+            const total = '01:40';
+            document.getElementById('playback-time').textContent = `${current} / ${total}`;
+        }
+
+        function updateSliceBasedOnTime() {
+            const normalizedTime = state.playbackState.currentTime / state.playbackState.duration;
+            const newPosition = normalizedTime * 200;
+            updateSlicePosition(newPosition);
+            document.getElementById('slice-slider').value = newPosition;
+        }
+
+        function seekPlayback(event) {
+            const timeline = document.getElementById('playback-timeline');
+            const rect = timeline.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            state.playbackState.currentTime = Math.floor(percent * state.playbackState.duration);
+            updatePlaybackUI();
+            updateSliceBasedOnTime();
+        }
+
+        function skipBackward() {
+            state.playbackState.currentTime = Math.max(0, state.playbackState.currentTime - 10);
+            updatePlaybackUI();
+            updateSliceBasedOnTime();
+        }
+
+        function skipForward() {
+            state.playbackState.currentTime = Math.min(state.playbackState.duration - 1, state.playbackState.currentTime + 10);
+            updatePlaybackUI();
+            updateSliceBasedOnTime();
+        }
+
+        function openScreenshotDetail(id) {
+            const modal = document.getElementById('screenshot-modal');
+            const body = document.getElementById('screenshot-modal-body');
+            const record = state.selectedRecord;
+            const screenshot = record.screenshots.find(s => s.id === id);
+
+            body.innerHTML = `
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="width: 100%; height: 400px; background: #0a0a0a; border-radius: 8px; display: flex; align-items: center; justify-content: center; position: relative;">
+                        <span style="color: var(--text-muted);">📷 截图预览</span>
+                        ${screenshot.hasIssue ? '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: 50%; border: 2px dashed var(--danger); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--danger); font-weight: 600;">问题区域</div>' : ''}
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 4px;">截图名称</div>
+                        <div style="font-weight: 500;">${screenshot.name}</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 4px;">采集时间</div>
+                        <div style="font-family: 'SF Mono', monospace;">${screenshot.time}</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 4px;">设备坐标</div>
+                        <div style="font-family: 'SF Mono', monospace;">${screenshot.coords}</div>
+                    </div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 4px;">状态</div>
+                        <div>${screenshot.hasIssue ? '<span style="color: var(--danger);">⚠ 包含问题区域</span>' : '<span style="color: var(--success);">✓ 正常</span>'}</div>
+                    </div>
+                </div>
+                ${screenshot.hasIssue ? `
+                    <div style="margin-top: 24px; padding: 16px; background: rgba(255, 77, 79, 0.1); border: 1px solid var(--danger); border-radius: 6px;">
+                        <div style="font-weight: 600; color: var(--danger); margin-bottom: 8px;">⚠ 问题标注说明</div>
+                        <div style="color: var(--text-secondary); font-size: 13px; line-height: 1.6;">
+                            图中红色虚线框标记的区域为透明遮挡误读问题区域。该区域内点云数据因透明材质反光导致法线计算异常，
+                            与周围正常区域存在明显的数据不连续性。
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+
+            modal.classList.add('active');
+        }
+
+        function closeScreenshotModal() {
+            document.getElementById('screenshot-modal').classList.remove('active');
+        }
+
+        function submitCorrection() {
+            const type = document.getElementById('correction-type').value;
+            const reason = document.getElementById('correction-reason').value;
+
+            if (!type || !reason) {
+                alert('请填写完整的修正信息');
+                return;
+            }
+
+            const record = state.selectedRecord;
+            const newVersion = `v${record.history.length + 1}.0`;
+
+            record.history.unshift({
+                version: newVersion,
+                time: new Date().toLocaleString('zh-CN'),
+                operator: '当前用户',
+                change: `修正类型: ${type}。说明: ${reason.substring(0, 50)}...`
+            });
+
+            record.status = 'review';
+
+            alert('修正已提交，状态已更新为「待复核」');
+            switchTab('history');
+            updateStatistics();
+            renderRecordList();
+        }
+
+        function deleteRecord() {
+            if (!confirm('确定要删除此记录吗？此操作不可恢复。')) return;
+
+            const index = state.records.findIndex(r => r.id === state.selectedRecord.id);
+            if (index > -1) {
+                state.records.splice(index, 1);
+                state.selectedRecord = null;
+                renderRecordList();
+                renderDetailPanel();
+                updateStatistics();
+            }
+        }
+
+        function refreshData() {
+            state.records = [...mockRecords];
+            renderRecordList();
+            updateStatistics();
+            updateLastUpdateTime();
+        }
+
+        function updateLastUpdateTime() {
+            document.getElementById('last-update-time').textContent = new Date().toLocaleString('zh-CN');
+        }
+
+        function openExportModal() {
+            const modal = document.getElementById('export-modal');
+            modal.classList.add('active');
+
+            const failed = state.records.filter(r => r.status === 'failed').length;
+            const review = state.records.filter(r => r.status === 'review').length;
+            const passed = state.records.filter(r => r.status === 'passed').length;
+
+            document.getElementById('export-failed').textContent = failed;
+            document.getElementById('export-review').textContent = review;
+            document.getElementById('export-passed').textContent = passed;
+            document.getElementById('export-total').textContent = state.records.length;
+
+            renderExportPreview();
+        }
+
+        function closeExportModal() {
+            document.getElementById('export-modal').classList.remove('active');
+        }
+
+        function renderExportPreview() {
+            const failedRecords = state.records.filter(r => r.status === 'failed');
+            const reviewRecords = state.records.filter(r => r.status === 'review');
+
+            const preview = document.getElementById('export-preview');
+            preview.innerHTML = `
+                <div class="export-header">
+                    <div class="export-title">复杂曲面法线练习 - 月度审查报告</div>
+                    <div class="export-subtitle">报告生成日期: ${new Date().toLocaleDateString('zh-CN')}</div>
+                </div>
+                
+                <div class="export-section">
+                    <div class="export-section-title">不合格记录（需要处理）</div>
+                    ${failedRecords.length > 0 ? `
+                        <table class="export-table">
+                            <thead>
+                                <tr>
+                                    <th>记录ID</th>
+                                    <th>设备</th>
+                                    <th>严重程度</th>
+                                    <th>判定原因</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${failedRecords.map(r => `
+                                    <tr>
+                                        <td>${r.id}</td>
+                                        <td>${r.deviceCode}</td>
+                                        <td style="color: #ff4d4f; font-weight: 600;">${getSeverityText(r.transparentOcclusion.severity)}</td>
+                                        <td>透明遮挡误读</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        ${failedRecords.map(r => `
+                            <div class="export-reason">
+                                <div class="export-reason-title">【${r.id}】透明遮挡误读说明</div>
+                                <div class="export-reason-content">
+                                    ${r.transparentOcclusion.reason}
+                                    <br><br>
+                                    <strong>判定依据：</strong>法线方向偏差 <span style="color: #ff4d4f; font-weight: 600;">${r.normalData.normalDeviation}°</span>，
+                                    超过正常阈值 15°。设备坐标 (${r.coordinates.x}, ${r.coordinates.y}, ${r.coordinates.z}) 
+                                    处于透明区域采集带。
+                                </div>
+                            </div>
+                        `).join('<div style="height: 16px;"></div>')}
+                    ` : '<div style="color: #52c41a; text-align: center; padding: 24px;">✓ 本月无不合格记录</div>'}
+                </div>
+                
+                ${reviewRecords.length > 0 ? `
+                    <div class="export-section">
+                        <div class="export-section-title">待复核记录（需人工确认）</div>
+                        <table class="export-table">
+                            <thead>
+                                <tr>
+                                    <th>记录ID</th>
+                                    <th>设备</th>
+                                    <th>严重程度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${reviewRecords.map(r => `
+                                    <tr>
+                                        <td>${r.id}</td>
+                                        <td>${r.deviceCode}</td>
+                                        <td style="color: #faad14;">${getSeverityText(r.transparentOcclusion.severity)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                ` : ''}
+                
+                <div class="export-section">
+                    <div style="font-size: 12px; color: #999; margin-top: 24px; text-align: right;">
+                        复杂曲面法线练习工作台 | 本地生成
+                    </div>
+                </div>
+            `;
+        }
+
+        function downloadReport() {
+            const content = document.getElementById('export-preview').innerHTML;
+            const blob = new Blob([`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>复杂曲面法线练习 - 审查报告</title>
+                    <style>
+                        body { font-family: "Microsoft YaHei", sans-serif; padding: 40px; }
+                        .export-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+                        .export-table th, .export-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+                        .export-table th { background: #f5f5f5; font-weight: 600; }
+                        .export-reason { margin: 16px 0; padding: 16px; background: #fff5f5; border-left: 3px solid #ff4d4f; }
+                    </style>
+                </head>
+                <body>${content}</body>
+                </html>
+            `], { type: 'text/html' });
+
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `复杂曲面法线练习报告_${new Date().toISOString().split('T')[0]}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            closeExportModal();
+        }
+
+        function downloadExcel() {
+            const failedRecords = state.records.filter(r => r.status === 'failed');
+            let csv = '记录ID,设备编号,采集时间,状态,严重程度,法线偏差,误读原因\n';
+
+            state.records.forEach(r => {
+                csv += `${r.id},${r.deviceCode},${r.captureTime},${getStatusText(r.status)},${r.transparentOcclusion.detected ? getSeverityText(r.transparentOcclusion.severity) : 'N/A'},${r.normalData.normalDeviation}°,${r.transparentOcclusion.reason || 'N/A'}\n`;
+            });
+
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `复杂曲面法线练习数据_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+            closeExportModal();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
