@@ -1,0 +1,2374 @@
+{
+  "record_id": "REC-2216d48c",
+  "batch_id": "BATCH-20260610012423",
+  "created_at": "2026-06-10T01:24:23.781888",
+  "status": "已校准",
+  "valid_answer_count": 108,
+  "excluded_answer_count": 4,
+  "gap_count": 4,
+  "student_answers": [
+    {
+      "student_id": "S001",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:10",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:10"
+      }
+    },
+    {
+      "student_id": "S001",
+      "item_id": "Q002",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:15",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q002",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:15"
+      }
+    },
+    {
+      "student_id": "S001",
+      "item_id": "Q003",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:22",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q003",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:22"
+      }
+    },
+    {
+      "student_id": "S001",
+      "item_id": "Q004",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:30",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q004",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:30"
+      }
+    },
+    {
+      "student_id": "S001",
+      "item_id": "Q005",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:41",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q005",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:41"
+      }
+    },
+    {
+      "student_id": "S001",
+      "item_id": "Q006",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:48",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q006",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:48"
+      }
+    },
+    {
+      "student_id": "S001",
+      "item_id": "Q007",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:55",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q007",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:55"
+      }
+    },
+    {
+      "student_id": "S001",
+      "item_id": "Q008",
+      "is_correct": null,
+      "timestamp": "2026-05-20 10:03",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q008",
+        "is_correct": "",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:03"
+      }
+    },
+    {
+      "student_id": "S001",
+      "item_id": "Q009",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:10",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S001",
+        "item_id": "Q009",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:10"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:08",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:08"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q002",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:14",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q002",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:14"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q003",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:20",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q003",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:20"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q004",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:28",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q004",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:28"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q005",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:38",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q005",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:38"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q006",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:45",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q006",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:45"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q007",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:52",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q007",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:52"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q008",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:00",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q008",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:00"
+      }
+    },
+    {
+      "student_id": "S002",
+      "item_id": "Q009",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:08",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S002",
+        "item_id": "Q009",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:08"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:12",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:12"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q002",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:18",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q002",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:18"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q003",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:25",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q003",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:25"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q004",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:33",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q004",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:33"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q005",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:44",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q005",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:44"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q006",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:51",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q006",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:51"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q007",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:58",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q007",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:58"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q008",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:06",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q008",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:06"
+      }
+    },
+    {
+      "student_id": "S003",
+      "item_id": "Q009",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:13",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S003",
+        "item_id": "Q009",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:13"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q001",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:05",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q001",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:05"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q002",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:11",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q002",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:11"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q003",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:18",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q003",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:18"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q004",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:25",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q004",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:25"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q005",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:34",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q005",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:34"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q006",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:42",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q006",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:42"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q007",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:50",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q007",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:50"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q008",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:58",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q008",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 09:58"
+      }
+    },
+    {
+      "student_id": "S004",
+      "item_id": "Q009",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:06",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S004",
+        "item_id": "Q009",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:06"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:11",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:11"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q002",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:17",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q002",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:17"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q003",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:24",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q003",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:24"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q004",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:31",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q004",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:31"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q005",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:40",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q005",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:40"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q006",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:47",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q006",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:47"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q007",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:54",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q007",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:54"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q008",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:02",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q008",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:02"
+      }
+    },
+    {
+      "student_id": "S005",
+      "item_id": "Q009",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:10",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S005",
+        "item_id": "Q009",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:10"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:09",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:09"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q002",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:16",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q002",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:16"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q003",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:23",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q003",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:23"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q004",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:30",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q004",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:30"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q005",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:39",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q005",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:39"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q006",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:46",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q006",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:46"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q007",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:53",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q007",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:53"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q008",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:01",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q008",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:01"
+      }
+    },
+    {
+      "student_id": "S006",
+      "item_id": "Q009",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:09",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S006",
+        "item_id": "Q009",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:09"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:07",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:07"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q002",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:14",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q002",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:14"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q003",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:21",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q003",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:21"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q004",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:29",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q004",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:29"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q005",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:38",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q005",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:38"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q006",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:45",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q006",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:45"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q007",
+      "is_correct": null,
+      "timestamp": "2026-05-20 09:52",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q007",
+        "is_correct": "",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:52"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q008",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:00",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q008",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:00"
+      }
+    },
+    {
+      "student_id": "S007",
+      "item_id": "Q009",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:08",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S007",
+        "item_id": "Q009",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:08"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:06",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:06"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q002",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:13",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q002",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:13"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q003",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:20",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q003",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:20"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q004",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:27",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q004",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:27"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q005",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:36",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q005",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:36"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q006",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:44",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q006",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:44"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q007",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:51",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q007",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:51"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q008",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:59",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q008",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 09:59"
+      }
+    },
+    {
+      "student_id": "S008",
+      "item_id": "Q009",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:07",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S008",
+        "item_id": "Q009",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:07"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:09",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:09"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q002",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:16",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q002",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:16"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q003",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:24",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q003",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:24"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q004",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:32",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q004",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:32"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q005",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:41",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q005",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:41"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q006",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:48",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q006",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:48"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q007",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:56",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q007",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:56"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q008",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:04",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q008",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:04"
+      }
+    },
+    {
+      "student_id": "S009",
+      "item_id": "Q009",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:12",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S009",
+        "item_id": "Q009",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:12"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:10",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:10"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q002",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:17",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q002",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:17"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q003",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:25",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q003",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:25"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q004",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:33",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q004",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:33"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q005",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:42",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q005",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:42"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q006",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:49",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q006",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:49"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q007",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:57",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q007",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:57"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q008",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:05",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q008",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:05"
+      }
+    },
+    {
+      "student_id": "S010",
+      "item_id": "Q009",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:13",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S010",
+        "item_id": "Q009",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:13"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:11",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:11"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q002",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:18",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q002",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:18"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q003",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:26",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q003",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:26"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q004",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:34",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q004",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:34"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q005",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:43",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q005",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:43"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q006",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:50",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q006",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:50"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q007",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:58",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q007",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:58"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q008",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:06",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q008",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:06"
+      }
+    },
+    {
+      "student_id": "S011",
+      "item_id": "Q009",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:14",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S011",
+        "item_id": "Q009",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:14"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q001",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:08",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q001",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "代数基础-因式分解",
+        "timestamp": "2026-05-20 09:08"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q002",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:15",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q002",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "二次函数顶点式",
+        "timestamp": "2026-05-20 09:15"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q003",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:23",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q003",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "三角恒等变换",
+        "timestamp": "2026-05-20 09:23"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q004",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:31",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q004",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "立体几何体积",
+        "timestamp": "2026-05-20 09:31"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q005",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:40",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q005",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "圆锥曲线离心率",
+        "timestamp": "2026-05-20 09:40"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q006",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:47",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q006",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "概率古典概型",
+        "timestamp": "2026-05-20 09:47"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q007",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:55",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q007",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "数列通项公式",
+        "timestamp": "2026-05-20 09:55"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q008",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 10:03",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q008",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "导数极值问题",
+        "timestamp": "2026-05-20 10:03"
+      }
+    },
+    {
+      "student_id": "S012",
+      "item_id": "Q009",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 10:11",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S012",
+        "item_id": "Q009",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "向量数量积",
+        "timestamp": "2026-05-20 10:11"
+      }
+    },
+    {
+      "student_id": "S013",
+      "item_id": "Q010",
+      "is_correct": 1,
+      "timestamp": "2026-05-20 09:15",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S013",
+        "item_id": "Q010",
+        "is_correct": "1",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "复数模运算",
+        "timestamp": "2026-05-20 09:15"
+      }
+    },
+    {
+      "student_id": "S014",
+      "item_id": "Q011",
+      "is_correct": 0,
+      "timestamp": "2026-05-20 09:22",
+      "source": "CSV:math_quiz_2026.csv",
+      "raw_row": {
+        "student_id": "S014",
+        "item_id": "Q011",
+        "is_correct": "0",
+        "course_id": "COURSE-MATH-2026",
+        "item_name": "排列组合基础",
+        "timestamp": "2026-05-20 09:22"
+      }
+    }
+  ],
+  "items": {
+    "Q001": {
+      "item_id": "Q001",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "代数基础-因式分解",
+      "difficulty": -2.1861768726791504,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 12,
+      "correct_rate": 0.9166666666666666
+    },
+    "Q002": {
+      "item_id": "Q002",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "二次函数顶点式",
+      "difficulty": -0.48142878044072523,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 12,
+      "correct_rate": 0.6666666666666666
+    },
+    "Q003": {
+      "item_id": "Q003",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "三角恒等变换",
+      "difficulty": 0.9048655806791653,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 12,
+      "correct_rate": 0.3333333333333333
+    },
+    "Q004": {
+      "item_id": "Q004",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "立体几何体积",
+      "difficulty": -0.12475383650199309,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 12,
+      "correct_rate": 0.5833333333333334
+    },
+    "Q005": {
+      "item_id": "Q005",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "圆锥曲线离心率",
+      "difficulty": 0.5481906367404327,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 12,
+      "correct_rate": 0.4166666666666667
+    },
+    "Q006": {
+      "item_id": "Q006",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "概率古典概型",
+      "difficulty": -0.12475383650199309,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 12,
+      "correct_rate": 0.5833333333333334
+    },
+    "Q007": {
+      "item_id": "Q007",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "数列通项公式",
+      "difficulty": 0.3940399569131745,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 11,
+      "correct_rate": 0.45454545454545453
+    },
+    "Q008": {
+      "item_id": "Q008",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "导数极值问题",
+      "difficulty": 0.7713341880546425,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 11,
+      "correct_rate": 0.36363636363636365
+    },
+    "Q009": {
+      "item_id": "Q009",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "向量数量积",
+      "difficulty": -0.12475383650199309,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 12,
+      "correct_rate": 0.5833333333333334
+    },
+    "Q010": {
+      "item_id": "Q010",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "复数模运算",
+      "difficulty": -4.78828159988078,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 1,
+      "correct_rate": 1.0
+    },
+    "Q011": {
+      "item_id": "Q011",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "排列组合基础",
+      "difficulty": 5.21171840011922,
+      "discrimination": 1.0,
+      "guess": 0.0,
+      "response_count": 1,
+      "correct_rate": 0.0
+    }
+  },
+  "students": {
+    "S001": {
+      "student_id": "S001",
+      "ability": 0.36147925022935545,
+      "ability_se": 0.7302967433402214,
+      "answered_count": 9,
+      "valid_answers": 8
+    },
+    "S002": {
+      "student_id": "S002",
+      "ability": 5.0,
+      "ability_se": 3333.3333416254018,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S003": {
+      "student_id": "S003",
+      "ability": -0.2701920846740365,
+      "ability_se": 0.6708203932499369,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S004": {
+      "student_id": "S004",
+      "ability": -5.0,
+      "ability_se": 3333.3333500000003,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S005": {
+      "student_id": "S005",
+      "ability": 0.1760950179543833,
+      "ability_se": 0.6708203932499369,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S006": {
+      "student_id": "S006",
+      "ability": 0.6460986472001186,
+      "ability_se": 0.7071067811865475,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S007": {
+      "student_id": "S007",
+      "ability": -0.1021845946439518,
+      "ability_se": 0.7071067811865475,
+      "answered_count": 9,
+      "valid_answers": 8
+    },
+    "S008": {
+      "student_id": "S008",
+      "ability": 0.6460986472001186,
+      "ability_se": 0.7071067811865475,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S009": {
+      "student_id": "S009",
+      "ability": -0.2701920846740365,
+      "ability_se": 0.6708203932499369,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S010": {
+      "student_id": "S010",
+      "ability": 0.6460986472001186,
+      "ability_se": 0.7071067811865475,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S011": {
+      "student_id": "S011",
+      "ability": 0.1760950179543833,
+      "ability_se": 0.6708203932499369,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S012": {
+      "student_id": "S012",
+      "ability": -0.2701920846740365,
+      "ability_se": 0.6708203932499369,
+      "answered_count": 9,
+      "valid_answers": 9
+    },
+    "S013": {
+      "student_id": "S013",
+      "ability": 5.0,
+      "ability_se": 10000.0,
+      "answered_count": 1,
+      "valid_answers": 1
+    },
+    "S014": {
+      "student_id": "S014",
+      "ability": -5.0,
+      "ability_se": 10000.0,
+      "answered_count": 1,
+      "valid_answers": 1
+    }
+  },
+  "constraint_checks": [
+    {
+      "name": "有效答题记录数>0",
+      "passed": true,
+      "detail": "有效记录=108，排除记录=4",
+      "level": "info"
+    },
+    {
+      "name": "题目[代数基础-因式分解]答题人数≥5",
+      "passed": true,
+      "detail": "12人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[代数基础-因式分解]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.9167，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[二次函数顶点式]答题人数≥5",
+      "passed": true,
+      "detail": "12人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[二次函数顶点式]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.6667，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[三角恒等变换]答题人数≥5",
+      "passed": true,
+      "detail": "12人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[三角恒等变换]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.3333，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[立体几何体积]答题人数≥5",
+      "passed": true,
+      "detail": "12人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[立体几何体积]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.5833，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[圆锥曲线离心率]答题人数≥5",
+      "passed": true,
+      "detail": "12人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[圆锥曲线离心率]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.4167，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[概率古典概型]答题人数≥5",
+      "passed": true,
+      "detail": "12人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[概率古典概型]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.5833，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[数列通项公式]答题人数≥5",
+      "passed": true,
+      "detail": "11人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[数列通项公式]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.4545，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[导数极值问题]答题人数≥5",
+      "passed": true,
+      "detail": "11人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[导数极值问题]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.3636，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[向量数量积]答题人数≥5",
+      "passed": true,
+      "detail": "12人作答",
+      "level": "info"
+    },
+    {
+      "name": "题目[向量数量积]正确率∈(0,1)",
+      "passed": true,
+      "detail": "正确率=0.5833，无除零风险",
+      "level": "info"
+    },
+    {
+      "name": "题目[复数模运算]答题人数≥5",
+      "passed": false,
+      "detail": "实际1人，低于阈值，估计结果不稳定",
+      "level": "warning"
+    },
+    {
+      "name": "题目[复数模运算]正确率<1",
+      "passed": false,
+      "detail": "该题全员答对（正确率≈1），除零风险",
+      "level": "warning"
+    },
+    {
+      "name": "题目[排列组合基础]答题人数≥5",
+      "passed": false,
+      "detail": "实际1人，低于阈值，估计结果不稳定",
+      "level": "warning"
+    },
+    {
+      "name": "题目[排列组合基础]正确率>0",
+      "passed": false,
+      "detail": "该题全员答错（正确率≈0），除零风险",
+      "level": "warning"
+    },
+    {
+      "name": "学生[S013]有效答题数≥3",
+      "passed": false,
+      "detail": "仅1题，能力估计不稳定",
+      "level": "warning"
+    },
+    {
+      "name": "学生[S014]有效答题数≥3",
+      "passed": false,
+      "detail": "仅1题，能力估计不稳定",
+      "level": "warning"
+    },
+    {
+      "name": "至少2道有效题",
+      "passed": true,
+      "detail": "有效题目数=11",
+      "level": "critical"
+    },
+    {
+      "name": "至少2名有效学生",
+      "passed": true,
+      "detail": "有效学生数=14",
+      "level": "critical"
+    },
+    {
+      "name": "难度排序与正确率排序一致性",
+      "passed": true,
+      "detail": "所有题目两种排序差异≤1位，结果稳定",
+      "level": "info"
+    }
+  ],
+  "error_analysis": [
+    {
+      "name": "模型均方误差 MSE",
+      "value": 0.161275,
+      "unit": "概率²",
+      "detail": "基于108条有效答题记录，模型预测与实际对错的平均平方偏差"
+    },
+    {
+      "name": "模型根均方误差 RMSE",
+      "value": 0.401591,
+      "unit": "概率",
+      "detail": "MSE开方，便于在0~1概率尺度上解读"
+    },
+    {
+      "name": "对数似然 LogLik",
+      "value": -50.601926,
+      "unit": "nats",
+      "detail": "值越接近0拟合越好，AIC/BIC可由该值推导"
+    },
+    {
+      "name": "平均残差",
+      "value": 0.161275,
+      "unit": "概率",
+      "detail": "单条记录平均预测误差"
+    }
+  ],
+  "issues": [
+    {
+      "issue_id": "ISS-b4146fbe",
+      "issue_type": "历史答案缺失",
+      "severity": "medium",
+      "description": "学生 S001 / 题目 Q008: 历史答案缺失，已暂存，不影响其他记录计算",
+      "related_student_id": "S001",
+      "related_item_id": "Q008",
+      "affected_records": [
+        "S001:Q008"
+      ],
+      "suggestion": "风控分析师可在复核界面补录该题对错，或确认排除",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-33e7c173",
+      "issue_type": "历史答案缺失",
+      "severity": "medium",
+      "description": "学生 S007 / 题目 Q007: 历史答案缺失，已暂存，不影响其他记录计算",
+      "related_student_id": "S007",
+      "related_item_id": "Q007",
+      "affected_records": [
+        "S007:Q007"
+      ],
+      "suggestion": "风控分析师可在复核界面补录该题对错，或确认排除",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-14d7867e",
+      "issue_type": "历史答案缺失",
+      "severity": "high",
+      "description": "第110行: 学生/题目标识缺失，无法处理",
+      "related_student_id": null,
+      "related_item_id": null,
+      "affected_records": [
+        "row-110"
+      ],
+      "suggestion": "请风控分析师补充 student_id 和 item_id 后重新导入或在复核界面修正",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-c216e43b",
+      "issue_type": "历史答案缺失",
+      "severity": "high",
+      "description": "第112行: 学生/题目标识缺失，无法处理",
+      "related_student_id": null,
+      "related_item_id": null,
+      "affected_records": [
+        "row-112"
+      ],
+      "suggestion": "请风控分析师补充 student_id 和 item_id 后重新导入或在复核界面修正",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-48d14adb",
+      "issue_type": "答题人数不足",
+      "severity": "medium",
+      "description": "题目 复数模运算(Q010) 仅1人作答，低于建议阈值5",
+      "related_student_id": null,
+      "related_item_id": "Q010",
+      "affected_records": [],
+      "suggestion": "参数估计已计算，但结果仅供参考，建议积累更多数据",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-73af3924",
+      "issue_type": "除零风险",
+      "severity": "high",
+      "description": "题目 复数模运算 全员答对，正确率=1，参数估计时出现除零边界",
+      "related_student_id": null,
+      "related_item_id": "Q010",
+      "affected_records": [],
+      "suggestion": "已使用(1-EPSILON)替代1值继续计算，但建议人工复核该题区分度",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-0a88c637",
+      "issue_type": "答题人数不足",
+      "severity": "medium",
+      "description": "题目 排列组合基础(Q011) 仅1人作答，低于建议阈值5",
+      "related_student_id": null,
+      "related_item_id": "Q011",
+      "affected_records": [],
+      "suggestion": "参数估计已计算，但结果仅供参考，建议积累更多数据",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-02c7bcb3",
+      "issue_type": "除零风险",
+      "severity": "high",
+      "description": "题目 排列组合基础 全员答错，正确率=0，参数估计时出现除零边界",
+      "related_student_id": null,
+      "related_item_id": "Q011",
+      "affected_records": [],
+      "suggestion": "已使用EPSILON=1e-8替代0值继续计算，但建议人工复核该题是否存在缺陷",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-8a210e25",
+      "issue_type": "答题人数不足",
+      "severity": "low",
+      "description": "学生 S013 只答对1题，能力估计可靠性低",
+      "related_student_id": "S013",
+      "related_item_id": null,
+      "affected_records": [],
+      "suggestion": "能力参数已给出，但建议补充更多答题数据后复算",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-32a09575",
+      "issue_type": "答题人数不足",
+      "severity": "low",
+      "description": "学生 S014 只答对1题，能力估计可靠性低",
+      "related_student_id": "S014",
+      "related_item_id": null,
+      "affected_records": [],
+      "suggestion": "能力参数已给出，但建议补充更多答题数据后复算",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-4d0ad900",
+      "issue_type": "除零风险",
+      "severity": "medium",
+      "description": "题目 复数模运算(Q010) 原始难度估计 b=-18.421，因正确率接近边界(=1.0)，已截断为-5.0",
+      "related_student_id": null,
+      "related_item_id": "Q010",
+      "affected_records": [],
+      "suggestion": "该题出现全对/全错极端情况，建议人工复核题目质量或积累更多作答数据",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-f552f580",
+      "issue_type": "除零风险",
+      "severity": "medium",
+      "description": "题目 排列组合基础(Q011) 原始难度估计 b=18.421，因正确率接近边界(=0.0)，已截断为5.0",
+      "related_student_id": null,
+      "related_item_id": "Q011",
+      "affected_records": [],
+      "suggestion": "该题出现全对/全错极端情况，建议人工复核题目质量或积累更多作答数据",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-3e82c8af",
+      "issue_type": "能力值异常",
+      "severity": "low",
+      "description": "学生 S002 原始能力估计 θ=18.374，超出±5.0范围，已截断为5.0",
+      "related_student_id": "S002",
+      "related_item_id": null,
+      "affected_records": [],
+      "suggestion": "该生出现全对或全错极端情况，原始logit值发散，建议结合其能力稳定性人工判断",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-96450182",
+      "issue_type": "能力值异常",
+      "severity": "low",
+      "description": "学生 S004 原始能力估计 θ=-18.468，超出±5.0范围，已截断为-5.0",
+      "related_student_id": "S004",
+      "related_item_id": null,
+      "affected_records": [],
+      "suggestion": "该生出现全对或全错极端情况，原始logit值发散，建议结合其能力稳定性人工判断",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-f6678796",
+      "issue_type": "能力值异常",
+      "severity": "low",
+      "description": "学生 S013 原始能力估计 θ=13.632，超出±5.0范围，已截断为5.0",
+      "related_student_id": "S013",
+      "related_item_id": null,
+      "affected_records": [],
+      "suggestion": "该生出现全对或全错极端情况，原始logit值发散，建议结合其能力稳定性人工判断",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    },
+    {
+      "issue_id": "ISS-1d80cc48",
+      "issue_type": "能力值异常",
+      "severity": "low",
+      "description": "学生 S014 原始能力估计 θ=-13.209，超出±5.0范围，已截断为-5.0",
+      "related_student_id": "S014",
+      "related_item_id": null,
+      "affected_records": [],
+      "suggestion": "该生出现全对或全错极端情况，原始logit值发散，建议结合其能力稳定性人工判断",
+      "reviewed": false,
+      "review_note": null,
+      "resolved": false
+    }
+  ],
+  "irt_params": {
+    "item_difficulties": {
+      "Q001": -2.1861768726791504,
+      "Q002": -0.48142878044072523,
+      "Q003": 0.9048655806791653,
+      "Q004": -0.12475383650199309,
+      "Q005": 0.5481906367404327,
+      "Q006": -0.12475383650199309,
+      "Q007": 0.3940399569131745,
+      "Q008": 0.7713341880546425,
+      "Q009": -0.12475383650199309,
+      "Q010": -4.78828159988078,
+      "Q011": 5.21171840011922
+    },
+    "estimation_method": "1PL/Rasch MMLE (proportional coding, centered)",
+    "epsilon_used": 1e-08,
+    "clamp": 5.0,
+    "student_abilities": {
+      "S001": 0.36147925022935545,
+      "S002": 5.0,
+      "S003": -0.2701920846740365,
+      "S004": -5.0,
+      "S005": 0.1760950179543833,
+      "S006": 0.6460986472001186,
+      "S007": -0.1021845946439518,
+      "S008": 0.6460986472001186,
+      "S009": -0.2701920846740365,
+      "S010": 0.6460986472001186,
+      "S011": 0.1760950179543833,
+      "S012": -0.2701920846740365,
+      "S013": 5.0,
+      "S014": -5.0
+    },
+    "student_se": {
+      "S001": 0.7302967433402214,
+      "S002": 3333.3333416254018,
+      "S003": 0.6708203932499369,
+      "S004": 3333.3333500000003,
+      "S005": 0.6708203932499369,
+      "S006": 0.7071067811865475,
+      "S007": 0.7071067811865475,
+      "S008": 0.7071067811865475,
+      "S009": 0.6708203932499369,
+      "S010": 0.7071067811865475,
+      "S011": 0.6708203932499369,
+      "S012": 0.6708203932499369,
+      "S013": 10000.0,
+      "S014": 10000.0
+    },
+    "model_fit": {
+      "mse": 0.161275,
+      "rmse": 0.401591,
+      "log_lik": -50.6,
+      "n_observations": 108
+    },
+    "difficulty_rank": {
+      "Q010": 1,
+      "Q001": 2,
+      "Q002": 3,
+      "Q004": 4,
+      "Q006": 5,
+      "Q009": 6,
+      "Q007": 7,
+      "Q005": 8,
+      "Q008": 9,
+      "Q003": 10,
+      "Q011": 11
+    },
+    "rate_rank": {
+      "Q010": 1,
+      "Q001": 2,
+      "Q002": 3,
+      "Q004": 4,
+      "Q006": 5,
+      "Q009": 6,
+      "Q007": 7,
+      "Q005": 8,
+      "Q008": 9,
+      "Q003": 10,
+      "Q011": 11
+    },
+    "unstable_items": []
+  },
+  "review_notes": [],
+  "raw_materials": [
+    "/Users/mac/pro/solo/workspaces/y12747/samples/math_quiz_2026.csv"
+  ]
+}

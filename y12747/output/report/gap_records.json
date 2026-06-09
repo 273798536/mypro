@@ -1,0 +1,74 @@
+[
+  {
+    "gap_id": "GAP-1c77ee2d",
+    "student_id": "S001",
+    "item_id": "Q008",
+    "missing_fields": [
+      "is_correct"
+    ],
+    "reason": "学生S001对题目Q008的作答结果缺失",
+    "assigned_to": "风控分析师",
+    "raw_data": {
+      "student_id": "S001",
+      "item_id": "Q008",
+      "is_correct": "",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "导数极值问题",
+      "timestamp": "2026-05-20 10:03"
+    }
+  },
+  {
+    "gap_id": "GAP-0fca4807",
+    "student_id": "S007",
+    "item_id": "Q007",
+    "missing_fields": [
+      "is_correct"
+    ],
+    "reason": "学生S007对题目Q007的作答结果缺失",
+    "assigned_to": "风控分析师",
+    "raw_data": {
+      "student_id": "S007",
+      "item_id": "Q007",
+      "is_correct": "",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "数列通项公式",
+      "timestamp": "2026-05-20 09:52"
+    }
+  },
+  {
+    "gap_id": "GAP-0493fd42",
+    "student_id": null,
+    "item_id": null,
+    "missing_fields": [
+      "student_id"
+    ],
+    "reason": "第110行缺少必填字段: student_id",
+    "assigned_to": "风控分析师",
+    "raw_data": {
+      "student_id": "",
+      "item_id": "Q011",
+      "is_correct": "1",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "排列组合基础",
+      "timestamp": "2026-05-20 09:20"
+    }
+  },
+  {
+    "gap_id": "GAP-218afd3a",
+    "student_id": null,
+    "item_id": null,
+    "missing_fields": [
+      "item_id"
+    ],
+    "reason": "第112行缺少必填字段: item_id",
+    "assigned_to": "风控分析师",
+    "raw_data": {
+      "student_id": "S014",
+      "item_id": "",
+      "is_correct": "1",
+      "course_id": "COURSE-MATH-2026",
+      "item_name": "缺失题目ID样例",
+      "timestamp": "2026-05-20 09:25"
+    }
+  }
+]
