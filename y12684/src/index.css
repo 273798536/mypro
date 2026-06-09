@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #D97706;
+  --color-sand: #C2956E;
+  --color-dark-brown: #78350F;
+  --color-info: #3B82F6;
+  --color-warning: #F59E0B;
+  --color-error: #EF4444;
+  --color-bg-dark: #1F2937;
+}
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: 'Noto Sans SC', system-ui, sans-serif;
+    background-color: #FBF5EE;
+    color: #3D1B07;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Source Serif 4', Georgia, serif;
+    color: #78350F;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md transition-all duration-200 font-medium;
+  }
+  .btn-primary {
+    @apply bg-amber text-white hover:bg-amber/90 shadow-card hover:shadow-hover;
+  }
+  .btn-secondary {
+    @apply bg-sand-200 text-sand-800 hover:bg-sand-300;
+  }
+  .btn-danger {
+    @apply bg-red-500 text-white hover:bg-red-600;
+  }
+  .card {
+    @apply bg-white rounded-lg shadow-card p-4;
+  }
+  .input {
+    @apply px-3 py-2 rounded-md border border-sand-300 focus:border-amber focus:ring-1 focus:ring-amber outline-none transition;
+  }
+  .badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+}
