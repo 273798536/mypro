@@ -1,0 +1,43 @@
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: #f5f7fa;
+  color: #303133;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.page-container {
+  padding: 20px;
+}
+
+.section-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #1f2d3d;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tag-error-normal { background: #67c23a; color: #fff; }
+.tag-error-warning { background: #e6a23c; color: #fff; }
+.tag-error-critical { background: #f56c6c; color: #fff; }
+
+.tag-status-pending { background: #909399; color: #fff; }
+.tag-status-passed { background: #67c23a; color: #fff; }
+.tag-status-rejected { background: #f56c6c; color: #fff; }
+.tag-status-need_review { background: #e6a23c; color: #fff; }
