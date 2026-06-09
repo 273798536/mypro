@@ -1,0 +1,8 @@
+record_id,income_amount,claimed_tax,taxpayer_name,tax_year,original_line_no,image_name,sheet_name,source_note
+QL001,300000.00,43080.00,周涛,2024,2,question_paper_q1.png,题目清单,题目1:25%税率档
+QL002,420000.00,73080.00,吴敏,2024,3,question_paper_q2.png,题目清单,题目2:跨30%临界点
+QL003,660000.00,145080.00,郑磊,2024,4,question_paper_q3.png,题目清单,题目3:35%税率档上边界
+QL004,960000.00,250080.00,冯雪,2024,5,question_paper_q4.png,题目清单,题目4:45%最高档临界点
+QL005,50000.00,2480.00,褚军,2024,6,question_paper_q5.png,题目清单,题目5:10%税率档计算
+QL006,1000000.00,268080.00,卫红,2024,7,question_paper_q6.png,题目清单,题目6:超96万最高档
+QL007,0.00,100.00,蒋丽,2024,8,question_paper_q7.png,题目清单,题目7:0收入异常税额

@@ -1,0 +1,9 @@
+record_id,income_amount,claimed_tax,taxpayer_name,tax_year,original_line_no,image_name,sheet_name,source_note
+SR001,25000.00,750.00,李明,2024,2,score_sheet_A_page1.jpg,评分记录表,来自评分表第2行
+SR002,85000.00,5980.00,王芳,2024,3,score_sheet_A_page1.jpg,评分记录表,正常区间样本
+SR003,36000.00,1080.00,张伟,2024,4,score_sheet_A_page2.jpg,评分记录表,恰好落在下阶梯边界
+SR004,36500.00,1130.00,刘洋,2024,5,score_sheet_A_page2.jpg,评分记录表,跨临界点附近
+SR005,144000.00,11880.00,陈静,2024,6,score_sheet_B_page1.jpg,评分记录表,阶梯上边界附近
+SR006,200000.00,23080.00,赵强,2024,7,score_sheet_B_page1.jpg,评分记录表,税额偏差较大
+SR007,85000.00,5980.00,王芳,2024,8,score_sheet_B_page2.jpg,评分记录表,重复样本SR002
+SR008,-5000.00,0.00,孙丽,2024,9,score_sheet_B_page2.jpg,评分记录表,异常负值需重采

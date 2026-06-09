@@ -1,0 +1,34 @@
+[
+  {
+    "result_id": "SR007-4386989920",
+    "record_id": "SR007",
+    "action": "确认通过",
+    "previous_status": "暂缓",
+    "new_status": "可用",
+    "operator": "algo_li",
+    "comment": "经核对SR007与SR002是同一人不同扫描件，确认通过",
+    "timestamp": "2026-06-09T21:40:11.639561",
+    "changed_fields": {
+      "status": {
+        "before": "暂缓",
+        "after": "可用"
+      }
+    }
+  },
+  {
+    "result_id": "QL007-4393246240",
+    "record_id": "QL007",
+    "action": "要求重采集",
+    "previous_status": "暂缓",
+    "new_status": "需重采集",
+    "operator": "algo_wang",
+    "comment": "0收入却有税额，疑似OCR识别错误，需重采原始图片",
+    "timestamp": "2026-06-09T21:40:40.013594",
+    "changed_fields": {
+      "status": {
+        "before": "暂缓",
+        "after": "需重采集"
+      }
+    }
+  }
+]
