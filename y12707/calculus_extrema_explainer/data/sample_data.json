@@ -1,0 +1,81 @@
+{
+  "students": [
+    {"student_code": "S2024001", "student_name": "张三", "class_name": "高数A班"},
+    {"student_code": "S2024002", "student_name": "李四", "class_name": "高数A班"},
+    {"student_code": "S2024003", "student_name": "王五", "class_name": "高数B班"},
+    {"student_code": "S2024004", "student_name": "赵六", "class_name": "高数B班"}
+  ],
+  "questions": [
+    {
+      "question_code": "Q_EXT_001",
+      "question_text": "求函数 f(x) = 1/x + x 在 x>0 时的极小值",
+      "correct_answer": 2.0,
+      "correct_derivative": "-1/(x*x) + 1",
+      "critical_points": "0,1",
+      "has_zero_division_risk": 1
+    },
+    {
+      "question_code": "Q_EXT_002",
+      "question_text": "求函数 f(x) = x^2 - 4x + 5 的极小值",
+      "correct_answer": 1.0,
+      "correct_derivative": "2*x - 4",
+      "critical_points": "2",
+      "has_zero_division_risk": 0
+    },
+    {
+      "question_code": "Q_EXT_003",
+      "question_text": "求函数 f(x) = ln(x)/x 在 x>0 时的极大值",
+      "correct_answer": 0.3679,
+      "correct_derivative": "(1 - ln(x))/(x*x)",
+      "critical_points": "0,e",
+      "has_zero_division_risk": 1
+    }
+  ],
+  "wrong_answers": [
+    {
+      "student_code": "S2024001",
+      "question_code": "Q_EXT_001",
+      "student_answer": 1.0,
+      "student_derivative": "-1/x + 1",
+      "student_work": "求导后令 f'(x)=0, 得 -1/x + 1 = 0, x=1",
+      "historical_score": 3.5,
+      "answered_at": "2026-06-01T10:00:00"
+    },
+    {
+      "student_code": "S2024002",
+      "question_code": "Q_EXT_001",
+      "student_answer": 2.5,
+      "student_derivative": "-1/(x*x) + 1",
+      "student_work": "求导正确但极值点代入计算错误",
+      "historical_score": null,
+      "answered_at": "2026-06-01T10:05:00"
+    },
+    {
+      "student_code": "S2024003",
+      "question_code": "Q_EXT_002",
+      "student_answer": 5.0,
+      "student_derivative": "x - 4",
+      "student_work": "导数系数丢了2",
+      "historical_score": 2.0,
+      "answered_at": "2026-06-02T09:30:00"
+    },
+    {
+      "student_code": "S2024004",
+      "question_code": "Q_EXT_003",
+      "student_answer": 1.0,
+      "student_derivative": "1/(x*x)",
+      "student_work": "求导漏掉了商导法则",
+      "historical_score": null,
+      "answered_at": "2026-06-02T14:15:00"
+    },
+    {
+      "student_code": "S2024001",
+      "question_code": "Q_EXT_003",
+      "student_answer": 0.5,
+      "student_derivative": "(1 - ln(x))/(x*x)",
+      "student_work": "导数正确，计算极值时近似误差",
+      "historical_score": 4.0,
+      "answered_at": "2026-06-02T14:20:00"
+    }
+  ]
+}
