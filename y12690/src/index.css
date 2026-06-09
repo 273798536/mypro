@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Source Han Sans', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  background-color: #0F172A;
+  color: #E5E7EB;
+  overflow: hidden;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #1F2937;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #4B5563;
+}
+
+.panel-card {
+  @apply bg-tech-gray/60 border border-gray-700 rounded-lg backdrop-blur-sm;
+}
+
+.btn-primary {
+  @apply bg-industrial-blue hover:bg-blue-800 text-white px-4 py-2 rounded-md font-medium transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md font-medium transition-colors;
+}
+
+.status-badge {
+  @apply px-2 py-0.5 rounded text-xs font-semibold;
+}
