@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>高分子分子量分布处理系统</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>高分子分子量分布处理系统</h1>
+    <nav>
+      <a href="#section-upload">导入</a>
+      <a href="#section-batches">批次列表</a>
+      <a href="#section-anomalies">异常记录</a>
+      <a href="#section-help">使用说明</a>
+      <button id="btn-export-all" class="btn-ghost">导出全部批次</button>
+      <button id="btn-load-samples" class="btn-primary">加载示例数据</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="section-upload" class="card">
+      <h2>1. 导入数据</h2>
+      <p class="hint">支持 .xlsx / .xls / .csv / .txt。需包含<strong>分子量</strong>与<strong>重量分数</strong>两列（列名支持中英文常见写法）。</p>
+      <form id="upload-form" class="form-row">
+        <label>批号 <input type="text" name="batch_no" id="batch_no" required placeholder="例如：PS-20240512-A" /></label>
+        <label>备注 <input type="text" name="note" placeholder="可留空" /></label>
+        <label>
+          批号重复策略
+          <select name="strategy">
+            <option value="merge" selected>合并（保留历史+更新最新）</option>
+            <option value="replace">覆盖</option>
+            <option value="skip">跳过</option>
+          </select>
+        </label>
+        <label class="file-label">选择文件<input type="file" name="file" id="file-input" accept=".xlsx,.xls,.csv,.txt" /></label>
+        <button type="submit" class="btn-primary">导入并计算</button>
+      </form>
+      <div id="upload-msg"></div>
+    </section>
+
+    <section id="section-last-run" class="card hidden">
+      <h2>最近一次处理结果</h2>
+      <div id="last-run-body"></div>
+    </section>
+
+    <section id="section-batches" class="card">
+      <h2>2. 批次列表</h2>
+      <table id="batch-table" class="data-table">
+        <thead>
+          <tr>
+            <th>批号</th><th>最近导入</th><th>导入次数</th>
+            <th>Mn</th><th>Mw</th><th>PDI</th><th>异常</th><th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="section-detail" class="card hidden">
+      <h2>3. 批次详情 <span id="detail-batch-no"></span></h2>
+      <div class="detail-grid">
+        <div class="chart-box">
+          <h3>分子量分布曲线</h3>
+          <canvas id="chart-dist"></canvas>
+        </div>
+        <div class="chart-box">
+          <h3>累积分布</h3>
+          <canvas id="chart-cum"></canvas>
+        </div>
+        <div class="stat-box">
+          <h3>统计结果</h3>
+          <table id="stat-table" class="data-table">
+            <thead><tr><th>指标</th><th>中文</th><th>数值</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="run-box">
+          <h3>处理记录（界面与报告共用）</h3>
+          <table id="run-table" class="data-table">
+            <thead><tr><th>运行号</th><th>时间</th><th>Mn</th><th>Mw</th><th>PDI</th><th>是否重复批号</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="btn-export-batch" class="btn-primary">导出本批次 Excel 报告</button>
+        <button id="btn-retest" class="btn-secondary">查看复测建议</button>
+      </div>
+
+      <div id="retest-box" class="hidden">
+        <h3>复测/核查建议</h3>
+        <div id="retest-list"></div>
+      </div>
+
+      <h3>异常追溯（含安全备注与处理意见）</h3>
+      <div id="anomaly-list"></div>
+    </section>
+
+    <section id="section-anomalies" class="card">
+      <h2>4. 全部异常记录</h2>
+      <table id="anomaly-table" class="data-table">
+        <thead>
+          <tr>
+            <th>异常编号</th><th>批号</th><th>严重程度</th><th>标题</th>
+            <th>描述</th><th>处理建议</th><th>安全备注</th><th>时间</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section id="section-help" class="card">
+      <h2>5. 使用说明</h2>
+      <ol class="help-list">
+        <li><strong>启动</strong>：在项目目录运行 <code>pip install -r requirements.txt</code> 后，执行 <code>python run.py</code>，浏览器打开 <code>http://127.0.0.1:5000</code>。</li>
+        <li><strong>导入</strong>：在顶部填写批号、选择文件，点击"导入并计算"。同一批号可重复导入（默认合并，保留历史）。</li>
+        <li><strong>查看异常</strong>：在批次详情或"全部异常记录"中可见每条异常的描述、处理建议、安全备注，可直接反向追溯到对应批号与运行号。</li>
+        <li><strong>导出结果</strong>：批次详情页"导出本批次 Excel 报告"，或顶部"导出全部批次"。报告中含统计结果、分布曲线数据、历次处理记录、异常说明及批号重复说明。</li>
+      </ol>
+      <p class="hint">界面显示、复测建议、Excel 报告三者均读取同一条处理记录（存储于 <code>data/records.json</code>），不会出现"界面一个数、报告一个数"的情况。</p>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
