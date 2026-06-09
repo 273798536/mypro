@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #e2e8f0;
+  background-color: #0a0f1a;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: 
+    radial-gradient(ellipse at top left, rgba(14, 165, 233, 0.08), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(245, 158, 11, 0.05), transparent 50%),
+    #0a0f1a;
+  min-height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #121a2b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e2d4a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0ea5e9;
+}
+
+/* Canvas grid background */
+.canvas-grid-bg {
+  background-image:
+    linear-gradient(rgba(30, 45, 74, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 45, 74, 0.5) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+@layer components {
+  .btn-control {
+    @apply px-4 py-2 rounded-lg font-mono text-sm font-medium transition-all duration-200 
+           border border-metro-border bg-metro-panel text-metro-text
+           hover:border-metro-primary hover:shadow-glow-primary hover:-translate-y-0.5
+           active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed
+           disabled:hover:shadow-none disabled:hover:translate-y-0;
+  }
+  
+  .btn-primary {
+    @apply bg-metro-primary/20 border-metro-primary text-metro-primary
+           hover:bg-metro-primary/30;
+  }
+  
+  .btn-danger {
+    @apply bg-metro-danger/20 border-metro-danger text-metro-danger
+           hover:bg-metro-danger/30 hover:shadow-glow-danger;
+  }
+  
+  .btn-success {
+    @apply bg-metro-success/20 border-metro-success text-metro-success
+           hover:bg-metro-success/30;
+  }
+  
+  .btn-warning {
+    @apply bg-metro-warning/20 border-metro-warning text-metro-warning
+           hover:bg-metro-warning/30;
+  }
+  
+  .panel {
+    @apply bg-metro-panel border border-metro-border rounded-xl backdrop-blur-sm;
+  }
+  
+  .panel-header {
+    @apply px-4 py-3 border-b border-metro-border flex items-center justify-between;
+  }
+  
+  .panel-title {
+    @apply font-mono text-sm font-semibold text-metro-text uppercase tracking-wider;
+  }
+  
+  .data-label {
+    @apply font-mono text-xs text-metro-muted uppercase tracking-wide;
+  }
+  
+  .data-value {
+    @apply font-mono text-metro-text;
+  }
+  
+  .status-dot {
+    @apply w-2 h-2 rounded-full inline-block;
+  }
+  
+  .anomaly-tag {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono
+           bg-metro-anomaly/20 text-metro-anomaly border border-metro-anomaly/40;
+  }
+}
