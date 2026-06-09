@@ -1,0 +1,2 @@
+[console_scripts]
+polymer-review = polymer_temp_review.cli:main

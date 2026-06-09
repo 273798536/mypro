@@ -1,0 +1,13 @@
+{
+  "total_batches": 3,
+  "direct_use_count": 1,
+  "needs_review_count": 2,
+  "consistent_count": 2,
+  "inconsistent_count": 1,
+  "retest_count": 1,
+  "missing_inputs": [
+    "缺少来源材料 RM-2024-999：请在 materials/ 目录下补充 RM-2024-999.json （包含 material_id, name, lot_no 等字段）",
+    "缺少称量单 W-20240610-999：请在 weighing_records/ 目录下补充 W-20240610-999.json （包含 record_id, material_id, weighed_mass_g 等字段）"
+  ],
+  "generated_at": "2026-06-10T02:53:43.577140"
+}

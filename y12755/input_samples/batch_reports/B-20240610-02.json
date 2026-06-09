@@ -1,0 +1,117 @@
+{
+  "batch_id": "B-20240610-02",
+  "product_name": "聚丙烯酸甲酯 PMA-02",
+  "report_version": 2,
+  "reaction_condition": {
+    "target_temp_c": 80.0,
+    "reaction_time_min": 180,
+    "initiator_type": "BPO",
+    "solvent": "甲苯",
+    "remarks": "温控异常，中段超温"
+  },
+  "temperature_profile": {
+    "target_temp_c": 80.0,
+    "tolerance_plus_c": 2.0,
+    "tolerance_minus_c": 2.0,
+    "points": [
+      {
+        "elapsed_min": 0,
+        "temperature_c": 78.61
+      },
+      {
+        "elapsed_min": 10,
+        "temperature_c": 81.32
+      },
+      {
+        "elapsed_min": 20,
+        "temperature_c": 81.0
+      },
+      {
+        "elapsed_min": 30,
+        "temperature_c": 79.07
+      },
+      {
+        "elapsed_min": 40,
+        "temperature_c": 79.98
+      },
+      {
+        "elapsed_min": 50,
+        "temperature_c": 79.81
+      },
+      {
+        "elapsed_min": 60,
+        "temperature_c": 82.8
+      },
+      {
+        "elapsed_min": 70,
+        "temperature_c": 82.8
+      },
+      {
+        "elapsed_min": 80,
+        "temperature_c": 82.8
+      },
+      {
+        "elapsed_min": 90,
+        "temperature_c": 78.21
+      },
+      {
+        "elapsed_min": 100,
+        "temperature_c": 81.28
+      },
+      {
+        "elapsed_min": 110,
+        "temperature_c": 79.74
+      },
+      {
+        "elapsed_min": 120,
+        "temperature_c": 81.0
+      },
+      {
+        "elapsed_min": 130,
+        "temperature_c": 78.11
+      },
+      {
+        "elapsed_min": 140,
+        "temperature_c": 79.79
+      },
+      {
+        "elapsed_min": 150,
+        "temperature_c": 80.84
+      },
+      {
+        "elapsed_min": 160,
+        "temperature_c": 78.97
+      },
+      {
+        "elapsed_min": 170,
+        "temperature_c": 81.69
+      },
+      {
+        "elapsed_min": 180,
+        "temperature_c": 81.53
+      }
+    ]
+  },
+  "concentration": {
+    "value": 1.15,
+    "unit": "mol/L",
+    "molecular_weight_g_mol": 86.09,
+    "density_g_mL": 0.92
+  },
+  "conclusion": {
+    "passed": true,
+    "summary": "反应温度正常，浓度合格",
+    "reviewer": "王主管",
+    "reviewed_at": "2024-06-10T17:30:00",
+    "needs_retest": false
+  },
+  "source_material_ids": [
+    "RM-2024-001",
+    "RM-2024-002",
+    "RM-2024-003"
+  ],
+  "weighing_record_ids": [
+    "W-20240610-004"
+  ],
+  "generated_at": "2024-06-10T18:30:00"
+}

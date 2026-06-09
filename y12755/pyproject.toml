@@ -1,0 +1,22 @@
+[project]
+name = "polymer-temp-review"
+version = "0.1.0"
+description = "聚合反应温控复盘 CLI 工具 - 批次报告一致性检查、复测建议、浓度换算、批次追踪"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.0.0",
+    "pydantic>=2.0.0",
+    "click>=8.1.0",
+    "openpyxl>=3.1.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+polymer-review = "polymer_temp_review.cli:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["polymer_temp_review*"]

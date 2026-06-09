@@ -1,0 +1,176 @@
+[
+  {
+    "batch_id": "B-20240610-01",
+    "conclusion_status": "direct_use",
+    "consistency_status": "consistent",
+    "retest": {
+      "need_retest": false,
+      "reasons": [],
+      "description": "温控、浓度、溯源均符合要求，结论与条件一致。",
+      "priority": "low"
+    },
+    "trace": {
+      "batch_id": "B-20240610-01",
+      "source_materials": [
+        {
+          "material_id": "RM-2024-001",
+          "name": "丙烯酸甲酯单体",
+          "lot_no": "MA-240601-A",
+          "supplier": "示例化工",
+          "received_date": "2024-06-01T09:30:00"
+        },
+        {
+          "material_id": "RM-2024-002",
+          "name": "BPO引发剂",
+          "lot_no": "BPO-240520-B",
+          "supplier": "示例化工",
+          "received_date": "2024-05-20T14:00:00"
+        },
+        {
+          "material_id": "RM-2024-003",
+          "name": "甲苯溶剂",
+          "lot_no": "TOL-240605-C",
+          "supplier": "示例化工",
+          "received_date": "2024-06-05T10:15:00"
+        }
+      ],
+      "weighing_records": [
+        {
+          "record_id": "W-20240610-001",
+          "material_id": "RM-2024-001",
+          "weighed_mass_g": 120.5,
+          "operator": "张研究员",
+          "timestamp": "2024-06-10T08:15:00"
+        },
+        {
+          "record_id": "W-20240610-002",
+          "material_id": "RM-2024-002",
+          "weighed_mass_g": 1.25,
+          "operator": "张研究员",
+          "timestamp": "2024-06-10T08:20:00"
+        },
+        {
+          "record_id": "W-20240610-003",
+          "material_id": "RM-2024-003",
+          "weighed_mass_g": 80.0,
+          "operator": "张研究员",
+          "timestamp": "2024-06-10T08:25:00"
+        }
+      ],
+      "missing_weighing_record_ids": []
+    },
+    "concentration_normalized": {
+      "value": 485.0,
+      "unit": "mg/mL",
+      "molecular_weight_g_mol": 86.09,
+      "density_g_mL": 0.92
+    },
+    "condition_changed": false,
+    "conclusion_needs_update": false,
+    "issues": [],
+    "warnings": [],
+    "review_time": "2026-06-10T02:53:43.577087"
+  },
+  {
+    "batch_id": "B-20240610-02",
+    "conclusion_status": "needs_review",
+    "consistency_status": "inconsistent",
+    "retest": {
+      "need_retest": true,
+      "reasons": [
+        "temperature_out_of_range",
+        "condition_conclusion_mismatch"
+      ],
+      "description": "温控数据存在异常；反应条件与结论不一致，建议药化研究员复核并决定是否复测。 具体问题: 共 3 个采样点温度超范围，最严重偏离: 82.8°C (目标 80.0°C, 时间点 60min)；结论标记为通过，但温控数据存在超范围点，建议药化研究员确认结论是否需要更新",
+      "priority": "high"
+    },
+    "trace": {
+      "batch_id": "B-20240610-02",
+      "source_materials": [
+        {
+          "material_id": "RM-2024-001",
+          "name": "丙烯酸甲酯单体",
+          "lot_no": "MA-240601-A",
+          "supplier": "示例化工",
+          "received_date": "2024-06-01T09:30:00"
+        },
+        {
+          "material_id": "RM-2024-002",
+          "name": "BPO引发剂",
+          "lot_no": "BPO-240520-B",
+          "supplier": "示例化工",
+          "received_date": "2024-05-20T14:00:00"
+        },
+        {
+          "material_id": "RM-2024-003",
+          "name": "甲苯溶剂",
+          "lot_no": "TOL-240605-C",
+          "supplier": "示例化工",
+          "received_date": "2024-06-05T10:15:00"
+        }
+      ],
+      "weighing_records": [
+        {
+          "record_id": "W-20240610-004",
+          "material_id": "RM-2024-001",
+          "weighed_mass_g": 118.75,
+          "operator": "李研究员",
+          "timestamp": "2024-06-10T13:05:00"
+        }
+      ],
+      "missing_weighing_record_ids": []
+    },
+    "concentration_normalized": {
+      "value": 99.0035,
+      "unit": "mg/mL",
+      "molecular_weight_g_mol": 86.09,
+      "density_g_mL": 0.92
+    },
+    "condition_changed": false,
+    "conclusion_needs_update": true,
+    "issues": [],
+    "warnings": [],
+    "review_time": "2026-06-10T02:53:43.577121"
+  },
+  {
+    "batch_id": "B-20240610-03",
+    "conclusion_status": "needs_review",
+    "consistency_status": "consistent",
+    "retest": {
+      "need_retest": false,
+      "reasons": [],
+      "description": "温控、浓度、溯源均符合要求，结论与条件一致。",
+      "priority": "low"
+    },
+    "trace": {
+      "batch_id": "B-20240610-03",
+      "source_materials": [
+        {
+          "material_id": "RM-2024-001",
+          "name": "丙烯酸甲酯单体",
+          "lot_no": "MA-240601-A",
+          "supplier": "示例化工",
+          "received_date": "2024-06-01T09:30:00"
+        }
+      ],
+      "weighing_records": [],
+      "missing_weighing_record_ids": [
+        "W-20240610-999"
+      ]
+    },
+    "concentration_normalized": {
+      "value": 98.5,
+      "unit": "mg/mL",
+      "molecular_weight_g_mol": 86.09,
+      "density_g_mL": 0.92
+    },
+    "condition_changed": false,
+    "conclusion_needs_update": false,
+    "issues": [
+      "缺少来源材料 RM-2024-999：请在 materials/ 目录下补充 RM-2024-999.json （包含 material_id, name, lot_no 等字段）",
+      "缺少称量单 W-20240610-999：请在 weighing_records/ 目录下补充 W-20240610-999.json （包含 record_id, material_id, weighed_mass_g 等字段）"
+    ],
+    "warnings": [],
+    "review_time": "2026-06-10T02:53:43.577135"
+  }
+]
