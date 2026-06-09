@@ -1,0 +1,37 @@
+{
+  "generated_at": "2026-06-09 19:07:52",
+  "overall_score": 0.5947117690098687,
+  "formula": {
+    "name": "轮廓系数 (Silhouette Coefficient)",
+    "formula_latex": "s(i) = (b(i) - a(i)) / max{a(i), b(i)}",
+    "formula_text": "对于样本 i：s(i) = (到最近其他簇的平均距离 - 簇内平均距离) / 二者较大值",
+    "unit": "无量纲 (ratio, 取值范围 [-1, +1])",
+    "range_interpretation": {
+      "[0.71, 1.00]": "强聚类结构，可信度高",
+      "[0.51, 0.70]": "合理聚类结构，可使用",
+      "[0.26, 0.50]": "弱聚类结构，建议复核",
+      "[ 0.00, 0.25]": "聚类结构不明显，慎用",
+      "[-1.00, -0.01]": "样本可能被错误聚类，需检查"
+    },
+    "applicable_scope": [
+      "样本已被分配到 ≥ 2 个簇",
+      "特征为连续型数值变量",
+      "距离度量采用欧氏距离（本工具默认）",
+      "样本量 ≥ 2，且每个簇至少有 1 个样本"
+    ],
+    "failure_modes": [
+      "单簇数据 → 无法计算 b(i)，返回 NaN",
+      "孤立样本 (簇大小=1) → a(i) 无定义，s(i)=0",
+      "量纲差异过大 → 高量纲特征主导距离，结果失真"
+    ],
+    "references": [
+      "Peter J. Rousseeuw (1987). Silhouettes: a graphical aid to the interpretation and validation of cluster analysis."
+    ]
+  },
+  "status_counts": {
+    "usable": 7,
+    "pending": 2,
+    "recollect": 1
+  },
+  "history_trend": "无历史数据"
+}

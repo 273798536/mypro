@@ -1,0 +1,5 @@
+record_id,cluster_label,math_score,math_score_unit,literacy_score,literacy_score_unit,source_ref
+B001,1,85.5,分,76.2,,MATH-B-001
+B002,1,91.0,,82.1,分,MATH-B-002
+B003,2,62.4,分,58.9,分,MATH-B-003
+B004,2,not_a_number,分,54.2,分,MATH-B-004
