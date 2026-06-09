@@ -1,0 +1,13 @@
+{
+  "review_id": "rv_6733e9bfa32b",
+  "record_id": "A001",
+  "question_id": "Q001",
+  "batch_id": "BATCH-2026-06",
+  "status": "pass",
+  "error_analysis": null,
+  "previous_status": "pass",
+  "affected_by_late_answer": false,
+  "late_answer_record_ids": [],
+  "reviewed_at": "2026-06-09T18:10:47.003038",
+  "run_id": "run_7afb300db17f"
+}

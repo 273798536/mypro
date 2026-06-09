@@ -1,0 +1,58 @@
+{
+  "review_id": "rv_fda0b4b01e39",
+  "record_id": "A002",
+  "question_id": "Q002",
+  "batch_id": "BATCH-2026-06",
+  "status": "rejected",
+  "error_analysis": {
+    "analysis_id": "ea_17938ab724c9",
+    "question_id": "Q002",
+    "error_type": "approximation_error",
+    "error_magnitude": 0.16666666666666666,
+    "threshold": 0.05,
+    "details": "近似误差过大：相对误差 16.6667%，超过阈值 5.00%；绝对误差 0.500000，容差 0.010000。",
+    "counter_examples": [
+      {
+        "example_id": "ce_f8a4700f4291",
+        "description": "当前作答与标准答案的直接对比",
+        "input_values": {
+          "student_answer": 2.5,
+          "correct_answer": 3.0
+        },
+        "expected": 3.0,
+        "actual": 2.5,
+        "error_magnitude": 0.5,
+        "generated_at": "2026-06-09T18:10:47.003475"
+      },
+      {
+        "example_id": "ce_5ea4739bbe6e",
+        "description": "边界内合法示例（误差减半仍在容差内）",
+        "input_values": {
+          "candidate_answer": 2.995
+        },
+        "expected": 3.0,
+        "actual": 2.995,
+        "error_magnitude": 0.004999999999999893,
+        "generated_at": "2026-06-09T18:10:47.003488"
+      },
+      {
+        "example_id": "ce_869b906c6bdf",
+        "description": "误差缩小至10%时的作答对比",
+        "input_values": {
+          "scaled_answer": 2.95
+        },
+        "expected": 3.0,
+        "actual": 2.95,
+        "error_magnitude": 0.04999999999999982,
+        "generated_at": "2026-06-09T18:10:47.003497"
+      }
+    ],
+    "analyzed_at": "2026-06-09T18:10:47.003514",
+    "version": 3
+  },
+  "previous_status": "rejected",
+  "affected_by_late_answer": false,
+  "late_answer_record_ids": [],
+  "reviewed_at": "2026-06-09T18:10:47.003519",
+  "run_id": "run_7afb300db17f"
+}

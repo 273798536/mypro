@@ -1,0 +1,25 @@
+{
+  "review_id": "rv_375bfe14661f",
+  "record_id": "A003",
+  "question_id": "Q003",
+  "batch_id": "BATCH-2026-06",
+  "status": "affected",
+  "error_analysis": {
+    "analysis_id": "ea_ab71d1612e34",
+    "question_id": "Q003",
+    "error_type": "approximation_error",
+    "error_magnitude": 0.020000000000000018,
+    "threshold": 0.02,
+    "details": "超出容差范围：绝对误差 0.020000，容差上限 0.020000。",
+    "counter_examples": [],
+    "analyzed_at": "2026-06-09T18:10:47.004221",
+    "version": 3
+  },
+  "previous_status": "pending",
+  "affected_by_late_answer": true,
+  "late_answer_record_ids": [
+    "A003"
+  ],
+  "reviewed_at": "2026-06-09T18:10:47.004228",
+  "run_id": "run_7afb300db17f"
+}

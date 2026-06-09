@@ -1,0 +1,25 @@
+[
+  {
+    "record_id": "A001",
+    "question_id": "Q001",
+    "student_answer": 9.8696,
+    "submitted_at": "2026-06-01T10:00:00",
+    "batch_id": "BATCH-2026-06"
+  },
+  {
+    "record_id": "A002",
+    "question_id": "Q002",
+    "student_answer": 2.5,
+    "submitted_at": "2026-06-01T10:05:00",
+    "batch_id": "BATCH-2026-06"
+  },
+  {
+    "record_id": "A003",
+    "question_id": "Q003",
+    "student_answer": 1.70,
+    "submitted_at": "2026-06-01T10:10:00",
+    "batch_id": "BATCH-2026-06",
+    "is_late": true,
+    "arrived_at": "2026-06-09T09:00:00"
+  }
+]

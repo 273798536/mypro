@@ -1,0 +1,51 @@
+{
+  "runs": [
+    {
+      "run_id": "run_2f7b866d46d7",
+      "started_at": "2026-06-09T18:10:13.551349",
+      "input_dir": "/Users/mac/pro/solo/workspaces/y12714/sample/input",
+      "finished_at": "2026-06-09T18:10:13.552477",
+      "stats": {
+        "total": 3,
+        "passed": 1,
+        "pending": 1,
+        "rejected": 1,
+        "affected": 0,
+        "new": 3,
+        "updated": 0
+      }
+    },
+    {
+      "run_id": "run_128c84e7e6f2",
+      "started_at": "2026-06-09T18:10:23.187356",
+      "input_dir": "/Users/mac/pro/solo/workspaces/y12714/sample/input",
+      "finished_at": "2026-06-09T18:10:23.188701",
+      "stats": {
+        "total": 3,
+        "passed": 1,
+        "pending": 1,
+        "rejected": 1,
+        "affected": 0,
+        "new": 0,
+        "updated": 3
+      }
+    },
+    {
+      "run_id": "run_7afb300db17f",
+      "started_at": "2026-06-09T18:10:47.002285",
+      "input_dir": "/Users/mac/pro/solo/workspaces/y12714/sample/input",
+      "finished_at": "2026-06-09T18:10:47.004640",
+      "stats": {
+        "total": 3,
+        "passed": 1,
+        "pending": 0,
+        "rejected": 1,
+        "affected": 1,
+        "new": 0,
+        "updated": 3
+      }
+    }
+  ],
+  "last_run_id": "run_7afb300db17f",
+  "processed_record_ids": []
+}

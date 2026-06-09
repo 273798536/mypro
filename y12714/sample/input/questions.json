@@ -1,0 +1,20 @@
+[
+  {
+    "question_id": "Q001",
+    "content": "计算 3.14159 的平方，保留四位小数。",
+    "correct_answer": 9.8696,
+    "tolerance": 0.0001
+  },
+  {
+    "question_id": "Q002",
+    "content": "求解方程 x^2 - 5x + 6 = 0 的较大实根。",
+    "correct_answer": 3.0,
+    "tolerance": 0.01
+  },
+  {
+    "question_id": "Q003",
+    "content": "统计某班级的平均身高（单位：米）。",
+    "correct_answer": 1.68,
+    "tolerance": 0.02
+  }
+]
