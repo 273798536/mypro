@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>胚胎发育阶段立体卡</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <header class="header">
+            <h1>胚胎发育阶段立体卡</h1>
+            <div class="status-badge" id="statusBadge">正常运行</div>
+        </header>
+        
+        <div class="main-container">
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>发育阶段</h3>
+                    <div class="stage-list" id="stageList"></div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>剖切控制</h3>
+                    <div class="control-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="clipXEnabled"> X轴剖切
+                        </label>
+                        <input type="range" id="clipX" min="-2" max="2" step="0.01" value="0" class="clip-slider" disabled>
+                        <span class="clip-value" id="clipXValue">0</span>
+                    </div>
+                    <div class="control-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="clipYEnabled"> Y轴剖切
+                        </label>
+                        <input type="range" id="clipY" min="-2" max="2" step="0.01" value="0" class="clip-slider" disabled>
+                        <span class="clip-value" id="clipYValue">0</span>
+                    </div>
+                    <div class="control-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="clipZEnabled"> Z轴剖切
+                        </label>
+                        <input type="range" id="clipZ" min="-2" max="2" step="0.01" value="0" class="clip-slider" disabled>
+                        <span class="clip-value" id="clipZValue">0</span>
+                    </div>
+                    <div class="control-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="clipEdgeHighlight" checked> 剖切边缘高亮
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>时间回放</h3>
+                    <div class="timeline-container">
+                        <input type="range" id="timeline" min="0" max="100" step="1" value="0">
+                        <div class="timeline-controls">
+                            <button id="playBtn">播放</button>
+                            <button id="pauseBtn">暂停</button>
+                            <button id="resetBtn">重置</button>
+                        </div>
+                        <div class="timeline-info">
+                            <span>当前阶段：</span>
+                            <span id="currentStage">第1阶段</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>筛选</h3>
+                    <div class="filter-group">
+                        <label><input type="checkbox" class="filter-checkbox" value="organ" checked> 器官</label>
+                        <label><input type="checkbox" class="filter-checkbox" value="tissue" checked> 组织</label>
+                        <label><input type="checkbox" class="filter-checkbox" value="cell" checked> 细胞</label>
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>测试场景</h3>
+                    <button id="testDuplicateImport">重复导入测试</button>
+                </div>
+            </aside>
+            
+            <main class="main-content">
+                <div id="canvas-container"></div>
+                
+                <div class="object-details" id="objectDetails">
+                    <div class="details-header">
+                        <h3>对象明细</h3>
+                        <button id="closeDetails">×</button>
+                    </div>
+                    <div class="details-content" id="detailsContent">
+                        <p class="hint-text">点击3D模型中的对象查看详细信息</p>
+                    </div>
+                    <div class="collision-section" id="collisionSection">
+                        <div class="collision-header">
+                            <span>碰撞检测</span>
+                            <span class="collision-count" id="collisionCount">0</span>
+                        </div>
+                        <div class="collision-list" id="collisionList"></div>
+                    </div>
+                </div>
+                
+                <div class="conclusion-panel" id="conclusionPanel">
+                    <div class="panel-header">
+                        <h3>最终结论</h3>
+                        <button id="closeConclusion">×</button>
+                    </div>
+                    <div class="panel-content" id="conclusionContent"></div>
+                </div>
+            </main>
+            
+            <aside class="right-sidebar">
+                <div class="sidebar-section">
+                    <h3>风险备注</h3>
+                    <div class="risk-list" id="riskList"></div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>最终结论</h3>
+                    <div class="conclusion-list" id="conclusionList"></div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <h3>设备坐标</h3>
+                    <div class="coordinate-list" id="coordinateList"></div>
+                    <button id="validateCoordinates" class="validate-btn">校验坐标完整性</button>
+                </div>
+            </aside>
+        </div>
+        
+        <div class="error-notification" id="errorNotification">
+            <div class="error-content">
+                <span class="error-icon">⚠️</span>
+                <span class="error-message" id="errorMessage"></span>
+                <button class="error-close" id="errorClose">×</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
