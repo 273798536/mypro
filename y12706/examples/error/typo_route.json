@@ -1,0 +1,18 @@
+{
+  "graph_id": "typo_route",
+  "nodes": ["宿舍", "一教", "二教", "三教", "实验室"],
+  "edges": [
+    {"from": "宿舍", "to": "一教", "weight": 5},
+    {"from": "一教", "to": "二教", "weight": 2},
+    {"from": "二教", "to": "三教", "weight": 2},
+    {"from": "三教", "to": "实验室", "weight": 4},
+    {"from": "宿舍", "to": "二教", "weight": 8},
+    {"from": "一教", "to": "三教", "weight": 5}
+  ],
+  "source": "宿舍",
+  "target": "实验室",
+  "expected_distance": 10.5,
+  "expected_path": ["宿舍", "一教", "二教", "三教", "实验室"],
+  "tolerance": 1e-6,
+  "notes": "近似误差：正确最短距离应为 13 (5+2+2+4)，但材料里手滑写成 10.5，像平时混进来的计算笔误"
+}

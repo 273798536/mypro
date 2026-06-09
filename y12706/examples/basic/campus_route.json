@@ -1,0 +1,19 @@
+{
+  "graph_id": "campus_route",
+  "nodes": ["东门", "图书馆", "教学楼A", "教学楼B", "食堂", "西门"],
+  "edges": [
+    {"from": "东门", "to": "图书馆", "weight": 3, "label": "主路"},
+    {"from": "图书馆", "to": "教学楼A", "weight": 2, "label": "连廊"},
+    {"from": "图书馆", "to": "教学楼B", "weight": 4, "label": "支路"},
+    {"from": "教学楼A", "to": "食堂", "weight": 1, "label": "捷径"},
+    {"from": "教学楼B", "to": "食堂", "weight": 2, "label": "主路"},
+    {"from": "食堂", "to": "西门", "weight": 3, "label": "主路"},
+    {"from": "教学楼A", "to": "教学楼B", "weight": 1, "label": "连廊"}
+  ],
+  "source": "东门",
+  "target": "西门",
+  "expected_distance": 9,
+  "expected_path": ["东门", "图书馆", "教学楼A", "食堂", "西门"],
+  "tolerance": 1e-6,
+  "notes": "排课最常用的校园路径示例，5 条边、无负权"
+}

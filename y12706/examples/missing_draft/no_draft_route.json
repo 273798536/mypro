@@ -1,0 +1,13 @@
+{
+  "graph_id": "no_draft_route",
+  "nodes": ["A", "B", "C", "D"],
+  "edges": [
+    {"from": "A", "to": "B", "weight": 1},
+    {"from": "B", "to": "C", "weight": 2},
+    {"from": "C", "to": "D", "weight": 3}
+  ],
+  "source": "A",
+  "target": "D",
+  "expected_distance": 6,
+  "notes": "草稿缺失：该图没有对应的 _draft.json，应先算完再把缺口列给老师补"
+}

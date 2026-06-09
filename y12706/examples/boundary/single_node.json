@@ -1,0 +1,10 @@
+{
+  "graph_id": "single_node",
+  "nodes": ["教室301"],
+  "edges": [],
+  "source": "教室301",
+  "target": "教室301",
+  "expected_distance": 0,
+  "expected_path": ["教室301"],
+  "notes": "边界：单节点，源=目标，距离为 0（与 empty_graph 结果不同）"
+}

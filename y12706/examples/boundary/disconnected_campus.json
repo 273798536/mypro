@@ -1,0 +1,11 @@
+{
+  "graph_id": "disconnected_campus",
+  "nodes": ["东门", "图书馆", "北食堂", "北宿舍"],
+  "edges": [
+    {"from": "东门", "to": "图书馆", "weight": 2},
+    {"from": "北食堂", "to": "北宿舍", "weight": 3}
+  ],
+  "source": "东门",
+  "target": "北宿舍",
+  "notes": "边界：南北校区断开，从东门到北宿舍不可达（结果与前两个边界都不同）"
+}

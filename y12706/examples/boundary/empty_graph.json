@@ -1,0 +1,8 @@
+{
+  "graph_id": "empty_graph",
+  "nodes": [],
+  "edges": [],
+  "source": null,
+  "target": null,
+  "notes": "边界：空集合，没有任何节点和边，预期计算失败"
+}
