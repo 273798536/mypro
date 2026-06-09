@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #E2E8F0;
+  background-color: #0A1628;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-image:
+    linear-gradient(rgba(0, 180, 216, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 180, 216, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-color: #0A1628;
+}
+
+::selection {
+  background-color: rgba(0, 180, 216, 0.3);
+  color: #F8FAFC;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F2540;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E3F6B;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00B4D8;
+}
+
+@layer utilities {
+  .duplicate-overlay {
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(230, 57, 70, 0.15),
+      rgba(230, 57, 70, 0.15) 6px,
+      transparent 6px,
+      transparent 14px
+    );
+    background-size: 20px 20px;
+  }
+
+  .glass-panel {
+    background: rgba(15, 37, 64, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 180, 216, 0.15);
+  }
+
+  .text-shadow-cyan {
+    text-shadow: 0 0 8px rgba(0, 180, 216, 0.5);
+  }
+}
