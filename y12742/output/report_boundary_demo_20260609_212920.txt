@@ -1,0 +1,41 @@
+赛事积分排名稳定性 - 批次报告
+批次标签: boundary_demo
+批次ID: 1
+创建时间: 2026-06-09T21:28:24
+源文件: samples/teams_boundary.csv
+备注: 建模社验收批次-含参数表边界样例除零边界
+报告生成时间: 2026-06-09T21:29:20
+
+============================================================
+批次 1 误差与稳定性解释
+============================================================
+队伍数: 13
+警告阈值: 0.15
+警告记录数: 5 (38.46%)
+平均误差幅度: 0.0769
+最大误差幅度: 0.3077
+平均稳定性指数: 0.9583
+最低稳定性指数: 0.8333
+平均排名波动(绝对值): 1.00
+最大排名波动(绝对值): 4
+
+警告记录明细:
+  - draft_id=3 队伍C_同分边界1: 原始排名=3→调整后=5 (delta=2), 误差=0.1538, 稳定性=0.9167, 状态=pending
+  - draft_id=4 队伍D_同分边界2: 原始排名=3→调整后=5 (delta=2), 误差=0.1538, 稳定性=0.9167, 状态=pending
+  - draft_id=5 队伍E_同分边界3: 原始排名=3→调整后=5 (delta=2), 误差=0.1538, 稳定性=0.9167, 状态=pending
+  - draft_id=8 队伍H_排名跳跃大_误差过大: 原始排名=12→调整后=8 (delta=-4), 误差=0.3077, 稳定性=0.8333, 状态=reviewing
+  - draft_id=11 队伍K_负分截断: 原始排名=11→调整后=13 (delta=2), 误差=0.1538, 稳定性=0.9167, 状态=pending
+
+参数表:
+  - score_weight = 0.6
+  - rank_weight = 0.4
+  - stability_half_window = 2.0
+  - warning_error_threshold = 0.15
+  - tie_break_method = 1.0
+============================================================
+处理痕迹 (run_records):
+  [2026-06-09T21:28:24] phase=create_batch operator=assistant detail=tag=boundary_demo, source=samples/teams_boundary.csv
+  [2026-06-09T21:28:32] phase=import_teams operator=assistant detail=file=teams_boundary.csv, count=13
+  [2026-06-09T21:28:32] phase=import_params operator=assistant detail=file=params_boundary.csv, keys=['score_weight', 'rank_weight', 'stability_half_window', 'warning_error_threshold', 'tie_break_method']
+  [2026-06-09T21:28:38] phase=run_calculation operator=assistant detail=teams=13, threshold=0.15
+  [2026-06-09T21:29:00] phase=update_review operator=assistant detail=draft_id=8: pending -> reviewing, reviewer=TA张老师

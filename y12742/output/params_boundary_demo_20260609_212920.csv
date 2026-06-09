@@ -1,0 +1,6 @@
+﻿param_key,param_value,description
+score_weight,0.6,
+rank_weight,0.4,
+stability_half_window,2.0,
+warning_error_threshold,0.15,
+tie_break_method,1.0,
