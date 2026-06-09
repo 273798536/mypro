@@ -1,0 +1,2 @@
+[console_scripts]
+chemeq = chemeq_balancer.cli:cli

@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chemeq-balancer"
+version = "1.0.0"
+description = "化学方程式配平 CLI 工具 - 面向药化课题组的批次报告管理系统"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    {name = "药化课题组工具链"}
+]
+keywords = ["chemistry", "equation", "balancer", "cli", "batch-report"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+dependencies = [
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "numpy>=1.24.0",
+    "sympy>=1.12",
+    "pandas>=2.0.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+chemeq = "chemeq_balancer.cli:cli"
+
+[tool.setuptools.packages.find]
+include = ["chemeq_balancer*"]
+
+[tool.setuptools.package-data]
+chemeq_balancer = ["examples/*.json", "examples/*.csv"]

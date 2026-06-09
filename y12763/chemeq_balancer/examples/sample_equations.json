@@ -1,0 +1,62 @@
+{
+  "_comment": "示例方程式集 - 用于快速测试 chemeq balance 子命令",
+  "examples": [
+    {
+      "name": "氢气燃烧",
+      "equation": "H2 + O2 -> H2O",
+      "expected_balanced": "2H2 + O2 -> 2H2O",
+      "difficulty": "简单",
+      "tags": ["无机", "燃烧"]
+    },
+    {
+      "name": "甲烷完全燃烧",
+      "equation": "CH4 + O2 -> CO2 + H2O",
+      "expected_balanced": "CH4 + 2O2 -> CO2 + 2H2O",
+      "difficulty": "简单",
+      "tags": ["有机", "燃烧"]
+    },
+    {
+      "name": "酸碱中和 (氢氧化钙+盐酸)",
+      "equation": "Ca(OH)2 + HCl -> CaCl2 + H2O",
+      "expected_balanced": "Ca(OH)2 + 2HCl -> CaCl2 + 2H2O",
+      "difficulty": "简单",
+      "tags": ["无机", "中和", "括号"]
+    },
+    {
+      "name": "高锰酸钾氧化浓盐酸",
+      "equation": "KMnO4 + HCl -> KCl + MnCl2 + Cl2 + H2O",
+      "expected_balanced": "2KMnO4 + 16HCl -> 2KCl + 2MnCl2 + 5Cl2 + 8H2O",
+      "difficulty": "中等",
+      "tags": ["无机", "氧化还原"]
+    },
+    {
+      "name": "乙醇燃烧",
+      "equation": "C2H5OH + O2 -> CO2 + H2O",
+      "expected_balanced": "C2H5OH + 3O2 -> 2CO2 + 3H2O",
+      "difficulty": "简单",
+      "tags": ["有机", "燃烧"]
+    },
+    {
+      "name": "葡萄糖完全氧化",
+      "equation": "C6H12O6 + O2 -> CO2 + H2O",
+      "expected_balanced": "C6H12O6 + 6O2 -> 6CO2 + 6H2O",
+      "difficulty": "中等",
+      "tags": ["生化", "呼吸作用"]
+    },
+    {
+      "name": "合成氨",
+      "equation": "N2 + H2 -> NH3",
+      "expected_balanced": "N2 + 3H2 -> 2NH3",
+      "difficulty": "简单",
+      "tags": ["无机", "工业合成"]
+    },
+    {
+      "name": "硫酸亚铁+酸性高锰酸钾",
+      "equation": "FeSO4 + KMnO4 + H2SO4 -> Fe2(SO4)3 + K2SO4 + MnSO4 + H2O",
+      "expected_balanced": "10FeSO4 + 2KMnO4 + 8H2SO4 -> 5Fe2(SO4)3 + K2SO4 + 2MnSO4 + 8H2O",
+      "difficulty": "困难",
+      "tags": ["无机", "氧化还原", "多物质"]
+    }
+  ],
+  "usage": "chemeq balance 'H2 + O2 -> H2O'"
+}
