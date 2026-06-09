@@ -1,0 +1,35 @@
+[
+  {
+    "question_id": "QHIST",
+    "student_id": "SH1",
+    "run_id": "20260609_194145_a55529",
+    "run_timestamp": "2026-06-09T19:41:45.380164",
+    "params": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "alternative": "two-sided",
+      "allocation_ratio": 1.0,
+      "calc_mode": "sample_size",
+      "p1": 0.5,
+      "p2": 0.65
+    },
+    "result_summary": {
+      "effect_size": -0.3046926540153976,
+      "alpha": 0.05,
+      "power": 0.8,
+      "n1": 169.08835645323907,
+      "n2": 169.08835645323907,
+      "sample_size": 169.08835645323907,
+      "alternative": "two-sided",
+      "notes": [
+        "效应量 h = -0.3047（Cohen's h）",
+        "双侧检验"
+      ]
+    },
+    "editor_note": "需要补充样本量计算过程",
+    "resolution": "approved",
+    "warnings": [],
+    "extrapolation_warning": "",
+    "error_msg": ""
+  }
+]

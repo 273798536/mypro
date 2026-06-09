@@ -1,0 +1,215 @@
+[
+  {
+    "question_id": "Q1001",
+    "student_id": "S001",
+    "run_id": "20260609_194535_8bf0ea",
+    "run_timestamp": "2026-06-09T19:45:35.129352",
+    "params": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "alternative": "two-sided",
+      "allocation_ratio": 1.0,
+      "calc_mode": "sample_size",
+      "p1": 0.5,
+      "p2": 0.0005
+    },
+    "result_summary": {
+      "effect_size": 1.5260712396261633,
+      "alpha": 0.05,
+      "power": 0.8,
+      "n1": 6.740437014924981,
+      "n2": 6.740437014924981,
+      "sample_size": 6.740437014924981,
+      "alternative": "two-sided",
+      "notes": [
+        "效应量 h = 1.5261（Cohen's h）",
+        "双侧检验"
+      ]
+    },
+    "editor_note": "",
+    "resolution": "warning",
+    "warnings": [
+      "p2=0.0005 低于推荐下限 0.001，属于外推越界，结果需谨慎解读"
+    ],
+    "extrapolation_warning": "p2=0.0005 低于推荐下限 0.001，属于外推越界，结果需谨慎解读",
+    "error_msg": ""
+  },
+  {
+    "question_id": "Q1002",
+    "student_id": "S002",
+    "run_id": "20260609_194535_8bf0ea",
+    "run_timestamp": "2026-06-09T19:45:35.129407",
+    "params": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "alternative": "two-sided",
+      "allocation_ratio": 1.0,
+      "calc_mode": "sample_size",
+      "p1": 0.9995,
+      "p2": 0.8
+    },
+    "result_summary": {
+      "effect_size": 0.8825701308328857,
+      "alpha": 0.05,
+      "power": 0.8,
+      "n1": 20.15297747737046,
+      "n2": 20.15297747737046,
+      "sample_size": 20.15297747737046,
+      "alternative": "two-sided",
+      "notes": [
+        "效应量 h = 0.8826（Cohen's h）",
+        "双侧检验"
+      ]
+    },
+    "editor_note": "",
+    "resolution": "warning",
+    "warnings": [
+      "p1=0.9995 高于推荐上限 0.999，属于外推越界，结果需谨慎解读"
+    ],
+    "extrapolation_warning": "p1=0.9995 高于推荐上限 0.999，属于外推越界，结果需谨慎解读",
+    "error_msg": ""
+  },
+  {
+    "question_id": "Q1003",
+    "student_id": "S003",
+    "run_id": "20260609_194535_8bf0ea",
+    "run_timestamp": "2026-06-09T19:45:35.129414",
+    "params": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "alternative": "two-sided",
+      "allocation_ratio": 1.0,
+      "calc_mode": "sample_size",
+      "delta": 0.5,
+      "sd": 0.0005
+    },
+    "result_summary": {
+      "effect_size": 1000.0,
+      "alpha": 0.05,
+      "power": 0.8,
+      "n1": 1.5697759468698175e-05,
+      "n2": 1.5697759468698175e-05,
+      "sample_size": 1.5697759468698175e-05,
+      "alternative": "two-sided",
+      "notes": [
+        "效应量 d = 1000.0000（Cohen's d）"
+      ]
+    },
+    "editor_note": "",
+    "resolution": "warning",
+    "warnings": [
+      "sd=0.0005 低于推荐下限 0.001，属于外推越界，结果需谨慎解读"
+    ],
+    "extrapolation_warning": "sd=0.0005 低于推荐下限 0.001，属于外推越界，结果需谨慎解读",
+    "error_msg": ""
+  },
+  {
+    "question_id": "Q1004",
+    "student_id": "S004",
+    "run_id": "20260609_194535_8bf0ea",
+    "run_timestamp": "2026-06-09T19:45:35.129419",
+    "params": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "alternative": "two-sided",
+      "allocation_ratio": 1.0,
+      "calc_mode": "sample_size",
+      "p1": 0.5,
+      "p2": 0.6
+    },
+    "result_summary": {
+      "effect_size": -0.20135792079033066,
+      "alpha": 0.05,
+      "power": 0.8,
+      "n1": 387.1686945387143,
+      "n2": 387.1686945387143,
+      "sample_size": 387.1686945387143,
+      "alternative": "two-sided",
+      "notes": [
+        "效应量 h = -0.2014（Cohen's h）",
+        "双侧检验"
+      ]
+    },
+    "editor_note": "",
+    "resolution": "success",
+    "warnings": [],
+    "extrapolation_warning": "",
+    "error_msg": ""
+  },
+  {
+    "question_id": "Q1005",
+    "student_id": "S005",
+    "run_id": "20260609_194535_8bf0ea",
+    "run_timestamp": "2026-06-09T19:45:35.129424",
+    "params": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "alternative": "two-sided",
+      "allocation_ratio": 1.0,
+      "calc_mode": "sample_size",
+      "delta": 0.5,
+      "sd": 1.0
+    },
+    "result_summary": {
+      "effect_size": 0.5,
+      "alpha": 0.05,
+      "power": 0.8,
+      "n1": 62.79103787479271,
+      "n2": 62.79103787479271,
+      "sample_size": 62.79103787479271,
+      "alternative": "two-sided",
+      "notes": [
+        "效应量 d = 0.5000（Cohen's d）"
+      ]
+    },
+    "editor_note": "",
+    "resolution": "success",
+    "warnings": [],
+    "extrapolation_warning": "",
+    "error_msg": ""
+  },
+  {
+    "question_id": "Q9999",
+    "student_id": "S999",
+    "run_id": "20260609_194535_8bf0ea",
+    "run_timestamp": "2026-06-09T19:45:35.129429",
+    "params": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "alternative": "two-sided",
+      "allocation_ratio": 1.0,
+      "calc_mode": "sample_size",
+      "p2": 0.6
+    },
+    "result_summary": {},
+    "editor_note": "",
+    "resolution": "missing_data",
+    "warnings": [
+      "p1"
+    ],
+    "extrapolation_warning": "",
+    "error_msg": "缺少必需列: p1"
+  },
+  {
+    "question_id": "Q9998",
+    "student_id": "S998",
+    "run_id": "20260609_194535_8bf0ea",
+    "run_timestamp": "2026-06-09T19:45:35.129432",
+    "params": {
+      "alpha": 0.05,
+      "power": 0.8,
+      "alternative": "two-sided",
+      "allocation_ratio": 1.0,
+      "calc_mode": "sample_size",
+      "delta": 0.5
+    },
+    "result_summary": {},
+    "editor_note": "",
+    "resolution": "missing_data",
+    "warnings": [
+      "sd"
+    ],
+    "extrapolation_warning": "",
+    "error_msg": "缺少必需列: sd"
+  }
+]
