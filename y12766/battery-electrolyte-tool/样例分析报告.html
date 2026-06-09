@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>电池电解液配比实验 - 谱图复核分析报告</title>
+<style>
+    body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+           max-width: 1100px; margin: 20px auto; padding: 0 20px; color: #222; line-height: 1.6; }
+    h1 { color: #1a5276; border-bottom: 3px solid #2980b9; padding-bottom: 8px; }
+    h2 { color: #2980b9; margin-top: 30px; }
+    h3 { color: #2c3e50; }
+    .subtitle { color: #7f8c8d; font-size: 0.85em; font-weight: normal; }
+    .summary-card { background: #f8f9fa; border-left: 4px solid #2980b9;
+                    padding: 15px 20px; border-radius: 4px; margin: 15px 0; }
+    .overlap-card { background: #fef5e7; border-left-color: #e67e22; }
+    .changed-card { background: #fdedec; border-left-color: #e74c3c; }
+    .normal-card { background: #eafaf1; border-left-color: #27ae60; }
+    .warning-card { background: #fef9e7; border-left: 4px solid #f39c12;
+                    padding: 15px 20px; border-radius: 4px; margin: 15px 0; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 12px;
+             font-weight: bold; font-size: 0.9em; }
+    .badge.changed { background: #e74c3c; color: white; }
+    .badge.overlap { background: #e67e22; color: white; }
+    .badge.normal  { background: #27ae60; color: white; }
+    .data-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    .data-table th, .data-table td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+    .data-table th { background: #2980b9; color: white; }
+    .data-table tr:nth-child(even) { background: #f8f9fa; }
+    .material-name { font-weight: bold; color: #c0392b; }
+    .diff-before { color: #7f8c8d; text-decoration: line-through; }
+    .diff-after  { color: #e74c3c; font-weight: bold; }
+    .retest-box { background: #fdfefe; border: 1px dashed #bdc3c7;
+                  padding: 12px 16px; border-radius: 4px; margin: 10px 0; white-space: pre-line; }
+    .formula-tag { display: inline-block; background: #d6eaf8; padding: 2px 8px;
+                   border-radius: 4px; margin: 2px; font-size: 0.9em; }
+    .problem-tag { display: inline-block; background: #f5b7b1; color: #922b21;
+                   padding: 2px 8px; border-radius: 4px; margin: 2px; font-size: 0.85em; }
+</style>
+</head>
+<body>
+<h1>电池电解液配比实验 - 谱图复核分析报告</h1>
+<p class="subtitle">面向环境监测员与课题组，自动整合旧表、谱图、备注、反应条件</p>
+        
+
+        <div class="summary-card">
+            <h2>分析总览</h2>
+            <p><strong>分析时间:</strong> 2026-06-10 04:34:59</p>
+            <p><strong>实验记录总数:</strong> 6 条</p>
+            <p><strong>复核后结论有变化:</strong>
+                <span class="badge changed">6</span> 条
+                (占 100.0% 当 6>0 时)
+            </p>
+            <p><strong>数据加载警告:</strong> 5 条</p>
+        </div>
+        
+
+            <div class="summary-card overlap-card">
+                <h2>谱峰重叠涉及材料总览 <span class="subtitle">（课题组一眼看出卡在哪）</span></h2>
+                <table class="data-table">
+                    <tr><th>材料名称</th><th>涉及样品数</th><th>涉及重叠峰位数</th><th>备注</th></tr>
+            
+
+                <tr>
+                    <td class="material-name">DMC</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>SAMP-004</td>
+                </tr>
+                
+
+                <tr>
+                    <td class="material-name">EC</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>SAMP-004</td>
+                </tr>
+                
+
+                <tr>
+                    <td class="material-name">EMC</td>
+                    <td>2</td>
+                    <td>3</td>
+                    <td>SAMP-004, SAMP-006</td>
+                </tr>
+                
+
+                <tr>
+                    <td class="material-name">FEC</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>SAMP-005</td>
+                </tr>
+                
+
+                <tr>
+                    <td class="material-name">LiFSI</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>SAMP-006</td>
+                </tr>
+                
+
+                <tr>
+                    <td class="material-name">LiPF6</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>SAMP-006</td>
+                </tr>
+                
+
+                <tr>
+                    <td class="material-name">LiTFSI</td>
+                    <td>1</td>
+                    <td>2</td>
+                    <td>SAMP-006</td>
+                </tr>
+                
+</table></div>
+
+            <div class="warning-card">
+                <h2>数据加载警告</h2>
+                <ul>
+            
+<li>样品SAMP-001: 温度漏填单位，默认按°C处理 (值=25.0)</li>
+<li>温度格式异常: 'abc'</li>
+<li>样品SAMP-004: 温度漏填单位，默认按°C处理 (值=30.0)</li>
+<li>样品SAMP-005: 温度漏填单位，默认按°C处理 (值=25.0)</li>
+<li>样品SAMP-006: 温度漏填单位，默认按°C处理 (值=27.0)</li>
+</ul></div>
+<div class="summary-card changed-card">
+<h3>样品 SAMP-001 <span class="badge changed">结论已变更</span></h3>
+<p><strong>日期:</strong> 2024-11-03 &nbsp;&nbsp; <strong>操作员:</strong> 张工</p>
+<p><strong>温度:</strong> 25.0°C &nbsp;&nbsp; <strong>湿度:</strong> 45.0%</p>
+<p><strong>配方:</strong> <span class="formula-tag">EC: 30.0</span> <span class="formula-tag">DMC: 70.0</span> <span class="formula-tag">LiPF6: 1.2</span> <span class="formula-tag">VC: 0.05</span></p>
+<p><strong>数据问题:</strong> <span class="problem-tag">样品SAMP-001: 温度漏填单位，默认按°C处理 (值=25.0)</span></p>
+<p><strong>谱图人工备注:</strong> 张工说这条峰形有点怪先标上</p>
+<h4>结论对比 <span class='subtitle'>（课题组可看到前后差别）</span></h4>
+<p><strong>原始结论:</strong> <span class='diff-before'>合格</span></p>
+<p><strong>复核结论:</strong> <span class='diff-after'>谱图正常，检出成分: DMC, EC, LiPF6</span></p>
+<h4>谱峰详情</h4>
+<table class="data-table">
+<tr><th>峰位(ppm)</th><th>强度</th><th>原始归属</th><th>复核归属</th><th>状态</th><th>重叠涉及材料</th></tr>
+<tr><td>1.410</td><td>920</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>1.820</td><td>870</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>3.720</td><td>1050</td><td>DMC</td><td>DMC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>4.500</td><td>1100</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>5.210</td><td>680</td><td>LiPF6</td><td>LiPF6</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+</table>
+<h4>复测建议 <span class='subtitle'>（含前后差别）</span></h4>
+<div class="retest-box">【复核发现结论有变】
+建议使用更高分辨率模式复测，或补充MS确认</div>
+</div>
+<div class="summary-card changed-card">
+<h3>样品 SAMP-002 <span class="badge changed">结论已变更</span></h3>
+<p><strong>日期:</strong> 2024-11-04 &nbsp;&nbsp; <strong>操作员:</strong> 李工</p>
+<p><strong>温度:</strong> 28.0°C &nbsp;&nbsp; <strong>湿度:</strong> 52.0%</p>
+<p><strong>配方:</strong> <span class="formula-tag">EC: 2.0</span> <span class="formula-tag">DMC: 5.0</span> <span class="formula-tag">EMC: 3.0</span> <span class="formula-tag">LiPF6: 1.0</span> <span class="formula-tag">FEC: 0.08</span></p>
+<p><strong>配方备注:</strong> 补做EMC比例</p>
+<p><strong>谱图人工备注:</strong> SAMP-003那条温度异常的谱图先留着</p>
+<h4>结论对比 <span class='subtitle'>（课题组可看到前后差别）</span></h4>
+<p><strong>原始结论:</strong> <span class='diff-before'>待复核</span></p>
+<p><strong>复核结论:</strong> <span class='diff-after'>谱图正常，检出成分: DMC, EC, EMC, LiPF6</span></p>
+<h4>谱峰详情</h4>
+<table class="data-table">
+<tr><th>峰位(ppm)</th><th>强度</th><th>原始归属</th><th>复核归属</th><th>状态</th><th>重叠涉及材料</th></tr>
+<tr><td>1.390</td><td>890</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>1.810</td><td>850</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>3.680</td><td>1180</td><td>DMC</td><td>DMC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>3.990</td><td>720</td><td>EMC</td><td>EMC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>4.510</td><td>1080</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>5.200</td><td>710</td><td>LiPF6</td><td>LiPF6</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+</table>
+<h4>复测建议 <span class='subtitle'>（含前后差别）</span></h4>
+<div class="retest-box">【复核发现结论有变】
+建议使用更高分辨率模式复测，或补充MS确认</div>
+</div>
+<div class="summary-card changed-card">
+<h3>样品 SAMP-003 <span class="badge changed">结论已变更</span></h3>
+<p><strong>日期:</strong> 2024-11-05 &nbsp;&nbsp; <strong>操作员:</strong> 王工</p>
+<p><strong>温度:</strong> 未填写 &nbsp;&nbsp; <strong>湿度:</strong> 48.0%</p>
+<p><strong>配方:</strong> <span class="formula-tag">EC: 35.0</span> <span class="formula-tag">DEC: 65.0</span> <span class="formula-tag">LiFSI: 1.1</span> <span class="formula-tag">PS: 0.03</span></p>
+<p><strong>数据问题:</strong> <span class="problem-tag">温度格式异常: 'abc'</span></p>
+<p><strong>配方备注:</strong> 温度探头换了还没标</p>
+<p><strong>谱图人工备注:</strong> 温度探头当日校准中，实际温度约26°C，数据可用但需注意</p>
+<h4>结论对比 <span class='subtitle'>（课题组可看到前后差别）</span></h4>
+<p><strong>原始结论:</strong> <span class='diff-before'>异常</span></p>
+<p><strong>复核结论:</strong> <span class='diff-after'>谱图正常，检出成分: DEC, EC, LiFSI</span></p>
+<h4>谱峰详情</h4>
+<table class="data-table">
+<tr><th>峰位(ppm)</th><th>强度</th><th>原始归属</th><th>复核归属</th><th>状态</th><th>重叠涉及材料</th></tr>
+<tr><td>1.420</td><td>905</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>1.830</td><td>860</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>4.090</td><td>780</td><td>DEC</td><td>DEC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>4.520</td><td>1090</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>5.010</td><td>650</td><td>LiFSI</td><td>LiFSI</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+</table>
+<h4>复测建议 <span class='subtitle'>（含前后差别）</span></h4>
+<div class="retest-box">【复核发现结论有变】
+建议使用更高分辨率模式复测，或补充MS确认</div>
+</div>
+<div class="summary-card changed-card">
+<h3>样品 SAMP-004 <span class="badge changed">结论已变更</span></h3>
+<p><strong>日期:</strong> 2024-11-06 &nbsp;&nbsp; <strong>操作员:</strong> 未填写</p>
+<p><strong>温度:</strong> 30.0°C &nbsp;&nbsp; <strong>湿度:</strong> 50.0%</p>
+<p><strong>配方:</strong> <span class="formula-tag">EC: 25.0</span> <span class="formula-tag">DMC: 45.0</span> <span class="formula-tag">EMC: 30.0</span> <span class="formula-tag">LiPF6: 1.3</span></p>
+<p><strong>数据问题:</strong> <span class="problem-tag">样品SAMP-004: 温度漏填单位，默认按°C处理 (值=30.0)</span></p>
+<p><strong>配方备注:</strong> 旧表抄过来的操作员漏了</p>
+<p><strong>谱图人工备注:</strong> SAMP-005的FEC峰存疑; 操作员是赵工代班，旧表漏填了</p>
+<h4>结论对比 <span class='subtitle'>（课题组可看到前后差别）</span></h4>
+<p><strong>原始结论:</strong> <span class='diff-before'>谱图正常，检出成分: DMC, EC, EMC, LiPF6</span></p>
+<p><strong>复核结论:</strong> <span class='diff-after'>存在2处谱峰重叠，涉及材料: DMC, EC, EMC；需复核确认</span></p>
+<h4>谱峰详情</h4>
+<table class="data-table">
+<tr><th>峰位(ppm)</th><th>强度</th><th>原始归属</th><th>复核归属</th><th>状态</th><th>重叠涉及材料</th></tr>
+<tr><td>1.220</td><td>840</td><td>DMC</td><td>DMC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>1.380</td><td>830</td><td>EMC</td><td>EMC</td><td><span class="badge overlap">重叠</span></td><td>EC</td></tr>
+<tr><td>3.670</td><td>1220</td><td>DMC</td><td>DMC</td><td><span class="badge overlap">重叠</span></td><td>EMC</td></tr>
+<tr><td>4.000</td><td>740</td><td>EMC</td><td>EMC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>4.500</td><td>1095</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>5.220</td><td>695</td><td>LiPF6</td><td>LiPF6</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+</table>
+<h4>复测建议 <span class='subtitle'>（含前后差别）</span></h4>
+<div class="retest-box">【复核发现结论有变】
+前后差别:
+  - 峰位1.38ppm (状态: 正常→重叠)
+  - 峰位3.67ppm (状态: 正常→重叠)
+谱峰重叠卡在: EC, EMC, DMC，建议针对这几种材料的特征峰重新设定扫描参数
+建议使用更高分辨率模式复测，或补充MS确认</div>
+</div>
+<div class="summary-card changed-card">
+<h3>样品 SAMP-005 <span class="badge changed">结论已变更</span></h3>
+<p><strong>日期:</strong> 2024-11-07 &nbsp;&nbsp; <strong>操作员:</strong> 张工</p>
+<p><strong>温度:</strong> 25.0°C &nbsp;&nbsp; <strong>湿度:</strong> 43.0%</p>
+<p><strong>配方:</strong> <span class="formula-tag">EC: 30.0</span> <span class="formula-tag">DMC: 70.0</span> <span class="formula-tag">LiPF6: 1.2</span> <span class="formula-tag">FEC: 0.1</span></p>
+<p><strong>数据问题:</strong> <span class="problem-tag">样品SAMP-005: 温度漏填单位，默认按°C处理 (值=25.0)</span></p>
+<p><strong>配方备注:</strong> 这批FEC看起来不太对</p>
+<p><strong>谱图人工备注:</strong> FEC这批来自新供应商，2.48ppm处峰和之前的批次峰形不太一样，怀疑有杂质干扰; 共享盘上还有一份SAMP-005的原始谱图备份，文件名 SAMP-005_RAW_20241107.jdx，如果2.48ppm处拿不准可以去翻原始数据。</p>
+<h4>结论对比 <span class='subtitle'>（课题组可看到前后差别）</span></h4>
+<p><strong>原始结论:</strong> <span class='diff-before'>存在2处存疑峰位，建议复测</span></p>
+<p><strong>复核结论:</strong> <span class='diff-after'>存在2处谱峰重叠，涉及材料: FEC；需复核确认</span></p>
+<h4>谱峰详情</h4>
+<table class="data-table">
+<tr><th>峰位(ppm)</th><th>强度</th><th>原始归属</th><th>复核归属</th><th>状态</th><th>重叠涉及材料</th></tr>
+<tr><td>1.400</td><td>910</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>1.800</td><td>865</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>2.480</td><td>190</td><td>FEC</td><td>FEC</td><td><span class="badge overlap">重叠</span></td><td>-</td></tr>
+<tr><td>2.550</td><td>140</td><td>(未标)</td><td><span class="diff-before">(未标)</span> → <span class="diff-after">FEC</span></td><td><span class="badge overlap">重叠</span></td><td>-</td></tr>
+<tr><td>3.710</td><td>1070</td><td>DMC</td><td>DMC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>4.500</td><td>1105</td><td>EC</td><td>EC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>5.200</td><td>690</td><td>LiPF6</td><td>LiPF6</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>5.780</td><td>150</td><td>(未标)</td><td><span class="diff-before">(未标)</span> → <span class="diff-after">FEC</span></td><td><span class="badge changed">存疑</span></td><td>-</td></tr>
+</table>
+<h4>复测建议 <span class='subtitle'>（含前后差别）</span></h4>
+<div class="retest-box">【复核发现结论有变】
+前后差别:
+  - 峰位2.48ppm (状态: 正常→重叠)
+  - 峰位2.55ppm: 归属从「未标注」改为「FEC」 (状态: 存疑→重叠)
+  - 峰位5.78ppm: 归属从「未标注」改为「FEC」
+谱峰重叠卡在: FEC，建议针对这几种材料的特征峰重新设定扫描参数
+建议使用更高分辨率模式复测，或补充MS确认</div>
+</div>
+<div class="summary-card changed-card">
+<h3>样品 SAMP-006 <span class="badge changed">结论已变更</span></h3>
+<p><strong>日期:</strong> 2024-11-08 &nbsp;&nbsp; <strong>操作员:</strong> 李工</p>
+<p><strong>温度:</strong> 27.0°C &nbsp;&nbsp; <strong>湿度:</strong> 47.0%</p>
+<p><strong>配方:</strong> <span class="formula-tag">EC: 20.0</span> <span class="formula-tag">EMC: 80.0</span> <span class="formula-tag">LiPF6: 0.8</span> <span class="formula-tag">LiFSI: 0.4</span> <span class="formula-tag">VC: 0.05</span></p>
+<p><strong>数据问题:</strong> <span class="problem-tag">样品SAMP-006: 温度漏填单位，默认按°C处理 (值=27.0)</span></p>
+<p><strong>配方备注:</strong> 双锂盐体系</p>
+<p><strong>谱图人工备注:</strong> 双锂盐体系，3.3~3.7ppm区间三峰靠得很近，EMC和两种锂盐特征峰有互相干扰，复核时重点看</p>
+<h4>结论对比 <span class='subtitle'>（课题组可看到前后差别）</span></h4>
+<p><strong>原始结论:</strong> <span class='diff-before'>谱图正常，检出成分: EMC, LiFSI, LiPF6</span></p>
+<p><strong>复核结论:</strong> <span class='diff-after'>存在3处谱峰重叠，涉及材料: EMC, LiFSI, LiPF6, LiTFSI；需复核确认</span></p>
+<h4>谱峰详情</h4>
+<table class="data-table">
+<tr><th>峰位(ppm)</th><th>强度</th><th>原始归属</th><th>复核归属</th><th>状态</th><th>重叠涉及材料</th></tr>
+<tr><td>1.390</td><td>875</td><td>EMC</td><td>EMC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>3.400</td><td>720</td><td>LiFSI</td><td>LiFSI</td><td><span class="badge overlap">重叠</span></td><td>LiTFSI</td></tr>
+<tr><td>3.450</td><td>690</td><td>LiPF6</td><td>LiPF6</td><td><span class="badge overlap">重叠</span></td><td>LiTFSI</td></tr>
+<tr><td>3.500</td><td>550</td><td>EMC</td><td>EMC</td><td><span class="badge overlap">重叠</span></td><td>LiPF6</td></tr>
+<tr><td>4.000</td><td>705</td><td>EMC</td><td>EMC</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>5.020</td><td>420</td><td>LiFSI</td><td>LiFSI</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+<tr><td>5.200</td><td>400</td><td>LiPF6</td><td>LiPF6</td><td><span class="badge normal">正常</span></td><td>-</td></tr>
+</table>
+<h4>复测建议 <span class='subtitle'>（含前后差别）</span></h4>
+<div class="retest-box">【复核发现结论有变】
+前后差别:
+  - 峰位3.40ppm (状态: 正常→重叠)
+  - 峰位3.45ppm (状态: 正常→重叠)
+  - 峰位3.50ppm (状态: 正常→重叠)
+谱峰重叠卡在: LiTFSI, LiFSI, LiPF6, EMC，建议针对这几种材料的特征峰重新设定扫描参数
+建议使用更高分辨率模式复测，或补充MS确认</div>
+</div>
+
+<hr style="margin-top:40px;">
+<p class="subtitle" style="text-align:center;">由 battery-electrolyte-tool 自动生成</p>
+</body>
+</html>
+        

@@ -1,0 +1,28 @@
+{
+  "SAMP-001": {
+    "temperature": 25.0,
+    "humidity": 45.0,
+    "atmosphere": "Ar",
+    "stirring_speed": 400
+  },
+  "SAMP-002": {
+    "temperature": 28.0,
+    "humidity": 52.0,
+    "atmosphere": "Ar",
+    "stirring_speed": 350
+  },
+  "SAMP-004": {
+    "operator": "赵工（代）",
+    "temperature": 30.0,
+    "humidity": 50.0
+  },
+  "SAMP-005": {
+    "temperature": 25.0,
+    "humidity": 43.0,
+    "fec_batch": "F2024-10-28"
+  },
+  "SAMP-006": {
+    "temperature": 27.0,
+    "humidity": 47.0
+  }
+}
