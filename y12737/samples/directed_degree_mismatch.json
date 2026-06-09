@@ -1,0 +1,13 @@
+{
+  "name": "有向图入度出度不匹配",
+  "directed": true,
+  "description": "有向图中存在入度出度差值为2的顶点，不满足欧拉路径条件",
+  "vertices": ["A", "B", "C", "D"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1},
+    {"source": "A", "target": "C", "weight": 1},
+    {"source": "A", "target": "D", "weight": 1},
+    {"source": "B", "target": "C", "weight": 1},
+    {"source": "C", "target": "D", "weight": 1}
+  ]
+}

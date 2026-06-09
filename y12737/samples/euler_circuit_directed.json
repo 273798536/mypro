@@ -1,0 +1,15 @@
+{
+  "name": "有向欧拉回路例图",
+  "directed": true,
+  "description": "有向图，每个顶点入度等于出度，存在有向欧拉回路",
+  "vertices": ["A", "B", "C", "D"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1},
+    {"source": "B", "target": "C", "weight": 1},
+    {"source": "C", "target": "A", "weight": 1},
+    {"source": "A", "target": "D", "weight": 1},
+    {"source": "D", "target": "C", "weight": 1},
+    {"source": "C", "target": "D", "weight": 1},
+    {"source": "D", "target": "A", "weight": 1}
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "batch_id": "20260609_204801",
+  "timestamp": "2026-06-09 20:48:01",
+  "operator": "algorithm_engineer",
+  "batch_notes": [],
+  "summary": {
+    "total": 1,
+    "success": 1,
+    "error": 0,
+    "boundary": 0,
+    "unreviewed": 1
+  },
+  "records": [
+    {
+      "record_id": "20260609_204801_333",
+      "graph_name": "边列表示例图",
+      "graph_hash": "cdc0273bfab2",
+      "timestamp": "2026-06-09 20:48:01",
+      "euler_type": "euler_path",
+      "has_euler_path": true,
+      "has_euler_circuit": false,
+      "is_connected": true,
+      "vertex_count": 5,
+      "edge_count": 8,
+      "warnings": [
+        "检测到有向图设置: directed=False"
+      ],
+      "errors": [],
+      "boundary_cases": [],
+      "start_vertex": "A",
+      "end_vertex": "B",
+      "path_preview": "A → D → E → C → D...",
+      "review_notes": [],
+      "reviewed": false,
+      "raw_result": null
+    }
+  ]
+}

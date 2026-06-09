@@ -1,0 +1,71 @@
+{
+  "graph_name": "两顶点单边图",
+  "directed": false,
+  "timestamp": "2026-06-09 20:47:28",
+  "check_result": {
+    "has_euler_path": true,
+    "has_euler_circuit": false,
+    "euler_type": "euler_path",
+    "is_connected": true,
+    "start_vertex": "A",
+    "end_vertex": "B",
+    "odd_degree_vertices": [
+      "A",
+      "B"
+    ],
+    "in_out_degree_diff": {},
+    "warnings": [],
+    "errors": [],
+    "boundary_cases": [
+      "SINGLE_EDGE: 图仅包含1条边",
+      "TWO_VERTEX_ONE_EDGE: 两顶点单边图"
+    ]
+  },
+  "path_result": {
+    "path": [
+      "A",
+      "B"
+    ],
+    "used_edges": 1,
+    "total_edges": 1,
+    "is_complete": true,
+    "construction_notes": []
+  },
+  "explanation": [
+    "============================================================",
+    "欧拉路径巡检分析报告",
+    "============================================================",
+    "\n检测结果类型: euler_path",
+    "✓ 存在欧拉路径（非回路）：可以从起点出发经过每条边恰好一次到达终点",
+    "\n连通性: 是",
+    "建议起始顶点: A",
+    "建议终止顶点: B",
+    "\n奇数度顶点 (2 个): ['A', 'B']",
+    "\n◈ 边界样例标记:",
+    "  - SINGLE_EDGE: 图仅包含1条边",
+    "  - TWO_VERTEX_ONE_EDGE: 两顶点单边图",
+    "\n构造路径 (1/1 条边):",
+    "  顶点序列: A → B",
+    "\n============================================================"
+  ],
+  "graph": {
+    "name": "两顶点单边图",
+    "directed": false,
+    "vertices": [
+      "A",
+      "B"
+    ],
+    "edges": [
+      {
+        "source": "A",
+        "target": "B",
+        "weight": 1.0,
+        "metadata": {}
+      }
+    ],
+    "stats": {
+      "vertex_count": 2,
+      "edge_count": 1
+    }
+  }
+}

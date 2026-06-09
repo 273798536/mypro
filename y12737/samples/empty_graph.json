@@ -1,0 +1,7 @@
+{
+  "name": "空图",
+  "directed": false,
+  "description": "空集合输入 - 没有任何顶点，边界测试用例",
+  "vertices": [],
+  "edges": []
+}

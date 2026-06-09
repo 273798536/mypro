@@ -1,0 +1,96 @@
+{
+  "graph_name": "不连通图例图",
+  "directed": false,
+  "timestamp": "2026-06-09 20:47:28",
+  "check_result": {
+    "has_euler_path": false,
+    "has_euler_circuit": false,
+    "euler_type": "none",
+    "is_connected": false,
+    "start_vertex": null,
+    "end_vertex": null,
+    "odd_degree_vertices": [],
+    "in_out_degree_diff": {},
+    "warnings": [],
+    "errors": [
+      "图不连通：存在多个连通分量（忽略孤立点）"
+    ],
+    "boundary_cases": []
+  },
+  "path_result": {
+    "path": null,
+    "used_edges": 0,
+    "total_edges": 6,
+    "is_complete": false,
+    "construction_notes": [
+      "不满足欧拉路径条件，无法构造完整路径"
+    ]
+  },
+  "explanation": [
+    "============================================================",
+    "欧拉路径巡检分析报告",
+    "============================================================",
+    "\n检测结果类型: none",
+    "✗ 不存在欧拉路径或欧拉回路",
+    "\n连通性: 否",
+    "\n✗ 错误:",
+    "  - 图不连通：存在多个连通分量（忽略孤立点）",
+    "\n构造说明:",
+    "  - 不满足欧拉路径条件，无法构造完整路径",
+    "\n============================================================"
+  ],
+  "graph": {
+    "name": "不连通图例图",
+    "directed": false,
+    "vertices": [
+      "E",
+      "F",
+      "A",
+      "C",
+      "D",
+      "B"
+    ],
+    "edges": [
+      {
+        "source": "A",
+        "target": "B",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "B",
+        "target": "C",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "A",
+        "target": "C",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "D",
+        "target": "E",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "E",
+        "target": "F",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "D",
+        "target": "F",
+        "weight": 1.0,
+        "metadata": {}
+      }
+    ],
+    "stats": {
+      "vertex_count": 6,
+      "edge_count": 6
+    }
+  }
+}

@@ -1,0 +1,14 @@
+# 无向图边列表格式示例
+# 以 # 或 // 开头的行为注释
+# 格式: source target [weight]
+name = 边列表示例图
+directed = false
+
+A B 1
+A C 1
+A D 1
+B C 1
+B D 1
+C D 1
+C E 1
+D E 1

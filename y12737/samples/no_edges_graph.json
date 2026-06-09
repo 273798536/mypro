@@ -1,0 +1,7 @@
+{
+  "name": "无边孤立点图",
+  "directed": false,
+  "description": "有顶点但无任何边 - 所有顶点都是孤立点",
+  "vertices": ["A", "B", "C", "D", "E"],
+  "edges": []
+}

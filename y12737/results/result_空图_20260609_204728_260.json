@@ -1,0 +1,56 @@
+{
+  "graph_name": "空图",
+  "directed": false,
+  "timestamp": "2026-06-09 20:47:28",
+  "check_result": {
+    "has_euler_path": false,
+    "has_euler_circuit": false,
+    "euler_type": "none",
+    "is_connected": true,
+    "start_vertex": null,
+    "end_vertex": null,
+    "odd_degree_vertices": [],
+    "in_out_degree_diff": {},
+    "warnings": [
+      "空图输入：未检测到任何顶点"
+    ],
+    "errors": [],
+    "boundary_cases": [
+      "EMPTY_GRAPH: 图为空（无顶点）"
+    ]
+  },
+  "path_result": {
+    "path": null,
+    "used_edges": 0,
+    "total_edges": 0,
+    "is_complete": false,
+    "construction_notes": [
+      "不满足欧拉路径条件，无法构造完整路径"
+    ]
+  },
+  "explanation": [
+    "============================================================",
+    "欧拉路径巡检分析报告",
+    "============================================================",
+    "\n检测结果类型: none",
+    "✗ 不存在欧拉路径或欧拉回路",
+    "\n连通性: 是",
+    "\n⚠ 警告:",
+    "  - 空图输入：未检测到任何顶点",
+    "\n◈ 边界样例标记:",
+    "  - EMPTY_GRAPH: 图为空（无顶点）",
+    "\n构造说明:",
+    "  - 不满足欧拉路径条件，无法构造完整路径",
+    "\n============================================================"
+  ],
+  "graph": {
+    "name": "空图",
+    "directed": false,
+    "vertices": [],
+    "edges": [],
+    "stats": {
+      "vertex_count": 0,
+      "edge_count": 0
+    }
+  }
+}

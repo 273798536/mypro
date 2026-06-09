@@ -1,0 +1,16 @@
+{
+  "name": "无向欧拉回图例图",
+  "directed": false,
+  "description": "经典的哥尼斯堡七桥变体，所有顶点度数均为偶数，存在欧拉回路",
+  "vertices": ["A", "B", "C", "D", "E"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1, "metadata": {"label": "AB1"}},
+    {"source": "A", "target": "C", "weight": 1, "metadata": {"label": "AC1"}},
+    {"source": "A", "target": "D", "weight": 1, "metadata": {"label": "AD1"}},
+    {"source": "B", "target": "C", "weight": 1, "metadata": {"label": "BC1"}},
+    {"source": "B", "target": "D", "weight": 1, "metadata": {"label": "BD1"}},
+    {"source": "C", "target": "D", "weight": 1, "metadata": {"label": "CD1"}},
+    {"source": "C", "target": "E", "weight": 1, "metadata": {"label": "CE1"}},
+    {"source": "D", "target": "E", "weight": 1, "metadata": {"label": "DE1"}}
+  ]
+}

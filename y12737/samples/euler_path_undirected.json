@@ -1,0 +1,15 @@
+{
+  "name": "无向欧拉路径例图",
+  "directed": false,
+  "description": "恰好两个奇数度顶点（A和E），存在欧拉路径但无回路",
+  "vertices": ["A", "B", "C", "D", "E"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1},
+    {"source": "A", "target": "C", "weight": 1},
+    {"source": "B", "target": "C", "weight": 1},
+    {"source": "B", "target": "D", "weight": 1},
+    {"source": "C", "target": "D", "weight": 1},
+    {"source": "C", "target": "E", "weight": 1},
+    {"source": "D", "target": "E", "weight": 1}
+  ]
+}

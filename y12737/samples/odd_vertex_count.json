@@ -1,0 +1,15 @@
+{
+  "name": "奇数度顶点异常图",
+  "directed": false,
+  "description": "无向图中奇数度顶点数为4，不满足欧拉路径条件",
+  "vertices": ["A", "B", "C", "D", "E", "F"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1},
+    {"source": "A", "target": "C", "weight": 1},
+    {"source": "B", "target": "C", "weight": 1},
+    {"source": "C", "target": "D", "weight": 1},
+    {"source": "D", "target": "E", "weight": 1},
+    {"source": "D", "target": "F", "weight": 1},
+    {"source": "E", "target": "F", "weight": 1}
+  ]
+}

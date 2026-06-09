@@ -1,0 +1,13 @@
+{
+  "name": "含孤立顶点的图",
+  "directed": false,
+  "description": "大部分顶点连通，但存在几个孤立顶点",
+  "vertices": ["A", "B", "C", "D", "E", "F", "G"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1},
+    {"source": "B", "target": "C", "weight": 1},
+    {"source": "C", "target": "A", "weight": 1},
+    {"source": "C", "target": "D", "weight": 1},
+    {"source": "D", "target": "A", "weight": 1}
+  ]
+}

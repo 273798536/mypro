@@ -1,0 +1,14 @@
+{
+  "name": "有向欧拉路径例图",
+  "directed": true,
+  "description": "有向图，A出度-入度=1（起点），D入度-出度=1（终点），存在有向欧拉路径",
+  "vertices": ["A", "B", "C", "D"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1},
+    {"source": "A", "target": "C", "weight": 1},
+    {"source": "B", "target": "C", "weight": 1},
+    {"source": "C", "target": "D", "weight": 1},
+    {"source": "C", "target": "A", "weight": 1},
+    {"source": "D", "target": "B", "weight": 1}
+  ]
+}

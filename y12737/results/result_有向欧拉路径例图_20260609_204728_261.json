@@ -1,0 +1,104 @@
+{
+  "graph_name": "有向欧拉路径例图",
+  "directed": true,
+  "timestamp": "2026-06-09 20:47:28",
+  "check_result": {
+    "has_euler_path": true,
+    "has_euler_circuit": false,
+    "euler_type": "euler_path",
+    "is_connected": true,
+    "start_vertex": "A",
+    "end_vertex": "B",
+    "odd_degree_vertices": [],
+    "in_out_degree_diff": {
+      "A": 1,
+      "B": -1
+    },
+    "warnings": [],
+    "errors": [],
+    "boundary_cases": []
+  },
+  "path_result": {
+    "path": [
+      "A",
+      "C",
+      "A",
+      "B",
+      "C",
+      "D",
+      "B"
+    ],
+    "used_edges": 6,
+    "total_edges": 6,
+    "is_complete": true,
+    "construction_notes": []
+  },
+  "explanation": [
+    "============================================================",
+    "欧拉路径巡检分析报告",
+    "============================================================",
+    "\n检测结果类型: euler_path",
+    "✓ 存在欧拉路径（非回路）：可以从起点出发经过每条边恰好一次到达终点",
+    "\n连通性: 是",
+    "建议起始顶点: A",
+    "建议终止顶点: B",
+    "\n有向图顶点(出度-入度)差异:",
+    "  顶点 A: +1",
+    "  顶点 B: -1",
+    "\n构造路径 (6/6 条边):",
+    "  顶点序列: A → C → A → B → C → D → B",
+    "\n============================================================"
+  ],
+  "graph": {
+    "name": "有向欧拉路径例图",
+    "directed": true,
+    "vertices": [
+      "D",
+      "A",
+      "B",
+      "C"
+    ],
+    "edges": [
+      {
+        "source": "A",
+        "target": "B",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "A",
+        "target": "C",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "B",
+        "target": "C",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "C",
+        "target": "D",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "C",
+        "target": "A",
+        "weight": 1.0,
+        "metadata": {}
+      },
+      {
+        "source": "D",
+        "target": "B",
+        "weight": 1.0,
+        "metadata": {}
+      }
+    ],
+    "stats": {
+      "vertex_count": 4,
+      "edge_count": 6
+    }
+  }
+}

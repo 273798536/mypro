@@ -1,0 +1,112 @@
+{
+  "batch_id": "20260609_204728",
+  "timestamp": "2026-06-09 20:47:28",
+  "operator": "algorithm_engineer",
+  "batch_notes": [
+    "批量混合测试"
+  ],
+  "summary": {
+    "total": 4,
+    "success": 3,
+    "error": 1,
+    "boundary": 2,
+    "unreviewed": 3
+  },
+  "records": [
+    {
+      "record_id": "20260609_204728_260",
+      "graph_name": "空图",
+      "graph_hash": "b2e8d4beed46",
+      "timestamp": "2026-06-09 20:47:28",
+      "euler_type": "none",
+      "has_euler_path": false,
+      "has_euler_circuit": false,
+      "is_connected": true,
+      "vertex_count": 0,
+      "edge_count": 0,
+      "warnings": [
+        "空图输入：未检测到任何顶点"
+      ],
+      "errors": [],
+      "boundary_cases": [
+        "EMPTY_GRAPH: 图为空（无顶点）"
+      ],
+      "start_vertex": null,
+      "end_vertex": null,
+      "path_preview": null,
+      "review_notes": [
+        "[2026-06-09 20:47:39] 这是预期的空图边界测试用例，数据确认无误"
+      ],
+      "reviewed": true,
+      "raw_result": null
+    },
+    {
+      "record_id": "20260609_204728_261",
+      "graph_name": "不连通图例图",
+      "graph_hash": "c7c82638a19c",
+      "timestamp": "2026-06-09 20:47:28",
+      "euler_type": "none",
+      "has_euler_path": false,
+      "has_euler_circuit": false,
+      "is_connected": false,
+      "vertex_count": 6,
+      "edge_count": 6,
+      "warnings": [],
+      "errors": [
+        "图不连通：存在多个连通分量（忽略孤立点）"
+      ],
+      "boundary_cases": [],
+      "start_vertex": null,
+      "end_vertex": null,
+      "path_preview": null,
+      "review_notes": [],
+      "reviewed": false,
+      "raw_result": null
+    },
+    {
+      "record_id": "20260609_204728_261",
+      "graph_name": "有向欧拉路径例图",
+      "graph_hash": "1585fe2a84b7",
+      "timestamp": "2026-06-09 20:47:28",
+      "euler_type": "euler_path",
+      "has_euler_path": true,
+      "has_euler_circuit": false,
+      "is_connected": true,
+      "vertex_count": 4,
+      "edge_count": 6,
+      "warnings": [],
+      "errors": [],
+      "boundary_cases": [],
+      "start_vertex": "A",
+      "end_vertex": "B",
+      "path_preview": "A → C → A → B → C...",
+      "review_notes": [],
+      "reviewed": false,
+      "raw_result": null
+    },
+    {
+      "record_id": "20260609_204728_262",
+      "graph_name": "两顶点单边图",
+      "graph_hash": "bd8bc267be52",
+      "timestamp": "2026-06-09 20:47:28",
+      "euler_type": "euler_path",
+      "has_euler_path": true,
+      "has_euler_circuit": false,
+      "is_connected": true,
+      "vertex_count": 2,
+      "edge_count": 1,
+      "warnings": [],
+      "errors": [],
+      "boundary_cases": [
+        "SINGLE_EDGE: 图仅包含1条边",
+        "TWO_VERTEX_ONE_EDGE: 两顶点单边图"
+      ],
+      "start_vertex": "A",
+      "end_vertex": "B",
+      "path_preview": "A → B",
+      "review_notes": [],
+      "reviewed": false,
+      "raw_result": null
+    }
+  ]
+}

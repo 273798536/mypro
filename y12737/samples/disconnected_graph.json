@@ -1,0 +1,14 @@
+{
+  "name": "不连通图例图",
+  "directed": false,
+  "description": "包含两个独立连通分量，整体不连通",
+  "vertices": ["A", "B", "C", "D", "E", "F"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1},
+    {"source": "B", "target": "C", "weight": 1},
+    {"source": "C", "target": "A", "weight": 1},
+    {"source": "D", "target": "E", "weight": 1},
+    {"source": "E", "target": "F", "weight": 1},
+    {"source": "F", "target": "D", "weight": 1}
+  ]
+}

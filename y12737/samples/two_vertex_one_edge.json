@@ -1,0 +1,9 @@
+{
+  "name": "两顶点单边图",
+  "directed": false,
+  "description": "最小的非平凡图 - 两个顶点一条边",
+  "vertices": ["A", "B"],
+  "edges": [
+    {"source": "A", "target": "B", "weight": 1}
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "batch_id": "20260609_204715",
+  "timestamp": "2026-06-09 20:47:15",
+  "operator": "algorithm_engineer",
+  "batch_notes": [],
+  "summary": {
+    "total": 1,
+    "success": 1,
+    "error": 0,
+    "boundary": 1,
+    "unreviewed": 1
+  },
+  "records": [
+    {
+      "record_id": "20260609_204715_507",
+      "graph_name": "空图",
+      "graph_hash": "b2e8d4beed46",
+      "timestamp": "2026-06-09 20:47:15",
+      "euler_type": "none",
+      "has_euler_path": false,
+      "has_euler_circuit": false,
+      "is_connected": true,
+      "vertex_count": 0,
+      "edge_count": 0,
+      "warnings": [
+        "空图输入：未检测到任何顶点"
+      ],
+      "errors": [],
+      "boundary_cases": [
+        "EMPTY_GRAPH: 图为空（无顶点）"
+      ],
+      "start_vertex": null,
+      "end_vertex": null,
+      "path_preview": null,
+      "review_notes": [],
+      "reviewed": false,
+      "raw_result": null
+    }
+  ]
+}
