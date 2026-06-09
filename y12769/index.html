@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>滴定管校准记录看板</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>滴定管校准记录看板</h1>
+      <p>温度曲线自动校验 · 异常分类处理 · 批次报告联动更新</p>
+    </header>
+
+    <div class="stats-bar" id="statsBar"></div>
+
+    <div class="toolbar">
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="all">全部记录</button>
+        <button class="filter-btn" data-filter="hasIssues">存在异常</button>
+        <button class="filter-btn" data-filter="material">需补材料</button>
+        <button class="filter-btn" data-filter="calibration">需改口径</button>
+        <button class="filter-btn" data-filter="data-quality">数据质量</button>
+      </div>
+      <button class="export-btn" onclick="exportAllRecords()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        导出完整报告
+      </button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="board">看板视图</button>
+      <button class="tab-btn" data-tab="table">明细表</button>
+    </div>
+
+    <div id="boardPanel" class="panel active"></div>
+
+    <div id="tablePanel" class="panel"></div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/logic.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
