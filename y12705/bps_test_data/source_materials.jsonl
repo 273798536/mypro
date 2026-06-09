@@ -1,0 +1,9 @@
+{"material_id":"M-001","case_id":"BC-001","material_type":"question_text","content":"已知二次函数 y=2(x-3)²+4，求其顶点坐标。","location":"教材P45例2","created_at":"2026-06-09T16:55:19.384469"}
+{"material_id":"M-002","case_id":"BC-001","material_type":"rubric","content":"顶点式 y=a(x-h)²+k 中顶点为(h,k)，h 取括号内常数的相反数。","location":"评分标准v2.1","created_at":"2026-06-09T16:55:19.384471"}
+{"material_id":"M-003","case_id":"BC-001","material_type":"reference_answer","content":"顶点坐标为 (3, 4)","location":"参考答案","created_at":"2026-06-09T16:55:19.384472"}
+{"material_id":"M-004","case_id":"BC-002","material_type":"question_text","content":"翻译：渔人甚异之。","location":"《桃花源记》","created_at":"2026-06-09T16:55:19.384473"}
+{"material_id":"M-005","case_id":"BC-002","material_type":"rubric","content":"'异'为意动用法，译为'对……感到诧异'。","location":"评分标准v2.1","created_at":"2026-06-09T16:55:19.384474"}
+{"material_id":"M-006","case_id":"BC-002","material_type":"reference_answer","content":"渔人对看到的景象感到非常诧异。","location":"参考答案","created_at":"2026-06-09T16:55:19.384476"}
+{"material_id":"M-007","case_id":"BC-003","material_type":"question_text","content":"一物体沿斜面匀速下滑，请判断摩擦力方向。","location":"物理必修一P78","created_at":"2026-06-09T16:55:19.384477"}
+{"material_id":"M-008","case_id":"BC-003","material_type":"rubric","content":"摩擦力方向与相对运动方向相反，沿斜面向上。","location":"评分标准v2.1","created_at":"2026-06-09T16:55:19.384478"}
+{"material_id":"M-009","case_id":"BC-003","material_type":"reference_answer","content":"摩擦力沿斜面向上。","location":"参考答案","created_at":"2026-06-09T16:55:19.384479"}

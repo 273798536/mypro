@@ -1,0 +1,6 @@
+{"answer_id":"A-001","case_id":"BC-001","student_id":"STU-101","is_correct":false,"answer_content":"(-3, 4)","error_category":"h符号错误","score":0.0}
+{"answer_id":"A-002","case_id":"BC-001","student_id":"STU-102","is_correct":true,"answer_content":"(3, 4)","error_category":"","score":1.0}
+{"answer_id":"A-003","case_id":"BC-001","student_id":"STU-103","is_correct":false,"answer_content":"(3, -4)","error_category":"k符号错误","score":0.0}
+{"answer_id":"A-004","case_id":"BC-002","student_id":"STU-201","is_correct":true,"answer_content":"渔人对此感到很诧异","error_category":"","score":1.0}
+{"answer_id":"A-005","case_id":"BC-002","student_id":"STU-202","is_correct":false,"answer_content":"渔人很奇怪","error_category":"意动未译出","score":0.0}
+{"answer_id":"A-006","case_id":"BC-003","student_id":"STU-301","is_correct":false,"answer_content":"沿斜面向下","error_category":"方向反","score":0.0}

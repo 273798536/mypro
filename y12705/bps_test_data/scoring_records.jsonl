@@ -1,0 +1,9 @@
+{"record_id":"S-001","case_id":"BC-001","scorer":"expert_a","score":0.4,"timestamp":"2026-06-09T16:55:19.384458","notes":"正确率偏低"}
+{"record_id":"S-002","case_id":"BC-001","scorer":"expert_b","score":0.35,"timestamp":"2026-06-09T16:55:19.384459","notes":"和预期一致"}
+{"record_id":"S-003","case_id":"BC-001","scorer":"expert_c","score":0.5,"timestamp":"2026-06-09T16:55:19.384460","notes":"部分学生掌握尚可"}
+{"record_id":"S-004","case_id":"BC-002","scorer":"expert_a","score":0.6,"timestamp":"2026-06-09T16:55:19.384462","notes":""}
+{"record_id":"S-005","case_id":"BC-002","scorer":"expert_b","score":0.55,"timestamp":"2026-06-09T16:55:19.384463","notes":""}
+{"record_id":"S-006","case_id":"BC-002","scorer":"expert_c","score":0.65,"timestamp":"2026-06-09T16:55:19.384464","notes":""}
+{"record_id":"S-007","case_id":"BC-003","scorer":"expert_a","score":0.3,"timestamp":"2026-06-09T16:55:19.384465","notes":""}
+{"record_id":"S-008","case_id":"BC-003","scorer":"expert_b","score":0.25,"timestamp":"2026-06-09T16:55:19.384466","notes":""}
+{"record_id":"S-009","case_id":"BC-003","scorer":"expert_c","score":0.3,"timestamp":"2026-06-09T16:55:19.384467","notes":""}

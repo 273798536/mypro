@@ -1,0 +1,2 @@
+[console_scripts]
+bps = bayesian_prior_sensitivity.cli:main
