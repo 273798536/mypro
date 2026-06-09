@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #E8EEF7;
+  background: #030914;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(61, 220, 151, 0.08), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(99, 127, 176, 0.12), transparent 55%),
+    linear-gradient(180deg, #030914 0%, #061224 100%);
+  background-attachment: fixed;
+}
+
+.font-display {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  letter-spacing: 0.01em;
+}
+
+.font-mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom thin scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(99, 127, 176, 0.35);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(99, 127, 176, 0.6);
+}
+
+/* Utility class definitions used in components */
+@layer components {
+  .panel {
+    @apply bg-ink-700/60 backdrop-blur-sm border border-ink-500/40 rounded-sm;
+  }
+  .panel-header {
+    @apply flex items-center justify-between px-4 py-2 border-b border-ink-500/30;
+  }
+  .btn {
+    @apply px-3 py-1.5 text-xs font-mono tracking-wide border rounded-sm transition-colors duration-150;
+  }
+  .btn-primary {
+    @apply btn bg-lattice text-ink-800 border-lattice hover:bg-lattice-soft;
+  }
+  .btn-ghost {
+    @apply btn border-ink-400/60 text-ink-100 hover:bg-ink-500/40;
+  }
+  .btn-warn {
+    @apply btn border-warn text-warn hover:bg-warn/10;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono rounded-sm border;
+  }
+  .label {
+    @apply text-[10px] font-mono uppercase tracking-widest text-ink-200/70;
+  }
+  .num-input {
+    @apply w-full bg-ink-800/80 border border-ink-500/40 rounded-sm px-2 py-1 text-sm font-mono text-ink-50
+           focus:outline-none focus:border-lattice/70 focus:ring-1 focus:ring-lattice/40 transition;
+  }
+  .section-title {
+    @apply font-display text-xl text-ink-50 tracking-wide;
+  }
+}
+
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
