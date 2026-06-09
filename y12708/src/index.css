@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+.font-serif-sc {
+  font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-700 border-primary-700 text-white hover:bg-primary-800 hover:border-primary-800 hover:shadow-card-hover focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply btn bg-white border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700;
+  }
+
+  .btn-danger {
+    @apply btn bg-white border-danger-500 text-danger-700 hover:bg-danger-50 dark:bg-slate-800 dark:text-danger-400 dark:hover:bg-danger-900/20;
+  }
+
+  .btn-accent {
+    @apply btn bg-accent-400 border-accent-500 text-white hover:bg-accent-500 hover:border-accent-600;
+  }
+
+  .btn-ghost {
+    @apply btn border-transparent bg-transparent text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800;
+  }
+
+  .card {
+    @apply bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded shadow-card;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 text-sm border-2 border-slate-300 rounded bg-white dark:bg-slate-900 dark:border-slate-600 dark:text-slate-100 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-colors;
+  }
+
+  .input-field-error {
+    @apply border-danger-500 focus:border-danger-500 focus:ring-danger-500;
+  }
+
+  .input-field-warning {
+    @apply border-warning-400 focus:border-warning-500 focus:ring-warning-500;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded;
+  }
+
+  .badge-success {
+    @apply badge bg-success-100 text-success-700 dark:bg-success-900/30 dark:text-success-400;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-700 dark:bg-warning-900/30 dark:text-warning-400;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger-100 text-danger-700 dark:bg-danger-900/30 dark:text-danger-400;
+  }
+
+  .badge-info {
+    @apply badge bg-info-100 text-info-700 dark:bg-info-900/30 dark:text-info-400;
+  }
+
+  .badge-neutral {
+    @apply badge bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300;
+  }
+
+  .badge-accent {
+    @apply badge bg-accent-100 text-accent-700 dark:bg-accent-900/30 dark:text-accent-400;
+  }
+
+  .data-table {
+    @apply w-full text-sm border-collapse;
+  }
+
+  .data-table thead th {
+    @apply px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700;
+  }
+
+  .data-table tbody td {
+    @apply px-4 py-3 border-b border-slate-100 dark:border-slate-700/50 text-slate-700 dark:text-slate-300;
+  }
+
+  .data-table tbody tr {
+    @apply hover:bg-primary-50/50 dark:hover:bg-primary-900/10 transition-colors;
+  }
+
+  .data-table tbody tr:nth-child(even) {
+    @apply bg-slate-50/50 dark:bg-slate-800/30;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 text-sm font-medium rounded transition-colors;
+  }
+
+  .nav-item-inactive {
+    @apply nav-item text-slate-300 hover:bg-primary-600/30 hover:text-white;
+  }
+
+  .nav-item-active {
+    @apply nav-item bg-primary-600/50 text-white border-l-4 border-accent-400;
+  }
+
+  .drawer-backdrop {
+    @apply fixed inset-0 bg-black/40 z-40 animate-fade-in;
+  }
+
+  .drawer-panel {
+    @apply fixed top-0 right-0 h-full w-full max-w-xl bg-white dark:bg-slate-900 shadow-drawer z-50 animate-slide-in-right overflow-y-auto;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold font-serif-sc text-slate-800 dark:text-slate-100;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5;
+  }
+
+  .tab-item {
+    @apply px-4 py-2 text-sm font-medium border-b-2 transition-colors cursor-pointer;
+  }
+
+  .tab-item-active {
+    @apply tab-item border-primary-700 text-primary-700 dark:text-primary-400 dark:border-primary-400;
+  }
+
+  .tab-item-inactive {
+    @apply tab-item border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200;
+  }
+}
