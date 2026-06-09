@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #0F172A;
+  background: #F8FAFC;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(13, 148, 136, 0.08), transparent 60%),
+    radial-gradient(900px 500px at 110% 10%, rgba(217, 119, 6, 0.05), transparent 60%),
+    #F8FAFC;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Noto Serif SC", Georgia, serif;
+  letter-spacing: 0.01em;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all duration-150 select-none;
+  }
+  .btn-primary {
+    @apply btn bg-brand-700 text-white border border-brand-800 hover:bg-brand-600 hover:shadow-hover hover:-translate-y-px active:translate-y-0;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 hover:shadow-soft;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100;
+  }
+  .btn-danger {
+    @apply btn bg-fail-500 text-white border border-fail-600 hover:bg-fail-600;
+  }
+  .card {
+    @apply bg-white rounded-lg2 shadow-card border border-slate-200/70;
+  }
+  .card-hover {
+    @apply card transition-all duration-200 hover:shadow-hover hover:-translate-y-0.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium;
+  }
+  .input {
+    @apply w-full px-3 py-2 text-sm rounded-md border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-500 transition;
+  }
+  .label {
+    @apply block text-xs font-medium text-slate-600 mb-1;
+  }
+  .section-title {
+    @apply font-serif text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
