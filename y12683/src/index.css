@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", "Source Han Sans CN", system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #e2e8f0;
+  background: #0f1f3a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f1f3a 0%, #1a365d 50%, #111827 100%);
+  background-attachment: fixed;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-tech-gray-800/60 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl;
+  }
+
+  .btn-primary {
+    @apply px-5 py-2.5 bg-deep-sea-500 hover:bg-deep-sea-600 text-white font-medium rounded-lg
+           transition-all duration-200 shadow-lg hover:shadow-deep-sea-500/30
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2.5 bg-tech-gray-700 hover:bg-tech-gray-600 text-white font-medium rounded-lg
+           transition-all duration-200 border border-white/10
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-warning {
+    @apply px-5 py-2.5 bg-warning-orange-500 hover:bg-warning-orange-600 text-white font-medium rounded-lg
+           transition-all duration-200 shadow-lg
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-success {
+    @apply px-5 py-2.5 bg-success-green-500 hover:bg-success-green-600 text-white font-medium rounded-lg
+           transition-all duration-200 shadow-lg
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-tech-gray-900/80 border border-white/10 rounded-lg
+           text-white placeholder-tech-gray-400 focus:outline-none focus:ring-2
+           focus:ring-deep-sea-500/50 focus:border-deep-sea-500/50 transition-all;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-tech-gray-300
+           hover:bg-white/5 hover:text-white transition-all duration-200 cursor-pointer;
+  }
+
+  .nav-item-active {
+    @apply bg-deep-sea-500/20 text-white border-l-2 border-deep-sea-400;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.5);
+  }
+}
