@@ -1,0 +1,4859 @@
+{
+  "snapshot": {
+    "snapshot_id": "c84e844a09",
+    "created_at": "2026-06-09T20:21:51.005618",
+    "source_name": "sample_data_v1.xlsx",
+    "record_count": 404,
+    "description": ""
+  },
+  "answers": [
+    {
+      "student_id": "S001",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:48:02",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "8fdd5765"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:09:38",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "e735729a"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:46:44",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "836300b8"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:30:17",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "1e41d805"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:40:44",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "7e3c74d0"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:55:48",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "ba51660d"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:24:22",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "4fa67024"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:11:46",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "996a45a3"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:36:05",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "ccd803ad"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:32:36",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "a6dee8a8"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q011",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:49:14",
+      "tags": [
+        "知识点:小样本区",
+        "难度:中等"
+      ],
+      "record_id": "ee364ef0"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:41:23",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "4d252389"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:59:59",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "cf05dabc"
+    },
+    {
+      "student_id": "S001",
+      "question_id": "Q019",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:02:10",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "de64db73"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:56:43",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "4a7e393d"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:14:14",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "21726757"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:16:13",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "99556e4b"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:20:13",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "051fc1c8"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:44:29",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "59f2cc9b"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:23:34",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "30d8c3cc"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:42:23",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "74145c14"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:23:48",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "04669780"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:40:10",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "6c21c100"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:16:24",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "e6afd996"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:17:48",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "6c4ad2f4"
+    },
+    {
+      "student_id": "S002",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:28:18",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "74983036"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:08:48",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "acb24f6e"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q002",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:16:53",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "3a534d2a"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:39:23",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "7e5f4b8d"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:15:58",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "50b3af6a"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:04:07",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "730e5579"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:18:15",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "0e3b3c47"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:21:46",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "585e9faf"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:16:49",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "21efc3da"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:42:16",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "25caf38c"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:54:59",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "82018e1c"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:46:23",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "b045f983"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:57:04",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "5a3f2826"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:56:00",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "26009cf2"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:58:04",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "ec0d52a2"
+    },
+    {
+      "student_id": "S003",
+      "question_id": "Q020",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:51:31",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "60083067"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:26:36",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "dd9fd232"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q002",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:48:06",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "9edb4653"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q003",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T11:48:26",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "20addce7"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:45:06",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "091c721f"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:27:15",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "3977fd2d"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:46:17",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "764d88f0"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q007",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T10:19:28",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "c5d59bcf"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T12:46:34",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "184df845"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:00:10",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "517576d0"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:42:57",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "034b4247"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q011",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T11:39:16",
+      "tags": [
+        "知识点:小样本区",
+        "难度:中等"
+      ],
+      "record_id": "12c0229b"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:22:42",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "4f9e6268"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:28:47",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "083c3eca"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q019",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:15:10",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "8f22ace2"
+    },
+    {
+      "student_id": "S004",
+      "question_id": "Q020",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:47:04",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "c2d0192e"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:31:00",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "35e3d8d3"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:32:02",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "ad55870b"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q003",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T12:29:36",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "36f78411"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:20:15",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "0bc9d5d7"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:45:19",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "527818f4"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:02:29",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "a228ee8d"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q007",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T10:25:04",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "5c451050"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:33:59",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "75b6ea84"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:02:23",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "41235e07"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:19:45",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "aaf9d048"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:21:19",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "78145a4d"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:27:47",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "30101593"
+    },
+    {
+      "student_id": "S005",
+      "question_id": "Q018",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:52:43",
+      "tags": [
+        "知识点:易错",
+        "难度:困难"
+      ],
+      "record_id": "0cb2b8fa"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:23:40",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "fa00f661"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:00:21",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "a93a05c1"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:07:10",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "eb6ab70d"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:49:35",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "7730ed39"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:56:57",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "3b8e4ab9"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:34:37",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "cdf4fe3c"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:33:57",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "07ff271d"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:31:13",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "7b6a1487"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:23:56",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "6094fd8b"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:00:55",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "f02a3477"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q011",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:45:01",
+      "tags": [
+        "知识点:小样本区",
+        "难度:中等"
+      ],
+      "record_id": "6e04eec7"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:03:17",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "53018596"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:09:54",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "72d3e10f"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:57:22",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "cf399eb2"
+    },
+    {
+      "student_id": "S006",
+      "question_id": "Q020",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:49:25",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "f33c2d94"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:11:22",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "603afe73"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:17:21",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "e9d8ec88"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:06:11",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "1a4bd4a1"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T12:32:27",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "94a3ca80"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:10:07",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "c99d907c"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:51:00",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "aedba47a"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:51:12",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "5bc9d8d1"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:50:58",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "bd46e629"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:31:46",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "f1d9d0bb"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:50:26",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "22d61585"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:37:43",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "4bb643ef"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:00:19",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "74336ba8"
+    },
+    {
+      "student_id": "S007",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:28:38",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "be999ce9"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:43:42",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "6eaef205"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:42:39",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "811e2aea"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q003",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T11:00:43",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "2d7d75d1"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:11:15",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "9f3aa8a8"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:56:26",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "dca837d0"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:38:31",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "70b34948"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q007",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T12:56:00",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "f49151d9"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:48:14",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "7cd92fee"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:12:35",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "ce549a2b"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:58:42",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "89cd496f"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:49:53",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "e12a97d8"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:01:28",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "338bcb0d"
+    },
+    {
+      "student_id": "S008",
+      "question_id": "Q018",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:13:31",
+      "tags": [
+        "知识点:易错",
+        "难度:困难"
+      ],
+      "record_id": "79ef18ed"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:09:21",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "0be4ea8a"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:35:09",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "92dbc0ab"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q003",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T13:00:13",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "83fe7be8"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:18:29",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "aa6ade85"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:47:24",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "1a5aef33"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:27:24",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "3fe698cb"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q007",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T11:16:48",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "d5797cc5"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:17:47",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "6d4d8d01"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:04:14",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "b3c95bb4"
+    },
+    {
+      "student_id": "S009",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:39:21",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "c33d0c6f"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:58:11",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "1a396729"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:54:29",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "0ea81b03"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:47:16",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "ee31bddf"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:18:03",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "115c6f25"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:46:04",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "4008f09e"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:03:12",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "5dadcb22"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:01:42",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "890bbb95"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:05:49",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "bd35be26"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:29:49",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "5c332fe4"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:06:59",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "b67b71c8"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:19:37",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "85b51d03"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:55:38",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "02f7bb9a"
+    },
+    {
+      "student_id": "S010",
+      "question_id": "Q020",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:49:23",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "f3c4998e"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:47:52",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "94a424a1"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:32:40",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "457e884e"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:39:27",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "1e7bcae9"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:46:17",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "f0178d94"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:59:27",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "dd269bd6"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:02:53",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "d7c00e7e"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:55:15",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "828265f1"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:51:24",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "41f686ba"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:23:11",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "cfeebb0f"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:06:21",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "d411ceb8"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:48:05",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "f56c9ebd"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:01:44",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "b39b7d90"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:04:05",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "e9fc9285"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:02:19",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "0041dba4"
+    },
+    {
+      "student_id": "S011",
+      "question_id": "Q019",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:20:21",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "a2c1f808"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:59:07",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "e8ee0c37"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:18:00",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "607f0536"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:55:47",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "8e3cfce5"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:14:38",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "ce38eea6"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:49:18",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "9135bcf0"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:03:45",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "5f3974b1"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:13:35",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "19fc4616"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:05:06",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "4e56161f"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:00:30",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "85fd798c"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:13:16",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "01c30bab"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:41:43",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "61b9c0fd"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:17:05",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "06ada9da"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:35:38",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "02b08e75"
+    },
+    {
+      "student_id": "S012",
+      "question_id": "Q019",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:55:58",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "76912b49"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:38:03",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "23d597cf"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:53:40",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "19bdbe29"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:40:15",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "dafb6cf9"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:00:26",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "75168915"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:59:18",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "7b05949d"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:55:14",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "bc8b053a"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:49:51",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "7ea88ea7"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:19:14",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "6e4c6058"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:18:03",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "339c344f"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:25:58",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "d2c00025"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:08:34",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "bfb8c183"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:50:47",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "b3f5c57f"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T12:52:53",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "c8935b7e"
+    },
+    {
+      "student_id": "S013",
+      "question_id": "Q019",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:27:02",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "4f939b13"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:53:58",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "ddbd1132"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q002",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:05:05",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "e5655248"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:22:42",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "ae42d15c"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:45:44",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "6f57acaf"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:20:02",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "77a61e74"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:22:07",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "afa3a23e"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:11:52",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "e68445a1"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:18:29",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "f688ee5f"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:32:39",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "c83a7c99"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:13:13",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "89b04135"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:01:45",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "7b95e1e5"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:23:14",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "1c845908"
+    },
+    {
+      "student_id": "S014",
+      "question_id": "Q020",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:14:32",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "c33f0c19"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:03:30",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "ec83ef24"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:38:12",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "38becbd7"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:34:55",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "72e1b82c"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:27:59",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "428ad6fa"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:00:18",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "6bbf535d"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:48:31",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "6c41b76e"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:25:35",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "19a6c613"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:22:55",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "9defcfa0"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:59:54",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "eca11dea"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:01:45",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "6f29db76"
+    },
+    {
+      "student_id": "S015",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:31:21",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "0615cd41"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:47:09",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "94197dce"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q002",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:39:44",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "56581bb4"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:24:54",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "2991c963"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:21:40",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "37aeb6c9"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:09:39",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "f0b46a1f"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:58:47",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "6ddec53c"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T13:00:55",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "b309c1a7"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:16:57",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "4a849f46"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:14:18",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "68191633"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:02:33",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "f8ad3db6"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:37:39",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "a00053c7"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:43:16",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "aa6d47d4"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:59:57",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "c1c6f06c"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q018",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:28:37",
+      "tags": [
+        "知识点:易错",
+        "难度:困难"
+      ],
+      "record_id": "9ff70ecd"
+    },
+    {
+      "student_id": "S016",
+      "question_id": "Q019",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:56:54",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "be2d7282"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:37:36",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "3ffe5e58"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:59:18",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "ffef3ebb"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:02:36",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "8a547d07"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:35:47",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "b5baac1d"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:58:38",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "5995d393"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:48:39",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "aea58c47"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:54:53",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "0284a9cf"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:40:41",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "4c6dc184"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:33:46",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "92985e98"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:46:11",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "9888eb73"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:09:53",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "cd493cea"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:15:47",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "321bcc6b"
+    },
+    {
+      "student_id": "S017",
+      "question_id": "Q019",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:53:46",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "2c821234"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:23:50",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "5fa424f4"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:31:29",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "1f6cc6ea"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:37:52",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "45be1ccc"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:52:14",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "8b3b256e"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:23:58",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "b2e19b0a"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:58:58",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "86d59e8b"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:12:00",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "5e8554ca"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:00:56",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "a69f9089"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:34:42",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "a2484653"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:30:47",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "e6ad026a"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:55:28",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "37b05db0"
+    },
+    {
+      "student_id": "S018",
+      "question_id": "Q019",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:55:23",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "0357dbbc"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:41:17",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "b881e078"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:56:05",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "06f6943b"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:32:01",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "d06fdf8c"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:32:50",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "9b783f3a"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:21:13",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "d52be859"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:37:50",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "92a1d898"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:37:08",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "1f5bc384"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:06:08",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "8911a2ef"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:22:01",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "2be81a35"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:47:33",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "dc258629"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q011",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:54:49",
+      "tags": [
+        "知识点:小样本区",
+        "难度:中等"
+      ],
+      "record_id": "f7808ef0"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:37:02",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "464ac731"
+    },
+    {
+      "student_id": "S019",
+      "question_id": "Q020",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:49:43",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "dd85bb84"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:20:20",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "42ece6a4"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:10:39",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "674b827c"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:23:24",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "c2af9caa"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:56:32",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "0483c2bc"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:59:07",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "e2b4b16f"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:55:27",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "bc2cf39d"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:26:52",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "d45afe0f"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:24:20",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "3357d740"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:39:43",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "be36ddf2"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:21:05",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "1f00ee73"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:23:35",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "c4d8cef6"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:51:00",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "86c6334f"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:13:38",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "5612e917"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:09:13",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "876f03f9"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q018",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:29:54",
+      "tags": [
+        "知识点:易错",
+        "难度:困难"
+      ],
+      "record_id": "6199354d"
+    },
+    {
+      "student_id": "S020",
+      "question_id": "Q020",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:57:51",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "ca00c76d"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:39:39",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "144368ff"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:35:59",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "8870cf51"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:09:44",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "0a286844"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:46:55",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "d249d401"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T12:42:01",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "2a9688c6"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:56:21",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "38ae3df7"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:23:49",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "bba3a214"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:13:09",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "bcf30c4f"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:52:05",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "b5b7a73a"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:04:38",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "18a106fd"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:12:43",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "9219fb95"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:41:38",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "f6b8b435"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:54:49",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "df775969"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q018",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:01:31",
+      "tags": [
+        "知识点:易错",
+        "难度:困难"
+      ],
+      "record_id": "85c0d27f"
+    },
+    {
+      "student_id": "S021",
+      "question_id": "Q020",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T13:00:14",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "84f92007"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:18:25",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "9e981b5f"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:04:29",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "1013fdb7"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:26:25",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "3cb32ae8"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:29:25",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "24690fc2"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:38:29",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "d2183e5b"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T10:27:15",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "de80c94c"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:20:25",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "f6398ade"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:56:21",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "4f1703b6"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:42:07",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "481faefd"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:29:22",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "c6468e5d"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:50:11",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "a1490597"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:40:31",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "b8bf46c4"
+    },
+    {
+      "student_id": "S022",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:28:28",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "bbbb06c9"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:40:20",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "51761348"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:53:40",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "07a62756"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:14:22",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "937632d3"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:55:02",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "a5314d1e"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T10:23:39",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "04def1ca"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:28:35",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "216e6151"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T12:26:41",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "c2225e83"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:08:09",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "f1f9accc"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:27:45",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "9928c057"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:10:15",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "830c327b"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:12:24",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "1291cb5e"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:41:41",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "18e814c3"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:38:18",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "d4c361be"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:34:55",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "4fed39f5"
+    },
+    {
+      "student_id": "S023",
+      "question_id": "Q018",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:49:09",
+      "tags": [
+        "知识点:易错",
+        "难度:困难"
+      ],
+      "record_id": "0f982b4b"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:21:19",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "41d9e5e8"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:24:52",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "c3bf3975"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q003",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T12:55:58",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "f598dc9b"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:32:01",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "739f8ebb"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:54:21",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "18817877"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:35:09",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "8eb4bcb5"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q007",
+      "is_correct": null,
+      "score": null,
+      "answer_time": "2025-06-01T10:25:32",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "eb5a1707"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q008",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:09:42",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "30731775"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:36:09",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "c949fc95"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:42:46",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "65a1c0f8"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:12:48",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "9520348b"
+    },
+    {
+      "student_id": "S024",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:00:57",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "a3e53ffd"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:37:32",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "40b0f851"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q002",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:34:08",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "39c3233e"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:03:55",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "0069be78"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:12:54",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "7a658642"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q005",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:41:17",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "ea559efc"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:24:00",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "2d37501d"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:06:26",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "274fb218"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:00:24",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "22a9f763"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:07:20",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "af6caa67"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:37:08",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "7a298ccf"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q011",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:35:48",
+      "tags": [
+        "知识点:小样本区",
+        "难度:中等"
+      ],
+      "record_id": "960ea6e1"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:05:13",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "27a5cf1c"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:28:49",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "6fffc0c0"
+    },
+    {
+      "student_id": "S025",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:12:15",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "5a49ff83"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:04:40",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "c97cd247"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:36:18",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "6d930087"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:01:36",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "68595736"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:32:04",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "138df2fa"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:09:35",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "dbf30592"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T11:39:23",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "66d3aee6"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:17:22",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "85d70063"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:26:49",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "83878bf9"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:30:34",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "b79eb155"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:55:29",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "932aa7ec"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:57:02",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "7c40a4e9"
+    },
+    {
+      "student_id": "S026",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:10:20",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "5400eb1e"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:31:55",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "b5dfecf8"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q002",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:31:51",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "206e8566"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:38:21",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "6a2ff48a"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:07:23",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "0b6c3470"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:48:05",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "d5bea901"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:15:20",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "a19183ba"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q007",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:15:19",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "bcc0da9b"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:42:44",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "7b3670ad"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:30:39",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "0419a823"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:14:04",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "22929296"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:53:50",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "b48026f9"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:45:23",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "f03fc305"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q017",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T10:39:43",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "0dc3364e"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q019",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:19:36",
+      "tags": [
+        "知识点:争议题",
+        "难度:中等"
+      ],
+      "record_id": "01e6ea3d"
+    },
+    {
+      "student_id": "S027",
+      "question_id": "Q020",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:20:41",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "68f5493b"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T10:47:31",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "0791b281"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q002",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:06:45",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "23e1ec0d"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:05:12",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "5e5dfa71"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q004",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:53:05",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "3ea1275d"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:50:22",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "1fb1f7fa"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q006",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:16:54",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "80a68a1f"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:44:50",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "ca07901e"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:51:50",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "ec95d97b"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q009",
+      "is_correct": false,
+      "score": 0.5,
+      "answer_time": "2025-06-01T12:21:36",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "37fae6aa"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:36:56",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "036448ef"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q011",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:02:33",
+      "tags": [
+        "知识点:小样本区",
+        "难度:中等"
+      ],
+      "record_id": "ff0d9575"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q014",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:21:41",
+      "tags": [
+        "知识点:送分题",
+        "难度:简单"
+      ],
+      "record_id": "4057eed0"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:32:56",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "c955d0cb"
+    },
+    {
+      "student_id": "S028",
+      "question_id": "Q020",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:14:53",
+      "tags": [
+        "知识点:临界题",
+        "难度:中等"
+      ],
+      "record_id": "8cbf621b"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q001",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:42:10",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "3c83fb1c"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:29:00",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "02a4af6c"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q003",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:04:12",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "cda48e53"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:32:40",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "6042a66f"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T10:43:37",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "3ba807f3"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:48:39",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "6dfad76a"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:24:02",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "594718b9"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:12:00",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "fd1d67b0"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:46:13",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "94073144"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q010",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:43:01",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "1e7ca5a3"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q015",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:16:29",
+      "tags": [
+        "知识点:超纲",
+        "难度:困难"
+      ],
+      "record_id": "9cd6f122"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q016",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:52:26",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "4e2a578d"
+    },
+    {
+      "student_id": "S029",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:35:09",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "23e6c094"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q001",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:34:32",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "7c456b2a"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q002",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:59:07",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "e8cc1b47"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q003",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:24:03",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "c9d4c560"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q004",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T12:37:26",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "f730728d"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q005",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T11:23:59",
+      "tags": [
+        "知识点:领域3",
+        "难度:中等"
+      ],
+      "record_id": "24f07a6e"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q006",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:40:31",
+      "tags": [
+        "知识点:领域1",
+        "难度:中等"
+      ],
+      "record_id": "262d8c71"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q007",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:07:01",
+      "tags": [
+        "知识点:领域2",
+        "难度:中等"
+      ],
+      "record_id": "de28ed19"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q008",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T11:57:15",
+      "tags": [
+        "知识点:领域3",
+        "难度:简单"
+      ],
+      "record_id": "1097ec71"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q009",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:12:18",
+      "tags": [
+        "知识点:领域1",
+        "难度:简单"
+      ],
+      "record_id": "f027286a"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q010",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:00:18",
+      "tags": [
+        "知识点:领域2",
+        "难度:简单"
+      ],
+      "record_id": "375f70d3"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q016",
+      "is_correct": false,
+      "score": 0.0,
+      "answer_time": "2025-06-01T12:25:35",
+      "tags": [
+        "知识点:冷门",
+        "难度:困难"
+      ],
+      "record_id": "8ba40ccc"
+    },
+    {
+      "student_id": "S030",
+      "question_id": "Q017",
+      "is_correct": true,
+      "score": 1.0,
+      "answer_time": "2025-06-01T10:18:24",
+      "tags": [
+        "知识点:简单",
+        "难度:简单"
+      ],
+      "record_id": "49a4011e"
+    }
+  ]
+}
