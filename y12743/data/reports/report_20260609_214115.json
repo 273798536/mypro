@@ -1,0 +1,3562 @@
+{
+  "report_id": "report_20260609_214115",
+  "generated_at": "2026-06-09T21:41:15.688351",
+  "summary": {
+    "total": 400,
+    "by_status": {
+      "unclassified": 176,
+      "pending": 194,
+      "recollect": 30
+    },
+    "by_issue_type": {
+      "sorting_unstable": 209,
+      "extrapolation_out_of_bounds": 30,
+      "data_missing": 5,
+      "data_abnormal": 10
+    },
+    "issues_count": 254,
+    "uploads": [
+      {
+        "upload_id": "b249b617",
+        "filename": "sample_data.csv",
+        "file_hash": "f895b1d4f92bae5aee2f1a876340e412d2f626c43c3ee3713e3ce27fcc2aba46",
+        "row_count": 400,
+        "upload_time": "2026-06-09T21:40:06.678502",
+        "status": "processed"
+      }
+    ]
+  },
+  "status_explanations": {
+    "available": {
+      "label": "数据可用",
+      "description": "该记录通过所有校验，可直接用于后续分析与输出。"
+    },
+    "pending": {
+      "label": "数据暂缓",
+      "description": "该记录存在瑕疵或存疑，需教研编辑人工确认后再决定是否使用。"
+    },
+    "recollect": {
+      "label": "需要重新采集",
+      "description": "该记录数据质量问题严重，当前值不可用，需安排重新抽样或采集。"
+    }
+  },
+  "issue_types": {
+    "sorting_unstable": "排序不稳定",
+    "extrapolation_out_of_bounds": "外推越界",
+    "data_missing": "数据缺失",
+    "data_abnormal": "异常值"
+  },
+  "charts": {
+    "status_distribution": "/static/charts/status_distribution.png",
+    "issue_distribution": "/static/charts/issue_distribution.png",
+    "score_distribution": "/static/charts/score_distribution.png",
+    "extrapolation_scatter": "/static/charts/extrapolation_scatter.png",
+    "sorting_unstable": "/static/charts/sorting_unstable.png"
+  },
+  "issues_by_type": {
+    "sorting_unstable": {
+      "label": "排序不稳定",
+      "count": 209,
+      "samples": [
+        {
+          "issue_id": "e4c0f9a1",
+          "record_id": "9be0a8d4",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.699754",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S006",
+            "score": 69.38,
+            "historical_value": 64.31,
+            "extrapolated_value": 71.89,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "a878df61",
+          "record_id": "2df9628b",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.705619",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S004",
+            "score": 80.43,
+            "historical_value": 78.11,
+            "extrapolated_value": 76.7,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "8121af9d",
+          "record_id": "1b389a63",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.717383",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S008",
+            "score": 72.74,
+            "historical_value": 73.08,
+            "extrapolated_value": 61.34,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "c73d9bd7",
+          "record_id": "aa95b0ba",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.723592",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S007",
+            "score": 65.92,
+            "historical_value": 58.86,
+            "extrapolated_value": 77.64,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "10b4b610",
+          "record_id": "e9fd916f",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.730046",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S010",
+            "score": 78.76,
+            "historical_value": 75.75,
+            "extrapolated_value": 76.42,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "becf17eb",
+          "record_id": "445e0dbd",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.737553",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S009",
+            "score": 90.93,
+            "historical_value": 88.38,
+            "extrapolated_value": 83.02,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "5fbccfd7",
+          "record_id": "fa37a5b2",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 17.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.745860",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S003",
+            "score": 67.26,
+            "historical_value": 61.04,
+            "extrapolated_value": 53.03,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "2108a282",
+          "record_id": "a1f5329f",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.752685",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S006",
+            "score": 76.29,
+            "historical_value": 76.84,
+            "extrapolated_value": 82.1,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "e29ff69a",
+          "record_id": "7264896b",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.758022",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S008",
+            "score": 79.71,
+            "historical_value": 89.12,
+            "extrapolated_value": 90.48,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "e55460bd",
+          "record_id": "c9c87d0c",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.766824",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S005",
+            "score": 77.8,
+            "historical_value": 72.17,
+            "extrapolated_value": 97.37,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "recollect"
+        }
+      ]
+    },
+    "extrapolation_out_of_bounds": {
+      "label": "外推越界",
+      "count": 30,
+      "samples": [
+        {
+          "issue_id": "d6f3ddd5",
+          "record_id": "aa95b0ba",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "与历史值偏差 31.9%，超过阈值 30% (计算过程: 历史值=58.86, 偏差率=0.319)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.442516",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S007",
+            "score": 65.92,
+            "historical_value": 58.86,
+            "extrapolated_value": 77.64,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "c6e75bff",
+          "record_id": "bae0f3d7",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 135.5 超出合理范围 [0, 100]; 与历史值偏差 64.3%，超过阈值 30% (计算过程: 历史值=82.46, 偏差率=0.643)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.457977",
+          "record_data": {
+            "question_id": "Q003",
+            "student_id": "S005",
+            "score": 74.64,
+            "historical_value": 82.46,
+            "extrapolated_value": 135.5,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "a1aab40e",
+          "record_id": "300cbe9e",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 -15.2 超出合理范围 [0, 100]; 与历史值偏差 117.7%，超过阈值 30% (计算过程: 历史值=85.96, 偏差率=1.177)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.473529",
+          "record_data": {
+            "question_id": "Q003",
+            "student_id": "S008",
+            "score": 78.57,
+            "historical_value": 85.96,
+            "extrapolated_value": -15.2,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "16230b93",
+          "record_id": "4dc36564",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 111.3 超出合理范围 [0, 100] (计算过程: 历史值=88.21, 偏差率=0.262)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.488484",
+          "record_data": {
+            "question_id": "Q006",
+            "student_id": "S010",
+            "score": 89.54,
+            "historical_value": 88.21,
+            "extrapolated_value": 111.3,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "21840afc",
+          "record_id": "3b24e713",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 110.96 超出合理范围 [0, 100]; 与历史值偏差 34.2%，超过阈值 30% (计算过程: 历史值=82.71, 偏差率=0.342)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.504521",
+          "record_data": {
+            "question_id": "Q007",
+            "student_id": "S010",
+            "score": 80.14,
+            "historical_value": 82.71,
+            "extrapolated_value": 110.96,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "d2848198",
+          "record_id": "8459bc07",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "与历史值偏差 30.3%，超过阈值 30% (计算过程: 历史值=87.39, 偏差率=0.303)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.524421",
+          "record_data": {
+            "question_id": "Q008",
+            "student_id": "S004",
+            "score": 75.82,
+            "historical_value": 87.39,
+            "extrapolated_value": 60.88,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "ebb7ad39",
+          "record_id": "5c954dcd",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 107.92 超出合理范围 [0, 100] (计算过程: 历史值=84.67, 偏差率=0.275)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.537205",
+          "record_data": {
+            "question_id": "Q010",
+            "student_id": "S005",
+            "score": 90.86,
+            "historical_value": 84.67,
+            "extrapolated_value": 107.92,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "ad413b7d",
+          "record_id": "4708daa1",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 135.5 超出合理范围 [0, 100]; 与历史值偏差 80.9%，超过阈值 30% (计算过程: 历史值=74.91, 偏差率=0.809)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.551339",
+          "record_data": {
+            "question_id": "Q012",
+            "student_id": "S005",
+            "score": 77.45,
+            "historical_value": 74.91,
+            "extrapolated_value": 135.5,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "5ec8c698",
+          "record_id": "dd7bedc0",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 -15.2 超出合理范围 [0, 100]; 与历史值偏差 116.2%，超过阈值 30% (计算过程: 历史值=94.04, 偏差率=1.162)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.565708",
+          "record_data": {
+            "question_id": "Q012",
+            "student_id": "S008",
+            "score": 89.75,
+            "historical_value": 94.04,
+            "extrapolated_value": -15.2,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "33a53abb",
+          "record_id": "b39accfc",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 106.74 超出合理范围 [0, 100] (计算过程: 历史值=94.31, 偏差率=0.132)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.575701",
+          "record_data": {
+            "question_id": "Q013",
+            "student_id": "S005",
+            "score": 89.51,
+            "historical_value": 94.31,
+            "extrapolated_value": 106.74,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        }
+      ]
+    },
+    "data_missing": {
+      "label": "数据缺失",
+      "count": 5,
+      "samples": [
+        {
+          "issue_id": "dfa852a5",
+          "record_id": "40f5f9af",
+          "issue_type": "data_missing",
+          "rule_name": "缺失值检测",
+          "details": "关键字段缺失: score",
+          "severity": "medium",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.870036",
+          "record_data": {
+            "question_id": "Q004",
+            "student_id": "S004",
+            "score": NaN,
+            "historical_value": 65.58,
+            "extrapolated_value": 69.29,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "5ca83073",
+          "record_id": "6acf4c4d",
+          "issue_type": "data_missing",
+          "rule_name": "缺失值检测",
+          "details": "关键字段缺失: sample_date",
+          "severity": "medium",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.885302",
+          "record_data": {
+            "question_id": "Q010",
+            "student_id": "S004",
+            "score": 71.15,
+            "historical_value": 71.71,
+            "extrapolated_value": 76.44,
+            "batch_id": "2026-05",
+            "sample_date": NaN
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "3942e856",
+          "record_id": "df0a6e4b",
+          "issue_type": "data_missing",
+          "rule_name": "缺失值检测",
+          "details": "关键字段缺失: score",
+          "severity": "medium",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.900980",
+          "record_data": {
+            "question_id": "Q001",
+            "student_id": "S010",
+            "score": NaN,
+            "historical_value": 74.02,
+            "extrapolated_value": 82.5,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "38c1b8c5",
+          "record_id": "8d04b111",
+          "issue_type": "data_missing",
+          "rule_name": "缺失值检测",
+          "details": "关键字段缺失: sample_date",
+          "severity": "medium",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.913515",
+          "record_data": {
+            "question_id": "Q002",
+            "student_id": "S001",
+            "score": 58.08,
+            "historical_value": 65.72,
+            "extrapolated_value": 56.81,
+            "batch_id": "2026-06",
+            "sample_date": NaN
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "a62af54a",
+          "record_id": "1341c21a",
+          "issue_type": "data_missing",
+          "rule_name": "缺失值检测",
+          "details": "关键字段缺失: score",
+          "severity": "medium",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.927933",
+          "record_data": {
+            "question_id": "Q009",
+            "student_id": "S001",
+            "score": NaN,
+            "historical_value": 77.88,
+            "extrapolated_value": 65.52,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "pending"
+        }
+      ]
+    },
+    "data_abnormal": {
+      "label": "异常值",
+      "count": 10,
+      "samples": [
+        {
+          "issue_id": "55b15de7",
+          "record_id": "e117f17a",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 score=25.0 异常，Z-Score=5.17，均值=75.74，标准差=9.81，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.950264",
+          "record_data": {
+            "question_id": "Q005",
+            "student_id": "S002",
+            "score": 25.0,
+            "historical_value": 83.29,
+            "extrapolated_value": 80.96,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "bd17c473",
+          "record_id": "59453ecc",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 score=46.04 异常，Z-Score=3.03，均值=75.74，标准差=9.81，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.966069",
+          "record_data": {
+            "question_id": "Q017",
+            "student_id": "S008",
+            "score": 46.04,
+            "historical_value": 56.48,
+            "extrapolated_value": 44.92,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "pending"
+        },
+        {
+          "issue_id": "83c84abb",
+          "record_id": "bae0f3d7",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.979726",
+          "record_data": {
+            "question_id": "Q003",
+            "student_id": "S005",
+            "score": 74.64,
+            "historical_value": 82.46,
+            "extrapolated_value": 135.5,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "3b40fb6a",
+          "record_id": "300cbe9e",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.990903",
+          "record_data": {
+            "question_id": "Q003",
+            "student_id": "S008",
+            "score": 78.57,
+            "historical_value": 85.96,
+            "extrapolated_value": -15.2,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "1b1db8d6",
+          "record_id": "4708daa1",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:09.008207",
+          "record_data": {
+            "question_id": "Q012",
+            "student_id": "S005",
+            "score": 77.45,
+            "historical_value": 74.91,
+            "extrapolated_value": 135.5,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "3bf35113",
+          "record_id": "dd7bedc0",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:09.022852",
+          "record_data": {
+            "question_id": "Q012",
+            "student_id": "S008",
+            "score": 89.75,
+            "historical_value": 94.04,
+            "extrapolated_value": -15.2,
+            "batch_id": "2026-05",
+            "sample_date": "2026-05-15"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "4824b61b",
+          "record_id": "cdea7d8c",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:09.038533",
+          "record_data": {
+            "question_id": "Q003",
+            "student_id": "S005",
+            "score": 71.57,
+            "historical_value": 69.72,
+            "extrapolated_value": 135.5,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "6da5f98a",
+          "record_id": "ab0d2a3c",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:09.051291",
+          "record_data": {
+            "question_id": "Q003",
+            "student_id": "S008",
+            "score": 63.71,
+            "historical_value": 61.09,
+            "extrapolated_value": -15.2,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "0c2d8b07",
+          "record_id": "3401f80e",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:09.069643",
+          "record_data": {
+            "question_id": "Q012",
+            "student_id": "S005",
+            "score": 81.5,
+            "historical_value": 81.01,
+            "extrapolated_value": 135.5,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "recollect"
+        },
+        {
+          "issue_id": "2274c3be",
+          "record_id": "635a9f3d",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:09.087633",
+          "record_data": {
+            "question_id": "Q012",
+            "student_id": "S008",
+            "score": 78.52,
+            "historical_value": 72.26,
+            "extrapolated_value": -15.2,
+            "batch_id": "2026-06",
+            "sample_date": "2026-06-10"
+          },
+          "record_status": "recollect"
+        }
+      ]
+    }
+  },
+  "flagged_records": [
+    {
+      "record_id": "9be0a8d4",
+      "upload_id": "b249b617",
+      "row_index": 5,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S006",
+        "score": 69.38,
+        "historical_value": 64.31,
+        "extrapolated_value": 71.89,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "e4c0f9a1"
+      ],
+      "create_time": "2026-06-09T21:40:06.679807",
+      "last_updated": "2026-06-09T21:40:09.116176",
+      "trace": [
+        {
+          "trace_id": "17e4a33f",
+          "target_id": "record:9be0a8d4",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.699774"
+        },
+        {
+          "trace_id": "521867fa",
+          "target_id": "record:9be0a8d4",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.116278"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "e4c0f9a1",
+          "record_id": "9be0a8d4",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.699754"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "2df9628b",
+      "upload_id": "b249b617",
+      "row_index": 3,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S004",
+        "score": 80.43,
+        "historical_value": 78.11,
+        "extrapolated_value": 76.7,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "a878df61"
+      ],
+      "create_time": "2026-06-09T21:40:06.679754",
+      "last_updated": "2026-06-09T21:40:09.102981",
+      "trace": [
+        {
+          "trace_id": "b8f2d68f",
+          "target_id": "record:2df9628b",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.705630"
+        },
+        {
+          "trace_id": "467040a3",
+          "target_id": "record:2df9628b",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.103039"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "a878df61",
+          "record_id": "2df9628b",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.705619"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "1b389a63",
+      "upload_id": "b249b617",
+      "row_index": 7,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S008",
+        "score": 72.74,
+        "historical_value": 73.08,
+        "extrapolated_value": 61.34,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "8121af9d"
+      ],
+      "create_time": "2026-06-09T21:40:06.679857",
+      "last_updated": "2026-06-09T21:40:09.206773",
+      "trace": [
+        {
+          "trace_id": "be0febe6",
+          "target_id": "record:1b389a63",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.717397"
+        },
+        {
+          "trace_id": "51608b2f",
+          "target_id": "record:1b389a63",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.206837"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "8121af9d",
+          "record_id": "1b389a63",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.717383"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "aa95b0ba",
+      "upload_id": "b249b617",
+      "row_index": 6,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S007",
+        "score": 65.92,
+        "historical_value": 58.86,
+        "extrapolated_value": 77.64,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "recollect",
+      "issues": [
+        "c73d9bd7",
+        "d6f3ddd5"
+      ],
+      "create_time": "2026-06-09T21:40:06.679833",
+      "last_updated": "2026-06-09T21:40:09.181627",
+      "trace": [
+        {
+          "trace_id": "23624eec",
+          "target_id": "record:aa95b0ba",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.723607"
+        },
+        {
+          "trace_id": "0ee3031c",
+          "target_id": "record:aa95b0ba",
+          "action": "issue_detected",
+          "description": "外推越界检测: 与历史值偏差 31.9%，超过阈值 30% (计算过程: 历史值=58.86, 偏差率=0.319)",
+          "timestamp": "2026-06-09T21:40:08.442603"
+        },
+        {
+          "trace_id": "d2cd2c32",
+          "target_id": "record:aa95b0ba",
+          "action": "status_change",
+          "description": "状态变更: None -> recollect",
+          "timestamp": "2026-06-09T21:40:09.181669"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "c73d9bd7",
+          "record_id": "aa95b0ba",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.723592"
+        },
+        {
+          "issue_id": "d6f3ddd5",
+          "record_id": "aa95b0ba",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "与历史值偏差 31.9%，超过阈值 30% (计算过程: 历史值=58.86, 偏差率=0.319)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.442516"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "e9fd916f",
+      "upload_id": "b249b617",
+      "row_index": 9,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S010",
+        "score": 78.76,
+        "historical_value": 75.75,
+        "extrapolated_value": 76.42,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "10b4b610"
+      ],
+      "create_time": "2026-06-09T21:40:06.679907",
+      "last_updated": "2026-06-09T21:40:09.220271",
+      "trace": [
+        {
+          "trace_id": "473ad966",
+          "target_id": "record:e9fd916f",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.730068"
+        },
+        {
+          "trace_id": "7cdbc916",
+          "target_id": "record:e9fd916f",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.220313"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "10b4b610",
+          "record_id": "e9fd916f",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.730046"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "445e0dbd",
+      "upload_id": "b249b617",
+      "row_index": 208,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S009",
+        "score": 90.93,
+        "historical_value": 88.38,
+        "extrapolated_value": 83.02,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "becf17eb"
+      ],
+      "create_time": "2026-06-09T21:40:06.685560",
+      "last_updated": "2026-06-09T21:40:10.897321",
+      "trace": [
+        {
+          "trace_id": "c2f4df72",
+          "target_id": "record:445e0dbd",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.737570"
+        },
+        {
+          "trace_id": "e369957a",
+          "target_id": "record:445e0dbd",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.897438"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "becf17eb",
+          "record_id": "445e0dbd",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.737553"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "fa37a5b2",
+      "upload_id": "b249b617",
+      "row_index": 202,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S003",
+        "score": 67.26,
+        "historical_value": 61.04,
+        "extrapolated_value": 53.03,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "5fbccfd7"
+      ],
+      "create_time": "2026-06-09T21:40:06.685416",
+      "last_updated": "2026-06-09T21:40:10.832104",
+      "trace": [
+        {
+          "trace_id": "4e2d30bd",
+          "target_id": "record:fa37a5b2",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 17.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.745873"
+        },
+        {
+          "trace_id": "fa796217",
+          "target_id": "record:fa37a5b2",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.832190"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "5fbccfd7",
+          "record_id": "fa37a5b2",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 17.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.745860"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "a1f5329f",
+      "upload_id": "b249b617",
+      "row_index": 205,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S006",
+        "score": 76.29,
+        "historical_value": 76.84,
+        "extrapolated_value": 82.1,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "2108a282"
+      ],
+      "create_time": "2026-06-09T21:40:06.685488",
+      "last_updated": "2026-06-09T21:40:10.864930",
+      "trace": [
+        {
+          "trace_id": "dc0105db",
+          "target_id": "record:a1f5329f",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.752703"
+        },
+        {
+          "trace_id": "763eeaf4",
+          "target_id": "record:a1f5329f",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.865016"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "2108a282",
+          "record_id": "a1f5329f",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.752685"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "7264896b",
+      "upload_id": "b249b617",
+      "row_index": 207,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S008",
+        "score": 79.71,
+        "historical_value": 89.12,
+        "extrapolated_value": 90.48,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "e29ff69a"
+      ],
+      "create_time": "2026-06-09T21:40:06.685536",
+      "last_updated": "2026-06-09T21:40:10.880748",
+      "trace": [
+        {
+          "trace_id": "4a049dae",
+          "target_id": "record:7264896b",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.758036"
+        },
+        {
+          "trace_id": "858667c5",
+          "target_id": "record:7264896b",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.880821"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "e29ff69a",
+          "record_id": "7264896b",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.758022"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "c9c87d0c",
+      "upload_id": "b249b617",
+      "row_index": 204,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S005",
+        "score": 77.8,
+        "historical_value": 72.17,
+        "extrapolated_value": 97.37,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "recollect",
+      "issues": [
+        "e55460bd",
+        "568c103a"
+      ],
+      "create_time": "2026-06-09T21:40:06.685464",
+      "last_updated": "2026-06-09T21:40:10.849581",
+      "trace": [
+        {
+          "trace_id": "a961a0aa",
+          "target_id": "record:c9c87d0c",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.766861"
+        },
+        {
+          "trace_id": "7897f7e3",
+          "target_id": "record:c9c87d0c",
+          "action": "issue_detected",
+          "description": "外推越界检测: 与历史值偏差 34.9%，超过阈值 30% (计算过程: 历史值=72.17, 偏差率=0.349)",
+          "timestamp": "2026-06-09T21:40:08.656480"
+        },
+        {
+          "trace_id": "3376f7e4",
+          "target_id": "record:c9c87d0c",
+          "action": "status_change",
+          "description": "状态变更: None -> recollect",
+          "timestamp": "2026-06-09T21:40:10.849651"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "e55460bd",
+          "record_id": "c9c87d0c",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.766824"
+        },
+        {
+          "issue_id": "568c103a",
+          "record_id": "c9c87d0c",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "与历史值偏差 34.9%，超过阈值 30% (计算过程: 历史值=72.17, 偏差率=0.349)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.656436"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "df0a6e4b",
+      "upload_id": "b249b617",
+      "row_index": 209,
+      "data": {
+        "question_id": "Q001",
+        "student_id": "S010",
+        "score": NaN,
+        "historical_value": 74.02,
+        "extrapolated_value": 82.5,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "40da1e6c",
+        "3942e856"
+      ],
+      "create_time": "2026-06-09T21:40:06.685584",
+      "last_updated": "2026-06-09T21:40:10.911048",
+      "trace": [
+        {
+          "trace_id": "0d29c652",
+          "target_id": "record:df0a6e4b",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.773864"
+        },
+        {
+          "trace_id": "e8982f5f",
+          "target_id": "record:df0a6e4b",
+          "action": "issue_detected",
+          "description": "缺失值检测: 关键字段缺失: score",
+          "timestamp": "2026-06-09T21:40:08.901017"
+        },
+        {
+          "trace_id": "15e8120c",
+          "target_id": "record:df0a6e4b",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.911172"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "40da1e6c",
+          "record_id": "df0a6e4b",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q001 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.773844"
+        },
+        {
+          "issue_id": "3942e856",
+          "record_id": "df0a6e4b",
+          "issue_type": "data_missing",
+          "rule_name": "缺失值检测",
+          "details": "关键字段缺失: score",
+          "severity": "medium",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.900980"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "cf3348ac",
+      "upload_id": "b249b617",
+      "row_index": 18,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S009",
+        "score": 85.31,
+        "historical_value": 89.97,
+        "extrapolated_value": 78.6,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "207a2048"
+      ],
+      "create_time": "2026-06-09T21:40:06.680124",
+      "last_updated": "2026-06-09T21:40:09.303183",
+      "trace": [
+        {
+          "trace_id": "34f58ffd",
+          "target_id": "record:cf3348ac",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 15.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.785407"
+        },
+        {
+          "trace_id": "da49edb9",
+          "target_id": "record:cf3348ac",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.303282"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "207a2048",
+          "record_id": "cf3348ac",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-05 排名变化 15.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.785368"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "557fa0cb",
+      "upload_id": "b249b617",
+      "row_index": 15,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S006",
+        "score": 67.8,
+        "historical_value": 65.5,
+        "extrapolated_value": 76.26,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "9ca620ac"
+      ],
+      "create_time": "2026-06-09T21:40:06.680052",
+      "last_updated": "2026-06-09T21:40:09.257693",
+      "trace": [
+        {
+          "trace_id": "b8dcec81",
+          "target_id": "record:557fa0cb",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.791601"
+        },
+        {
+          "trace_id": "57b5f06d",
+          "target_id": "record:557fa0cb",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.257735"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "9ca620ac",
+          "record_id": "557fa0cb",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.791588"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "2dd90286",
+      "upload_id": "b249b617",
+      "row_index": 16,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S007",
+        "score": 78.44,
+        "historical_value": 69.62,
+        "extrapolated_value": 81.03,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "5edc588e"
+      ],
+      "create_time": "2026-06-09T21:40:06.680076",
+      "last_updated": "2026-06-09T21:40:09.273118",
+      "trace": [
+        {
+          "trace_id": "7c6fde2a",
+          "target_id": "record:2dd90286",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 12.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.801377"
+        },
+        {
+          "trace_id": "59247b68",
+          "target_id": "record:2dd90286",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.273198"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "5edc588e",
+          "record_id": "2dd90286",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-05 排名变化 12.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.801363"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "87adbf61",
+      "upload_id": "b249b617",
+      "row_index": 10,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S001",
+        "score": 68.98,
+        "historical_value": 78.24,
+        "extrapolated_value": 68.87,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "8b60382f"
+      ],
+      "create_time": "2026-06-09T21:40:06.679931",
+      "last_updated": "2026-06-09T21:40:09.232748",
+      "trace": [
+        {
+          "trace_id": "d7d00319",
+          "target_id": "record:87adbf61",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.807556"
+        },
+        {
+          "trace_id": "40172f41",
+          "target_id": "record:87adbf61",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.232814"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "8b60382f",
+          "record_id": "87adbf61",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.807539"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "22e39210",
+      "upload_id": "b249b617",
+      "row_index": 14,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S005",
+        "score": 73.84,
+        "historical_value": 72.34,
+        "extrapolated_value": 62.02,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "859efd50"
+      ],
+      "create_time": "2026-06-09T21:40:06.680028",
+      "last_updated": "2026-06-09T21:40:09.245955",
+      "trace": [
+        {
+          "trace_id": "7584cc6d",
+          "target_id": "record:22e39210",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.816591"
+        },
+        {
+          "trace_id": "370bc79b",
+          "target_id": "record:22e39210",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.246010"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "859efd50",
+          "record_id": "22e39210",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.816578"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "d1ce70c6",
+      "upload_id": "b249b617",
+      "row_index": 17,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S008",
+        "score": 71.15,
+        "historical_value": 67.76,
+        "extrapolated_value": 76.04,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "41ac49f7"
+      ],
+      "create_time": "2026-06-09T21:40:06.680100",
+      "last_updated": "2026-06-09T21:40:09.288392",
+      "trace": [
+        {
+          "trace_id": "3c9753ee",
+          "target_id": "record:d1ce70c6",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.822027"
+        },
+        {
+          "trace_id": "9dda950a",
+          "target_id": "record:d1ce70c6",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.288501"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "41ac49f7",
+          "record_id": "d1ce70c6",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.822015"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "bbcbd760",
+      "upload_id": "b249b617",
+      "row_index": 218,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S009",
+        "score": 100.0,
+        "historical_value": 100.3,
+        "extrapolated_value": 100.11,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "recollect",
+      "issues": [
+        "bfdbfe9b",
+        "c6c20475"
+      ],
+      "create_time": "2026-06-09T21:40:06.685798",
+      "last_updated": "2026-06-09T21:40:11.011304",
+      "trace": [
+        {
+          "trace_id": "f28bdf8c",
+          "target_id": "record:bbcbd760",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.829399"
+        },
+        {
+          "trace_id": "994eef41",
+          "target_id": "record:bbcbd760",
+          "action": "issue_detected",
+          "description": "外推越界检测: 值 100.11 超出合理范围 [0, 100] (计算过程: 历史值=100.3, 偏差率=0.002)",
+          "timestamp": "2026-06-09T21:40:08.670479"
+        },
+        {
+          "trace_id": "3dca95fd",
+          "target_id": "record:bbcbd760",
+          "action": "status_change",
+          "description": "状态变更: None -> recollect",
+          "timestamp": "2026-06-09T21:40:11.011396"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "bfdbfe9b",
+          "record_id": "bbcbd760",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.829384"
+        },
+        {
+          "issue_id": "c6c20475",
+          "record_id": "bbcbd760",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 100.11 超出合理范围 [0, 100] (计算过程: 历史值=100.3, 偏差率=0.002)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.670456"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "7b897d40",
+      "upload_id": "b249b617",
+      "row_index": 211,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S002",
+        "score": 70.73,
+        "historical_value": 65.67,
+        "extrapolated_value": 57.49,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "dd5cf752"
+      ],
+      "create_time": "2026-06-09T21:40:06.685632",
+      "last_updated": "2026-06-09T21:40:10.937943",
+      "trace": [
+        {
+          "trace_id": "7803acda",
+          "target_id": "record:7b897d40",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.834496"
+        },
+        {
+          "trace_id": "4411684b",
+          "target_id": "record:7b897d40",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.937996"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "dd5cf752",
+          "record_id": "7b897d40",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.834484"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "d8d7b87e",
+      "upload_id": "b249b617",
+      "row_index": 216,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S007",
+        "score": 72.69,
+        "historical_value": 76.17,
+        "extrapolated_value": 87.48,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "a3e01315"
+      ],
+      "create_time": "2026-06-09T21:40:06.685751",
+      "last_updated": "2026-06-09T21:40:10.997889",
+      "trace": [
+        {
+          "trace_id": "14b35aa4",
+          "target_id": "record:d8d7b87e",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.839138"
+        },
+        {
+          "trace_id": "c49d289e",
+          "target_id": "record:d8d7b87e",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.997956"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "a3e01315",
+          "record_id": "d8d7b87e",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.839130"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "ddddb8ed",
+      "upload_id": "b249b617",
+      "row_index": 213,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S004",
+        "score": 62.05,
+        "historical_value": 60.37,
+        "extrapolated_value": 75.4,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "036d5d07"
+      ],
+      "create_time": "2026-06-09T21:40:06.685679",
+      "last_updated": "2026-06-09T21:40:10.968151",
+      "trace": [
+        {
+          "trace_id": "d4a525a5",
+          "target_id": "record:ddddb8ed",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.845674"
+        },
+        {
+          "trace_id": "3f3e1c3c",
+          "target_id": "record:ddddb8ed",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.968200"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "036d5d07",
+          "record_id": "ddddb8ed",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.845637"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "01d9d761",
+      "upload_id": "b249b617",
+      "row_index": 219,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S010",
+        "score": 74.76,
+        "historical_value": 75.75,
+        "extrapolated_value": 73.6,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "d2b56a2f"
+      ],
+      "create_time": "2026-06-09T21:40:06.685822",
+      "last_updated": "2026-06-09T21:40:11.023953",
+      "trace": [
+        {
+          "trace_id": "467ee24b",
+          "target_id": "record:01d9d761",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.850826"
+        },
+        {
+          "trace_id": "c4a7ca67",
+          "target_id": "record:01d9d761",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.023999"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "d2b56a2f",
+          "record_id": "01d9d761",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.850814"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "97dc582d",
+      "upload_id": "b249b617",
+      "row_index": 212,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S003",
+        "score": 83.23,
+        "historical_value": 83.6,
+        "extrapolated_value": 72.91,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "b0f14f7e"
+      ],
+      "create_time": "2026-06-09T21:40:06.685655",
+      "last_updated": "2026-06-09T21:40:10.952477",
+      "trace": [
+        {
+          "trace_id": "25ab0f85",
+          "target_id": "record:97dc582d",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.855642"
+        },
+        {
+          "trace_id": "6c1fe480",
+          "target_id": "record:97dc582d",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.952530"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "b0f14f7e",
+          "record_id": "97dc582d",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.855632"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "79656bbe",
+      "upload_id": "b249b617",
+      "row_index": 215,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S006",
+        "score": 72.27,
+        "historical_value": 58.79,
+        "extrapolated_value": 71.84,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "ea5373ec"
+      ],
+      "create_time": "2026-06-09T21:40:06.685727",
+      "last_updated": "2026-06-09T21:40:10.983196",
+      "trace": [
+        {
+          "trace_id": "097ad31e",
+          "target_id": "record:79656bbe",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.863469"
+        },
+        {
+          "trace_id": "43c1700b",
+          "target_id": "record:79656bbe",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.983268"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "ea5373ec",
+          "record_id": "79656bbe",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.863442"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "8d04b111",
+      "upload_id": "b249b617",
+      "row_index": 210,
+      "data": {
+        "question_id": "Q002",
+        "student_id": "S001",
+        "score": 58.08,
+        "historical_value": 65.72,
+        "extrapolated_value": 56.81,
+        "batch_id": "2026-06",
+        "sample_date": NaN
+      },
+      "data_status": "pending",
+      "issues": [
+        "4a8a9230",
+        "38c1b8c5"
+      ],
+      "create_time": "2026-06-09T21:40:06.685608",
+      "last_updated": "2026-06-09T21:40:10.924107",
+      "trace": [
+        {
+          "trace_id": "a1e456c8",
+          "target_id": "record:8d04b111",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.868868"
+        },
+        {
+          "trace_id": "1c42a25b",
+          "target_id": "record:8d04b111",
+          "action": "issue_detected",
+          "description": "缺失值检测: 关键字段缺失: sample_date",
+          "timestamp": "2026-06-09T21:40:08.913583"
+        },
+        {
+          "trace_id": "55d5faa2",
+          "target_id": "record:8d04b111",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:10.924159"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "4a8a9230",
+          "record_id": "8d04b111",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q002 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.868856"
+        },
+        {
+          "issue_id": "38c1b8c5",
+          "record_id": "8d04b111",
+          "issue_type": "data_missing",
+          "rule_name": "缺失值检测",
+          "details": "关键字段缺失: sample_date",
+          "severity": "medium",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.913515"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "e0f16d60",
+      "upload_id": "b249b617",
+      "row_index": 28,
+      "data": {
+        "question_id": "Q003",
+        "student_id": "S009",
+        "score": 66.92,
+        "historical_value": 64.41,
+        "extrapolated_value": 74.24,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "05dee250"
+      ],
+      "create_time": "2026-06-09T21:40:06.680371",
+      "last_updated": "2026-06-09T21:40:09.358680",
+      "trace": [
+        {
+          "trace_id": "fe05a003",
+          "target_id": "record:e0f16d60",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q003 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.874469"
+        },
+        {
+          "trace_id": "76a0e5eb",
+          "target_id": "record:e0f16d60",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.358724"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "05dee250",
+          "record_id": "e0f16d60",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q003 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.874459"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "b6390368",
+      "upload_id": "b249b617",
+      "row_index": 20,
+      "data": {
+        "question_id": "Q003",
+        "student_id": "S001",
+        "score": 70.21,
+        "historical_value": 69.28,
+        "extrapolated_value": 61.36,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "8c237613"
+      ],
+      "create_time": "2026-06-09T21:40:06.680172",
+      "last_updated": "2026-06-09T21:40:09.317561",
+      "trace": [
+        {
+          "trace_id": "6c63b340",
+          "target_id": "record:b6390368",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q003 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.881332"
+        },
+        {
+          "trace_id": "f836eb46",
+          "target_id": "record:b6390368",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.317623"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "8c237613",
+          "record_id": "b6390368",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q003 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.881320"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "58a9fc9d",
+      "upload_id": "b249b617",
+      "row_index": 223,
+      "data": {
+        "question_id": "Q003",
+        "student_id": "S004",
+        "score": 85.92,
+        "historical_value": 92.15,
+        "extrapolated_value": 69.33,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "3bbf79f2"
+      ],
+      "create_time": "2026-06-09T21:40:06.685919",
+      "last_updated": "2026-06-09T21:40:11.065556",
+      "trace": [
+        {
+          "trace_id": "ac646302",
+          "target_id": "record:58a9fc9d",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.886185"
+        },
+        {
+          "trace_id": "354faa6c",
+          "target_id": "record:58a9fc9d",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.065608"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "3bbf79f2",
+          "record_id": "58a9fc9d",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q003 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.886176"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "ab0d2a3c",
+      "upload_id": "b249b617",
+      "row_index": 227,
+      "data": {
+        "question_id": "Q003",
+        "student_id": "S008",
+        "score": 63.71,
+        "historical_value": 61.09,
+        "extrapolated_value": -15.2,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "recollect",
+      "issues": [
+        "b2c6dbf6",
+        "b6a7f531",
+        "6da5f98a"
+      ],
+      "create_time": "2026-06-09T21:40:06.686016",
+      "last_updated": "2026-06-09T21:40:11.119077",
+      "trace": [
+        {
+          "trace_id": "111d4820",
+          "target_id": "record:ab0d2a3c",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 17.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.891088"
+        },
+        {
+          "trace_id": "c65098b8",
+          "target_id": "record:ab0d2a3c",
+          "action": "issue_detected",
+          "description": "外推越界检测: 值 -15.2 超出合理范围 [0, 100]; 与历史值偏差 124.9%，超过阈值 30% (计算过程: 历史值=61.09, 偏差率=1.249)",
+          "timestamp": "2026-06-09T21:40:08.719593"
+        },
+        {
+          "trace_id": "3d96ea65",
+          "target_id": "record:ab0d2a3c",
+          "action": "issue_detected",
+          "description": "异常值检测: 字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+          "timestamp": "2026-06-09T21:40:09.051311"
+        },
+        {
+          "trace_id": "745cebd9",
+          "target_id": "record:ab0d2a3c",
+          "action": "status_change",
+          "description": "状态变更: None -> recollect",
+          "timestamp": "2026-06-09T21:40:11.119126"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "b2c6dbf6",
+          "record_id": "ab0d2a3c",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q003 在批次 2026-06 排名变化 17.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.891081"
+        },
+        {
+          "issue_id": "b6a7f531",
+          "record_id": "ab0d2a3c",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 -15.2 超出合理范围 [0, 100]; 与历史值偏差 124.9%，超过阈值 30% (计算过程: 历史值=61.09, 偏差率=1.249)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.719507"
+        },
+        {
+          "issue_id": "6da5f98a",
+          "record_id": "ab0d2a3c",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:09.051291"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "cdea7d8c",
+      "upload_id": "b249b617",
+      "row_index": 224,
+      "data": {
+        "question_id": "Q003",
+        "student_id": "S005",
+        "score": 71.57,
+        "historical_value": 69.72,
+        "extrapolated_value": 135.5,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "recollect",
+      "issues": [
+        "4e47539e",
+        "93398d8d",
+        "4824b61b"
+      ],
+      "create_time": "2026-06-09T21:40:06.685943",
+      "last_updated": "2026-06-09T21:40:11.078857",
+      "trace": [
+        {
+          "trace_id": "f0d23cd0",
+          "target_id": "record:cdea7d8c",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.899641"
+        },
+        {
+          "trace_id": "a8b4f084",
+          "target_id": "record:cdea7d8c",
+          "action": "issue_detected",
+          "description": "外推越界检测: 值 135.5 超出合理范围 [0, 100]; 与历史值偏差 94.3%，超过阈值 30% (计算过程: 历史值=69.72, 偏差率=0.943)",
+          "timestamp": "2026-06-09T21:40:08.697456"
+        },
+        {
+          "trace_id": "dad270f8",
+          "target_id": "record:cdea7d8c",
+          "action": "issue_detected",
+          "description": "异常值检测: 字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+          "timestamp": "2026-06-09T21:40:09.038558"
+        },
+        {
+          "trace_id": "0c5c8281",
+          "target_id": "record:cdea7d8c",
+          "action": "status_change",
+          "description": "状态变更: None -> recollect",
+          "timestamp": "2026-06-09T21:40:11.078956"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "4e47539e",
+          "record_id": "cdea7d8c",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q003 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.899626"
+        },
+        {
+          "issue_id": "93398d8d",
+          "record_id": "cdea7d8c",
+          "issue_type": "extrapolation_out_of_bounds",
+          "rule_name": "外推越界检测",
+          "details": "值 135.5 超出合理范围 [0, 100]; 与历史值偏差 94.3%，超过阈值 30% (计算过程: 历史值=69.72, 偏差率=0.943)",
+          "severity": "high",
+          "suggested_status": "recollect",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.697427"
+        },
+        {
+          "issue_id": "4824b61b",
+          "record_id": "cdea7d8c",
+          "issue_type": "data_abnormal",
+          "rule_name": "异常值检测",
+          "details": "字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+          "severity": "medium",
+          "suggested_status": "available",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:09.038533"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "5f100976",
+      "upload_id": "b249b617",
+      "row_index": 226,
+      "data": {
+        "question_id": "Q003",
+        "student_id": "S007",
+        "score": 84.36,
+        "historical_value": 90.71,
+        "extrapolated_value": 90.13,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "de529ee4"
+      ],
+      "create_time": "2026-06-09T21:40:06.685992",
+      "last_updated": "2026-06-09T21:40:11.105176",
+      "trace": [
+        {
+          "trace_id": "25e4ec9f",
+          "target_id": "record:5f100976",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.905488"
+        },
+        {
+          "trace_id": "e27592b2",
+          "target_id": "record:5f100976",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.105221"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "de529ee4",
+          "record_id": "5f100976",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q003 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.905478"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "77ecc25c",
+      "upload_id": "b249b617",
+      "row_index": 220,
+      "data": {
+        "question_id": "Q003",
+        "student_id": "S001",
+        "score": 69.26,
+        "historical_value": 66.53,
+        "extrapolated_value": 69.0,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "a746dac5"
+      ],
+      "create_time": "2026-06-09T21:40:06.685846",
+      "last_updated": "2026-06-09T21:40:11.037381",
+      "trace": [
+        {
+          "trace_id": "db272429",
+          "target_id": "record:77ecc25c",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.913529"
+        },
+        {
+          "trace_id": "d0cb55dc",
+          "target_id": "record:77ecc25c",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.037425"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "a746dac5",
+          "record_id": "77ecc25c",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q003 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.913515"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "300c92ac",
+      "upload_id": "b249b617",
+      "row_index": 228,
+      "data": {
+        "question_id": "Q003",
+        "student_id": "S009",
+        "score": 62.78,
+        "historical_value": 66.34,
+        "extrapolated_value": 60.86,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "1f4847e5"
+      ],
+      "create_time": "2026-06-09T21:40:06.686040",
+      "last_updated": "2026-06-09T21:40:11.132953",
+      "trace": [
+        {
+          "trace_id": "1844cb3d",
+          "target_id": "record:300c92ac",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.918947"
+        },
+        {
+          "trace_id": "fe359ec7",
+          "target_id": "record:300c92ac",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.133004"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "1f4847e5",
+          "record_id": "300c92ac",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q003 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.918933"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "94d4e922",
+      "upload_id": "b249b617",
+      "row_index": 39,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S010",
+        "score": 63.31,
+        "historical_value": 69.03,
+        "extrapolated_value": 69.33,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "99cc98c9"
+      ],
+      "create_time": "2026-06-09T21:40:06.680629",
+      "last_updated": "2026-06-09T21:40:09.417623",
+      "trace": [
+        {
+          "trace_id": "2bca9a05",
+          "target_id": "record:94d4e922",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.925607"
+        },
+        {
+          "trace_id": "95c50195",
+          "target_id": "record:94d4e922",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.417670"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "99cc98c9",
+          "record_id": "94d4e922",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.925596"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "66840503",
+      "upload_id": "b249b617",
+      "row_index": 30,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S001",
+        "score": 75.97,
+        "historical_value": 80.81,
+        "extrapolated_value": 70.35,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "de5bb1a5"
+      ],
+      "create_time": "2026-06-09T21:40:06.680418",
+      "last_updated": "2026-06-09T21:40:09.372695",
+      "trace": [
+        {
+          "trace_id": "a19af105",
+          "target_id": "record:66840503",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.932448"
+        },
+        {
+          "trace_id": "0ad2c4c6",
+          "target_id": "record:66840503",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.372744"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "de5bb1a5",
+          "record_id": "66840503",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.932437"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "40f5f9af",
+      "upload_id": "b249b617",
+      "row_index": 33,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S004",
+        "score": NaN,
+        "historical_value": 65.58,
+        "extrapolated_value": 69.29,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "7e6154fc",
+        "dfa852a5"
+      ],
+      "create_time": "2026-06-09T21:40:06.680488",
+      "last_updated": "2026-06-09T21:40:09.402848",
+      "trace": [
+        {
+          "trace_id": "b9951023",
+          "target_id": "record:40f5f9af",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.937283"
+        },
+        {
+          "trace_id": "5bb54e8a",
+          "target_id": "record:40f5f9af",
+          "action": "issue_detected",
+          "description": "缺失值检测: 关键字段缺失: score",
+          "timestamp": "2026-06-09T21:40:08.870060"
+        },
+        {
+          "trace_id": "6f7af5c7",
+          "target_id": "record:40f5f9af",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.402943"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "7e6154fc",
+          "record_id": "40f5f9af",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.937274"
+        },
+        {
+          "issue_id": "dfa852a5",
+          "record_id": "40f5f9af",
+          "issue_type": "data_missing",
+          "rule_name": "缺失值检测",
+          "details": "关键字段缺失: score",
+          "severity": "medium",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:08.870036"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "bcbb17a9",
+      "upload_id": "b249b617",
+      "row_index": 32,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S003",
+        "score": 77.96,
+        "historical_value": 79.27,
+        "extrapolated_value": 78.0,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "6aa4f9ad"
+      ],
+      "create_time": "2026-06-09T21:40:06.680464",
+      "last_updated": "2026-06-09T21:40:09.387069",
+      "trace": [
+        {
+          "trace_id": "404cd43b",
+          "target_id": "record:bcbb17a9",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.942086"
+        },
+        {
+          "trace_id": "85aedcfa",
+          "target_id": "record:bcbb17a9",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.387114"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "6aa4f9ad",
+          "record_id": "bcbb17a9",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.942079"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "8ef11f15",
+      "upload_id": "b249b617",
+      "row_index": 236,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S007",
+        "score": 54.18,
+        "historical_value": 62.66,
+        "extrapolated_value": 55.87,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "5481b76e"
+      ],
+      "create_time": "2026-06-09T21:40:06.686232",
+      "last_updated": "2026-06-09T21:40:11.189737",
+      "trace": [
+        {
+          "trace_id": "3e712716",
+          "target_id": "record:8ef11f15",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.949307"
+        },
+        {
+          "trace_id": "d1606171",
+          "target_id": "record:8ef11f15",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.189785"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "5481b76e",
+          "record_id": "8ef11f15",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.949298"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "88349f46",
+      "upload_id": "b249b617",
+      "row_index": 238,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S009",
+        "score": 74.62,
+        "historical_value": 80.14,
+        "extrapolated_value": 75.54,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "0f878bf6"
+      ],
+      "create_time": "2026-06-09T21:40:06.686281",
+      "last_updated": "2026-06-09T21:40:11.207730",
+      "trace": [
+        {
+          "trace_id": "4ee9646d",
+          "target_id": "record:88349f46",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.954853"
+        },
+        {
+          "trace_id": "80a12eea",
+          "target_id": "record:88349f46",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.207777"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "0f878bf6",
+          "record_id": "88349f46",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.954839"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "bb5f0516",
+      "upload_id": "b249b617",
+      "row_index": 232,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S003",
+        "score": 78.26,
+        "historical_value": 72.01,
+        "extrapolated_value": 85.65,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "be6d2a0f"
+      ],
+      "create_time": "2026-06-09T21:40:06.686136",
+      "last_updated": "2026-06-09T21:40:11.175004",
+      "trace": [
+        {
+          "trace_id": "71c1c7e1",
+          "target_id": "record:bb5f0516",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.961570"
+        },
+        {
+          "trace_id": "efb8fcd2",
+          "target_id": "record:bb5f0516",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.175056"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "be6d2a0f",
+          "record_id": "bb5f0516",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.961556"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "c7e7eaa7",
+      "upload_id": "b249b617",
+      "row_index": 230,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S001",
+        "score": 71.39,
+        "historical_value": 77.19,
+        "extrapolated_value": 62.74,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "a6efa0e9"
+      ],
+      "create_time": "2026-06-09T21:40:06.686088",
+      "last_updated": "2026-06-09T21:40:11.147430",
+      "trace": [
+        {
+          "trace_id": "7e7cb84a",
+          "target_id": "record:c7e7eaa7",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.967413"
+        },
+        {
+          "trace_id": "b1631c18",
+          "target_id": "record:c7e7eaa7",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.147518"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "a6efa0e9",
+          "record_id": "c7e7eaa7",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.967400"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "3bcb3e93",
+      "upload_id": "b249b617",
+      "row_index": 231,
+      "data": {
+        "question_id": "Q004",
+        "student_id": "S002",
+        "score": 81.16,
+        "historical_value": 84.12,
+        "extrapolated_value": 78.68,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "f6a139e9"
+      ],
+      "create_time": "2026-06-09T21:40:06.686112",
+      "last_updated": "2026-06-09T21:40:11.162537",
+      "trace": [
+        {
+          "trace_id": "8b6e9e09",
+          "target_id": "record:3bcb3e93",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 15.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.972615"
+        },
+        {
+          "trace_id": "4be71ed2",
+          "target_id": "record:3bcb3e93",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.162614"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "f6a139e9",
+          "record_id": "3bcb3e93",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q004 在批次 2026-06 排名变化 15.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.972607"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "fbba53f9",
+      "upload_id": "b249b617",
+      "row_index": 49,
+      "data": {
+        "question_id": "Q005",
+        "student_id": "S010",
+        "score": 61.8,
+        "historical_value": 64.41,
+        "extrapolated_value": 64.17,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "02fd501c"
+      ],
+      "create_time": "2026-06-09T21:40:06.680865",
+      "last_updated": "2026-06-09T21:40:09.569241",
+      "trace": [
+        {
+          "trace_id": "7cd6dadd",
+          "target_id": "record:fbba53f9",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q005 在批次 2026-05 排名变化 17.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.980447"
+        },
+        {
+          "trace_id": "119d1103",
+          "target_id": "record:fbba53f9",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.569288"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "02fd501c",
+          "record_id": "fbba53f9",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q005 在批次 2026-05 排名变化 17.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.980432"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "d2fbb68e",
+      "upload_id": "b249b617",
+      "row_index": 45,
+      "data": {
+        "question_id": "Q005",
+        "student_id": "S006",
+        "score": 90.5,
+        "historical_value": 86.58,
+        "extrapolated_value": 87.92,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "04970cca"
+      ],
+      "create_time": "2026-06-09T21:40:06.680772",
+      "last_updated": "2026-06-09T21:40:09.450976",
+      "trace": [
+        {
+          "trace_id": "6c7e8fda",
+          "target_id": "record:d2fbb68e",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q005 在批次 2026-05 排名变化 15.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.985944"
+        },
+        {
+          "trace_id": "0e9bf324",
+          "target_id": "record:d2fbb68e",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.451168"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "04970cca",
+          "record_id": "d2fbb68e",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q005 在批次 2026-05 排名变化 15.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.985931"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "c112b87b",
+      "upload_id": "b249b617",
+      "row_index": 44,
+      "data": {
+        "question_id": "Q005",
+        "student_id": "S005",
+        "score": 64.38,
+        "historical_value": 66.74,
+        "extrapolated_value": 57.02,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "10cd49ff"
+      ],
+      "create_time": "2026-06-09T21:40:06.680748",
+      "last_updated": "2026-06-09T21:40:09.432414",
+      "trace": [
+        {
+          "trace_id": "7464b66f",
+          "target_id": "record:c112b87b",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q005 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.990991"
+        },
+        {
+          "trace_id": "d349e416",
+          "target_id": "record:c112b87b",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.432490"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "10cd49ff",
+          "record_id": "c112b87b",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q005 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.990983"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "fd4a33da",
+      "upload_id": "b249b617",
+      "row_index": 48,
+      "data": {
+        "question_id": "Q005",
+        "student_id": "S009",
+        "score": 77.6,
+        "historical_value": 81.51,
+        "extrapolated_value": 67.7,
+        "batch_id": "2026-05",
+        "sample_date": "2026-05-15"
+      },
+      "data_status": "pending",
+      "issues": [
+        "46af3d20"
+      ],
+      "create_time": "2026-06-09T21:40:06.680842",
+      "last_updated": "2026-06-09T21:40:09.536614",
+      "trace": [
+        {
+          "trace_id": "6161ecde",
+          "target_id": "record:fd4a33da",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q005 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:06.998651"
+        },
+        {
+          "trace_id": "31b42fcd",
+          "target_id": "record:fd4a33da",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:09.536728"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "46af3d20",
+          "record_id": "fd4a33da",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q005 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:06.998634"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "c337bb73",
+      "upload_id": "b249b617",
+      "row_index": 247,
+      "data": {
+        "question_id": "Q005",
+        "student_id": "S008",
+        "score": 62.2,
+        "historical_value": 59.08,
+        "extrapolated_value": 62.41,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "0d51426c"
+      ],
+      "create_time": "2026-06-09T21:40:06.686499",
+      "last_updated": "2026-06-09T21:40:11.393918",
+      "trace": [
+        {
+          "trace_id": "aef94092",
+          "target_id": "record:c337bb73",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:07.004093"
+        },
+        {
+          "trace_id": "a0ca1ecf",
+          "target_id": "record:c337bb73",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.393990"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "0d51426c",
+          "record_id": "c337bb73",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q005 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:07.004082"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "15bb5c0c",
+      "upload_id": "b249b617",
+      "row_index": 240,
+      "data": {
+        "question_id": "Q005",
+        "student_id": "S001",
+        "score": 78.08,
+        "historical_value": 69.53,
+        "extrapolated_value": 67.29,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "6135988e"
+      ],
+      "create_time": "2026-06-09T21:40:06.686331",
+      "last_updated": "2026-06-09T21:40:11.223579",
+      "trace": [
+        {
+          "trace_id": "18ff6b66",
+          "target_id": "record:15bb5c0c",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:07.009896"
+        },
+        {
+          "trace_id": "8bdef31d",
+          "target_id": "record:15bb5c0c",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.223639"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "6135988e",
+          "record_id": "15bb5c0c",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q005 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:07.009852"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "ffd3fd90",
+      "upload_id": "b249b617",
+      "row_index": 246,
+      "data": {
+        "question_id": "Q005",
+        "student_id": "S007",
+        "score": 91.65,
+        "historical_value": 96.73,
+        "extrapolated_value": 76.93,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "81d7f00a"
+      ],
+      "create_time": "2026-06-09T21:40:06.686475",
+      "last_updated": "2026-06-09T21:40:11.378667",
+      "trace": [
+        {
+          "trace_id": "35df9736",
+          "target_id": "record:ffd3fd90",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:07.016420"
+        },
+        {
+          "trace_id": "25b0d35a",
+          "target_id": "record:ffd3fd90",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.378730"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "81d7f00a",
+          "record_id": "ffd3fd90",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q005 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:07.016407"
+        }
+      ],
+      "manual_edits": []
+    },
+    {
+      "record_id": "303696f3",
+      "upload_id": "b249b617",
+      "row_index": 242,
+      "data": {
+        "question_id": "Q005",
+        "student_id": "S003",
+        "score": 75.18,
+        "historical_value": 76.92,
+        "extrapolated_value": 70.87,
+        "batch_id": "2026-06",
+        "sample_date": "2026-06-10"
+      },
+      "data_status": "pending",
+      "issues": [
+        "1e5c1481"
+      ],
+      "create_time": "2026-06-09T21:40:06.686379",
+      "last_updated": "2026-06-09T21:40:11.353262",
+      "trace": [
+        {
+          "trace_id": "dd9a8a22",
+          "target_id": "record:303696f3",
+          "action": "issue_detected",
+          "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+          "timestamp": "2026-06-09T21:40:07.021648"
+        },
+        {
+          "trace_id": "b54b0ef7",
+          "target_id": "record:303696f3",
+          "action": "status_change",
+          "description": "状态变更: None -> pending",
+          "timestamp": "2026-06-09T21:40:11.353345"
+        }
+      ],
+      "issues_detail": [
+        {
+          "issue_id": "1e5c1481",
+          "record_id": "303696f3",
+          "issue_type": "sorting_unstable",
+          "rule_name": "排序不稳定检测",
+          "details": "题目 Q005 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+          "severity": "high",
+          "suggested_status": "pending",
+          "status": "pending",
+          "create_time": "2026-06-09T21:40:07.021640"
+        }
+      ],
+      "manual_edits": []
+    }
+  ],
+  "rule_descriptions": [
+    {
+      "key": "sorting_unstable",
+      "name": "排序不稳定检测",
+      "description": "检测同一维度下排序结果在相邻批次间存在异常波动的记录",
+      "severity": "high",
+      "params": {
+        "sort_column": "score",
+        "group_column": "question_id",
+        "rank_diff_threshold": 3,
+        "window_size": 3
+      }
+    },
+    {
+      "key": "extrapolation_out_of_bounds",
+      "name": "外推越界检测",
+      "description": "检测通过外推计算得到的值超出合理范围的记录",
+      "severity": "high",
+      "params": {
+        "value_column": "extrapolated_value",
+        "lower_bound": 0,
+        "upper_bound": 100,
+        "historical_column": "historical_value",
+        "deviation_threshold": 0.3
+      }
+    },
+    {
+      "key": "data_missing",
+      "name": "缺失值检测",
+      "description": "检测关键字段存在缺失的记录",
+      "severity": "medium",
+      "params": {
+        "required_columns": [
+          "question_id",
+          "score",
+          "sample_date"
+        ]
+      }
+    },
+    {
+      "key": "data_abnormal",
+      "name": "异常值检测",
+      "description": "检测数值偏离正常统计分布的记录",
+      "severity": "medium",
+      "params": {
+        "check_columns": [
+          "score",
+          "extrapolated_value"
+        ],
+        "zscore_threshold": 2.5
+      }
+    }
+  ]
+}

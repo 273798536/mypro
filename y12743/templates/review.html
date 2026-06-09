@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}综合复核 - 抽样偏差修正器{% endblock %}
+{% block content %}
+
+<div class="card">
+    <h2>📋 综合复核报告</h2>
+    <div class="section-desc">
+        <strong>让运营同事看出处理的是眼前这批具体材料。</strong>
+        计算草稿、图表截图、排序不稳定记录放在同一轮复核里，不沿用旧流程的通用样例。
+        报告ID: <code>{{ report.report_id }}</code>
+    </div>
+    
+    <div style="background:#f0f9eb;border:1px solid #67c23a;padding:14px;border-radius:6px;margin-bottom:16px;">
+        <pre style="background:white;color:#2c3e50;margin:0;border:none;padding:0;font-family:inherit;font-size:13px;white-space:pre-wrap;">{{ text_summary }}</pre>
+    </div>
+</div>
+
+<div class="card">
+    <h2>📊 图表复核（本轮具体材料）</h2>
+    <div class="section-desc">以下图表均基于当前导入的数据生成，可与表格、文字说明三方对照。</div>
+    <div class="grid grid-2">
+        {% for cname, cpath in report.charts.items() %}
+        <div>
+            <h3>{{ cname }}</h3>
+            <img src="{{ cpath }}" class="chart-img" alt="{{ cname }}">
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card">
+    <h2>🧮 计算草稿（规则判定过程）</h2>
+    <div class="section-desc">每条规则的参数和判定逻辑透明化，月底/课前公式核查时可以直接对照。</div>
+    {% for rule in report.rule_descriptions %}
+    <div style="margin-bottom: 16px; padding: 14px; background: #fafafa; border-radius: 6px;">
+        <h3 style="margin-top:0;">{{ rule.name }} <span class="badge 
+            {% if rule.severity == 'high' %}badge-red
+            {% elif rule.severity == 'medium' %}badge-orange
+            {% else %}badge-blue{% endif %}">{{ rule.severity }}</span>
+        </h3>
+        <p style="color:#606266;font-size:13px;margin-bottom:8px;">{{ rule.description }}</p>
+        <div style="font-size:12px;color:#909399;">
+            <strong>参数配置:</strong>
+            <ul style="margin-left:20px;margin-top:4px;">
+                {% for pk, pv in rule.params.items() %}
+                <li><code>{{ pk }}</code> = {{ pv }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <h2>🔀 排序不稳定记录（重点复核）</h2>
+    {% if report.issues_by_type.sorting_unstable.samples %}
+    <table>
+        <thead>
+            <tr>
+                <th>记录ID</th>
+                <th>题目</th>
+                <th>学生</th>
+                <th>批次</th>
+                <th>分数</th>
+                <th>问题说明</th>
+                <th>判定</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in report.issues_by_type.sorting_unstable.samples %}
+            <tr>
+                <td><code>{{ issue.record_id }}</code></td>
+                <td>{{ issue.record_data.get('question_id', '-') }}</td>
+                <td>{{ issue.record_data.get('student_id', '-') }}</td>
+                <td>{{ issue.record_data.get('batch_id', '-') }}</td>
+                <td>{{ issue.record_data.get('score', '-') }}</td>
+                <td style="max-width:350px;">{{ issue.details }}</td>
+                <td>
+                    {% if issue.record_status == 'available' %}
+                    <span class="badge badge-green">可用</span>
+                    {% elif issue.record_status == 'pending' %}
+                    <span class="badge badge-orange">暂缓</span>
+                    {% else %}
+                    <span class="badge badge-red">需重采</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#909399;">本轮无排序不稳定记录。</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>📈 外推越界记录（倒查验收重点）</h2>
+    {% if report.issues_by_type.extrapolation_out_of_bounds.samples %}
+    <table>
+        <thead>
+            <tr>
+                <th>记录ID</th>
+                <th>题目</th>
+                <th>历史值</th>
+                <th>外推值</th>
+                <th>计算过程</th>
+                <th>判定</th>
+                <th>追溯</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in report.issues_by_type.extrapolation_out_of_bounds.samples %}
+            <tr>
+                <td><code>{{ issue.record_id }}</code></td>
+                <td>{{ issue.record_data.get('question_id', '-') }}</td>
+                <td>{{ issue.record_data.get('historical_value', '-') }}</td>
+                <td style="color:#f56c6c;font-weight:bold;">{{ issue.record_data.get('extrapolated_value', '-') }}</td>
+                <td style="font-size:12px;max-width:300px;">{{ issue.details }}</td>
+                <td><span class="badge badge-red">需重采</span></td>
+                <td><a href="/record/{{ issue.record_id }}" class="btn btn-sm btn-outline">倒查</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#909399;">本轮无外推越界记录。</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>📋 数据可用判定说明</h2>
+    <div class="grid grid-2">
+        {% for st, info in report.status_explanations.items() %}
+        <div style="padding: 14px; border-radius: 6px;
+            {% if st == 'available' %}background:#f0f9eb;border:1px solid #67c23a;
+            {% elif st == 'pending' %}background:#fdf6ec;border:1px solid #e6a23c;
+            {% else %}background:#fef0f0;border:1px solid #f56c6c;{% endif %}">
+            <h3 style="margin-top:0;">
+                {% if st == 'available' %}✅{% elif st == 'pending' %}⚠️{% else %}🔴{% endif %}
+                {{ info.label }}
+            </h3>
+            <p style="font-size:13px;color:#606266;margin:0;">{{ info.description }}</p>
+            <p style="font-size:12px;color:#909399;margin-top:6px;">
+                当前数量: <strong>{{ report.summary.by_status.get(st, 0) }}</strong> 条
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

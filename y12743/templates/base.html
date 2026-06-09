@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}抽样偏差修正器{% endblock %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header .subtitle { font-size: 13px; opacity: 0.9; }
+        .nav {
+            background: white;
+            padding: 0 40px;
+            border-bottom: 1px solid #e4e7ed;
+            display: flex;
+            gap: 5px;
+        }
+        .nav a {
+            padding: 14px 20px;
+            text-decoration: none;
+            color: #606266;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .nav a:hover, .nav a.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: #f5f7fa;
+        }
+        .container {
+            padding: 30px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #ebeef5;
+            color: #303133;
+        }
+        .card h3 {
+            font-size: 15px;
+            margin: 16px 0 10px;
+            color: #606266;
+        }
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .stat-card {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-card .num {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .stat-card .label { font-size: 13px; opacity: 0.85; }
+        .stat-green { background: #f0f9eb; color: #67c23a; }
+        .stat-orange { background: #fdf6ec; color: #e6a23c; }
+        .stat-red { background: #fef0f0; color: #f56c6c; }
+        .stat-blue { background: #ecf5ff; color: #409eff; }
+        .stat-purple { background: #f3e9fc; color: #909399; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ebeef5;
+        }
+        th {
+            background: #fafafa;
+            font-weight: 600;
+            color: #606266;
+        }
+        tr:hover { background: #f5f7fa; }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-green { background: #f0f9eb; color: #67c23a; }
+        .badge-orange { background: #fdf6ec; color: #e6a23c; }
+        .badge-red { background: #fef0f0; color: #f56c6c; }
+        .badge-blue { background: #ecf5ff; color: #409eff; }
+        .badge-gray { background: #f4f4f5; color: #909399; }
+        .btn {
+            display: inline-block;
+            padding: 8px 18px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .btn:hover { background: #5568d3; }
+        .btn-outline {
+            background: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+        .btn-danger { background: #f56c6c; }
+        .btn-success { background: #67c23a; }
+        .btn-warning { background: #e6a23c; }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        input[type=file] {
+            padding: 8px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+        }
+        .upload-area {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .alert {
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        .alert-info { background: #ecf5ff; color: #409eff; border-left: 4px solid #409eff; }
+        .alert-warning { background: #fdf6ec; color: #e6a23c; border-left: 4px solid #e6a23c; }
+        .alert-success { background: #f0f9eb; color: #67c23a; border-left: 4px solid #67c23a; }
+        .alert-error { background: #fef0f0; color: #f56c6c; border-left: 4px solid #f56c6c; }
+        .chart-img {
+            width: 100%;
+            max-width: 500px;
+            border-radius: 6px;
+            border: 1px solid #ebeef5;
+        }
+        .trace-log {
+            background: #fafafa;
+            padding: 10px 14px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, Consolas, monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .trace-item {
+            padding: 4px 0;
+            border-bottom: 1px dashed #e4e7ed;
+        }
+        .trace-item:last-child { border-bottom: none; }
+        .trace-action {
+            display: inline-block;
+            min-width: 100px;
+            color: #667eea;
+            font-weight: 500;
+        }
+        .trace-time {
+            color: #909399;
+            font-size: 11px;
+        }
+        .edit-history {
+            background: #fff7e6;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 4px 0;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 14px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .section-desc {
+            color: #909399;
+            font-size: 13px;
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎯 抽样偏差修正器</h1>
+        <div class="subtitle">教研数据质量检测 · 约束校验 · 可追溯复核</div>
+    </div>
+    <div class="nav">
+        <a href="/" class="{% if active_page == 'dashboard' %}active{% endif %}">📊 总览仪表盘</a>
+        <a href="/constraint-check" class="{% if active_page == 'constraint' %}active{% endif %}">🔍 约束校验（日常入口）</a>
+        <a href="/review" class="{% if active_page == 'review' %}active{% endif %}">📋 综合复核</a>
+        <a href="/formula-review" class="{% if active_page == 'formula' %}active{% endif %}">🧮 公式计算核查</a>
+        <a href="/records" class="{% if active_page == 'records' %}active{% endif %}">📁 记录追溯</a>
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

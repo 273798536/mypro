@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}约束校验 - 抽样偏差修正器{% endblock %}
+{% block content %}
+
+<div class="card">
+    <h2>🔍 约束校验（日常入口）</h2>
+    <div class="section-desc">
+        <strong>教研编辑日常使用入口。</strong>这里把所有"坏记录"拎出来，
+        每条记录标注：<span class="badge badge-green">数据可用</span>
+        <span class="badge badge-orange">数据暂缓</span>
+        <span class="badge badge-red">需重新采集</span>。
+        点击记录可查看追溯链和详细计算过程。
+    </div>
+</div>
+
+<div class="card">
+    <h2>📋 问题检出汇总</h2>
+    <div class="grid grid-4">
+        <div class="stat-card stat-red">
+            <div class="num">{{ issues_by_type.sorting_unstable.count }}</div>
+            <div class="label">🔀 排序不稳定</div>
+        </div>
+        <div class="stat-card stat-orange">
+            <div class="num">{{ issues_by_type.extrapolation_out_of_bounds.count }}</div>
+            <div class="label">📈 外推越界</div>
+        </div>
+        <div class="stat-card stat-purple">
+            <div class="num">{{ issues_by_type.data_missing.count }}</div>
+            <div class="label">❓ 数据缺失</div>
+        </div>
+        <div class="stat-card stat-blue">
+            <div class="num">{{ issues_by_type.data_abnormal.count }}</div>
+            <div class="label">⚠️ 异常值</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>🔀 排序不稳定记录</h2>
+    <div class="section-desc">同一题目在不同批次排名异常波动，需要人工确认是否排序算法有误或数据本身有问题。</div>
+    
+    {% if charts.sorting_unstable %}
+    <img src="{{ charts.sorting_unstable }}" class="chart-img" style="max-width:600px;margin-bottom:16px;" alt="排序不稳定对比图">
+    {% endif %}
+    
+    {% if issues_by_type.sorting_unstable.samples %}
+    <table>
+        <thead>
+            <tr>
+                <th>记录ID</th>
+                <th>题目ID</th>
+                <th>学生ID</th>
+                <th>分数</th>
+                <th>批次</th>
+                <th>问题详情</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in issues_by_type.sorting_unstable.samples %}
+            <tr>
+                <td><code>{{ issue.record_id }}</code></td>
+                <td>{{ issue.record_data.get('question_id', '-') }}</td>
+                <td>{{ issue.record_data.get('student_id', '-') }}</td>
+                <td>{{ issue.record_data.get('score', '-') }}</td>
+                <td>{{ issue.record_data.get('batch_id', '-') }}</td>
+                <td style="max-width:300px;">{{ issue.details }}</td>
+                <td>
+                    {% if issue.record_status == 'available' %}
+                    <span class="badge badge-green">可用</span>
+                    {% elif issue.record_status == 'pending' %}
+                    <span class="badge badge-orange">暂缓</span>
+                    {% elif issue.record_status == 'recollect' %}
+                    <span class="badge badge-red">需重采</span>
+                    {% else %}
+                    <span class="badge badge-gray">未分类</span>
+                    {% endif %}
+                </td>
+                <td><a href="/record/{{ issue.record_id }}" class="btn btn-sm btn-outline">详情/追溯</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#909399;">暂无排序不稳定记录。</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>📈 外推越界记录（可复现样例）</h2>
+    <div class="section-desc">
+        <strong>验收重点：</strong>这些记录的图（散点图）、表（下面表格）、文字说明（详情列）三者必须对得上。
+        每条记录都有完整的计算草稿，可在详情页倒查来源。
+    </div>
+    
+    {% if issues_by_type.extrapolation_out_of_bounds.samples %}
+    <table>
+        <thead>
+            <tr>
+                <th>记录ID</th>
+                <th>题目ID</th>
+                <th>历史值</th>
+                <th>外推值</th>
+                <th>合理范围</th>
+                <th>计算说明</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in issues_by_type.extrapolation_out_of_bounds.samples %}
+            <tr>
+                <td><code>{{ issue.record_id }}</code></td>
+                <td>{{ issue.record_data.get('question_id', '-') }}</td>
+                <td>{{ issue.record_data.get('historical_value', '-') }}</td>
+                <td style="color:#f56c6c;font-weight:bold;">{{ issue.record_data.get('extrapolated_value', '-') }}</td>
+                <td>[0, 100]</td>
+                <td style="max-width:350px;font-size:12px;">{{ issue.details }}</td>
+                <td>
+                    {% if issue.record_status == 'available' %}
+                    <span class="badge badge-green">可用</span>
+                    {% elif issue.record_status == 'pending' %}
+                    <span class="badge badge-orange">暂缓</span>
+                    {% elif issue.record_status == 'recollect' %}
+                    <span class="badge badge-red">需重采</span>
+                    {% else %}
+                    <span class="badge badge-gray">未分类</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="actions">
+                        <a href="/record/{{ issue.record_id }}" class="btn btn-sm btn-outline">详情</a>
+                        <form action="/resolve/{{ issue.issue_id }}" method="post" style="display:inline;">
+                            <input type="hidden" name="resolution" value="人工确认通过，数据可信">
+                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('标记为通过？')">✓ 通过</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#909399;">暂无外推越界记录。</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>📋 所有带问题的记录</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>记录ID</th>
+                <th>题目ID</th>
+                <th>核心数据</th>
+                <th>问题数</th>
+                <th>判定状态</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in flagged_records %}
+            <tr>
+                <td><code>{{ rec.record_id }}</code></td>
+                <td>{{ rec.data.get('question_id', '-') }}</td>
+                <td style="font-size:12px;">
+                    分数: {{ rec.data.get('score', '-') }}<br>
+                    外推: {{ rec.data.get('extrapolated_value', '-') }}
+                </td>
+                <td><span class="badge badge-red">{{ rec.issues|length }}</span></td>
+                <td>
+                    {% if rec.data_status == 'available' %}
+                    <span class="badge badge-green">✅ 可用</span>
+                    {% elif rec.data_status == 'pending' %}
+                    <span class="badge badge-orange">⚠️ 暂缓</span>
+                    {% elif rec.data_status == 'recollect' %}
+                    <span class="badge badge-red">🔴 需重采</span>
+                    {% else %}
+                    <span class="badge badge-gray">未分类</span>
+                    {% endif %}
+                </td>
+                <td><a href="/record/{{ rec.record_id }}" class="btn btn-sm btn-outline">查看详情</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

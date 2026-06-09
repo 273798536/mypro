@@ -1,0 +1,3355 @@
+[
+  {
+    "trace_id": "8dcc48b0",
+    "target_id": "upload:b249b617",
+    "action": "import",
+    "description": "导入文件 sample_data.csv，共 400 条记录",
+    "timestamp": "2026-06-09T21:40:06.678541"
+  },
+  {
+    "trace_id": "17e4a33f",
+    "target_id": "record:9be0a8d4",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.699774"
+  },
+  {
+    "trace_id": "b8f2d68f",
+    "target_id": "record:2df9628b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.705630"
+  },
+  {
+    "trace_id": "be0febe6",
+    "target_id": "record:1b389a63",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.717397"
+  },
+  {
+    "trace_id": "23624eec",
+    "target_id": "record:aa95b0ba",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.723607"
+  },
+  {
+    "trace_id": "473ad966",
+    "target_id": "record:e9fd916f",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.730068"
+  },
+  {
+    "trace_id": "c2f4df72",
+    "target_id": "record:445e0dbd",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.737570"
+  },
+  {
+    "trace_id": "4e2d30bd",
+    "target_id": "record:fa37a5b2",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 17.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.745873"
+  },
+  {
+    "trace_id": "dc0105db",
+    "target_id": "record:a1f5329f",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.752703"
+  },
+  {
+    "trace_id": "4a049dae",
+    "target_id": "record:7264896b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.758036"
+  },
+  {
+    "trace_id": "a961a0aa",
+    "target_id": "record:c9c87d0c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.766861"
+  },
+  {
+    "trace_id": "0d29c652",
+    "target_id": "record:df0a6e4b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q001 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.773864"
+  },
+  {
+    "trace_id": "34f58ffd",
+    "target_id": "record:cf3348ac",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 15.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.785407"
+  },
+  {
+    "trace_id": "b8dcec81",
+    "target_id": "record:557fa0cb",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.791601"
+  },
+  {
+    "trace_id": "7c6fde2a",
+    "target_id": "record:2dd90286",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.801377"
+  },
+  {
+    "trace_id": "d7d00319",
+    "target_id": "record:87adbf61",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.807556"
+  },
+  {
+    "trace_id": "7584cc6d",
+    "target_id": "record:22e39210",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.816591"
+  },
+  {
+    "trace_id": "3c9753ee",
+    "target_id": "record:d1ce70c6",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.822027"
+  },
+  {
+    "trace_id": "f28bdf8c",
+    "target_id": "record:bbcbd760",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.829399"
+  },
+  {
+    "trace_id": "7803acda",
+    "target_id": "record:7b897d40",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.834496"
+  },
+  {
+    "trace_id": "14b35aa4",
+    "target_id": "record:d8d7b87e",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.839138"
+  },
+  {
+    "trace_id": "d4a525a5",
+    "target_id": "record:ddddb8ed",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.845674"
+  },
+  {
+    "trace_id": "467ee24b",
+    "target_id": "record:01d9d761",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.850826"
+  },
+  {
+    "trace_id": "25ab0f85",
+    "target_id": "record:97dc582d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.855642"
+  },
+  {
+    "trace_id": "097ad31e",
+    "target_id": "record:79656bbe",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.863469"
+  },
+  {
+    "trace_id": "a1e456c8",
+    "target_id": "record:8d04b111",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q002 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.868868"
+  },
+  {
+    "trace_id": "fe05a003",
+    "target_id": "record:e0f16d60",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q003 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.874469"
+  },
+  {
+    "trace_id": "6c63b340",
+    "target_id": "record:b6390368",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q003 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.881332"
+  },
+  {
+    "trace_id": "ac646302",
+    "target_id": "record:58a9fc9d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.886185"
+  },
+  {
+    "trace_id": "111d4820",
+    "target_id": "record:ab0d2a3c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 17.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.891088"
+  },
+  {
+    "trace_id": "f0d23cd0",
+    "target_id": "record:cdea7d8c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.899641"
+  },
+  {
+    "trace_id": "25e4ec9f",
+    "target_id": "record:5f100976",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.905488"
+  },
+  {
+    "trace_id": "db272429",
+    "target_id": "record:77ecc25c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.913529"
+  },
+  {
+    "trace_id": "1844cb3d",
+    "target_id": "record:300c92ac",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q003 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.918947"
+  },
+  {
+    "trace_id": "2bca9a05",
+    "target_id": "record:94d4e922",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.925607"
+  },
+  {
+    "trace_id": "a19af105",
+    "target_id": "record:66840503",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.932448"
+  },
+  {
+    "trace_id": "b9951023",
+    "target_id": "record:40f5f9af",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.937283"
+  },
+  {
+    "trace_id": "404cd43b",
+    "target_id": "record:bcbb17a9",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.942086"
+  },
+  {
+    "trace_id": "3e712716",
+    "target_id": "record:8ef11f15",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.949307"
+  },
+  {
+    "trace_id": "4ee9646d",
+    "target_id": "record:88349f46",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.954853"
+  },
+  {
+    "trace_id": "71c1c7e1",
+    "target_id": "record:bb5f0516",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.961570"
+  },
+  {
+    "trace_id": "7e7cb84a",
+    "target_id": "record:c7e7eaa7",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.967413"
+  },
+  {
+    "trace_id": "8b6e9e09",
+    "target_id": "record:3bcb3e93",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q004 在批次 2026-06 排名变化 15.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.972615"
+  },
+  {
+    "trace_id": "7cd6dadd",
+    "target_id": "record:fbba53f9",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-05 排名变化 17.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.980447"
+  },
+  {
+    "trace_id": "6c7e8fda",
+    "target_id": "record:d2fbb68e",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-05 排名变化 15.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.985944"
+  },
+  {
+    "trace_id": "7464b66f",
+    "target_id": "record:c112b87b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.990991"
+  },
+  {
+    "trace_id": "6161ecde",
+    "target_id": "record:fd4a33da",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:06.998651"
+  },
+  {
+    "trace_id": "aef94092",
+    "target_id": "record:c337bb73",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.004093"
+  },
+  {
+    "trace_id": "18ff6b66",
+    "target_id": "record:15bb5c0c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.009896"
+  },
+  {
+    "trace_id": "35df9736",
+    "target_id": "record:ffd3fd90",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.016420"
+  },
+  {
+    "trace_id": "dd9a8a22",
+    "target_id": "record:303696f3",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.021648"
+  },
+  {
+    "trace_id": "db2e16c4",
+    "target_id": "record:e117f17a",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q005 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.028459"
+  },
+  {
+    "trace_id": "6387eef8",
+    "target_id": "record:53efd2f2",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q006 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.034840"
+  },
+  {
+    "trace_id": "c4721364",
+    "target_id": "record:cebb76b3",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q006 在批次 2026-05 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.040223"
+  },
+  {
+    "trace_id": "726715c0",
+    "target_id": "record:8697d587",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q006 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.047448"
+  },
+  {
+    "trace_id": "191b956f",
+    "target_id": "record:79431cf2",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q006 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.053056"
+  },
+  {
+    "trace_id": "4d4f6716",
+    "target_id": "record:51f31b2a",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q006 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.058403"
+  },
+  {
+    "trace_id": "447d3b91",
+    "target_id": "record:89820fea",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q006 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.065597"
+  },
+  {
+    "trace_id": "c226e1ab",
+    "target_id": "record:239999fb",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q006 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.071048"
+  },
+  {
+    "trace_id": "b28839e3",
+    "target_id": "record:4bf2a319",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q006 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.078522"
+  },
+  {
+    "trace_id": "1cc4658f",
+    "target_id": "record:db3a9c45",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-05 排名变化 15.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.085724"
+  },
+  {
+    "trace_id": "815ad37a",
+    "target_id": "record:83613000",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.092292"
+  },
+  {
+    "trace_id": "94cd682b",
+    "target_id": "record:d19ccb37",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.099927"
+  },
+  {
+    "trace_id": "cb8c837a",
+    "target_id": "record:45953413",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.105865"
+  },
+  {
+    "trace_id": "2da89b9a",
+    "target_id": "record:fb97e543",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-06 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.114530"
+  },
+  {
+    "trace_id": "71209da1",
+    "target_id": "record:90990d34",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.120579"
+  },
+  {
+    "trace_id": "1118ec22",
+    "target_id": "record:da3143ef",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.129845"
+  },
+  {
+    "trace_id": "215457ee",
+    "target_id": "record:80de994a",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.136517"
+  },
+  {
+    "trace_id": "fbd7c82d",
+    "target_id": "record:e88ca4fa",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q007 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.144717"
+  },
+  {
+    "trace_id": "9ccc162a",
+    "target_id": "record:df890549",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.153952"
+  },
+  {
+    "trace_id": "84968e46",
+    "target_id": "record:291272bb",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-05 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.163124"
+  },
+  {
+    "trace_id": "02b8a1c6",
+    "target_id": "record:2b7ee8b7",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.170260"
+  },
+  {
+    "trace_id": "1ade62b2",
+    "target_id": "record:ee4d48eb",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-05 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.178719"
+  },
+  {
+    "trace_id": "7221b8d9",
+    "target_id": "record:94e7f36f",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.186638"
+  },
+  {
+    "trace_id": "3b1df6c0",
+    "target_id": "record:ca1b5d87",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.193229"
+  },
+  {
+    "trace_id": "fc5dc060",
+    "target_id": "record:018a7fa0",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.201339"
+  },
+  {
+    "trace_id": "0d603f34",
+    "target_id": "record:4ac22293",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-06 排名变化 18.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.208160"
+  },
+  {
+    "trace_id": "36919a76",
+    "target_id": "record:d3af7e3e",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.217908"
+  },
+  {
+    "trace_id": "bfa6310c",
+    "target_id": "record:7c0ba621",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.224312"
+  },
+  {
+    "trace_id": "61683dfb",
+    "target_id": "record:5f736d1f",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.232654"
+  },
+  {
+    "trace_id": "18603455",
+    "target_id": "record:8738420c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q008 在批次 2026-06 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.240286"
+  },
+  {
+    "trace_id": "18ae251c",
+    "target_id": "record:8c3fed8e",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q009 在批次 2026-05 排名变化 17.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.251339"
+  },
+  {
+    "trace_id": "c28c4fda",
+    "target_id": "record:6972588c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q009 在批次 2026-05 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.258007"
+  },
+  {
+    "trace_id": "53e60256",
+    "target_id": "record:169e9eb5",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q009 在批次 2026-05 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.266893"
+  },
+  {
+    "trace_id": "fb9b27cb",
+    "target_id": "record:a933c4b5",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q009 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.273992"
+  },
+  {
+    "trace_id": "7cbcdcc0",
+    "target_id": "record:68874e3f",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q009 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.284128"
+  },
+  {
+    "trace_id": "9ba4bd22",
+    "target_id": "record:4b8e2061",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q009 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.290974"
+  },
+  {
+    "trace_id": "99999e0d",
+    "target_id": "record:7eed9932",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q009 在批次 2026-06 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.299754"
+  },
+  {
+    "trace_id": "dda95260",
+    "target_id": "record:1341c21a",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q009 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.306405"
+  },
+  {
+    "trace_id": "c7279342",
+    "target_id": "record:824476fc",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.315886"
+  },
+  {
+    "trace_id": "1b540fef",
+    "target_id": "record:c234cc04",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-05 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.322749"
+  },
+  {
+    "trace_id": "58bb5274",
+    "target_id": "record:239a26b6",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-05 排名变化 17.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.331481"
+  },
+  {
+    "trace_id": "fdfbf1f8",
+    "target_id": "record:11663d68",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.338539"
+  },
+  {
+    "trace_id": "af434fba",
+    "target_id": "record:41539043",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.347409"
+  },
+  {
+    "trace_id": "e608419b",
+    "target_id": "record:d6a675c2",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.355464"
+  },
+  {
+    "trace_id": "e58b5af0",
+    "target_id": "record:dea76cd6",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.372686"
+  },
+  {
+    "trace_id": "f308463b",
+    "target_id": "record:aa349cf1",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.383258"
+  },
+  {
+    "trace_id": "e7618516",
+    "target_id": "record:374b2e6d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.391661"
+  },
+  {
+    "trace_id": "1bfa1286",
+    "target_id": "record:4fb4b792",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.403014"
+  },
+  {
+    "trace_id": "e5dd0386",
+    "target_id": "record:648835f2",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q010 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.413135"
+  },
+  {
+    "trace_id": "f815e6ca",
+    "target_id": "record:791bfe6c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-05 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.423200"
+  },
+  {
+    "trace_id": "9fad8e29",
+    "target_id": "record:6d0787dd",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-05 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.433093"
+  },
+  {
+    "trace_id": "ad7995bc",
+    "target_id": "record:6873202d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.441067"
+  },
+  {
+    "trace_id": "46276171",
+    "target_id": "record:a064bde6",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.453872"
+  },
+  {
+    "trace_id": "5f227208",
+    "target_id": "record:0958191d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.468296"
+  },
+  {
+    "trace_id": "cb8d7091",
+    "target_id": "record:6fdb724e",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-06 排名变化 15.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.475523"
+  },
+  {
+    "trace_id": "ff2a4ffe",
+    "target_id": "record:8d6948db",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.485470"
+  },
+  {
+    "trace_id": "725800a8",
+    "target_id": "record:8b76ff2f",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.493987"
+  },
+  {
+    "trace_id": "e5600d40",
+    "target_id": "record:17bbffcf",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.502911"
+  },
+  {
+    "trace_id": "7722bd23",
+    "target_id": "record:2290ca2d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.512857"
+  },
+  {
+    "trace_id": "645d3a08",
+    "target_id": "record:3bc66909",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.520521"
+  },
+  {
+    "trace_id": "8a0386d7",
+    "target_id": "record:0aa34dd5",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q011 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.529996"
+  },
+  {
+    "trace_id": "a04818dd",
+    "target_id": "record:e376fdb0",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-05 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.538808"
+  },
+  {
+    "trace_id": "44d59c52",
+    "target_id": "record:4708daa1",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.548285"
+  },
+  {
+    "trace_id": "314e94c1",
+    "target_id": "record:165b9eb8",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.556177"
+  },
+  {
+    "trace_id": "ebe90e44",
+    "target_id": "record:5db7775c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.565525"
+  },
+  {
+    "trace_id": "eb6aa093",
+    "target_id": "record:e530af52",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.572890"
+  },
+  {
+    "trace_id": "e7b3d7b3",
+    "target_id": "record:ea58e99a",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-06 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.582932"
+  },
+  {
+    "trace_id": "4e8ac08a",
+    "target_id": "record:e778df8a",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.590868"
+  },
+  {
+    "trace_id": "8f6d61a9",
+    "target_id": "record:635a9f3d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.600045"
+  },
+  {
+    "trace_id": "f7093bb2",
+    "target_id": "record:42b3a4cf",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.607067"
+  },
+  {
+    "trace_id": "f118e3ef",
+    "target_id": "record:c82d020c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q012 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.615653"
+  },
+  {
+    "trace_id": "784f81ef",
+    "target_id": "record:955424a4",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-05 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.623667"
+  },
+  {
+    "trace_id": "c1c7b8dd",
+    "target_id": "record:b39accfc",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.632429"
+  },
+  {
+    "trace_id": "c31b36ad",
+    "target_id": "record:ace2b56b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.639596"
+  },
+  {
+    "trace_id": "514124fd",
+    "target_id": "record:62066178",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.648610"
+  },
+  {
+    "trace_id": "c7f13d6e",
+    "target_id": "record:bd851d05",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.656018"
+  },
+  {
+    "trace_id": "0e6e0c65",
+    "target_id": "record:b8e8aec1",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.664906"
+  },
+  {
+    "trace_id": "77be5c08",
+    "target_id": "record:16a0141c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.672030"
+  },
+  {
+    "trace_id": "8c0bae7f",
+    "target_id": "record:217d01be",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.680828"
+  },
+  {
+    "trace_id": "4e52c8d2",
+    "target_id": "record:84eba358",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.687985"
+  },
+  {
+    "trace_id": "784039d5",
+    "target_id": "record:22d4ca41",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.696719"
+  },
+  {
+    "trace_id": "67454f51",
+    "target_id": "record:974950b8",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.703778"
+  },
+  {
+    "trace_id": "be803e65",
+    "target_id": "record:8bfacc66",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q013 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.712795"
+  },
+  {
+    "trace_id": "dc5c78f7",
+    "target_id": "record:895a74f0",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-05 排名变化 17.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.721458"
+  },
+  {
+    "trace_id": "5a5051b2",
+    "target_id": "record:c734e082",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.731095"
+  },
+  {
+    "trace_id": "69038b66",
+    "target_id": "record:6a6c9e9b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.739071"
+  },
+  {
+    "trace_id": "5e859e69",
+    "target_id": "record:0564c6ee",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.749294"
+  },
+  {
+    "trace_id": "9f16cb74",
+    "target_id": "record:12876127",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-05 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.757123"
+  },
+  {
+    "trace_id": "0f937202",
+    "target_id": "record:5e5778fc",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.766434"
+  },
+  {
+    "trace_id": "dcd055fa",
+    "target_id": "record:4b38dced",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.774164"
+  },
+  {
+    "trace_id": "7ec22a48",
+    "target_id": "record:3a6a8c98",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-06 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.784014"
+  },
+  {
+    "trace_id": "9c0dc30c",
+    "target_id": "record:cba77548",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.791815"
+  },
+  {
+    "trace_id": "34d38220",
+    "target_id": "record:fac5c79d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.801299"
+  },
+  {
+    "trace_id": "98d115d9",
+    "target_id": "record:1aeb60bf",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-06 排名变化 15.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.809094"
+  },
+  {
+    "trace_id": "69773188",
+    "target_id": "record:d189ca3d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q014 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.818113"
+  },
+  {
+    "trace_id": "cc64d53b",
+    "target_id": "record:4f466fae",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.828609"
+  },
+  {
+    "trace_id": "1d81827b",
+    "target_id": "record:87618200",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.836575"
+  },
+  {
+    "trace_id": "82cfa02a",
+    "target_id": "record:f8452f5d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.845708"
+  },
+  {
+    "trace_id": "32b6e216",
+    "target_id": "record:daf50eff",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-05 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.853884"
+  },
+  {
+    "trace_id": "f297432f",
+    "target_id": "record:1425d1ce",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-05 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.862837"
+  },
+  {
+    "trace_id": "a15cd004",
+    "target_id": "record:61e4e5e0",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.870948"
+  },
+  {
+    "trace_id": "1e9d1793",
+    "target_id": "record:9d6a8fc1",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.880852"
+  },
+  {
+    "trace_id": "ebbcfcac",
+    "target_id": "record:f3a0dfcd",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.888142"
+  },
+  {
+    "trace_id": "9e361c23",
+    "target_id": "record:3636e113",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.897032"
+  },
+  {
+    "trace_id": "f7455a98",
+    "target_id": "record:030e06a6",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.904961"
+  },
+  {
+    "trace_id": "82fc2c28",
+    "target_id": "record:fc66f9b0",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.914442"
+  },
+  {
+    "trace_id": "9a363b02",
+    "target_id": "record:36681f88",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.922599"
+  },
+  {
+    "trace_id": "540bdc8d",
+    "target_id": "record:b756be3c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q015 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.931855"
+  },
+  {
+    "trace_id": "5829a1ab",
+    "target_id": "record:a4601a69",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-05 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.940672"
+  },
+  {
+    "trace_id": "24a9cb4e",
+    "target_id": "record:553d60a0",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.950039"
+  },
+  {
+    "trace_id": "5c34060d",
+    "target_id": "record:c6d3e310",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.958064"
+  },
+  {
+    "trace_id": "3cff6cb0",
+    "target_id": "record:64dd2e5d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.968488"
+  },
+  {
+    "trace_id": "c40631ac",
+    "target_id": "record:41029f09",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.978398"
+  },
+  {
+    "trace_id": "26ce7bd6",
+    "target_id": "record:b7999e42",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-05 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.986828"
+  },
+  {
+    "trace_id": "667acdb1",
+    "target_id": "record:5494bc9c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:07.996832"
+  },
+  {
+    "trace_id": "ff646490",
+    "target_id": "record:94dcc7c3",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.005015"
+  },
+  {
+    "trace_id": "63fb4908",
+    "target_id": "record:6f17e113",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.015018"
+  },
+  {
+    "trace_id": "586dc986",
+    "target_id": "record:75cb5714",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.023207"
+  },
+  {
+    "trace_id": "5ae3a9b4",
+    "target_id": "record:075aa220",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.033425"
+  },
+  {
+    "trace_id": "31c9d230",
+    "target_id": "record:feeaaf1c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-06 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.041861"
+  },
+  {
+    "trace_id": "03cd6cd2",
+    "target_id": "record:a8dd08ad",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q016 在批次 2026-06 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.053698"
+  },
+  {
+    "trace_id": "585a7ce6",
+    "target_id": "record:741c9277",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.065906"
+  },
+  {
+    "trace_id": "e4dc96e3",
+    "target_id": "record:8068307f",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-05 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.074332"
+  },
+  {
+    "trace_id": "965d9e4c",
+    "target_id": "record:b5ce09fd",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.084641"
+  },
+  {
+    "trace_id": "4818318f",
+    "target_id": "record:ad3817a6",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-05 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.094458"
+  },
+  {
+    "trace_id": "d07e6be2",
+    "target_id": "record:fc73dfbd",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.102931"
+  },
+  {
+    "trace_id": "e28c023b",
+    "target_id": "record:4f9a3359",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.113239"
+  },
+  {
+    "trace_id": "1f5cd50c",
+    "target_id": "record:9cfc25dc",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-06 排名变化 18.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.122847"
+  },
+  {
+    "trace_id": "dda03cc0",
+    "target_id": "record:bf93a6d2",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-06 排名变化 12.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.133046"
+  },
+  {
+    "trace_id": "65a9829b",
+    "target_id": "record:8f9d78a7",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-06 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.141265"
+  },
+  {
+    "trace_id": "8b54ea59",
+    "target_id": "record:59453ecc",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q017 在批次 2026-06 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.151106"
+  },
+  {
+    "trace_id": "7aec85dc",
+    "target_id": "record:2e7eb399",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-05 排名变化 17.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.161550"
+  },
+  {
+    "trace_id": "f429c30b",
+    "target_id": "record:50810515",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.169740"
+  },
+  {
+    "trace_id": "cc6b8b42",
+    "target_id": "record:a5862851",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.179285"
+  },
+  {
+    "trace_id": "891c9110",
+    "target_id": "record:d8aacf9b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.187142"
+  },
+  {
+    "trace_id": "8a33727e",
+    "target_id": "record:b04a586b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.196429"
+  },
+  {
+    "trace_id": "3a052641",
+    "target_id": "record:6a64d425",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-06 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.204518"
+  },
+  {
+    "trace_id": "44868ad5",
+    "target_id": "record:07830367",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-06 排名变化 16.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.214062"
+  },
+  {
+    "trace_id": "13879ffe",
+    "target_id": "record:5ca120e7",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.222082"
+  },
+  {
+    "trace_id": "e6ca6443",
+    "target_id": "record:8644231a",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-06 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.231807"
+  },
+  {
+    "trace_id": "454cb280",
+    "target_id": "record:d7caa9fe",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q018 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.239873"
+  },
+  {
+    "trace_id": "55a248bd",
+    "target_id": "record:5cea5f4f",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-05 排名变化 8.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.250186"
+  },
+  {
+    "trace_id": "b9af9b01",
+    "target_id": "record:952c8eb5",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-05 排名变化 11.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.258197"
+  },
+  {
+    "trace_id": "4fe27e77",
+    "target_id": "record:36bedcd3",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-05 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.267669"
+  },
+  {
+    "trace_id": "59fa94bf",
+    "target_id": "record:2d8b96f1",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-05 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.275609"
+  },
+  {
+    "trace_id": "c93b558e",
+    "target_id": "record:06948629",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-05 排名变化 4.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.285210"
+  },
+  {
+    "trace_id": "134d05c0",
+    "target_id": "record:9e7623ab",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-06 排名变化 6.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.302736"
+  },
+  {
+    "trace_id": "481748cb",
+    "target_id": "record:5c745f13",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.314543"
+  },
+  {
+    "trace_id": "8f3ebb2a",
+    "target_id": "record:e45191b6",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.324123"
+  },
+  {
+    "trace_id": "9220636b",
+    "target_id": "record:8cf2bb46",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.335074"
+  },
+  {
+    "trace_id": "4f199364",
+    "target_id": "record:45b368c9",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q019 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.345781"
+  },
+  {
+    "trace_id": "f5c22af1",
+    "target_id": "record:aa1d613d",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q020 在批次 2026-05 排名变化 15.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.356128"
+  },
+  {
+    "trace_id": "65a673b0",
+    "target_id": "record:ad1f9030",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q020 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.369409"
+  },
+  {
+    "trace_id": "96fc20d3",
+    "target_id": "record:adfeed13",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q020 在批次 2026-05 排名变化 5.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.380711"
+  },
+  {
+    "trace_id": "802bbdd1",
+    "target_id": "record:3ed0b35b",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q020 在批次 2026-06 排名变化 10.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.389628"
+  },
+  {
+    "trace_id": "a7c4c38c",
+    "target_id": "record:76e6ae7c",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q020 在批次 2026-06 排名变化 13.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.400836"
+  },
+  {
+    "trace_id": "5dcf0c6a",
+    "target_id": "record:f6bb7048",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q020 在批次 2026-06 排名变化 7.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.411280"
+  },
+  {
+    "trace_id": "ea86766e",
+    "target_id": "record:d96b4131",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q020 在批次 2026-06 排名变化 9.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.420627"
+  },
+  {
+    "trace_id": "4cb9ae7d",
+    "target_id": "record:8daebd11",
+    "action": "issue_detected",
+    "description": "排序不稳定检测: 题目 Q020 在批次 2026-06 排名变化 14.0 位，超过阈值 3",
+    "timestamp": "2026-06-09T21:40:08.433116"
+  },
+  {
+    "trace_id": "0ee3031c",
+    "target_id": "record:aa95b0ba",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 31.9%，超过阈值 30% (计算过程: 历史值=58.86, 偏差率=0.319)",
+    "timestamp": "2026-06-09T21:40:08.442603"
+  },
+  {
+    "trace_id": "5c824bf7",
+    "target_id": "record:bae0f3d7",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 135.5 超出合理范围 [0, 100]; 与历史值偏差 64.3%，超过阈值 30% (计算过程: 历史值=82.46, 偏差率=0.643)",
+    "timestamp": "2026-06-09T21:40:08.458002"
+  },
+  {
+    "trace_id": "d4561b12",
+    "target_id": "record:300cbe9e",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 -15.2 超出合理范围 [0, 100]; 与历史值偏差 117.7%，超过阈值 30% (计算过程: 历史值=85.96, 偏差率=1.177)",
+    "timestamp": "2026-06-09T21:40:08.473545"
+  },
+  {
+    "trace_id": "c71a99cc",
+    "target_id": "record:4dc36564",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 111.3 超出合理范围 [0, 100] (计算过程: 历史值=88.21, 偏差率=0.262)",
+    "timestamp": "2026-06-09T21:40:08.488503"
+  },
+  {
+    "trace_id": "8f9241f1",
+    "target_id": "record:3b24e713",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 110.96 超出合理范围 [0, 100]; 与历史值偏差 34.2%，超过阈值 30% (计算过程: 历史值=82.71, 偏差率=0.342)",
+    "timestamp": "2026-06-09T21:40:08.504542"
+  },
+  {
+    "trace_id": "dbdad437",
+    "target_id": "record:8459bc07",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 30.3%，超过阈值 30% (计算过程: 历史值=87.39, 偏差率=0.303)",
+    "timestamp": "2026-06-09T21:40:08.524442"
+  },
+  {
+    "trace_id": "c15d7b97",
+    "target_id": "record:5c954dcd",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 107.92 超出合理范围 [0, 100] (计算过程: 历史值=84.67, 偏差率=0.275)",
+    "timestamp": "2026-06-09T21:40:08.537260"
+  },
+  {
+    "trace_id": "88fd1a63",
+    "target_id": "record:4708daa1",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 135.5 超出合理范围 [0, 100]; 与历史值偏差 80.9%，超过阈值 30% (计算过程: 历史值=74.91, 偏差率=0.809)",
+    "timestamp": "2026-06-09T21:40:08.551358"
+  },
+  {
+    "trace_id": "c48836ac",
+    "target_id": "record:dd7bedc0",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 -15.2 超出合理范围 [0, 100]; 与历史值偏差 116.2%，超过阈值 30% (计算过程: 历史值=94.04, 偏差率=1.162)",
+    "timestamp": "2026-06-09T21:40:08.565746"
+  },
+  {
+    "trace_id": "2c8d9235",
+    "target_id": "record:b39accfc",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 106.74 超出合理范围 [0, 100] (计算过程: 历史值=94.31, 偏差率=0.132)",
+    "timestamp": "2026-06-09T21:40:08.575752"
+  },
+  {
+    "trace_id": "84027453",
+    "target_id": "record:c734e082",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 31.9%，超过阈值 30% (计算过程: 历史值=56.08, 偏差率=0.319)",
+    "timestamp": "2026-06-09T21:40:08.587612"
+  },
+  {
+    "trace_id": "e125c54a",
+    "target_id": "record:b7999e42",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 41.7%，超过阈值 30% (计算过程: 历史值=44.4, 偏差率=0.417)",
+    "timestamp": "2026-06-09T21:40:08.599715"
+  },
+  {
+    "trace_id": "287965a3",
+    "target_id": "record:809d7a9f",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 103.57 超出合理范围 [0, 100] (计算过程: 历史值=90.62, 偏差率=0.143)",
+    "timestamp": "2026-06-09T21:40:08.646515"
+  },
+  {
+    "trace_id": "7897f7e3",
+    "target_id": "record:c9c87d0c",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 34.9%，超过阈值 30% (计算过程: 历史值=72.17, 偏差率=0.349)",
+    "timestamp": "2026-06-09T21:40:08.656480"
+  },
+  {
+    "trace_id": "994eef41",
+    "target_id": "record:bbcbd760",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 100.11 超出合理范围 [0, 100] (计算过程: 历史值=100.3, 偏差率=0.002)",
+    "timestamp": "2026-06-09T21:40:08.670479"
+  },
+  {
+    "trace_id": "7eace27b",
+    "target_id": "record:17a4fdf7",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 35.9%，超过阈值 30% (计算过程: 历史值=79.97, 偏差率=0.359)",
+    "timestamp": "2026-06-09T21:40:08.685491"
+  },
+  {
+    "trace_id": "a8b4f084",
+    "target_id": "record:cdea7d8c",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 135.5 超出合理范围 [0, 100]; 与历史值偏差 94.3%，超过阈值 30% (计算过程: 历史值=69.72, 偏差率=0.943)",
+    "timestamp": "2026-06-09T21:40:08.697456"
+  },
+  {
+    "trace_id": "3d0c6f33",
+    "target_id": "record:74e9ae97",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 31.7%，超过阈值 30% (计算过程: 历史值=61.67, 偏差率=0.317)",
+    "timestamp": "2026-06-09T21:40:08.707308"
+  },
+  {
+    "trace_id": "c65098b8",
+    "target_id": "record:ab0d2a3c",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 -15.2 超出合理范围 [0, 100]; 与历史值偏差 124.9%，超过阈值 30% (计算过程: 历史值=61.09, 偏差率=1.249)",
+    "timestamp": "2026-06-09T21:40:08.719593"
+  },
+  {
+    "trace_id": "d97fa0af",
+    "target_id": "record:7791db01",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 106.6 超出合理范围 [0, 100]; 与历史值偏差 31.9%，超过阈值 30% (计算过程: 历史值=80.79, 偏差率=0.319)",
+    "timestamp": "2026-06-09T21:40:08.731873"
+  },
+  {
+    "trace_id": "b82a064c",
+    "target_id": "record:51f31b2a",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 109.19 超出合理范围 [0, 100] (计算过程: 历史值=99.52, 偏差率=0.097)",
+    "timestamp": "2026-06-09T21:40:08.742190"
+  },
+  {
+    "trace_id": "f922afa4",
+    "target_id": "record:3401f80e",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 135.5 超出合理范围 [0, 100]; 与历史值偏差 67.3%，超过阈值 30% (计算过程: 历史值=81.01, 偏差率=0.673)",
+    "timestamp": "2026-06-09T21:40:08.756400"
+  },
+  {
+    "trace_id": "fcb8b4ce",
+    "target_id": "record:635a9f3d",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 -15.2 超出合理范围 [0, 100]; 与历史值偏差 121.0%，超过阈值 30% (计算过程: 历史值=72.26, 偏差率=1.210)",
+    "timestamp": "2026-06-09T21:40:08.768554"
+  },
+  {
+    "trace_id": "451fb49d",
+    "target_id": "record:8bfacc66",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 31.8%，超过阈值 30% (计算过程: 历史值=53.84, 偏差率=0.318)",
+    "timestamp": "2026-06-09T21:40:08.782094"
+  },
+  {
+    "trace_id": "1c801cce",
+    "target_id": "record:94dcc7c3",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 35.4%，超过阈值 30% (计算过程: 历史值=75.15, 偏差率=0.354)",
+    "timestamp": "2026-06-09T21:40:08.795145"
+  },
+  {
+    "trace_id": "96cf9a9c",
+    "target_id": "record:9cfc25dc",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 30.0%，超过阈值 30% (计算过程: 历史值=61.35, 偏差率=0.300)",
+    "timestamp": "2026-06-09T21:40:08.808121"
+  },
+  {
+    "trace_id": "e0f80f7d",
+    "target_id": "record:07830367",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 100.64 超出合理范围 [0, 100] (计算过程: 历史值=98.75, 偏差率=0.019)",
+    "timestamp": "2026-06-09T21:40:08.820113"
+  },
+  {
+    "trace_id": "cf498ebf",
+    "target_id": "record:45b368c9",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 35.1%，超过阈值 30% (计算过程: 历史值=56.84, 偏差率=0.351)",
+    "timestamp": "2026-06-09T21:40:08.832821"
+  },
+  {
+    "trace_id": "0bf1434b",
+    "target_id": "record:58cb890a",
+    "action": "issue_detected",
+    "description": "外推越界检测: 与历史值偏差 31.9%，超过阈值 30% (计算过程: 历史值=61.99, 偏差率=0.319)",
+    "timestamp": "2026-06-09T21:40:08.845966"
+  },
+  {
+    "trace_id": "676b4fed",
+    "target_id": "record:d3e5b5f5",
+    "action": "issue_detected",
+    "description": "外推越界检测: 值 103.12 超出合理范围 [0, 100] (计算过程: 历史值=81.66, 偏差率=0.263)",
+    "timestamp": "2026-06-09T21:40:08.856339"
+  },
+  {
+    "trace_id": "5bb54e8a",
+    "target_id": "record:40f5f9af",
+    "action": "issue_detected",
+    "description": "缺失值检测: 关键字段缺失: score",
+    "timestamp": "2026-06-09T21:40:08.870060"
+  },
+  {
+    "trace_id": "75a6c238",
+    "target_id": "record:6acf4c4d",
+    "action": "issue_detected",
+    "description": "缺失值检测: 关键字段缺失: sample_date",
+    "timestamp": "2026-06-09T21:40:08.885341"
+  },
+  {
+    "trace_id": "e8982f5f",
+    "target_id": "record:df0a6e4b",
+    "action": "issue_detected",
+    "description": "缺失值检测: 关键字段缺失: score",
+    "timestamp": "2026-06-09T21:40:08.901017"
+  },
+  {
+    "trace_id": "1c42a25b",
+    "target_id": "record:8d04b111",
+    "action": "issue_detected",
+    "description": "缺失值检测: 关键字段缺失: sample_date",
+    "timestamp": "2026-06-09T21:40:08.913583"
+  },
+  {
+    "trace_id": "9d9cb2b5",
+    "target_id": "record:1341c21a",
+    "action": "issue_detected",
+    "description": "缺失值检测: 关键字段缺失: score",
+    "timestamp": "2026-06-09T21:40:08.928028"
+  },
+  {
+    "trace_id": "7c0f6d92",
+    "target_id": "record:e117f17a",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 score=25.0 异常，Z-Score=5.17，均值=75.74，标准差=9.81，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:08.950297"
+  },
+  {
+    "trace_id": "6a0f4f59",
+    "target_id": "record:59453ecc",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 score=46.04 异常，Z-Score=3.03，均值=75.74，标准差=9.81，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:08.966113"
+  },
+  {
+    "trace_id": "12e9eee0",
+    "target_id": "record:bae0f3d7",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:08.979753"
+  },
+  {
+    "trace_id": "7e09f1af",
+    "target_id": "record:300cbe9e",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:08.990920"
+  },
+  {
+    "trace_id": "d49080b0",
+    "target_id": "record:4708daa1",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:09.008246"
+  },
+  {
+    "trace_id": "a8d0b84d",
+    "target_id": "record:dd7bedc0",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:09.022894"
+  },
+  {
+    "trace_id": "dad270f8",
+    "target_id": "record:cdea7d8c",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:09.038558"
+  },
+  {
+    "trace_id": "3d96ea65",
+    "target_id": "record:ab0d2a3c",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:09.051311"
+  },
+  {
+    "trace_id": "95a72ff3",
+    "target_id": "record:3401f80e",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 extrapolated_value=135.5 异常，Z-Score=3.65，均值=76.01，标准差=16.30，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:09.069665"
+  },
+  {
+    "trace_id": "afbf6695",
+    "target_id": "record:635a9f3d",
+    "action": "issue_detected",
+    "description": "异常值检测: 字段 extrapolated_value=-15.2 异常，Z-Score=5.60，均值=76.01，标准差=16.30，阈值=2.5",
+    "timestamp": "2026-06-09T21:40:09.087657"
+  },
+  {
+    "trace_id": "467040a3",
+    "target_id": "record:2df9628b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.103039"
+  },
+  {
+    "trace_id": "521867fa",
+    "target_id": "record:9be0a8d4",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.116278"
+  },
+  {
+    "trace_id": "d2cd2c32",
+    "target_id": "record:aa95b0ba",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:09.181669"
+  },
+  {
+    "trace_id": "51608b2f",
+    "target_id": "record:1b389a63",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.206837"
+  },
+  {
+    "trace_id": "7cdbc916",
+    "target_id": "record:e9fd916f",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.220313"
+  },
+  {
+    "trace_id": "40172f41",
+    "target_id": "record:87adbf61",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.232814"
+  },
+  {
+    "trace_id": "370bc79b",
+    "target_id": "record:22e39210",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.246010"
+  },
+  {
+    "trace_id": "57b5f06d",
+    "target_id": "record:557fa0cb",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.257735"
+  },
+  {
+    "trace_id": "59247b68",
+    "target_id": "record:2dd90286",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.273198"
+  },
+  {
+    "trace_id": "9dda950a",
+    "target_id": "record:d1ce70c6",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.288501"
+  },
+  {
+    "trace_id": "da49edb9",
+    "target_id": "record:cf3348ac",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.303282"
+  },
+  {
+    "trace_id": "f836eb46",
+    "target_id": "record:b6390368",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.317623"
+  },
+  {
+    "trace_id": "61c7e449",
+    "target_id": "record:bae0f3d7",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:09.331753"
+  },
+  {
+    "trace_id": "21505bc6",
+    "target_id": "record:300cbe9e",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:09.346942"
+  },
+  {
+    "trace_id": "76a0e5eb",
+    "target_id": "record:e0f16d60",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.358724"
+  },
+  {
+    "trace_id": "0ad2c4c6",
+    "target_id": "record:66840503",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.372744"
+  },
+  {
+    "trace_id": "85aedcfa",
+    "target_id": "record:bcbb17a9",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.387114"
+  },
+  {
+    "trace_id": "6f7af5c7",
+    "target_id": "record:40f5f9af",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.402943"
+  },
+  {
+    "trace_id": "95c50195",
+    "target_id": "record:94d4e922",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.417670"
+  },
+  {
+    "trace_id": "d349e416",
+    "target_id": "record:c112b87b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.432490"
+  },
+  {
+    "trace_id": "0e9bf324",
+    "target_id": "record:d2fbb68e",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.451168"
+  },
+  {
+    "trace_id": "31b42fcd",
+    "target_id": "record:fd4a33da",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.536728"
+  },
+  {
+    "trace_id": "119d1103",
+    "target_id": "record:fbba53f9",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.569288"
+  },
+  {
+    "trace_id": "f37f8b8d",
+    "target_id": "record:53efd2f2",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.587872"
+  },
+  {
+    "trace_id": "0be05994",
+    "target_id": "record:cebb76b3",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.606024"
+  },
+  {
+    "trace_id": "e4cdd441",
+    "target_id": "record:8697d587",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.625219"
+  },
+  {
+    "trace_id": "2d481c86",
+    "target_id": "record:4dc36564",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:09.646722"
+  },
+  {
+    "trace_id": "40b777e1",
+    "target_id": "record:db3a9c45",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.664857"
+  },
+  {
+    "trace_id": "eaf01d68",
+    "target_id": "record:83613000",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.707928"
+  },
+  {
+    "trace_id": "47314a2c",
+    "target_id": "record:d19ccb37",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.725884"
+  },
+  {
+    "trace_id": "6e609959",
+    "target_id": "record:3b24e713",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:09.741162"
+  },
+  {
+    "trace_id": "0de24434",
+    "target_id": "record:291272bb",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.757338"
+  },
+  {
+    "trace_id": "30ec0d65",
+    "target_id": "record:8459bc07",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:09.772168"
+  },
+  {
+    "trace_id": "d5dc3765",
+    "target_id": "record:94e7f36f",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.786933"
+  },
+  {
+    "trace_id": "b369b230",
+    "target_id": "record:2b7ee8b7",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.809990"
+  },
+  {
+    "trace_id": "f5111b59",
+    "target_id": "record:ee4d48eb",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.825008"
+  },
+  {
+    "trace_id": "af8fb457",
+    "target_id": "record:df890549",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.838524"
+  },
+  {
+    "trace_id": "fea71363",
+    "target_id": "record:ca1b5d87",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.852986"
+  },
+  {
+    "trace_id": "1ac1bbf4",
+    "target_id": "record:169e9eb5",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.866509"
+  },
+  {
+    "trace_id": "e0a64d3d",
+    "target_id": "record:6972588c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.880654"
+  },
+  {
+    "trace_id": "65e4ca7e",
+    "target_id": "record:8c3fed8e",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.896918"
+  },
+  {
+    "trace_id": "50b8b718",
+    "target_id": "record:239a26b6",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.913729"
+  },
+  {
+    "trace_id": "d79860a6",
+    "target_id": "record:6acf4c4d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.928549"
+  },
+  {
+    "trace_id": "ed0bc585",
+    "target_id": "record:5c954dcd",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:09.952445"
+  },
+  {
+    "trace_id": "ca46d2a9",
+    "target_id": "record:c234cc04",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.973965"
+  },
+  {
+    "trace_id": "870b10af",
+    "target_id": "record:824476fc",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:09.995221"
+  },
+  {
+    "trace_id": "c26d58f1",
+    "target_id": "record:6873202d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.015300"
+  },
+  {
+    "trace_id": "ad8b966e",
+    "target_id": "record:6d0787dd",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.036126"
+  },
+  {
+    "trace_id": "face049b",
+    "target_id": "record:a064bde6",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.087330"
+  },
+  {
+    "trace_id": "c2d5b53e",
+    "target_id": "record:791bfe6c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.125368"
+  },
+  {
+    "trace_id": "448e579b",
+    "target_id": "record:165b9eb8",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.157507"
+  },
+  {
+    "trace_id": "708724d6",
+    "target_id": "record:e376fdb0",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.180634"
+  },
+  {
+    "trace_id": "230473ed",
+    "target_id": "record:4708daa1",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:10.197011"
+  },
+  {
+    "trace_id": "27802ba2",
+    "target_id": "record:dd7bedc0",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:10.212421"
+  },
+  {
+    "trace_id": "cea7bf97",
+    "target_id": "record:955424a4",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.226335"
+  },
+  {
+    "trace_id": "32404c80",
+    "target_id": "record:b39accfc",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:10.240220"
+  },
+  {
+    "trace_id": "8601b55e",
+    "target_id": "record:895a74f0",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.255945"
+  },
+  {
+    "trace_id": "56080b2c",
+    "target_id": "record:0564c6ee",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.269969"
+  },
+  {
+    "trace_id": "65766d8a",
+    "target_id": "record:12876127",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.282763"
+  },
+  {
+    "trace_id": "de53b9e9",
+    "target_id": "record:c734e082",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:10.296085"
+  },
+  {
+    "trace_id": "97751305",
+    "target_id": "record:6a6c9e9b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.307941"
+  },
+  {
+    "trace_id": "e97d0393",
+    "target_id": "record:1425d1ce",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.321927"
+  },
+  {
+    "trace_id": "17165ed0",
+    "target_id": "record:daf50eff",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.335299"
+  },
+  {
+    "trace_id": "47164abe",
+    "target_id": "record:f8452f5d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.351096"
+  },
+  {
+    "trace_id": "3c0e4560",
+    "target_id": "record:87618200",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.365157"
+  },
+  {
+    "trace_id": "f75a769d",
+    "target_id": "record:4f466fae",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.380878"
+  },
+  {
+    "trace_id": "e019c69d",
+    "target_id": "record:64dd2e5d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.396344"
+  },
+  {
+    "trace_id": "ae9edf2d",
+    "target_id": "record:c6d3e310",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.409671"
+  },
+  {
+    "trace_id": "27f6ece6",
+    "target_id": "record:a4601a69",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.423261"
+  },
+  {
+    "trace_id": "e5971b92",
+    "target_id": "record:553d60a0",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.436550"
+  },
+  {
+    "trace_id": "bc0438ff",
+    "target_id": "record:b7999e42",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:10.451091"
+  },
+  {
+    "trace_id": "df2cce35",
+    "target_id": "record:41029f09",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.469203"
+  },
+  {
+    "trace_id": "cb8b55b1",
+    "target_id": "record:ad3817a6",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.487045"
+  },
+  {
+    "trace_id": "838d5a67",
+    "target_id": "record:b5ce09fd",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.503488"
+  },
+  {
+    "trace_id": "9cf6d44b",
+    "target_id": "record:fc73dfbd",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.519335"
+  },
+  {
+    "trace_id": "528880fe",
+    "target_id": "record:8068307f",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.536727"
+  },
+  {
+    "trace_id": "33c725f6",
+    "target_id": "record:741c9277",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.551080"
+  },
+  {
+    "trace_id": "c3fc87a7",
+    "target_id": "record:a5862851",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.565583"
+  },
+  {
+    "trace_id": "be289f24",
+    "target_id": "record:50810515",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.579136"
+  },
+  {
+    "trace_id": "502a25e5",
+    "target_id": "record:2e7eb399",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.592004"
+  },
+  {
+    "trace_id": "305963b8",
+    "target_id": "record:d8aacf9b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.610120"
+  },
+  {
+    "trace_id": "37f11778",
+    "target_id": "record:b04a586b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.624611"
+  },
+  {
+    "trace_id": "4c7b99d5",
+    "target_id": "record:36bedcd3",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.640633"
+  },
+  {
+    "trace_id": "ae291fb1",
+    "target_id": "record:952c8eb5",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.655761"
+  },
+  {
+    "trace_id": "554b85b0",
+    "target_id": "record:06948629",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.674051"
+  },
+  {
+    "trace_id": "ab4a8cde",
+    "target_id": "record:5cea5f4f",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.692309"
+  },
+  {
+    "trace_id": "bcec19de",
+    "target_id": "record:2d8b96f1",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.715256"
+  },
+  {
+    "trace_id": "66aa0916",
+    "target_id": "record:adfeed13",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.734976"
+  },
+  {
+    "trace_id": "bf5a9c62",
+    "target_id": "record:ad1f9030",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.769792"
+  },
+  {
+    "trace_id": "d03d65ec",
+    "target_id": "record:aa1d613d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.790914"
+  },
+  {
+    "trace_id": "caaaf615",
+    "target_id": "record:809d7a9f",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:10.809028"
+  },
+  {
+    "trace_id": "fa796217",
+    "target_id": "record:fa37a5b2",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.832190"
+  },
+  {
+    "trace_id": "3376f7e4",
+    "target_id": "record:c9c87d0c",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:10.849651"
+  },
+  {
+    "trace_id": "763eeaf4",
+    "target_id": "record:a1f5329f",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.865016"
+  },
+  {
+    "trace_id": "858667c5",
+    "target_id": "record:7264896b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.880821"
+  },
+  {
+    "trace_id": "e369957a",
+    "target_id": "record:445e0dbd",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.897438"
+  },
+  {
+    "trace_id": "15e8120c",
+    "target_id": "record:df0a6e4b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.911172"
+  },
+  {
+    "trace_id": "55d5faa2",
+    "target_id": "record:8d04b111",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.924159"
+  },
+  {
+    "trace_id": "4411684b",
+    "target_id": "record:7b897d40",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.937996"
+  },
+  {
+    "trace_id": "6c1fe480",
+    "target_id": "record:97dc582d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.952530"
+  },
+  {
+    "trace_id": "3f3e1c3c",
+    "target_id": "record:ddddb8ed",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.968200"
+  },
+  {
+    "trace_id": "43c1700b",
+    "target_id": "record:79656bbe",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.983268"
+  },
+  {
+    "trace_id": "c49d289e",
+    "target_id": "record:d8d7b87e",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:10.997956"
+  },
+  {
+    "trace_id": "3dca95fd",
+    "target_id": "record:bbcbd760",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:11.011396"
+  },
+  {
+    "trace_id": "c4a7ca67",
+    "target_id": "record:01d9d761",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.023999"
+  },
+  {
+    "trace_id": "d0cb55dc",
+    "target_id": "record:77ecc25c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.037425"
+  },
+  {
+    "trace_id": "1c46ff74",
+    "target_id": "record:17a4fdf7",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:11.051656"
+  },
+  {
+    "trace_id": "354faa6c",
+    "target_id": "record:58a9fc9d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.065608"
+  },
+  {
+    "trace_id": "0c5c8281",
+    "target_id": "record:cdea7d8c",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:11.078956"
+  },
+  {
+    "trace_id": "ce417416",
+    "target_id": "record:74e9ae97",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:11.090934"
+  },
+  {
+    "trace_id": "e27592b2",
+    "target_id": "record:5f100976",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.105221"
+  },
+  {
+    "trace_id": "745cebd9",
+    "target_id": "record:ab0d2a3c",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:11.119126"
+  },
+  {
+    "trace_id": "fe359ec7",
+    "target_id": "record:300c92ac",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.133004"
+  },
+  {
+    "trace_id": "b1631c18",
+    "target_id": "record:c7e7eaa7",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.147518"
+  },
+  {
+    "trace_id": "4be71ed2",
+    "target_id": "record:3bcb3e93",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.162614"
+  },
+  {
+    "trace_id": "efb8fcd2",
+    "target_id": "record:bb5f0516",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.175056"
+  },
+  {
+    "trace_id": "d1606171",
+    "target_id": "record:8ef11f15",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.189785"
+  },
+  {
+    "trace_id": "80a12eea",
+    "target_id": "record:88349f46",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.207777"
+  },
+  {
+    "trace_id": "8bdef31d",
+    "target_id": "record:15bb5c0c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.223639"
+  },
+  {
+    "trace_id": "2abbfa71",
+    "target_id": "record:e117f17a",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.321486"
+  },
+  {
+    "trace_id": "b54b0ef7",
+    "target_id": "record:303696f3",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.353345"
+  },
+  {
+    "trace_id": "25b0d35a",
+    "target_id": "record:ffd3fd90",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.378730"
+  },
+  {
+    "trace_id": "a0ca1ecf",
+    "target_id": "record:c337bb73",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.393990"
+  },
+  {
+    "trace_id": "c631f343",
+    "target_id": "record:4bf2a319",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.408360"
+  },
+  {
+    "trace_id": "d5f200fb",
+    "target_id": "record:7791db01",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:11.423752"
+  },
+  {
+    "trace_id": "a98fa82c",
+    "target_id": "record:239999fb",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.438771"
+  },
+  {
+    "trace_id": "e980b193",
+    "target_id": "record:51f31b2a",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:11.452506"
+  },
+  {
+    "trace_id": "c3e9f548",
+    "target_id": "record:79431cf2",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.465514"
+  },
+  {
+    "trace_id": "15254c09",
+    "target_id": "record:89820fea",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.478965"
+  },
+  {
+    "trace_id": "403da443",
+    "target_id": "record:da3143ef",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.490641"
+  },
+  {
+    "trace_id": "e8d813fa",
+    "target_id": "record:e88ca4fa",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.505685"
+  },
+  {
+    "trace_id": "e4ba6641",
+    "target_id": "record:90990d34",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.520832"
+  },
+  {
+    "trace_id": "bd5822f3",
+    "target_id": "record:45953413",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.536203"
+  },
+  {
+    "trace_id": "af2cc2ed",
+    "target_id": "record:80de994a",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.553205"
+  },
+  {
+    "trace_id": "812dbafd",
+    "target_id": "record:fb97e543",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.571131"
+  },
+  {
+    "trace_id": "c652914e",
+    "target_id": "record:5f736d1f",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.585511"
+  },
+  {
+    "trace_id": "e7f6f4e5",
+    "target_id": "record:d3af7e3e",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.601361"
+  },
+  {
+    "trace_id": "ecb7c7b5",
+    "target_id": "record:7c0ba621",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.616780"
+  },
+  {
+    "trace_id": "09953eae",
+    "target_id": "record:018a7fa0",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.632146"
+  },
+  {
+    "trace_id": "10d5138c",
+    "target_id": "record:4ac22293",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.646108"
+  },
+  {
+    "trace_id": "1fadc4e9",
+    "target_id": "record:8738420c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.659791"
+  },
+  {
+    "trace_id": "de84095f",
+    "target_id": "record:1341c21a",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.675559"
+  },
+  {
+    "trace_id": "70f990f5",
+    "target_id": "record:7eed9932",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.691145"
+  },
+  {
+    "trace_id": "9851cca9",
+    "target_id": "record:4b8e2061",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.705516"
+  },
+  {
+    "trace_id": "5f0312ef",
+    "target_id": "record:68874e3f",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.720014"
+  },
+  {
+    "trace_id": "c6b69939",
+    "target_id": "record:a933c4b5",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.734589"
+  },
+  {
+    "trace_id": "826d8177",
+    "target_id": "record:374b2e6d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.747113"
+  },
+  {
+    "trace_id": "7e964424",
+    "target_id": "record:41539043",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.760330"
+  },
+  {
+    "trace_id": "dffba096",
+    "target_id": "record:d6a675c2",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.774440"
+  },
+  {
+    "trace_id": "bac6689c",
+    "target_id": "record:648835f2",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.787714"
+  },
+  {
+    "trace_id": "e5f4681c",
+    "target_id": "record:11663d68",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.801136"
+  },
+  {
+    "trace_id": "3c6c92a8",
+    "target_id": "record:4fb4b792",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.815969"
+  },
+  {
+    "trace_id": "f38b7051",
+    "target_id": "record:aa349cf1",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.829556"
+  },
+  {
+    "trace_id": "3348ffdb",
+    "target_id": "record:dea76cd6",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.841239"
+  },
+  {
+    "trace_id": "9829a05a",
+    "target_id": "record:8d6948db",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.854309"
+  },
+  {
+    "trace_id": "03d3a032",
+    "target_id": "record:0aa34dd5",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.867765"
+  },
+  {
+    "trace_id": "8bcb7aa0",
+    "target_id": "record:0958191d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.881743"
+  },
+  {
+    "trace_id": "3ebad956",
+    "target_id": "record:3bc66909",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.898585"
+  },
+  {
+    "trace_id": "c45954d5",
+    "target_id": "record:6fdb724e",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.913950"
+  },
+  {
+    "trace_id": "9a837620",
+    "target_id": "record:8b76ff2f",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.930653"
+  },
+  {
+    "trace_id": "8b64fbfe",
+    "target_id": "record:2290ca2d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.944859"
+  },
+  {
+    "trace_id": "5c753d48",
+    "target_id": "record:17bbffcf",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.956026"
+  },
+  {
+    "trace_id": "e877562f",
+    "target_id": "record:42b3a4cf",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.968954"
+  },
+  {
+    "trace_id": "fa705f7b",
+    "target_id": "record:c82d020c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.981450"
+  },
+  {
+    "trace_id": "55603b46",
+    "target_id": "record:5db7775c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:11.992851"
+  },
+  {
+    "trace_id": "f5362b12",
+    "target_id": "record:e530af52",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.005057"
+  },
+  {
+    "trace_id": "5b235e26",
+    "target_id": "record:3401f80e",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.018000"
+  },
+  {
+    "trace_id": "5012d17f",
+    "target_id": "record:ea58e99a",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.030600"
+  },
+  {
+    "trace_id": "a8622acf",
+    "target_id": "record:e778df8a",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.042508"
+  },
+  {
+    "trace_id": "e449e408",
+    "target_id": "record:635a9f3d",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.055369"
+  },
+  {
+    "trace_id": "13687bcd",
+    "target_id": "record:974950b8",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.067465"
+  },
+  {
+    "trace_id": "af73ccc8",
+    "target_id": "record:bd851d05",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.080392"
+  },
+  {
+    "trace_id": "85b27e1a",
+    "target_id": "record:217d01be",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.091526"
+  },
+  {
+    "trace_id": "05f8201b",
+    "target_id": "record:22d4ca41",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.102928"
+  },
+  {
+    "trace_id": "f32ad694",
+    "target_id": "record:16a0141c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.113953"
+  },
+  {
+    "trace_id": "4233d37d",
+    "target_id": "record:8bfacc66",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.124635"
+  },
+  {
+    "trace_id": "a8076ee8",
+    "target_id": "record:62066178",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.137237"
+  },
+  {
+    "trace_id": "f3abdb53",
+    "target_id": "record:ace2b56b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.150997"
+  },
+  {
+    "trace_id": "0750d4ac",
+    "target_id": "record:b8e8aec1",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.166400"
+  },
+  {
+    "trace_id": "072daf39",
+    "target_id": "record:84eba358",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.178086"
+  },
+  {
+    "trace_id": "9c703b40",
+    "target_id": "record:1aeb60bf",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.189573"
+  },
+  {
+    "trace_id": "d94d561d",
+    "target_id": "record:3a6a8c98",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.204103"
+  },
+  {
+    "trace_id": "3cc1de59",
+    "target_id": "record:d189ca3d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.219466"
+  },
+  {
+    "trace_id": "fef647ea",
+    "target_id": "record:4b38dced",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.232865"
+  },
+  {
+    "trace_id": "1bd58cac",
+    "target_id": "record:5e5778fc",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.290390"
+  },
+  {
+    "trace_id": "059d7dee",
+    "target_id": "record:cba77548",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.310903"
+  },
+  {
+    "trace_id": "afe0e691",
+    "target_id": "record:fac5c79d",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.323908"
+  },
+  {
+    "trace_id": "5685afab",
+    "target_id": "record:f3a0dfcd",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.336701"
+  },
+  {
+    "trace_id": "688a8e77",
+    "target_id": "record:b756be3c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.351180"
+  },
+  {
+    "trace_id": "bfd1dd9f",
+    "target_id": "record:61e4e5e0",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.363298"
+  },
+  {
+    "trace_id": "18d75b5b",
+    "target_id": "record:fc66f9b0",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.373795"
+  },
+  {
+    "trace_id": "f66c7bc7",
+    "target_id": "record:030e06a6",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.385890"
+  },
+  {
+    "trace_id": "3a8316d0",
+    "target_id": "record:36681f88",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.397686"
+  },
+  {
+    "trace_id": "65bcee3b",
+    "target_id": "record:3636e113",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.407913"
+  },
+  {
+    "trace_id": "b466e795",
+    "target_id": "record:9d6a8fc1",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.420372"
+  },
+  {
+    "trace_id": "d56a1566",
+    "target_id": "record:75cb5714",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.434972"
+  },
+  {
+    "trace_id": "5bab6193",
+    "target_id": "record:a8dd08ad",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.446987"
+  },
+  {
+    "trace_id": "d4081540",
+    "target_id": "record:5494bc9c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.457425"
+  },
+  {
+    "trace_id": "3f1d6d9d",
+    "target_id": "record:94dcc7c3",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.469437"
+  },
+  {
+    "trace_id": "4c276f71",
+    "target_id": "record:075aa220",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.480831"
+  },
+  {
+    "trace_id": "b7f95613",
+    "target_id": "record:feeaaf1c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.490118"
+  },
+  {
+    "trace_id": "d8ab814e",
+    "target_id": "record:6f17e113",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.501637"
+  },
+  {
+    "trace_id": "52d5573b",
+    "target_id": "record:4f9a3359",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.512815"
+  },
+  {
+    "trace_id": "2f2cc190",
+    "target_id": "record:bf93a6d2",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.522632"
+  },
+  {
+    "trace_id": "655cbaa1",
+    "target_id": "record:8f9d78a7",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.533365"
+  },
+  {
+    "trace_id": "2bb885a9",
+    "target_id": "record:59453ecc",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.543613"
+  },
+  {
+    "trace_id": "9ef07647",
+    "target_id": "record:9cfc25dc",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.554282"
+  },
+  {
+    "trace_id": "c85ad702",
+    "target_id": "record:5ca120e7",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.565241"
+  },
+  {
+    "trace_id": "ad0ebac3",
+    "target_id": "record:07830367",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.574563"
+  },
+  {
+    "trace_id": "b766719f",
+    "target_id": "record:8644231a",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.587726"
+  },
+  {
+    "trace_id": "7d95a942",
+    "target_id": "record:d7caa9fe",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.599510"
+  },
+  {
+    "trace_id": "ad0841ad",
+    "target_id": "record:6a64d425",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.610131"
+  },
+  {
+    "trace_id": "d8a56ac5",
+    "target_id": "record:8cf2bb46",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.622113"
+  },
+  {
+    "trace_id": "472adb99",
+    "target_id": "record:45b368c9",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.633724"
+  },
+  {
+    "trace_id": "fbf98fbb",
+    "target_id": "record:9e7623ab",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.645186"
+  },
+  {
+    "trace_id": "383160a8",
+    "target_id": "record:58cb890a",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.656301"
+  },
+  {
+    "trace_id": "1da87aa6",
+    "target_id": "record:d3e5b5f5",
+    "action": "status_change",
+    "description": "状态变更: None -> recollect",
+    "timestamp": "2026-06-09T21:40:12.669353"
+  },
+  {
+    "trace_id": "231eff1c",
+    "target_id": "record:5c745f13",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.681226"
+  },
+  {
+    "trace_id": "7f5e09f7",
+    "target_id": "record:e45191b6",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.690860"
+  },
+  {
+    "trace_id": "51e3b8a8",
+    "target_id": "record:76e6ae7c",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.702549"
+  },
+  {
+    "trace_id": "d93bdf3f",
+    "target_id": "record:f6bb7048",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.714481"
+  },
+  {
+    "trace_id": "18dbfb65",
+    "target_id": "record:8daebd11",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.723898"
+  },
+  {
+    "trace_id": "36571c6b",
+    "target_id": "record:d96b4131",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.735914"
+  },
+  {
+    "trace_id": "96735a5c",
+    "target_id": "record:3ed0b35b",
+    "action": "status_change",
+    "description": "状态变更: None -> pending",
+    "timestamp": "2026-06-09T21:40:12.749228"
+  }
+]

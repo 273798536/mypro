@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}总览仪表盘 - 抽样偏差修正器{% endblock %}
+{% block content %}
+
+<div class="card">
+    <h2>📊 数据总览</h2>
+    <div class="section-desc">一眼看清当前所有数据的状态分布和问题检出情况。教研编辑日常打开首先看到的是哪些记录有问题。</div>
+    <div class="grid grid-4">
+        <div class="stat-card stat-blue">
+            <div class="num">{{ summary.total }}</div>
+            <div class="label">总记录数</div>
+        </div>
+        <div class="stat-card stat-green">
+            <div class="num">{{ summary.by_status.get('available', 0) }}</div>
+            <div class="label">✅ 数据可用</div>
+        </div>
+        <div class="stat-card stat-orange">
+            <div class="num">{{ summary.by_status.get('pending', 0) }}</div>
+            <div class="label">⚠️ 数据暂缓</div>
+        </div>
+        <div class="stat-card stat-red">
+            <div class="num">{{ summary.by_status.get('recollect', 0) }}</div>
+            <div class="label">🔴 需重新采集</div>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-2">
+    <div class="card">
+        <h2>📈 数据状态分布</h2>
+        {% if charts.status_distribution %}
+        <img src="{{ charts.status_distribution }}" class="chart-img" alt="状态分布">
+        {% else %}
+        <p style="color:#909399;">暂无数据，请先导入文件或加载样例。</p>
+        {% endif %}
+    </div>
+    <div class="card">
+        <h2>🎯 问题类型分布</h2>
+        {% if charts.issue_distribution %}
+        <img src="{{ charts.issue_distribution }}" class="chart-img" alt="问题分布">
+        {% else %}
+        <p style="color:#909399;">暂无数据，请先导入文件或加载样例。</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="grid grid-2">
+    <div class="card">
+        <h2>📊 分数分布</h2>
+        {% if charts.score_distribution %}
+        <img src="{{ charts.score_distribution }}" class="chart-img" alt="分数分布">
+        {% endif %}
+    </div>
+    <div class="card">
+        <h2>🔴 外推值 vs 历史值（越界点标红）</h2>
+        <div class="section-desc">红色点表示外推越界记录，可直观看到哪些值跑出了合理范围 [0, 100]。</div>
+        {% if charts.extrapolation_scatter %}
+        <img src="{{ charts.extrapolation_scatter }}" class="chart-img" alt="外推散点">
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <h2>📥 数据导入</h2>
+    <div class="section-desc">支持 CSV / Excel 格式。系统会自动检测重复导入（基于文件哈希），避免同一份数据出现两份结论。</div>
+    
+    <div class="upload-area">
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".csv,.xlsx,.xls" required>
+            <button type="submit" class="btn">上传并校验</button>
+        </form>
+        <a href="/load-sample" class="btn btn-outline">🧪 加载样例数据（可复现）</a>
+        <a href="/reset" class="btn btn-danger btn-sm" onclick="return confirm('确定清空所有数据？')">清空数据</a>
+    </div>
+    
+    {% if message %}
+    <div class="alert alert-{{ message_type }}" style="margin-top: 16px;">{{ message }}</div>
+    {% endif %}
+</div>
+
+{% if summary.uploads %}
+<div class="card">
+    <h2>📂 导入历史</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>上传ID</th>
+                <th>文件名</th>
+                <th>记录数</th>
+                <th>上传时间</th>
+                <th>状态</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for up in summary.uploads %}
+            <tr>
+                <td><code>{{ up.upload_id }}</code></td>
+                <td>{{ up.filename }}</td>
+                <td>{{ up.row_count }}</td>
+                <td>{{ up.upload_time }}</td>
+                <td><span class="badge badge-green">{{ up.status }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+
+{% endblock %}

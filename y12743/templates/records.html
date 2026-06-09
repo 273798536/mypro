@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}所有记录 - 抽样偏差修正器{% endblock %}
+{% block content %}
+
+<div class="card">
+    <h2>📁 所有记录与追溯</h2>
+    <div class="section-desc">浏览所有记录，可按状态筛选。点击任意记录查看完整追溯链。</div>
+    
+    <div style="margin-bottom: 16px;">
+        <a href="/records" class="btn btn-sm btn-outline">全部</a>
+        <a href="/records?status=available" class="btn btn-sm btn-success">✅ 可用</a>
+        <a href="/records?status=pending" class="btn btn-sm btn-warning">⚠️ 暂缓</a>
+        <a href="/records?status=recollect" class="btn btn-sm btn-danger">🔴 需重采</a>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>记录ID</th>
+                <th>题目ID</th>
+                <th>学生ID</th>
+                <th>分数</th>
+                <th>外推值</th>
+                <th>批次</th>
+                <th>问题数</th>
+                <th>状态</th>
+                <th>最后更新</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rec in records %}
+            <tr>
+                <td><code>{{ rec.record_id }}</code></td>
+                <td>{{ rec.data.get('question_id', '-') }}</td>
+                <td>{{ rec.data.get('student_id', '-') }}</td>
+                <td>{{ rec.data.get('score', '-') }}</td>
+                <td>{{ rec.data.get('extrapolated_value', '-') }}</td>
+                <td>{{ rec.data.get('batch_id', '-') }}</td>
+                <td>
+                    {% if rec.issues %}
+                    <span class="badge badge-red">{{ rec.issues|length }}</span>
+                    {% else %}
+                    <span class="badge badge-green">0</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if rec.data_status == 'available' %}
+                    <span class="badge badge-green">可用</span>
+                    {% elif rec.data_status == 'pending' %}
+                    <span class="badge badge-orange">暂缓</span>
+                    {% elif rec.data_status == 'recollect' %}
+                    <span class="badge badge-red">需重采</span>
+                    {% else %}
+                    <span class="badge badge-gray">未分类</span>
+                    {% endif %}
+                </td>
+                <td style="font-size:12px;color:#909399;">{{ rec.last_updated }}</td>
+                <td><a href="/record/{{ rec.record_id }}" class="btn btn-sm btn-outline">详情/追溯</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    {% if not records %}
+    <p style="color:#909399;text-align:center;padding:30px 0;">暂无记录，请先导入数据。</p>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}公式计算核查 - 抽样偏差修正器{% endblock %}
+{% block content %}
+
+<div class="card">
+    <h2>🧮 公式计算核查（月底/课前使用）</h2>
+    <div class="section-desc">
+        月底或课前核查公式计算是否能解释清楚。展示每条规则的判定公式、参数、以及在当前数据上的计算示例。
+    </div>
+</div>
+
+<div class="card">
+    <h2>📐 规则1：排序不稳定检测</h2>
+    <h3>判定公式</h3>
+    <pre>
+对每个题目分组（question_id）：
+  若存在批次信息（batch_id）：
+    rank_diff = |本次排名 - 上次排名|
+    若 rank_diff > 阈值（默认3） → 判定为排序不稳定
+  否则（无批次信息）：
+    score_ratio = |分数变化| / 上次分数
+    若 score_ratio > 0.5 → 判定为排序不稳定</pre>
+    
+    <h3>参数配置</h3>
+    <table>
+        <thead>
+            <tr><th>参数</th><th>当前值</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>sort_column</td><td>score</td><td>用于排序的列</td></tr>
+            <tr><td>group_column</td><td>question_id</td><td>分组列</td></tr>
+            <tr><td>rank_diff_threshold</td><td>3</td><td>排名变化阈值</td></tr>
+            <tr><td>score_ratio_threshold</td><td>0.5</td><td>分数波动比例阈值</td></tr>
+        </tbody>
+    </table>
+    
+    <h3>本轮检出数量</h3>
+    <p><span class="badge badge-red" style="font-size:15px;padding:6px 14px;">
+        {{ issues_by_type.sorting_unstable.count }} 条
+    </span></p>
+</div>
+
+<div class="card">
+    <h2>📐 规则2：外推越界检测</h2>
+    <h3>判定公式</h3>
+    <pre>
+触发条件（满足任意一条即判定越界）：
+  1. extrapolated_value < lower_bound  或  extrapolated_value > upper_bound
+  2. 若存在历史值 historical_value：
+       deviation = |extrapolated_value - historical_value| / |historical_value|
+       若 deviation > deviation_threshold（默认30%）→ 判定越界
+
+结果说明：
+  外推越界 → 建议状态：recollect（需重新采集）</pre>
+    
+    <h3>参数配置</h3>
+    <table>
+        <thead>
+            <tr><th>参数</th><th>当前值</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>value_column</td><td>extrapolated_value</td><td>外推值列名</td></tr>
+            <tr><td>lower_bound</td><td>0</td><td>合理下界</td></tr>
+            <tr><td>upper_bound</td><td>100</td><td>合理上界</td></tr>
+            <tr><td>historical_column</td><td>historical_value</td><td>历史值列名</td></tr>
+            <tr><td>deviation_threshold</td><td>0.3 (30%)</td><td>与历史值偏差阈值</td></tr>
+        </tbody>
+    </table>
+    
+    <h3>计算示例（本轮实际数据）</h3>
+    {% if issues_by_type.extrapolation_out_of_bounds.samples %}
+    <table>
+        <thead>
+            <tr>
+                <th>记录ID</th>
+                <th>历史值</th>
+                <th>外推值</th>
+                <th>是否越界</th>
+                <th>偏差率</th>
+                <th>判定</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in issues_by_type.extrapolation_out_of_bounds.samples[:5] %}
+            {% set h = issue.record_data.get('historical_value', 0) or 0 %}
+            {% set e = issue.record_data.get('extrapolated_value', 0) or 0 %}
+            {% set dev = (e - h)|abs / (h|abs if h != 0 else 1) %}
+            <tr>
+                <td><code>{{ issue.record_id }}</code></td>
+                <td>{{ h }}</td>
+                <td style="color:#f56c6c;font-weight:bold;">{{ e }}</td>
+                <td>
+                    {% if e < 0 or e > 100 %}
+                    <span class="badge badge-red">是（超出[0,100]）</span>
+                    {% else %}
+                    <span class="badge badge-green">否</span>
+                    {% endif %}
+                </td>
+                <td>{{ '%.1f%%'|format(dev * 100) if h else 'N/A' }}</td>
+                <td><span class="badge badge-red">需重采</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#909399;">本轮无越界记录。</p>
+    {% endif %}
+    
+    <h3>本轮检出数量</h3>
+    <p><span class="badge badge-red" style="font-size:15px;padding:6px 14px;">
+        {{ issues_by_type.extrapolation_out_of_bounds.count }} 条
+    </span></p>
+</div>
+
+<div class="card">
+    <h2>📐 规则3：缺失值 & 异常值检测</h2>
+    <h3>缺失值判定</h3>
+    <pre>关键字段 required_columns = [question_id, score, sample_date]
+任意字段为空 → 判定 data_missing → 建议状态：pending（暂缓）</pre>
+    
+    <h3>异常值判定（Z-Score方法）</h3>
+    <pre>对数值列 score, extrapolated_value：
+  zscore = |x - mean| / std
+  若 zscore > 阈值（默认2.5） → 判定 data_abnormal → 建议状态：available（但需关注）</pre>
+    
+    <h3>本轮检出</h3>
+    <p>
+        缺失值: <span class="badge badge-purple" style="font-size:14px;padding:5px 12px;">
+            {{ issues_by_type.data_missing.count }} 条
+        </span>
+        &nbsp;&nbsp;
+        异常值: <span class="badge badge-blue" style="font-size:14px;padding:5px 12px;">
+            {{ issues_by_type.data_abnormal.count }} 条
+        </span>
+    </p>
+</div>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+rules:
+  sorting_unstable:
+    name: "排序不稳定检测"
+    description: "检测同一维度下排序结果在相邻批次间存在异常波动的记录"
+    enabled: true
+    severity: "high"
+    params:
+      sort_column: "score"
+      group_column: "question_id"
+      rank_diff_threshold: 3
+      window_size: 3
+    result_status: "pending"
+    
+  extrapolation_out_of_bounds:
+    name: "外推越界检测"
+    description: "检测通过外推计算得到的值超出合理范围的记录"
+    enabled: true
+    severity: "high"
+    params:
+      value_column: "extrapolated_value"
+      lower_bound: 0
+      upper_bound: 100
+      historical_column: "historical_value"
+      deviation_threshold: 0.3
+    result_status: "recollect"
+    
+  data_missing:
+    name: "缺失值检测"
+    description: "检测关键字段存在缺失的记录"
+    enabled: true
+    severity: "medium"
+    params:
+      required_columns: ["question_id", "score", "sample_date"]
+    result_status: "pending"
+    
+  data_abnormal:
+    name: "异常值检测"
+    description: "检测数值偏离正常统计分布的记录"
+    enabled: true
+    severity: "medium"
+    params:
+      check_columns: ["score", "extrapolated_value"]
+      zscore_threshold: 2.5
+    result_status: "available"
+
+review_workflow:
+  stages:
+    - name: "约束校验"
+      entry_point: true
+      description: "日常入口：自动检出坏记录，标记可用/暂缓/需重采"
+    - name: "公式计算核查"
+      entry_point: false
+      description: "月底/课前：核查公式计算过程是否可解释"
+    - name: "综合复核"
+      entry_point: false
+      description: "计算草稿、图表、排序不稳定同轮复核"
