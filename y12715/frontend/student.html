@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>组合计数错题归因 - 学生查看</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #333; }
+.header { background: linear-gradient(135deg, #27ae60, #2ecc71); color: #fff; padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 20px; }
+.header .nav a { color: #cde; margin-left: 18px; text-decoration: none; font-size: 14px; }
+.header .nav a.active { color: #fff; border-bottom: 2px solid #fff; padding-bottom: 4px; }
+.container { max-width: 960px; margin: 0 auto; padding: 24px; }
+.legend { background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; display: flex; gap: 24px; flex-wrap: wrap; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.legend-box { width: 14px; height: 14px; border-radius: 3px; }
+.filter { margin-bottom: 16px; display: flex; gap: 10px; align-items: center; }
+.filter input, .filter select { padding: 7px 12px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; }
+.filter button { padding: 7px 16px; background: #27ae60; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.card { background: #fff; border-radius: 8px; padding: 18px 22px; margin-bottom: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border-left: 5px solid #ccc; position: relative; }
+.card-approved { border-left-color: #52c41a; }
+.card-pending { border-left-color: #faad14; }
+.card-rejected { border-left-color: #ff4d4f; }
+.card-delayed { border-left-color: #1890ff; }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.card-title { font-size: 15px; font-weight: 600; flex: 1; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; margin-left: 8px; }
+.badge-approved { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+.badge-pending { background: #fff7e6; color: #d46b08; border: 1px solid #ffd591; }
+.badge-rejected { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+.badge-delayed { background: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; }
+.badge-quality-available { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+.badge-quality-delayed { background: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; }
+.badge-quality-recollect { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+.tip-banner { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+.tip-banner.ok { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+.tip-banner.warn { background: #fff7e6; color: #d46b08; border: 1px solid #ffd591; }
+.tip-banner.err { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+.tip-banner.info { background: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; }
+.question-box { background: #fafafa; padding: 12px 14px; border-radius: 6px; margin-bottom: 12px; line-height: 1.6; font-size: 14px; }
+.answer-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; font-size: 13px; }
+.answer-row .col { padding: 10px 12px; border-radius: 6px; }
+.answer-row .correct { background: #f6ffed; border: 1px solid #b7eb8f; }
+.answer-row .wrong { background: #fff1f0; border: 1px solid #ffa39e; }
+.answer-row .col-title { font-weight: 600; margin-bottom: 4px; font-size: 12px; }
+.answer-row .correct .col-title { color: #389e0d; }
+.answer-row .wrong .col-title { color: #cf1322; }
+.attribution { padding: 12px 14px; border-radius: 6px; background: #fafcff; border: 1px solid #d6e4ff; margin-bottom: 12px; }
+.attribution-title { font-weight: 600; color: #2c3e50; margin-bottom: 6px; font-size: 13px; }
+.attribution-cat { display: inline-block; background: #2c3e50; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 12px; margin-right: 8px; }
+.attribution-text { font-size: 13px; color: #444; line-height: 1.6; }
+.data-status { display: flex; gap: 10px; align-items: center; font-size: 12px; color: #666; padding-top: 10px; border-top: 1px dashed #eee; margin-top: 10px; }
+.empty { text-align: center; padding: 60px; color: #999; }
+.cta-btn { padding: 5px 12px; background: #1890ff; color: #fff; border: none; border-radius: 4px; font-size: 12px; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>组合计数错题归因 · 我的错题本</h1>
+    <div class="nav">
+        <a href="/">风控工作台</a>
+        <a href="/student" class="active">学生查看</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="legend">
+        <div class="legend-item"><div class="legend-box" style="background:#52c41a;"></div>✅ 已通过 — 可直接使用</div>
+        <div class="legend-item"><div class="legend-box" style="background:#faad14;"></div>⏳ 待确认 — 请等待风控分析师复核</div>
+        <div class="legend-item"><div class="legend-box" style="background:#ff4d4f;"></div>❌ 需重新采集 — 请联系风控分析师</div>
+        <div class="legend-item"><div class="legend-box" style="background:#1890ff;"></div>🔄 暂缓处理 — 后续跟进</div>
+    </div>
+
+    <div class="filter">
+        <input type="text" id="studentId" placeholder="请输入学生编号，如 S2024001">
+        <button onclick="loadData()">查看我的错题</button>
+    </div>
+
+    <div id="resultContainer"></div>
+</div>
+
+<script>
+async function api(url, opts = {}) {
+    const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts });
+    return res.json();
+}
+
+function tipBanner(type, text) {
+    const icons = { ok: '✅', warn: '⏳', err: '❌', info: 'ℹ️' };
+    return `<div class="tip-banner ${type}">${icons[type]} ${text}</div>`;
+}
+
+function renderList(qs) {
+    const container = document.getElementById('resultContainer');
+    if (!qs.length) {
+        container.innerHTML = '<div class="card"><div class="empty">暂无错题记录，请确认学生编号是否正确。</div></div>';
+        return;
+    }
+
+    const groups = { approved: [], pending: [], rejected: [], delayed: [] };
+    qs.forEach(q => groups[q.status] ? groups[q.status].push(q) : (groups[q.status] = [q]));
+
+    let summary = '';
+    if (groups.approved.length) summary += tipBanner('ok', `有 <b>${groups.approved.length}</b> 条错题归因已通过复核，可直接使用`);
+    if (groups.pending.length) summary += tipBanner('warn', `有 <b>${groups.pending.length}</b> 条错题归因待风控分析师确认，暂请勿直接使用`);
+    if (groups.rejected.length) summary += tipBanner('err', `有 <b>${groups.rejected.length}</b> 条记录数据缺失需重新采集，请联系风控分析师`);
+    if (groups.delayed.length) summary += tipBanner('info', `有 <b>${groups.delayed.length}</b> 条记录暂缓处理，后续将跟进通知`);
+
+    let html = summary;
+    const order = ['approved', 'pending', 'delayed', 'rejected'];
+    order.forEach(status => {
+        (groups[status] || []).forEach(q => {
+            html += `
+                <div class="card card-${status}">
+                    <div class="card-header">
+                        <div class="card-title">
+                            错题 #${q.id}
+                            <span class="badge badge-${status}">${q.status_label}</span>
+                            <span class="badge badge-quality-${q.data_quality}">${q.data_quality_label}</span>
+                        </div>
+                        <div style="font-size:12px; color:#999;">${q.created_at}</div>
+                    </div>
+
+                    ${q.status === 'approved' ? tipBanner('ok', '本条归因已通过风控复核，结论可直接使用。') : ''}
+                    ${q.status === 'pending' ? tipBanner('warn', '本条归因正待风控分析师复核，结论仅供参考，请等待确认。 <button class="cta-btn" onclick="alert(\'请联系风控分析师进行复核\')">催办复核</button>') : ''}
+                    ${q.status === 'rejected' ? tipBanner('err', '本条数据不完整或来源不明，需重新采集。 <button class="cta-btn" onclick="alert(\'请联系风控分析师重新录入\')">联系风控</button>') : ''}
+                    ${q.status === 'delayed' ? tipBanner('info', '本条归因暂缓处理，后续更新将通知您。') : ''}
+
+                    <div class="question-box">${q.question_content}</div>
+
+                    <div class="answer-row">
+                        <div class="col correct">
+                            <div class="col-title">✅ 标准答案</div>
+                            <div>${q.correct_answer || '(未提供)'}</div>
+                        </div>
+                        <div class="col wrong">
+                            <div class="col-title">❌ 我的作答</div>
+                            <div>${q.student_answer || '(未记录)'}</div>
+                        </div>
+                    </div>
+
+                    <div class="attribution">
+                        <div class="attribution-title">
+                            ${q.attribution_category ? '<span class="attribution-cat">' + q.attribution_category + '</span>' : ''}
+                            归因分析
+                        </div>
+                        <div class="attribution-text">${q.attribution_reason || '（暂未完成归因，请等待风控分析师复核）'}</div>
+                    </div>
+
+                    <div class="data-status">
+                        <span>📊 数据可用性说明：</span>
+                        ${q.data_quality === 'available' ? '<span style="color:#389e0d;">题干、答案、来源信息完整，结论可直接使用</span>' : ''}
+                        ${q.data_quality === 'delayed' ? '<span style="color:#096dd9;">部分信息待补充，结论暂缓使用</span>' : ''}
+                        ${q.data_quality === 'recollect' ? '<span style="color:#cf1322;">关键信息缺失，需重新采集后再用</span>' : ''}
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+    container.innerHTML = html;
+}
+
+async function loadData() {
+    const sid = document.getElementById('studentId').value.trim();
+    const url = sid ? `/api/questions?student_id=${encodeURIComponent(sid)}` : '/api/questions';
+    const qs = await api(url);
+    renderList(qs);
+}
+
+document.getElementById('studentId').value = 'S2024001';
+loadData();
+</script>
+</body>
+</html>

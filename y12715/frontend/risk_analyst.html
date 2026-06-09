@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>组合计数错题归因 - 风控工作台</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #333; }
+.header { background: linear-gradient(135deg, #2c3e50, #4a6580); color: #fff; padding: 16px 28px; display: flex; justify-content: space-between; align-items: center; }
+.header h1 { font-size: 20px; }
+.header .nav a { color: #cde; margin-left: 18px; text-decoration: none; font-size: 14px; }
+.header .nav a.active { color: #fff; border-bottom: 2px solid #4fc3f7; padding-bottom: 4px; }
+.container { display: flex; gap: 20px; padding: 20px; }
+.sidebar { width: 300px; flex-shrink: 0; }
+.main { flex: 1; min-width: 0; }
+.card { background: #fff; border-radius: 8px; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); margin-bottom: 18px; }
+.card h2 { font-size: 15px; color: #2c3e50; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat-box { padding: 12px; border-radius: 6px; color: #fff; text-align: center; }
+.stat-box .num { font-size: 24px; font-weight: 700; }
+.stat-box .label { font-size: 12px; opacity: 0.9; margin-top: 2px; }
+.btn { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+.btn-primary { background: #4A90E2; color: #fff; }
+.btn-primary:hover { background: #357ABD; }
+.btn-success { background: #52c41a; color: #fff; }
+.btn-success:hover { background: #45a815; }
+.btn-warn { background: #faad14; color: #fff; }
+.btn-danger { background: #ff4d4f; color: #fff; }
+.btn-default { background: #f0f0f0; color: #333; }
+.btn-sm { padding: 3px 10px; font-size: 12px; }
+.btn-group { display: flex; gap: 6px; flex-wrap: wrap; }
+.filter-bar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+.filter-bar select, .filter-bar input { padding: 6px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+th { background: #fafafa; font-weight: 600; color: #555; }
+tr:hover td { background: #fafcff; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.tag-pending { background: #fff7e6; color: #d46b08; border: 1px solid #ffd591; }
+.tag-approved { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+.tag-rejected { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+.tag-delayed { background: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; }
+.tag-quality-available { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+.tag-quality-delayed { background: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; }
+.tag-quality-recollect { background: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; }
+.source-info { font-size: 11px; color: #888; margin-top: 4px; }
+.source-info span { margin-right: 8px; }
+.modal-mask { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 100; align-items: center; justify-content: center; }
+.modal-mask.active { display: flex; }
+.modal { background: #fff; border-radius: 8px; width: 720px; max-height: 85vh; overflow: auto; }
+.modal-header { padding: 16px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-size: 16px; }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid #eee; text-align: right; }
+.close-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: #999; }
+.form-row { margin-bottom: 14px; }
+.form-row label { display: block; margin-bottom: 5px; font-size: 13px; color: #555; font-weight: 500; }
+.form-row input, .form-row textarea, .form-row select { width: 100%; padding: 7px 10px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 13px; font-family: inherit; }
+.form-row textarea { min-height: 70px; resize: vertical; }
+.audit-timeline { border-left: 2px solid #e8e8e8; padding-left: 16px; margin-top: 12px; }
+.audit-item { position: relative; margin-bottom: 16px; }
+.audit-item::before { content: ''; position: absolute; left: -22px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: #4A90E2; border: 2px solid #fff; box-shadow: 0 0 0 2px #4A90E2; }
+.audit-item .meta { font-size: 12px; color: #888; margin-bottom: 4px; }
+.audit-item .content { background: #fafafa; padding: 10px; border-radius: 4px; font-size: 13px; }
+.audit-item .diff { font-size: 12px; margin-top: 6px; }
+.audit-item .diff .old { color: #cf1322; text-decoration: line-through; }
+.audit-item .diff .new { color: #389e0d; }
+.check-list { margin-top: 10px; }
+.check-item { padding: 8px 10px; border-radius: 4px; margin-bottom: 6px; font-size: 12px; }
+.check-item.pass { background: #f6ffed; border-left: 3px solid #52c41a; }
+.check-item.fail { background: #fff1f0; border-left: 3px solid #ff4d4f; }
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.chart-box { text-align: center; }
+.chart-box img { max-width: 100%; border-radius: 4px; border: 1px solid #eee; }
+.chart-box .title { font-size: 12px; color: #666; margin-top: 6px; }
+.empty { text-align: center; padding: 40px; color: #999; }
+.checkbox-col { width: 36px; text-align: center; }
+input[type="checkbox"] { cursor: pointer; }
+.bulk-bar { background: #fffbe6; border: 1px solid #ffe58f; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; display: none; align-items: center; gap: 10px; }
+.bulk-bar.active { display: flex; }
+.bulk-bar .count { font-size: 13px; color: #d46b08; }
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid #eee; }
+.tab { padding: 8px 18px; cursor: pointer; font-size: 14px; color: #666; border-bottom: 2px solid transparent; }
+.tab.active { color: #2c3e50; border-bottom-color: #4A90E2; font-weight: 600; }
+.question-text { font-size: 13px; line-height: 1.5; }
+.version-badge { display: inline-block; background: #e6f7ff; color: #096dd9; padding: 1px 6px; border-radius: 3px; font-size: 11px; margin-left: 6px; }
+</style>
+</head>
+<body>
+<div class="header">
+    <h1>组合计数错题归因 · 风控工作台</h1>
+    <div class="nav">
+        <a href="/" class="active">风控工作台</a>
+        <a href="/student">学生查看</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <div class="card">
+            <h2>数据总览</h2>
+            <div id="statGrid" class="stat-grid"></div>
+        </div>
+        <div class="card">
+            <h2>快捷操作</h2>
+            <div class="btn-group" style="flex-direction:column; gap:8px;">
+                <button class="btn btn-primary" onclick="loadSample()">初始化示例数据</button>
+                <button class="btn btn-default" onclick="openAddModal()">+ 新增错题</button>
+                <button class="btn btn-success" onclick="downloadExcel()">导出Excel</button>
+                <button class="btn btn-warn" onclick="downloadAuditLogs()">导出审核日志</button>
+                <button class="btn btn-default" onclick="location.reload()">刷新</button>
+            </div>
+        </div>
+        <div class="card">
+            <h2>图表总览</h2>
+            <div class="chart-grid">
+                <div class="chart-box">
+                    <img id="chartStatus" src="/api/export/chart/status.png" alt="状态分布">
+                    <div class="title">状态分布</div>
+                </div>
+                <div class="chart-box">
+                    <img id="chartQuality" src="/api/export/chart/quality.png" alt="质量分布">
+                    <div class="title">数据质量</div>
+                </div>
+            </div>
+            <div style="margin-top:12px;">
+                <img src="/api/export/chart/category.png" alt="归因类别" style="width:100%; border-radius:4px; border:1px solid #eee;">
+                <div class="title" style="text-align:center; font-size:12px; color:#666; margin-top:6px;">归因类别分布</div>
+            </div>
+            <div style="margin-top:12px;">
+                <button class="btn btn-default" style="width:100%;" onclick="window.open('/api/export/chart/combined.png')">下载综合图表</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="card">
+            <h2>错题归因列表</h2>
+
+            <div id="bulkBar" class="bulk-bar">
+                <span class="count">已选 <b id="selectedCount">0</b> 条</span>
+                <button class="btn btn-success btn-sm" onclick="bulkAction('approved')">批量通过</button>
+                <button class="btn btn-danger btn-sm" onclick="bulkAction('rejected')">批量退回重采</button>
+                <button class="btn btn-warn btn-sm" onclick="bulkAction('delayed')">批量暂缓</button>
+                <button class="btn btn-default btn-sm" onclick="clearSelection()">清空</button>
+            </div>
+
+            <div class="filter-bar">
+                <select id="filterStatus">
+                    <option value="">全部状态</option>
+                    <option value="pending">待确认</option>
+                    <option value="approved">已通过</option>
+                    <option value="rejected">需重新采集</option>
+                    <option value="delayed">暂缓处理</option>
+                </select>
+                <input type="text" id="filterStudent" placeholder="学生编号/姓名搜索...">
+                <button class="btn btn-primary btn-sm" onclick="loadData()">筛选</button>
+                <span style="margin-left:auto; font-size:12px; color:#888;">提示：勾选后可批量操作</span>
+            </div>
+
+            <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                <tr>
+                    <th class="checkbox-col"><input type="checkbox" id="checkAll" onclick="toggleAll()"></th>
+                    <th>ID</th>
+                    <th>学生</th>
+                    <th>题目内容</th>
+                    <th>归因</th>
+                    <th>状态</th>
+                    <th>数据质量</th>
+                    <th>来源追溯</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody id="questionTable"></tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-mask" id="detailModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>错题详情 <span id="detailVersion" class="version-badge"></span></h3>
+            <button class="close-btn" onclick="closeModal('detailModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="detailBody"></div>
+        <div class="modal-footer">
+            <button class="btn btn-default" onclick="closeModal('detailModal')">关闭</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-mask" id="editModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>人工修正 · 留痕记录</h3>
+            <button class="close-btn" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="editForm"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" onclick="closeModal('editModal')">取消</button>
+            <button class="btn btn-primary" onclick="submitEdit()">保存并记录留痕</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-mask" id="addModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>新增错题记录</h3>
+            <button class="close-btn" onclick="closeModal('addModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <label>学生编号 *</label>
+                <input type="text" id="add_student_id" value="S2024001">
+            </div>
+            <div class="form-row">
+                <label>学生姓名</label>
+                <input type="text" id="add_student_name">
+            </div>
+            <div class="form-row">
+                <label>题目内容 *</label>
+                <textarea id="add_question_content"></textarea>
+            </div>
+            <div class="form-row">
+                <label>标准答案</label>
+                <input type="text" id="add_correct_answer">
+            </div>
+            <div class="form-row">
+                <label>学生作答</label>
+                <input type="text" id="add_student_answer">
+            </div>
+            <div class="form-row">
+                <label>来源类型 (excel/image/note)</label>
+                <input type="text" id="add_source_type" placeholder="excel">
+            </div>
+            <div class="form-row">
+                <label>来源引用 (行号/图片名)</label>
+                <input type="text" id="add_source_ref" placeholder="习题册A第12行 或 scan_xxx.png">
+            </div>
+            <div class="form-row">
+                <label>来源备注</label>
+                <input type="text" id="add_source_note" placeholder="期中测验卷、错题本第X页...">
+            </div>
+            <div class="form-row">
+                <label>归因类别</label>
+                <select id="add_attribution_category">
+                    <option value="">未分类</option>
+                    <option value="公式混淆">公式混淆</option>
+                    <option value="分类分步缺失">分类分步缺失</option>
+                    <option value="排列模型误判">排列模型误判</option>
+                    <option value="特殊元素遗漏">特殊元素遗漏</option>
+                    <option value="约束条件忽略">约束条件忽略</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>归因原因</label>
+                <textarea id="add_attribution_reason"></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-default" onclick="closeModal('addModal')">取消</button>
+            <button class="btn btn-primary" onclick="submitAdd()">提交</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let questions = [];
+let editingId = null;
+let selectedIds = new Set();
+
+async function api(url, opts = {}) {
+    const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts });
+    if (!res.ok) throw new Error(await res.text());
+    const ct = res.headers.get('content-type');
+    return ct && ct.includes('application/json') ? res.json() : res.text();
+}
+
+async function loadData() {
+    const status = document.getElementById('filterStatus').value;
+    const student = document.getElementById('filterStudent').value;
+    let url = '/api/questions';
+    const params = [];
+    if (status) params.push('status=' + status);
+    if (student) params.push('student_id=' + encodeURIComponent(student));
+    if (params.length) url += '?' + params.join('&');
+    questions = await api(url);
+    renderTable();
+    loadStats();
+}
+
+async function loadStats() {
+    const s = await api('/api/statistics');
+    const grid = document.getElementById('statGrid');
+    grid.innerHTML = `
+        <div class="stat-box" style="background:#4A90E2;">
+            <div class="num">${s.total || 0}</div><div class="label">总题数</div>
+        </div>
+        <div class="stat-box" style="background:#faad14;">
+            <div class="num">${s.by_status['待确认'] || 0}</div><div class="label">待确认</div>
+        </div>
+        <div class="stat-box" style="background:#52c41a;">
+            <div class="num">${s.by_status['已通过'] || 0}</div><div class="label">已通过</div>
+        </div>
+        <div class="stat-box" style="background:#ff4d4f;">
+            <div class="num">${(s.by_status['需重新采集']||0) + (s.by_status['暂缓处理']||0)}</div><div class="label">异常待处理</div>
+        </div>
+    `;
+}
+
+function statusTag(s) {
+    const map = { pending: '待确认', approved: '已通过', rejected: '需重新采集', delayed: '暂缓处理' };
+    return `<span class="tag tag-${s}">${map[s] || s}</span>`;
+}
+function qualityTag(q) {
+    const map = { available: '数据可用', delayed: '数据暂缓', recollect: '需重新采集' };
+    return `<span class="tag tag-quality-${q}">${map[q] || q}</span>`;
+}
+
+function renderTable() {
+    const tbody = document.getElementById('questionTable');
+    if (!questions.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty">暂无数据，请点击左侧"初始化示例数据"</td></tr>';
+        return;
+    }
+    tbody.innerHTML = questions.map(q => `
+        <tr>
+            <td class="checkbox-col"><input type="checkbox" class="row-check" value="${q.id}" ${selectedIds.has(q.id)?'checked':''} onclick="toggleSelect(${q.id})"></td>
+            <td>#${q.id}<span class="version-badge">v${q.version}</span></td>
+            <td>${q.student_name || '-'}<br><span style="font-size:11px;color:#999;">${q.student_id}</span></td>
+            <td>
+                <div class="question-text">${q.question_content}</div>
+                ${q.student_answer ? `<div style="font-size:11px;color:#c00;margin-top:4px;">学生答: ${q.student_answer}</div>` : ''}
+                ${q.correct_answer ? `<div style="font-size:11px;color:#080;margin-top:2px;">标准: ${q.correct_answer}</div>` : ''}
+            </td>
+            <td>
+                ${q.attribution_category ? `<b>${q.attribution_category}</b>` : '<span style="color:#bbb;">未归因</span>'}
+                ${q.attribution_reason ? `<div style="font-size:11px;color:#666;margin-top:3px;">${q.attribution_reason}</div>` : ''}
+            </td>
+            <td>${statusTag(q.status)}</td>
+            <td>${qualityTag(q.data_quality)}</td>
+            <td>
+                <div class="source-info">
+                    ${q.source_type ? `<span>📌${q.source_type}</span>` : ''}
+                    ${q.source_ref ? `<span>🔗${q.source_ref}</span>` : ''}
+                    ${q.source_note ? `<span>📝${q.source_note}</span>` : ''}
+                    ${!q.source_type && !q.source_ref && !q.source_note ? '<span style="color:#f00;">⚠️无来源</span>' : ''}
+                </div>
+            </td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-default" onclick="viewDetail(${q.id})">详情</button>
+                    <button class="btn btn-sm btn-primary" onclick="openEdit(${q.id})">修正</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    document.getElementById('checkAll').checked = questions.length > 0 && questions.every(q => selectedIds.has(q.id));
+    updateBulkBar();
+}
+
+function updateBulkBar() {
+    document.getElementById('selectedCount').textContent = selectedIds.size;
+    document.getElementById('bulkBar').classList.toggle('active', selectedIds.size > 0);
+}
+function toggleSelect(id) {
+    if (selectedIds.has(id)) selectedIds.delete(id); else selectedIds.add(id);
+    updateBulkBar();
+}
+function toggleAll() {
+    const all = document.getElementById('checkAll').checked;
+    selectedIds.clear();
+    if (all) questions.forEach(q => selectedIds.add(q.id));
+    renderTable();
+}
+function clearSelection() { selectedIds.clear(); renderTable(); }
+
+async function bulkAction(status) {
+    if (!selectedIds.size) return;
+    const reason = prompt('请输入批量操作原因：', '批量复核');
+    if (reason === null) return;
+    const analyst = prompt('请输入风控分析师姓名：', '风控-小王') || '匿名';
+    await api('/api/questions/batch-review', {
+        method: 'POST',
+        body: JSON.stringify({ ids: [...selectedIds], status, change_reason: reason, analyst_name: analyst })
+    });
+    selectedIds.clear();
+    loadData();
+    refreshCharts();
+}
+
+async function viewDetail(id) {
+    const q = await api(`/api/questions/${id}`);
+    document.getElementById('detailVersion').textContent = `v${q.version}`;
+    let html = `
+        <div class="form-row">
+            <label>学生信息</label>
+            <div>${q.student_name || '-'} (${q.student_id})</div>
+        </div>
+        <div class="form-row">
+            <label>题目内容</label>
+            <div style="padding:10px; background:#fafafa; border-radius:4px;">${q.question_content}</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="form-row">
+                <label>标准答案</label>
+                <div style="color:#080;">${q.correct_answer || '-'}</div>
+            </div>
+            <div class="form-row">
+                <label>学生作答</label>
+                <div style="color:#c00;">${q.student_answer || '-'}</div>
+            </div>
+        </div>
+        <div class="form-row">
+            <label>来源追溯</label>
+            <div class="source-info">
+                ${q.source_type ? `<span>类型：${q.source_type}</span>` : ''}
+                ${q.source_ref ? `<span>行号/图片：${q.source_ref}</span>` : ''}
+                ${q.source_note ? `<span>备注：${q.source_note}</span>` : ''}
+                ${!q.source_type && !q.source_ref && !q.source_note ? '<span style="color:#f00;">⚠️ 未记录来源，无法追溯</span>' : ''}
+            </div>
+        </div>
+        <div class="form-row">
+            <label>归因结论</label>
+            <div><b>${q.attribution_category || '未分类'}</b></div>
+            <div style="margin-top:6px; color:#555;">${q.attribution_reason || '-'}</div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="form-row"><label>状态</label><div>${statusTag(q.status)}</div></div>
+            <div class="form-row"><label>数据质量</label><div>${qualityTag(q.data_quality)}</div></div>
+        </div>
+        <div class="form-row">
+            <label>约束校验结果</label>
+            <div class="check-list">
+                ${q.constraint_checks && q.constraint_checks.length ? q.constraint_checks.map(c => `
+                    <div class="check-item ${c.check_result}">
+                        <b>[${c.check_result === 'pass' ? '✅通过' : '❌失败'}] ${c.check_type}</b>
+                        <div>${c.check_detail}</div>
+                        ${c.source_material_ref ? `<div style="color:#888; font-size:11px; margin-top:3px;">关联来源：${c.source_material_ref}</div>` : ''}
+                    </div>
+                `).join('') : '<div style="color:#999; font-size:12px;">暂无校验记录</div>'}
+            </div>
+        </div>
+        <div class="form-row">
+            <label>审核留痕 · 变更历史</label>
+            <div class="audit-timeline">
+                ${q.audit_logs && q.audit_logs.length ? q.audit_logs.map(l => `
+                    <div class="audit-item">
+                        <div class="meta">${l.created_at} · ${l.analyst_name}</div>
+                        <div class="content">
+                            ${l.from_status ? `<span class="old">${l.from_status_label || l.from_status}</span> → ` : ''}
+                            <span class="new"><b>${l.to_status_label || l.to_status}</b></span>
+                            ${l.change_reason ? `<div style="margin-top:4px; color:#666;">${l.change_reason}</div>` : ''}
+                            ${l.old_values && l.new_values ? `
+                                <div class="diff">
+                                    ${Object.keys(l.new_values).map(k => {
+                                        const o = l.old_values[k];
+                                        const n = l.new_values[k];
+                                        if (o === n) return '';
+                                        return `<div><b>${k}</b>: <span class="old">${o || '(空)'}</span> → <span class="new">${n || '(空)'}</span></div>`;
+                                    }).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('') : '<div style="color:#999; font-size:12px;">暂无变更记录</div>'}
+            </div>
+        </div>
+    `;
+    document.getElementById('detailBody').innerHTML = html;
+    openModal('detailModal');
+}
+
+async function openEdit(id) {
+    editingId = id;
+    const q = await api(`/api/questions/${id}`);
+    const html = `
+        <div class="form-row" style="background:#fffbe6; padding:10px; border-radius:4px; border:1px solid #ffe58f;">
+            <label style="color:#d46b08;">风控分析师姓名 *</label>
+            <input type="text" id="edit_analyst" placeholder="请输入您的姓名用于留痕" value="风控-小王">
+        </div>
+        <div class="form-row">
+            <label>变更原因 *</label>
+            <textarea id="edit_reason" placeholder="请说明本次人工修正的原因..."></textarea>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="form-row">
+                <label>状态</label>
+                <select id="edit_status">
+                    <option value="pending" ${q.status==='pending'?'selected':''}>待确认</option>
+                    <option value="approved" ${q.status==='approved'?'selected':''}>已通过</option>
+                    <option value="rejected" ${q.status==='rejected'?'selected':''}>需重新采集</option>
+                    <option value="delayed" ${q.status==='delayed'?'selected':''}>暂缓处理</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>数据质量</label>
+                <select id="edit_quality">
+                    <option value="available" ${q.data_quality==='available'?'selected':''}>数据可用</option>
+                    <option value="delayed" ${q.data_quality==='delayed'?'selected':''}>数据暂缓</option>
+                    <option value="recollect" ${q.data_quality==='recollect'?'selected':''}>需重新采集</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <label>归因类别</label>
+            <select id="edit_category">
+                <option value="">未分类</option>
+                <option value="公式混淆" ${q.attribution_category==='公式混淆'?'selected':''}>公式混淆</option>
+                <option value="分类分步缺失" ${q.attribution_category==='分类分步缺失'?'selected':''}>分类分步缺失</option>
+                <option value="排列模型误判" ${q.attribution_category==='排列模型误判'?'selected':''}>排列模型误判</option>
+                <option value="特殊元素遗漏" ${q.attribution_category==='特殊元素遗漏'?'selected':''}>特殊元素遗漏</option>
+                <option value="约束条件忽略" ${q.attribution_category==='约束条件忽略'?'selected':''}>约束条件忽略</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label>归因原因</label>
+            <textarea id="edit_reason_text">${q.attribution_reason || ''}</textarea>
+        </div>
+        <div style="border-top:1px solid #eee; padding-top:12px;">
+            <label style="display:block; margin-bottom:6px; font-size:13px; color:#555; font-weight:500;">来源追溯信息（保留原始行号/图片名/备注）</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div class="form-row" style="margin-bottom:0;">
+                    <label>来源类型</label>
+                    <input type="text" id="edit_source_type" value="${q.source_type || ''}">
+                </div>
+                <div class="form-row" style="margin-bottom:0;">
+                    <label>来源引用 (行号/图片名)</label>
+                    <input type="text" id="edit_source_ref" value="${q.source_ref || ''}">
+                </div>
+            </div>
+            <div class="form-row" style="margin-top:10px;">
+                <label>来源备注</label>
+                <input type="text" id="edit_source_note" value="${q.source_note || ''}">
+            </div>
+        </div>
+    `;
+    document.getElementById('editForm').innerHTML = html;
+    openModal('editModal');
+}
+
+async function submitEdit() {
+    const analyst = document.getElementById('edit_analyst').value.trim();
+    const reason = document.getElementById('edit_reason').value.trim();
+    if (!analyst) { alert('请填写风控分析师姓名'); return; }
+    if (!reason) { alert('请填写变更原因'); return; }
+    const data = {
+        analyst_name: analyst,
+        change_reason: reason,
+        status: document.getElementById('edit_status').value,
+        data_quality: document.getElementById('edit_quality').value,
+        attribution_category: document.getElementById('edit_category').value,
+        attribution_reason: document.getElementById('edit_reason_text').value,
+        source_type: document.getElementById('edit_source_type').value,
+        source_ref: document.getElementById('edit_source_ref').value,
+        source_note: document.getElementById('edit_source_note').value,
+    };
+    await api(`/api/questions/${editingId}`, { method: 'PUT', body: JSON.stringify(data) });
+    closeModal('editModal');
+    loadData();
+    refreshCharts();
+}
+
+function openAddModal() { openModal('addModal'); }
+async function submitAdd() {
+    const data = {
+        student_id: document.getElementById('add_student_id').value,
+        student_name: document.getElementById('add_student_name').value,
+        question_content: document.getElementById('add_question_content').value,
+        correct_answer: document.getElementById('add_correct_answer').value,
+        student_answer: document.getElementById('add_student_answer').value,
+        source_type: document.getElementById('add_source_type').value,
+        source_ref: document.getElementById('add_source_ref').value,
+        source_note: document.getElementById('add_source_note').value,
+        attribution_category: document.getElementById('add_attribution_category').value,
+        attribution_reason: document.getElementById('add_attribution_reason').value,
+    };
+    if (!data.question_content) { alert('请填写题目内容'); return; }
+    await api('/api/questions', { method: 'POST', body: JSON.stringify(data) });
+    closeModal('addModal');
+    loadData();
+    refreshCharts();
+}
+
+async function loadSample() {
+    if (!confirm('将清空现有数据并加载示例数据，确认继续？')) return;
+    await api('/api/init-sample', { method: 'POST' });
+    loadData();
+    refreshCharts();
+}
+
+function downloadExcel() { window.open('/api/export/questions.xlsx'); }
+function downloadAuditLogs() { window.open('/api/export/audit-logs.xlsx'); }
+function refreshCharts() {
+    document.getElementById('chartStatus').src = '/api/export/chart/status.png?t=' + Date.now();
+    document.getElementById('chartQuality').src = '/api/export/chart/quality.png?t=' + Date.now();
+}
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+loadData();
+</script>
+</body>
+</html>
