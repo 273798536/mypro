@@ -1,0 +1,35 @@
+{
+  "sample_id": "S001",
+  "x_values": [
+    0.0,
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    5.0,
+    6.0,
+    7.0,
+    8.0,
+    9.0,
+    10.0
+  ],
+  "y_values": [
+    0.0,
+    0.5,
+    1.1,
+    1.6,
+    2.0,
+    2.6,
+    3.1,
+    3.5,
+    4.0,
+    4.4,
+    5.0
+  ],
+  "source": "batch_import",
+  "source_file": "samples.csv",
+  "source_batch": null,
+  "imported_at": "2026-06-09T18:16:38.132210",
+  "operator": null,
+  "metadata": {}
+}

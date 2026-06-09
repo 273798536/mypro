@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: spline-check
+Version: 0.1.0
+Summary: 样条插值过冲检查工具 - 批量复核、追溯留痕、边界去重
+Requires-Python: >=3.9
+Requires-Dist: numpy>=1.21
+Requires-Dist: scipy>=1.7
+Requires-Dist: pandas>=1.3
+Requires-Dist: pydantic>=1.9
+Requires-Dist: rich>=12.0
+Requires-Dist: click>=8.0

@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spline-check"
+version = "0.1.0"
+description = "样条插值过冲检查工具 - 批量复核、追溯留痕、边界去重"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy>=1.21",
+    "scipy>=1.7",
+    "pandas>=1.3",
+    "pydantic>=1.9",
+    "rich>=12.0",
+    "click>=8.0",
+]
+
+[project.scripts]
+spline-check = "spline_check.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["spline_check*"]

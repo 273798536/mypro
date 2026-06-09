@@ -1,0 +1,166 @@
+{
+  "generated_at": "2026-06-09T18:16:38.141532",
+  "total": 4,
+  "usable_count": 3,
+  "pending_count": 1,
+  "recollect_count": 0,
+  "boundary_count": 0,
+  "results": [
+    {
+      "sample_id": "S001",
+      "fingerprint": "bb88112879080001",
+      "status": "usable",
+      "has_overshoot": false,
+      "max_overshoot": null,
+      "overshoot_points": [],
+      "smoothing": 0.0,
+      "knots": 9,
+      "checked_at": "2026-06-09T18:16:38.139047",
+      "checker_version": "0.1.0",
+      "note": null
+    },
+    {
+      "sample_id": "S002",
+      "fingerprint": "b4084c21dc415380",
+      "status": "pending",
+      "has_overshoot": true,
+      "max_overshoot": 0.08016513158805873,
+      "overshoot_points": [
+        [
+          0,
+          -0.006741646913147871,
+          0.0
+        ],
+        [
+          1,
+          -0.00595411318481545,
+          0.0
+        ],
+        [
+          2,
+          -0.005175745933488261,
+          0.0
+        ],
+        [
+          3,
+          -0.004406528579224611,
+          0.0
+        ],
+        [
+          4,
+          -0.0036464445420827953,
+          0.0
+        ],
+        [
+          5,
+          -0.0028954772421211257,
+          0.0
+        ],
+        [
+          6,
+          -0.002153610099397904,
+          0.0
+        ],
+        [
+          7,
+          -0.0014208265339714311,
+          0.0
+        ],
+        [
+          8,
+          -0.0006971099659000144,
+          0.0
+        ],
+        [
+          186,
+          -0.000473792642701128,
+          0.0
+        ]
+      ],
+      "smoothing": 0.1,
+      "knots": 7,
+      "checked_at": "2026-06-09T18:16:38.140027",
+      "checker_version": "0.1.0",
+      "note": null
+    },
+    {
+      "sample_id": "S003",
+      "fingerprint": "438c3e6e3603e3d8",
+      "status": "usable",
+      "has_overshoot": false,
+      "max_overshoot": null,
+      "overshoot_points": [],
+      "smoothing": 0.1,
+      "knots": 9,
+      "checked_at": "2026-06-09T18:16:38.140526",
+      "checker_version": "0.1.0",
+      "note": null
+    },
+    {
+      "sample_id": "S004",
+      "fingerprint": "52e985c23fb02a04",
+      "status": "usable",
+      "has_overshoot": true,
+      "max_overshoot": 0.0035200519696178194,
+      "overshoot_points": [
+        [
+          756,
+          -0.00016999565298676708,
+          0.0
+        ],
+        [
+          757,
+          -0.00047028195559992923,
+          0.0
+        ],
+        [
+          758,
+          -0.0007568446539667567,
+          0.0
+        ],
+        [
+          759,
+          -0.001029627845645719,
+          0.0
+        ],
+        [
+          760,
+          -0.0012885756281952876,
+          0.0
+        ],
+        [
+          761,
+          -0.0015336320991739324,
+          0.0
+        ],
+        [
+          762,
+          -0.0017647413561401243,
+          0.0
+        ],
+        [
+          763,
+          -0.001981847496652335,
+          0.0
+        ],
+        [
+          764,
+          -0.002184894618269031,
+          0.0
+        ],
+        [
+          765,
+          -0.0023738268185486905,
+          0.0
+        ]
+      ],
+      "smoothing": 0.0,
+      "knots": 6,
+      "checked_at": "2026-06-09T18:16:38.140995",
+      "checker_version": "0.1.0",
+      "note": null
+    }
+  ],
+  "corrections": [],
+  "duplicates_detected": []
+}

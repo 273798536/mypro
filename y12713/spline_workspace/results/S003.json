@@ -1,0 +1,13 @@
+{
+  "sample_id": "S003",
+  "fingerprint": "438c3e6e3603e3d8",
+  "status": "usable",
+  "has_overshoot": false,
+  "max_overshoot": null,
+  "overshoot_points": [],
+  "smoothing": 0.1,
+  "knots": 9,
+  "checked_at": "2026-06-09T18:16:38.140526",
+  "checker_version": "0.1.0",
+  "note": null
+}
