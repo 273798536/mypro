@@ -1,0 +1,18 @@
+[project]
+name = "ip-scheduler"
+version = "0.1.0"
+description = "整数规划排班器 - 建模社助教工具"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.0",
+    "matplotlib>=3.4",
+    "rich>=12.0",
+    "python-dateutil>=2.8",
+]
+
+[project.scripts]
+ip-scheduler = "src.scheduler.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

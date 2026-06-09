@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: ip-scheduler
+Version: 0.1.0
+Summary: 整数规划排班器 - 建模社助教工具
+Requires-Python: >=3.9
+Requires-Dist: click>=8.0
+Requires-Dist: matplotlib>=3.4
+Requires-Dist: rich>=12.0
+Requires-Dist: python-dateutil>=2.8

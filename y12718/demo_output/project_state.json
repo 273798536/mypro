@@ -1,0 +1,995 @@
+{
+  "input_dir": "demo_input",
+  "output_dir": "demo_output",
+  "source_file_hashes": {
+    "drafts.csv": "9e23bb991f98f786",
+    "drafts.md": "7621275d987c3ad2",
+    "drafts.txt": "29e73e1e1f97bdcb"
+  },
+  "last_run": "2026-06-09T19:11:12",
+  "assignments": {
+    "asg-20260609191112403-0-a40c3e": {
+      "assignment_id": "asg-20260609191112403-0-a40c3e",
+      "person": "张伟",
+      "date": "2026-06-10",
+      "shift": "早班",
+      "hours": 7.5,
+      "status": "confirmed",
+      "content_hash": "df8f87a3d163",
+      "source_rows": [
+        "drafts.csv:1",
+        "drafts.csv:13"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:53"
+    },
+    "asg-20260609191112404-1-b498b7": {
+      "assignment_id": "asg-20260609191112404-1-b498b7",
+      "person": "李娜",
+      "date": "2026-06-10",
+      "shift": "中班",
+      "hours": 6.0,
+      "status": "pending",
+      "content_hash": "d2e9097872cb",
+      "source_rows": [
+        "drafts.csv:2"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-2-ae796a": {
+      "assignment_id": "asg-20260609191112404-2-ae796a",
+      "person": "王强",
+      "date": "2026-06-10",
+      "shift": "晚班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "ce91708f53d9",
+      "source_rows": [
+        "drafts.csv:3"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-3-953734": {
+      "assignment_id": "asg-20260609191112404-3-953734",
+      "person": "赵磊",
+      "date": "2026-06-11",
+      "shift": "早班",
+      "hours": 4.0,
+      "status": "pending",
+      "content_hash": "20fbf811cfdb",
+      "source_rows": [
+        "drafts.csv:5"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-4-f89004": {
+      "assignment_id": "asg-20260609191112404-4-f89004",
+      "person": "陈静",
+      "date": "2026-06-11",
+      "shift": "中班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "dd656468e381",
+      "source_rows": [
+        "drafts.csv:6"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-5-fc63d9": {
+      "assignment_id": "asg-20260609191112404-5-fc63d9",
+      "person": "刘洋",
+      "date": "2026-06-11",
+      "shift": "晚班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "05e73363c5e6",
+      "source_rows": [
+        "drafts.csv:7"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-6-548146": {
+      "assignment_id": "asg-20260609191112404-6-548146",
+      "person": "孙悦",
+      "date": "2026-06-12",
+      "shift": "早班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "a22549a0bd4c",
+      "source_rows": [
+        "drafts.csv:10"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-7-e1b723": {
+      "assignment_id": "asg-20260609191112404-7-e1b723",
+      "person": "周杰",
+      "date": "2026-06-12",
+      "shift": "中班",
+      "hours": 6.0,
+      "status": "pending",
+      "content_hash": "40c1432c4f3b",
+      "source_rows": [
+        "drafts.csv:11"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-8-4d5561": {
+      "assignment_id": "asg-20260609191112404-8-4d5561",
+      "person": "吴敏",
+      "date": "2026-06-12",
+      "shift": "晚班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "158cbf4166b2",
+      "source_rows": [
+        "drafts.csv:12"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-10-ca7cbc": {
+      "assignment_id": "asg-20260609191112404-10-ca7cbc",
+      "person": "李娜",
+      "date": "2026-06-12",
+      "shift": "早班",
+      "hours": 4.0,
+      "status": "pending",
+      "content_hash": "65772d29d2c8",
+      "source_rows": [
+        "drafts.csv:14"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-11-c012f7": {
+      "assignment_id": "asg-20260609191112404-11-c012f7",
+      "person": "张伟",
+      "date": "2026-06-13",
+      "shift": "早班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "6ba6511fb301",
+      "source_rows": [
+        "drafts.md:1",
+        "drafts.md:4"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-12-12e531": {
+      "assignment_id": "asg-20260609191112404-12-12e531",
+      "person": "李娜",
+      "date": "2026-06-13",
+      "shift": "中班",
+      "hours": 6.0,
+      "status": "pending",
+      "content_hash": "f850b2e309ec",
+      "source_rows": [
+        "drafts.md:2",
+        "drafts.md:5"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-13-713c50": {
+      "assignment_id": "asg-20260609191112404-13-713c50",
+      "person": "王强",
+      "date": "2026-06-13",
+      "shift": "晚班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "26bca6332351",
+      "source_rows": [
+        "drafts.md:3",
+        "drafts.md:6"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-14-77703d": {
+      "assignment_id": "asg-20260609191112404-14-77703d",
+      "person": "赵磊",
+      "date": "2026-06-14",
+      "shift": "早班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "8c0134f9a7ec",
+      "source_rows": [
+        "drafts.md:4",
+        "drafts.md:7"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-15-d0f740": {
+      "assignment_id": "asg-20260609191112404-15-d0f740",
+      "person": "陈静",
+      "date": "2026-06-14",
+      "shift": "中班",
+      "hours": 6.0,
+      "status": "pending",
+      "content_hash": "d5b853303da5",
+      "source_rows": [
+        "drafts.md:5",
+        "drafts.md:8"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-16-f82cf0": {
+      "assignment_id": "asg-20260609191112404-16-f82cf0",
+      "person": "刘洋",
+      "date": "2026-06-14",
+      "shift": "晚班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "427b59793df5",
+      "source_rows": [
+        "drafts.md:6",
+        "drafts.md:9"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-23-79ecc4": {
+      "assignment_id": "asg-20260609191112404-23-79ecc4",
+      "person": "孙悦",
+      "date": "2026-06-15",
+      "shift": "全天",
+      "hours": 10.0,
+      "status": "pending",
+      "content_hash": "ccb9b20b48ce",
+      "source_rows": [
+        "drafts.md:12"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-24-79408f": {
+      "assignment_id": "asg-20260609191112404-24-79408f",
+      "person": "周杰",
+      "date": "2026-06-15",
+      "shift": "早班",
+      "hours": 4.0,
+      "status": "pending",
+      "content_hash": "4746a0f430ed",
+      "source_rows": [
+        "drafts.md:13"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-25-8e6c16": {
+      "assignment_id": "asg-20260609191112404-25-8e6c16",
+      "person": "吴敏",
+      "date": "2026-06-15",
+      "shift": "晚班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "8b77d0ed0231",
+      "source_rows": [
+        "drafts.md:14"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-26-42d8d6": {
+      "assignment_id": "asg-20260609191112404-26-42d8d6",
+      "person": "张伟",
+      "date": "2026-06-16",
+      "shift": "早班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "a33abd05a709",
+      "source_rows": [
+        "drafts.txt:3"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-27-420da9": {
+      "assignment_id": "asg-20260609191112404-27-420da9",
+      "person": "李娜",
+      "date": "2026-06-16",
+      "shift": "中班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "92aab54dc457",
+      "source_rows": [
+        "drafts.txt:4"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-28-e99971": {
+      "assignment_id": "asg-20260609191112404-28-e99971",
+      "person": "王强",
+      "date": "2026-06-16",
+      "shift": "晚班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "eba2b89501be",
+      "source_rows": [
+        "drafts.txt:5"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-29-461e31": {
+      "assignment_id": "asg-20260609191112404-29-461e31",
+      "person": "赵磊",
+      "date": "2026-06-17",
+      "shift": "早班",
+      "hours": 4.0,
+      "status": "pending",
+      "content_hash": "c3170c5c859f",
+      "source_rows": [
+        "drafts.txt:6"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-30-f361c4": {
+      "assignment_id": "asg-20260609191112404-30-f361c4",
+      "person": "陈静",
+      "date": "2026-06-17",
+      "shift": "中班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "93868d58f16c",
+      "source_rows": [
+        "drafts.txt:10"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    },
+    "asg-20260609191112404-31-7ce8c3": {
+      "assignment_id": "asg-20260609191112404-31-7ce8c3",
+      "person": "刘洋",
+      "date": "2026-06-17",
+      "shift": "晚班",
+      "hours": 8.0,
+      "status": "pending",
+      "content_hash": "a856335474df",
+      "source_rows": [
+        "drafts.txt:11"
+      ],
+      "created_at": "2026-06-09T19:11:12",
+      "updated_at": "2026-06-09T19:11:12"
+    }
+  },
+  "audit": [
+    {
+      "record_id": "adt-20260609191112405-32-b82935",
+      "timestamp": "2026-06-09T19:11:12",
+      "assignment_id": "asg-20260609191112403-0-a40c3e",
+      "before": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.csv:1"
+        ]
+      },
+      "after": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.csv:1",
+          "drafts.csv:13"
+        ]
+      },
+      "operator": "ta",
+      "comment": "补录合并"
+    },
+    {
+      "record_id": "adt-20260609191112405-33-89bf2d",
+      "timestamp": "2026-06-09T19:11:12",
+      "assignment_id": "asg-20260609191112404-11-c012f7",
+      "before": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.md:1"
+        ]
+      },
+      "after": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.md:1",
+          "drafts.md:4"
+        ]
+      },
+      "operator": "ta",
+      "comment": "补录合并"
+    },
+    {
+      "record_id": "adt-20260609191112405-34-1f2805",
+      "timestamp": "2026-06-09T19:11:12",
+      "assignment_id": "asg-20260609191112404-12-12e531",
+      "before": {
+        "status": "pending",
+        "hours": 6.0,
+        "source_rows": [
+          "drafts.md:2"
+        ]
+      },
+      "after": {
+        "status": "pending",
+        "hours": 6.0,
+        "source_rows": [
+          "drafts.md:2",
+          "drafts.md:5"
+        ]
+      },
+      "operator": "ta",
+      "comment": "补录合并"
+    },
+    {
+      "record_id": "adt-20260609191112405-35-47d7f1",
+      "timestamp": "2026-06-09T19:11:12",
+      "assignment_id": "asg-20260609191112404-13-713c50",
+      "before": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.md:3"
+        ]
+      },
+      "after": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.md:3",
+          "drafts.md:6"
+        ]
+      },
+      "operator": "ta",
+      "comment": "补录合并"
+    },
+    {
+      "record_id": "adt-20260609191112405-36-3a45e3",
+      "timestamp": "2026-06-09T19:11:12",
+      "assignment_id": "asg-20260609191112404-14-77703d",
+      "before": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.md:4"
+        ]
+      },
+      "after": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.md:4",
+          "drafts.md:7"
+        ]
+      },
+      "operator": "ta",
+      "comment": "补录合并"
+    },
+    {
+      "record_id": "adt-20260609191112405-37-0cbf9e",
+      "timestamp": "2026-06-09T19:11:12",
+      "assignment_id": "asg-20260609191112404-15-d0f740",
+      "before": {
+        "status": "pending",
+        "hours": 6.0,
+        "source_rows": [
+          "drafts.md:5"
+        ]
+      },
+      "after": {
+        "status": "pending",
+        "hours": 6.0,
+        "source_rows": [
+          "drafts.md:5",
+          "drafts.md:8"
+        ]
+      },
+      "operator": "ta",
+      "comment": "补录合并"
+    },
+    {
+      "record_id": "adt-20260609191112405-38-05ebee",
+      "timestamp": "2026-06-09T19:11:12",
+      "assignment_id": "asg-20260609191112404-16-f82cf0",
+      "before": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.md:6"
+        ]
+      },
+      "after": {
+        "status": "pending",
+        "hours": 8.0,
+        "source_rows": [
+          "drafts.md:6",
+          "drafts.md:9"
+        ]
+      },
+      "operator": "ta",
+      "comment": "补录合并"
+    },
+    {
+      "record_id": "adt-20260609191152329-0-9b6500",
+      "timestamp": "2026-06-09T19:11:52",
+      "assignment_id": "asg-20260609191112403-0-a40c3e",
+      "before": {
+        "status": "pending"
+      },
+      "after": {
+        "status": "confirmed"
+      },
+      "operator": "ta",
+      "comment": "通过审核"
+    },
+    {
+      "record_id": "adt-20260609191153111-0-474ed2",
+      "timestamp": "2026-06-09T19:11:53",
+      "assignment_id": "asg-20260609191112403-0-a40c3e",
+      "before": {
+        "hours": 8.0
+      },
+      "after": {
+        "hours": 7.5
+      },
+      "operator": "ta",
+      "comment": "人工修正"
+    }
+  ],
+  "counter_examples": [
+    {
+      "ce_id": "ce-20260609191112406-39-680b7d",
+      "rule": "coverage_gap",
+      "description": "2026-06-10 早班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-40-6ab821",
+      "rule": "coverage_gap",
+      "description": "2026-06-10 中班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-41-919739",
+      "rule": "coverage_gap",
+      "description": "2026-06-10 晚班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-42-fe21f6",
+      "rule": "coverage_gap",
+      "description": "2026-06-11 早班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-43-e11502",
+      "rule": "coverage_gap",
+      "description": "2026-06-11 中班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-44-74dd7e",
+      "rule": "coverage_gap",
+      "description": "2026-06-11 晚班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-45-5bbd32",
+      "rule": "coverage_gap",
+      "description": "2026-06-12 早班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-46-fdcf19",
+      "rule": "coverage_gap",
+      "description": "2026-06-12 中班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-47-290c21",
+      "rule": "coverage_gap",
+      "description": "2026-06-12 晚班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-48-6eb22d",
+      "rule": "coverage_gap",
+      "description": "2026-06-13 早班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-49-533766",
+      "rule": "coverage_gap",
+      "description": "2026-06-13 中班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-50-7c68f6",
+      "rule": "coverage_gap",
+      "description": "2026-06-13 晚班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-51-7af132",
+      "rule": "coverage_gap",
+      "description": "2026-06-14 早班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-52-62b72e",
+      "rule": "coverage_gap",
+      "description": "2026-06-14 中班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-53-dd1d53",
+      "rule": "coverage_gap",
+      "description": "2026-06-14 晚班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-54-65ba72",
+      "rule": "coverage_gap",
+      "description": "2026-06-15 早班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-55-93b521",
+      "rule": "coverage_gap",
+      "description": "2026-06-15 中班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-56-069c71",
+      "rule": "coverage_gap",
+      "description": "2026-06-15 晚班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-57-c5d616",
+      "rule": "coverage_gap",
+      "description": "2026-06-16 早班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-58-cf5aec",
+      "rule": "coverage_gap",
+      "description": "2026-06-16 中班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-59-0f29ba",
+      "rule": "coverage_gap",
+      "description": "2026-06-16 晚班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-60-3f27ba",
+      "rule": "coverage_gap",
+      "description": "2026-06-17 早班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-61-e9b83a",
+      "rule": "coverage_gap",
+      "description": "2026-06-17 中班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-62-0ee7e2",
+      "rule": "coverage_gap",
+      "description": "2026-06-17 晚班 无人排班",
+      "affected_assignments": [],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-63-094f10",
+      "rule": "pending_review",
+      "description": "张伟 2026-06-10 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112403-0-a40c3e"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-64-d96e50",
+      "rule": "pending_review",
+      "description": "李娜 2026-06-10 中班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-1-b498b7"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-65-5ce9dc",
+      "rule": "pending_review",
+      "description": "王强 2026-06-10 晚班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-2-ae796a"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-66-c7aaca",
+      "rule": "pending_review",
+      "description": "赵磊 2026-06-11 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-3-953734"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-67-388922",
+      "rule": "pending_review",
+      "description": "陈静 2026-06-11 中班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-4-f89004"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-68-6fc53d",
+      "rule": "pending_review",
+      "description": "刘洋 2026-06-11 晚班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-5-fc63d9"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-69-035219",
+      "rule": "pending_review",
+      "description": "孙悦 2026-06-12 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-6-548146"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-70-9494b6",
+      "rule": "pending_review",
+      "description": "周杰 2026-06-12 中班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-7-e1b723"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-71-17acb4",
+      "rule": "pending_review",
+      "description": "吴敏 2026-06-12 晚班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-8-4d5561"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-72-990973",
+      "rule": "pending_review",
+      "description": "李娜 2026-06-12 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-10-ca7cbc"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-73-dd7e31",
+      "rule": "pending_review",
+      "description": "张伟 2026-06-13 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-11-c012f7"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-74-11a7db",
+      "rule": "pending_review",
+      "description": "李娜 2026-06-13 中班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-12-12e531"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-75-d2f039",
+      "rule": "pending_review",
+      "description": "王强 2026-06-13 晚班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-13-713c50"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-76-ef7020",
+      "rule": "pending_review",
+      "description": "赵磊 2026-06-14 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-14-77703d"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-77-aadadc",
+      "rule": "pending_review",
+      "description": "陈静 2026-06-14 中班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-15-d0f740"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-78-724269",
+      "rule": "pending_review",
+      "description": "刘洋 2026-06-14 晚班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-16-f82cf0"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-79-3a2dd2",
+      "rule": "pending_review",
+      "description": "孙悦 2026-06-15 全天 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-23-79ecc4"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-80-7c940f",
+      "rule": "pending_review",
+      "description": "周杰 2026-06-15 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-24-79408f"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-81-4323cf",
+      "rule": "pending_review",
+      "description": "吴敏 2026-06-15 晚班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-25-8e6c16"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-82-3e8d3a",
+      "rule": "pending_review",
+      "description": "张伟 2026-06-16 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-26-42d8d6"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-83-bddabe",
+      "rule": "pending_review",
+      "description": "李娜 2026-06-16 中班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-27-420da9"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-84-530550",
+      "rule": "pending_review",
+      "description": "王强 2026-06-16 晚班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-28-e99971"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-85-8e33e1",
+      "rule": "pending_review",
+      "description": "赵磊 2026-06-17 早班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-29-461e31"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-86-85a0cc",
+      "rule": "pending_review",
+      "description": "陈静 2026-06-17 中班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-30-f361c4"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    },
+    {
+      "ce_id": "ce-20260609191112406-87-a22b62",
+      "rule": "pending_review",
+      "description": "刘洋 2026-06-17 晚班 待确认",
+      "affected_assignments": [
+        "asg-20260609191112404-31-7ce8c3"
+      ],
+      "severity": "info",
+      "created_at": "2026-06-09T19:11:12"
+    }
+  ]
+}

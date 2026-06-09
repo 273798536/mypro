@@ -1,0 +1,2 @@
+[console_scripts]
+ip-scheduler = src.scheduler.__main__:main
