@@ -1,0 +1,592 @@
+{
+  "operator_report": {
+    "generated_at": "2026-06-09T11:16:52.560127",
+    "backtest_run_id": 1,
+    "summary": {
+      "total_questions": 5,
+      "passed": 0,
+      "extrapolation_count": 2,
+      "extrapolation_breached": 1,
+      "answer_mismatch": 4,
+      "chart_missing": 0
+    },
+    "extrapolation_explanations": [
+      {
+        "question_external_id": "Q-003",
+        "var_value": 0.04240179820508195,
+        "historical_var_value": 0.038,
+        "is_extrapolation": true,
+        "extrapolation_bounds_breached": false,
+        "explanation": "由于历史数据不足，使用外推法估算 VaR。结果与历史答案差异在允许范围内。建议：如有更多历史数据可补入以提升结果可靠性。",
+        "next_step": "下一步：复核数据（补材料），若数据无误则需要改口径"
+      },
+      {
+        "question_external_id": "Q-004",
+        "var_value": 0.08648568893890499,
+        "historical_var_value": 0.035,
+        "is_extrapolation": true,
+        "extrapolation_bounds_breached": true,
+        "explanation": "外推越界被拦截：估算值 0.086486 与历史答案 0.035000 比值 2.47x 超过合理范围。原因：样本不足导致估计不稳定 / 市场环境发生结构性变化。此结果已被标记为异常，不可直接用于出题。",
+        "next_step": "下一步：先补材料（扩充历史样本），若样本已充足则改口径（调整外推参数）"
+      }
+    ],
+    "blocking_issues_count": 5
+  },
+  "anomaly_classification": {
+    "total_open_anomalies": 13,
+    "severity_counts": {
+      "blocker": 1,
+      "critical": 4,
+      "warning": 8,
+      "info": 0
+    },
+    "by_action": [
+      {
+        "action_required": "复核",
+        "count": 9,
+        "hint": "人工复核 / 交叉验证 / 二次确认",
+        "items": [
+          {
+            "id": 1,
+            "question_external_id": "Q-001",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-001",
+            "detail": "题目 Q-001 答案不匹配。\n本次计算: 0.026773\n历史答案: 0.028500\n偏差: 6.06%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.173463"
+          },
+          {
+            "id": 2,
+            "question_external_id": "Q-001",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-001",
+            "detail": "题目 Q-001 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.173464"
+          },
+          {
+            "id": 3,
+            "question_external_id": "Q-002",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-002",
+            "detail": "题目 Q-002 答案不匹配。\n本次计算: 0.047874\n历史答案: 0.041000\n偏差: 16.77%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.532518"
+          },
+          {
+            "id": 4,
+            "question_external_id": "Q-002",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-002",
+            "detail": "题目 Q-002 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.532521"
+          },
+          {
+            "id": 5,
+            "question_external_id": "Q-003",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-003",
+            "detail": "题目 Q-003 答案不匹配。\n本次计算: 0.042402\n历史答案: 0.038000\n偏差: 11.58%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.849608"
+          },
+          {
+            "id": 6,
+            "question_external_id": "Q-003",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-003",
+            "detail": "题目 Q-003 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.849610"
+          },
+          {
+            "id": 9,
+            "question_external_id": "Q-004",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-004",
+            "detail": "题目 Q-004 答案不匹配。\n本次计算: 0.086486\n历史答案: 0.035000\n偏差: 147.10%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:52.195007"
+          },
+          {
+            "id": 10,
+            "question_external_id": "Q-004",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-004",
+            "detail": "题目 Q-004 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:52.195007"
+          },
+          {
+            "id": 13,
+            "question_external_id": "Q-005",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-005",
+            "detail": "题目 Q-005 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:52.554702"
+          }
+        ]
+      },
+      {
+        "action_required": "无需处理",
+        "count": 0,
+        "hint": "无需处理",
+        "items": []
+      },
+      {
+        "action_required": "补材料",
+        "count": 4,
+        "hint": "补充历史数据 / 扩充样本 / 提供缺失的材料",
+        "items": [
+          {
+            "id": 7,
+            "question_external_id": "Q-003",
+            "anomaly_type": "statistical",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "估计不稳定: 题目 Q-003",
+            "detail": "题目 Q-003 的 VaR 估计置信区间过宽。\nVaR = 0.042402\n95% CI = [0.022143, 0.057900]\n相对宽度 = 84.3%\n建议：补充更多历史数据（补材料）以提升估计精度。",
+            "created_at": "2026-06-09T11:16:51.849611"
+          },
+          {
+            "id": 8,
+            "question_external_id": "Q-004",
+            "anomaly_type": "extrapolation",
+            "severity": "blocker",
+            "action_required": "补材料",
+            "title": "外推越界: 题目 Q-004",
+            "detail": "题目 Q-004 使用外推法时超出合理边界。\n计算 VaR = 0.086486\n历史答案 VaR = 0.035000\n置信区间: [0.027015, 0.141927]\n建议：先补材料（扩充历史样本），如样本已足够则改口径（调整外推参数）",
+            "created_at": "2026-06-09T11:16:52.195006"
+          },
+          {
+            "id": 11,
+            "question_external_id": "Q-004",
+            "anomaly_type": "data",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "样本不足: 题目 Q-004",
+            "detail": "题目 Q-004 的样本数仅 25，少于最小要求 30。\n建议：补充更多历史数据（补材料）。",
+            "created_at": "2026-06-09T11:16:52.195008"
+          },
+          {
+            "id": 12,
+            "question_external_id": "Q-004",
+            "anomaly_type": "statistical",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "估计不稳定: 题目 Q-004",
+            "detail": "题目 Q-004 的 VaR 估计置信区间过宽。\nVaR = 0.086486\n95% CI = [0.027015, 0.141927]\n相对宽度 = 132.9%\n建议：补充更多历史数据（补材料）以提升估计精度。",
+            "created_at": "2026-06-09T11:16:52.195008"
+          }
+        ]
+      }
+    ],
+    "by_question": [
+      {
+        "question_external_id": "Q-004",
+        "anomaly_count": 5,
+        "has_blocker": true,
+        "actions_needed": [
+          "复核",
+          "补材料"
+        ],
+        "items": [
+          {
+            "id": 8,
+            "question_external_id": "Q-004",
+            "anomaly_type": "extrapolation",
+            "severity": "blocker",
+            "action_required": "补材料",
+            "title": "外推越界: 题目 Q-004",
+            "detail": "题目 Q-004 使用外推法时超出合理边界。\n计算 VaR = 0.086486\n历史答案 VaR = 0.035000\n置信区间: [0.027015, 0.141927]\n建议：先补材料（扩充历史样本），如样本已足够则改口径（调整外推参数）",
+            "created_at": "2026-06-09T11:16:52.195006"
+          },
+          {
+            "id": 9,
+            "question_external_id": "Q-004",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-004",
+            "detail": "题目 Q-004 答案不匹配。\n本次计算: 0.086486\n历史答案: 0.035000\n偏差: 147.10%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:52.195007"
+          },
+          {
+            "id": 10,
+            "question_external_id": "Q-004",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-004",
+            "detail": "题目 Q-004 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:52.195007"
+          },
+          {
+            "id": 11,
+            "question_external_id": "Q-004",
+            "anomaly_type": "data",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "样本不足: 题目 Q-004",
+            "detail": "题目 Q-004 的样本数仅 25，少于最小要求 30。\n建议：补充更多历史数据（补材料）。",
+            "created_at": "2026-06-09T11:16:52.195008"
+          },
+          {
+            "id": 12,
+            "question_external_id": "Q-004",
+            "anomaly_type": "statistical",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "估计不稳定: 题目 Q-004",
+            "detail": "题目 Q-004 的 VaR 估计置信区间过宽。\nVaR = 0.086486\n95% CI = [0.027015, 0.141927]\n相对宽度 = 132.9%\n建议：补充更多历史数据（补材料）以提升估计精度。",
+            "created_at": "2026-06-09T11:16:52.195008"
+          }
+        ]
+      },
+      {
+        "question_external_id": "Q-003",
+        "anomaly_count": 3,
+        "has_blocker": false,
+        "actions_needed": [
+          "复核",
+          "补材料"
+        ],
+        "items": [
+          {
+            "id": 5,
+            "question_external_id": "Q-003",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-003",
+            "detail": "题目 Q-003 答案不匹配。\n本次计算: 0.042402\n历史答案: 0.038000\n偏差: 11.58%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.849608"
+          },
+          {
+            "id": 6,
+            "question_external_id": "Q-003",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-003",
+            "detail": "题目 Q-003 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.849610"
+          },
+          {
+            "id": 7,
+            "question_external_id": "Q-003",
+            "anomaly_type": "statistical",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "估计不稳定: 题目 Q-003",
+            "detail": "题目 Q-003 的 VaR 估计置信区间过宽。\nVaR = 0.042402\n95% CI = [0.022143, 0.057900]\n相对宽度 = 84.3%\n建议：补充更多历史数据（补材料）以提升估计精度。",
+            "created_at": "2026-06-09T11:16:51.849611"
+          }
+        ]
+      },
+      {
+        "question_external_id": "Q-001",
+        "anomaly_count": 2,
+        "has_blocker": false,
+        "actions_needed": [
+          "复核"
+        ],
+        "items": [
+          {
+            "id": 1,
+            "question_external_id": "Q-001",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-001",
+            "detail": "题目 Q-001 答案不匹配。\n本次计算: 0.026773\n历史答案: 0.028500\n偏差: 6.06%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.173463"
+          },
+          {
+            "id": 2,
+            "question_external_id": "Q-001",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-001",
+            "detail": "题目 Q-001 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.173464"
+          }
+        ]
+      },
+      {
+        "question_external_id": "Q-002",
+        "anomaly_count": 2,
+        "has_blocker": false,
+        "actions_needed": [
+          "复核"
+        ],
+        "items": [
+          {
+            "id": 3,
+            "question_external_id": "Q-002",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-002",
+            "detail": "题目 Q-002 答案不匹配。\n本次计算: 0.047874\n历史答案: 0.041000\n偏差: 16.77%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.532518"
+          },
+          {
+            "id": 4,
+            "question_external_id": "Q-002",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-002",
+            "detail": "题目 Q-002 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.532521"
+          }
+        ]
+      },
+      {
+        "question_external_id": "Q-005",
+        "anomaly_count": 1,
+        "has_blocker": false,
+        "actions_needed": [
+          "复核"
+        ],
+        "items": [
+          {
+            "id": 13,
+            "question_external_id": "Q-005",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-005",
+            "detail": "题目 Q-005 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:52.554702"
+          }
+        ]
+      }
+    ]
+  },
+  "dashboard": {
+    "generated_at": "2026-06-09T11:16:52.562082",
+    "anomaly_overview": {
+      "total": 13,
+      "blockers": 1,
+      "criticals": 4,
+      "warnings": 8,
+      "infos": 0
+    },
+    "action_items": [
+      {
+        "action_required": "复核",
+        "count": 9,
+        "hint": "人工复核 / 交叉验证 / 二次确认"
+      },
+      {
+        "action_required": "补材料",
+        "count": 4,
+        "hint": "补充历史数据 / 扩充样本 / 提供缺失的材料"
+      }
+    ],
+    "question_issues": [
+      {
+        "question_external_id": "Q-004",
+        "anomaly_count": 5,
+        "has_blocker": true,
+        "actions_needed": [
+          "复核",
+          "补材料"
+        ],
+        "items": [
+          {
+            "id": 8,
+            "question_external_id": "Q-004",
+            "anomaly_type": "extrapolation",
+            "severity": "blocker",
+            "action_required": "补材料",
+            "title": "外推越界: 题目 Q-004",
+            "detail": "题目 Q-004 使用外推法时超出合理边界。\n计算 VaR = 0.086486\n历史答案 VaR = 0.035000\n置信区间: [0.027015, 0.141927]\n建议：先补材料（扩充历史样本），如样本已足够则改口径（调整外推参数）",
+            "created_at": "2026-06-09T11:16:52.195006"
+          },
+          {
+            "id": 9,
+            "question_external_id": "Q-004",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-004",
+            "detail": "题目 Q-004 答案不匹配。\n本次计算: 0.086486\n历史答案: 0.035000\n偏差: 147.10%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:52.195007"
+          },
+          {
+            "id": 10,
+            "question_external_id": "Q-004",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-004",
+            "detail": "题目 Q-004 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:52.195007"
+          },
+          {
+            "id": 11,
+            "question_external_id": "Q-004",
+            "anomaly_type": "data",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "样本不足: 题目 Q-004",
+            "detail": "题目 Q-004 的样本数仅 25，少于最小要求 30。\n建议：补充更多历史数据（补材料）。",
+            "created_at": "2026-06-09T11:16:52.195008"
+          },
+          {
+            "id": 12,
+            "question_external_id": "Q-004",
+            "anomaly_type": "statistical",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "估计不稳定: 题目 Q-004",
+            "detail": "题目 Q-004 的 VaR 估计置信区间过宽。\nVaR = 0.086486\n95% CI = [0.027015, 0.141927]\n相对宽度 = 132.9%\n建议：补充更多历史数据（补材料）以提升估计精度。",
+            "created_at": "2026-06-09T11:16:52.195008"
+          }
+        ]
+      },
+      {
+        "question_external_id": "Q-003",
+        "anomaly_count": 3,
+        "has_blocker": false,
+        "actions_needed": [
+          "复核",
+          "补材料"
+        ],
+        "items": [
+          {
+            "id": 5,
+            "question_external_id": "Q-003",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-003",
+            "detail": "题目 Q-003 答案不匹配。\n本次计算: 0.042402\n历史答案: 0.038000\n偏差: 11.58%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.849608"
+          },
+          {
+            "id": 6,
+            "question_external_id": "Q-003",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-003",
+            "detail": "题目 Q-003 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.849610"
+          },
+          {
+            "id": 7,
+            "question_external_id": "Q-003",
+            "anomaly_type": "statistical",
+            "severity": "warning",
+            "action_required": "补材料",
+            "title": "估计不稳定: 题目 Q-003",
+            "detail": "题目 Q-003 的 VaR 估计置信区间过宽。\nVaR = 0.042402\n95% CI = [0.022143, 0.057900]\n相对宽度 = 84.3%\n建议：补充更多历史数据（补材料）以提升估计精度。",
+            "created_at": "2026-06-09T11:16:51.849611"
+          }
+        ]
+      },
+      {
+        "question_external_id": "Q-001",
+        "anomaly_count": 2,
+        "has_blocker": false,
+        "actions_needed": [
+          "复核"
+        ],
+        "items": [
+          {
+            "id": 1,
+            "question_external_id": "Q-001",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-001",
+            "detail": "题目 Q-001 答案不匹配。\n本次计算: 0.026773\n历史答案: 0.028500\n偏差: 6.06%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.173463"
+          },
+          {
+            "id": 2,
+            "question_external_id": "Q-001",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-001",
+            "detail": "题目 Q-001 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.173464"
+          }
+        ]
+      },
+      {
+        "question_external_id": "Q-002",
+        "anomaly_count": 2,
+        "has_blocker": false,
+        "actions_needed": [
+          "复核"
+        ],
+        "items": [
+          {
+            "id": 3,
+            "question_external_id": "Q-002",
+            "anomaly_type": "consistency",
+            "severity": "critical",
+            "action_required": "复核",
+            "title": "答案不匹配: 题目 Q-002",
+            "detail": "题目 Q-002 答案不匹配。\n本次计算: 0.047874\n历史答案: 0.041000\n偏差: 16.77%\n建议：先复核数据（补材料），如数据无误则需要改口径",
+            "created_at": "2026-06-09T11:16:51.532518"
+          },
+          {
+            "id": 4,
+            "question_external_id": "Q-002",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-002",
+            "detail": "题目 Q-002 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:51.532521"
+          }
+        ]
+      },
+      {
+        "question_external_id": "Q-005",
+        "anomaly_count": 1,
+        "has_blocker": false,
+        "actions_needed": [
+          "复核"
+        ],
+        "items": [
+          {
+            "id": 13,
+            "question_external_id": "Q-005",
+            "anomaly_type": "chart",
+            "severity": "warning",
+            "action_required": "复核",
+            "title": "图表未校验: 题目 Q-005",
+            "detail": "题目 Q-005 的图表已生成但尚未与计算结果对齐校验。",
+            "created_at": "2026-06-09T11:16:52.554702"
+          }
+        ]
+      }
+    ],
+    "question_list_impact": {
+      "total_notifications": 0,
+      "needs_rerun_count": 0,
+      "needs_rerun": [],
+      "info_only": []
+    }
+  }
+}

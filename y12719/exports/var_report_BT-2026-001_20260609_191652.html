@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>风险价值分位回测报告 - BT-2026-001</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; padding: 24px; background: #f8fafc; color: #1e293b; }
+  h1 { margin: 0 0 8px; font-size: 24px; color: #0f172a; }
+  h2 { margin: 32px 0 16px; font-size: 18px; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+  h3 { margin: 16px 0 8px; font-size: 15px; color: #334155; }
+  .subtitle { color: #64748b; font-size: 13px; margin-bottom: 24px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .summary-card { background: #fff; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  .summary-card .label { font-size: 12px; color: #64748b; margin-bottom: 4px; }
+  .summary-card .value { font-size: 24px; font-weight: 600; color: #0f172a; }
+  .summary-card.blocker .value { color: #dc2626; }
+  .summary-card.warning .value { color: #f59e0b; }
+  .summary-card.success .value { color: #16a34a; }
+  .section { background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  th { background: #f1f5f9; font-weight: 600; color: #334155; font-size: 12px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.blocker { background: #fee2e2; color: #991b1b; }
+  .badge.critical { background: #fed7aa; color: #9a3412; }
+  .badge.warning { background: #fef3c7; color: #92400e; }
+  .badge.info { background: #dbeafe; color: #1e40af; }
+  .badge.success { background: #dcfce7; color: #166534; }
+  .badge.action { background: #ede9fe; color: #5b21b6; }
+  .explanation { background: #f8fafc; border-left: 3px solid #6366f1; padding: 10px 14px; margin: 8px 0; border-radius: 4px; font-size: 13px; line-height: 1.6; }
+  .explanation.blocked { border-left-color: #dc2626; background: #fef2f2; }
+  .next-step { background: #ecfdf5; border-left: 3px solid #10b981; padding: 8px 12px; margin-top: 6px; border-radius: 4px; font-size: 12px; color: #065f46; }
+  .legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #475569; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+  code { background: #f1f5f9; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+  .muted { color: #64748b; font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>风险价值分位回测报告</h1>
+<div class="subtitle">批次: <code>BT-2026-001</code> · 生成时间: 2026-06-09T11:16:52.560127</div>
+
+<h2>一、总览</h2>
+<div class="summary-grid">
+  <div class="summary-card success">
+    <div class="label">题目总数</div>
+    <div class="value">5</div>
+  </div>
+  <div class="summary-card success">
+    <div class="label">通过数</div>
+    <div class="value">0</div>
+  </div>
+  <div class="summary-card warning">
+    <div class="label">外推模式</div>
+    <div class="value">2</div>
+  </div>
+  <div class="summary-card blocker">
+    <div class="label">外推越界(拦截)</div>
+    <div class="value">1</div>
+  </div>
+  <div class="summary-card blocker">
+    <div class="label">答案不匹配</div>
+    <div class="value">4</div>
+  </div>
+  <div class="summary-card warning">
+    <div class="label">图表缺失</div>
+    <div class="value">0</div>
+  </div>
+</div>
+
+<h2>二、外推越界说明</h2>
+<div class="legend">
+  <div class="legend-item"><span class="legend-dot" style="background:#16a34a"></span>样本充足</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#f59e0b"></span>外推但合规</div>
+  <div class="legend-item"><span class="legend-dot" style="background:#dc2626"></span>外推越界(已拦截)</div>
+</div>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>题目</th>
+      <th>状态</th>
+      <th>计算值</th>
+      <th>历史答案</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+  
+    <tr>
+      <td><code>Q-003</code></td>
+      <td>
+        
+          <span class="badge warning">外推</span>
+        
+      </td>
+      <td>0.042402</td>
+      <td>0.038000</td>
+      <td>
+        <div class="explanation ">
+          由于历史数据不足，使用外推法估算 VaR。结果与历史答案差异在允许范围内。建议：如有更多历史数据可补入以提升结果可靠性。
+        </div>
+        <div class="next-step"><strong>下一步：</strong>下一步：复核数据（补材料），若数据无误则需要改口径</div>
+      </td>
+    </tr>
+  
+    <tr>
+      <td><code>Q-004</code></td>
+      <td>
+        
+          <span class="badge blocker">外推越界(已拦截)</span>
+        
+      </td>
+      <td>0.086486</td>
+      <td>0.035000</td>
+      <td>
+        <div class="explanation blocked">
+          外推越界被拦截：估算值 0.086486 与历史答案 0.035000 比值 2.47x 超过合理范围。原因：样本不足导致估计不稳定 / 市场环境发生结构性变化。此结果已被标记为异常，不可直接用于出题。
+        </div>
+        <div class="next-step"><strong>下一步：</strong>下一步：先补材料（扩充历史样本），若样本已充足则改口径（调整外推参数）</div>
+      </td>
+    </tr>
+  
+  </tbody>
+</table>
+
+
+<h2>三、待办事项（教研编辑）</h2>
+
+  
+    <div class="section">
+      <h3>
+        <span class="badge action">复核</span>
+        共 9 项
+      </h3>
+      <p class="muted">人工复核 / 交叉验证 / 二次确认</p>
+    </div>
+  
+    <div class="section">
+      <h3>
+        <span class="badge action">补材料</span>
+        共 4 项
+      </h3>
+      <p class="muted">补充历史数据 / 扩充样本 / 提供缺失的材料</p>
+    </div>
+  
+
+
+<h2>四、题目清单变更影响</h2>
+
+  
+  
+
+
+</body>
+</html>
