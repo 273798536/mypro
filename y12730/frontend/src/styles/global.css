@@ -1,0 +1,148 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  background: #f0f2f5;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.page-container {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.page-subtitle {
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-card .stat-number {
+  font-size: 28px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.stat-card .stat-label {
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+}
+
+.tag-usable {
+  background: #f6ffed;
+  border: 1px solid #b7eb8f;
+  color: #389e0d;
+}
+
+.tag-pending {
+  background: #fff7e6;
+  border: 1px solid #ffd591;
+  color: #d46b08;
+}
+
+.tag-recollect {
+  background: #fff1f0;
+  border: 1px solid #ffa39e;
+  color: #cf1322;
+}
+
+.tag-need-material {
+  background: #e6f7ff;
+  border: 1px solid #91d5ff;
+  color: #0958d9;
+}
+
+.tag-need-standard {
+  background: #fff0f6;
+  border: 1px solid #ffadd2;
+  color: #c41d7f;
+}
+
+.source-info {
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.error-bar-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.error-bar {
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  flex: 1;
+  overflow: hidden;
+  min-width: 100px;
+}
+
+.error-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s;
+}
+
+.student-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.student-badge.ok {
+  background: #f6ffed;
+  color: #389e0d;
+  border: 1px solid #b7eb8f;
+}
+
+.student-badge.wait {
+  background: #fff7e6;
+  color: #d46b08;
+  border: 1px solid #ffd591;
+}
+
+.student-badge.ask {
+  background: #fff1f0;
+  color: #cf1322;
+  border: 1px solid #ffa39e;
+}
+
+.conflict-description {
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  margin: 6px 0;
+}
+
+.conflict-suggestion {
+  background: #e6fffb;
+  border: 1px solid #87e8de;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.review-action-col {
+  min-width: 260px;
+}
