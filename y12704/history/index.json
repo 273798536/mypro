@@ -1,0 +1,25 @@
+{
+  "snapshots": [
+    {
+      "version": "v001",
+      "timestamp": "2026-06-09T16:54:50.282573",
+      "result_id": "1c7e44f3",
+      "chart_path": "./output/chart_1c7e44f3.png",
+      "change_reason": "",
+      "is_valid": false,
+      "raw_area": 12.0,
+      "parameter_version": "v1.2"
+    },
+    {
+      "version": "v002",
+      "timestamp": "2026-06-09T16:55:36.575866",
+      "result_id": "3a3c6688",
+      "chart_path": "./output/chart_3a3c6688.png",
+      "change_reason": "补录 P005 单位，统一 P006 单位为米",
+      "is_valid": true,
+      "raw_area": 12.0,
+      "parameter_version": "v1.2"
+    }
+  ],
+  "current_version": "v002"
+}
