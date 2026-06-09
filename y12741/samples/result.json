@@ -1,0 +1,204 @@
+{
+  "bundle_id": "a5cfe48f4c",
+  "label": "2026-Q2-桥梁几何投影复核批次",
+  "computed_at": "2026-06-09T21:31:25.314803",
+  "summary": {
+    "total_errors": 7,
+    "out_of_tolerance": 1,
+    "conflicts": 1,
+    "boundary_gaps": [
+      "Q-007"
+    ]
+  },
+  "errors": [
+    {
+      "item_id": "Q-001",
+      "expected": [
+        100.0,
+        200.0
+      ],
+      "actual": [
+        100.3,
+        200.1
+      ],
+      "distance_px": 0.3162,
+      "within_tolerance": true,
+      "severity": "info",
+      "source_material": "samples/scores.csv",
+      "chart_diff_delta": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "item_id": "Q-002",
+      "expected": [
+        40.5,
+        150.3
+      ],
+      "actual": [
+        41.2,
+        151.0
+      ],
+      "distance_px": 0.9899,
+      "within_tolerance": true,
+      "severity": "info",
+      "source_material": "samples/scores.csv",
+      "chart_diff_delta": [
+        1.5,
+        0.0
+      ]
+    },
+    {
+      "item_id": "Q-003",
+      "expected": [
+        100.0,
+        100.0
+      ],
+      "actual": [
+        100.0,
+        104.5
+      ],
+      "distance_px": 4.5,
+      "within_tolerance": false,
+      "severity": "error",
+      "source_material": "samples/scores.csv",
+      "chart_diff_delta": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "item_id": "Q-003",
+      "expected": [
+        100.0,
+        100.0
+      ],
+      "actual": [
+        99.9,
+        99.8
+      ],
+      "distance_px": 0.2236,
+      "within_tolerance": true,
+      "severity": "info",
+      "source_material": "samples/scores.csv",
+      "chart_diff_delta": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "item_id": "Q-004",
+      "expected": [
+        159.7,
+        200.1
+      ],
+      "actual": [
+        160.5,
+        200.3
+      ],
+      "distance_px": 0.8246,
+      "within_tolerance": true,
+      "severity": "info",
+      "source_material": "samples/scores.csv",
+      "chart_diff_delta": [
+        0.0,
+        1.9000000000000057
+      ]
+    },
+    {
+      "item_id": "Q-005",
+      "expected": [
+        5.0,
+        50.0
+      ],
+      "actual": [
+        5.1,
+        49.7
+      ],
+      "distance_px": 0.3162,
+      "within_tolerance": true,
+      "severity": "info",
+      "source_material": "samples/scores.csv",
+      "chart_diff_delta": [
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "item_id": "Q-006",
+      "expected": null,
+      "actual": [
+        0.0,
+        0.0
+      ],
+      "distance_px": 0.0,
+      "within_tolerance": true,
+      "severity": "info",
+      "source_material": "samples/scores.csv",
+      "chart_diff_delta": null
+    }
+  ],
+  "conflicts": [
+    {
+      "constraint_a": "题目基准期望((5.0, 50.0))",
+      "constraint_b": "评分低分(0.0)",
+      "item_ids": [
+        "Q-005"
+      ],
+      "material_sources": [
+        "samples/questions.csv",
+        "samples/scores.csv"
+      ],
+      "description": "题目 Q-005 投影接近基准但评分异常低，基准与评分材料存在冲突",
+      "severity": "warning"
+    }
+  ],
+  "chart_comparison": {
+    "compared": true,
+    "before_points": 6,
+    "after_points": 6,
+    "common_keys": [
+      "Q-001",
+      "Q-002",
+      "Q-003",
+      "Q-004",
+      "Q-005"
+    ],
+    "added_keys": [
+      "Q-NEW-8"
+    ],
+    "removed_keys": [
+      "Q-OLD-9"
+    ],
+    "deltas": {
+      "Q-001": {
+        "dx": 0.0,
+        "dy": 0.0,
+        "distance": 0.0
+      },
+      "Q-002": {
+        "dx": 1.5,
+        "dy": 0.0,
+        "distance": 1.5
+      },
+      "Q-003": {
+        "dx": 0.0,
+        "dy": 0.0,
+        "distance": 0.0
+      },
+      "Q-004": {
+        "dx": 0.0,
+        "dy": 1.9000000000000057,
+        "distance": 1.9000000000000057
+      },
+      "Q-005": {
+        "dx": 0.0,
+        "dy": 0.0,
+        "distance": 0.0
+      }
+    },
+    "reversal_count": 2
+  },
+  "notes": []
+}

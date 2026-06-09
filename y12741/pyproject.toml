@@ -1,0 +1,17 @@
+[project]
+name = "geo-projection-check"
+version = "0.1.0"
+description = "几何投影误差校验系统 - 处理现实材料、交互式复核、冲突定位"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1",
+    "rich>=13.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+geo-check = "geo_projection_check.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

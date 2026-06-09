@@ -1,0 +1,12 @@
+projection_type: orthographic
+focal_length: null
+view_angle_deg: 0.0
+scale_factor: 1.0
+origin_x: 0.0
+origin_y: 0.0
+tolerance_px: 2.0
+maintained_by: 王工 (投影组)
+maintained_at: '2026-06-02T21:30:41'
+notes:
+- 沿用Q3版本坐标系；投委会要求放宽到2px
+- 上次会议遗留：origin_y是否需要修正-0.5？待确认
