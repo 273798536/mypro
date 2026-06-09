@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "contest": "建模社校内选拔赛-2026春季",
+    "team": "概率树复盘小组A",
+    "submitted_by": "助教-李",
+    "description": "本届比赛风险评估模块概率树，含若干故意设置的误差用于验收测试"
+  },
+  "trees": [
+    {
+      "id": "root_risk",
+      "label": "项目整体风险",
+      "probability": 1.0,
+      "calc_note": "根节点，归一化参考点",
+      "source_ref": "草稿第1页-图1",
+      "children": [
+        {
+          "id": "node_market",
+          "label": "市场风险",
+          "probability": 0.4,
+          "calc_note": "历史3年同行业数据统计，样本量127家",
+          "source_ref": "草稿第2页-市场风险章节-公式(3)",
+          "raw_value": "40.0%",
+          "children": [
+            {
+              "id": "node_price",
+              "label": "价格波动风险",
+              "probability": 0.55,
+              "calc_note": "条件概率：在市场风险发生下，价格波动占比约55%",
+              "source_ref": "草稿第2页-表2",
+              "raw_value": "0.55"
+            },
+            {
+              "id": "node_compete",
+              "label": "竞争加剧风险",
+              "probability": 0.3,
+              "calc_note": "条件概率：在市场风险发生下，竞争加剧占比",
+              "source_ref": "草稿第2页-表2",
+              "raw_value": "0.30"
+            },
+            {
+              "id": "node_demand",
+              "label": "需求下滑风险",
+              "probability": 0.2,
+              "calc_note": "⚠️ 此处子节点概率和=0.55+0.3+0.2=1.05>1，设置为验收用异常",
+              "source_ref": "草稿第2页-表2（疑似录入错误，原值应为0.15）",
+              "raw_value": "0.20"
+            }
+          ]
+        },
+        {
+          "id": "node_tech",
+          "label": "技术风险",
+          "probability": 0.3,
+          "calc_note": "德尔菲法三位专家打分均值(0.28/0.31/0.31)",
+          "source_ref": "草稿第3页-专家评分表",
+          "children": [
+            {
+              "id": "node_failure",
+              "label": "核心模块失效",
+              "probability": 0.35,
+              "calc_note": "条件概率",
+              "source_ref": "草稿第3页"
+            },
+            {
+              "id": "node_delay",
+              "label": "交付延期",
+              "probability": 0.6,
+              "calc_note": "条件概率",
+              "source_ref": "草稿第3页"
+            },
+            {
+              "id": "node_security",
+              "label": "安全漏洞",
+              "probability": 0.05,
+              "calc_note": "条件概率",
+              "source_ref": "草稿第3页"
+            }
+          ]
+        },
+        {
+          "id": "node_ops",
+          "label": "运营风险",
+          "probability": 0.55,
+          "calc_note": "⚠️ 作为子节点概率大于父节点(1.0下的分支但此处单独概率不应超过同层总和合理范围；更关键是下一层有超限)",
+          "source_ref": "草稿第4页-运营风险估算",
+          "children": [
+            {
+              "id": "node_staff",
+              "label": "人员流失风险",
+              "probability": 1.3,
+              "calc_note": "⚠️ 概率值>1，明显录入错误，应为0.13（百分比未换算）",
+              "source_ref": "草稿第4页-公式(7)：13%直接写成1.3",
+              "raw_value": "13% 误录为1.3"
+            },
+            {
+              "id": "node_supply",
+              "label": "供应链中断",
+              "probability": -0.05,
+              "calc_note": "⚠️ 概率为负值，应为0.05（符号误写）",
+              "source_ref": "草稿第4页-公式(8)",
+              "raw_value": "-0.05"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

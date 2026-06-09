@@ -1,0 +1,15 @@
+{
+  "by_hash": {
+    "3399d8d197b5987ffaab3f3a176a55a5250d2092fbb9cabdadc579772191439f": "proc_2a6764ebd514"
+  },
+  "by_batch": {
+    "batch_20260609": [
+      "proc_2a6764ebd514"
+    ]
+  },
+  "by_source": {
+    "sample_trees.json": [
+      "proc_2a6764ebd514"
+    ]
+  }
+}

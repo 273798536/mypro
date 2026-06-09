@@ -1,0 +1,212 @@
+{
+  "id": "proc_2a6764ebd514",
+  "source_file": "sample_trees.json",
+  "source_hash": "3399d8d197b5987ffaab3f3a176a55a5250d2092fbb9cabdadc579772191439f",
+  "batch_id": "batch_20260609",
+  "status": "processed",
+  "tree_root": {
+    "id": "root_risk",
+    "label": "项目整体风险",
+    "probability": 1.0,
+    "parent_id": null,
+    "source_ref": "草稿第1页-图1",
+    "calc_note": "根节点，归一化参考点",
+    "raw_value": null,
+    "children": [
+      {
+        "id": "node_market",
+        "label": "市场风险",
+        "probability": 0.4,
+        "parent_id": "root_risk",
+        "source_ref": "草稿第2页-市场风险章节-公式(3)",
+        "calc_note": "历史3年同行业数据统计，样本量127家",
+        "raw_value": "40.0%",
+        "children": [
+          {
+            "id": "node_price",
+            "label": "价格波动风险",
+            "probability": 0.55,
+            "parent_id": "node_market",
+            "source_ref": "草稿第2页-表2",
+            "calc_note": "条件概率：在市场风险发生下，价格波动占比约55%",
+            "raw_value": "0.55",
+            "children": []
+          },
+          {
+            "id": "node_compete",
+            "label": "竞争加剧风险",
+            "probability": 0.3,
+            "parent_id": "node_market",
+            "source_ref": "草稿第2页-表2",
+            "calc_note": "条件概率：在市场风险发生下，竞争加剧占比",
+            "raw_value": "0.30",
+            "children": []
+          },
+          {
+            "id": "node_demand",
+            "label": "需求下滑风险",
+            "probability": 0.2,
+            "parent_id": "node_market",
+            "source_ref": "草稿第2页-表2（疑似录入错误，原值应为0.15）",
+            "calc_note": "⚠️ 此处子节点概率和=0.55+0.3+0.2=1.05>1，设置为验收用异常",
+            "raw_value": "0.20",
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "node_tech",
+        "label": "技术风险",
+        "probability": 0.3,
+        "parent_id": "root_risk",
+        "source_ref": "草稿第3页-专家评分表",
+        "calc_note": "德尔菲法三位专家打分均值(0.28/0.31/0.31)",
+        "raw_value": null,
+        "children": [
+          {
+            "id": "node_failure",
+            "label": "核心模块失效",
+            "probability": 0.35,
+            "parent_id": "node_tech",
+            "source_ref": "草稿第3页",
+            "calc_note": "条件概率",
+            "raw_value": null,
+            "children": []
+          },
+          {
+            "id": "node_delay",
+            "label": "交付延期",
+            "probability": 0.6,
+            "parent_id": "node_tech",
+            "source_ref": "草稿第3页",
+            "calc_note": "条件概率",
+            "raw_value": null,
+            "children": []
+          },
+          {
+            "id": "node_security",
+            "label": "安全漏洞",
+            "probability": 0.05,
+            "parent_id": "node_tech",
+            "source_ref": "草稿第3页",
+            "calc_note": "条件概率",
+            "raw_value": null,
+            "children": []
+          }
+        ]
+      },
+      {
+        "id": "node_ops",
+        "label": "运营风险",
+        "probability": 0.55,
+        "parent_id": "root_risk",
+        "source_ref": "草稿第4页-运营风险估算",
+        "calc_note": "⚠️ 作为子节点概率大于父节点(1.0下的分支但此处单独概率不应超过同层总和合理范围；更关键是下一层有超限)",
+        "raw_value": null,
+        "children": [
+          {
+            "id": "node_staff",
+            "label": "人员流失风险",
+            "probability": 1.3,
+            "parent_id": "node_ops",
+            "source_ref": "草稿第4页-公式(7)：13%直接写成1.3",
+            "calc_note": "⚠️ 概率值>1，明显录入错误，应为0.13（百分比未换算）",
+            "raw_value": "13% 误录为1.3",
+            "children": []
+          },
+          {
+            "id": "node_supply",
+            "label": "供应链中断",
+            "probability": -0.05,
+            "parent_id": "node_ops",
+            "source_ref": "草稿第4页-公式(8)",
+            "calc_note": "⚠️ 概率为负值，应为0.05（符号误写）",
+            "raw_value": "-0.05",
+            "children": []
+          }
+        ]
+      }
+    ]
+  },
+  "errors": [
+    {
+      "record_id": "err_f52bf0e29d65",
+      "node_id": "root_risk",
+      "node_label": "项目整体风险",
+      "expected_prob": 1.0,
+      "actual_prob": 1.25,
+      "absolute_error": 0.25,
+      "relative_error": 0.25,
+      "severity": "critical",
+      "error_type": "子节点概率和不等于1",
+      "explanation_zh": "父节点「项目整体风险」下所有子节点的概率之和不等于1.0。当前求和为 1.2500，偏离标准值 0.2500（相对误差 25.00%）。这违反了概率树的基本公理，将导致整条分支的条件概率无法归一化。",
+      "suggestion_zh": "请逐一核对「项目整体风险」下各子节点的概率值：检查是否遗漏了某个互斥事件，或存在重复计数。如为近似计算，请统一保留小数位数并在末端进行归一化调整。",
+      "calc_draft_ref": "根节点，归一化参考点",
+      "processing_note": "子节点数: 3, 子节点概率列表: [0.4, 0.3, 0.55]"
+    },
+    {
+      "record_id": "err_1dd24f983802",
+      "node_id": "node_market",
+      "node_label": "市场风险",
+      "expected_prob": 1.0,
+      "actual_prob": 1.05,
+      "absolute_error": 0.050000000000000044,
+      "relative_error": 0.050000000000000044,
+      "severity": "medium",
+      "error_type": "子节点概率和不等于1",
+      "explanation_zh": "父节点「市场风险」下所有子节点的概率之和不等于1.0。当前求和为 1.0500，偏离标准值 0.0500（相对误差 5.00%）。这违反了概率树的基本公理，将导致整条分支的条件概率无法归一化。",
+      "suggestion_zh": "请逐一核对「市场风险」下各子节点的概率值：检查是否遗漏了某个互斥事件，或存在重复计数。如为近似计算，请统一保留小数位数并在末端进行归一化调整。",
+      "calc_draft_ref": "历史3年同行业数据统计，样本量127家",
+      "processing_note": "子节点数: 3, 子节点概率列表: [0.55, 0.3, 0.2]"
+    },
+    {
+      "record_id": "err_72f43ffbb23d",
+      "node_id": "node_ops",
+      "node_label": "运营风险",
+      "expected_prob": 1.0,
+      "actual_prob": 1.25,
+      "absolute_error": 0.25,
+      "relative_error": 0.25,
+      "severity": "critical",
+      "error_type": "子节点概率和不等于1",
+      "explanation_zh": "父节点「运营风险」下所有子节点的概率之和不等于1.0。当前求和为 1.2500，偏离标准值 0.2500（相对误差 25.00%）。这违反了概率树的基本公理，将导致整条分支的条件概率无法归一化。",
+      "suggestion_zh": "请逐一核对「运营风险」下各子节点的概率值：检查是否遗漏了某个互斥事件，或存在重复计数。如为近似计算，请统一保留小数位数并在末端进行归一化调整。",
+      "calc_draft_ref": "⚠️ 作为子节点概率大于父节点(1.0下的分支但此处单独概率不应超过同层总和合理范围；更关键是下一层有超限)",
+      "processing_note": "子节点数: 2, 子节点概率列表: [1.3, -0.05]"
+    },
+    {
+      "record_id": "err_4a6c79553188",
+      "node_id": "node_staff",
+      "node_label": "人员流失风险",
+      "expected_prob": 1.0,
+      "actual_prob": 1.3,
+      "absolute_error": 0.30000000000000004,
+      "relative_error": 0.30000000000000004,
+      "severity": "critical",
+      "error_type": "概率值大于1",
+      "explanation_zh": "节点「人员流失风险」的概率值大于1：当前值为 1.3000。概率的取值范围必须在 [0, 1] 之间，该值在数学上不合法，将直接导致整条路径的联合概率计算失真。",
+      "suggestion_zh": "请立即复核节点「人员流失风险」的原始计算草稿：检查是否存在单位混淆（如将百分比直接当小数使用）、符号错误或数据录入笔误。如确为原始数据问题，请记录并在报告中注明。",
+      "calc_draft_ref": "⚠️ 概率值>1，明显录入错误，应为0.13（百分比未换算）",
+      "processing_note": "原始值: 13% 误录为1.3, 来源引用: 草稿第4页-公式(7)：13%直接写成1.3"
+    },
+    {
+      "record_id": "err_717e27a01725",
+      "node_id": "node_supply",
+      "node_label": "供应链中断",
+      "expected_prob": 0.0,
+      "actual_prob": -0.05,
+      "absolute_error": 0.05,
+      "relative_error": 0.05,
+      "severity": "medium",
+      "error_type": "概率值为负值",
+      "explanation_zh": "节点「供应链中断」的概率值为负值：当前值为 -0.0500。概率的取值范围必须在 [0, 1] 之间，该值在数学上不合法，将直接导致整条路径的联合概率计算失真。",
+      "suggestion_zh": "请立即复核节点「供应链中断」的原始计算草稿：检查是否存在单位混淆（如将百分比直接当小数使用）、符号错误或数据录入笔误。如确为原始数据问题，请记录并在报告中注明。",
+      "calc_draft_ref": "⚠️ 概率为负值，应为0.05（符号误写）",
+      "processing_note": "原始值: -0.05, 来源引用: 草稿第4页-公式(8)"
+    }
+  ],
+  "created_at": "2026-06-09T15:48:13.260774",
+  "updated_at": "2026-06-09T15:48:13.260782",
+  "review_notes": [],
+  "overall_summary_zh": "本次共处理 1 棵概率树，发现 5 处概率估值偏差，其中严重偏差 3 条、中等偏差 2 条。主要问题类型为：子节点概率和不等于1(3条)、概率值大于1(1条)、概率值为负值(1条)。 其中需重点关注：「项目整体风险」、「运营风险」、「人员流失风险」 等节点。建议按严重程度从高到低依次复核计算草稿，优先修正严重和较大偏差后再重新校验。"
+}
