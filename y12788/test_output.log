@@ -1,0 +1,92 @@
+[94mℹ INFO[0m 数据库已重置 → /Users/mac/pro/solo/workspaces/y12788/curing_system.db
+
+【测试1】样例可复现 · 图/表/文字三者一致
+  [92m✓ PASS[0m 相同输入算法可复现(哈希一致)
+  [92m✓ PASS[0m 文字报告包含所有关键数值(与summary_numbers一致)
+  [92m✓ PASS[0m 指标表与核心数值一致(凝胶/完全固化/固化度/结论)
+         凝胶=True,完全固化=True,固化度=True,结论=True
+  [92m✓ PASS[0m 谱图标注时间与核心数值一致
+         gel=651.61 vs 651.61, vit=1535.48 vs 1535.48, plat=2270.97 vs 2270.97
+  [92m✓ PASS[0m 算法结果与理论真值在合理误差范围内
+         凝胶误差=180.3s(阈值200s), 完全固化误差=221.0s(阈值400s)
+[94mℹ INFO[0m 数据库已重置 → /Users/mac/pro/solo/workspaces/y12788/curing_system.db
+
+【测试2】缺批次报告时给出可操作错误(不是内部异常)
+  [92m✓ PASS[0m ActionableError 结构正确(含suggestion、detail、code)
+         message=未找到批号 [RESIN-2025-A001] 对应的批次报告, suggestion长度=70, detail keys=['missing_batch_no', 'next_step']
+  [92m✓ PASS[0m to_dict() 输出符合前端协议
+[94mℹ INFO[0m 数据库已重置 → /Users/mac/pro/solo/workspaces/y12788/curing_system.db
+
+【测试3】批号重复/重复导入的幂等处理
+  [92m✓ PASS[0m 首次导入 → CREATED
+         action=CREATED, record_no=RESIN-2025-A001-001
+  [92m✓ PASS[0m 完全相同的谱图第二次导入 → SKIPPED(而不是UPDATED,避免重复)
+         action=SKIPPED, existing=RESIN-2025-A001-001
+  [92m✓ PASS[0m 签名相同仅改备注 → SKIPPED,说明签名机制生效
+         签名机制避免了无意义重复入库
+  [92m✓ PASS[0m 同一记录号 RESIN-2025-A001-001 仅 1 条结论记录(不会两份打架)
+         实际有 1 条 CuringTimeResult
+  [92m✓ PASS[0m 同一记录号仅 1 条 ExperimentRecord
+         实际有 1 条
+[94mℹ INFO[0m 数据库已重置 → /Users/mac/pro/solo/workspaces/y12788/curing_system.db
+
+【测试4】导出与界面摘要一致 · 结论同步校验
+  [92m✓ PASS[0m 摘要一致时导出成功(>5KB有效Excel)
+         文件大小=19051 字节
+  [92m✓ PASS[0m 结论不一致时导出被拦截
+         被拦截原因: 判定结论不一致:界面显示 待确认 / 数据库 PASS。请刷新页面重新加载最新数据后再导出。
+  [92m✓ PASS[0m 哈希不一致时 verify_consistency 拦截
+  [92m✓ PASS[0m 批次导出 RESIN-2025-A001 成功(含 3 条记录)
+         文件大小=9463 字节, 记录数=3
+[94mℹ INFO[0m 数据库已重置 → /Users/mac/pro/solo/workspaces/y12788/curing_system.db
+
+【测试5】同批号序号自动递增 · 导入动作有审计
+  [92m✓ PASS[0m 第 1 条导入 → 自动分配 seq=1
+         record_no=RESIN-2025-A001-001
+  [92m✓ PASS[0m 第 2 条导入 → 自动分配 seq=2
+         record_no=RESIN-2025-A001-002
+  [92m✓ PASS[0m 第 3 条导入 → 自动分配 seq=3
+         record_no=RESIN-2025-A001-003
+  [92m✓ PASS[0m 每个导入动作都有审计日志
+         审计日志 3 条, actions=['CREATED', 'CREATED', 'CREATED']
+  [92m✓ PASS[0m 每条审计日志都有可操作建议(含成功)
+         suggestion字段样本: ['可在【谱图判读】中查看图、表、文字说明。...', '可在【谱图判读】中查看图、表、文字说明。...', '可在【谱图判读】中查看图、表、文字说明。...']
+  [92m✓ PASS[0m 占用seq且禁止更新时给出可操作错误(含suggested_seq)
+         message=同批号[RESIN-2025-A001]下的序号 seq_no=1 已被占用(记录号 RESIN-2025-A001-001),且未启用更新模式, detail={'conflict_record_no': 'RESIN-2025-A001-001', 'conflict_seq': 1, 'suggested_seq': 4, 'operation_mode': 'allow_update=False'}
+[94mℹ INFO[0m 数据库已重置 → /Users/mac/pro/solo/workspaces/y12788/curing_system.db
+
+【测试6】浓度换算模块 · 月底/课前校准曲线
+  [92m✓ PASS[0m 回归方法=最小二乘 + 返回R²值
+         method=最小二乘线性回归, R²=0.6248
+  [92m✓ PASS[0m 返回有效数据点数 ≥ 10 (>= 5批号 × ≥2平行样)
+         有效点数=14, outliers=[]
+  [92m✓ PASS[0m 回归曲线数据 plot_x/plot_y 长度匹配(供前端绘图)
+         len(plot_x)=100, len(plot_y)=100
+  [92m✓ PASS[0m 支持以实际浓度为Y轴回归(与标称浓度分开)
+         点数=11, y_label=实测浓度 (%)
+  [92m✓ PASS[0m 浓度预测函数与回归方程一致
+         预测=49.1332, 方程值=49.1332
+  [92m✓ PASS[0m R²<0.9时预测结果给出 caution 警告
+         R²=0.6248, caution=当前回归 R²=0.6248 < 0.9,拟合度较差,预测结果仅供参考,建议补充更多校准点。
+  [92m✓ PASS[0m 浓度校准报告导出成功
+         文件大小=9454 字节
+  [92m✓ PASS[0m 空筛选返回ActionableError(而不是空结果或500)
+[94mℹ INFO[0m 数据库已重置 → /Users/mac/pro/solo/workspaces/y12788/curing_system.db
+
+【测试7】补录/重算后结论统一,不会出现两份
+  [92m✓ PASS[0m 首次导入显式指定 seq=1
+         record_no=RESIN-2025-A001-001
+  [92m✓ PASS[0m 补录同一记录号 → UPDATED/SKIPPED
+         action=UPDATED, record_no=RESIN-2025-A001-001
+  [92m✓ PASS[0m 补录后 RESIN-2025-A001-001 仍只有1条结论(不会两份打架)
+         实际CuringTimeResult数=1
+  [92m✓ PASS[0m CuringTimeResult.recalculation_count > 0 (标记为重算)
+         recalculation_count=1
+  [92m✓ PASS[0m 文字说明报告已包含补录备注
+         text_report末尾50字: ... 最终结论:    【PASS】
+----------------------------------------
+备注: 补录:重新采集的谱图数据,替换原数据
+
+============================================================
+测试总览: 35/35 通过 ✨
+============================================================

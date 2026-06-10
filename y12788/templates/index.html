@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>树脂固化时间判定系统</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+:root{
+  --bg:#f1f5f9;--card:#ffffff;--primary:#1e3a8a;--primary-light:#3b82f6;
+  --accent:#0ea5e9;--pass:#22c55e;--hold:#f59e0b;--fail:#ef4444;
+  --text:#0f172a;--muted:#64748b;--border:#e2e8f0
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;padding:16px 32px;box-shadow:0 4px 20px rgba(30,58,138,.2)}
+header h1{font-size:22px;font-weight:700}
+header p{opacity:.85;font-size:13px;margin-top:4px}
+.tabs{display:flex;gap:0;padding:0 32px;background:#fff;border-bottom:2px solid var(--border);overflow-x:auto}
+.tab{padding:14px 24px;cursor:pointer;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;font-size:14px}
+.tab:hover{color:var(--primary)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab .hint{font-size:11px;display:block;opacity:.7;font-weight:400}
+main{padding:24px 32px;max-width:1400px;margin:0 auto}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:var(--card);border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 12px rgba(15,23,42,.04);border:1px solid var(--border)}
+.card h2{font-size:16px;margin-bottom:16px;display:flex;align-items:center;gap:8px;color:var(--primary)}
+.card h2::before{content:"";width:4px;height:18px;background:var(--primary);border-radius:2px}
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:1fr 1fr}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+input,select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;transition:all .15s;background:#fff}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary-light);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+button{padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light)}
+.btn-secondary{background:var(--border);color:var(--text)}
+.btn-secondary:hover{background:#cbd5e1}
+.btn-outline{background:#fff;border:1.5px solid var(--primary);color:var(--primary)}
+.btn-outline:hover{background:rgba(59,130,246,.08)}
+.btn-danger{background:var(--fail);color:#fff}
+.btn-success{background:var(--pass);color:#fff}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.form-group{flex:1;min-width:160px}
+.chart{width:100%;height:380px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:#f8fafc;font-weight:600;color:var(--primary);font-size:12px;white-space:nowrap}
+tr:hover td{background:#f8fafc}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;letter-spacing:.5px}
+.badge-PASS{background:var(--pass);box-shadow:0 2px 6px rgba(34,197,94,.3)}
+.badge-待确认{background:var(--hold);box-shadow:0 2px 6px rgba(245,158,11,.3)}
+.badge-FAIL{background:var(--fail);box-shadow:0 2px 6px rgba(239,68,68,.3)}
+.metric-card{background:linear-gradient(135deg,#f8fafc,#fff);border:1px solid var(--border);border-radius:10px;padding:16px}
+.metric-card .label{font-size:12px;color:var(--muted);font-weight:500}
+.metric-card .value{font-size:24px;font-weight:700;margin-top:6px;color:var(--primary)}
+.metric-card .unit{font-size:12px;color:var(--muted);font-weight:500;margin-left:4px}
+.summary-judgment{font-size:32px;font-weight:800;text-align:center;padding:20px;border-radius:12px;margin-bottom:16px;color:#fff}
+.summary-PASS{background:linear-gradient(135deg,#16a34a,#22c55e)}
+.summary-待确认{background:linear-gradient(135deg,#d97706,#f59e0b)}
+.summary-FAIL{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.text-report{background:#0f172a;color:#e2e8f0;padding:20px;border-radius:10px;font-family:"SF Mono",Consolas,monospace;font-size:12.5px;line-height:1.85;white-space:pre-wrap;max-height:420px;overflow-y:auto}
+.text-report .star{color:#fbbf24;font-weight:700}
+.alert{padding:14px 18px;border-radius:10px;margin-bottom:16px;font-size:13.5px;display:flex;gap:12px;align-items:flex-start}
+.alert-error{background:#fef2f2;border-left:4px solid var(--fail);color:#991b1b}
+.alert-warn{background:#fffbeb;border-left:4px solid var(--hold);color:#92400e}
+.alert-info{background:#eff6ff;border-left:4px solid var(--primary);color:#1e3a8a}
+.alert-success{background:#f0fdf4;border-left:4px solid var(--pass);color:#166534}
+.alert strong{display:block;margin-bottom:4px}
+.alert .suggestion{margin-top:6px;padding-top:6px;border-top:1px dashed rgba(0,0,0,.1);font-weight:600}
+.record-list{max-height:500px;overflow-y:auto}
+.record-item{padding:14px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center}
+.record-item:hover{border-color:var(--primary-light);background:#f8fafc}
+.record-item.selected{border-color:var(--primary);background:#eff6ff}
+.record-item .info{flex:1}
+.record-item .no{font-weight:700;color:var(--primary)}
+.record-item .meta{font-size:12px;color:var(--muted);margin-top:3px}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty .big{font-size:48px;margin-bottom:8px;opacity:.4}
+.tag{display:inline-block;background:#e0f2fe;color:#0369a1;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-right:4px}
+.loading{display:inline-block;width:18px;height:18px;border:2.5px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#notification{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px;max-width:380px}
+.notification{padding:14px 18px;border-radius:10px;color:#fff;font-size:13px;box-shadow:0 10px 30px rgba(0,0,0,.2);animation:slideIn .3s ease}
+.notification.success{background:var(--pass)}
+.notification.error{background:var(--fail)}
+.notification.info{background:var(--primary-light)}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.section-title{font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:0 0 12px 0;padding-bottom:8px;border-bottom:1px dashed var(--border)}
+.checkbox-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.checkbox-row input{width:auto}
+hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+.regression-eq{font-size:18px;font-weight:700;color:var(--primary);padding:14px;background:linear-gradient(90deg,#eff6ff,transparent);border-radius:8px;margin:10px 0}
+.regression-r2{font-size:14px;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🧪 树脂固化时间判定系统</h1>
+  <p>谱图判读 + 浓度换算 · 图/表/文字三者一致 · 防重复导入与冲突</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="spectrum">📊 谱图判读 <span class="hint">日常入口 · 单条处理</span></div>
+  <div class="tab" data-tab="concentration">📐 浓度换算 <span class="hint">月底/课前 · 校准曲线</span></div>
+  <div class="tab" data-tab="records">📋 记录管理 <span class="hint">批次总览 · 批量导出</span></div>
+</div>
+
+<main>
+
+<!-- ============ 面板1:谱图判读(日常入口) ============ -->
+<section id="panel-spectrum" class="panel active">
+
+  <div class="card">
+    <h2>① 导入谱图数据</h2>
+    <div class="row">
+      <div class="form-group">
+        <label>批次报告 *</label>
+        <select id="in-batch-no">
+          <option value="">-- 请先选择批号(必须已录入批次报告) --</option>
+        </select>
+        <button class="btn-outline" style="margin-top:8px;padding:6px 12px;font-size:12px" onclick="openBatchDialog()">＋ 新建批次报告</button>
+      </div>
+      <div class="form-group">
+        <label>谱图文件 * (.json / .csv)</label>
+        <input type="file" id="in-spectrum-file" accept=".json,.csv">
+        <button class="btn-secondary" style="margin-top:8px;padding:6px 12px;font-size:12px" onclick="loadDemoSpectrum()">📥 加载演示样例谱图</button>
+      </div>
+      <div class="form-group">
+        <label>同批号序号(留空=自动分配)</label>
+        <input type="number" id="in-seq-no" placeholder="自动分配下一个可用序号">
+      </div>
+      <div class="form-group">
+        <label>实验日期</label>
+        <input type="date" id="in-exp-date">
+      </div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <div class="form-group"><label>操作人员</label><input type="text" id="in-operator" placeholder="化学老师姓名"></div>
+      <div class="form-group"><label>试样重量(g)</label><input type="number" step="0.0001" id="in-weight" placeholder="可选"></div>
+      <div class="form-group"><label>固化剂配比(%)</label><input type="number" step="0.1" id="in-curing-ratio" placeholder="可选"></div>
+      <div class="form-group"><label>实测浓度(%)</label><input type="number" step="0.01" id="in-actual-conc" placeholder="可选"></div>
+    </div>
+    <div style="margin-top:14px">
+      <label>备注</label>
+      <textarea id="in-remark" rows="2" placeholder="可记录实验条件、异常情况等"></textarea>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="in-allow-update" checked>
+      <label for="in-allow-update" style="margin:0">当记录号已存在时,以幂等模式更新(避免两份冲突结论)</label>
+    </div>
+    <hr>
+    <div class="row">
+      <button class="btn-primary" onclick="runSpectrumAnalysis()">🚀 运行固化时间判定</button>
+      <button class="btn-secondary" onclick="clearCurrentResult()">清空当前</button>
+    </div>
+  </div>
+
+  <div id="spectrum-result-area"></div>
+
+  <div class="card" id="card-recent" style="display:none">
+    <h2>② 最近实验记录(点击查看详情)</h2>
+    <div id="recent-list" class="record-list"></div>
+  </div>
+
+</section>
+
+
+<!-- ============ 面板2:浓度换算(月底/课前入口) ============ -->
+<section id="panel-concentration" class="panel">
+
+  <div class="card">
+    <h2>浓度校准曲线 — 月底汇总/课前讲解</h2>
+    <div class="row">
+      <div class="form-group">
+        <label>X轴(自变量)</label>
+        <select id="reg-x-axis">
+          <option value="peak_area">峰面积(默认,与浓度相关性最好)</option>
+          <option value="peak_signal">特征峰强度</option>
+          <option value="full_cure_time">完全固化时间</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Y轴(因变量)</label>
+        <select id="reg-y-axis">
+          <option value="nominal_concentration">标称浓度(批次报告)</option>
+          <option value="actual_concentration">实测浓度(手工录入)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>筛选批次(留空=全部)</label>
+        <select id="reg-batch-filter" multiple size="3"></select>
+      </div>
+      <div class="form-group">
+        <label style="margin-top:14px">&nbsp;</label>
+        <button class="btn-primary" onclick="runRegression()">📊 建立回归</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="regression-result-area"></div>
+
+</section>
+
+
+<!-- ============ 面板3:记录管理 ============ -->
+<section id="panel-records" class="panel">
+
+  <div class="card">
+    <h2>全部实验记录 — 质检主管审核</h2>
+    <div class="row">
+      <div class="form-group">
+        <label>按批号筛选</label>
+        <select id="filter-batch-no"><option value="">全部批号</option></select>
+      </div>
+      <div class="form-group">
+        <label>按结论筛选</label>
+        <select id="filter-judgment">
+          <option value="">全部</option>
+          <option value="PASS">✅ PASS</option>
+          <option value="待确认">⚠ 待确认</option>
+          <option value="FAIL">❌ FAIL</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex:0 0 auto">
+        <label>&nbsp;</label>
+        <button class="btn-outline" onclick="refreshRecordList()">🔄 刷新</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="margin-bottom:14px">
+      <div style="flex:1">
+        <div class="section-title">记录列表(选择后可批量操作)</div>
+      </div>
+      <button class="btn-primary" onclick="exportCurrentBatchExcel()" id="btn-export-batch" disabled>📤 导出当前批次Excel</button>
+    </div>
+    <div id="record-list" class="record-list"></div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">最近导入审计日志(重复导入处理追踪)</div>
+    <div id="audit-list"></div>
+  </div>
+
+</section>
+
+</main>
+
+<!-- ========= 批量报告对话框 ========= -->
+<div id="batch-dialog" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:1000;align-items:center;justify-content:center">
+  <div class="card" style="width:480px;margin:auto;margin-top:10vh">
+    <h2>新建批次报告(必须先建立再导入)</h2>
+    <div class="form-group" style="margin-bottom:12px"><label>批号 *</label><input type="text" id="bd-batch-no" placeholder="如:RESIN-2025-A001"></div>
+    <div class="form-group" style="margin-bottom:12px"><label>树脂型号 *</label><input type="text" id="bd-resin-type" placeholder="如:E-51环氧"></div>
+    <div class="form-group" style="margin-bottom:12px"><label>生产厂家</label><input type="text" id="bd-mfr" placeholder="如:中石化"></div>
+    <div class="form-group" style="margin-bottom:12px"><label>生产日期</label><input type="date" id="bd-date"></div>
+    <div class="form-group" style="margin-bottom:12px"><label>标称浓度(%)</label><input type="number" step="0.01" id="bd-conc" placeholder="如:50.00"></div>
+    <div class="form-group" style="margin-bottom:12px"><label>备注</label><textarea id="bd-remark" rows="2"></textarea></div>
+    <div class="row">
+      <button class="btn-primary" onclick="submitBatchReport()">保存批次报告</button>
+      <button class="btn-secondary" onclick="document.getElementById('batch-dialog').style.display='none'">取消</button>
+    </div>
+  </div>
+</div>
+
+<div id="notification"></div>
+
+<script>
+/* ---------- 工具函数 ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+async function api(url,method='GET',body){
+  const opts={method,headers:{'Accept':'application/json'}};
+  if(body!==undefined){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(body);}
+  const r=await fetch(url,opts);
+  const ct=r.headers.get('content-type')||'';
+  if(ct.includes('application/json')){
+    const data=await r.json();
+    if(!r.ok&&data.error){throw data;}
+    if(!r.ok){throw {message:`HTTP ${r.status}`,suggestion:'请联系管理员'};}
+    return data;
+  }
+  return r;
+}
+
+function notify(msg,type='success'){
+  const el=document.createElement('div');
+  el.className='notification '+type;
+  el.textContent=msg;
+  $('#notification').appendChild(el);
+  setTimeout(()=>el.remove(),4000);
+}
+
+function alertHtml(type,title,message,suggestion){
+  const icon={error:'❌',warn:'⚠️',info:'ℹ️',success:'✅'}[type]||'ℹ️';
+  return `<div class="alert alert-${type}"><div>${icon}</div><div><strong>${title}</strong>${message}${suggestion?`<div class="suggestion">👉 操作建议:${suggestion}</div>`:''}</div></div>`;
+}
+
+/* ---------- Tab 切换 ---------- */
+$$('.tab').forEach(t=>t.addEventListener('click',()=>{
+  $$('.tab').forEach(x=>x.classList.remove('active'));
+  $$('.panel').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  $('#panel-'+t.dataset.tab).classList.add('active');
+  if(t.dataset.tab==='records'){refreshRecordList();loadAuditLogs();}
+  if(t.dataset.tab==='concentration'){populateBatchFilter();}
+}));
+
+/* ---------- 批次管理 ---------- */
+function openBatchDialog(){
+  $('#batch-dialog').style.display='flex';
+}
+async function submitBatchReport(){
+  const data={};
+  const fields=[['bd-batch-no','batch_no'],['bd-resin-type','resin_type'],['bd-mfr','manufacturer'],['bd-date','production_date'],['bd-conc','nominal_concentration'],['bd-remark','remark']];
+  const fd=new FormData();
+  for(const[id,k]of fields){
+    const v=$('#'+id).value;
+    if(v)fd.append(k,v);
+  }
+  if(!fd.get('batch_no')||!fd.get('resin_type')){
+    notify('批号和树脂型号必填','error');return;
+  }
+  try{
+    const r=await fetch('/api/batch-report',{method:'POST',body:fd});
+    const d=await r.json();
+    if(!r.ok)throw d;
+    notify('批次报告创建成功');
+    document.getElementById('batch-dialog').style.display='none';
+    await loadBatchOptions();
+    await populateBatchFilter();
+    $$('#bd-batch-no,#bd-resin-type,#bd-mfr,#bd-date,#bd-conc,#bd-remark').forEach(x=>x.value='');
+  }catch(e){
+    const ae=document.getElementById('batch-dialog').querySelector('.alert-area')||document.createElement('div');
+    ae.className='alert-area';
+    ae.innerHTML=alertHtml('error','创建失败',e.message||'未知错误',e.suggestion||'请重试');
+    document.getElementById('batch-dialog').querySelector('.card').insertBefore(ae,document.getElementById('batch-dialog').querySelector('.row'));
+    setTimeout(()=>ae.remove(),5000);
+  }
+}
+
+async function loadBatchOptions(){
+  const list=await api('/api/batch-report');
+  const sel=$('#in-batch-no');
+  sel.innerHTML='<option value="">-- 请先选择批号(必须已录入批次报告) --</option>';
+  list.forEach(b=>{
+    const opt=document.createElement('option');opt.value=b.batch_no;
+    opt.textContent=`${b.batch_no} | ${b.resin_type}${b.nominal_concentration?` | 标称${b.nominal_concentration}%`:''}`;
+    sel.appendChild(opt);
+  });
+  const fb=$('#filter-batch-no');
+  fb.innerHTML='<option value="">全部批号</option>';
+  list.forEach(b=>{const o=document.createElement('option');o.value=b.batch_no;o.textContent=b.batch_no;fb.appendChild(o);});
+}
+
+async function populateBatchFilter(){
+  const list=await api('/api/batch-report');
+  const sel=$('#reg-batch-filter');
+  sel.innerHTML='';
+  list.forEach(b=>{const o=document.createElement('option');o.value=b.batch_no;o.textContent=b.batch_no;sel.appendChild(o);});
+}
+
+/* ---------- 谱图数据生成(演示样例) ---------- */
+function generateDemoSpectrum(seed=42){
+  function srand(x){let t=x+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;}
+  let r=srand(seed);
+  const N=200,t=[],s=[];
+  const tMax=3600;
+  const tGel=900+srand(++seed)*300-150;
+  const tVit=tGel*1.9+srand(++seed)*200;
+  const tEnd=tVit*1.6+srand(++seed)*400;
+  for(let i=0;i<N;i++){
+    const ti=(i/(N-1))*tMax;
+    t.push(+ti.toFixed(1));
+    let v;
+    if(ti<tGel){v=0.05+0.07*(ti/tGel);}
+    else if(ti<tVit){const u=(ti-tGel)/(tVit-tGel);v=0.12+0.55*(1-Math.pow(1-u,3));}
+    else if(ti<tEnd){const u=(ti-tVit)/(tEnd-tVit);v=0.67+0.30*(1-Math.exp(-4*u));}
+    else{v=0.97;}
+    v+=(srand(++seed)-0.5)*0.025;
+    s.push(+v.toFixed(6));
+  }
+  return {time_points:t,signal_values:s,file_name:`demo_seed${seed}.json`,spectrum_type:"FTIR",temperature:80+srand(++seed)*10,measured_at:new Date().toISOString().slice(0,16)};
+}
+
+function loadDemoSpectrum(){
+  const seed=Math.floor(Math.random()*9999)+1;
+  window._demoSpectrum=generateDemoSpectrum(seed);
+  notify(`演示谱图已加载(种子=${seed},${window._demoSpectrum.time_points.length}个采样点)`);
+}
+
+/* ---------- 谱图导入与判定(日常入口核心) ---------- */
+async function runSpectrumAnalysis(){
+  const batchNo=$('#in-batch-no').value;
+  if(!batchNo){
+    const a=$('#spectrum-result-area');
+    a.innerHTML=alertHtml('error','未选择批号','请先选择关联的树脂批号,或点击"新建批次报告"录入。','如果此批号首次出现,必须先建立批次报告再导入谱图。');
+    return;
+  }
+  const btn=event.target;btn.disabled=true;
+  btn.innerHTML='<span class="loading"></span> 分析中...';
+  try{
+    let spectrumPayload=null;
+    const file=$('#in-spectrum-file').files[0];
+    if(file){
+      const text=await file.text();
+      if(file.name.endsWith('.json'))spectrumPayload=JSON.parse(text);
+      else{
+        const lines=text.trim().split('\n');
+        const t=[],s=[];let start=0;
+        if(lines[0]&&/^(time|t,)/i.test(lines[0]))start=1;
+        for(const line of lines.slice(start)){
+          const p=line.split(',').map(x=>parseFloat(x.trim()));
+          if(p.length>=2&&!isNaN(p[0])&&!isNaN(p[1])){t.push(p[0]);s.push(p[1]);}
+        }
+        spectrumPayload={time_points:t,signal_values:s,file_name:file.name};
+      }
+    }else if(window._demoSpectrum){
+      spectrumPayload={...window._demoSpectrum};
+    }else{
+      throw {message:'未选择谱图文件,也未加载演示样例',suggestion:'请上传谱图文件(.json/.csv),或点击"加载演示样例谱图"按钮。'};
+    }
+    const body={
+      batch_no:batchNo,
+      spectrum:spectrumPayload,
+      seq_no:parseInt($('#in-seq-no').value)||undefined,
+      operator:$('#in-operator').value,
+      experiment_date:$('#in-exp-date').value,
+      initial_weight:parseFloat($('#in-weight').value)||undefined,
+      curing_agent_ratio:parseFloat($('#in-curing-ratio').value)||undefined,
+      actual_concentration:parseFloat($('#in-actual-conc').value)||undefined,
+      remark:$('#in-remark').value,
+      allow_update:$('#in-allow-update').checked,
+    };
+    const result=await api('/api/spectrum/import-json','POST',body);
+    window._lastResult=result;
+    window._lastCanonical=result.canonical;
+    renderSpectrumResult(result);
+    refreshRecent();
+    if(result.action==='CREATED')notify('新记录创建成功,已完成固化判定');
+    else if(result.action==='UPDATED')notify('已按幂等模式更新现有记录(避免冲突)','info');
+    else if(result.action==='SKIPPED')notify(`已跳过重复数据,复用记录号=${result.existing_record_no}`,'info');
+  }catch(e){
+    $('#spectrum-result-area').innerHTML=alertHtml('error',e.code||'导入/判定失败',e.message||'未知错误',e.suggestion||'请检查输入后重试');
+    notify(e.message||'操作失败','error');
+  }finally{
+    btn.disabled=false;
+    btn.innerHTML='🚀 运行固化时间判定';
+  }
+}
+
+function clearCurrentResult(){
+  $('#spectrum-result-area').innerHTML='';
+  window._lastResult=null;
+  window._lastCanonical=null;
+}
+
+/* ---------- 渲染结果:图+表+文字(三者一致核心) ---------- */
+function renderSpectrumResult(result){
+  const c=result.canonical;
+  const area=$('#spectrum-result-area');
+  const batchInfo=result.batch_report_info||{};
+  const actionBadge=result.action?{
+    CREATED:'<span class="badge" style="background:#0ea5e9">新建</span>',
+    UPDATED:'<span class="badge" style="background:#8b5cf6">幂等更新</span>',
+    SKIPPED:'<span class="badge" style="background:#64748b">跳过(重复)</span>',
+  }[result.action]||'':'';
+
+  let html=`<div class="card"><h2>③ 判定结果 — ${c.record_no} ${actionBadge}</h2>`;
+  html+=`<div class="summary-judgment summary-${c.judgment_badge}">最终结论:<b style="font-size:44px;margin:0 12px">${c.judgment_badge}</b>(置信度 ${(c.summary_numbers.confidence*100).toFixed(1)}%)</div>`;
+  html+=`<div class="grid grid-3" style="margin-bottom:20px">`;
+  const keyMetrics=[
+    ['凝胶时间',c.summary_numbers.gel_time,'s','粘度突变,交联反应启动'],
+    ['玻璃化时间',c.summary_numbers.vitrification_time,'s','70%固化完成'],
+    ['完全固化时间',c.summary_numbers.full_cure_time,'s','95%平台起点'],
+    ['固化度估算',c.summary_numbers.curing_degree,'%','信号平台水平换算'],
+    ['特征峰强度',c.summary_numbers.peak_signal,'a.u.','最大峰值绝对值'],
+    ['峰面积积分',c.summary_numbers.peak_area,'a.u.·s','反应总能量'],
+  ];
+  keyMetrics.forEach(([l,v,u,d])=>{
+    html+=`<div class="metric-card"><div class="label">${l}</div><div class="value">${v}<span class="unit">${u}</span></div><div style="font-size:11px;color:var(--muted);margin-top:4px">${d}</div></div>`;
+  });
+  html+=`</div>`;
+  if(batchInfo.resin_type){
+    html+=`<div style="margin-bottom:12px"><span class="tag">${batchInfo.resin_type}</span><span class="tag">${batchInfo.manufacturer||'厂家未填'}</span><span class="tag">标称浓度 ${batchInfo.nominal_concentration||'?'}%</span></div>`;
+  }
+  html+=`<div class="row" style="margin-bottom:16px">
+    <button class="btn-success" onclick="exportSingleExcel()">📤 导出Excel(与界面一致)</button>
+    <button class="btn-outline" onclick="copyTextReport()">📋 复制文字说明</button>
+  </div>`;
+  html+=`</div>`;
+
+  html+=`<div class="card"><h2>④ 谱图可视化 — 三时间点标注</h2>`;
+  html+=`<div id="spectrum-chart" class="chart"></div>`;
+  html+=`</div>`;
+
+  html+=`<div class="grid grid-2"><div class="card"><h2>⑤ 指标明细表</h2><table><thead><tr><th>指标</th><th>数值</th><th>单位</th><th>说明</th></tr></thead><tbody>`;
+  c.metrics_table.forEach(r=>{
+    const val=r.metric==='结论'?`<span class="badge badge-${r.value}">${r.value}</span>`:r.value;
+    html+=`<tr><td>${r.metric}</td><td>${val}</td><td>${r.unit}</td><td style="font-size:12px;color:var(--muted)">${r.description}</td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  html+=`<div class="card"><h2>⑥ 文字说明报告</h2><pre class="text-report" id="text-report-el">${c.text_report.replace(/★/g,'<span class="star">★</span>')}</pre></div></div>`;
+
+  area.innerHTML=html;
+  setTimeout(()=>drawSpectrumChart(c),100);
+}
+
+function drawSpectrumChart(canonical){
+  const cd=canonical.chart_data;
+  const colors={'凝胶期':'#94a3b8','凝胶化阶段':'#60a5fa','玻璃化阶段':'#34d399','固化完成':'#a78bfa'};
+  const chart=echarts.init(document.getElementById('spectrum-chart'));
+  const marks=cd.markers||[];
+  const option={
+    backgroundColor:'#fff',
+    tooltip:{trigger:'axis',backgroundColor:'rgba(15,23,42,.9)',borderColor:'transparent',textStyle:{color:'#fff'}},
+    legend:{data:['原始信号','平滑后信号'],top:0},
+    grid:{left:50,right:30,top:40,bottom:60},
+    xAxis:{type:'value',name:'时间 (秒)',nameLocation:'middle',nameGap:30,splitLine:{show:false}},
+    yAxis:{type:'value',name:'信号强度',splitLine:{lineStyle:{color:'#f1f5f9'}}},
+    series:[
+      {name:'原始信号',type:'line',smooth:true,symbol:'none',data:cd.time_series.map((t,i)=>[t,cd.signal_series[i]]),lineStyle:{color:'#cbd5e1',width:1.2}},
+      {name:'平滑后信号',type:'line',smooth:true,symbol:'none',data:cd.time_series.map((t,i)=>[t,cd.smoothed_series[i]]),lineStyle:{color:'#1e3a8a',width:2.5},
+        markPoint:{symbol:'pin',symbolSize:50,data:marks.map(m=>({
+          name:m.label,coord:[m.time,m.value],itemStyle:{color:m.type==='gel'?'#3b82f6':m.type==='vitrification'?'#10b981':m.type==='full_cure'?'#8b5cf6':'#f59e0b'},label:{formatter:m.label,fontSize:10}
+        }))},
+        markArea:{silent:false,data:(cd.segments||[]).map(s=>([
+          {name:s.name,xAxis:s.start,itemStyle:{color:s.color,opacity:.12}},
+          {xAxis:s.end}
+        ]))}
+      },
+    ]
+  };
+  chart.setOption(option);
+  window._spectrumChart=chart;
+}
+
+/* ---------- 导出 ---------- */
+async function exportSingleExcel(){
+  if(!window._lastCanonical){notify('暂无可导出数据','error');return;}
+  try{
+    const body={verify_summary:{
+      judgment_badge:window._lastCanonical.judgment_badge,
+      canonical_hash:window._lastCanonical.canonical_hash,
+    }};
+    const r=await fetch(`/api/export/single/${window._lastCanonical.record_no}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){const d=await r.json().catch(()=>({}));throw d;}
+    const blob=await r.blob();
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`curing_${window._lastCanonical.record_no}.xlsx`;a.click();
+    notify('导出成功(已通过一致性校验)');
+  }catch(e){
+    const el=$('#spectrum-result-area');
+    const box=document.createElement('div');
+    box.innerHTML=alertHtml('error','导出被拒绝(一致性保护)',e.message||'导出时检测到界面与数据库不一致',e.suggestion||'请刷新页面后重试,避免出现界面与文件结论不一致。');
+    el.insertBefore(box,el.firstChild);
+    notify('导出失败:数据不一致','error');
+  }
+}
+
+function copyTextReport(){
+  if(!window._lastCanonical)return;
+  navigator.clipboard.writeText(window._lastCanonical.text_report);
+  notify('文字说明已复制到剪贴板');
+}
+
+/* ---------- 最近列表 ---------- */
+async function refreshRecent(){
+  try{
+    const list=await api('/api/spectrum/records?limit=10');
+    if(!list.length){$('#card-recent').style.display='none';return;}
+    $('#card-recent').style.display='block';
+    $('#recent-list').innerHTML=list.map(r=>`
+      <div class="record-item" onclick="viewRecord('${r.record_no}')">
+        <div class="info">
+          <div class="no">${r.record_no}</div>
+          <div class="meta">批号 ${r.batch_no} · ${r.experiment_date||'无日期'} · 操作 ${r.operator||'-'}</div>
+        </div>
+        <div>
+          <span class="badge badge-${r.judgment||'FAIL'}">${r.judgment||'?'}</span>
+          <span style="margin-left:10px;color:var(--muted);font-size:12px">${r.gel_time?.toFixed(1)||'-'}s</span>
+        </div>
+      </div>`).join('');
+  }catch(e){}
+}
+
+async function viewRecord(recordNo){
+  try{
+    const c=await api(`/api/spectrum/canonical/${recordNo}`);
+    window._lastCanonical=c;
+    window._lastResult={action:'VIEWED',canonical:c,batch_report_info:{}};
+    renderSpectrumResult({canonical:c,action:'VIEWED',batch_report_info:{}});
+  }catch(e){notify(e.message||'加载失败','error');}
+}
+
+/* ---------- 浓度换算面板 ---------- */
+async function runRegression(){
+  try{
+    const selected=Array.from($('#reg-batch-filter').selectedOptions).map(o=>o.value);
+    const body={
+      x_axis:$('#reg-x-axis').value,
+      y_axis:$('#reg-y-axis').value,
+      batch_nos:selected.length?selected:null,
+    };
+    const d=await api('/api/concentration/regression','POST',body);
+    window._lastRegression=d;
+    renderRegressionResult(d);
+  }catch(e){
+    $('#regression-result-area').innerHTML=alertHtml('error',e.code||'回归失败',e.message||'无法建立校准曲线',e.suggestion||'请增加已完成判读的实验记录数量。');
+    notify(e.message||'回归失败','error');
+  }
+}
+
+function renderRegressionResult(d){
+  let html=`<div class="card"><h2>校准回归结果</h2>`;
+  html+=`<div class="regression-eq">${d.equation}</div>`;
+  html+=`<div class="regression-r2">R² = <b style="color:var(--primary);font-size:16px">${d.r_squared}</b>  ${d.r_squared>=0.9?'<span style="color:#16a34a">✅ 拟合优秀</span>':d.r_squared>=0.7?'<span style="color:#f59e0b">⚠ 拟合一般,可补充数据</span>':'<span style="color:#ef4444">❌ 拟合较差,不建议用于预测</span>'}</div>`;
+  html+=`<div class="row" style="margin-top:12px">
+    <div class="form-group" style="max-width:220px">
+      <label>输入X值,预测浓度:</label>
+      <div class="row" style="gap:6px">
+        <input type="number" step="0.01" id="pred-x" placeholder="输入X值">
+        <button class="btn-primary" onclick="runPrediction()" style="padding:8px 14px">预测</button>
+      </div>
+      <div id="pred-result" style="margin-top:8px;font-weight:700"></div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn-success" onclick="exportRegressionExcel()" style="padding:10px 16px">📤 导出校准报告Excel</button>
+  </div>`;
+  html+=`</div>`;
+  html+=`<div class="card"><h2>校准曲线图</h2><div id="reg-chart" class="chart"></div></div>`;
+  html+=`<div class="grid grid-2">
+    <div class="card"><h2>数据点明细</h2><table><thead><tr><th>记录</th><th>批号</th><th>X值</th><th>Y值</th><th>预测Y</th><th>残差</th></tr></thead><tbody>`;
+  d.points.forEach(p=>{
+    html+=`<tr><td>${p.record_no}</td><td>${p.batch_no}</td><td>${p._x_value?.toFixed(4)||'-'}</td><td>${p._y_value?.toFixed(2)||'-'}</td><td>${p._predicted_y?.toFixed(2)||'-'}</td><td style="color:${Math.abs(p._residual)>Math.max(...d.residuals.map(Math.abs))*0.6?'#ef4444':'var(--muted)'}">${p._residual?.toFixed(3)}</td></tr>`;
+  });
+  html+=`</tbody></table></div>`;
+  html+=`<div class="card"><h2>模型参数</h2><div class="grid grid-3" style="gap:10px">
+    <div class="metric-card"><div class="label">斜率</div><div class="value" style="font-size:18px">${d.slope}</div></div>
+    <div class="metric-card"><div class="label">截距</div><div class="value" style="font-size:18px">${d.intercept}</div></div>
+    <div class="metric-card"><div class="label">样本数</div><div class="value" style="font-size:18px">${d.points.length}</div></div>
+  </div><hr><div style="font-size:13px;color:var(--muted)">排除异常点:${d.outliers.length?d.outliers.join(', '):'无'}</div></div></div>`;
+  $('#regression-result-area').innerHTML=html;
+  setTimeout(()=>drawRegChart(d),100);
+}
+
+async function runPrediction(){
+  const xv=parseFloat($('#pred-x').value);
+  if(isNaN(xv)||xv<=0){notify('请输入有效X值','error');return;}
+  try{
+    const selected=Array.from($('#reg-batch-filter').selectedOptions).map(o=>o.value);
+    const d=await api('/api/concentration/predict','POST',{
+      x_axis:$('#reg-x-axis').value,y_axis:$('#reg-y-axis').value,
+      batch_nos:selected.length?selected:null,x_value:xv,
+    });
+    const p=d.prediction;
+    const ca=`<span style="color:var(--primary);font-size:22px;margin-left:6px">${p.predicted_concentration}%</span>`;
+    $('#pred-result').innerHTML=`预测浓度=${ca}${p.caution?`<div style="font-size:11px;color:#f59e0b;margin-top:4px;font-weight:400">⚠ ${p.caution}</div>`:''}`;
+  }catch(e){notify(e.message||'预测失败','error');}
+}
+
+async function exportRegressionExcel(){
+  const selected=Array.from($('#reg-batch-filter').selectedOptions).map(o=>o.value);
+  const body={x_axis:$('#reg-x-axis').value,y_axis:$('#reg-y-axis').value,batch_nos:selected.length?selected:null};
+  const r=await fetch('/api/export/concentration',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!r.ok){const d=await r.json().catch(()=>({}));throw d;}
+  const blob=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='concentration_regression.xlsx';a.click();
+  notify('校准报告导出成功');
+}
+
+function drawRegChart(d){
+  const chart=echarts.init(document.getElementById('reg-chart'));
+  const scatterData=d.points.map(p=>({value:[p._x_value,p._y_value],name:p.record_no,itemStyle:{color:Math.abs(p._residual)>Math.max(...d.residuals.map(Math.abs))*0.6?'#ef4444':'#1e3a8a'}}));
+  const lineData=d.plot_x.map((x,i)=>[x,d.plot_y[i]]);
+  chart.setOption({
+    tooltip:{trigger:'item',formatter:p=>p.seriesName==='校准点'?`<b>${p.data.name}</b><br>${d.x_label}: ${p.value[0]}<br>${d.y_label}: ${p.value[1]}`:`Y = ${d.slope.toFixed(6)} X + ${d.intercept.toFixed(4)}<br>R²=${d.r_squared}`},
+    legend:{top:0},
+    grid:{left:60,right:30,top:40,bottom:60},
+    xAxis:{type:'value',name:d.x_label,nameLocation:'middle',nameGap:32},
+    yAxis:{type:'value',name:d.y_label},
+    series:[
+      {name:'校准点',type:'scatter',data:scatterData,symbolSize:14},
+      {name:'回归线',type:'line',smooth:false,data:lineData,lineStyle:{color:'#ef4444',width:3,type:'dashed'},symbol:'none'},
+    ]
+  });
+  window._regChart=chart;
+}
+
+/* ---------- 记录管理面板 ---------- */
+let _selectedBatch=null;
+async function refreshRecordList(){
+  const q=[];
+  if($('#filter-batch-no').value)q.push('batch_no='+encodeURIComponent($('#filter-batch-no').value));
+  if($('#filter-judgment').value)q.push('judgment='+encodeURIComponent($('#filter-judgment').value));
+  try{
+    const list=await api('/api/spectrum/records?'+(q.length?q.join('&'):'limit=100'));
+    _selectedBatch=$('#filter-batch-no').value||null;
+    $('#btn-export-batch').disabled=!_selectedBatch;
+    if(!list.length){$('#record-list').innerHTML=`<div class="empty"><div class="big">📭</div>暂无符合条件的记录</div>`;return;}
+    $('#record-list').innerHTML=list.map(r=>`
+      <div class="record-item" onclick="viewRecord('${r.record_no}')">
+        <div class="info">
+          <div class="no">${r.record_no} <span style="font-weight:400;color:var(--muted);font-size:12px">· 批号 ${r.batch_no}</span></div>
+          <div class="meta">凝胶 ${r.gel_time?.toFixed(1)||'-'}s · 完全固化 ${r.full_cure_time?.toFixed(1)||'-'}s · 置信度 ${((r.confidence||0)*100).toFixed(0)}%</div>
+        </div>
+        <span class="badge badge-${r.judgment||'FAIL'}">${r.judgment||'?'}</span>
+      </div>`).join('');
+  }catch(e){$('#record-list').innerHTML=alertHtml('error','加载失败',e.message,'请刷新页面');}
+}
+
+async function exportCurrentBatchExcel(){
+  if(!_selectedBatch){notify('请先选择批号','error');return;}
+  try{
+    const canonicals=await api(`/api/spectrum/by-batch/${_selectedBatch}`);
+    const vs={};
+    canonicals.forEach(c=>{vs[c.record_no]={judgment_badge:c.judgment_badge,canonical_hash:c.canonical_hash};});
+    const r=await fetch(`/api/export/batch/${_selectedBatch}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({verify_summaries:vs})});
+    if(!r.ok){const d=await r.json().catch(()=>({}));throw d;}
+    const blob=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`batch_${_selectedBatch}.xlsx`;a.click();
+    notify('批次导出成功(已通过一致性校验)');
+  }catch(e){
+    notify(e.message||'导出失败','error');
+  }
+}
+
+async function loadAuditLogs(){
+  try{
+    const logs=await api('/api/audit?limit=30');
+    if(!logs.length){$('#audit-list').innerHTML='<div class="empty"><div class="big">📝</div>暂无审计日志</div>';return;}
+    $('#audit-list').innerHTML=`<table><thead><tr><th>时间</th><th>导入批次</th><th>记录号</th><th>动作</th><th>原因/提示</th><th>操作人</th></tr></thead><tbody>`
+      +logs.map(l=>{
+        const badgeColor=l.action==='CREATED'?'#22c55e':l.action==='UPDATED'?'#8b5cf6':l.action==='SKIPPED'?'#64748b':'#ef4444';
+        return `<tr>
+          <td style="white-space:nowrap;font-size:12px">${(l.created_at||'').slice(0,19).replace('T',' ')}</td>
+          <td style="font-size:12px;font-family:monospace">${l.import_batch_id}</td>
+          <td style="font-weight:600">${l.record_no||'-'}</td>
+          <td><span class="badge" style="background:${badgeColor}">${l.action}</span></td>
+          <td style="font-size:12px"><div>${l.reason||''}</div>${l.suggestion?`<div style="color:var(--muted);margin-top:3px">💡 ${l.suggestion}</div>`:''}</td>
+          <td style="font-size:12px">${l.operator||'-'}</td>
+        </tr>`;
+      }).join('')+`</tbody></table>`;
+  }catch(e){}
+}
+
+/* ---------- 初始化 ---------- */
+window.addEventListener('DOMContentLoaded',async()=>{
+  await loadBatchOptions();
+  refreshRecent();
+  // 默认日期填今天
+  $('#in-exp-date').value=new Date().toISOString().slice(0,10);
+  $('#bd-date').value=new Date().toISOString().slice(0,10);
+  window.addEventListener('resize',()=>{
+    window._spectrumChart&&window._spectrumChart.resize();
+    window._regChart&&window._regChart.resize();
+  });
+});
+</script>
+</body>
+</html>
