@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html {
+    font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  body {
+    @apply bg-paper-100 text-paper-900;
+    font-feature-settings: 'tnum' on, 'lnum' on;
+  }
+  
+  ::selection {
+    @apply bg-deep-sea-200 text-deep-sea-900;
+  }
+  
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-paper-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-paper-300 rounded-full hover:bg-paper-400 transition-colors;
+  }
+}
+
+@layer components {
+  .font-serif-sc {
+    font-family: 'Noto Serif SC', Georgia, serif;
+  }
+  
+  .font-sans-sc {
+    font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+  
+  .animate-pulse-soft {
+    animation: pulseSoft 2s ease-in-out infinite;
+  }
+}
