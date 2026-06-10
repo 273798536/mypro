@@ -1,0 +1,10 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+.page-container { padding: 24px; }
+.section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+.stat-card { text-align: center; }
+.stat-card .ant-statistic-title { color: #666; }
+.abnormal-tag { margin-right: 8px; }
+.trace-timeline .ant-timeline-item-label { width: 160px !important; }
+.trace-timeline .ant-timeline-item-content { left: calc(160px + 14px) !important; width: calc(100% - 160px - 14px) !important; }
