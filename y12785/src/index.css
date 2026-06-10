@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-indigo-900: #1B2A4A;
+  --color-indigo-800: #243656;
+  --color-indigo-700: #2D4262;
+  --color-amber-500: #E8913A;
+  --color-amber-400: #F0A855;
+  --color-emerald-500: #10B981;
+  --color-coral-500: #EF4444;
+  --color-cool-gray: #6B7280;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+body {
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1F2937;
+  background-color: #F3F4F6;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+}
+
+.font-data {
+  font-family: var(--font-mono);
+}
+
+@layer components {
+  .card-hover {
+    @apply transition-all duration-150 ease-out hover:-translate-y-0.5 hover:shadow-md;
+  }
+}
+
+@keyframes draw-line {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.recharts-line-curve {
+  stroke-dasharray: 1000;
+  animation: draw-line 1.5s ease-out forwards;
+}
