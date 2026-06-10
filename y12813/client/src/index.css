@@ -1,0 +1,17 @@
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; background: #f0f2f5; }
+.page-container { padding: 24px; }
+.stat-card-normal .ant-statistic-content { color: #52c41a !important; }
+.stat-card-boundary .ant-statistic-content { color: #faad14 !important; }
+.stat-card-bad .ant-statistic-content { color: #ff4d4f !important; }
+.stat-card-pending .ant-statistic-content { color: #8c8c8c !important; }
+.stat-card-duplicate .ant-statistic-content { color: #722ed1 !important; }
+.trace-timeline { max-width: 800px; }
+.section-title { font-size: 16px; font-weight: 600; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px; }
+.link-text { color: #1677ff; cursor: pointer; }
+.link-text:hover { text-decoration: underline; }
+.status-tag-normal { background: #f6ffed !important; border-color: #b7eb8f !important; color: #389e0d !important; }
+.status-tag-boundary { background: #fffbe6 !important; border-color: #ffe58f !important; color: #d48806 !important; }
+.status-tag-bad { background: #fff2f0 !important; border-color: #ffccc7 !important; color: #cf1322 !important; }
+.status-tag-pending { background: #fafafa !important; border-color: #d9d9d9 !important; color: #595959 !important; }
