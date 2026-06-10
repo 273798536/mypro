@@ -1,0 +1,1052 @@
+{
+  "DY-20240610-01": [
+    {
+      "batch_no": "DY-20240610-01",
+      "sample_name": "酸性镀铜液",
+      "process_date": "2024-06-10 09:15:00",
+      "temperature": 25.0,
+      "temperature_unit": "℃",
+      "ph_value": 4.2,
+      "operator": "张工",
+      "weighing_records": [
+        {
+          "sample_name": "酸性镀铜液",
+          "weight": 500.0,
+          "weight_unit": "g",
+          "operator": "张工",
+          "weigh_time": "2024-06-10 09:15:00"
+        }
+      ],
+      "reagent_records": [
+        {
+          "reagent_name": "硫酸铜",
+          "reagent_batch": "CUSO4-2024-03",
+          "concentration": 200.0,
+          "unit": "g/L",
+          "volume_used": 250.0,
+          "supplier": "国药集团",
+          "expiry_date": "2025-03-15"
+        },
+        {
+          "reagent_name": "硫酸",
+          "reagent_batch": "H2SO4-2024-01",
+          "concentration": 98.0,
+          "unit": "%",
+          "volume_used": 15.0,
+          "supplier": "国药集团",
+          "expiry_date": "2026-01-20"
+        },
+        {
+          "reagent_name": "氯离子添加剂",
+          "reagent_batch": "CL-ADD-2024-02",
+          "concentration": 50.0,
+          "unit": "g/L",
+          "volume_used": 5.0,
+          "supplier": "上海某化工",
+          "expiry_date": "2025-08-10"
+        }
+      ],
+      "spectrum_data": [
+        {
+          "wavelength": 300.0,
+          "absorbance": 0.052,
+          "concentration": null
+        },
+        {
+          "wavelength": 350.0,
+          "absorbance": 0.068,
+          "concentration": null
+        },
+        {
+          "wavelength": 400.0,
+          "absorbance": 0.095,
+          "concentration": null
+        },
+        {
+          "wavelength": 450.0,
+          "absorbance": 0.12,
+          "concentration": null
+        },
+        {
+          "wavelength": 500.0,
+          "absorbance": 0.145,
+          "concentration": null
+        },
+        {
+          "wavelength": 550.0,
+          "absorbance": 0.168,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 0.21,
+          "concentration": null
+        },
+        {
+          "wavelength": 650.0,
+          "absorbance": 0.32,
+          "concentration": null
+        },
+        {
+          "wavelength": 700.0,
+          "absorbance": 0.58,
+          "concentration": null
+        },
+        {
+          "wavelength": 750.0,
+          "absorbance": 0.78,
+          "concentration": null
+        },
+        {
+          "wavelength": 780.0,
+          "absorbance": 1.25,
+          "concentration": null
+        },
+        {
+          "wavelength": 800.0,
+          "absorbance": 1.85,
+          "concentration": null
+        },
+        {
+          "wavelength": 810.0,
+          "absorbance": 2.1,
+          "concentration": null
+        },
+        {
+          "wavelength": 820.0,
+          "absorbance": 1.92,
+          "concentration": null
+        },
+        {
+          "wavelength": 850.0,
+          "absorbance": 1.65,
+          "concentration": null
+        },
+        {
+          "wavelength": 900.0,
+          "absorbance": 1.2,
+          "concentration": null
+        },
+        {
+          "wavelength": 950.0,
+          "absorbance": 0.85,
+          "concentration": null
+        },
+        {
+          "wavelength": 1000.0,
+          "absorbance": 0.52,
+          "concentration": null
+        }
+      ],
+      "analysis_results": [
+        {
+          "ion_name": "铜离子(Cu²⁺)",
+          "concentration": 179.49,
+          "unit": "g/L",
+          "status": "normal",
+          "remark": "",
+          "spectrum_points": [
+            {
+              "wavelength": 800.0,
+              "absorbance": 1.85,
+              "concentration": null
+            },
+            {
+              "wavelength": 810.0,
+              "absorbance": 2.1,
+              "concentration": null
+            },
+            {
+              "wavelength": 820.0,
+              "absorbance": 1.92,
+              "concentration": null
+            }
+          ],
+          "calculation_formula": "根据朗伯-比尔定律：C = A / (ε × L)，温度修正系数=1.0000"
+        }
+      ],
+      "analysis_opinion": "铜离子(Cu²⁺) 浓度正常，在工艺范围内。",
+      "review_opinion": "",
+      "overall_status": "normal",
+      "run_id": "71137e68",
+      "run_time": "2026-06-10 16:02:04",
+      "is_latest": true,
+      "source_file": "称量单.csv",
+      "remark": "检测离子: 铜离子(Cu²⁺)"
+    }
+  ],
+  "DY-20240610-02": [
+    {
+      "batch_no": "DY-20240610-02",
+      "sample_name": "镍锌合金镀液",
+      "process_date": "2024-06-10 10:30:00",
+      "temperature": 25.0,
+      "temperature_unit": "℃",
+      "ph_value": 4.8,
+      "operator": "李工",
+      "weighing_records": [
+        {
+          "sample_name": "镍锌合金镀液",
+          "weight": 500.0,
+          "weight_unit": "g",
+          "operator": "李工",
+          "weigh_time": "2024-06-10 10:30:00"
+        }
+      ],
+      "reagent_records": [
+        {
+          "reagent_name": "硫酸镍",
+          "reagent_batch": "NISO4-2024-04",
+          "concentration": 300.0,
+          "unit": "g/L",
+          "volume_used": 200.0,
+          "supplier": "国药集团",
+          "expiry_date": "2025-06-01"
+        },
+        {
+          "reagent_name": "硫酸锌",
+          "reagent_batch": "ZNSO4-2024-03",
+          "concentration": 100.0,
+          "unit": "g/L",
+          "volume_used": 80.0,
+          "supplier": "国药集团",
+          "expiry_date": "2025-04-18"
+        },
+        {
+          "reagent_name": "硼酸",
+          "reagent_batch": "H3BO3-2024-01",
+          "concentration": 50.0,
+          "unit": "g/L",
+          "volume_used": 30.0,
+          "supplier": "天津化工",
+          "expiry_date": "2025-12-30"
+        }
+      ],
+      "spectrum_data": [
+        {
+          "wavelength": 300.0,
+          "absorbance": 0.045,
+          "concentration": null
+        },
+        {
+          "wavelength": 320.0,
+          "absorbance": 0.08,
+          "concentration": null
+        },
+        {
+          "wavelength": 340.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 360.0,
+          "absorbance": 0.42,
+          "concentration": null
+        },
+        {
+          "wavelength": 380.0,
+          "absorbance": 0.95,
+          "concentration": null
+        },
+        {
+          "wavelength": 395.0,
+          "absorbance": 1.12,
+          "concentration": null
+        },
+        {
+          "wavelength": 410.0,
+          "absorbance": 0.89,
+          "concentration": null
+        },
+        {
+          "wavelength": 430.0,
+          "absorbance": 0.52,
+          "concentration": null
+        },
+        {
+          "wavelength": 450.0,
+          "absorbance": 0.28,
+          "concentration": null
+        },
+        {
+          "wavelength": 500.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 550.0,
+          "absorbance": 0.09,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 0.06,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 0.08,
+          "concentration": null
+        },
+        {
+          "wavelength": 620.0,
+          "absorbance": 0.165,
+          "concentration": null
+        },
+        {
+          "wavelength": 640.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 660.0,
+          "absorbance": 0.1,
+          "concentration": null
+        },
+        {
+          "wavelength": 680.0,
+          "absorbance": 0.06,
+          "concentration": null
+        },
+        {
+          "wavelength": 700.0,
+          "absorbance": 0.035,
+          "concentration": null
+        }
+      ],
+      "analysis_results": [
+        {
+          "ion_name": "镍离子(Ni²⁺)",
+          "concentration": 80.0,
+          "unit": "g/L",
+          "status": "normal",
+          "remark": "",
+          "spectrum_points": [
+            {
+              "wavelength": 380.0,
+              "absorbance": 0.95,
+              "concentration": null
+            },
+            {
+              "wavelength": 395.0,
+              "absorbance": 1.12,
+              "concentration": null
+            },
+            {
+              "wavelength": 410.0,
+              "absorbance": 0.89,
+              "concentration": null
+            }
+          ],
+          "calculation_formula": "根据朗伯-比尔定律：C = A / (ε × L)，温度修正系数=1.0000"
+        },
+        {
+          "ion_name": "硫酸根(SO₄²⁻)",
+          "concentration": 139.94,
+          "unit": "g/L",
+          "status": "normal",
+          "remark": "",
+          "spectrum_points": [
+            {
+              "wavelength": 395.0,
+              "absorbance": 1.12,
+              "concentration": null
+            },
+            {
+              "wavelength": 410.0,
+              "absorbance": 0.89,
+              "concentration": null
+            },
+            {
+              "wavelength": 430.0,
+              "absorbance": 0.52,
+              "concentration": null
+            }
+          ],
+          "calculation_formula": "根据朗伯-比尔定律：C = A / (ε × L)，温度修正系数=1.0000"
+        }
+      ],
+      "analysis_opinion": "镍离子(Ni²⁺)、硫酸根(SO₄²⁻) 浓度正常，在工艺范围内。",
+      "review_opinion": "",
+      "overall_status": "normal",
+      "run_id": "1d74b5bb",
+      "run_time": "2026-06-10 16:02:04",
+      "is_latest": false,
+      "source_file": "称量单.csv",
+      "remark": "检测离子: 镍离子(Ni²⁺), 锌离子(Zn²⁺)"
+    },
+    {
+      "batch_no": "DY-20240610-02",
+      "sample_name": "镍锌合金镀液",
+      "process_date": "2024-06-10 10:30:00",
+      "temperature": 25.0,
+      "temperature_unit": "℃",
+      "ph_value": 4.8,
+      "operator": "李工",
+      "weighing_records": [
+        {
+          "sample_name": "镍锌合金镀液",
+          "weight": 500.0,
+          "weight_unit": "g",
+          "operator": "李工",
+          "weigh_time": "2024-06-10 10:30:00"
+        },
+        {
+          "sample_name": "镍锌合金镀液",
+          "weight": 500.0,
+          "weight_unit": "g",
+          "operator": "李工",
+          "weigh_time": "2024-06-10 10:30:00"
+        }
+      ],
+      "reagent_records": [
+        {
+          "reagent_name": "硫酸镍",
+          "reagent_batch": "NISO4-2024-04",
+          "concentration": 300.0,
+          "unit": "g/L",
+          "volume_used": 200.0,
+          "supplier": "国药集团",
+          "expiry_date": "2025-06-01"
+        },
+        {
+          "reagent_name": "硫酸锌",
+          "reagent_batch": "ZNSO4-2024-03",
+          "concentration": 100.0,
+          "unit": "g/L",
+          "volume_used": 80.0,
+          "supplier": "国药集团",
+          "expiry_date": "2025-04-18"
+        },
+        {
+          "reagent_name": "硼酸",
+          "reagent_batch": "H3BO3-2024-01",
+          "concentration": 50.0,
+          "unit": "g/L",
+          "volume_used": 30.0,
+          "supplier": "天津化工",
+          "expiry_date": "2025-12-30"
+        }
+      ],
+      "spectrum_data": [
+        {
+          "wavelength": 300.0,
+          "absorbance": 0.045,
+          "concentration": null
+        },
+        {
+          "wavelength": 320.0,
+          "absorbance": 0.08,
+          "concentration": null
+        },
+        {
+          "wavelength": 340.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 360.0,
+          "absorbance": 0.42,
+          "concentration": null
+        },
+        {
+          "wavelength": 380.0,
+          "absorbance": 0.95,
+          "concentration": null
+        },
+        {
+          "wavelength": 395.0,
+          "absorbance": 1.12,
+          "concentration": null
+        },
+        {
+          "wavelength": 410.0,
+          "absorbance": 0.89,
+          "concentration": null
+        },
+        {
+          "wavelength": 430.0,
+          "absorbance": 0.52,
+          "concentration": null
+        },
+        {
+          "wavelength": 450.0,
+          "absorbance": 0.28,
+          "concentration": null
+        },
+        {
+          "wavelength": 500.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 550.0,
+          "absorbance": 0.09,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 0.06,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 0.08,
+          "concentration": null
+        },
+        {
+          "wavelength": 620.0,
+          "absorbance": 0.165,
+          "concentration": null
+        },
+        {
+          "wavelength": 640.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 660.0,
+          "absorbance": 0.1,
+          "concentration": null
+        },
+        {
+          "wavelength": 680.0,
+          "absorbance": 0.06,
+          "concentration": null
+        },
+        {
+          "wavelength": 700.0,
+          "absorbance": 0.035,
+          "concentration": null
+        },
+        {
+          "wavelength": 300.0,
+          "absorbance": 0.045,
+          "concentration": null
+        },
+        {
+          "wavelength": 320.0,
+          "absorbance": 0.08,
+          "concentration": null
+        },
+        {
+          "wavelength": 340.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 360.0,
+          "absorbance": 0.42,
+          "concentration": null
+        },
+        {
+          "wavelength": 380.0,
+          "absorbance": 0.95,
+          "concentration": null
+        },
+        {
+          "wavelength": 395.0,
+          "absorbance": 1.12,
+          "concentration": null
+        },
+        {
+          "wavelength": 410.0,
+          "absorbance": 0.89,
+          "concentration": null
+        },
+        {
+          "wavelength": 430.0,
+          "absorbance": 0.52,
+          "concentration": null
+        },
+        {
+          "wavelength": 450.0,
+          "absorbance": 0.28,
+          "concentration": null
+        },
+        {
+          "wavelength": 500.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 550.0,
+          "absorbance": 0.09,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 0.06,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 0.08,
+          "concentration": null
+        },
+        {
+          "wavelength": 620.0,
+          "absorbance": 0.165,
+          "concentration": null
+        },
+        {
+          "wavelength": 640.0,
+          "absorbance": 0.15,
+          "concentration": null
+        },
+        {
+          "wavelength": 660.0,
+          "absorbance": 0.1,
+          "concentration": null
+        },
+        {
+          "wavelength": 680.0,
+          "absorbance": 0.06,
+          "concentration": null
+        },
+        {
+          "wavelength": 700.0,
+          "absorbance": 0.035,
+          "concentration": null
+        }
+      ],
+      "analysis_results": [
+        {
+          "ion_name": "镍离子(Ni²⁺)",
+          "concentration": 80.0,
+          "unit": "g/L",
+          "status": "normal",
+          "remark": "",
+          "spectrum_points": [
+            {
+              "wavelength": 380.0,
+              "absorbance": 0.95,
+              "concentration": null
+            },
+            {
+              "wavelength": 380.0,
+              "absorbance": 0.95,
+              "concentration": null
+            },
+            {
+              "wavelength": 395.0,
+              "absorbance": 1.12,
+              "concentration": null
+            },
+            {
+              "wavelength": 395.0,
+              "absorbance": 1.12,
+              "concentration": null
+            },
+            {
+              "wavelength": 410.0,
+              "absorbance": 0.89,
+              "concentration": null
+            },
+            {
+              "wavelength": 410.0,
+              "absorbance": 0.89,
+              "concentration": null
+            }
+          ],
+          "calculation_formula": "根据朗伯-比尔定律：C = A / (ε × L)，温度修正系数=1.0000"
+        },
+        {
+          "ion_name": "硫酸根(SO₄²⁻)",
+          "concentration": 139.94,
+          "unit": "g/L",
+          "status": "normal",
+          "remark": "",
+          "spectrum_points": [
+            {
+              "wavelength": 395.0,
+              "absorbance": 1.12,
+              "concentration": null
+            },
+            {
+              "wavelength": 395.0,
+              "absorbance": 1.12,
+              "concentration": null
+            },
+            {
+              "wavelength": 410.0,
+              "absorbance": 0.89,
+              "concentration": null
+            },
+            {
+              "wavelength": 410.0,
+              "absorbance": 0.89,
+              "concentration": null
+            },
+            {
+              "wavelength": 430.0,
+              "absorbance": 0.52,
+              "concentration": null
+            },
+            {
+              "wavelength": 430.0,
+              "absorbance": 0.52,
+              "concentration": null
+            }
+          ],
+          "calculation_formula": "根据朗伯-比尔定律：C = A / (ε × L)，温度修正系数=1.0000"
+        }
+      ],
+      "analysis_opinion": "镍离子(Ni²⁺)、硫酸根(SO₄²⁻) 浓度正常，在工艺范围内。",
+      "review_opinion": "",
+      "overall_status": "normal",
+      "run_id": "ae67f8ef",
+      "run_time": "2026-06-10 16:02:04",
+      "is_latest": true,
+      "source_file": "称量单.csv",
+      "remark": "检测离子: 镍离子(Ni²⁺), 锌离子(Zn²⁺)"
+    }
+  ],
+  "DY-20240610-03": [
+    {
+      "batch_no": "DY-20240610-03",
+      "sample_name": "装饰铬镀液",
+      "process_date": "2024-06-10 14:20:00",
+      "temperature": 28.0,
+      "temperature_unit": "℃",
+      "ph_value": 3.5,
+      "operator": "王工",
+      "weighing_records": [
+        {
+          "sample_name": "装饰铬镀液",
+          "weight": 500.0,
+          "weight_unit": "g",
+          "operator": "王工",
+          "weigh_time": "2024-06-10 14:20:00"
+        }
+      ],
+      "reagent_records": [
+        {
+          "reagent_name": "铬酸酐",
+          "reagent_batch": "CRO3-2024-02",
+          "concentration": 500.0,
+          "unit": "g/L",
+          "volume_used": 300.0,
+          "supplier": "国药集团",
+          "expiry_date": "2025-05-20"
+        },
+        {
+          "reagent_name": "硫酸",
+          "reagent_batch": "H2SO4-2024-01",
+          "concentration": 98.0,
+          "unit": "%",
+          "volume_used": 20.0,
+          "supplier": "国药集团",
+          "expiry_date": "2026-01-20"
+        },
+        {
+          "reagent_name": "三价铬添加剂",
+          "reagent_batch": "CR3-ADD-2024-03",
+          "concentration": 20.0,
+          "unit": "g/L",
+          "volume_used": 10.0,
+          "supplier": "上海某化工",
+          "expiry_date": "2025-09-15"
+        }
+      ],
+      "spectrum_data": [
+        {
+          "wavelength": 400.0,
+          "absorbance": 0.12,
+          "concentration": null
+        },
+        {
+          "wavelength": 420.0,
+          "absorbance": 0.25,
+          "concentration": null
+        },
+        {
+          "wavelength": 450.0,
+          "absorbance": 0.58,
+          "concentration": null
+        },
+        {
+          "wavelength": 480.0,
+          "absorbance": 0.95,
+          "concentration": null
+        },
+        {
+          "wavelength": 500.0,
+          "absorbance": 1.35,
+          "concentration": null
+        },
+        {
+          "wavelength": 520.0,
+          "absorbance": 1.78,
+          "concentration": null
+        },
+        {
+          "wavelength": 540.0,
+          "absorbance": 2.35,
+          "concentration": null
+        },
+        {
+          "wavelength": 560.0,
+          "absorbance": 2.1,
+          "concentration": null
+        },
+        {
+          "wavelength": 580.0,
+          "absorbance": 1.65,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 1.2,
+          "concentration": null
+        },
+        {
+          "wavelength": 620.0,
+          "absorbance": 0.85,
+          "concentration": null
+        },
+        {
+          "wavelength": 650.0,
+          "absorbance": 0.52,
+          "concentration": null
+        },
+        {
+          "wavelength": 400.0,
+          "absorbance": 0.28,
+          "concentration": null
+        },
+        {
+          "wavelength": 410.0,
+          "absorbance": 0.52,
+          "concentration": null
+        },
+        {
+          "wavelength": 420.0,
+          "absorbance": 0.89,
+          "concentration": null
+        },
+        {
+          "wavelength": 430.0,
+          "absorbance": 0.72,
+          "concentration": null
+        },
+        {
+          "wavelength": 440.0,
+          "absorbance": 0.45,
+          "concentration": null
+        },
+        {
+          "wavelength": 450.0,
+          "absorbance": 0.22,
+          "concentration": null
+        }
+      ],
+      "analysis_results": [
+        {
+          "ion_name": "锌离子(Zn²⁺)",
+          "concentration": 122.31,
+          "unit": "g/L",
+          "status": "abnormal",
+          "remark": "浓度偏高，超过正常上限 50 g/L",
+          "spectrum_points": [
+            {
+              "wavelength": 580.0,
+              "absorbance": 1.65,
+              "concentration": null
+            },
+            {
+              "wavelength": 600.0,
+              "absorbance": 1.2,
+              "concentration": null
+            },
+            {
+              "wavelength": 620.0,
+              "absorbance": 0.85,
+              "concentration": null
+            }
+          ],
+          "calculation_formula": "根据朗伯-比尔定律：C = A / (ε × L)，温度修正系数=1.0600"
+        },
+        {
+          "ion_name": "铬离子(Cr⁶⁺)",
+          "concentration": 26.5,
+          "unit": "g/L",
+          "status": "abnormal",
+          "remark": "浓度偏高，超过正常上限 20 g/L",
+          "spectrum_points": [
+            {
+              "wavelength": 520.0,
+              "absorbance": 1.78,
+              "concentration": null
+            },
+            {
+              "wavelength": 540.0,
+              "absorbance": 2.35,
+              "concentration": null
+            },
+            {
+              "wavelength": 560.0,
+              "absorbance": 2.1,
+              "concentration": null
+            }
+          ],
+          "calculation_formula": "根据朗伯-比尔定律：C = A / (ε × L)，温度修正系数=1.0600"
+        }
+      ],
+      "analysis_opinion": "存在异常项目：\n  - 锌离子(Zn²⁺): 浓度偏高，超过正常上限 50 g/L\n  - 铬离子(Cr⁶⁺): 浓度偏高，超过正常上限 20 g/L\n建议：多项离子浓度异常，请核查试剂添加记录和电镀工艺参数，必要时重新取样检测。",
+      "review_opinion": "",
+      "overall_status": "abnormal",
+      "run_id": "81b55cb4",
+      "run_time": "2026-06-10 16:02:04",
+      "is_latest": true,
+      "source_file": "称量单.csv",
+      "remark": "检测离子: 铬离子(Cr⁶⁺), 硫酸根(SO₄²⁻)"
+    }
+  ],
+  "DY-20240610-04": [
+    {
+      "batch_no": "DY-20240610-04",
+      "sample_name": "碱性镀锌液",
+      "process_date": "2024-06-10 15:45:00",
+      "temperature": 22.0,
+      "temperature_unit": "℃",
+      "ph_value": 13.2,
+      "operator": "张工",
+      "weighing_records": [
+        {
+          "sample_name": "碱性镀锌液",
+          "weight": 500.0,
+          "weight_unit": "g",
+          "operator": "张工",
+          "weigh_time": "2024-06-10 15:45:00"
+        }
+      ],
+      "reagent_records": [
+        {
+          "reagent_name": "氧化锌",
+          "reagent_batch": "ZNO-2024-01",
+          "concentration": 100.0,
+          "unit": "g/L",
+          "volume_used": 100.0,
+          "supplier": "国药集团",
+          "expiry_date": "2025-07-05"
+        },
+        {
+          "reagent_name": "氢氧化钠",
+          "reagent_batch": "NAOH-2024-02",
+          "concentration": 100.0,
+          "unit": "g/L",
+          "volume_used": 120.0,
+          "supplier": "国药集团",
+          "expiry_date": "2026-02-10"
+        },
+        {
+          "reagent_name": "光亮剂",
+          "reagent_batch": "Brightener-2024-01",
+          "concentration": 20.0,
+          "unit": "g/L",
+          "volume_used": 8.0,
+          "supplier": "美国进口",
+          "expiry_date": "2025-03-01"
+        }
+      ],
+      "spectrum_data": [
+        {
+          "wavelength": 550.0,
+          "absorbance": 0.03,
+          "concentration": null
+        },
+        {
+          "wavelength": 580.0,
+          "absorbance": 0.055,
+          "concentration": null
+        },
+        {
+          "wavelength": 600.0,
+          "absorbance": 0.12,
+          "concentration": null
+        },
+        {
+          "wavelength": 610.0,
+          "absorbance": 0.21,
+          "concentration": null
+        },
+        {
+          "wavelength": 620.0,
+          "absorbance": 0.365,
+          "concentration": null
+        },
+        {
+          "wavelength": 630.0,
+          "absorbance": 0.32,
+          "concentration": null
+        },
+        {
+          "wavelength": 640.0,
+          "absorbance": 0.25,
+          "concentration": null
+        },
+        {
+          "wavelength": 650.0,
+          "absorbance": 0.18,
+          "concentration": null
+        },
+        {
+          "wavelength": 670.0,
+          "absorbance": 0.1,
+          "concentration": null
+        },
+        {
+          "wavelength": 700.0,
+          "absorbance": 0.05,
+          "concentration": null
+        }
+      ],
+      "analysis_results": [
+        {
+          "ion_name": "锌离子(Zn²⁺)",
+          "concentration": 32.99,
+          "unit": "g/L",
+          "status": "normal",
+          "remark": "",
+          "spectrum_points": [
+            {
+              "wavelength": 600.0,
+              "absorbance": 0.12,
+              "concentration": null
+            },
+            {
+              "wavelength": 610.0,
+              "absorbance": 0.21,
+              "concentration": null
+            },
+            {
+              "wavelength": 620.0,
+              "absorbance": 0.365,
+              "concentration": null
+            },
+            {
+              "wavelength": 630.0,
+              "absorbance": 0.32,
+              "concentration": null
+            },
+            {
+              "wavelength": 640.0,
+              "absorbance": 0.25,
+              "concentration": null
+            }
+          ],
+          "calculation_formula": "根据朗伯-比尔定律：C = A / (ε × L)，温度修正系数=0.9400"
+        }
+      ],
+      "analysis_opinion": "锌离子(Zn²⁺) 浓度正常，在工艺范围内。",
+      "review_opinion": "",
+      "overall_status": "normal",
+      "run_id": "a472a671",
+      "run_time": "2026-06-10 16:02:04",
+      "is_latest": true,
+      "source_file": "称量单.csv",
+      "remark": "检测离子: 锌离子(Zn²⁺)"
+    }
+  ]
+}
