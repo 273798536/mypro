@@ -1,0 +1,41 @@
+{
+  "stability": {
+    "content_degradation_threshold": 5.0,
+    "ph_variation_threshold": 1.0,
+    "microbial_limit": 100,
+    "expiry_criteria": "含量下降不超过5%",
+    "calculation_method": "线性回归法",
+    "standard_time_points": [
+      "0月",
+      "1月",
+      "3月",
+      "6月",
+      "12月",
+      "24月"
+    ]
+  },
+  "anomaly_detection": {
+    "max_time_deviation_hours": 24,
+    "required_units": [
+      "mg/g",
+      "pH",
+      "CFU/g",
+      "%",
+      "°C",
+      "mPa·s",
+      "g/cm³"
+    ],
+    "value_range_check": true
+  },
+  "export": {
+    "format": "html",
+    "include_charts": true,
+    "anomaly_report_first": true,
+    "explain_terms": true
+  },
+  "paths": {
+    "input_dir": "/Users/mac/pro/solo/workspaces/y12787/data/input",
+    "output_dir": "/Users/mac/pro/solo/workspaces/y12787/data/output",
+    "work_dir": "/Users/mac/pro/solo/workspaces/y12787/data/work"
+  }
+}
