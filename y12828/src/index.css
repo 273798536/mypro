@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
+    color: #1E293B;
+    line-height: 1.6;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .lab-card {
+    @apply bg-white rounded-xl border border-lab-border shadow-sm transition-all duration-200;
+  }
+
+  .lab-card:hover {
+    @apply shadow-md -translate-y-0.5;
+  }
+
+  .lab-panel {
+    @apply bg-white rounded-lg border border-lab-border shadow-inner-subtle;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-primary-600 text-white rounded-lg font-medium transition-all duration-200 hover:bg-primary-700 hover:shadow-md active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-lab-bg text-lab-text rounded-lg font-medium border border-lab-border transition-all duration-200 hover:bg-white hover:shadow-sm active:scale-95;
+  }
+
+  .btn-accent {
+    @apply px-4 py-2 bg-accent-500 text-white rounded-lg font-medium transition-all duration-200 hover:bg-accent-600 hover:shadow-glow-accent active:scale-95;
+  }
+
+  .btn-warning {
+    @apply px-4 py-2 bg-warning-500 text-white rounded-lg font-medium transition-all duration-200 hover:bg-warning-600 hover:shadow-glow-warning active:scale-95;
+  }
+
+  .tag {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .tag-primary {
+    @apply tag bg-primary-50 text-primary-700;
+  }
+
+  .tag-accent {
+    @apply tag bg-accent-50 text-accent-700;
+  }
+
+  .tag-warning {
+    @apply tag bg-warning-50 text-warning-700 animate-pulse-border;
+  }
+
+  .tag-danger {
+    @apply tag bg-danger-50 text-danger-700;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 bg-white border border-lab-border rounded-lg text-lab-text placeholder-lab-textMuted transition-all duration-200 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100;
+  }
+
+  .data-table {
+    @apply w-full text-sm;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 text-left font-medium text-lab-textMuted bg-lab-bg border-b border-lab-border;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 border-b border-lab-border;
+  }
+
+  .data-table tr {
+    @apply transition-colors duration-150;
+  }
+
+  .data-table tbody tr:hover {
+    @apply bg-primary-50/30;
+  }
+
+  .data-table tbody tr:nth-child(even) {
+    @apply bg-lab-bg/50;
+  }
+
+  .timeline-node {
+    @apply relative pl-8 pb-6 border-l-2 border-lab-border last:border-l-transparent;
+  }
+
+  .timeline-node::before {
+    content: '';
+    @apply absolute left-[-7px] top-0 w-3 h-3 rounded-full bg-primary-500 border-2 border-white shadow;
+  }
+
+  .timeline-node.active::before {
+    @apply bg-accent-500 animate-pulse;
+  }
+
+  .timeline-node.duplicate::before {
+    @apply bg-warning-500 animate-pulse-border;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #CBD5E1 transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-lab-border rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-lab-textMuted;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-gradient-lab {
+    background: linear-gradient(135deg, #F5F7FA 0%, #E8EDF2 100%);
+  }
+
+  .bg-gradient-dark {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  }
+
+  .text-gradient-accent {
+    background: linear-gradient(135deg, #00B8A9 0%, #1AC9B7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .animate-trace-flow {
+    animation: traceFlow 2s ease-in-out infinite;
+  }
+
+  @keyframes traceFlow {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(0.95);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-number-count {
+    animation: numberCount 1s ease-out;
+  }
+
+  @keyframes numberCount {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .diff-added {
+    @apply bg-accent-50 text-accent-700;
+  }
+
+  .diff-removed {
+    @apply bg-danger-50 text-danger-700 line-through;
+  }
+
+  .diff-changed {
+    @apply bg-warning-50 text-warning-700;
+  }
+}
