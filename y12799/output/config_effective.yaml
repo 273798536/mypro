@@ -1,0 +1,9 @@
+input_dir: /Users/mac/pro/solo/workspaces/y12799/input
+output_dir: /Users/mac/pro/solo/workspaces/y12799/output
+thresholds:
+  max_batch_cv_percent: 10.0
+  min_blank_control_count: 3
+  reaction_time_tolerance_min: 2
+  temp_curve_max_deviation: 2.0
+preserve_manual_notes: true
+enable_idempotency: true

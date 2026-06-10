@@ -1,0 +1,19 @@
+[project]
+name = "kit-batch-analysis"
+version = "0.1.0"
+description = "试剂盒批间差分析 - 实验室日常工具"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+kit-batch = "kit_batch_analysis.cli:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,431 @@
+{
+  "version": 1,
+  "last_run_id": "RUN-4260FF5FAFF1",
+  "last_run_timestamp": "2026-06-10T18:19:53.055832",
+  "runs": [
+    {
+      "run_id": "RUN-7DB2A3A22709",
+      "timestamp": "2026-06-10T18:18:13.224568",
+      "batch_count": 3,
+      "anomaly_count": 9
+    },
+    {
+      "run_id": "RUN-5DDC412922D2",
+      "timestamp": "2026-06-10T18:18:50.258053",
+      "batch_count": 3,
+      "anomaly_count": 9
+    },
+    {
+      "run_id": "RUN-E021061400C9",
+      "timestamp": "2026-06-10T18:19:43.506697",
+      "batch_count": 3,
+      "anomaly_count": 9
+    },
+    {
+      "run_id": "RUN-4260FF5FAFF1",
+      "timestamp": "2026-06-10T18:19:53.055832",
+      "batch_count": 3,
+      "anomaly_count": 9
+    }
+  ],
+  "anomalies": {
+    "DCC24FCA4FD98A39": {
+      "anomaly_id": "BC-KIT-2026-06A01-A6CAFDBC",
+      "batch_no": "KIT-2026-06A01",
+      "source_module": "空白对照校验",
+      "anomaly_type": "空白对照缺失/不足",
+      "severity": "警告",
+      "action": "建议复测",
+      "title": "空白对照数量不足（需≥3个）",
+      "first_seen": "2026-06-10T18:18:13.438920",
+      "last_seen": "2026-06-10T18:19:53.218437",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    },
+    "C28F6F5BEC1FC10C": {
+      "anomaly_id": "RTM-KIT-2026-06A01-A62CBA6F",
+      "batch_no": "KIT-2026-06A01",
+      "source_module": "反应时间校验",
+      "anomaly_type": "反应时间漏记",
+      "severity": "警告",
+      "action": "改口径",
+      "title": "2条反应时间实际时长未填写",
+      "first_seen": "2026-06-10T18:18:13.438923",
+      "last_seen": "2026-06-10T18:19:53.218440",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    },
+    "4AC8ECB11CAEBE7A": {
+      "anomaly_id": "RTD-KIT-2026-06A02-25B8D292",
+      "batch_no": "KIT-2026-06A02",
+      "source_module": "反应时间校验",
+      "anomaly_type": "反应时间超差",
+      "severity": "警告",
+      "action": "待审核",
+      "title": "1条反应时间偏差超过±2分钟",
+      "first_seen": "2026-06-10T18:18:13.438927",
+      "last_seen": "2026-06-10T18:19:53.218443",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    },
+    "51CFD246D36B2ADA": {
+      "anomaly_id": "WSC-KIT-2026-06A01-60B290F6",
+      "batch_no": "KIT-2026-06A01",
+      "source_module": "称量单校验",
+      "anomaly_type": "称量偏差过大",
+      "severity": "严重",
+      "action": "补材料",
+      "title": "1项称量偏差超过5.0%",
+      "first_seen": "2026-06-10T18:18:13.438929",
+      "last_seen": "2026-06-10T18:19:53.218446",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    },
+    "61E9F0EE1F896BED": {
+      "anomaly_id": "WSW-KIT-2026-06A02-6E12B54A",
+      "batch_no": "KIT-2026-06A02",
+      "source_module": "称量单校验",
+      "anomaly_type": "称量偏差偏大",
+      "severity": "警告",
+      "action": "待审核",
+      "title": "1项称量偏差介于2.0%~5.0%",
+      "first_seen": "2026-06-10T18:18:13.438932",
+      "last_seen": "2026-06-10T18:19:53.218449",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    },
+    "C2CB85FCC18283CB": {
+      "anomaly_id": "TC-KIT-2026-06A01-1B859461",
+      "batch_no": "KIT-2026-06A01",
+      "source_module": "温度曲线校验",
+      "anomaly_type": "温度曲线超差",
+      "severity": "警告",
+      "action": "建议复测",
+      "title": "1条温度曲线偏差超过±2.0℃",
+      "first_seen": "2026-06-10T18:18:13.438935",
+      "last_seen": "2026-06-10T18:19:53.218452",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    },
+    "8F68BC091D7634B3": {
+      "anomaly_id": "CV-KIT-2026-06A01-6B2F8FF7",
+      "batch_no": "KIT-2026-06A01",
+      "source_module": "批间差计算",
+      "anomaly_type": "批间差CV超差",
+      "severity": "严重",
+      "action": "建议复测",
+      "title": "3项指标批间差CV超标",
+      "first_seen": "2026-06-10T18:18:13.438938",
+      "last_seen": "2026-06-10T18:19:53.218456",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    },
+    "4D96C2CA10FC6FAC": {
+      "anomaly_id": "CV-KIT-2026-06A02-E3E59356",
+      "batch_no": "KIT-2026-06A02",
+      "source_module": "批间差计算",
+      "anomaly_type": "批间差CV超差",
+      "severity": "严重",
+      "action": "建议复测",
+      "title": "3项指标批间差CV超标",
+      "first_seen": "2026-06-10T18:18:13.438940",
+      "last_seen": "2026-06-10T18:19:53.218459",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    },
+    "997BB0192FBE7F07": {
+      "anomaly_id": "CV-KIT-2026-06B03-497FFCA8",
+      "batch_no": "KIT-2026-06B03",
+      "source_module": "批间差计算",
+      "anomaly_type": "批间差CV超差",
+      "severity": "严重",
+      "action": "建议复测",
+      "title": "3项指标批间差CV超标",
+      "first_seen": "2026-06-10T18:18:13.438943",
+      "last_seen": "2026-06-10T18:19:53.218462",
+      "seen_count": 4,
+      "resolved": false,
+      "resolved_at": null,
+      "resolution_note": ""
+    }
+  },
+  "batch_tracking": {
+    "KIT-2026-06A01": {
+      "kit_name": "心肌肌钙蛋白I检测试剂盒",
+      "first_analysis_date": "2026-06-10",
+      "last_analysis_date": "2026-06-10",
+      "analysis_count": 4,
+      "current_status": "待整改：反应时间漏记、批间差CV超差、温度曲线超差、空白对照不足",
+      "recheck_suggestions": [
+        "反应时间漏记",
+        "批间差CV超差",
+        "温度曲线超差",
+        "空白对照不足"
+      ],
+      "unresolved_anomaly_ids": [
+        "BC-KIT-2026-06A01-A6CAFDBC",
+        "RTM-KIT-2026-06A01-A62CBA6F",
+        "WSC-KIT-2026-06A01-60B290F6",
+        "TC-KIT-2026-06A01-1B859461",
+        "CV-KIT-2026-06A01-6B2F8FF7"
+      ],
+      "history_snapshots": [
+        {
+          "timestamp": "2026-06-10T18:18:13.438874",
+          "analysis_count": 1,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：反应时间漏记、批间差CV超差、温度曲线超差、空白对照不足",
+          "recheck_suggestions": [
+            "反应时间漏记",
+            "批间差CV超差",
+            "温度曲线超差",
+            "空白对照不足"
+          ],
+          "unresolved_count": 5
+        },
+        {
+          "timestamp": "2026-06-10T18:18:50.468193",
+          "analysis_count": 2,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：反应时间漏记、批间差CV超差、温度曲线超差、空白对照不足",
+          "recheck_suggestions": [
+            "反应时间漏记",
+            "批间差CV超差",
+            "温度曲线超差",
+            "空白对照不足"
+          ],
+          "unresolved_count": 5
+        },
+        {
+          "timestamp": "2026-06-10T18:19:43.711931",
+          "analysis_count": 3,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：反应时间漏记、批间差CV超差、温度曲线超差、空白对照不足",
+          "recheck_suggestions": [
+            "反应时间漏记",
+            "批间差CV超差",
+            "温度曲线超差",
+            "空白对照不足"
+          ],
+          "unresolved_count": 5
+        },
+        {
+          "timestamp": "2026-06-10T18:19:53.218392",
+          "analysis_count": 4,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：反应时间漏记、批间差CV超差、温度曲线超差、空白对照不足",
+          "recheck_suggestions": [
+            "反应时间漏记",
+            "批间差CV超差",
+            "温度曲线超差",
+            "空白对照不足"
+          ],
+          "unresolved_count": 5
+        }
+      ],
+      "manual_notes": []
+    },
+    "KIT-2026-06A02": {
+      "kit_name": "心肌肌钙蛋白I检测试剂盒",
+      "first_analysis_date": "2026-06-10",
+      "last_analysis_date": "2026-06-10",
+      "analysis_count": 4,
+      "current_status": "待整改：批间差CV超差",
+      "recheck_suggestions": [
+        "批间差CV超差"
+      ],
+      "unresolved_anomaly_ids": [
+        "RTD-KIT-2026-06A02-25B8D292",
+        "WSW-KIT-2026-06A02-6E12B54A",
+        "CV-KIT-2026-06A02-E3E59356"
+      ],
+      "history_snapshots": [
+        {
+          "timestamp": "2026-06-10T18:18:13.438892",
+          "analysis_count": 1,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：批间差CV超差",
+          "recheck_suggestions": [
+            "批间差CV超差"
+          ],
+          "unresolved_count": 3
+        },
+        {
+          "timestamp": "2026-06-10T18:18:50.468214",
+          "analysis_count": 2,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：批间差CV超差",
+          "recheck_suggestions": [
+            "批间差CV超差"
+          ],
+          "unresolved_count": 3
+        },
+        {
+          "timestamp": "2026-06-10T18:19:43.711952",
+          "analysis_count": 3,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：批间差CV超差",
+          "recheck_suggestions": [
+            "批间差CV超差"
+          ],
+          "unresolved_count": 3
+        },
+        {
+          "timestamp": "2026-06-10T18:19:53.218410",
+          "analysis_count": 4,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：批间差CV超差",
+          "recheck_suggestions": [
+            "批间差CV超差"
+          ],
+          "unresolved_count": 3
+        }
+      ],
+      "manual_notes": []
+    },
+    "KIT-2026-06B03": {
+      "kit_name": "C反应蛋白检测试剂盒",
+      "first_analysis_date": "2026-06-10",
+      "last_analysis_date": "2026-06-10",
+      "analysis_count": 4,
+      "current_status": "待整改：批间差CV超差",
+      "recheck_suggestions": [
+        "批间差CV超差"
+      ],
+      "unresolved_anomaly_ids": [
+        "CV-KIT-2026-06B03-497FFCA8"
+      ],
+      "history_snapshots": [
+        {
+          "timestamp": "2026-06-10T18:18:13.438906",
+          "analysis_count": 1,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：批间差CV超差",
+          "recheck_suggestions": [
+            "批间差CV超差"
+          ],
+          "unresolved_count": 1
+        },
+        {
+          "timestamp": "2026-06-10T18:18:50.468229",
+          "analysis_count": 2,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：批间差CV超差",
+          "recheck_suggestions": [
+            "批间差CV超差"
+          ],
+          "unresolved_count": 1
+        },
+        {
+          "timestamp": "2026-06-10T18:19:43.711968",
+          "analysis_count": 3,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：批间差CV超差",
+          "recheck_suggestions": [
+            "批间差CV超差"
+          ],
+          "unresolved_count": 1
+        },
+        {
+          "timestamp": "2026-06-10T18:19:53.218425",
+          "analysis_count": 4,
+          "modules_present": [
+            "试剂台账",
+            "实验记录",
+            "称量单",
+            "反应时间",
+            "温度曲线"
+          ],
+          "status": "待整改：批间差CV超差",
+          "recheck_suggestions": [
+            "批间差CV超差"
+          ],
+          "unresolved_count": 1
+        }
+      ],
+      "manual_notes": []
+    }
+  }
+}
