@@ -1,0 +1,47 @@
+[
+  {
+    "id": "LOT001",
+    "lot_number": "RGT-2024-042",
+    "reagent_name": "Western Blot 电泳试剂套装",
+    "manufacturer": "BioRad 生命科学",
+    "production_date": "2024-02-15",
+    "expiry_date": "2025-08-15",
+    "notes": "常规实验用试剂，储存条件 2-8°C"
+  },
+  {
+    "id": "LOT002",
+    "lot_number": "RGT-2024-056",
+    "reagent_name": "SDS-PAGE 凝胶预制胶",
+    "manufacturer": "Thermo Fisher Scientific",
+    "production_date": "2024-03-10",
+    "expiry_date": "2025-09-10",
+    "notes": "12% 分离胶，适用于 10-150 kDa 蛋白分离"
+  },
+  {
+    "id": "LOT003",
+    "lot_number": "RGT-2024-065",
+    "reagent_name": "SDS-PAGE 凝胶预制胶",
+    "manufacturer": "Thermo Fisher Scientific",
+    "production_date": "2024-03-10",
+    "expiry_date": "2025-09-10",
+    "notes": "BAD003: 批号录入笔误，应为 RGT-2024-056，与 LOT002 为同一批次"
+  },
+  {
+    "id": "LOT004",
+    "lot_number": "RGT-2024-071",
+    "reagent_name": "ECL 化学发光显色液",
+    "manufacturer": "Millipore Sigma",
+    "production_date": "2024-04-05",
+    "expiry_date": "2025-10-05",
+    "notes": "高灵敏度显色液，曝光时间建议 30-300 秒"
+  },
+  {
+    "id": "LOT005",
+    "lot_number": "RGT-2024-083",
+    "reagent_name": "PVDF 转印膜 0.45μm",
+    "manufacturer": "GE Healthcare",
+    "production_date": "2024-05-20",
+    "expiry_date": "2026-05-20",
+    "notes": "硝酸纤维素替代膜，适合低丰度蛋白检测"
+  }
+]

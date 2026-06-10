@@ -1,0 +1,402 @@
+[
+  {
+    "id": "SMP001",
+    "lot_id": "LOT001",
+    "sample_code": "H-202406-001",
+    "sampling_site_id": "SITE001",
+    "collection_date": "2024-06-01",
+    "micrograph_url": "https://lab.example.com/images/202406/H-001_normal.tif",
+    "concentration": 2.35,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP002",
+    "lot_id": "LOT001",
+    "sample_code": "H-202406-002",
+    "sampling_site_id": "SITE002",
+    "collection_date": "2024-06-01",
+    "micrograph_url": "https://lab.example.com/images/202406/H-002_BAD001.tif",
+    "concentration": 1.82,
+    "is_abnormal": true
+  },
+  {
+    "id": "SMP003",
+    "lot_id": "LOT001",
+    "sample_code": "H-202406-003",
+    "sampling_site_id": "SITE003",
+    "collection_date": "2024-06-01",
+    "micrograph_url": "https://lab.example.com/images/202406/H-003_BAD001.tif",
+    "concentration": 3.12,
+    "is_abnormal": true
+  },
+  {
+    "id": "SMP004",
+    "lot_id": "LOT001",
+    "sample_code": "H-202406-004",
+    "sampling_site_id": "SITE004",
+    "collection_date": "2024-06-02",
+    "micrograph_url": "https://lab.example.com/images/202406/H-004_normal.tif",
+    "concentration": 2.68,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP005",
+    "lot_id": "LOT001",
+    "sample_code": "H-202406-005",
+    "sampling_site_id": "SITE001",
+    "collection_date": "2024-06-02",
+    "micrograph_url": "https://lab.example.com/images/202406/H-005_normal.tif",
+    "concentration": 2.91,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP006",
+    "lot_id": "LOT001",
+    "sample_code": "H-202406-006",
+    "sampling_site_id": "SITE002",
+    "collection_date": "2024-06-02",
+    "micrograph_url": "https://lab.example.com/images/202406/H-006_BAD001.tif",
+    "concentration": 1.45,
+    "is_abnormal": true
+  },
+  {
+    "id": "SMP007",
+    "lot_id": "LOT001",
+    "sample_code": "H-202406-007",
+    "sampling_site_id": "SITE003",
+    "collection_date": "2024-06-03",
+    "micrograph_url": "https://lab.example.com/images/202406/H-007_normal.tif",
+    "concentration": 2.77,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP008",
+    "lot_id": "LOT001",
+    "sample_code": "H-202406-008",
+    "sampling_site_id": "SITE004",
+    "collection_date": "2024-06-03",
+    "micrograph_url": "https://lab.example.com/images/202406/H-008_normal.tif",
+    "concentration": 2.53,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP009",
+    "lot_id": "LOT002",
+    "sample_code": "G-202406-001",
+    "sampling_site_id": "SITE001",
+    "collection_date": "2024-06-05",
+    "micrograph_url": "https://lab.example.com/images/202406/G-001_normal.tif",
+    "concentration": 2.44,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP010",
+    "lot_id": "LOT002",
+    "sample_code": "G-202406-002",
+    "sampling_site_id": "SITE002",
+    "collection_date": "2024-06-05",
+    "micrograph_url": "https://lab.example.com/images/202406/G-002_normal.tif",
+    "concentration": 2.88,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP011",
+    "lot_id": "LOT002",
+    "sample_code": "G-202406-003",
+    "sampling_site_id": "SITE003",
+    "collection_date": "2024-06-05",
+    "micrograph_url": "https://lab.example.com/images/202406/G-003_overexposed_BAD002.tif",
+    "concentration": 3.55,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP012",
+    "lot_id": "LOT002",
+    "sample_code": "G-202406-004",
+    "sampling_site_id": "SITE004",
+    "collection_date": "2024-06-06",
+    "micrograph_url": "https://lab.example.com/images/202406/G-004_normal.tif",
+    "concentration": 2.16,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP013",
+    "lot_id": "LOT002",
+    "sample_code": "G-202406-005",
+    "sampling_site_id": "SITE001",
+    "collection_date": "2024-06-06",
+    "micrograph_url": "https://lab.example.com/images/202406/G-005_normal.tif",
+    "concentration": 2.72,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP014",
+    "lot_id": "LOT002",
+    "sample_code": "G-202406-006",
+    "sampling_site_id": "SITE002",
+    "collection_date": "2024-06-06",
+    "micrograph_url": "https://lab.example.com/images/202406/G-006_overexposed_BAD002.tif",
+    "concentration": 3.82,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP015",
+    "lot_id": "LOT002",
+    "sample_code": "G-202406-007",
+    "sampling_site_id": "SITE003",
+    "collection_date": "2024-06-07",
+    "micrograph_url": "https://lab.example.com/images/202406/G-007_normal.tif",
+    "concentration": 2.39,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP016",
+    "lot_id": "LOT002",
+    "sample_code": "G-202406-008",
+    "sampling_site_id": "SITE004",
+    "collection_date": "2024-06-07",
+    "micrograph_url": "https://lab.example.com/images/202406/G-008_normal.tif",
+    "concentration": 2.64,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP017",
+    "lot_id": "LOT003",
+    "sample_code": "T-202406-001",
+    "sampling_site_id": "SITE001",
+    "collection_date": "2024-06-09",
+    "micrograph_url": "https://lab.example.com/images/202406/T-001_normal.tif",
+    "concentration": 2.48,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP018",
+    "lot_id": "LOT003",
+    "sample_code": "T-202406-002",
+    "sampling_site_id": "SITE002",
+    "collection_date": "2024-06-09",
+    "micrograph_url": "https://lab.example.com/images/202406/T-002_normal.tif",
+    "concentration": 2.71,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP019",
+    "lot_id": "LOT003",
+    "sample_code": "T-202406-003",
+    "sampling_site_id": "SITE003",
+    "collection_date": "2024-06-09",
+    "micrograph_url": "https://lab.example.com/images/202406/T-003_normal.tif",
+    "concentration": 2.56,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP020",
+    "lot_id": "LOT003",
+    "sample_code": "T-202406-004",
+    "sampling_site_id": "SITE004",
+    "collection_date": "2024-06-10",
+    "micrograph_url": "https://lab.example.com/images/202406/T-004_normal.tif",
+    "concentration": 2.83,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP021",
+    "lot_id": "LOT003",
+    "sample_code": "T-202406-005",
+    "sampling_site_id": "SITE001",
+    "collection_date": "2024-06-10",
+    "micrograph_url": "https://lab.example.com/images/202406/T-005_normal.tif",
+    "concentration": 2.29,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP022",
+    "lot_id": "LOT003",
+    "sample_code": "T-202406-006",
+    "sampling_site_id": "SITE002",
+    "collection_date": "2024-06-10",
+    "micrograph_url": "https://lab.example.com/images/202406/T-006_normal.tif",
+    "concentration": 2.94,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP023",
+    "lot_id": "LOT003",
+    "sample_code": "T-202406-007",
+    "sampling_site_id": "SITE003",
+    "collection_date": "2024-06-11",
+    "micrograph_url": "https://lab.example.com/images/202406/T-007_normal.tif",
+    "concentration": 2.67,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP024",
+    "lot_id": "LOT003",
+    "sample_code": "T-202406-008",
+    "sampling_site_id": "SITE004",
+    "collection_date": "2024-06-11",
+    "micrograph_url": "https://lab.example.com/images/202406/T-008_normal.tif",
+    "concentration": 2.41,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP025",
+    "lot_id": "LOT004",
+    "sample_code": "E-202406-001",
+    "sampling_site_id": "SITE001",
+    "collection_date": "2024-06-13",
+    "micrograph_url": "https://lab.example.com/images/202406/E-001_BAD004.tif",
+    "concentration": 1.98,
+    "is_abnormal": true
+  },
+  {
+    "id": "SMP026",
+    "lot_id": "LOT004",
+    "sample_code": "E-202406-002",
+    "sampling_site_id": "SITE002",
+    "collection_date": "2024-06-13",
+    "micrograph_url": "https://lab.example.com/images/202406/E-002_BAD004.tif",
+    "concentration": 2.11,
+    "is_abnormal": true
+  },
+  {
+    "id": "SMP027",
+    "lot_id": "LOT004",
+    "sample_code": "E-202406-003",
+    "sampling_site_id": "SITE003",
+    "collection_date": "2024-06-13",
+    "micrograph_url": "https://lab.example.com/images/202406/E-003_BAD004.tif",
+    "concentration": 1.76,
+    "is_abnormal": true
+  },
+  {
+    "id": "SMP028",
+    "lot_id": "LOT004",
+    "sample_code": "E-202406-004",
+    "sampling_site_id": "SITE004",
+    "collection_date": "2024-06-14",
+    "micrograph_url": "https://lab.example.com/images/202406/E-004_normal.tif",
+    "concentration": 2.84,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP029",
+    "lot_id": "LOT004",
+    "sample_code": "E-202406-005",
+    "sampling_site_id": "SITE001",
+    "collection_date": "2024-06-14",
+    "micrograph_url": "https://lab.example.com/images/202406/E-005_BAD004.tif",
+    "concentration": 1.65,
+    "is_abnormal": true
+  },
+  {
+    "id": "SMP030",
+    "lot_id": "LOT004",
+    "sample_code": "E-202406-006",
+    "sampling_site_id": "SITE002",
+    "collection_date": "2024-06-14",
+    "micrograph_url": "https://lab.example.com/images/202406/E-006_normal.tif",
+    "concentration": 2.73,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP031",
+    "lot_id": "LOT004",
+    "sample_code": "E-202406-007",
+    "sampling_site_id": "SITE003",
+    "collection_date": "2024-06-15",
+    "micrograph_url": "https://lab.example.com/images/202406/E-007_BAD004.tif",
+    "concentration": 1.88,
+    "is_abnormal": true
+  },
+  {
+    "id": "SMP032",
+    "lot_id": "LOT004",
+    "sample_code": "E-202406-008",
+    "sampling_site_id": "SITE004",
+    "collection_date": "2024-06-15",
+    "micrograph_url": "https://lab.example.com/images/202406/E-008_normal.tif",
+    "concentration": 2.59,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP033",
+    "lot_id": "LOT005",
+    "sample_code": "P-202406-001",
+    "sampling_site_id": "",
+    "collection_date": "2024-06-17",
+    "micrograph_url": "https://lab.example.com/images/202406/P-001_BAD005.tif",
+    "concentration": 2.38,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP034",
+    "lot_id": "LOT005",
+    "sample_code": "P-202406-002",
+    "sampling_site_id": "",
+    "collection_date": "2024-06-17",
+    "micrograph_url": "https://lab.example.com/images/202406/P-002_BAD005.tif",
+    "concentration": 2.51,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP035",
+    "lot_id": "LOT005",
+    "sample_code": "P-202406-003",
+    "sampling_site_id": "",
+    "collection_date": "2024-06-17",
+    "micrograph_url": "https://lab.example.com/images/202406/P-003_BAD005.tif",
+    "concentration": 2.66,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP036",
+    "lot_id": "LOT005",
+    "sample_code": "P-202406-004",
+    "sampling_site_id": "",
+    "collection_date": "2024-06-18",
+    "micrograph_url": "https://lab.example.com/images/202406/P-004_BAD005.tif",
+    "concentration": 2.47,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP037",
+    "lot_id": "LOT005",
+    "sample_code": "P-202406-005",
+    "sampling_site_id": "",
+    "collection_date": "2024-06-18",
+    "micrograph_url": "https://lab.example.com/images/202406/P-005_BAD005.tif",
+    "concentration": 2.78,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP038",
+    "lot_id": "LOT005",
+    "sample_code": "P-202406-006",
+    "sampling_site_id": "",
+    "collection_date": "2024-06-18",
+    "micrograph_url": "https://lab.example.com/images/202406/P-006_BAD005.tif",
+    "concentration": 2.33,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP039",
+    "lot_id": "LOT005",
+    "sample_code": "P-202406-007",
+    "sampling_site_id": "",
+    "collection_date": "2024-06-19",
+    "micrograph_url": "https://lab.example.com/images/202406/P-007_BAD005.tif",
+    "concentration": 2.62,
+    "is_abnormal": false
+  },
+  {
+    "id": "SMP040",
+    "lot_id": "LOT005",
+    "sample_code": "P-202406-008",
+    "sampling_site_id": "",
+    "collection_date": "2024-06-19",
+    "micrograph_url": "https://lab.example.com/images/202406/P-008_BAD005.tif",
+    "concentration": 2.54,
+    "is_abnormal": false
+  }
+]

@@ -1,0 +1,181 @@
+[
+  {
+    "id": "RUN001",
+    "lot_id": "LOT001",
+    "run_index": 1,
+    "algorithm_version": "v1.2",
+    "executed_at": "2024-06-04T09:15:32Z",
+    "operator": "王研究员",
+    "parameters": {
+      "voltage": 120,
+      "run_time_min": 90,
+      "staining_time_min": 45,
+      "exposure_ms": 1500
+    }
+  },
+  {
+    "id": "RUN002",
+    "lot_id": "LOT001",
+    "run_index": 2,
+    "algorithm_version": "v1.3",
+    "executed_at": "2024-06-04T14:22:18Z",
+    "operator": "李技术员",
+    "parameters": {
+      "voltage": 120,
+      "run_time_min": 90,
+      "staining_time_min": 45,
+      "exposure_ms": 1800,
+      "background_subtraction": true
+    }
+  },
+  {
+    "id": "RUN003",
+    "lot_id": "LOT002",
+    "run_index": 1,
+    "algorithm_version": "v1.2",
+    "executed_at": "2024-06-08T08:45:10Z",
+    "operator": "张主管",
+    "parameters": {
+      "voltage": 125,
+      "run_time_min": 85,
+      "staining_time_min": 50,
+      "exposure_ms": 2000
+    }
+  },
+  {
+    "id": "RUN004",
+    "lot_id": "LOT002",
+    "run_index": 2,
+    "algorithm_version": "v1.3",
+    "executed_at": "2024-06-08T15:12:44Z",
+    "operator": "王研究员",
+    "parameters": {
+      "voltage": 125,
+      "run_time_min": 85,
+      "staining_time_min": 50,
+      "exposure_ms": 2200,
+      "background_subtraction": true
+    }
+  },
+  {
+    "id": "RUN005",
+    "lot_id": "LOT002",
+    "run_index": 3,
+    "algorithm_version": "v2.0-beta",
+    "executed_at": "2024-06-09T10:05:27Z",
+    "operator": "李技术员",
+    "parameters": {
+      "voltage": 130,
+      "run_time_min": 80,
+      "staining_time_min": 55,
+      "exposure_ms": 2500,
+      "background_subtraction": true,
+      "auto_threshold": "otsu"
+    }
+  },
+  {
+    "id": "RUN006",
+    "lot_id": "LOT003",
+    "run_index": 1,
+    "algorithm_version": "v1.2",
+    "executed_at": "2024-06-12T09:30:55Z",
+    "operator": "赵实验员",
+    "parameters": {
+      "voltage": 120,
+      "run_time_min": 90,
+      "staining_time_min": 45,
+      "exposure_ms": 1600
+    }
+  },
+  {
+    "id": "RUN007",
+    "lot_id": "LOT003",
+    "run_index": 2,
+    "algorithm_version": "v1.3",
+    "executed_at": "2024-06-12T16:45:03Z",
+    "operator": "赵实验员",
+    "parameters": {
+      "voltage": 120,
+      "run_time_min": 90,
+      "staining_time_min": 45,
+      "exposure_ms": 1800,
+      "background_subtraction": true
+    }
+  },
+  {
+    "id": "RUN008",
+    "lot_id": "LOT004",
+    "run_index": 1,
+    "algorithm_version": "v1.2",
+    "executed_at": "2024-06-16T08:50:22Z",
+    "operator": "李技术员",
+    "parameters": {
+      "voltage": 125,
+      "run_time_min": 88,
+      "staining_time_min": 48,
+      "exposure_ms": 2000
+    }
+  },
+  {
+    "id": "RUN009",
+    "lot_id": "LOT004",
+    "run_index": 2,
+    "algorithm_version": "v1.3",
+    "executed_at": "2024-06-16T14:35:11Z",
+    "operator": "王研究员",
+    "parameters": {
+      "voltage": 125,
+      "run_time_min": 88,
+      "staining_time_min": 48,
+      "exposure_ms": 2200,
+      "background_subtraction": true
+    }
+  },
+  {
+    "id": "RUN010",
+    "lot_id": "LOT004",
+    "run_index": 3,
+    "algorithm_version": "v2.0-beta",
+    "executed_at": "2024-06-17T11:20:38Z",
+    "operator": "张主管",
+    "parameters": {
+      "voltage": 130,
+      "run_time_min": 82,
+      "staining_time_min": 52,
+      "exposure_ms": 2600,
+      "background_subtraction": true,
+      "auto_threshold": "otsu"
+    }
+  },
+  {
+    "id": "RUN011",
+    "lot_id": "LOT005",
+    "run_index": 1,
+    "algorithm_version": "v1.3",
+    "executed_at": "2024-06-20T09:10:05Z",
+    "operator": "赵实验员",
+    "parameters": {
+      "voltage": 125,
+      "run_time_min": 90,
+      "staining_time_min": 50,
+      "exposure_ms": 2100,
+      "background_subtraction": true
+    }
+  },
+  {
+    "id": "RUN012",
+    "lot_id": "LOT005",
+    "run_index": 2,
+    "algorithm_version": "v2.0-beta",
+    "executed_at": "2024-06-20T15:55:49Z",
+    "operator": "李技术员",
+    "parameters": {
+      "voltage": 130,
+      "run_time_min": 85,
+      "staining_time_min": 55,
+      "exposure_ms": 2400,
+      "background_subtraction": true,
+      "auto_threshold": "otsu"
+    }
+  }
+]
