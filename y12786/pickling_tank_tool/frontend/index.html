@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>酸洗槽浓度补加质检系统</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; background: #f5f7fa; color: #333; }
+        .header { background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 24px; font-weight: 600; }
+        .header .actions { display: flex; gap: 10px; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; transition: all 0.3s; }
+        .btn-primary { background: #409eff; color: white; }
+        .btn-primary:hover { background: #66b1ff; }
+        .btn-success { background: #67c23a; color: white; }
+        .btn-success:hover { background: #85ce61; }
+        .btn-warning { background: #e6a23c; color: white; }
+        .btn-warning:hover { background: #ebb563; }
+        .btn-danger { background: #f56c6c; color: white; }
+        .btn-danger:hover { background: #f78989; }
+        .btn-info { background: #909399; color: white; }
+        .btn-info:hover { background: #a6a9ad; }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+        .container { display: flex; height: calc(100vh - 80px); }
+        .sidebar { width: 350px; background: white; border-right: 1px solid #e4e7ed; padding: 20px; overflow-y: auto; }
+        .sidebar h2 { font-size: 16px; margin-bottom: 15px; color: #1e3c72; }
+        .search-box { margin-bottom: 15px; }
+        .search-box input { width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 14px; }
+
+        .form-list { list-style: none; }
+        .form-item { padding: 12px; border: 1px solid #e4e7ed; border-radius: 4px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s; position: relative; }
+        .form-item:hover { border-color: #409eff; background: #ecf5ff; }
+        .form-item.active { border-color: #409eff; background: #ecf5ff; }
+        .form-item.bad-data { border-left: 4px solid #f56c6c; background: #fef0f0; }
+        .form-item.supplement { border-left: 4px solid #e6a23c; background: #fdf6ec; }
+        .form-item.overlap { border-left: 4px solid #e6a23c; }
+        .form-item-title { font-weight: 600; font-size: 14px; color: #1e3c72; margin-bottom: 5px; }
+        .form-item-sub { font-size: 12px; color: #666; display: flex; justify-content: space-between; }
+        .form-item-tags { margin-top: 6px; display: flex; gap: 5px; flex-wrap: wrap; }
+        .tag { padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+        .tag-bad { background: #fef0f0; color: #f56c6c; border: 1px solid #fbc4c4; }
+        .tag-supplement { background: #fdf6ec; color: #e6a23c; border: 1px solid #f5dab1; }
+        .tag-overlap { background: #fdf6ec; color: #e6a23c; border: 1px solid #f5dab1; }
+        .tag-valid { background: #f0f9eb; color: #67c23a; border: 1px solid #c2e7b0; }
+        .tag-pending { background: #fdf6ec; color: #e6a23c; border: 1px solid #f5dab1; }
+        .tag-doubt { background: #fef0f0; color: #f56c6c; border: 1px solid #fbc4c4; }
+        .tag-error { background: #fef0f0; color: #f56c6c; border: 1px solid #fbc4c4; }
+
+        .main { flex: 1; padding: 20px; overflow-y: auto; }
+        .empty-state { text-align: center; padding: 100px 20px; color: #909399; }
+        .empty-state i { font-size: 64px; display: block; margin-bottom: 20px; }
+
+        .detail-header { background: white; padding: 20px; border-radius: 6px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .detail-header h2 { color: #1e3c72; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .detail-meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px; color: #666; }
+        .detail-meta span strong { color: #333; }
+
+        .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .panel { background: white; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .panel-header { padding: 15px 20px; border-bottom: 1px solid #e4e7ed; display: flex; justify-content: space-between; align-items: center; }
+        .panel-header h3 { font-size: 16px; color: #1e3c72; display: flex; align-items: center; gap: 8px; }
+        .panel-body { padding: 20px; }
+        .form-row { display: grid; grid-template-columns: 140px 1fr; margin-bottom: 12px; font-size: 14px; }
+        .form-row label { color: #666; padding-top: 6px; }
+        .form-row .value { padding: 6px 0; font-weight: 500; }
+        .form-row .value.missing { color: #f56c6c; font-style: italic; }
+        .form-row .value.error { color: #f56c6c; text-decoration: line-through; }
+        .form-row .value.corrected { color: #67c23a; margin-left: 10px; }
+
+        .panel-full { grid-column: 1 / -1; }
+
+        .alert { padding: 15px; border-radius: 4px; margin-bottom: 15px; display: flex; gap: 10px; }
+        .alert-warning { background: #fdf6ec; border: 1px solid #f5dab1; color: #e6a23c; }
+        .alert-danger { background: #fef0f0; border: 1px solid #fbc4c4; color: #f56c6c; }
+        .alert-info { background: #ecf5ff; border: 1px solid #b3d8ff; color: #409eff; }
+        .alert-success { background: #f0f9eb; border: 1px solid #c2e7b0; color: #67c23a; }
+        .alert-icon { font-size: 18px; flex-shrink: 0; }
+
+        .op-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .track-panel { background: white; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .track-list { padding: 10px 20px; }
+        .track-item { padding: 15px 0; border-bottom: 1px solid #f0f0f0; position: relative; }
+        .track-item:last-child { border-bottom: none; }
+        .track-item::before { content: ''; position: absolute; left: -25px; top: 22px; width: 12px; height: 12px; border-radius: 50%; background: #409eff; }
+        .track-item.change::before { background: #f56c6c; }
+        .track-item-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .track-item-type { font-weight: 600; color: #1e3c72; }
+        .track-item-time { font-size: 12px; color: #909399; }
+        .track-item-content { font-size: 14px; color: #666; }
+        .track-item-diff { margin-top: 8px; padding: 8px 12px; background: #fef0f0; border-left: 3px solid #f56c6c; border-radius: 2px; font-size: 13px; }
+        .track-item-diff strong { color: #f56c6c; }
+        .track-item-diff .before { text-decoration: line-through; }
+        .track-item-diff .after { color: #67c23a; font-weight: 600; margin-left: 10px; }
+
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline::before { content: ''; position: absolute; left: 15px; top: 0; bottom: 0; width: 2px; background: #e4e7ed; }
+
+        .spectrum-highlight { background: linear-gradient(90deg, #fef0f0 0%, #fef0f0 50%, transparent 100%); }
+        .spectrum-material { font-weight: 600; color: #f56c6c; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; border-radius: 8px; width: 500px; max-width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-header { padding: 20px; border-bottom: 1px solid #e4e7ed; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { color: #1e3c72; }
+        .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #909399; }
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 15px 20px; border-top: 1px solid #e4e7ed; display: flex; justify-content: flex-end; gap: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; color: #333; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 14px; }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        .loading { text-align: center; padding: 20px; color: #909399; }
+        .toast { position: fixed; top: 20px; right: 20px; padding: 12px 24px; border-radius: 4px; color: white; z-index: 2000; animation: slideIn 0.3s ease; }
+        .toast.success { background: #67c23a; }
+        .toast.error { background: #f56c6c; }
+        .toast.info { background: #409eff; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        .report-preview { background: #fafafa; border: 1px solid #e4e7ed; border-radius: 4px; padding: 15px; margin-top: 15px; font-size: 13px; }
+        .report-preview h4 { color: #1e3c72; margin-bottom: 10px; }
+        .report-preview .final-judgment { font-size: 16px; font-weight: 600; padding: 10px; background: white; border-radius: 4px; margin-top: 10px; text-align: center; }
+        .report-preview .final-judgment.qualified { color: #67c23a; border: 2px solid #67c23a; }
+        .report-preview .final-judgment.pending { color: #e6a23c; border: 2px solid #e6a23c; }
+        .report-preview .final-judgment.doubt { color: #f56c6c; border: 2px solid #f56c6c; }
+        .report-preview .final-judgment.error { color: #f56c6c; border: 2px solid #f56c6c; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧪 酸洗槽浓度补加质检系统</h1>
+        <div class="actions">
+            <button class="btn btn-success" onclick="importSampleData()">📥 导入样例数据</button>
+            <button class="btn btn-primary" onclick="showCreateModal()">➕ 新建称量单</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>📋 称量单列表</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索批次号..." oninput="searchForms()">
+            </div>
+            <ul class="form-list" id="formList">
+                <li class="loading">加载中...</li>
+            </ul>
+        </div>
+
+        <div class="main" id="mainContent">
+            <div class="empty-state">
+                <i>📊</i>
+                <p>请从左侧选择一份称量单查看详情</p>
+                <p style="font-size: 12px; margin-top: 10px;">或点击"导入样例数据"开始体验</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="supplementModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📝 补录数据</h3>
+                <button class="modal-close" onclick="closeModal('supplementModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>补录来源</label>
+                    <input type="text" id="supplementSource" placeholder="例如：纸质称量记录单 #20260530-001">
+                </div>
+                <div class="form-group">
+                    <label>补录备注</label>
+                    <textarea id="supplementRemarks" placeholder="请输入补录原因和说明..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>补录人</label>
+                    <input type="text" id="supplementOperator" placeholder="请输入姓名">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" onclick="closeModal('supplementModal')">取消</button>
+                <button class="btn btn-primary" onclick="submitSupplement()">确认补录</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✅ 人工确认</h3>
+                <button class="modal-close" onclick="closeModal('confirmModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <div class="alert-icon">ℹ️</div>
+                    <div id="confirmInfo">确认信息...</div>
+                </div>
+                <div class="form-group">
+                    <label>确认人 <span style="color: #f56c6c;">*</span></label>
+                    <input type="text" id="confirmOperator" placeholder="请输入姓名">
+                </div>
+                <div class="form-group">
+                    <label>确认备注</label>
+                    <textarea id="confirmRemarks" placeholder="请输入确认意见..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" onclick="closeModal('confirmModal')">取消</button>
+                <button class="btn btn-success" onclick="submitConfirm()">确认通过</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>➕ 新建称量单</h3>
+                <button class="modal-close" onclick="closeModal('createModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>批次号 <span style="color: #f56c6c;">*</span></label>
+                    <input type="text" id="newBatchNo" placeholder="例如：SX-2026-0601-001">
+                </div>
+                <div class="form-group">
+                    <label>槽号 <span style="color: #f56c6c;">*</span></label>
+                    <input type="text" id="newTankNo" placeholder="例如：酸洗槽#3">
+                </div>
+                <div class="form-group">
+                    <label>试剂名称 <span style="color: #f56c6c;">*</span></label>
+                    <input type="text" id="newReagentName" placeholder="例如：浓硝酸">
+                </div>
+                <div class="form-group">
+                    <label>称量人</label>
+                    <input type="text" id="newOperator" placeholder="请输入姓名">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-info" onclick="closeModal('createModal')">取消</button>
+                <button class="btn btn-primary" onclick="submitCreate()">创建</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        let currentFormId = null;
+        let currentOpinionId = null;
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        async function fetchAPI(url, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${url}`, {
+                    headers: { 'Content-Type': 'application/json', ...options.headers },
+                    ...options
+                });
+                if (!response.ok) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.detail || `HTTP ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                showToast(error.message, 'error');
+                throw error;
+            }
+        }
+
+        async function loadForms(batchNo = null) {
+            const listEl = document.getElementById('formList');
+            listEl.innerHTML = '<li class="loading">加载中...</li>';
+            try {
+                const forms = await fetchAPI(`/weighing-forms/${batchNo ? `?batch_no=${encodeURIComponent(batchNo)}` : ''}`);
+                listEl.innerHTML = '';
+                if (forms.length === 0) {
+                    listEl.innerHTML = '<li style="text-align: center; padding: 30px; color: #909399;">暂无数据</li>';
+                    return;
+                }
+                for (const form of forms) {
+                    const li = document.createElement('li');
+                    li.className = 'form-item';
+                    if (form.is_bad_data) li.classList.add('bad-data');
+                    if (form.is_supplement) li.classList.add('supplement');
+
+                    const detail = await fetchAPI(`/weighing-forms/${form.id}/detail`).catch(() => null);
+                    let judgment = '未处理';
+                    let judgmentClass = '';
+                    let hasOverlap = false;
+                    if (detail && detail.treatment_opinion) {
+                        judgment = detail.treatment_opinion.final_judgment || '未处理';
+                        if (judgment === '合格') judgmentClass = 'tag-valid';
+                        else if (judgment === '待复核') judgmentClass = 'tag-pending';
+                        else if (judgment === '数据存疑') judgmentClass = 'tag-doubt';
+                        else if (judgment === '数据错误') judgmentClass = 'tag-error';
+                        hasOverlap = detail.treatment_opinion.spectrum_peak_overlap;
+                        if (hasOverlap) li.classList.add('overlap');
+                    }
+
+                    const date = form.weighing_date ? new Date(form.weighing_date).toLocaleDateString() : '未填写';
+
+                    li.innerHTML = `
+                        <div class="form-item-title">${form.batch_no}</div>
+                        <div class="form-item-sub">
+                            <span>${form.tank_no} · ${form.reagent_name}</span>
+                            <span>${date}</span>
+                        </div>
+                        <div class="form-item-tags">
+                            ${form.is_bad_data ? '<span class="tag tag-bad">⚠️ 坏数据</span>' : ''}
+                            ${form.is_supplement ? '<span class="tag tag-supplement">📝 补录</span>' : ''}
+                            ${hasOverlap ? '<span class="tag tag-overlap">📈 谱峰重叠</span>' : ''}
+                            ${judgment !== '未处理' ? `<span class="tag ${judgmentClass}">${judgment}</span>` : ''}
+                        </div>
+                    `;
+                    li.onclick = () => loadDetail(form.id);
+                    if (currentFormId === form.id) li.classList.add('active');
+                    listEl.appendChild(li);
+                }
+            } catch (error) {
+                listEl.innerHTML = '<li style="text-align: center; padding: 30px; color: #f56c6c;">加载失败</li>';
+            }
+        }
+
+        function searchForms() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            loadForms(keyword);
+        }
+
+        async function loadDetail(formId) {
+            currentFormId = formId;
+            const mainEl = document.getElementById('mainContent');
+            mainEl.innerHTML = '<div class="loading">加载详情...</div>';
+
+            try {
+                const detail = await fetchAPI(`/weighing-forms/${formId}/detail`);
+                currentOpinionId = detail.treatment_opinion?.id;
+
+                const judgmentMap = {
+                    '合格': 'qualified',
+                    '待复核': 'pending',
+                    '数据存疑': 'doubt',
+                    '数据错误': 'error',
+                    '未处理': 'pending'
+                };
+
+                let alerts = '';
+                if (detail.is_bad_data) {
+                    alerts += `<div class="alert alert-danger">
+                        <div class="alert-icon">⚠️</div>
+                        <div><strong>坏数据标记：</strong>${detail.bad_data_reason || '该记录存在异常'}</div>
+                    </div>`;
+                }
+                if (detail.is_supplement) {
+                    alerts += `<div class="alert alert-warning">
+                        <div class="alert-icon">📝</div>
+                        <div><strong>补录数据：</strong>来源：${detail.supplement_source || '未知'}。${detail.supplement_remarks || ''}</div>
+                    </div>`;
+                }
+
+                const formMissingUnit = !detail.unit;
+                let ledgerMissingUnit = false;
+                let ledgerBadData = false;
+                if (detail.reagent_ledger) {
+                    ledgerMissingUnit = !detail.reagent_ledger.concentration_unit;
+                    ledgerBadData = detail.reagent_ledger.concentration_value && detail.reagent_ledger.concentration_value > 100;
+                }
+
+                const judgment = detail.treatment_opinion?.final_judgment || '未处理';
+                const judgmentClass = judgmentMap[judgment] || 'pending';
+
+                mainEl.innerHTML = `
+                    ${alerts}
+
+                    <div class="detail-header">
+                        <h2>
+                            ${detail.batch_no}
+                            ${detail.is_bad_data ? '<span class="tag tag-bad">坏数据</span>' : ''}
+                            ${detail.is_supplement ? '<span class="tag tag-supplement">补录</span>' : ''}
+                        </h2>
+                        <div class="detail-meta">
+                            <span><strong>槽号：</strong>${detail.tank_no}</span>
+                            <span><strong>试剂：</strong>${detail.reagent_name}</span>
+                            <span><strong>称量人：</strong>${detail.weighing_operator || '未填写'}</span>
+                            <span><strong>日期：</strong>${detail.weighing_date ? new Date(detail.weighing_date).toLocaleString() : '未填写'}</span>
+                        </div>
+                        <div class="op-buttons" style="margin-top: 15px;">
+                            <button class="btn btn-warning" onclick="rerunAnalysis()">🔄 重复运行</button>
+                            <button class="btn btn-warning" onclick="showSupplementModal()">📝 补录</button>
+                            <button class="btn btn-success" onclick="showConfirmModal()">✅ 人工确认</button>
+                            <button class="btn btn-primary" onclick="exportReport()">📄 导出报告</button>
+                        </div>
+                    </div>
+
+                    <div class="panels">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3>⚖️ 称量单</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="form-row">
+                                    <label>批次号</label>
+                                    <div class="value">${detail.batch_no}</div>
+                                </div>
+                                <div class="form-row">
+                                    <label>槽号</label>
+                                    <div class="value">${detail.tank_no}</div>
+                                </div>
+                                <div class="form-row">
+                                    <label>试剂名称</label>
+                                    <div class="value">${detail.reagent_name}</div>
+                                </div>
+                                <div class="form-row">
+                                    <label>应称量</label>
+                                    <div class="value ${detail.required_amount ? '' : 'missing'}">${detail.required_amount ?? '未填写'}</div>
+                                </div>
+                                <div class="form-row">
+                                    <label>实称量</label>
+                                    <div class="value ${detail.actual_amount ? '' : 'missing'}">${detail.actual_amount ?? '未填写'}</div>
+                                </div>
+                                <div class="form-row">
+                                    <label>单位</label>
+                                    <div class="value ${formMissingUnit ? 'missing' : ''}">${formMissingUnit ? '⚠️ 漏填' : detail.unit}</div>
+                                </div>
+                                <div class="form-row">
+                                    <label>天平编号</label>
+                                    <div class="value">${detail.balance_no || '未填写'}</div>
+                                </div>
+                                <div class="form-row">
+                                    <label>称量时间</label>
+                                    <div class="value">${detail.weighing_time || '未填写'}</div>
+                                </div>
+                                <div class="form-row">
+                                    <label>备注</label>
+                                    <div class="value">${detail.remarks || '无'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3>📦 试剂台账</h3>
+                            </div>
+                            <div class="panel-body">
+                                ${detail.reagent_ledger ? `
+                                    <div class="form-row">
+                                        <label>试剂批号</label>
+                                        <div class="value">${detail.reagent_ledger.reagent_batch_no || '未填写'}</div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>CAS号</label>
+                                        <div class="value">${detail.reagent_ledger.reagent_cas_no || '未填写'}</div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>纯度</label>
+                                        <div class="value">${detail.reagent_ledger.purity || '未填写'}</div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>浓度</label>
+                                        <div class="value ${ledgerBadData ? 'error' : ''}">
+                                            ${detail.reagent_ledger.concentration || '未填写'}
+                                            ${ledgerBadData ? '<span class="corrected">(正确: 65%)</span>' : ''}
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>浓度值</label>
+                                        <div class="value ${ledgerBadData ? 'error' : ''}">
+                                            ${detail.reagent_ledger.concentration_value ?? '未填写'}
+                                            ${ledgerBadData ? '<span class="corrected">(正确: 65)</span>' : ''}
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>浓度单位</label>
+                                        <div class="value ${ledgerMissingUnit ? 'missing' : ''}">${ledgerMissingUnit ? '⚠️ 漏填' : detail.reagent_ledger.concentration_unit}</div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>生产厂家</label>
+                                        <div class="value">${detail.reagent_ledger.manufacturer || '未填写'}</div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>生产日期</label>
+                                        <div class="value">${detail.reagent_ledger.production_date ? new Date(detail.reagent_ledger.production_date).toLocaleDateString() : '未填写'}</div>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>有效期至</label>
+                                        <div class="value">${detail.reagent_ledger.expiry_date ? new Date(detail.reagent_ledger.expiry_date).toLocaleDateString() : '未填写'}</div>
+                                    </div>
+                                    ${detail.reagent_ledger.remarks ? `
+                                    <div class="form-row">
+                                        <label>台账备注</label>
+                                        <div class="value">${detail.reagent_ledger.remarks}</div>
+                                    </div>` : ''}
+                                ` : '<div style="text-align: center; padding: 30px; color: #909399;">暂无试剂台账</div>'}
+                            </div>
+                        </div>
+
+                        <div class="panel panel-full">
+                            <div class="panel-header">
+                                <h3>💡 处理意见</h3>
+                                <div style="font-size: 12px; color: #909399;">
+                                    运行次数: ${detail.treatment_opinion?.run_count || 0} | 
+                                    报告版本: ${detail.treatment_opinion?.report_version || 1}
+                                    ${detail.treatment_opinion?.report_exported ? ' | ✅ 已导出' : ''}
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                ${detail.treatment_opinion ? `
+                                    ${detail.treatment_opinion.spectrum_peak_overlap ? `
+                                    <div class="alert alert-warning spectrum-highlight">
+                                        <div class="alert-icon">📈</div>
+                                        <div>
+                                            <strong>谱峰重叠警告：</strong>
+                                            卡在哪份材料：<span class="spectrum-material">${detail.treatment_opinion.overlap_material}</span><br>
+                                            详细说明：${detail.treatment_opinion.overlap_details}
+                                        </div>
+                                    </div>` : ''}
+
+                                    ${detail.treatment_opinion.judgment_changed ? `
+                                    <div class="alert alert-danger">
+                                        <div class="alert-icon">🔄</div>
+                                        <div>
+                                            <strong>判断已变更：</strong>${detail.treatment_opinion.change_reason}
+                                        </div>
+                                    </div>` : ''}
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                        <div>
+                                            <div class="form-row">
+                                                <label>质检人</label>
+                                                <div class="value">${detail.treatment_opinion.inspector || '未填写'}</div>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>原始浓度</label>
+                                                <div class="value">${detail.treatment_opinion.original_concentration ?? '未填写'} g/L</div>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>目标浓度</label>
+                                                <div class="value">${detail.treatment_opinion.target_concentration ?? '未填写'} g/L</div>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>计算补加量</label>
+                                                <div class="value">${detail.treatment_opinion.calculated_supplement ?? '未填写'} mL</div>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>实际补加量</label>
+                                                <div class="value">${detail.treatment_opinion.actual_supplement ?? '未填写'} mL</div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div class="form-row">
+                                                <label>初步判断</label>
+                                                <div class="value">${detail.treatment_opinion.preliminary_judgment || '未填写'}</div>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>最终判断</label>
+                                                <div class="value">${detail.treatment_opinion.final_judgment || '未填写'}</div>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>人工确认</label>
+                                                <div class="value">
+                                                    ${detail.treatment_opinion.manual_confirm 
+                                                        ? `✅ ${detail.treatment_opinion.confirmer || ''} ${detail.treatment_opinion.confirm_date ? new Date(detail.treatment_opinion.confirm_date).toLocaleDateString() : ''}`
+                                                        : '未确认'}
+                                                </div>
+                                            </div>
+                                            <div class="form-row">
+                                                <label>上次运行</label>
+                                                <div class="value">${detail.treatment_opinion.last_run_time ? new Date(detail.treatment_opinion.last_run_time).toLocaleString() : '未运行'}</div>
+                                            </div>
+                                            ${detail.treatment_opinion.confirm_remarks ? `
+                                            <div class="form-row">
+                                                <label>确认备注</label>
+                                                <div class="value">${detail.treatment_opinion.confirm_remarks}</div>
+                                            </div>` : ''}
+                                        </div>
+                                    </div>
+
+                                    ${detail.treatment_opinion.processing_remarks ? `
+                                    <div class="form-row">
+                                        <label>处理说明</label>
+                                        <div class="value">${detail.treatment_opinion.processing_remarks}</div>
+                                    </div>` : ''}
+
+                                    <div class="report-preview">
+                                        <h4>📄 报告预览</h4>
+                                        <div style="margin-bottom: 8px;"><strong>批次号：</strong>${detail.batch_no}</div>
+                                        <div style="margin-bottom: 8px;"><strong>酸洗槽：</strong>${detail.tank_no}</div>
+                                        <div style="margin-bottom: 8px;"><strong>试剂：</strong>${detail.reagent_name}</div>
+                                        ${detail.treatment_opinion.spectrum_peak_overlap ? `
+                                        <div style="margin-bottom: 8px; color: #e6a23c;">
+                                            <strong>⚠️ 谱峰重叠：</strong>卡在 <span class="spectrum-material">${detail.treatment_opinion.overlap_material}</span>
+                                        </div>` : ''}
+                                        <div class="final-judgment ${judgmentClass}">
+                                            最终结论：${judgment}
+                                        </div>
+                                    </div>
+                                ` : '<div style="text-align: center; padding: 30px; color: #909399;">暂无处理意见</div>'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="track-panel">
+                        <div class="panel-header">
+                            <h3>📜 批次追踪</h3>
+                        </div>
+                        <div class="track-list">
+                            <div class="timeline">
+                                ${detail.batch_tracks && detail.batch_tracks.length > 0 ? detail.batch_tracks.map(track => `
+                                    <div class="track-item ${track.judgment_difference ? 'change' : ''}">
+                                        <div class="track-item-header">
+                                            <span class="track-item-type">${track.operation_type}</span>
+                                            <span class="track-item-time">${new Date(track.operation_time).toLocaleString()}</span>
+                                        </div>
+                                        <div class="track-item-content">
+                                            ${track.operation_remarks || ''}
+                                            ${track.operator ? `<span style="color: #909399; margin-left: 10px;">操作人: ${track.operator}</span>` : ''}
+                                        </div>
+                                        ${track.judgment_difference ? `
+                                        <div class="track-item-diff">
+                                            <strong>判断变更：</strong>
+                                            <span class="before">${track.before_judgment}</span>
+                                            →
+                                            <span class="after">${track.after_judgment}</span>
+                                            <div style="margin-top: 5px; font-size: 12px;">${track.judgment_difference}</div>
+                                        </div>` : ''}
+                                        ${track.before_judgment && track.after_judgment && track.before_judgment !== track.after_judgment && !track.judgment_difference ? `
+                                        <div class="track-item-diff">
+                                            <strong>前后差别：</strong>
+                                            <span class="before">${track.before_judgment}</span>
+                                            →
+                                            <span class="after">${track.after_judgment}</span>
+                                        </div>` : ''}
+                                    </div>
+                                `).join('') : '<div style="text-align: center; padding: 30px; color: #909399;">暂无追踪记录</div>'}
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                loadForms();
+            } catch (error) {
+                mainEl.innerHTML = '<div class="empty-state">加载详情失败</div>';
+            }
+        }
+
+        async function rerunAnalysis() {
+            if (!currentOpinionId) {
+                showToast('请先创建处理意见', 'error');
+                return;
+            }
+            try {
+                await fetchAPI(`/treatment-opinions/${currentOpinionId}/rerun`, { method: 'POST' });
+                showToast('重复运行成功', 'success');
+                loadDetail(currentFormId);
+            } catch (e) {}
+        }
+
+        function showSupplementModal() {
+            document.getElementById('supplementModal').classList.add('show');
+        }
+
+        async function submitSupplement() {
+            const source = document.getElementById('supplementSource').value.trim();
+            const remarks = document.getElementById('supplementRemarks').value.trim();
+            const operator = document.getElementById('supplementOperator').value.trim();
+            if (!source || !remarks) {
+                showToast('请填写补录来源和备注', 'error');
+                return;
+            }
+            try {
+                await fetchAPI(`/weighing-forms/${currentFormId}/supplement?source=${encodeURIComponent(source)}&remarks=${encodeURIComponent(remarks)}&operator=${encodeURIComponent(operator)}`, { method: 'POST' });
+                showToast('补录成功', 'success');
+                closeModal('supplementModal');
+                loadDetail(currentFormId);
+            } catch (e) {}
+        }
+
+        function showConfirmModal() {
+            if (!currentOpinionId) {
+                showToast('请先创建处理意见', 'error');
+                return;
+            }
+            fetchAPI(`/weighing-forms/${currentFormId}/spectrum-overlap`).then(data => {
+                let info = '确认该批次的处理结果';
+                if (data.has_overlap) {
+                    info = `⚠️ 该批次存在谱峰重叠，卡在：<strong style="color:#f56c6c">${data.material}</strong><br>请确认已正确处理谱峰重叠问题。`;
+                }
+                document.getElementById('confirmInfo').innerHTML = info;
+                document.getElementById('confirmModal').classList.add('show');
+            }).catch(() => {
+                document.getElementById('confirmInfo').textContent = '确认该批次的处理结果';
+                document.getElementById('confirmModal').classList.add('show');
+            });
+        }
+
+        async function submitConfirm() {
+            const operator = document.getElementById('confirmOperator').value.trim();
+            const remarks = document.getElementById('confirmRemarks').value.trim();
+            if (!operator) {
+                showToast('请填写确认人', 'error');
+                return;
+            }
+            try {
+                await fetchAPI(`/treatment-opinions/${currentOpinionId}/manual-confirm?operator=${encodeURIComponent(operator)}&remarks=${encodeURIComponent(remarks)}`, { method: 'POST' });
+                showToast('人工确认成功', 'success');
+                closeModal('confirmModal');
+                loadDetail(currentFormId);
+            } catch (e) {}
+        }
+
+        async function exportReport() {
+            if (!currentOpinionId) {
+                showToast('请先创建处理意见', 'error');
+                return;
+            }
+            try {
+                await fetchAPI(`/treatment-opinions/${currentOpinionId}/export-report`, { method: 'POST' });
+                showToast('报告导出成功，版本号已更新', 'success');
+                loadDetail(currentFormId);
+            } catch (e) {}
+        }
+
+        async function importSampleData() {
+            if (!confirm('确定要导入样例数据吗？这将添加5条测试记录。')) return;
+            try {
+                const result = await fetchAPI('/import-sample-data', { method: 'POST' });
+                showToast(`成功导入 ${result.count} 条样例数据`, 'success');
+                loadForms();
+            } catch (e) {}
+        }
+
+        function showCreateModal() {
+            document.getElementById('createModal').classList.add('show');
+        }
+
+        async function submitCreate() {
+            const batchNo = document.getElementById('newBatchNo').value.trim();
+            const tankNo = document.getElementById('newTankNo').value.trim();
+            const reagentName = document.getElementById('newReagentName').value.trim();
+            const operator = document.getElementById('newOperator').value.trim();
+            if (!batchNo || !tankNo || !reagentName) {
+                showToast('请填写必填项', 'error');
+                return;
+            }
+            try {
+                const form = await fetchAPI('/weighing-forms/', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        batch_no: batchNo,
+                        tank_no: tankNo,
+                        reagent_name: reagentName,
+                        weighing_operator: operator || null
+                    })
+                });
+                showToast('创建成功', 'success');
+                closeModal('createModal');
+                loadForms();
+                loadDetail(form.id);
+            } catch (e) {}
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.classList.remove('show');
+            });
+        });
+
+        loadForms();
+    </script>
+</body>
+</html>

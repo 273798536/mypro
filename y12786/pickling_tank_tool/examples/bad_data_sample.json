@@ -1,0 +1,58 @@
+{
+    "description": "酸洗槽浓度补加 - 坏数据样例（试剂浓度错填）",
+    "scenario": "操作员录入时手滑，将65%写成650%，导致后续计算全部错误",
+    "weighing_form": {
+        "batch_no": "SX-BAD-20260610-001",
+        "tank_no": "酸洗槽#5",
+        "reagent_name": "硝酸",
+        "required_amount": 3000,
+        "actual_amount": 3050,
+        "unit": "mL",
+        "weighing_operator": "孙工",
+        "weighing_date": "2026-06-03T08:45:00",
+        "weighing_time": "08:45",
+        "balance_no": "BL-004",
+        "remarks": "日常补加",
+        "is_bad_data": true,
+        "bad_data_reason": "试剂浓度错填：浓度值填错10倍，实际应为65%，记录为650%"
+    },
+    "reagent_ledger": {
+        "reagent_batch_no": "HNO3-20260501-BAD",
+        "reagent_cas_no": "7697-37-2",
+        "purity": "650%",
+        "concentration": "650%",
+        "concentration_value": 650,
+        "concentration_unit": "%",
+        "manufacturer": "国药集团化学试剂有限公司",
+        "production_date": "2026-05-01T00:00:00",
+        "expiry_date": "2027-04-30T00:00:00",
+        "storage_condition": "阴凉通风处",
+        "receiver": "孙工",
+        "receive_date": "2026-05-05T00:00:00",
+        "usage_record": "首次使用",
+        "remarks": "典型坏数据：浓度不可能达到650%，属于录入时多写了一个0"
+    },
+    "treatment_opinion": {
+        "inspector": "周工",
+        "inspection_date": "2026-06-03T09:30:00",
+        "original_concentration": 140,
+        "target_concentration": 150,
+        "calculated_supplement": 500,
+        "actual_supplement": 3050,
+        "spectrum_peak_overlap": false,
+        "preliminary_judgment": "数据错误",
+        "final_judgment": "数据错误",
+        "run_count": 3,
+        "processing_remarks": "已标记为坏数据，实际补加量3050mL异常偏大，原因是浓度值错填导致计算错误。正确浓度应为65%，实际补加应为500mL左右。"
+    },
+    "error_analysis": {
+        "error_type": "数据录入错误",
+        "error_field": "concentration_value / concentration",
+        "original_value": "65%",
+        "wrong_value": "650%",
+        "error_cause": "手滑多输入了一个0",
+        "impact": "计算补加量时偏差10倍，导致实际补加量远大于需求",
+        "detection_method": "数据质量检查：浓度值超过100%自动标记异常",
+        "prevention": "增加数值范围校验，浓度字段上限设为100%"
+    }
+}
