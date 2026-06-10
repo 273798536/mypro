@@ -1,0 +1,4 @@
+﻿材料批次,情景,基线最优模型,情景最优模型,基线Langmuir_Qmax,情景Langmuir_Qmax,是否改变结论
+MIL-101-Cr-20240515,假设漏记实际12h（qe×0.8）,Freundlich,Langmuir,824.445,755.401,True
+MIL-101-Cr-20240515,剔除漏记行（认为未平衡）,Freundlich,Freundlich,824.445,806.322,False
+MIL-101-Cr-20240515,ppm严格密度校正(×1.005),Freundlich,Freundlich,824.445,820.288,False
