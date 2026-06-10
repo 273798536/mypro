@@ -1,0 +1,105 @@
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid var(--border-color);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.qcBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.qcClean {
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--color-clean);
+}
+
+.qcNeedRecheck {
+  background: rgba(255, 152, 0, 0.15);
+  color: var(--color-need-recheck);
+}
+
+.qcFlagged {
+  background: rgba(244, 67, 54, 0.15);
+  color: var(--color-flagged);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.value {
+  font-size: 14px;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+.explanationBox {
+  background: var(--bg-primary);
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  border-left: 3px solid var(--bg-accent);
+}
+
+.linkBtn {
+  display: inline-block;
+  padding: 4px 10px;
+  margin-right: 8px;
+  margin-top: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--color-clean);
+  transition: all var(--transition);
+}
+
+.linkBtn:hover {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.dupBadge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  background: rgba(158, 158, 158, 0.2);
+  color: var(--color-duplicate);
+  margin-left: 6px;
+}

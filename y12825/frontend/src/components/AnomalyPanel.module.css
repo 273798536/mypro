@@ -1,0 +1,106 @@
+.pageTitle {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.anomalyList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.anomalyCard {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--color-flagged);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.anomalyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.anomalyId {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.anomalyLineage {
+  color: var(--color-clean);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.anomalyLineage:hover {
+  text-decoration: underline;
+}
+
+.deviation {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(244, 67, 54, 0.15);
+  color: var(--color-flagged);
+}
+
+.anomalyType {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: rgba(255, 152, 0, 0.15);
+  color: var(--color-need-recheck);
+}
+
+.anomalyDetails {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.anomalyExplanation {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.reviewBtn {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid var(--color-clean);
+  color: var(--color-clean);
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  transition: all var(--transition);
+}
+
+.reviewBtn:hover {
+  background: var(--color-clean);
+  color: #fff;
+}
+
+.loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 60px 20px;
+}
+
+.noData {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 60px 20px;
+}

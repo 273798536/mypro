@@ -1,0 +1,176 @@
+.pageTitle {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 18px;
+  text-align: center;
+  border-top: 3px solid var(--border-color);
+}
+
+.cardTotal {
+  border-top-color: #42a5f5;
+}
+
+.cardClean {
+  border-top-color: var(--color-clean);
+}
+
+.cardRecheck {
+  border-top-color: var(--color-need-recheck);
+}
+
+.cardFlagged {
+  border-top-color: var(--color-flagged);
+}
+
+.cardDuplicate {
+  border-top-color: var(--color-duplicate);
+}
+
+.cardAnomaly {
+  border-top-color: #ab47bc;
+}
+
+.cardValue {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.cardLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.filterBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 13px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+}
+
+.filterBtn:hover {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+}
+
+.filterBtnActive {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+  border-color: var(--bg-accent);
+}
+
+.tableWrap {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  text-align: left;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+tr:hover td {
+  background: rgba(15, 52, 96, 0.3);
+}
+
+.qcBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.qcClean {
+  background: rgba(76, 175, 80, 0.15);
+  color: var(--color-clean);
+}
+
+.qcNeedRecheck {
+  background: rgba(255, 152, 0, 0.15);
+  color: var(--color-need-recheck);
+}
+
+.qcFlagged {
+  background: rgba(244, 67, 54, 0.15);
+  color: var(--color-flagged);
+}
+
+.dupBadge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  background: rgba(158, 158, 158, 0.2);
+  color: var(--color-duplicate);
+  margin-left: 6px;
+}
+
+.loading {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 60px 20px;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
+}

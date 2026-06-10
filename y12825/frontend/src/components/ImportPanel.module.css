@@ -1,0 +1,133 @@
+.pageTitle {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.uploadZone {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  border: 2px dashed var(--border-color);
+  padding: 48px 24px;
+  text-align: center;
+  margin-bottom: 24px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.uploadZone:hover {
+  border-color: var(--bg-accent);
+  background: rgba(15, 52, 96, 0.3);
+}
+
+.uploadIcon {
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+.uploadText {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.uploadHint {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.uploading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+
+.resultSection {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.resultTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.resultGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.resultCard {
+  background: var(--bg-primary);
+  border-radius: 4px;
+  padding: 12px;
+  text-align: center;
+}
+
+.resultValue {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.resultLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.cleanValue {
+  color: var(--color-clean);
+}
+
+.dupValue {
+  color: var(--color-flagged);
+}
+
+.warningSection {
+  margin-top: 16px;
+}
+
+.warningTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-need-recheck);
+  margin-bottom: 8px;
+}
+
+.warningItem {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 4px 0;
+}
+
+.dupWarning {
+  margin-top: 16px;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 4px;
+  padding: 12px;
+}
+
+.dupWarningTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-flagged);
+  margin-bottom: 8px;
+}
+
+.dupId {
+  display: inline-block;
+  padding: 2px 8px;
+  margin: 2px 4px;
+  background: rgba(244, 67, 54, 0.15);
+  color: var(--color-flagged);
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.fileInput {
+  display: none;
+}
