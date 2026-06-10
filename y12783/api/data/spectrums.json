@@ -1,0 +1,40 @@
+[
+  {
+    "id": "s-001",
+    "batchId": "b-001",
+    "spectrumFile": "spectrum_coat001.csv",
+    "capturedAt": "2026-06-08T12:00:00Z",
+    "interpreted": true,
+    "interpretedBy": "张主管",
+    "interpretedAt": "2026-06-09T09:00:00Z",
+    "interpretationRemark": "谱图特征峰清晰，与厚度估算结果一致",
+    "interpretationStatus": "pass",
+    "consistentWithThickness": true
+  },
+  {
+    "id": "s-002",
+    "batchId": "b-002",
+    "spectrumFile": "spectrum_coat002.csv",
+    "capturedAt": "2026-06-09T10:30:00Z",
+    "interpreted": false
+  },
+  {
+    "id": "s-003",
+    "batchId": "b-003",
+    "spectrumFile": "spectrum_coat003.csv",
+    "capturedAt": "2026-06-07T15:00:00Z",
+    "interpreted": false
+  },
+  {
+    "id": "s-004",
+    "batchId": "b-004",
+    "spectrumFile": "spectrum_coat004.csv",
+    "capturedAt": "2026-06-06T17:00:00Z",
+    "interpreted": true,
+    "interpretedBy": "李工",
+    "interpretedAt": "2026-06-08T14:00:00Z",
+    "interpretationRemark": "厚度计算与透射谱拟合结果吻合",
+    "interpretationStatus": "pass",
+    "consistentWithThickness": true
+  }
+]

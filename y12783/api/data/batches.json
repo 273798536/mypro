@@ -1,0 +1,67 @@
+[
+  {
+    "id": "b-001",
+    "batchNo": "COAT-2026-0608-01",
+    "materialNo": "MAT-SiO2-001",
+    "materialName": "SiO2薄膜样品",
+    "substrateType": "单晶硅片",
+    "coatingType": "SiO2",
+    "operator": "李工",
+    "status": "completed",
+    "createdAt": "2026-06-08T09:15:00Z",
+    "updatedAt": "2026-06-08T14:30:00Z",
+    "remark": "标准工艺批次"
+  },
+  {
+    "id": "b-002",
+    "batchNo": "COAT-2026-0608-02",
+    "materialNo": "MAT-TiO2-003",
+    "materialName": "TiO2薄膜样品",
+    "substrateType": "石英玻璃",
+    "coatingType": "TiO2",
+    "operator": "王技术员",
+    "status": "processing",
+    "createdAt": "2026-06-08T11:00:00Z",
+    "updatedAt": "2026-06-09T08:45:00Z",
+    "remark": "可见光催化实验用"
+  },
+  {
+    "id": "b-003",
+    "batchNo": "COAT-2026-0607-01",
+    "materialNo": "MAT-SiO2-002",
+    "materialName": "SiO2薄膜样品",
+    "substrateType": "单晶硅片",
+    "coatingType": "SiO2",
+    "operator": "李工",
+    "status": "exception",
+    "createdAt": "2026-06-07T10:30:00Z",
+    "updatedAt": "2026-06-07T16:00:00Z",
+    "remark": "空白对照数据缺失"
+  },
+  {
+    "id": "b-004",
+    "batchNo": "COAT-2026-0606-03",
+    "materialNo": "MAT-SiN-001",
+    "materialName": "Si3N4薄膜样品",
+    "substrateType": "单晶硅片",
+    "coatingType": "Si3N4",
+    "operator": "张工程师",
+    "status": "completed",
+    "createdAt": "2026-06-06T14:20:00Z",
+    "updatedAt": "2026-06-06T17:10:00Z",
+    "remark": "钝化层测试"
+  },
+  {
+    "id": "b-005",
+    "batchNo": "COAT-2026-0605-02",
+    "materialNo": "MAT-Al2O3-001",
+    "materialName": "Al2O3薄膜样品",
+    "substrateType": "蓝宝石",
+    "coatingType": "Al2O3",
+    "operator": "王技术员",
+    "status": "pending",
+    "createdAt": "2026-06-05T16:45:00Z",
+    "updatedAt": "2026-06-05T16:45:00Z",
+    "remark": "待厚度测试"
+  }
+]

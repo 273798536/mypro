@@ -1,0 +1,81 @@
+[
+  {
+    "id": "t-001",
+    "batchId": "b-001",
+    "version": 1,
+    "algorithm": "standard",
+    "blankControlComplete": true,
+    "parameters": {
+      "wavelength": 632.8,
+      "refractiveIndex": 1.457,
+      "reflectance": 0.185
+    },
+    "thicknessNm": 285.6,
+    "confidenceMin": 280.2,
+    "confidenceMax": 291,
+    "source": "web",
+    "operator": "李工",
+    "status": "pass",
+    "remark": "椭偏仪测试验证一致",
+    "createdAt": "2026-06-08T11:30:00Z"
+  },
+  {
+    "id": "t-002",
+    "batchId": "b-001",
+    "version": 2,
+    "algorithm": "standard",
+    "blankControlComplete": true,
+    "parameters": {
+      "wavelength": 632.8,
+      "refractiveIndex": 1.46,
+      "reflectance": 0.182
+    },
+    "thicknessNm": 289.3,
+    "confidenceMin": 284,
+    "confidenceMax": 294.6,
+    "source": "web",
+    "operator": "李工",
+    "status": "pass",
+    "remark": "复测，折射率修正后",
+    "createdAt": "2026-06-08T14:30:00Z"
+  },
+  {
+    "id": "t-003",
+    "batchId": "b-003",
+    "version": 1,
+    "algorithm": "degraded_cli",
+    "blankControlComplete": false,
+    "parameters": {
+      "wavelength": 632.8,
+      "refractiveIndex": 1.457
+    },
+    "thicknessNm": 310.5,
+    "confidenceMin": 290,
+    "confidenceMax": 335,
+    "source": "cli",
+    "operator": "system",
+    "status": "pending",
+    "remark": "空白对照缺失，降级估算，置信区间较宽",
+    "createdAt": "2026-06-07T18:00:00Z"
+  },
+  {
+    "id": "t-004",
+    "batchId": "b-004",
+    "version": 1,
+    "algorithm": "standard",
+    "blankControlComplete": true,
+    "parameters": {
+      "wavelength": 550,
+      "refractiveIndex": 2.05,
+      "transmittance": 0.72
+    },
+    "thicknessNm": 120.8,
+    "confidenceMin": 117.5,
+    "confidenceMax": 124.1,
+    "source": "web",
+    "operator": "张工程师",
+    "status": "pass",
+    "remark": "",
+    "createdAt": "2026-06-06T16:30:00Z"
+  }
+]
