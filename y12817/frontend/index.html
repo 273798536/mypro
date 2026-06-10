@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生态样方覆盖度估算系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>🌿 生态样方覆盖度估算系统</h1>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="generateSamples()">生成样例数据</button>
+                <span class="current-user">当前用户：张育种</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <nav class="sidebar">
+                <h3>样本列表</h3>
+                <div id="sampleList" class="sample-list"></div>
+            </nav>
+
+            <section class="content-area">
+                <div id="welcomeView" class="welcome-view">
+                    <div class="welcome-card">
+                        <h2>欢迎使用生态样方覆盖度估算系统</h2>
+                        <p>请从左侧选择一个样方样本，查看详细的覆盖度估算结果。</p>
+                        <div class="feature-list">
+                            <div class="feature-item">
+                                <span class="feature-icon">📊</span>
+                                <div>
+                                    <h4>图、表、文一体化</h4>
+                                    <p>估算结果的图表和文字说明一一对应，数据一致</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🔄</span>
+                                <div>
+                                    <h4>人工修正与质控共用记录</h4>
+                                    <p>界面操作和报告生成使用同一批处理记录</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📋</span>
+                                <div>
+                                    <h4>版本对比</h4>
+                                    <p>测序结果修改后，新旧结论并排对比查看</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">📝</span>
+                                <div>
+                                    <h4>普通话报告</h4>
+                                    <p>报告自带白话文解释，可直接复制给同事</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🕐</span>
+                                <div>
+                                    <h4>完整历史追踪</h4>
+                                    <p>谁改的、什么时候改的、为什么改，一目了然</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <span class="feature-icon">🔍</span>
+                                <div>
+                                    <h4>异常追溯链路</h4>
+                                    <p>顺着异常往回查，查到测序结果和处理意见</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sampleDetailView" class="sample-detail-view" style="display:none;">
+                    <div class="detail-tabs">
+                        <button class="tab-btn active" data-tab="overview" onclick="switchTab('overview')">概览</button>
+                        <button class="tab-btn" data-tab="sequencing" onclick="switchTab('sequencing')">测序结果</button>
+                        <button class="tab-btn" data-tab="qc" onclick="switchTab('qc')">质控与修正</button>
+                        <button class="tab-btn" data-tab="compare" onclick="switchTab('compare')">版本对比</button>
+                        <button class="tab-btn" data-tab="history" onclick="switchTab('history')">处理历史</button>
+                        <button class="tab-btn" data-tab="trace" onclick="switchTab('trace')">异常追溯</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div id="tab-overview" class="tab-pane active">
+                            <div class="sample-header">
+                                <h2 id="sampleTitle">样本详情</h2>
+                                <div class="sample-meta">
+                                    <span id="sampleLocation" class="meta-tag"></span>
+                                    <span id="sampleHabitat" class="meta-tag"></span>
+                                    <span id="sampleDate" class="meta-tag"></span>
+                                </div>
+                            </div>
+
+                            <div class="qc-banner" id="qcbanner" style="display:none;">
+                                <span class="qc-icon">⚠️</span>
+                                <span id="qcBannerText">该样本存在质控问题</span>
+                                <button class="btn btn-small" onclick="switchTab('qc')">查看详情</button>
+                            </div>
+
+                            <div class="action-bar">
+                                <button class="btn btn-primary" onclick="runEstimation()">
+                                    📊 运行覆盖度估算
+                                </button>
+                                <span class="version-info" id="versionInfo"></span>
+                            </div>
+
+                            <div id="noReportHint" class="no-report-hint">
+                                <p>暂无估算报告，点击上方"运行覆盖度估算"按钮生成报告</p>
+                            </div>
+
+                            <div id="reportContent" style="display:none;">
+                                <div class="stats-grid">
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="statTotalCoverage">--</div>
+                                        <div class="stat-label">总覆盖度</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="statRichness">--</div>
+                                        <div class="stat-label">物种数</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="statShannon">--</div>
+                                        <div class="stat-label">Shannon指数</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="statEvenness">--</div>
+                                        <div class="stat-label">均匀度</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="statDominant">--</div>
+                                        <div class="stat-label">优势种</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-value" id="statCI">--</div>
+                                        <div class="stat-label">置信区间</div>
+                                    </div>
+                                </div>
+
+                                <div class="charts-row">
+                                    <div class="chart-card">
+                                        <h3>物种覆盖度分布</h3>
+                                        <div id="coverageChart" class="chart-container"></div>
+                                    </div>
+                                    <div class="chart-card">
+                                        <h3>物种相对丰度</h3>
+                                        <div id="abundanceChart" class="chart-container"></div>
+                                    </div>
+                                </div>
+
+                                <div class="charts-row">
+                                    <div class="chart-card">
+                                        <h3>Alpha多样性指数</h3>
+                                        <div id="diversityChart" class="chart-container-small"></div>
+                                    </div>
+                                    <div class="chart-card">
+                                        <h3>覆盖度置信区间</h3>
+                                        <div id="ciChart" class="chart-container-small"></div>
+                                    </div>
+                                </div>
+
+                                <div class="report-section">
+                                    <h3>📋 报告说明（普通话版）</h3>
+                                    <div class="plain-summary" id="plainSummary"></div>
+                                </div>
+
+                                <div class="report-section">
+                                    <h3>📝 可复制文案</h3>
+                                    <div class="copyable-box">
+                                        <pre id="copyableText"></pre>
+                                        <button class="btn btn-small btn-copy" onclick="copyReportText()">
+                                            📋 复制文案
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-sequencing" class="tab-pane">
+                            <div class="section-header">
+                                <h3>测序结果详情</h3>
+                                <div class="section-actions">
+                                    <button class="btn btn-small btn-secondary" onclick="showAddSpeciesModal()">
+                                        ➕ 添加物种
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>物种名称</th>
+                                            <th>reads数</th>
+                                            <th>相对丰度</th>
+                                            <th>GC含量</th>
+                                            <th>质量值</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sequencingTableBody"></tbody>
+                                </table>
+                            </div>
+                            <div class="hint-box">
+                                <p>💡 提示：修改测序结果后，需要重新运行覆盖度估算才能更新报告</p>
+                            </div>
+                        </div>
+
+                        <div id="tab-qc" class="tab-pane">
+                            <div class="section-header">
+                                <h3>质控标记与人工修正</h3>
+                            </div>
+                            <div id="qcFlagsList"></div>
+
+                            <div class="section-header" style="margin-top: 30px;">
+                                <h3>处理记录（与报告共用）</h3>
+                            </div>
+                            <div id="processingRecordsQc"></div>
+                        </div>
+
+                        <div id="tab-compare" class="tab-pane">
+                            <div class="section-header">
+                                <h3>报告版本对比</h3>
+                                <div class="compare-selectors">
+                                    <div class="selector-group">
+                                        <label>版本 A：</label>
+                                        <select id="compareVersionA" onchange="updateComparison()"></select>
+                                    </div>
+                                    <div class="selector-group">
+                                        <label>版本 B：</label>
+                                        <select id="compareVersionB" onchange="updateComparison()"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="noCompareHint" class="no-report-hint">
+                                <p>请确保至少有两个版本的报告，然后选择版本进行对比</p>
+                            </div>
+
+                            <div id="compareContent" style="display:none;">
+                                <div class="compare-summary">
+                                    <div class="compare-item">
+                                        <div class="compare-label">总覆盖度</div>
+                                        <div class="compare-values">
+                                            <span class="compare-a" id="compareCoverageA">--</span>
+                                            <span class="compare-arrow">→</span>
+                                            <span class="compare-b" id="compareCoverageB">--</span>
+                                            <span class="compare-diff" id="compareCoverageDiff"></span>
+                                        </div>
+                                    </div>
+                                    <div class="compare-item">
+                                        <div class="compare-label">物种数</div>
+                                        <div class="compare-values">
+                                            <span class="compare-a" id="compareRichnessA">--</span>
+                                            <span class="compare-arrow">→</span>
+                                            <span class="compare-b" id="compareRichnessB">--</span>
+                                            <span class="compare-diff" id="compareRichnessDiff"></span>
+                                        </div>
+                                    </div>
+                                    <div class="compare-item">
+                                        <div class="compare-label">Shannon指数</div>
+                                        <div class="compare-values">
+                                            <span class="compare-a" id="compareShannonA">--</span>
+                                            <span class="compare-arrow">→</span>
+                                            <span class="compare-b" id="compareShannonB">--</span>
+                                            <span class="compare-diff" id="compareShannonDiff"></span>
+                                        </div>
+                                    </div>
+                                    <div class="compare-item">
+                                        <div class="compare-label">优势种</div>
+                                        <div class="compare-values">
+                                            <span class="compare-a" id="compareDominantA">--</span>
+                                            <span class="compare-arrow">→</span>
+                                            <span class="compare-b" id="compareDominantB">--</span>
+                                            <span class="compare-diff" id="compareDominantDiff"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="chart-card">
+                                    <h3>物种覆盖度对比</h3>
+                                    <div id="compareChart" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-history" class="tab-pane">
+                            <div class="section-header">
+                                <h3>处理历史记录</h3>
+                            </div>
+                            <div class="timeline" id="historyTimeline"></div>
+                        </div>
+
+                        <div id="tab-trace" class="tab-pane">
+                            <div class="section-header">
+                                <h3>异常追溯</h3>
+                                <p class="trace-desc">选择一个质控异常，顺着链路查看：异常 → 受影响的测序结果 → 处理意见与记录</p>
+                            </div>
+
+                            <div class="trace-selector">
+                                <label>选择异常标记：</label>
+                                <select id="traceFlagSelect" onchange="runTrace()"></select>
+                            </div>
+
+                            <div id="traceContent" style="display:none;">
+                                <div class="trace-steps">
+                                    <div class="trace-step active">
+                                        <div class="step-number">1</div>
+                                        <div class="step-title">异常标记</div>
+                                        <div class="step-content" id="traceStep1"></div>
+                                    </div>
+                                    <div class="trace-connector"></div>
+                                    <div class="trace-step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-title">受影响测序结果</div>
+                                        <div class="step-content" id="traceStep2"></div>
+                                    </div>
+                                    <div class="trace-connector"></div>
+                                    <div class="trace-step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-title">处理记录与意见</div>
+                                        <div class="step-content" id="traceStep3"></div>
+                                    </div>
+                                    <div class="trace-connector"></div>
+                                    <div class="trace-step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-title">报告影响</div>
+                                        <div class="step-content" id="traceStep4"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="noTraceHint" class="no-report-hint">
+                                <p>该样本暂无质控异常标记</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="modifyModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>修改测序结果</h3>
+                <button class="modal-close" onclick="closeModal('modifyModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>物种名称</label>
+                    <input type="text" id="modifySpeciesName" readonly>
+                </div>
+                <div class="form-group">
+                    <label>新的reads数</label>
+                    <input type="number" id="modifyReadCount">
+                </div>
+                <div class="form-group">
+                    <label>修改原因</label>
+                    <textarea id="modifyReason" rows="3" placeholder="请说明修改原因..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>操作人</label>
+                    <input type="text" id="modifyOperator" value="张育种">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modifyModal')">取消</button>
+                <button class="btn btn-primary" onclick="submitModify()">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="addSpeciesModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>添加物种</h3>
+                <button class="modal-close" onclick="closeModal('addSpeciesModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>物种名称</label>
+                    <input type="text" id="addSpeciesName" placeholder="请输入物种名称">
+                </div>
+                <div class="form-group">
+                    <label>reads数</label>
+                    <input type="number" id="addSpeciesReads" value="10000">
+                </div>
+                <div class="form-group">
+                    <label>添加原因</label>
+                    <textarea id="addSpeciesReason" rows="3" placeholder="请说明添加原因..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>操作人</label>
+                    <input type="text" id="addSpeciesOperator" value="张育种">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('addSpeciesModal')">取消</button>
+                <button class="btn btn-primary" onclick="submitAddSpecies()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="resolveQcModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>处理质控问题</h3>
+                <button class="modal-close" onclick="closeModal('resolveQcModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>质控标记</label>
+                    <input type="text" id="resolveFlagId" readonly>
+                </div>
+                <div class="form-group">
+                    <label>处理意见</label>
+                    <textarea id="resolveResolution" rows="4" placeholder="请描述处理方式和结论..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>操作人</label>
+                    <input type="text" id="resolveOperator" value="张育种">
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" id="markContaminationResolved">
+                        标记污染问题已解决
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('resolveQcModal')">取消</button>
+                <button class="btn btn-primary" onclick="submitResolveQc()">确认处理</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

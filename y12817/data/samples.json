@@ -1,0 +1,804 @@
+{
+  "Q2024-001": {
+    "metadata": {
+      "sample_id": "Q2024-001",
+      "quadrat_id": "Q-A01",
+      "location": "内蒙古锡林郭勒草原",
+      "collection_date": "2024-07-15",
+      "collector": "张育种",
+      "habitat_type": "典型草原",
+      "area_m2": 1.0
+    },
+    "sequencing_results": [
+      {
+        "species_name": "冰草",
+        "read_count": 25738,
+        "relative_abundance": 0.160349,
+        "gc_content": 43.98,
+        "quality_score": 28.27
+      },
+      {
+        "species_name": "针茅",
+        "read_count": 24300,
+        "relative_abundance": 0.151391,
+        "gc_content": 50.9,
+        "quality_score": 34.5
+      },
+      {
+        "species_name": "羊草",
+        "read_count": 40000,
+        "relative_abundance": 0.249203,
+        "gc_content": 51.79,
+        "quality_score": 30.2
+      },
+      {
+        "species_name": "披碱草",
+        "read_count": 10111,
+        "relative_abundance": 0.062992,
+        "gc_content": 40.13,
+        "quality_score": 36.09
+      },
+      {
+        "species_name": "猪毛菜",
+        "read_count": 18170,
+        "relative_abundance": 0.1132,
+        "gc_content": 53.96,
+        "quality_score": 36.06
+      },
+      {
+        "species_name": "小叶锦鸡儿",
+        "read_count": 8736,
+        "relative_abundance": 0.054426,
+        "gc_content": 43.11,
+        "quality_score": 31.4
+      },
+      {
+        "species_name": "驼绒藜",
+        "read_count": 13279,
+        "relative_abundance": 0.082729,
+        "gc_content": 46.73,
+        "quality_score": 37.57
+      },
+      {
+        "species_name": "冷蒿",
+        "read_count": 20178,
+        "relative_abundance": 0.12571,
+        "gc_content": 41.93,
+        "quality_score": 28.93
+      }
+    ],
+    "processing_records": [
+      {
+        "record_id": "REC-15dc0206",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "张育种",
+        "action_type": "sample_collection",
+        "details": {
+          "location": "内蒙古锡林郭勒草原",
+          "habitat_type": "典型草原",
+          "area_m2": 1.0
+        },
+        "reason": "野外样方采集"
+      },
+      {
+        "record_id": "REC-fd590c79",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "测序中心-刘技术",
+        "action_type": "sequencing",
+        "details": {
+          "platform": "Illumina NovaSeq",
+          "total_reads": 150000,
+          "read_length": "PE150"
+        },
+        "reason": "样本送检测序"
+      },
+      {
+        "record_id": "REC-dc34c054",
+        "timestamp": "2026-06-11 00:01:37",
+        "operator": "张育种",
+        "action_type": "coverage_estimation",
+        "details": {
+          "report_id": "RPT-eda5e8a7",
+          "version": 1,
+          "method": "relative_abundance_scaling",
+          "total_coverage": 85.0
+        },
+        "reason": "执行覆盖度估算"
+      },
+      {
+        "record_id": "REC-40631cda",
+        "timestamp": "2026-06-11 00:04:37",
+        "operator": "李专员",
+        "action_type": "modify_sequencing",
+        "details": {
+          "species_name": "羊草",
+          "old_read_count": 29484,
+          "new_read_count": 40000,
+          "change": 10516
+        },
+        "reason": "人工复核修正，原始测序偏低"
+      },
+      {
+        "record_id": "REC-0ea2e879",
+        "timestamp": "2026-06-11 00:04:37",
+        "operator": "李专员",
+        "action_type": "coverage_estimation",
+        "details": {
+          "report_id": "RPT-23f89dda",
+          "version": 2,
+          "method": "relative_abundance_scaling",
+          "total_coverage": 85.0
+        },
+        "reason": "执行覆盖度估算"
+      }
+    ],
+    "qc_flags": [],
+    "reports": [
+      {
+        "report_id": "RPT-eda5e8a7",
+        "sample_id": "Q2024-001",
+        "generated_at": "2026-06-11 00:01:37",
+        "generated_by": "张育种",
+        "estimate": {
+          "sample_id": "Q2024-001",
+          "total_coverage": 85.0,
+          "species_coverage": {
+            "冰草": 14.59,
+            "针茅": 13.77,
+            "羊草": 16.71,
+            "披碱草": 5.73,
+            "猪毛菜": 10.3,
+            "小叶锦鸡儿": 4.95,
+            "驼绒藜": 7.52,
+            "冷蒿": 11.43
+          },
+          "species_richness": 8,
+          "shannon_index": 2.0047,
+          "simpson_index": 0.8571,
+          "evenness": 0.9641,
+          "dominant_species": "羊草",
+          "estimation_method": "relative_abundance_scaling",
+          "confidence_interval": [
+            79.8,
+            89.8
+          ]
+        },
+        "plain_language_summary": "样方 Q2024-001 的植被覆盖度估算结果为 85.0%，属于很高水平。植被覆盖度非常好，群落结构完整。\n该样方共检测到 8 个物种，Shannon多样性指数为 2.0047，物种分布非常均匀。\n优势种为 羊草，覆盖度占比 16.71%。\n前三优势物种分别是：羊草（16.71%）、冰草（14.59%）、针茅（13.77%）。\n生境类型：典型草原。",
+        "copyable_text": "【生态样方覆盖度报告】样方编号：Q2024-001\n植被总覆盖度：85.0%（很高）\n物种数量：8 种\n优势物种：羊草\nShannon多样性指数：2.0047\n生境类型：典型草原\n简要说明：植被覆盖度非常好，群落结构完整，物种分布非常均匀。",
+        "version": 1,
+        "parent_version": null
+      },
+      {
+        "report_id": "RPT-23f89dda",
+        "sample_id": "Q2024-001",
+        "generated_at": "2026-06-11 00:04:37",
+        "generated_by": "李专员",
+        "estimate": {
+          "sample_id": "Q2024-001",
+          "total_coverage": 85.0,
+          "species_coverage": {
+            "冰草": 13.63,
+            "针茅": 12.87,
+            "羊草": 21.18,
+            "披碱草": 5.35,
+            "猪毛菜": 9.62,
+            "小叶锦鸡儿": 4.63,
+            "驼绒藜": 7.03,
+            "冷蒿": 10.69
+          },
+          "species_richness": 8,
+          "shannon_index": 1.9717,
+          "simpson_index": 0.8469,
+          "evenness": 0.9482,
+          "dominant_species": "羊草",
+          "estimation_method": "relative_abundance_scaling",
+          "confidence_interval": [
+            79.8,
+            89.8
+          ]
+        },
+        "plain_language_summary": "样方 Q2024-001 的植被覆盖度估算结果为 85.0%，属于很高水平。植被覆盖度非常好，群落结构完整。\n该样方共检测到 8 个物种，Shannon多样性指数为 1.9717，物种分布非常均匀。\n优势种为 羊草，覆盖度占比 21.18%。\n前三优势物种分别是：羊草（21.18%）、冰草（13.63%）、针茅（12.87%）。\n生境类型：典型草原。",
+        "copyable_text": "【生态样方覆盖度报告】样方编号：Q2024-001\n植被总覆盖度：85.0%（很高）\n物种数量：8 种\n优势物种：羊草\nShannon多样性指数：1.9717\n生境类型：典型草原\n简要说明：植被覆盖度非常好，群落结构完整，物种分布非常均匀。",
+        "version": 2,
+        "parent_version": 1
+      }
+    ],
+    "current_report_version": 2,
+    "is_contaminated": false,
+    "contamination_resolved": false
+  },
+  "Q2024-002": {
+    "metadata": {
+      "sample_id": "Q2024-002",
+      "quadrat_id": "Q-A02",
+      "location": "内蒙古锡林郭勒草原",
+      "collection_date": "2024-07-15",
+      "collector": "张育种",
+      "habitat_type": "典型草原",
+      "area_m2": 1.0
+    },
+    "sequencing_results": [
+      {
+        "species_name": "苔草",
+        "read_count": 26377,
+        "relative_abundance": 0.219812,
+        "gc_content": 52.37,
+        "quality_score": 36.29
+      },
+      {
+        "species_name": "糙隐子草",
+        "read_count": 21575,
+        "relative_abundance": 0.179795,
+        "gc_content": 51.55,
+        "quality_score": 36.62
+      },
+      {
+        "species_name": "驼绒藜",
+        "read_count": 32415,
+        "relative_abundance": 0.27013,
+        "gc_content": 40.92,
+        "quality_score": 35.05
+      },
+      {
+        "species_name": "猪毛菜",
+        "read_count": 17663,
+        "relative_abundance": 0.147194,
+        "gc_content": 45.79,
+        "quality_score": 30.28
+      },
+      {
+        "species_name": "羊草",
+        "read_count": 21968,
+        "relative_abundance": 0.18307,
+        "gc_content": 44.66,
+        "quality_score": 28.8
+      }
+    ],
+    "processing_records": [
+      {
+        "record_id": "REC-4cee2586",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "张育种",
+        "action_type": "sample_collection",
+        "details": {
+          "location": "内蒙古锡林郭勒草原",
+          "habitat_type": "典型草原",
+          "area_m2": 1.0
+        },
+        "reason": "野外样方采集"
+      },
+      {
+        "record_id": "REC-1c9d6c6b",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "测序中心-刘技术",
+        "action_type": "sequencing",
+        "details": {
+          "platform": "Illumina NovaSeq",
+          "total_reads": 120000,
+          "read_length": "PE150"
+        },
+        "reason": "样本送检测序"
+      }
+    ],
+    "qc_flags": [],
+    "reports": [],
+    "current_report_version": 0,
+    "is_contaminated": false,
+    "contamination_resolved": false
+  },
+  "Q2024-003": {
+    "metadata": {
+      "sample_id": "Q2024-003",
+      "quadrat_id": "Q-B01",
+      "location": "宁夏沙坡头",
+      "collection_date": "2024-07-18",
+      "collector": "李专员",
+      "habitat_type": "荒漠草原",
+      "area_m2": 1.0
+    },
+    "sequencing_results": [
+      {
+        "species_name": "针茅",
+        "read_count": 29933,
+        "relative_abundance": 0.332596,
+        "gc_content": 58.73,
+        "quality_score": 30.67
+      },
+      {
+        "species_name": "百里香",
+        "read_count": 21566,
+        "relative_abundance": 0.239628,
+        "gc_content": 52.18,
+        "quality_score": 34.48
+      },
+      {
+        "species_name": "猪毛菜",
+        "read_count": 21731,
+        "relative_abundance": 0.241461,
+        "gc_content": 54.58,
+        "quality_score": 29.71
+      },
+      {
+        "species_name": "麻黄",
+        "read_count": 16768,
+        "relative_abundance": 0.186315,
+        "gc_content": 47.59,
+        "quality_score": 29.63
+      }
+    ],
+    "processing_records": [
+      {
+        "record_id": "REC-10253199",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "李专员",
+        "action_type": "sample_collection",
+        "details": {
+          "location": "宁夏沙坡头",
+          "habitat_type": "荒漠草原",
+          "area_m2": 1.0
+        },
+        "reason": "野外样方采集"
+      },
+      {
+        "record_id": "REC-88c4d292",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "测序中心-刘技术",
+        "action_type": "sequencing",
+        "details": {
+          "platform": "Illumina NovaSeq",
+          "total_reads": 90000,
+          "read_length": "PE150"
+        },
+        "reason": "样本送检测序"
+      },
+      {
+        "record_id": "REC-9b9d810e",
+        "timestamp": "2026-06-11 00:06:59",
+        "operator": "张育种",
+        "action_type": "remove_species",
+        "details": {
+          "species_name": "大肠杆菌(疑似污染)",
+          "read_count_removed": 13500
+        },
+        "reason": "确认是样本污染，移除该物种后重新估算"
+      },
+      {
+        "record_id": "REC-a702c50e",
+        "timestamp": "2026-06-11 00:07:01",
+        "operator": "张育种",
+        "action_type": "qc_resolve",
+        "details": {
+          "flag_id": "QC-b4fa76bb",
+          "flag_type": "contamination",
+          "resolution": "已确认是样本污染，已移除大肠杆菌序列，数据可正常使用",
+          "mark_contamination_resolved": true
+        },
+        "reason": "处理质控问题"
+      }
+    ],
+    "qc_flags": [
+      {
+        "flag_id": "QC-b4fa76bb",
+        "sample_id": "Q2024-003",
+        "flag_type": "contamination",
+        "description": "检测到非目标物种序列，疑似样本污染",
+        "severity": "high",
+        "status": "resolved",
+        "raised_by": "自动质控系统",
+        "raised_at": "2026-06-11 00:00:09",
+        "resolved_by": "张育种",
+        "resolved_at": "2026-06-11 00:07:01",
+        "resolution": "已确认是样本污染，已移除大肠杆菌序列，数据可正常使用"
+      }
+    ],
+    "reports": [],
+    "current_report_version": 0,
+    "is_contaminated": true,
+    "contamination_resolved": true
+  },
+  "Q2024-004": {
+    "metadata": {
+      "sample_id": "Q2024-004",
+      "quadrat_id": "Q-C01",
+      "location": "青海三江源",
+      "collection_date": "2024-08-01",
+      "collector": "王研究员",
+      "habitat_type": "高寒草甸",
+      "area_m2": 1.0
+    },
+    "sequencing_results": [
+      {
+        "species_name": "沙蒿",
+        "read_count": 23187,
+        "relative_abundance": 0.115938,
+        "gc_content": 51.67,
+        "quality_score": 32.28
+      },
+      {
+        "species_name": "小叶锦鸡儿",
+        "read_count": 16752,
+        "relative_abundance": 0.083763,
+        "gc_content": 59.95,
+        "quality_score": 31.62
+      },
+      {
+        "species_name": "冰草",
+        "read_count": 19556,
+        "relative_abundance": 0.097783,
+        "gc_content": 49.87,
+        "quality_score": 29.38
+      },
+      {
+        "species_name": "糙隐子草",
+        "read_count": 10156,
+        "relative_abundance": 0.050782,
+        "gc_content": 57.22,
+        "quality_score": 35.56
+      },
+      {
+        "species_name": "羊草",
+        "read_count": 15487,
+        "relative_abundance": 0.077437,
+        "gc_content": 43.2,
+        "quality_score": 29.53
+      },
+      {
+        "species_name": "苔草",
+        "read_count": 22658,
+        "relative_abundance": 0.113293,
+        "gc_content": 51.93,
+        "quality_score": 34.8
+      },
+      {
+        "species_name": "早熟禾",
+        "read_count": 18159,
+        "relative_abundance": 0.090798,
+        "gc_content": 51.92,
+        "quality_score": 31.85
+      },
+      {
+        "species_name": "披碱草",
+        "read_count": 8858,
+        "relative_abundance": 0.044291,
+        "gc_content": 45.03,
+        "quality_score": 32.68
+      },
+      {
+        "species_name": "驼绒藜",
+        "read_count": 8798,
+        "relative_abundance": 0.043991,
+        "gc_content": 58.85,
+        "quality_score": 33.53
+      },
+      {
+        "species_name": "冷蒿",
+        "read_count": 20059,
+        "relative_abundance": 0.100298,
+        "gc_content": 42.29,
+        "quality_score": 34.8
+      },
+      {
+        "species_name": "鸢尾",
+        "read_count": 16227,
+        "relative_abundance": 0.081137,
+        "gc_content": 55.02,
+        "quality_score": 36.85
+      },
+      {
+        "species_name": "针茅",
+        "read_count": 20097,
+        "relative_abundance": 0.100488,
+        "gc_content": 46.8,
+        "quality_score": 35.69
+      }
+    ],
+    "processing_records": [
+      {
+        "record_id": "REC-b0790e1d",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "王研究员",
+        "action_type": "sample_collection",
+        "details": {
+          "location": "青海三江源",
+          "habitat_type": "高寒草甸",
+          "area_m2": 1.0
+        },
+        "reason": "野外样方采集"
+      },
+      {
+        "record_id": "REC-585cf7d7",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "测序中心-刘技术",
+        "action_type": "sequencing",
+        "details": {
+          "platform": "Illumina NovaSeq",
+          "total_reads": 200000,
+          "read_length": "PE150"
+        },
+        "reason": "样本送检测序"
+      }
+    ],
+    "qc_flags": [],
+    "reports": [],
+    "current_report_version": 0,
+    "is_contaminated": false,
+    "contamination_resolved": false
+  },
+  "Q2024-005": {
+    "metadata": {
+      "sample_id": "Q2024-005",
+      "quadrat_id": "Q-C02",
+      "location": "青海三江源",
+      "collection_date": "2024-08-01",
+      "collector": "王研究员",
+      "habitat_type": "高寒草甸",
+      "area_m2": 1.0
+    },
+    "sequencing_results": [
+      {
+        "species_name": "猪毛菜",
+        "read_count": 25449,
+        "relative_abundance": 0.141388,
+        "gc_content": 58.58,
+        "quality_score": 18.08
+      },
+      {
+        "species_name": "百里香",
+        "read_count": 13356,
+        "relative_abundance": 0.074202,
+        "gc_content": 56.63,
+        "quality_score": 36.79
+      },
+      {
+        "species_name": "冷蒿",
+        "read_count": 20554,
+        "relative_abundance": 0.114193,
+        "gc_content": 41.16,
+        "quality_score": 31.08
+      },
+      {
+        "species_name": "麻黄",
+        "read_count": 19920,
+        "relative_abundance": 0.11067,
+        "gc_content": 58.94,
+        "quality_score": 36.78
+      },
+      {
+        "species_name": "羊草",
+        "read_count": 10277,
+        "relative_abundance": 0.057096,
+        "gc_content": 49.72,
+        "quality_score": 28.86
+      },
+      {
+        "species_name": "鸢尾",
+        "read_count": 23166,
+        "relative_abundance": 0.128704,
+        "gc_content": 55.21,
+        "quality_score": 28.69
+      },
+      {
+        "species_name": "沙蒿",
+        "read_count": 18449,
+        "relative_abundance": 0.102498,
+        "gc_content": 42.57,
+        "quality_score": 35.66
+      },
+      {
+        "species_name": "早熟禾",
+        "read_count": 23507,
+        "relative_abundance": 0.130599,
+        "gc_content": 51.0,
+        "quality_score": 32.75
+      },
+      {
+        "species_name": "驼绒藜",
+        "read_count": 18258,
+        "relative_abundance": 0.101437,
+        "gc_content": 57.45,
+        "quality_score": 30.65
+      },
+      {
+        "species_name": "冰草",
+        "read_count": 7058,
+        "relative_abundance": 0.039212,
+        "gc_content": 44.24,
+        "quality_score": 32.23
+      }
+    ],
+    "processing_records": [
+      {
+        "record_id": "REC-1e006501",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "王研究员",
+        "action_type": "sample_collection",
+        "details": {
+          "location": "青海三江源",
+          "habitat_type": "高寒草甸",
+          "area_m2": 1.0
+        },
+        "reason": "野外样方采集"
+      },
+      {
+        "record_id": "REC-3f1256eb",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "测序中心-刘技术",
+        "action_type": "sequencing",
+        "details": {
+          "platform": "Illumina NovaSeq",
+          "total_reads": 180000,
+          "read_length": "PE150"
+        },
+        "reason": "样本送检测序"
+      }
+    ],
+    "qc_flags": [
+      {
+        "flag_id": "QC-73bddbe4",
+        "sample_id": "Q2024-005",
+        "flag_type": "low_quality",
+        "description": "部分物种测序质量值偏低，可能影响覆盖度估算",
+        "severity": "medium",
+        "status": "open",
+        "raised_by": "自动质控系统",
+        "raised_at": "2026-06-11 00:00:09",
+        "resolved_by": null,
+        "resolved_at": null,
+        "resolution": null
+      }
+    ],
+    "reports": [],
+    "current_report_version": 0,
+    "is_contaminated": false,
+    "contamination_resolved": false
+  },
+  "Q2024-006": {
+    "metadata": {
+      "sample_id": "Q2024-006",
+      "quadrat_id": "Q-D01",
+      "location": "云南西双版纳",
+      "collection_date": "2024-08-10",
+      "collector": "赵博士",
+      "habitat_type": "热带雨林",
+      "area_m2": 1.0
+    },
+    "sequencing_results": [
+      {
+        "species_name": "沙蒿",
+        "read_count": 14811,
+        "relative_abundance": 0.059246,
+        "gc_content": 49.45,
+        "quality_score": 33.71
+      },
+      {
+        "species_name": "早熟禾",
+        "read_count": 20331,
+        "relative_abundance": 0.081327,
+        "gc_content": 56.15,
+        "quality_score": 35.85
+      },
+      {
+        "species_name": "披碱草",
+        "read_count": 12429,
+        "relative_abundance": 0.049718,
+        "gc_content": 41.94,
+        "quality_score": 29.9
+      },
+      {
+        "species_name": "苔草",
+        "read_count": 12211,
+        "relative_abundance": 0.048846,
+        "gc_content": 48.47,
+        "quality_score": 32.31
+      },
+      {
+        "species_name": "小叶锦鸡儿",
+        "read_count": 8919,
+        "relative_abundance": 0.035677,
+        "gc_content": 54.58,
+        "quality_score": 32.67
+      },
+      {
+        "species_name": "猪毛菜",
+        "read_count": 21275,
+        "relative_abundance": 0.085103,
+        "gc_content": 59.68,
+        "quality_score": 34.73
+      },
+      {
+        "species_name": "百里香",
+        "read_count": 12403,
+        "relative_abundance": 0.049614,
+        "gc_content": 48.05,
+        "quality_score": 28.98
+      },
+      {
+        "species_name": "糙隐子草",
+        "read_count": 27326,
+        "relative_abundance": 0.109308,
+        "gc_content": 57.23,
+        "quality_score": 31.39
+      },
+      {
+        "species_name": "冰草",
+        "read_count": 26316,
+        "relative_abundance": 0.105268,
+        "gc_content": 43.8,
+        "quality_score": 30.49
+      },
+      {
+        "species_name": "驼绒藜",
+        "read_count": 8916,
+        "relative_abundance": 0.035665,
+        "gc_content": 48.44,
+        "quality_score": 32.49
+      },
+      {
+        "species_name": "鸢尾",
+        "read_count": 12603,
+        "relative_abundance": 0.050414,
+        "gc_content": 45.0,
+        "quality_score": 30.79
+      },
+      {
+        "species_name": "羊草",
+        "read_count": 22110,
+        "relative_abundance": 0.088443,
+        "gc_content": 48.86,
+        "quality_score": 37.23
+      },
+      {
+        "species_name": "麻黄",
+        "read_count": 12079,
+        "relative_abundance": 0.048318,
+        "gc_content": 51.01,
+        "quality_score": 36.61
+      },
+      {
+        "species_name": "冷蒿",
+        "read_count": 10272,
+        "relative_abundance": 0.041089,
+        "gc_content": 59.99,
+        "quality_score": 28.51
+      },
+      {
+        "species_name": "针茅",
+        "read_count": 27990,
+        "relative_abundance": 0.111964,
+        "gc_content": 59.38,
+        "quality_score": 36.36
+      }
+    ],
+    "processing_records": [
+      {
+        "record_id": "REC-b453e78c",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "赵博士",
+        "action_type": "sample_collection",
+        "details": {
+          "location": "云南西双版纳",
+          "habitat_type": "热带雨林",
+          "area_m2": 1.0
+        },
+        "reason": "野外样方采集"
+      },
+      {
+        "record_id": "REC-9d2a2d9a",
+        "timestamp": "2026-06-11 00:00:09",
+        "operator": "测序中心-刘技术",
+        "action_type": "sequencing",
+        "details": {
+          "platform": "Illumina NovaSeq",
+          "total_reads": 250000,
+          "read_length": "PE150"
+        },
+        "reason": "样本送检测序"
+      }
+    ],
+    "qc_flags": [],
+    "reports": [],
+    "current_report_version": 0,
+    "is_contaminated": false,
+    "contamination_resolved": false
+  }
+}
