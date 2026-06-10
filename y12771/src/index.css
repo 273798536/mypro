@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+  h1, h2, h3, h4, h5 {
+    font-family: 'Source Serif 4', Georgia, serif;
+  }
+  body {
+    @apply bg-ink-50 text-ink-900 antialiased;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-ink-800 px-4 py-2.5 text-sm font-medium text-white shadow-card transition-all duration-200 hover:-translate-y-px hover:bg-ink-700 hover:shadow-cardHover active:translate-y-0 disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-ink-200 bg-white px-4 py-2.5 text-sm font-medium text-ink-800 shadow-card transition-all duration-200 hover:-translate-y-px hover:border-ink-300 hover:shadow-cardHover active:translate-y-0 disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-warn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-amber-500 px-4 py-2.5 text-sm font-medium text-white shadow-card transition-all duration-200 hover:-translate-y-px hover:bg-amber-600 hover:shadow-cardHover active:translate-y-0;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-rose-500 px-4 py-2.5 text-sm font-medium text-white shadow-card transition-all duration-200 hover:-translate-y-px hover:bg-rose-600 hover:shadow-cardHover active:translate-y-0;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-ink-600 transition-colors duration-200 hover:bg-ink-100 hover:text-ink-900;
+  }
+  .card {
+    @apply rounded-xl border border-ink-100 bg-white shadow-card;
+  }
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-0.5 hover:shadow-cardHover;
+  }
+  .input-field {
+    @apply w-full rounded-md border border-ink-200 bg-white px-3 py-2 text-sm text-ink-900 placeholder:text-ink-400 shadow-sm transition-colors duration-200 focus:border-ink-500 focus:outline-none focus:ring-2 focus:ring-ink-500/20;
+  }
+  .label-text {
+    @apply mb-1.5 block text-sm font-medium text-ink-700;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .chip-green {
+    @apply chip bg-moss-100 text-moss-700;
+  }
+  .chip-amber {
+    @apply chip bg-amber-100 text-amber-700;
+  }
+  .chip-rose {
+    @apply chip bg-rose-100 text-rose-700;
+  }
+  .chip-ink {
+    @apply chip bg-ink-100 text-ink-700;
+  }
+  .section-title {
+    @apply font-serif text-2xl font-semibold text-ink-900;
+  }
+  .sub-title {
+    @apply font-serif text-lg font-semibold text-ink-800;
+  }
+  .table-th {
+    @apply whitespace-nowrap px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-500;
+  }
+  .table-td {
+    @apply whitespace-nowrap px-4 py-3 text-sm text-ink-800;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #d9e1ee transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #d9e1ee;
+    border-radius: 3px;
+  }
+  .grain-bg {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+}
