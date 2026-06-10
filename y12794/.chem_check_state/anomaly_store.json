@@ -1,0 +1,306 @@
+{
+  "ANO-B2F14272": {
+    "trace_id": "ANO-B2F14272",
+    "batch_id": "BATCH-2026-0602",
+    "category": "pH越界",
+    "severity": "warning",
+    "description": "pH接近边界: 2.1 (距边界仅 0.10)",
+    "detail": "批次 BATCH-2026-0602 在 2026-06-02T10:00 时刻pH 2.1，距允许范围边界仅 0.10，虽未越界但需要关注趋势。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.076226",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-09D96CAA": {
+    "trace_id": "ANO-09D96CAA",
+    "batch_id": "BATCH-2026-0602",
+    "category": "pH越界",
+    "severity": "warning",
+    "description": "pH接近边界: 2.3 (距边界仅 0.30)",
+    "detail": "批次 BATCH-2026-0602 在 2026-06-02T11:00 时刻pH 2.3，距允许范围边界仅 0.30，虽未越界但需要关注趋势。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.076453",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-343013D9": {
+    "trace_id": "ANO-343013D9",
+    "batch_id": "BATCH-2026-0602",
+    "category": "试剂浓度",
+    "severity": "warning",
+    "description": "试剂 '硫酸' 浓度接近容差边界: 96.0% (容差 ±2.0)",
+    "detail": "批次 BATCH-2026-0602 的试剂 '硫酸' 浓度 96.0%，距容差边界仅 0.00，需要关注。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.076614",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": "操作员说稀释时温度上来了一下但很快回落，我觉得应该没问题先记上"
+  },
+  "ANO-889C29C6": {
+    "trace_id": "ANO-889C29C6",
+    "batch_id": "BATCH-2026-0603",
+    "category": "温度曲线",
+    "severity": "critical",
+    "description": "温度越界: 190.0°C (允许范围 -20.0~180.0°C)",
+    "detail": "批次 BATCH-2026-0603 在 2026-06-03T14:00 时刻温度读数 190.0°C，超出允许范围 (-20.0°C ~ 180.0°C)。此为硬性指标，必须停线复核。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.076802",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-AFA65D3F": {
+    "trace_id": "ANO-AFA65D3F",
+    "batch_id": "BATCH-2026-0603",
+    "category": "温度曲线",
+    "severity": "warning",
+    "description": "温度变化速率过大: 148.0°C/步 (限值 5.0°C/步)",
+    "detail": "批次 BATCH-2026-0603 在 2026-06-03T14:15 时刻温度跳变 148.0°C，超过每步变化限值 5.0°C，请确认传感器或工艺是否正常。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.076983",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-C27A025B": {
+    "trace_id": "ANO-C27A025B",
+    "batch_id": "BATCH-2026-0603",
+    "category": "温度曲线",
+    "severity": "critical",
+    "description": "温度越界: 185.0°C (允许范围 -20.0~180.0°C)",
+    "detail": "批次 BATCH-2026-0603 在 2026-06-03T14:30 时刻温度读数 185.0°C，超出允许范围 (-20.0°C ~ 180.0°C)。此为硬性指标，必须停线复核。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.077180",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-AD65DB29": {
+    "trace_id": "ANO-AD65DB29",
+    "batch_id": "BATCH-2026-0603",
+    "category": "温度曲线",
+    "severity": "warning",
+    "description": "温度变化速率过大: 143.0°C/步 (限值 5.0°C/步)",
+    "detail": "批次 BATCH-2026-0603 在 2026-06-03T14:30 时刻温度跳变 143.0°C，超过每步变化限值 5.0°C，请确认传感器或工艺是否正常。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.077425",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-D62B1FB9": {
+    "trace_id": "ANO-D62B1FB9",
+    "batch_id": "BATCH-2026-0603",
+    "category": "pH越界",
+    "severity": "critical",
+    "description": "pH越界: 13.5 (允许范围 2.0~12.0)",
+    "detail": "批次 BATCH-2026-0603 在 2026-06-03T14:00 时刻pH读数 13.5，超出允许范围 (2.0 ~ 12.0)。pH超标可能影响产物纯度与安全性，需立即确认。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.077757",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-C69DC795": {
+    "trace_id": "ANO-C69DC795",
+    "batch_id": "BATCH-2026-0603",
+    "category": "pH越界",
+    "severity": "critical",
+    "description": "pH越界: 0.5 (允许范围 2.0~12.0)",
+    "detail": "批次 BATCH-2026-0603 在 2026-06-03T14:30 时刻pH读数 0.5，超出允许范围 (2.0 ~ 12.0)。pH超标可能影响产物纯度与安全性，需立即确认。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.078102",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-D32AB629": {
+    "trace_id": "ANO-D32AB629",
+    "batch_id": "BATCH-2026-0603",
+    "category": "试剂浓度",
+    "severity": "critical",
+    "description": "试剂 '氢氧化钠' 浓度错填: 填写 75.0%，期望 50.0±3.0%",
+    "detail": "批次 BATCH-2026-0603 的试剂 '氢氧化钠' 浓度填写为 75.0%，与标准浓度 50.0% 偏差 25.0，超出容差 ±3.0%。此偏差意味着标签浓度与实际不符，可能导致操作人员误判危险等级，属于必须拦截的合规缺陷。即便质检主管只看导出报告，也能明确看到：该试剂浓度偏差 25.0 已超出容许范围，标签信息不可信。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.078412",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": "这批数据有问题，浓度那个负数肯定填错了，丙酮浓度也忘填了，麻烦帮忙查一下"
+  },
+  "ANO-B4D460E9": {
+    "trace_id": "ANO-B4D460E9",
+    "batch_id": "BATCH-2026-0603",
+    "category": "试剂浓度",
+    "severity": "critical",
+    "description": "试剂 '乙醇' 浓度值异常: -5.0%",
+    "detail": "批次 BATCH-2026-0603 的试剂 '乙醇' 浓度填写为 -5.0%，该值不在0~100%的物理合理范围内，属于明显的录入错误或数据损坏。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.078710",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": "这批数据有问题，浓度那个负数肯定填错了，丙酮浓度也忘填了，麻烦帮忙查一下"
+  },
+  "ANO-E764BAB4": {
+    "trace_id": "ANO-E764BAB4",
+    "batch_id": "BATCH-2026-0603",
+    "category": "试剂浓度",
+    "severity": "critical",
+    "description": "试剂 '丙酮' 浓度缺失",
+    "detail": "批次 BATCH-2026-0603 的试剂 '丙酮' 未填写浓度值。浓度缺失属于标签关键信息不全，该记录不能通过合规检查。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.079012",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": "这批数据有问题，浓度那个负数肯定填错了，丙酮浓度也忘填了，麻烦帮忙查一下"
+  },
+  "ANO-10416A7B": {
+    "trace_id": "ANO-10416A7B",
+    "batch_id": "BATCH-2026-0603",
+    "category": "反应条件",
+    "severity": "critical",
+    "description": "压力越界: 8.5 MPa (允许范围 0.8~5.0 MPa)",
+    "detail": "批次 BATCH-2026-0603 反应压力 8.5 MPa，超出允许范围 (0.8~5.0 MPa)，属于安全风险。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.079372",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-2B266A01": {
+    "trace_id": "ANO-2B266A01",
+    "batch_id": "BATCH-2026-0603",
+    "category": "反应条件",
+    "severity": "critical",
+    "description": "反应时长为负数: -10.0 min",
+    "detail": "批次 BATCH-2026-0603 反应时长填写为 -10.0 min，数值不合理。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.079735",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-4F245CCC": {
+    "trace_id": "ANO-4F245CCC",
+    "batch_id": "BATCH-2026-0603",
+    "category": "反应条件",
+    "severity": "warning",
+    "description": "搅拌速度为负数: -50.0 rpm",
+    "detail": "批次 BATCH-2026-0603 搅拌速度填写为 -50.0 rpm，数值不合理。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.080130",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  },
+  "ANO-C77878C8": {
+    "trace_id": "ANO-C77878C8",
+    "batch_id": "BATCH-2026-0603",
+    "category": "标签完整性",
+    "severity": "critical",
+    "description": "标签缺少必填项: cas_number, hazard_pictograms, signal_word, h_statements, p_statements, manufacturer, net_quantity, expiry_date",
+    "detail": "批次 BATCH-2026-0603 标签缺少以下必填字段: cas_number, hazard_pictograms, signal_word, h_statements, p_statements, manufacturer, net_quantity, expiry_date。根据GHS标准，这些字段缺一不可，标签信息不完整不允许出厂。",
+    "status": "open",
+    "events": [
+      {
+        "timestamp": "2026-06-10T16:27:42.080542",
+        "from_status": "",
+        "to_status": "open",
+        "operator": "system",
+        "note": "自动检出"
+      }
+    ],
+    "original_remark": ""
+  }
+}

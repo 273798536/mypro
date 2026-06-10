@@ -1,0 +1,196 @@
+[
+  {
+    "batch_id": "BATCH-2026-0601",
+    "product_name": "工业盐酸",
+    "cas_number": "7647-01-0",
+    "hazard_pictograms": [
+      "腐蚀",
+      "毒性"
+    ],
+    "signal_word": "危险",
+    "h_statements": [
+      "H314",
+      "H335"
+    ],
+    "p_statements": [
+      "P260",
+      "P280",
+      "P305+P351+P338"
+    ],
+    "manufacturer": "某某化工有限公司",
+    "net_quantity": "25kg",
+    "expiry_date": "2027-06-01",
+    "temperature_curve": [
+      {
+        "timestamp": "2026-06-01T08:00",
+        "value": 25.3
+      },
+      {
+        "timestamp": "2026-06-01T08:30",
+        "value": 25.5
+      },
+      {
+        "timestamp": "2026-06-01T09:00",
+        "value": 25.4
+      }
+    ],
+    "ph_readings": [
+      {
+        "timestamp": "2026-06-01T08:00",
+        "value": 3.2
+      },
+      {
+        "timestamp": "2026-06-01T09:00",
+        "value": 3.1
+      }
+    ],
+    "reagents": [
+      {
+        "name": "盐酸",
+        "concentration": 36.5,
+        "unit": "%",
+        "lot_number": "LOT-HCl-001"
+      }
+    ],
+    "reaction_conditions": {
+      "catalyst": "无",
+      "pressure_mpa": 1.0,
+      "duration_min": 60.0,
+      "stirring_rpm": 200.0
+    },
+    "manual_remarks": "称量员确认这批盐酸外观清澈无杂质，和上次进的同一批号",
+    "safety_notes": "已确认通风柜运行正常",
+    "custom_temp_range": null,
+    "custom_ph_range": null,
+    "custom_pressure_range": null
+  },
+  {
+    "batch_id": "BATCH-2026-0602",
+    "product_name": "稀硫酸溶液",
+    "cas_number": "7664-93-9",
+    "hazard_pictograms": [
+      "腐蚀"
+    ],
+    "signal_word": "警告",
+    "h_statements": [
+      "H314"
+    ],
+    "p_statements": [
+      "P280",
+      "P305+P351+P338"
+    ],
+    "manufacturer": "某某化工有限公司",
+    "net_quantity": "10L",
+    "expiry_date": "2027-03-15",
+    "temperature_curve": [
+      {
+        "timestamp": "2026-06-02T10:00",
+        "value": 26.0
+      },
+      {
+        "timestamp": "2026-06-02T10:30",
+        "value": 30.5
+      },
+      {
+        "timestamp": "2026-06-02T11:00",
+        "value": 28.0
+      }
+    ],
+    "ph_readings": [
+      {
+        "timestamp": "2026-06-02T10:00",
+        "value": 2.1
+      },
+      {
+        "timestamp": "2026-06-02T11:00",
+        "value": 2.3
+      }
+    ],
+    "reagents": [
+      {
+        "name": "硫酸",
+        "concentration": 96.0,
+        "unit": "%",
+        "lot_number": "LOT-H2SO4-002"
+      }
+    ],
+    "reaction_conditions": {
+      "catalyst": "无",
+      "pressure_mpa": 0.9,
+      "duration_min": 45.0,
+      "stirring_rpm": 150.0
+    },
+    "manual_remarks": "操作员说稀释时温度上来了一下但很快回落，我觉得应该没问题先记上",
+    "safety_notes": "",
+    "custom_temp_range": null,
+    "custom_ph_range": null,
+    "custom_pressure_range": null
+  },
+  {
+    "batch_id": "BATCH-2026-0603",
+    "product_name": "混合试剂X",
+    "cas_number": "",
+    "hazard_pictograms": [],
+    "signal_word": "",
+    "h_statements": [],
+    "p_statements": [],
+    "manufacturer": "",
+    "net_quantity": "",
+    "expiry_date": "",
+    "temperature_curve": [
+      {
+        "timestamp": "2026-06-03T14:00",
+        "value": 190.0
+      },
+      {
+        "timestamp": "2026-06-03T14:15",
+        "value": 42.0
+      },
+      {
+        "timestamp": "2026-06-03T14:30",
+        "value": 185.0
+      }
+    ],
+    "ph_readings": [
+      {
+        "timestamp": "2026-06-03T14:00",
+        "value": 13.5
+      },
+      {
+        "timestamp": "2026-06-03T14:30",
+        "value": 0.5
+      }
+    ],
+    "reagents": [
+      {
+        "name": "氢氧化钠",
+        "concentration": 75.0,
+        "unit": "%",
+        "lot_number": "LOT-NaOH-003"
+      },
+      {
+        "name": "乙醇",
+        "concentration": -5.0,
+        "unit": "%",
+        "lot_number": "LOT-EtOH-003"
+      },
+      {
+        "name": "丙酮",
+        "concentration": null,
+        "unit": "%",
+        "lot_number": "LOT-Ace-003"
+      }
+    ],
+    "reaction_conditions": {
+      "catalyst": "钯碳",
+      "pressure_mpa": 8.5,
+      "duration_min": -10.0,
+      "stirring_rpm": -50.0
+    },
+    "manual_remarks": "这批数据有问题，浓度那个负数肯定填错了，丙酮浓度也忘填了，麻烦帮忙查一下",
+    "safety_notes": "",
+    "custom_temp_range": null,
+    "custom_ph_range": null,
+    "custom_pressure_range": null
+  }
+]
