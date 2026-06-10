@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>气体吸收效率看板</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: #f0f2f5; color: #303133; }
+.header { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; padding: 20px 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+.header h1 { font-size: 22px; font-weight: 600; }
+.header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+.container { padding: 24px 32px; max-width: 1600px; margin: 0 auto; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: white; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-left: 4px solid #3b82f6; }
+.stat-card.green { border-left-color: #10b981; }
+.stat-card.orange { border-left-color: #f59e0b; }
+.stat-card.red { border-left-color: #ef4444; }
+.stat-card .label { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+.stat-card .value { font-size: 26px; font-weight: 600; color: #111827; }
+.panel { background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); margin-bottom: 20px; }
+.panel-header { padding: 14px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.panel-header h2 { font-size: 15px; font-weight: 600; color: #111827; }
+.panel-body { padding: 16px 20px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid #d1d5db; border-radius: 5px; background: white; cursor: pointer; font-size: 13px; color: #374151; transition: all 0.15s; }
+.btn:hover { border-color: #3b82f6; color: #1e40af; background: #eff6ff; }
+.btn-primary { background: #3b82f6; color: white; border-color: #3b82f6; }
+.btn-primary:hover { background: #2563eb; color: white; }
+.btn-success { background: #10b981; color: white; border-color: #10b981; }
+.btn-success:hover { background: #059669; color: white; }
+.btn-warn { background: #f59e0b; color: white; border-color: #f59e0b; }
+.btn-warn:hover { background: #d97706; color: white; }
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.tag { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 500; }
+.tag-green { background: #d1fae5; color: #065f46; }
+.tag-blue { background: #dbeafe; color: #1e40af; }
+.tag-yellow { background: #fef3c7; color: #92400e; }
+.tag-red { background: #fee2e2; color: #991b1b; }
+.tag-gray { background: #e5e7eb; color: #4b5563; }
+.tag-purple { background: #ede9fe; color: #5b21b6; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th { background: #f9fafb; padding: 10px 12px; text-align: left; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb; white-space: nowrap; position: sticky; top: 0; }
+tbody td { padding: 10px 12px; border-bottom: 1px solid #f3f4f6; color: #4b5563; vertical-align: middle; }
+tbody tr:hover { background: #f9fafb; }
+tbody tr.row-warning { background: #fffbeb; }
+tbody tr.row-warning:hover { background: #fef3c7; }
+tbody tr.row-error { background: #fef2f2; }
+tbody tr.row-error:hover { background: #fee2e2; }
+.table-wrap { overflow-x: auto; max-height: 520px; }
+.modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
+.modal-mask.active { display: flex; }
+.modal { background: white; border-radius: 10px; max-width: 720px; width: 100%; max-height: 85vh; overflow: auto; }
+.modal-header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-size: 16px; font-weight: 600; }
+.modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #6b7280; line-height: 1; }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 14px 20px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 10px; }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 13px; color: #374151; margin-bottom: 5px; font-weight: 500; }
+.form-group label .req { color: #ef4444; margin-left: 2px; }
+.form-control { width: 100%; padding: 7px 10px; border: 1px solid #d1d5db; border-radius: 5px; font-size: 13px; font-family: inherit; }
+.form-control:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+select.form-control { background: white; }
+textarea.form-control { resize: vertical; min-height: 70px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-row-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.info-card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px 14px; margin-bottom: 12px; }
+.info-card .title { font-size: 12px; color: #6b7280; margin-bottom: 4px; }
+.info-card .content { font-size: 14px; color: #111827; font-weight: 500; }
+.diff-row { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; margin: 8px 0; }
+.diff-old { background: #fee2e2; padding: 8px 10px; border-radius: 5px; border: 1px solid #fca5a5; font-size: 13px; }
+.diff-arrow { color: #6b7280; font-size: 16px; }
+.diff-new { background: #d1fae5; padding: 8px 10px; border-radius: 5px; border: 1px solid #6ee7b7; font-size: 13px; }
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: #e5e7eb; }
+.timeline-item { position: relative; padding-bottom: 16px; }
+.timeline-item::before { content: ''; position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: #3b82f6; border: 2px solid white; box-shadow: 0 0 0 2px #93c5fd; }
+.timeline-item.retest::before { background: #f59e0b; box-shadow: 0 0 0 2px #fcd34d; }
+.timeline-item.anomaly::before { background: #ef4444; box-shadow: 0 0 0 2px #fca5a5; }
+.timeline-time { font-size: 12px; color: #6b7280; }
+.timeline-content { font-size: 13px; color: #374151; margin-top: 2px; }
+.timeline-meta { font-size: 12px; color: #6b7280; margin-top: 2px; }
+.issue-list { list-style: none; padding: 0; }
+.issue-list li { padding: 5px 0; font-size: 13px; color: #4b5563; }
+.issue-list li::before { content: '⚠️ '; margin-right: 4px; }
+.issue-list li.ok::before { content: '✓ '; }
+.empty { padding: 40px; text-align: center; color: #9ca3af; font-size: 14px; }
+.tabs { display: flex; border-bottom: 2px solid #e5e7eb; margin-bottom: 16px; }
+.tab { padding: 10px 20px; cursor: pointer; font-size: 13px; color: #6b7280; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.tab.active { color: #1e40af; border-bottom-color: #3b82f6; font-weight: 600; }
+.hidden { display: none; }
+.issue-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: #fef3c7; color: #92400e; border-radius: 4px; font-size: 11px; margin: 1px; }
+.issue-chip.error { background: #fee2e2; color: #991b1b; }
+.link { color: #2563eb; cursor: pointer; }
+.link:hover { text-decoration: underline; }
+.toast { position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 6px; color: white; font-size: 13px; z-index: 9999; animation: slideIn 0.3s; }
+.toast.success { background: #10b981; }
+.toast.error { background: #ef4444; }
+.toast.info { background: #3b82f6; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.sample-notice { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px 14px; margin-bottom: 16px; font-size: 13px; color: #1e40af; }
+.sample-notice strong { color: #1e3a8a; }
+.status-flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px; background: #f9fafb; border-radius: 6px; margin-bottom: 14px; }
+.status-node { padding: 6px 14px; border-radius: 16px; font-size: 12px; background: #e5e7eb; color: #4b5563; }
+.status-node.current { background: #3b82f6; color: white; font-weight: 600; }
+.status-node.done { background: #10b981; color: white; }
+.status-arrow { color: #9ca3af; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🧪 气体吸收效率看板</h1>
+  <div class="subtitle">数据导入 · 配方工程师复核 · 状态流转 · 异常留痕 · 报告导出</div>
+</div>
+
+<div class="container">
+  <div class="stats" id="stats"></div>
+
+  <div class="sample-notice" id="sampleNotice">
+    <strong>📌 快速开始：</strong>首次使用请点击下方「生成并导入样例数据」按钮，会自动生成一批贴近日常场景的测试数据（含旧表格式、补录备注、漏填单位、坏数据等），导入后即可体验完整流程。也可以直接上传自己的 Excel 文件。
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>📚 导入批次记录</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="openImportModal()">⬆️ 上传Excel导入</button>
+        <button class="btn btn-success" onclick="generateAndImportSample()">✨ 生成并导入样例数据</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="table-wrap">
+        <table id="batchTable">
+          <thead>
+            <tr><th>批次号</th><th>文件名</th><th>导入时间</th><th>导入人</th><th>记录数</th><th>有效数</th><th>当前状态</th><th>流转次数</th><th>操作</th></tr>
+          </thead>
+          <tbody id="batchBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" id="detailPanel">
+    <div class="panel-header">
+      <h2 id="detailTitle">📋 批次明细（请选择批次）</h2>
+      <div id="detailActions" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+    <div class="panel-body">
+      <div id="detailEmpty" class="empty">← 请先从上方列表中选择一个批次查看明细</div>
+      <div id="detailContent" class="hidden">
+        <div class="status-flow" id="statusFlow"></div>
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('records')">📊 检测记录 (${rc})</div>
+          <div class="tab" onclick="switchTab('anomalies')">🔴 异常留痕 (${ac})</div>
+          <div class="tab" onclick="switchTab('reviews')">📝 复核记录 (${vc})</div>
+          <div class="tab" onclick="switchTab('transitions')">🔀 状态流转 (${tc})</div>
+        </div>
+
+        <div id="tab-records">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>编号</th><th>样品</th><th>测试日期</th>
+                  <th>温度</th><th>吸收剂(g)</th><th>精度</th>
+                  <th>气量(L)</th><th>导入效率</th><th>重算效率</th>
+                  <th>判定</th><th>数据质量</th><th>问题</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="recordsBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="tab-anomalies" class="hidden">
+          <div id="anomaliesBody"></div>
+        </div>
+
+        <div id="tab-reviews" class="hidden">
+          <div id="reviewsBody"></div>
+        </div>
+
+        <div id="tab-transitions" class="hidden">
+          <div id="transitionsBody"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="importModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header"><h3>⬆️ 导入数据文件</h3><button class="modal-close" onclick="closeModal('importModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>选择Excel文件<span class="req">*</span></label>
+        <input type="file" id="importFile" accept=".xlsx,.xls" class="form-control" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>导入人<span class="req">*</span></label>
+          <input type="text" id="importOperator" class="form-control" value="配方工程师" />
+        </div>
+        <div class="form-group">
+          <label>备注</label>
+          <input type="text" id="importRemark" class="form-control" placeholder="如：2026年Q2第二批样品" />
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="title">支持的列名（中文/英文均可）</div>
+        <div class="content" style="font-size:12px;font-weight:normal;">
+          记录编号、样品名称、样品批次、测试日期、测试温度、温度单位、环境气压、吸收剂质量、质量单位、气体体积、体积单位、吸收效率、判定、备注、补录备注
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('importModal')">取消</button>
+      <button class="btn btn-primary" onclick="doImport()">确认导入</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="reviewModal">
+  <div class="modal">
+    <div class="modal-header"><h3 id="reviewTitle">📝 复核记录</h3><button class="modal-close" onclick="closeModal('reviewModal')">×</button></div>
+    <div class="modal-body" id="reviewBody"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('reviewModal')">关闭</button>
+      <button class="btn btn-primary" onclick="saveReview()">保存复核</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="transitionModal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-header"><h3>🔀 推进状态</h3><button class="modal-close" onclick="closeModal('transitionModal')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>当前状态</label>
+        <input type="text" id="currentStatus" class="form-control" readonly />
+      </div>
+      <div class="form-group">
+        <label>推进到<span class="req">*</span></label>
+        <select id="nextStatus" class="form-control"></select>
+      </div>
+      <div class="form-group">
+        <label>操作人</label>
+        <input type="text" id="transitionOperator" class="form-control" value="配方工程师" />
+      </div>
+      <div class="form-group">
+        <label>备注说明</label>
+        <textarea id="transitionComment" class="form-control" placeholder="如：全部复核完成，无异议"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('transitionModal')">取消</button>
+      <button class="btn btn-primary" onclick="doTransition()">确认推进</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let state = { batches: [], currentBatch: null, currentRecord: null, overview: null };
+
+const STATUS_MAP = {
+  'none': { label: '未开始', cls: 'tag-gray' },
+  'imported': { label: '已导入', cls: 'tag-blue' },
+  'reviewing': { label: '复核中', cls: 'tag-yellow' },
+  'confirmed': { label: '已确认', cls: 'tag-green' },
+  'exported': { label: '已导出', cls: 'tag-purple' },
+  'archived': { label: '已归档', cls: 'tag-gray' }
+};
+const STATUS_FLOW = ['none', 'imported', 'reviewing', 'confirmed', 'exported'];
+const NEXT_STATUS = {
+  'imported': [['reviewing', '开始复核'], ['confirmed', '直接确认']],
+  'reviewing': [['confirmed', '确认完成']],
+  'confirmed': [['exported', '导出报告']],
+  'exported': [['archived', '归档']]
+};
+const JUDGMENT_CLS = { '优秀': 'tag-green', '合格': 'tag-blue', '不合格': 'tag-red', '未判定': 'tag-gray' };
+const QUALITY_CLS = { normal: 'tag-green', warning: 'tag-yellow', error: 'tag-red' };
+const QUALITY_LABEL = { normal: '正常', warning: '有提醒', error: '异常' };
+
+function toast(msg, type = 'info') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+async function api(url, opts = {}) {
+  try {
+    const res = await fetch(url, { headers: { 'Content-Type': 'application/json' }, ...opts });
+    return await res.json();
+  } catch (e) {
+    toast('网络错误: ' + e.message, 'error');
+    return { success: false };
+  }
+}
+
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function openImportModal() { document.getElementById('importFile').value = ''; openModal('importModal'); }
+
+async function loadOverview() {
+  const r = await api('/api/stats/overview');
+  if (r.success) {
+    state.overview = r.data;
+    const js = Object.fromEntries((r.data.judgmentStats || []).map(s => [s.judgment, s.cnt]));
+    document.getElementById('stats').innerHTML = `
+      <div class="stat-card"><div class="label">导入批次</div><div class="value">${r.data.totalBatches}</div></div>
+      <div class="stat-card green"><div class="label">检测记录</div><div class="value">${r.data.totalRecords}</div></div>
+      <div class="stat-card orange"><div class="label">异常留痕</div><div class="value">${r.data.totalAnomalies}</div></div>
+      <div class="stat-card red"><div class="label">不合格/未判定</div><div class="value">${(js['不合格']||0)+(js['未判定']||0)}</div></div>
+      <div class="stat-card"><div class="label">已导出报告</div><div class="value">${r.data.totalExports}</div></div>
+    `;
+  }
+}
+
+async function loadBatches() {
+  const r = await api('/api/batches');
+  if (r.success) {
+    state.batches = r.data;
+    const tb = document.getElementById('batchBody');
+    if (!r.data.length) {
+      tb.innerHTML = '<tr><td colspan="9" class="empty">暂无批次，请先导入数据</td></tr>';
+      return;
+    }
+    tb.innerHTML = r.data.map(b => {
+      const s = STATUS_MAP[b.status] || { label: b.status, cls: 'tag-gray' };
+      return `<tr class="${state.currentBatch && state.currentBatch.batch.id === b.id ? 'row-warning' : ''}">
+        <td><span class="link" onclick="loadBatchDetail(${b.id})"><strong>${b.batch_no}</strong></span></td>
+        <td>${b.file_name}</td>
+        <td>${b.import_time}</td>
+        <td>${b.imported_by}</td>
+        <td>${b.total_records}</td>
+        <td>${b.valid_records||0} <span style="color:#9ca3af">(${(b.total_records?((b.valid_records||0)/b.total_records*100).toFixed(0):0)}%)</span></td>
+        <td><span class="tag ${s.cls}">${s.label}</span></td>
+        <td>${b.transition_count || 0}</td>
+        <td>
+          <button class="btn btn-sm" onclick="loadBatchDetail(${b.id})">查看</button>
+          ${b.status === 'confirmed' || b.status === 'reviewing' ? `<button class="btn btn-sm btn-success" onclick="exportReport(${b.id})">导出</button>` : ''}
+          ${NEXT_STATUS[b.status] ? `<button class="btn btn-sm btn-warn" onclick="openTransition(${b.id})">推进</button>` : ''}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+async function loadBatchDetail(id) {
+  const r = await api('/api/batches/' + id);
+  if (!r.success) return;
+  state.currentBatch = r.data;
+  const { batch, records, transitions, reviews, anomalies } = r.data;
+
+  document.getElementById('detailTitle').innerHTML = `📋 批次明细：<span style="color:#1e40af">${batch.batch_no}</span> <span style="font-size:12px;color:#6b7280;font-weight:normal">${batch.file_name}</span>`;
+  document.getElementById('detailEmpty').classList.add('hidden');
+  document.getElementById('detailContent').classList.remove('hidden');
+
+  const s = STATUS_MAP[batch.status] || { label: batch.status, cls: '' };
+  document.getElementById('detailActions').innerHTML = `
+    <span class="tag ${s.cls}">当前状态：${s.label}</span>
+    ${NEXT_STATUS[batch.status] ? `<button class="btn btn-warn btn-sm" onclick="openTransition(${batch.id})">🔀 推进状态</button>` : ''}
+    <button class="btn btn-sm" onclick="loadBatchDetail(${batch.id})">🔄 刷新</button>
+    ${batch.status === 'confirmed' || batch.status === 'reviewing' || batch.status === 'imported' ? `<button class="btn btn-success btn-sm" onclick="exportReport(${batch.id})">📄 导出报告</button>` : ''}
+  `;
+
+  const ci = STATUS_FLOW.indexOf(batch.status);
+  document.getElementById('statusFlow').innerHTML = STATUS_FLOW.map((st, i) => {
+    const sc = i < ci ? 'done' : (i === ci ? 'current' : '');
+    return `<span class="status-node ${sc}">${STATUS_MAP[st]?.label || st}</span>${i < STATUS_FLOW.length - 1 ? '<span class="status-arrow">→</span>' : ''}`;
+  }).join('');
+
+  const reTab = document.querySelector('.tab:nth-child(1)');
+  const anTab = document.querySelector('.tab:nth-child(2)');
+  const rvTab = document.querySelector('.tab:nth-child(3)');
+  const trTab = document.querySelector('.tab:nth-child(4)');
+  reTab.textContent = `📊 检测记录 (${records.length})`;
+  anTab.textContent = `🔴 异常留痕 (${anomalies.length})`;
+  rvTab.textContent = `📝 复核记录 (${reviews.length})`;
+  trTab.textContent = `🔀 状态流转 (${transitions.length})`;
+
+  renderRecords(records);
+  renderAnomalies(anomalies);
+  renderReviews(reviews);
+  renderTransitions(transitions);
+  loadBatches();
+}
+
+function renderRecords(records) {
+  const tb = document.getElementById('recordsBody');
+  if (!records.length) { tb.innerHTML = '<tr><td colspan="13" class="empty">暂无记录</td></tr>'; return; }
+  tb.innerHTML = records.map(r => {
+    const issues = JSON.parse(r.quality_issues || '[]');
+    const issueHtml = issues.slice(0, 3).map(i => {
+      const isErr = i.includes('缺失') || i.includes('不足') || i.includes('无效') || i.includes('相差超过');
+      return `<span class="issue-chip ${isErr ? 'error' : ''}" title="${i}">${i.length > 14 ? i.slice(0, 14) + '…' : i}</span>`;
+    }).join('') + (issues.length > 3 ? `<span class="issue-chip">+${issues.length - 3}</span>` : '');
+    const rowCls = r.data_quality === 'error' ? 'row-error' : (r.data_quality === 'warning' ? 'row-warning' : '');
+    return `<tr class="${rowCls}">
+      <td><code>${r.record_no}</code></td>
+      <td><strong>${r.sample_name || '-'}</strong><br><span style="font-size:11px;color:#9ca3af">${r.sample_batch || ''}</span></td>
+      <td>${r.test_date || '-'}</td>
+      <td>${r.temperature != null ? r.temperature : '-'} <span style="color:#9ca3af">${r.temperature_unit || ''}</span></td>
+      <td>${r.absorbent_mass != null ? r.absorbent_mass : '-'}</td>
+      <td>${r.absorbent_mass_precision ? `<span class="tag ${r.absorbent_mass_precision === '高精度' ? 'tag-green' : (r.absorbent_mass_precision === '中等精度' ? 'tag-blue' : 'tag-yellow')}">${r.absorbent_mass_precision}</span>` : '-'}</td>
+      <td>${r.gas_volume != null ? r.gas_volume : '-'}</td>
+      <td><strong>${r.absorption_rate != null ? r.absorption_rate + '%' : '-'}</strong></td>
+      <td><strong style="color:#2563eb">${r.calculated_rate != null ? r.calculated_rate + '%' : '-'}</strong>${r.absorption_rate != null && r.calculated_rate != null && Math.abs(r.absorption_rate - r.calculated_rate) > 2 ? ' ⚠️' : ''}</td>
+      <td><span class="tag ${JUDGMENT_CLS[r.judgment] || 'tag-gray'}">${r.judgment || '-'}</span></td>
+      <td><span class="tag ${QUALITY_CLS[r.data_quality] || 'tag-gray'}">${QUALITY_LABEL[r.data_quality] || r.data_quality}</span></td>
+      <td style="min-width:220px">${issueHtml || '<span style="color:#9ca3af">无</span>'}</td>
+      <td>
+        <button class="btn btn-sm" onclick="openReview(${r.id})">复核</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAnomalies(anomalies) {
+  const box = document.getElementById('anomaliesBody');
+  if (!anomalies.length) { box.innerHTML = '<div class="empty">暂无异常留痕</div>'; return; }
+  const typeLabel = { judgment_change: '判定变更', retest_suggestion: '复测建议', data_correction: '数据修正' };
+  box.innerHTML = `<div class="timeline">${anomalies.map(a => `
+    <div class="timeline-item ${a.is_retest ? 'retest' : 'anomaly'}">
+      <div class="timeline-time">${a.trace_time} · <strong>${a.operator}</strong> · ${typeLabel[a.anomaly_type] || a.anomaly_type}</div>
+      <div class="timeline-content" style="color:#111827;font-weight:500">
+        ${a.record_no} · ${a.sample_name}
+      </div>
+      <div class="timeline-meta" style="margin-top:6px;">
+        ${a.before_judgment || a.before_value ? `<div class="diff-row">
+          <div class="diff-old">${a.before_value ? a.before_value + ' · ' : ''}判定: ${a.before_judgment || '-'}</div>
+          <div class="diff-arrow">➜</div>
+          <div class="diff-new">${a.after_value ? a.after_value + ' · ' : ''}判定: ${a.after_judgment || '-'}</div>
+        </div>` : ''}
+        <div style="margin-top:4px;"><strong>原因：</strong>${a.reason || '-'}</div>
+        ${a.is_retest ? `<div style="margin-top:4px;color:#92400e;"><strong>复测建议：</strong>${a.retest_suggestion || '-'}</div>` : ''}
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function renderReviews(reviews) {
+  const box = document.getElementById('reviewsBody');
+  if (!reviews.length) { box.innerHTML = '<div class="empty">暂无复核记录</div>'; return; }
+  const typeLabel = { import_check: '导入自动检查', manual_review: '人工复核' };
+  box.innerHTML = `<div class="timeline">${reviews.map(r => `
+    <div class="timeline-item">
+      <div class="timeline-time">${r.review_time} · <strong>${r.reviewer}</strong> · ${typeLabel[r.review_type] || r.review_type}</div>
+      <div class="timeline-content">
+        ${r.field_name ? `<span class="tag tag-yellow">字段: ${r.field_name}</span> ` : ''}
+        ${r.comment || '无详细说明'}
+      </div>
+      ${r.old_value || r.new_value ? `<div class="timeline-meta" style="margin-top:4px;">
+        ${r.old_value ? `<span class="diff-old" style="padding:2px 8px;font-size:12px;">旧值: ${r.old_value}</span>` : ''}
+        ${r.old_value && r.new_value ? ' ➜ ' : ''}
+        ${r.new_value ? `<span class="diff-new" style="padding:2px 8px;font-size:12px;">新值: ${r.new_value}</span>` : ''}
+      </div>` : ''}
+    </div>
+  `).join('')}</div>`;
+}
+
+function renderTransitions(transitions) {
+  const box = document.getElementById('transitionsBody');
+  if (!transitions.length) { box.innerHTML = '<div class="empty">暂无流转记录</div>'; return; }
+  box.innerHTML = `<div class="timeline">${transitions.map(t => {
+    const fs = STATUS_MAP[t.from_status] || { label: t.from_status };
+    const ts = STATUS_MAP[t.to_status] || { label: t.to_status };
+    return `<div class="timeline-item" style="padding-bottom:20px;">
+      <div class="timeline-time">${t.transition_time} · 操作人: <strong>${t.operator}</strong></div>
+      <div class="timeline-content" style="margin-top:4px;">
+        <span class="tag tag-gray">${fs.label}</span>
+        <span style="margin:0 8px;color:#6b7280;">➜</span>
+        <span class="tag tag-blue">${ts.label}</span>
+      </div>
+      ${t.comment ? `<div class="timeline-meta" style="margin-top:4px;">备注：${t.comment}</div>` : ''}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function switchTab(name) {
+  ['records', 'anomalies', 'reviews', 'transitions'].forEach(n => {
+    document.getElementById('tab-' + n).classList.toggle('hidden', n !== name);
+  });
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', ['records', 'anomalies', 'reviews', 'transitions'][i] === name);
+  });
+}
+
+async function openReview(recordId) {
+  const r = await api('/api/records/' + recordId);
+  if (!r.success) return;
+  const rec = r.data.record;
+  state.currentRecord = rec;
+  const issues = JSON.parse(rec.quality_issues || '[]');
+  const reviews = r.data.reviews || [];
+  const anomalies = r.data.anomalies || [];
+  const typeLabel = { judgment_change: '判定变更', retest_suggestion: '复测建议' };
+
+  document.getElementById('reviewTitle').innerHTML = `📝 复核记录 · ${rec.sample_name} (${rec.record_no})`;
+
+  document.getElementById('reviewBody').innerHTML = `
+    <div class="form-row-3">
+      <div class="info-card"><div class="title">样品名称</div><div class="content">${rec.sample_name || '-'}</div></div>
+      <div class="info-card"><div class="title">批次号</div><div class="content">${rec.sample_batch || '-'}</div></div>
+      <div class="info-card"><div class="title">测试日期</div><div class="content">${rec.test_date || '-'}</div></div>
+    </div>
+
+    <div class="form-row-3">
+      <div class="info-card"><div class="title">吸收率（导入）</div><div class="content">${rec.absorption_rate != null ? rec.absorption_rate + '%' : '-'}</div></div>
+      <div class="info-card"><div class="title">吸收率（重算）</div><div class="content" style="color:#1e40af">${rec.calculated_rate != null ? rec.calculated_rate + '%' : '-'}</div></div>
+      <div class="info-card"><div class="title">当前判定</div><div class="content"><span class="tag ${JUDGMENT_CLS[rec.judgment] || ''}">${rec.judgment || '-'}</span></div></div>
+    </div>
+
+    <div style="margin-top:14px;border-top:1px dashed #e5e7eb;padding-top:14px;">
+      <h4 style="font-size:13px;color:#111827;margin-bottom:10px;">🔧 修正数据 / 调整判定</h4>
+      <div class="form-row">
+        <div class="form-group">
+          <label>修改字段</label>
+          <select id="reviewField" class="form-control" onchange="onFieldChange()">
+            <option value="">-- 仅调整判定/加备注 --</option>
+            <option value="absorption_rate">吸收率 (%)</option>
+            <option value="temperature">测试温度</option>
+            <option value="absorbent_mass">吸收剂质量 (g)</option>
+            <option value="gas_volume">气体体积 (L)</option>
+            <option value="sample_batch">样品批次</option>
+            <option value="test_date">测试日期</option>
+            <option value="supplementary_remark">补录备注</option>
+          </select>
+        </div>
+        <div class="form-group" id="fieldValueGroup">
+          <label>新值</label>
+          <input type="text" id="reviewNewValue" class="form-control" disabled placeholder="先选择要修改的字段" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>是否修改判定结论？</label>
+          <select id="changeJudgment" class="form-control" onchange="toggleNewJudgment()">
+            <option value="0">不修改，保持原判定</option>
+            <option value="1">修改判定结论</option>
+          </select>
+        </div>
+        <div class="form-group" id="newJudgmentGroup">
+          <label>新判定结论</label>
+          <select id="newJudgment" class="form-control" disabled>
+            <option value="${rec.judgment}">保持：${rec.judgment}</option>
+            <option value="优秀">优秀 (≥95%)</option>
+            <option value="合格">合格 (85%~95%)</option>
+            <option value="不合格">不合格 (<85%)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>是否需复测？</label>
+          <select id="needRetest" class="form-control" onchange="toggleRetest()">
+            <option value="0">不需要</option>
+            <option value="1">建议复测</option>
+          </select>
+        </div>
+        <div class="form-group" id="retestGroup">
+          <label>复测建议</label>
+          <input type="text" id="retestSuggestion" class="form-control" disabled placeholder="如：重新称量吸收剂后检测" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>复核意见<span class="req">*</span></label>
+        <textarea id="reviewComment" class="form-control" placeholder="请输入复核意见（必填），如：数据无误，确认合格"></textarea>
+      </div>
+      <div class="form-group">
+        <label>复核人</label>
+        <input type="text" id="reviewer" class="form-control" value="配方工程师" />
+      </div>
+    </div>
+
+    ${issues.length ? `
+    <div style="margin-top:14px;border-top:1px dashed #e5e7eb;padding-top:14px;">
+      <h4 style="font-size:13px;color:#111827;margin-bottom:8px;">⚠️ 系统检测到的问题</h4>
+      <ul class="issue-list">${issues.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>` : ''}
+
+    ${reviews.length || anomalies.length ? `
+    <div style="margin-top:14px;border-top:1px dashed #e5e7eb;padding-top:14px;">
+      <h4 style="font-size:13px;color:#111827;margin-bottom:10px;">📜 历史处理痕迹</h4>
+      <div class="timeline">
+        ${anomalies.map(a => `
+          <div class="timeline-item ${a.is_retest ? 'retest' : 'anomaly'}">
+            <div class="timeline-time">${a.trace_time} · ${a.operator}</div>
+            <div class="timeline-content">
+              <span class="tag tag-red">${typeLabel[a.anomaly_type] || a.anomaly_type}</span>
+              ${a.before_judgment !== a.after_judgment ? `${a.before_judgment} ➜ <strong>${a.after_judgment}</strong>` : ''}
+            </div>
+            <div class="timeline-meta">原因：${a.reason || '-'}</div>
+            ${a.is_retest ? `<div class="timeline-meta" style="color:#92400e;">复测：${a.retest_suggestion}</div>` : ''}
+          </div>`).join('')}
+        ${reviews.map(rv => `
+          <div class="timeline-item">
+            <div class="timeline-time">${rv.review_time} · ${rv.reviewer}</div>
+            <div class="timeline-content">
+              <span class="tag tag-blue">${rv.review_type === 'manual_review' ? '人工复核' : '自动检查'}</span>
+              ${rv.comment || ''}
+            </div>
+            ${rv.old_value ? `<div class="timeline-meta">${rv.field_name}: ${rv.old_value} ➜ ${rv.new_value}</div>` : ''}
+          </div>`).join('')}
+      </div>
+    </div>` : ''}
+  `;
+
+  openModal('reviewModal');
+}
+
+function onFieldChange() {
+  const f = document.getElementById('reviewField').value;
+  const nv = document.getElementById('reviewNewValue');
+  nv.disabled = !f;
+  if (!f) { nv.value = ''; nv.placeholder = '先选择要修改的字段'; return; }
+  if (state.currentRecord) {
+    const oldV = state.currentRecord[f];
+    nv.value = oldV != null ? oldV : '';
+  }
+  nv.placeholder = '请输入新值';
+}
+
+function toggleNewJudgment() {
+  document.getElementById('newJudgment').disabled = document.getElementById('changeJudgment').value !== '1';
+}
+function toggleRetest() {
+  document.getElementById('retestSuggestion').disabled = document.getElementById('needRetest').value !== '1';
+}
+
+async function saveReview() {
+  if (!state.currentRecord) return;
+  const fieldName = document.getElementById('reviewField').value;
+  const newValue = document.getElementById('reviewNewValue').value;
+  const changeJudgment = document.getElementById('changeJudgment').value === '1';
+  const newJudgment = document.getElementById('newJudgment').value;
+  const needRetest = document.getElementById('needRetest').value === '1';
+  const retestSuggestion = document.getElementById('retestSuggestion').value;
+  const comment = document.getElementById('reviewComment').value.trim();
+  const reviewer = document.getElementById('reviewer').value.trim();
+
+  if (!comment) { toast('请填写复核意见', 'error'); return; }
+  if (needRetest && !retestSuggestion) { toast('需要复测时请填写复测建议', 'error'); return; }
+  if (changeJudgment && !newJudgment) { toast('请选择新判定结论', 'error'); return; }
+
+  let oldValue = null;
+  if (fieldName && state.currentRecord) {
+    oldValue = state.currentRecord[fieldName];
+    if (oldValue === newValue) { toast('新值与原值相同，无需修改此字段', 'error'); return; }
+  }
+
+  const payload = {
+    fieldName: fieldName || null,
+    oldValue: fieldName ? oldValue : null,
+    newValue: fieldName ? newValue : null,
+    comment,
+    reviewResult: 'reviewed',
+    reviewer,
+    changeJudgment,
+    newJudgment: changeJudgment ? newJudgment : null,
+    retestSuggestion: needRetest ? retestSuggestion : null
+  };
+
+  const r = await api('/api/review/' + state.currentRecord.id, { method: 'POST', body: JSON.stringify(payload) });
+  if (r.success) {
+    toast('复核已保存', 'success');
+    closeModal('reviewModal');
+    if (state.currentBatch) loadBatchDetail(state.currentBatch.batch.id);
+  } else {
+    toast(r.message || '保存失败', 'error');
+  }
+}
+
+function openTransition(batchId) {
+  const b = state.batches.find(x => x.id === batchId) || (state.currentBatch && state.currentBatch.batch);
+  if (!b) return;
+  const curS = STATUS_MAP[b.status] || { label: b.status };
+  document.getElementById('currentStatus').value = curS.label;
+  const opts = NEXT_STATUS[b.status] || [];
+  document.getElementById('nextStatus').innerHTML = opts.map(o => `<option value="${o[0]}">${o[1]} → ${STATUS_MAP[o[0]]?.label || o[0]}</option>`).join('');
+  document.getElementById('transitionComment').value = '';
+  state._pendingBatchId = batchId;
+  openModal('transitionModal');
+}
+
+async function doTransition() {
+  if (!state._pendingBatchId) return;
+  const toStatus = document.getElementById('nextStatus').value;
+  const operator = document.getElementById('transitionOperator').value.trim();
+  const comment = document.getElementById('transitionComment').value.trim();
+  if (!toStatus) { toast('请选择目标状态', 'error'); return; }
+  const r = await api('/api/batches/' + state._pendingBatchId + '/transition', {
+    method: 'POST', body: JSON.stringify({ toStatus, operator, comment })
+  });
+  if (r.success) {
+    toast('状态已推进', 'success');
+    closeModal('transitionModal');
+    loadBatches();
+    if (state.currentBatch && state.currentBatch.batch.id === state._pendingBatchId) {
+      loadBatchDetail(state._pendingBatchId);
+    }
+  }
+}
+
+async function exportReport(batchId) {
+  const op = prompt('请输入导出人姓名：', '配方工程师');
+  if (op === null) return;
+  toast('正在生成报告...', 'info');
+  const r = await api(`/api/batches/${batchId}/export?operator=${encodeURIComponent(op || '配方工程师')}`);
+  if (r.success) {
+    toast('报告已生成，开始下载', 'success');
+    setTimeout(() => { window.open(r.data.downloadUrl, '_blank'); }, 500);
+    loadBatches();
+    if (state.currentBatch && state.currentBatch.batch.id === batchId) loadBatchDetail(batchId);
+  } else {
+    toast(r.message || '导出失败', 'error');
+  }
+}
+
+async function doImport() {
+  const file = document.getElementById('importFile').files[0];
+  if (!file) { toast('请选择文件', 'error'); return; }
+  const op = document.getElementById('importOperator').value.trim() || '配方工程师';
+  const rk = document.getElementById('importRemark').value.trim();
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('operator', op);
+  fd.append('remark', rk);
+  toast('正在导入...', 'info');
+  try {
+    const res = await fetch('/api/import', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.success) {
+      toast(`导入成功：共 ${data.data.totalRecords} 条，有效 ${data.data.validRecords} 条`, 'success');
+      closeModal('importModal');
+      await loadBatches();
+      setTimeout(() => loadBatchDetail(data.data.batchId), 300);
+    } else {
+      toast(data.message || '导入失败', 'error');
+    }
+  } catch (e) {
+    toast('导入失败: ' + e.message, 'error');
+  }
+}
+
+function buildSampleWorkbook() {
+  const XLSX = window.XLSX;
+  const wb = XLSX.utils.book_new();
+
+  const data = [
+    {
+      '记录编号': 'R0001',
+      '样品名称': '活性炭A型',
+      '样品批次': 'AC-2026-0601',
+      '测试日期': '2026-06-01',
+      '测试温度': 25.0,
+      '温度单位': 'C',
+      '环境气压': 101.3,
+      '吸收剂质量': 5.2345,
+      '质量单位': 'g',
+      '气体体积': 120.5,
+      '体积单位': 'L',
+      '吸收效率': 96.8,
+      '判定': '优秀',
+      '备注': '常规生产样，过程无异常',
+      '补录备注': ''
+    },
+    {
+      '记录编号': 'R0002',
+      '样品名称': '活性炭A型',
+      '样品批次': 'AC-2026-0602',
+      '测试日期': '2026-06-02',
+      '测试温度': 25.3,
+      '温度单位': 'C',
+      '环境气压': 100.8,
+      '吸收剂质量': 4.852,
+      '质量单位': 'g',
+      '气体体积': 118.2,
+      '体积单位': 'L',
+      '吸收效率': 89.4,
+      '判定': '合格',
+      '备注': '',
+      '补录备注': '6月5日补录，原始记录纸略有污渍'
+    },
+    {
+      '记录编号': 'R0003',
+      '样品名称': '分子筛B型',
+      '样品批次': 'MS-2026-0528',
+      '测试日期': '2026-05-28',
+      '测试温度': '77°F',
+      '温度单位': '',
+      '环境气压': 101.5,
+      '吸收剂质量': 5.1234,
+      '质量单位': 'g',
+      '气体体积': 125.0,
+      '体积单位': 'L',
+      '吸收效率': 93.5,
+      '判定': '合格',
+      '备注': '旧表导入，温度写的是华氏度',
+      '补录备注': ''
+    },
+    {
+      '记录编号': 'R0004',
+      '样品名称': '分子筛B型',
+      '样品批次': 'MS-2026-0530',
+      '测试日期': '2026-05-30',
+      '测试温度': 298.15,
+      '温度单位': 'K',
+      '环境气压': 100.5,
+      '吸收剂质量': 4.9567,
+      '质量单位': 'g',
+      '气体体积': 115.3,
+      '体积单位': 'L',
+      '吸收效率': 91.2,
+      '判定': '合格',
+      '备注': '热力学实验记录，单位用开尔文',
+      '补录备注': ''
+    },
+    {
+      '记录编号': 'R0005',
+      '样品名称': '硅胶C型',
+      '样品批次': 'SG-2026-0603',
+      '测试日期': '2026-06-03',
+      '测试温度': 26.5,
+      '温度单位': '',
+      '环境气压': 101.0,
+      '吸收剂质量': 5.12,
+      '质量单位': '',
+      '气体体积': 130.0,
+      '体积单位': '',
+      '吸收效率': 82.3,
+      '判定': '不合格',
+      '备注': '称量精度不够，只到百分之一克',
+      '补录备注': '建议复测，使用万分之一天平'
+    },
+    {
+      '记录编号': 'R0006',
+      '样品名称': '硅胶C型',
+      '样品批次': 'SG-2026-0605',
+      '测试日期': '2026-06-05',
+      '测试温度': 24.8,
+      '温度单位': 'C',
+      '环境气压': 101.2,
+      '吸收剂质量': 4.78,
+      '质量单位': 'g',
+      '气体体积': 112.5,
+      '体积单位': 'L',
+      '吸收效率': 86.7,
+      '判定': '合格',
+      '备注': '精度只有2位小数，可能被低估',
+      '补录备注': ''
+    },
+    {
+      '记录编号': 'R0007',
+      '样品名称': '活性炭A型（复测）',
+      '样品批次': 'AC-2026-0601-R2',
+      '测试日期': '',
+      '测试温度': 25.0,
+      '温度单位': 'C',
+      '环境气压': 101.3,
+      '吸收剂质量': 5.23,
+      '质量单位': 'g',
+      '气体体积': '',
+      '体积单位': 'L',
+      '吸收效率': '',
+      '判定': '',
+      '备注': '漏填较多，待补充测试日期和气体体积',
+      '补录备注': '现场原始数据暂未找到'
+    },
+    {
+      '记录编号': 'R0008',
+      '样品名称': '碳分子筛D型',
+      '样品批次': 'CMS-2026-0608',
+      '测试日期': '2026-06-08',
+      '测试温度': 27.0,
+      '温度单位': 'C',
+      '环境气压': 102.0,
+      '吸收剂质量': 5.4432,
+      '质量单位': 'g',
+      '气体体积': 98.7,
+      '体积单位': 'L',
+      '吸收效率': 78.5,
+      '判定': '不合格',
+      '备注': '首次不合格，建议复核查原因',
+      '补录备注': '怀疑称量环节有问题'
+    },
+    {
+      '记录编号': 'R0009',
+      '样品名称': '碳分子筛D型（复测）',
+      '样品批次': 'CMS-2026-0608-R2',
+      '测试日期': '2026-06-09',
+      '测试温度': 25.5,
+      '温度单位': 'C',
+      '环境气压': 101.5,
+      '吸收剂质量': 5.4431,
+      '质量单位': 'g',
+      '气体体积': 105.2,
+      '体积单位': 'L',
+      '吸收效率': 88.9,
+      '判定': '合格',
+      '备注': '复测，上次气量记录有误',
+      '补录备注': '复测后结论变更：不合格→合格'
+    },
+    {
+      '记录编号': 'R0010',
+      '样品名称': '活性氧化铝E型',
+      '样品批次': 'AL-2026-0610',
+      '测试日期': '2026-06-10',
+      '测试温度': 25.2,
+      '温度单位': 'C',
+      '环境气压': 100.9,
+      '吸收剂质量': 5.0123,
+      '质量单位': 'g',
+      '气体体积': 122.8,
+      '体积单位': 'L',
+      '吸收效率': 99.5,
+      '判定': '优秀',
+      '备注': '导入值写的99.5%，实际体积偏大，重算会不一样',
+      '补录备注': ''
+    }
+  ];
+
+  const ws = XLSX.utils.json_to_sheet(data);
+  ws['!cols'] = [
+    { wch: 10 }, { wch: 22 }, { wch: 18 }, { wch: 12 },
+    { wch: 10 }, { wch: 10 }, { wch: 10 },
+    { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+    { wch: 10 }, { wch: 8 }, { wch: 35 }, { wch: 30 }
+  ];
+  XLSX.utils.book_append_sheet(wb, ws, '气体吸收效率数据');
+  return wb;
+}
+
+async function generateAndImportSample() {
+  if (typeof window.XLSX === 'undefined') {
+    toast('正在加载Excel组件...', 'info');
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+      s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+  const wb = buildSampleWorkbook();
+  const buf = window.XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+  const file = new File([buf], `样例数据_混合场景_${new Date().toISOString().slice(0,10)}.xlsx`, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const fd = new FormData();
+  fd.append('file', file);
+  fd.append('operator', '配方工程师');
+  fd.append('remark', '样例数据：包含旧表(华氏度/开尔文)、补录备注、漏填单位、称量精度不足、复测改变判定等场景');
+  toast('正在导入样例数据...', 'info');
+  try {
+    const res = await fetch('/api/import', { method: 'POST', body: fd });
+    const data = await res.json();
+    if (data.success) {
+      toast(`样例导入成功！共 ${data.data.totalRecords} 条记录，可立即体验完整流程`, 'success');
+      await loadBatches();
+      await loadOverview();
+      setTimeout(() => loadBatchDetail(data.data.batchId), 300);
+    } else {
+      toast(data.message || '导入失败', 'error');
+    }
+  } catch (e) {
+    toast('导入失败: ' + e.message, 'error');
+  }
+}
+
+(async function init() {
+  await loadOverview();
+  await loadBatches();
+})();
+</script>
+</body>
+</html>
