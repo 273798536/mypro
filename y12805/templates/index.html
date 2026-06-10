@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCR 阴性对照巡检</title>
+<style>
+:root {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --border: #e2e8f0;
+  --text: #1a202c;
+  --text2: #718096;
+  --primary: #2b6cb0;
+  --primary-light: #ebf4ff;
+  --success: #38a169;
+  --success-light: #f0fff4;
+  --warning: #d69e2e;
+  --warning-light: #fffff0;
+  --danger: #e53e3e;
+  --danger-light: #fff5f5;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+.header { background:linear-gradient(135deg,#2b6cb0,#2c5282); color:#fff; padding:20px 32px; display:flex; align-items:center; justify-content:space-between; }
+.header h1 { font-size:22px; font-weight:700; }
+.header .subtitle { font-size:13px; opacity:.8; margin-top:2px; }
+.tabs { background:var(--card); border-bottom:1px solid var(--border); padding:0 32px; display:flex; gap:0; }
+.tab { padding:12px 20px; cursor:pointer; font-size:14px; color:var(--text2); border-bottom:2px solid transparent; transition:all .2s; }
+.tab:hover { color:var(--primary); }
+.tab.active { color:var(--primary); border-bottom-color:var(--primary); font-weight:600; }
+.main { padding:24px 32px; max-width:1400px; margin:0 auto; }
+.panel { display:none; }
+.panel.active { display:block; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:20px; margin-bottom:16px; }
+.card-title { font-size:16px; font-weight:600; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.badge { display:inline-flex; align-items:center; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:600; }
+.badge-confirmed { background:var(--success-light); color:var(--success); }
+.badge-needs_review { background:var(--warning-light); color:var(--warning); }
+.badge-draft { background:#edf2f7; color:var(--text2); }
+.badge-danger { background:var(--danger-light); color:var(--danger); }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { text-align:left; padding:10px 12px; background:#f7fafc; border-bottom:2px solid var(--border); color:var(--text2); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.5px; }
+td { padding:10px 12px; border-bottom:1px solid var(--border); }
+tr:hover td { background:#f7fafc; }
+.btn { display:inline-flex; align-items:center; gap:4px; padding:6px 14px; border:none; border-radius:6px; font-size:13px; cursor:pointer; transition:all .2s; }
+.btn-primary { background:var(--primary); color:#fff; }
+.btn-primary:hover { background:#2c5282; }
+.btn-success { background:var(--success); color:#fff; }
+.btn-success:hover { background:#2f855a; }
+.btn-warning { background:var(--warning); color:#fff; }
+.btn-warning:hover { background:#b7791f; }
+.btn-sm { padding:4px 10px; font-size:12px; }
+.btn-outline { background:transparent; border:1px solid var(--border); color:var(--text2); }
+.btn-outline:hover { border-color:var(--primary); color:var(--primary); }
+.btn-danger { background:var(--danger); color:#fff; }
+.toolbar { display:flex; gap:8px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+select,input[type=text],input[type=date],textarea { padding:6px 12px; border:1px solid var(--border); border-radius:6px; font-size:13px; outline:none; transition:border-color .2s; }
+select:focus,input[type=text]:focus,input[type=date]:focus,textarea:focus { border-color:var(--primary); }
+textarea { resize:vertical; min-height:60px; }
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+.stat-card { text-align:center; padding:16px; }
+.stat-card .number { font-size:28px; font-weight:700; color:var(--primary); }
+.stat-card .label { font-size:12px; color:var(--text2); margin-top:4px; }
+.link { color:var(--primary); cursor:pointer; text-decoration:none; }
+.link:hover { text-decoration:underline; }
+.flag-item { display:flex; align-items:flex-start; gap:8px; padding:8px 12px; background:var(--warning-light); border-radius:6px; margin-bottom:6px; font-size:13px; }
+.flag-item .flag-icon { color:var(--warning); font-size:16px; flex-shrink:0; }
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; align-items:center; justify-content:center; }
+.modal-overlay.show { display:flex; }
+.modal { background:var(--card); border-radius:12px; padding:24px; width:560px; max-height:80vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,.15); }
+.modal h3 { margin-bottom:16px; font-size:18px; }
+.form-group { margin-bottom:14px; }
+.form-group label { display:block; font-size:13px; font-weight:600; color:var(--text2); margin-bottom:4px; }
+.form-group input,.form-group select,.form-group textarea { width:100%; }
+.modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+.lineage-node { display:inline-flex; align-items:center; gap:4px; background:var(--primary-light); color:var(--primary); padding:4px 10px; border-radius:6px; font-size:12px; margin:2px; }
+.lineage-arrow { color:var(--text2); font-size:18px; }
+.empty-state { text-align:center; padding:40px; color:var(--text2); }
+.empty-state .icon { font-size:48px; margin-bottom:12px; }
+.toast { position:fixed; top:20px; right:20px; padding:12px 20px; border-radius:8px; color:#fff; font-size:14px; z-index:200; transform:translateX(120%); transition:transform .3s; }
+.toast.show { transform:translateX(0); }
+.toast-success { background:var(--success); }
+.toast-error { background:var(--danger); }
+.toast-warning { background:var(--warning); }
+.correction-item { padding:8px 12px; background:#f7fafc; border-radius:6px; margin-bottom:4px; font-size:12px; }
+.usable-hint { display:inline-flex; align-items:center; gap:4px; font-size:12px; font-weight:600; }
+.usable-hint.usable { color:var(--success); }
+.usable-hint.review { color:var(--warning); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>🧬 PCR 阴性对照巡检</h1>
+    <div class="subtitle">采样地点变更自动联动复核 · 谱系追踪 · 分组统计</div>
+  </div>
+  <div style="display:flex;gap:8px;">
+    <button class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.3)" onclick="showImportModal()">📥 批量导入</button>
+    <button class="btn btn-danger btn-sm" onclick="resetAll()">重置数据库</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('samples')">样本清单</div>
+  <div class="tab" onclick="switchTab('conclusions')">结论与复核</div>
+  <div class="tab" onclick="switchTab('statistics')">分组统计</div>
+  <div class="tab" onclick="switchTab('flags')">复核提醒</div>
+</div>
+
+<div class="main">
+
+  <div id="panel-samples" class="panel active">
+    <div class="toolbar">
+      <select id="filter-location" onchange="loadSamples()"><option value="">全部地点</option></select>
+      <select id="filter-species" onchange="loadSamples()"><option value="">全部物种</option></select>
+      <select id="filter-status" onchange="loadSamples()">
+        <option value="">全部状态</option>
+        <option value="pending">待处理</option>
+        <option value="processing">处理中</option>
+        <option value="completed">已完成</option>
+      </select>
+      <span style="flex:1"></span>
+      <span id="sample-count" style="font-size:13px;color:var(--text2)"></span>
+    </div>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>样本编号</th>
+            <th>物种</th>
+            <th>采样地点</th>
+            <th>采集日期</th>
+            <th>病理备注</th>
+            <th>结论状态</th>
+            <th>可用性</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="samples-tbody"></tbody>
+      </table>
+      <div id="samples-empty" class="empty-state" style="display:none">
+        <div class="icon">🧪</div>
+        <div>暂无样本，点击「批量导入」添加</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="panel-conclusions" class="panel">
+    <div class="toolbar">
+      <select id="filter-conclusion-status" onchange="loadConclusions()">
+        <option value="">全部结论</option>
+        <option value="confirmed">✅ 已确认（可直接用）</option>
+        <option value="needs_review">⚠️ 待复核（需找管理员）</option>
+        <option value="draft">📝 草稿</option>
+      </select>
+    </div>
+    <div id="conclusions-list"></div>
+    <div id="conclusions-empty" class="empty-state" style="display:none">
+      <div class="icon">📋</div>
+      <div>暂无结论数据</div>
+    </div>
+  </div>
+
+  <div id="panel-statistics" class="panel">
+    <div class="toolbar">
+      <span style="font-size:14px;font-weight:600;">分组依据：</span>
+      <select id="group-by" onchange="loadStatistics()">
+        <option value="sampling_location">采样地点</option>
+        <option value="species">物种</option>
+        <option value="collection_date">采集日期</option>
+      </select>
+    </div>
+    <div class="grid-3" id="stat-cards"></div>
+    <div class="card" id="stat-table-card">
+      <table>
+        <thead>
+          <tr><th>分组</th><th>总数</th><th>已确认</th><th>待复核</th><th>草稿</th><th>确认率</th></tr>
+        </thead>
+        <tbody id="stat-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="panel-flags" class="panel">
+    <div class="toolbar">
+      <span style="font-size:14px;font-weight:600;">采样地点变更后需重新复核的样本：</span>
+      <select id="filter-flag-resolved" onchange="loadFlags()">
+        <option value="0">未解决</option>
+        <option value="1">已解决</option>
+      </select>
+    </div>
+    <div id="flags-list"></div>
+    <div id="flags-empty" class="empty-state" style="display:none">
+      <div class="icon">✅</div>
+      <div>没有待处理的复核提醒</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <h3>📥 批量导入样本</h3>
+    <div class="form-group">
+      <label>粘贴 JSON（数组格式）</label>
+      <textarea id="import-json" rows="8" placeholder='[{"sample_code":"NC-001","species":"小鼠","sampling_location":"A栋3层","collection_date":"2026-06-01","pathology_notes":"正常"}]'></textarea>
+    </div>
+    <div id="import-result" style="font-size:13px;margin-bottom:12px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeImportModal()">取消</button>
+      <button class="btn btn-primary" onclick="doImport()">导入</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="sample-modal">
+  <div class="modal">
+    <h3 id="sample-modal-title">样本详情</h3>
+    <div id="sample-modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeSampleModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="correct-modal">
+  <div class="modal">
+    <h3>✏️ 人工修正</h3>
+    <input type="hidden" id="correct-sample-id">
+    <div class="form-group">
+      <label>修正字段</label>
+      <select id="correct-field">
+        <option value="pathology_notes">病理备注</option>
+        <option value="sampling_location">采样地点</option>
+        <option value="species">物种</option>
+        <option value="collection_date">采集日期</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>新值</label>
+      <input type="text" id="correct-new-value">
+    </div>
+    <div class="form-group">
+      <label>修正原因（必填）</label>
+      <textarea id="correct-reason" rows="2"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeCorrectModal()">取消</button>
+      <button class="btn btn-warning" onclick="doCorrect()">提交修正</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="conclusion-modal">
+  <div class="modal">
+    <h3 id="conclusion-modal-title">结论详情</h3>
+    <div id="conclusion-modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeConclusionModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+
+function $(id) { return document.getElementById(id); }
+
+function toast(msg, type='success') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast toast-' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  $('panel-' + name).classList.add('active');
+  if (name === 'samples') loadSamples();
+  else if (name === 'conclusions') loadConclusions();
+  else if (name === 'statistics') loadStatistics();
+  else if (name === 'flags') loadFlags();
+}
+
+function statusBadge(status) {
+  const map = {
+    confirmed: ['已确认','badge-confirmed'],
+    needs_review: ['待复核','badge-needs_review'],
+    draft: ['草稿','badge-draft'],
+    pending: ['待处理','badge-draft'],
+    processing: ['处理中','badge-needs_review'],
+    completed: ['已完成','badge-confirmed'],
+  };
+  const [text, cls] = map[status] || [status, 'badge-draft'];
+  return `<span class="badge ${cls}">${text}</span>`;
+}
+
+function usabilityHint(conclusionStatus) {
+  if (conclusionStatus === 'confirmed') {
+    return `<span class="usable-hint usable">✅ 可直接用</span>`;
+  }
+  return `<span class="usable-hint review">⚠️ 需管理员复核</span>`;
+}
+
+async function api(url, opts={}) {
+  try {
+    const res = await fetch(API + url, {
+      headers: {'Content-Type': 'application/json'},
+      ...opts
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      const err = data.error || {};
+      toast(`${err.detail || '操作失败'}${err.suggestion ? ' — ' + err.suggestion : ''}`, 'error');
+      return null;
+    }
+    return data;
+  } catch(e) {
+    toast('网络请求失败: ' + e.message, 'error');
+    return null;
+  }
+}
+
+async function loadSamples() {
+  const loc = $('filter-location').value;
+  const sp = $('filter-species').value;
+  const st = $('filter-status').value;
+  let url = '/api/samples?';
+  if (loc) url += `sampling_location=${encodeURIComponent(loc)}&`;
+  if (sp) url += `species=${encodeURIComponent(sp)}&`;
+  if (st) url += `status=${encodeURIComponent(st)}&`;
+
+  const data = await api(url);
+  if (!data) return;
+  const samples = data.data;
+
+  const locations = [...new Set(samples.map(s => s.sampling_location))];
+  const species = [...new Set(samples.map(s => s.species))];
+  const locSel = $('filter-location');
+  const spSel = $('filter-species');
+  const curLoc = locSel.value;
+  const curSp = spSel.value;
+  locSel.innerHTML = '<option value="">全部地点</option>' + locations.map(l => `<option value="${l}" ${l===curLoc?'selected':''}>${l}</option>`).join('');
+  spSel.innerHTML = '<option value="">全部物种</option>' + species.map(s => `<option value="${s}" ${s===curSp?'selected':''}>${s}</option>`).join('');
+
+  const tbody = $('samples-tbody');
+  if (samples.length === 0) {
+    tbody.innerHTML = '';
+    $('samples-empty').style.display = 'block';
+    $('sample-count').textContent = '';
+    return;
+  }
+  $('samples-empty').style.display = 'none';
+  $('sample-count').textContent = `共 ${samples.length} 条`;
+
+  tbody.innerHTML = samples.map(s => `
+    <tr>
+      <td><a class="link" onclick="showSample(${s.id})">${s.sample_code}</a></td>
+      <td>${s.species}</td>
+      <td>${s.sampling_location}</td>
+      <td>${s.collection_date}</td>
+      <td>${s.pathology_notes || '<span style="color:var(--danger)">⚠️ 缺少</span>'}</td>
+      <td>${statusBadge(s.conclusion_status || 'needs_review')}</td>
+      <td>${usabilityHint(s.conclusion_status)}</td>
+      <td>
+        <button class="btn btn-sm btn-outline" onclick="showCorrect(${s.id},'${s.sample_code}')">修正</button>
+        <button class="btn btn-sm btn-primary" onclick="showConclusion(${s.conclusion_id})">结论</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function loadConclusions() {
+  const st = $('filter-conclusion-status').value;
+  let url = '/api/conclusions?';
+  if (st) url += `status=${st}&`;
+  const data = await api(url);
+  if (!data) return;
+  const conclusions = data.data;
+
+  if (conclusions.length === 0) {
+    $('conclusions-list').innerHTML = '';
+    $('conclusions-empty').style.display = 'block';
+    return;
+  }
+  $('conclusions-empty').style.display = 'none';
+
+  $('conclusions-list').innerHTML = conclusions.map(c => `
+    <div class="card">
+      <div class="card-title">
+        <a class="link" onclick="showSample(${c.sample_id})">${c.sample_code}</a>
+        ${statusBadge(c.status)}
+        ${usabilityHint(c.status)}
+      </div>
+      <div style="font-size:13px;margin-bottom:8px;">
+        <strong>物种：</strong>${c.species} &nbsp;
+        <strong>地点：</strong>${c.sampling_location} &nbsp;
+        <strong>日期：</strong>${c.collection_date}
+      </div>
+      <div style="font-size:13px;margin-bottom:8px;">
+        <strong>检测结果：</strong>${c.result || '（未填写）'} &nbsp;
+        <strong>复核意见：</strong>${c.review_opinion || '（未填写）'} &nbsp;
+        <strong>复核人：</strong>${c.reviewer || '（未填写）'}
+      </div>
+      ${c.lineage && c.lineage.length > 0 ? `
+        <div style="font-size:12px;margin-bottom:8px;">
+          <strong>谱系追踪：</strong>
+          ${c.lineage.map(l => `<span class="lineage-node">🔗 ${l.source_sample_code} — ${l.source_material}${l.description ? '（'+l.description+'）' : ''}</span>`).join('<span class="lineage-arrow">→</span>')}
+        </div>
+      ` : ''}
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-sm btn-primary" onclick="editConclusion(${c.id},'${c.sample_code}')">编辑结论</button>
+        ${c.status !== 'confirmed' ? `<button class="btn btn-sm btn-success" onclick="confirmConclusion(${c.id},'${c.sample_code}')">确认复核</button>` : ''}
+        <button class="btn btn-sm btn-outline" onclick="showSample(${c.sample_id})">查看样本 →</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadStatistics() {
+  const groupBy = $('group-by').value;
+  const data = await api(`/api/statistics/groups?group_by=${groupBy}`);
+  if (!data) return;
+  const groups = data.data.groups;
+
+  const total = groups.reduce((s,g) => s + g.total, 0);
+  const confirmed = groups.reduce((s,g) => s + g.confirmed, 0);
+  const needsReview = groups.reduce((s,g) => s + g.needs_review, 0);
+
+  $('stat-cards').innerHTML = `
+    <div class="card stat-card"><div class="number">${total}</div><div class="label">样本总数</div></div>
+    <div class="card stat-card"><div class="number" style="color:var(--success)">${confirmed}</div><div class="label">已确认</div></div>
+    <div class="card stat-card"><div class="number" style="color:var(--warning)">${needsReview}</div><div class="label">待复核</div></div>
+  `;
+
+  $('stat-tbody').innerHTML = groups.map(g => `
+    <tr>
+      <td><strong>${g.group_key}</strong></td>
+      <td>${g.total}</td>
+      <td style="color:var(--success)">${g.confirmed}</td>
+      <td style="color:var(--warning)">${g.needs_review}</td>
+      <td>${g.draft}</td>
+      <td>${g.total > 0 ? Math.round(g.confirmed / g.total * 100) + '%' : '-'}</td>
+    </tr>
+  `).join('');
+}
+
+async function loadFlags() {
+  const resolved = $('filter-flag-resolved').value;
+  const data = await api(`/api/review-flags?resolved=${resolved}`);
+  if (!data) return;
+  const flags = data.data;
+
+  if (flags.length === 0) {
+    $('flags-list').innerHTML = '';
+    $('flags-empty').style.display = 'block';
+    return;
+  }
+  $('flags-empty').style.display = 'none';
+
+  $('flags-list').innerHTML = flags.map(f => `
+    <div class="flag-item">
+      <span class="flag-icon">⚠️</span>
+      <div style="flex:1">
+        <strong><a class="link" onclick="showSample(${f.sample_id})">${f.sample_code}</a></strong>
+        （${f.sampling_location}）— ${f.message}
+        <div style="font-size:11px;color:var(--text2);margin-top:2px">${f.created_at}</div>
+      </div>
+      ${f.resolved ? '<span class="badge badge-confirmed">已解决</span>' : `<button class="btn btn-sm btn-warning" onclick="resolveFlag(${f.id})">标记已解决</button>`}
+    </div>
+  `).join('');
+}
+
+function showImportModal() { $('import-modal').classList.add('show'); }
+function closeImportModal() { $('import-modal').classList.remove('show'); $('import-result').innerHTML = ''; }
+
+async function doImport() {
+  const raw = $('import-json').value.trim();
+  if (!raw) { toast('请输入 JSON 数据', 'error'); return; }
+  let samples;
+  try { samples = JSON.parse(raw); } catch(e) { toast('JSON 格式错误: ' + e.message, 'error'); return; }
+  if (!Array.isArray(samples)) { toast('请输入数组格式的 JSON', 'error'); return; }
+
+  const data = await api('/api/samples/import', {
+    method: 'POST',
+    body: JSON.stringify({ samples })
+  });
+  if (!data) return;
+  const r = data.data;
+
+  let html = '';
+  if (r.imported.length) html += `<div style="color:var(--success)">✅ 成功导入 ${r.imported.length} 条</div>`;
+  if (r.duplicates.length) html += `<div style="color:var(--warning)">⚠️ 跳过重复 ${r.duplicates.length} 条：${r.duplicates.map(d => d.sample_code).join(', ')}</div>`;
+  if (r.errors.length) html += `<div style="color:var(--danger)">❌ 导入失败 ${r.errors.length} 条：${r.errors.map(e => e.message).join('; ')}</div>`;
+  $('import-result').innerHTML = html;
+
+  if (r.imported.length > 0) {
+    toast(`成功导入 ${r.imported.length} 条样本`);
+    loadSamples();
+  }
+}
+
+async function showSample(id) {
+  const data = await api(`/api/samples/${id}`);
+  if (!data) return;
+  const s = data.data;
+
+  $('sample-modal-title').textContent = `样本 ${s.sample_code}`;
+  let html = `
+    <div class="grid-2">
+      <div class="form-group"><label>样本编号</label><div>${s.sample_code}</div></div>
+      <div class="form-group"><label>物种</label><div>${s.species}</div></div>
+      <div class="form-group"><label>采样地点</label><div>${s.sampling_location}</div></div>
+      <div class="form-group"><label>采集日期</label><div>${s.collection_date}</div></div>
+      <div class="form-group"><label>病理备注</label><div>${s.pathology_notes || '<span style="color:var(--danger)">⚠️ 缺少病理备注</span>'}</div></div>
+      <div class="form-group"><label>状态</label><div>${statusBadge(s.status)}</div></div>
+    </div>
+  `;
+
+  if (s.conclusion) {
+    html += `
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+        <div class="card-title">📋 结论 <a class="link" onclick="showConclusion(${s.conclusion.id})" style="font-size:13px">（点击查看详情 →）</a> ${statusBadge(s.conclusion.status)} ${usabilityHint(s.conclusion.status)}</div>
+        <div style="font-size:13px"><strong>结果：</strong>${s.conclusion.result || '未填写'} &nbsp; <strong>复核意见：</strong>${s.conclusion.review_opinion || '未填写'}</div>
+      </div>
+    `;
+  }
+
+  if (s.review_flags && s.review_flags.length > 0) {
+    html += `
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+        <div class="card-title">⚠️ 复核提醒</div>
+        ${s.review_flags.map(f => `<div class="flag-item"><span class="flag-icon">⚠️</span><div>${f.message}</div></div>`).join('')}
+      </div>
+    `;
+  }
+
+  if (s.corrections && s.corrections.length > 0) {
+    html += `
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border)">
+        <div class="card-title">📝 修正记录</div>
+        ${s.corrections.map(c => `
+          <div class="correction-item">
+            <strong>${c.field_name}</strong>: <span style="text-decoration:line-through;color:var(--danger)">${c.old_value}</span> → <span style="color:var(--success)">${c.new_value}</span>
+            ${c.reason ? `（原因: ${c.reason}）` : ''} — ${c.corrected_by} @ ${c.created_at}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  $('sample-modal-body').innerHTML = html;
+  $('sample-modal').classList.add('show');
+}
+
+function closeSampleModal() { $('sample-modal').classList.remove('show'); }
+
+async function showConclusion(id) {
+  const data = await api(`/api/conclusions/${id}`);
+  if (!data) return;
+  const c = data.data;
+
+  $('conclusion-modal-title').textContent = `结论 — ${c.sample_code}`;
+  let html = `
+    <div class="grid-2">
+      <div class="form-group"><label>样本编号</label><div><a class="link" onclick="closeConclusionModal();showSample(${c.sample_id})">${c.sample_code}</a></div></div>
+      <div class="form-group"><label>物种 / 地点</label><div>${c.species} / ${c.sampling_location}</div></div>
+      <div class="form-group"><label>结论状态</label><div>${statusBadge(c.status)} ${usabilityHint(c.status)}</div></div>
+      <div class="form-group"><label>复核人</label><div>${c.reviewer || '未指定'}</div></div>
+    </div>
+    <div class="form-group"><label>检测结果</label><div>${c.result || '（未填写）'}</div></div>
+    <div class="form-group"><label>复核意见</label><div>${c.review_opinion || '（未填写）'}</div></div>
+  `;
+
+  if (c.lineage && c.lineage.length > 0) {
+    html += `
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <div class="card-title">🔗 谱系追踪（结论 ← 来源材料）</div>
+        ${c.lineage.map(l => `<span class="lineage-node">🔗 ${l.source_sample_code} — ${l.source_material}${l.description ? '（'+l.description+'）' : ''}</span>`).join('<span class="lineage-arrow">→</span>')}
+      </div>
+    `;
+  }
+
+  if (c.corrections && c.corrections.length > 0) {
+    html += `
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <div class="card-title">📝 修正记录</div>
+        ${c.corrections.map(cr => `
+          <div class="correction-item">
+            <strong>${cr.field_name}</strong>: <span style="text-decoration:line-through;color:var(--danger)">${cr.old_value}</span> → <span style="color:var(--success)">${cr.new_value}</span>
+            ${cr.reason ? `（原因: ${cr.reason}）` : ''} — ${cr.corrected_by} @ ${cr.created_at}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  if (c.review_flags && c.review_flags.length > 0) {
+    html += `
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        <div class="card-title">⚠️ 复核提醒</div>
+        ${c.review_flags.map(f => `<div class="flag-item"><span class="flag-icon">⚠️</span><div>${f.message}</div></div>`).join('')}
+      </div>
+    `;
+  }
+
+  $('conclusion-modal-body').innerHTML = html;
+  $('conclusion-modal').classList.add('show');
+}
+
+function closeConclusionModal() { $('conclusion-modal').classList.remove('show'); }
+
+function showCorrect(id, code) {
+  $('correct-sample-id').value = id;
+  $('correct-new-value').value = '';
+  $('correct-reason').value = '';
+  $('correct-modal').classList.add('show');
+}
+function closeCorrectModal() { $('correct-modal').classList.remove('show'); }
+
+async function doCorrect() {
+  const sampleId = $('correct-sample-id').value;
+  const field = $('correct-field').value;
+  const newValue = $('correct-new-value').value;
+  const reason = $('correct-reason').value;
+  if (!newValue) { toast('请输入新值', 'error'); return; }
+  if (!reason) { toast('请填写修正原因', 'error'); return; }
+
+  const data = await api(`/api/samples/${sampleId}/correct`, {
+    method: 'POST',
+    body: JSON.stringify({ field_name: field, new_value: newValue, reason })
+  });
+  if (!data) return;
+  toast('修正成功');
+  closeCorrectModal();
+  loadSamples();
+}
+
+async function editConclusion(id, code) {
+  const result = prompt(`编辑 ${code} 的检测结果：`);
+  if (result === null) return;
+  const opinion = prompt(`编辑 ${code} 的复核意见：`);
+  if (opinion === null) return;
+
+  const data = await api(`/api/conclusions/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ result, review_opinion: opinion })
+  });
+  if (!data) return;
+  toast('结论已更新');
+  loadConclusions();
+}
+
+async function confirmConclusion(id, code) {
+  const reviewer = prompt(`确认复核 ${code}，请输入复核人姓名：`);
+  if (!reviewer) return;
+
+  const data = await api(`/api/conclusions/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: 'confirmed', reviewer })
+  });
+  if (!data) return;
+  toast(`${code} 已确认复核`);
+  loadConclusions();
+  loadSamples();
+}
+
+async function resolveFlag(id) {
+  const data = await api(`/api/review-flags/${id}/resolve`, { method: 'POST' });
+  if (!data) return;
+  toast('已标记为已解决');
+  loadFlags();
+}
+
+async function resetAll() {
+  if (!confirm('确定要清空数据库吗？此操作不可恢复。')) return;
+  await api('/api/reset', { method: 'POST' });
+  toast('数据库已清空');
+  loadSamples();
+  loadConclusions();
+  loadStatistics();
+  loadFlags();
+}
+
+loadSamples();
+</script>
+</body>
+</html>
