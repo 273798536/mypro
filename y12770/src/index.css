@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  body {
+    @apply bg-lab-bg text-lab-text;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', serif;
+    @apply font-bold;
+  }
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/40 rounded-xl shadow-card;
+  }
+  .btn-primary {
+    @apply px-4 py-2 bg-gradient-to-br from-lab-primary to-lab-primaryLight text-white rounded-md
+           hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 font-medium;
+  }
+  .btn-secondary {
+    @apply px-4 py-2 border border-lab-primary text-lab-primary bg-white rounded-md
+           hover:bg-lab-primary/5 transition-all duration-200 font-medium;
+  }
+  .btn-danger {
+    @apply px-4 py-2 bg-lab-danger text-white rounded-md hover:bg-lab-danger/90 transition-all duration-200 font-medium;
+  }
+  .btn-success {
+    @apply px-4 py-2 bg-lab-success text-white rounded-md hover:bg-lab-success/90 transition-all duration-200 font-medium;
+  }
+  .status-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+  .status-success {
+    @apply status-badge bg-lab-success/10 text-lab-success;
+  }
+  .status-warning {
+    @apply status-badge bg-lab-warning/15 text-lab-warning;
+  }
+  .status-danger {
+    @apply status-badge bg-lab-danger/10 text-lab-danger;
+  }
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-lab-textLight hover:text-lab-primary
+           hover:bg-lab-primary/5 transition-all duration-200 cursor-pointer;
+  }
+  .sidebar-item-active {
+    @apply sidebar-item bg-lab-primary text-white hover:bg-lab-primary hover:text-white shadow-md;
+  }
+  .table-cell {
+    @apply px-4 py-3 text-sm border-b border-lab-border;
+  }
+  .input-field {
+    @apply w-full px-3 py-2 border border-lab-border rounded-md text-sm
+           focus:outline-none focus:border-lab-primary focus:ring-1 focus:ring-lab-primary/30
+           transition-colors duration-200;
+  }
+  .error-callout {
+    @apply p-4 bg-lab-warning/10 border-l-4 border-lab-warning rounded-r-md;
+  }
+  .info-callout {
+    @apply p-4 bg-lab-primary/5 border-l-4 border-lab-primary rounded-r-md;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-lab-border rounded-full;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+}
