@@ -1,0 +1,517 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8">
+<title>荧光猝灭曲线拟合分析报告</title>
+
+        <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            line-height: 1.7; color: #333; max-width: 1100px; margin: 0 auto;
+            padding: 30px; background: #fafafa;
+        }
+        h1 { color: #1f4e79; font-size: 26px; border-bottom: 3px solid #1f4e79;
+             padding-bottom: 10px; margin-bottom: 25px; }
+        h2 { color: #2e75b6; font-size: 20px; margin: 30px 0 15px 0;
+             padding-left: 10px; border-left: 4px solid #2e75b6; }
+        h3 { color: #404040; font-size: 16px; margin: 20px 0 10px 0; }
+        h4 { color: #404040; font-size: 15px; margin-bottom: 12px; }
+        .section { background: white; border-radius: 8px; padding: 22px;
+                   margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .exec-summary { background: linear-gradient(135deg, #1f4e79, #2e75b6);
+                        color: white; padding: 22px; border-radius: 8px;
+                        margin-bottom: 25px; }
+        .exec-summary h2 { color: white; border-color: white; margin-top: 0; }
+        .exec-summary p { font-size: 15px; margin: 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0;
+                font-size: 13.5px; }
+        th { background: #1f4e79; color: white; padding: 10px 12px;
+             text-align: left; font-weight: 600; }
+        td { padding: 9px 12px; border-bottom: 1px solid #e0e0e0; }
+        tr:nth-child(even) { background: #f8f9fb; }
+        tr:hover { background: #eef4fb; }
+        .data-table .row-danger { background: #fff2f2 !important; }
+        .data-table .row-warning { background: #fff8e6 !important; }
+        .data-table .row-danger:hover, .data-table .row-warning:hover { opacity: 0.85; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 10px;
+               font-size: 11px; margin: 1px 2px; font-weight: 500; }
+        .tag-danger { background: #fde4e4; color: #c00000; }
+        .tag-warning { background: #fff4cc; color: #806000; }
+        .tag-info { background: #d9e8fa; color: #1f4e79; }
+        .missing { color: #bbb; font-style: italic; }
+        .fit-table .param-name { font-weight: 600; color: #1f4e79; }
+        .fit-table .highlight-change { background: #fff2f2 !important; }
+        .fit-table .highlight-change td { font-weight: bold; color: #c00000; }
+        .fit-table .highlight-diff td { color: #1f4e79; font-style: italic; }
+        .judge { padding: 3px 10px; border-radius: 4px; font-weight: 600; }
+        .judge-ok { background: #e2efd9; color: #375623; }
+        .judge-bad { background: #fde4e4; color: #c00000; }
+        .alert { padding: 14px 18px; border-radius: 6px; margin: 15px 0;
+                 font-size: 14px; }
+        .alert-danger { background: #fde4e4; border-left: 4px solid #c00000; color: #5c0000; }
+        .alert-info { background: #d9e8fa; border-left: 4px solid #2e75b6; color: #0f3b66; }
+        .alert strong { margin-right: 6px; }
+        .alert-table tr.level-high { background: #fff2f2; }
+        .alert-table tr.level-mid { background: #fff8e6; }
+        .alert-table tr.level-low { background: #e2efd9; }
+        .alert-table tr.level-info { background: #eef4fb; }
+        .level-badge { padding: 3px 10px; border-radius: 4px; font-size: 12px;
+                       font-weight: 600; display: inline-block; }
+        .level-badge.level-high { background: #c00000; color: white; }
+        .level-badge.level-mid { background: #ed7d31; color: white; }
+        .level-badge.level-low { background: #70ad47; color: white; }
+        .level-badge.level-info { background: #2e75b6; color: white; }
+        .manager-box { background: #fff8e6; border: 2px solid #ffc000;
+                       border-radius: 8px; padding: 18px; margin-top: 18px; }
+        .manager-box h4 { color: #806000; margin-bottom: 12px; }
+        .manager-title { font-weight: 600; color: #806000; margin: 10px 0 6px 0; }
+        .manager-box ul { padding-left: 20px; }
+        .manager-box li { margin: 5px 0; }
+        .fig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px;
+                    margin: 15px 0; }
+        .fig-grid.single { grid-template-columns: 1fr; }
+        .fig-box { background: #f8f9fb; padding: 12px; border-radius: 6px;
+                   text-align: center; }
+        .fig-box img { max-width: 100%; border: 1px solid #ddd; border-radius: 4px; }
+        .fig-caption { color: #666; font-size: 13px; margin-top: 8px;
+                       font-style: italic; }
+        .muted { color: #999; font-style: italic; }
+        .footer { text-align: center; color: #999; font-size: 12px;
+                  margin-top: 40px; padding-top: 18px; border-top: 1px solid #ddd; }
+        .warning-list { background: #fff8e6; padding: 12px 20px; border-radius: 6px;
+                        margin: 10px 0; }
+        .warning-list li { margin: 4px 0; }
+        </style>
+        
+</head><body>
+<h1>🔬 荧光猝灭 Stern-Volmer 曲线拟合分析报告</h1>
+<div class="exec-summary">
+<h2>📊 质检主管摘要</h2>
+<p>本批数据共检测到安全隐患 11 项 （高风险3、中风险5、低风险2）。 配平前后判定一致（不合格 - 需重新检测）。 反应时间漏记问题记录如下：   - 材料【异硫氰酸荧光素】批号【FQ-2024-0316-A】(行[4])   - 材料【罗丹明B】批号【FQ-2024-0317-A】(行[7])   - 材料【罗丹明6G】批号【FQ-2024-0319-A】(行[11]) 批号重复问题记录如下：   - 材料【异硫氰酸荧光素】批号【FQ-2024-0315-A】重复记录   - 材料【异硫氰酸荧光素】批号【FQ-2024-0316-B】重复记录</p>
+<p>拟合结果：Ksv = 0.0835 ± 0.0236 L/mmol | R² = 0.5571 | 最终判定：不合格 - 需重新检测</p>
+<p>安全风险提示：共 11 项（高风险 3 项 / 中风险 5 项），详见下方安全分析部分。</p>
+</div>
+<div class="section">
+<h2>1️⃣ 数据质量安全分析</h2>
+<table class="alert-table">
+<thead><tr><th>风险</th><th>类别</th><th>批号</th><th>材料</th><th>行号</th><th>问题说明</th></tr></thead>
+<tbody>
+<tr class="level-high">
+<td><span class="level-badge level-high">高风险</span></td>
+<td>反应时间漏记</td>
+<td>FQ-2024-0316-A</td>
+<td>异硫氰酸荧光素</td>
+<td>4</td>
+<td>材料【异硫氰酸荧光素】的第4行记录缺少反应时间。荧光猝灭反应时间直接影响I0/I比值准确性，漏记将导致拟合结果不可靠。</td>
+</tr>
+<tr class="level-high">
+<td><span class="level-badge level-high">高风险</span></td>
+<td>反应时间漏记</td>
+<td>FQ-2024-0317-A</td>
+<td>罗丹明B</td>
+<td>7</td>
+<td>材料【罗丹明B】的第7行记录缺少反应时间。荧光猝灭反应时间直接影响I0/I比值准确性，漏记将导致拟合结果不可靠。</td>
+</tr>
+<tr class="level-high">
+<td><span class="level-badge level-high">高风险</span></td>
+<td>反应时间漏记</td>
+<td>FQ-2024-0319-A</td>
+<td>罗丹明6G</td>
+<td>11</td>
+<td>材料【罗丹明6G】的第11行记录缺少反应时间。荧光猝灭反应时间直接影响I0/I比值准确性，漏记将导致拟合结果不可靠。</td>
+</tr>
+<tr class="level-mid">
+<td><span class="level-badge level-mid">中风险</span></td>
+<td>批号重复</td>
+<td>FQ-2024-0315-A</td>
+<td>异硫氰酸荧光素</td>
+<td>1, 2</td>
+<td>批号【FQ-2024-0315-A】在原始数据中出现2次，涉及浓度值: [0.0, 0.5]。系统已自动按浓度取均值处理，但需人工确认是否为平行样或录入错误。涉及材料: 异硫氰酸荧光素</td>
+</tr>
+<tr class="level-mid">
+<td><span class="level-badge level-mid">中风险</span></td>
+<td>批号重复</td>
+<td>FQ-2024-0316-B</td>
+<td>异硫氰酸荧光素</td>
+<td>5, 6</td>
+<td>批号【FQ-2024-0316-B】在原始数据中出现2次，涉及浓度值: [4.0, 4.0]。系统已自动按浓度取均值处理，但需人工确认是否为平行样或录入错误。涉及材料: 异硫氰酸荧光素</td>
+</tr>
+<tr class="level-mid">
+<td><span class="level-badge level-mid">中风险</span></td>
+<td>单位漏填</td>
+<td>FQ-2024-0315-B</td>
+<td>异硫氰酸荧光素</td>
+<td>3</td>
+<td>材料【异硫氰酸荧光素】的第3行缺少浓度单位。已假定单位为 mmol/L，如实际不同将严重影响Ksv值量纲。</td>
+</tr>
+<tr class="level-mid">
+<td><span class="level-badge level-mid">中风险</span></td>
+<td>单位漏填</td>
+<td>FQ-2024-0319-B</td>
+<td>罗丹明6G</td>
+<td>12</td>
+<td>材料【罗丹明6G】的第12行缺少浓度单位。已假定单位为 mmol/L，如实际不同将严重影响Ksv值量纲。</td>
+</tr>
+<tr class="level-low">
+<td><span class="level-badge level-low">低风险</span></td>
+<td>补录/旧表数据</td>
+<td>FQ-2024-0316-A</td>
+<td>异硫氰酸荧光素</td>
+<td>4</td>
+<td>第4行数据标记为【补录，昨天仪器记录丢失】。补录数据的原始记录追溯性可能不足，建议在纸质档案中确认原始数据。</td>
+</tr>
+<tr class="level-low">
+<td><span class="level-badge level-low">低风险</span></td>
+<td>补录/旧表数据</td>
+<td>FQ-2024-0319-B</td>
+<td>罗丹明6G</td>
+<td>12</td>
+<td>第12行数据标记为【旧表，单位后续补上】。补录数据的原始记录追溯性可能不足，建议在纸质档案中确认原始数据。</td>
+</tr>
+<tr class="level-mid">
+<td><span class="level-badge level-mid">中风险</span></td>
+<td>反应时间不一致</td>
+<td>FQ-2024-0317-B</td>
+<td>罗丹明B</td>
+<td>8</td>
+<td>材料【罗丹明B】第8行反应时间为30.0min，与大多数记录的15.0min不符。已在配平计算中按时间比例校正，但建议人工复核原始记录。</td>
+</tr>
+<tr class="level-info">
+<td><span class="level-badge level-info">提示</span></td>
+<td>多材料混合</td>
+<td></td>
+<td>异硫氰酸荧光素, 罗丹明B, 罗丹明6G</td>
+<td></td>
+<td>本批数据包含 3 种材料: 异硫氰酸荧光素, 罗丹明B, 罗丹明6G。已合并拟合。如需分别拟合请按材料拆分后重新运行。</td>
+</tr>
+</tbody></table>
+<div class="manager-box">
+<h4>📋 质检主管快速定位清单</h4>
+<p class="manager-title">【反应时间漏记】— 卡在哪份材料？</p>
+<ul>
+<li>材料<b>【异硫氰酸荧光素】</b>，批号<b>【FQ-2024-0316-A】</b>，数据行<b>4</b>（备注写有"补录，昨天仪器记录丢失"；序号4）</li>
+<li>材料<b>【罗丹明B】</b>，批号<b>【FQ-2024-0317-A】</b>，数据行<b>7</b>（备注写有"nan"；序号7）</li>
+<li>材料<b>【罗丹明6G】</b>，批号<b>【FQ-2024-0319-A】</b>，数据行<b>11</b>（备注写有"nan"；序号11）</li>
+</ul>
+<p class="manager-title">【批号重复】— 卡在哪份材料？</p>
+<ul>
+<li>材料<b>【异硫氰酸荧光素】</b>，批号<b>【FQ-2024-0315-A】</b>，数据行<b>1、2</b>
+<li>材料<b>【异硫氰酸荧光素】</b>，批号<b>【FQ-2024-0316-B】</b>，数据行<b>5、6</b>
+</ul>
+</div>
+</div>
+<div class="section">
+<h2>2️⃣ 原始数据明细</h2>
+<p class="muted">表格中已用不同颜色和标签标记各类数据问题，方便逐行核对。</p>
+<table class="data-table">
+<thead><tr>
+<th>行号</th>
+<th>序号</th>
+<th>样品批号</th>
+<th>材料名称</th>
+<th>猝灭剂浓度</th>
+<th>单位</th>
+<th>荧光强度</th>
+<th>反应时间</th>
+<th>时间单位</th>
+<th>备注</th>
+<th>质量标记</th>
+</tr></thead><tbody>
+<tr class="row-warning">
+<td>1</td>
+<td>1</td>
+<td>FQ-2024-0315-A</td>
+<td>异硫氰酸荧光素</td>
+<td>0.0</td>
+<td>mmol/L</td>
+<td>985.9605698361348</td>
+<td>15.0</td>
+<td>min</td>
+<td><span class="missing">—</span></td>
+<td><span class="tag tag-warning">批号重复</span></td>
+</tr>
+<tr class="row-warning">
+<td>2</td>
+<td>2</td>
+<td>FQ-2024-0315-A</td>
+<td>异硫氰酸荧光素</td>
+<td>0.5</td>
+<td>mmol/L</td>
+<td>938.3887900166412</td>
+<td>15.0</td>
+<td>min</td>
+<td>重复检测</td>
+<td><span class="tag tag-warning">批号重复</span></td>
+</tr>
+<tr class="">
+<td>3</td>
+<td>3</td>
+<td>FQ-2024-0315-B</td>
+<td>异硫氰酸荧光素</td>
+<td>1.0</td>
+<td><span class="missing">—</span></td>
+<td>910.9980689088212</td>
+<td>15.0</td>
+<td>min</td>
+<td><span class="missing">—</span></td>
+<td><span class="tag tag-info">缺单位</span></td>
+</tr>
+<tr class="row-warning">
+<td>4</td>
+<td>4</td>
+<td>FQ-2024-0316-A</td>
+<td>异硫氰酸荧光素</td>
+<td>2.0</td>
+<td>mmol/L</td>
+<td>855.883195883734</td>
+<td><span class="missing">—</span></td>
+<td>min</td>
+<td>补录，昨天仪器记录丢失</td>
+<td><span class="tag tag-warning">缺反应时间</span> <span class="tag tag-info">补录/旧表</span></td>
+</tr>
+<tr class="row-warning">
+<td>5</td>
+<td>5</td>
+<td>FQ-2024-0316-B</td>
+<td>异硫氰酸荧光素</td>
+<td>4.0</td>
+<td>mmol/L</td>
+<td>728.5334430854094</td>
+<td>15.0</td>
+<td>min</td>
+<td><span class="missing">—</span></td>
+<td><span class="tag tag-warning">批号重复</span></td>
+</tr>
+<tr class="row-warning">
+<td>6</td>
+<td>6</td>
+<td>FQ-2024-0316-B</td>
+<td>异硫氰酸荧光素</td>
+<td>4.0</td>
+<td>mmol/L</td>
+<td>670.2507676385767</td>
+<td>15.0</td>
+<td>min</td>
+<td>平行样</td>
+<td><span class="tag tag-warning">批号重复</span></td>
+</tr>
+<tr class="row-warning">
+<td>7</td>
+<td>7</td>
+<td>FQ-2024-0317-A</td>
+<td>罗丹明B</td>
+<td>6.0</td>
+<td>mmol/L</td>
+<td>646.1969790331661</td>
+<td><span class="missing">—</span></td>
+<td><span class="missing">—</span></td>
+<td><span class="missing">—</span></td>
+<td><span class="tag tag-warning">缺反应时间</span></td>
+</tr>
+<tr class="">
+<td>8</td>
+<td>8</td>
+<td>FQ-2024-0317-B</td>
+<td>罗丹明B</td>
+<td>8.0</td>
+<td>mmol/L</td>
+<td>602.2838871194219</td>
+<td>30.0</td>
+<td>min</td>
+<td><span class="missing">—</span></td>
+<td>✓ 正常</td>
+</tr>
+<tr class="">
+<td>9</td>
+<td>9</td>
+<td>FQ-2024-0318-A</td>
+<td>罗丹明B</td>
+<td>10.0</td>
+<td>mmol/L</td>
+<td>1560.0</td>
+<td>15.0</td>
+<td>min</td>
+<td><span class="missing">—</span></td>
+<td>✓ 正常</td>
+</tr>
+<tr class="">
+<td>10</td>
+<td>10</td>
+<td>FQ-2024-0318-B</td>
+<td>罗丹明B</td>
+<td>12.0</td>
+<td>mmol/L</td>
+<td>479.5148222202657</td>
+<td>15.0</td>
+<td>min</td>
+<td><span class="missing">—</span></td>
+<td>✓ 正常</td>
+</tr>
+<tr class="row-warning">
+<td>11</td>
+<td>11</td>
+<td>FQ-2024-0319-A</td>
+<td>罗丹明6G</td>
+<td>15.0</td>
+<td>mmol/L</td>
+<td>437.2799512922623</td>
+<td><span class="missing">—</span></td>
+<td>min</td>
+<td><span class="missing">—</span></td>
+<td><span class="tag tag-warning">缺反应时间</span></td>
+</tr>
+<tr class="">
+<td>12</td>
+<td>12</td>
+<td>FQ-2024-0319-B</td>
+<td>罗丹明6G</td>
+<td>20.0</td>
+<td><span class="missing">—</span></td>
+<td>357.4019506492134</td>
+<td>15.0</td>
+<td>min</td>
+<td>旧表，单位后续补上</td>
+<td><span class="tag tag-info">缺单位</span> <span class="tag tag-info">补录/旧表</span></td>
+</tr>
+<tr class="">
+<td>13</td>
+<td>13</td>
+<td>FQ-2024-0319-C</td>
+<td>罗丹明6G</td>
+<td>25.0</td>
+<td>mmol/L</td>
+<td>308.0112429571569</td>
+<td>15.0</td>
+<td>min</td>
+<td><span class="missing">—</span></td>
+<td>✓ 正常</td>
+</tr>
+</tbody></table>
+</div>
+<div class="section">
+<h2>3️⃣ 拟合参数对比（配平前 vs 配平后）</h2>
+<table class="fit-table">
+<thead><tr><th>参数</th><th>配平前</th><th>配平后</th></tr></thead>
+<tbody>
+<tr class=""><td class="param-name">拟合方法</td><td>Stern-Volmer线性拟合</td><td>Stern-Volmer线性拟合</td></tr>
+<tr class=""><td class="param-name">参与拟合点数</td><td>12</td><td>12</td></tr>
+<tr class=""><td class="param-name">Ksv (L/mmol)</td><td>0.084955 ± 0.013980</td><td>0.083539 ± 0.023556</td></tr>
+<tr class="highlight-diff"><td class="param-name">Ksv变化</td><td>—</td><td>-0.001416 (-1.67%)</td></tr>
+<tr class=""><td class="param-name">截距</td><td>0.9139 ± 0.0060</td><td>1.0626 ± 0.0102</td></tr>
+<tr class=""><td class="param-name">相关系数 R²</td><td>0.786921</td><td>0.557067</td></tr>
+<tr class=""><td class="param-name">调整 R²</td><td>0.765613</td><td>0.512773</td></tr>
+<tr class=""><td class="param-name">均方根误差 RMSE</td><td>0.343038</td><td>0.578033</td></tr>
+<tr class="highlight-diff"><td class="param-name">R²变化</td><td>—</td><td>-0.229854</td></tr>
+<tr class=""><td class="param-name">I0 估计值</td><td>985.96</td><td>985.96</td></tr>
+<tr class=""><td class="param-name">质量判定</td><td><span class="judge judge-ok">不合格 - 需重新检测</span></td><td><span class="judge judge-ok">不合格 - 需重新检测</span></td></tr>
+</tbody></table>
+<div class="alert alert-info">
+<strong>✓ 判定一致：</strong>
+配平前后均判定为「不合格 - 需重新检测」。但仍建议复核异常记录。
+</div>
+<h3>拟合警告</h3>
+<ul class="warning-list">
+<li>配平前：R²=0.7869，线性相关性较弱，建议检查数据或考虑非线性模型</li>
+<li>配平前：批号 [FQ-2024-0315-A] 有重复记录，已按浓度取均值并入拟合。涉及行: [1, 2]</li>
+<li>配平后：R²=0.5571，线性相关性较弱，建议检查数据或考虑非线性模型</li>
+</ul>
+</div>
+<div class="section">
+<h2>4️⃣ 可视化图表</h2>
+<h3>4.1 Stern-Volmer 拟合曲线对比</h3>
+<div class="fig-grid single">
+<div class="fig-box">
+<img src="stern_volmer_fit.png" alt="拟合曲线">
+<p class="fig-caption">图1：配平前后Stern-Volmer拟合对比。异常点（红色×）、时间漏记（橙色△）、补录（绿色◇）均已在图中标出。</p>
+</div>
+</div>
+<h3>4.2 原始荧光强度分布</h3>
+<div class="fig-grid single">
+<div class="fig-box">
+<img src="raw_intensity.png" alt="原始强度">
+<p class="fig-caption">图2：各数据行的原始荧光强度柱状图。红色为异常值、橙色为反应时间漏记记录。灰色虚线为均值和3σ控制线。</p>
+</div>
+</div>
+<h3>4.3 残差分析对比</h3>
+<div class="fig-grid single">
+<div class="fig-box">
+<img src="residuals.png" alt="残差分析">
+<p class="fig-caption">图3：配平前后残差分布对比。绿色区域为±RMSE区间，理想情况下残差应随机分布在0附近。</p>
+</div>
+</div>
+<h3>4.4 数据问题统计 & 拟合质量雷达图</h3>
+<div class="fig-grid">
+<div class="fig-box">
+<img src="issue_summary.png" alt="问题统计">
+<p class="fig-caption">图4：数据质量各类问题数量统计。红色为高风险、橙色为中风险。</p>
+</div>
+<div class="fig-box">
+<img src="comparison_radar.png" alt="雷达图">
+<p class="fig-caption">图5：拟合质量四维雷达图。绿色（配平后）越往外越好。</p>
+</div>
+</div>
+</div>
+<div class="section">
+<h2>5️⃣ 拟合结果文本说明</h2>
+<h3>配平前拟合结果</h3>
+<pre style="background:#f8f9fb;padding:15px;border-radius:6px;font-family:Consolas,monospace;font-size:13px;overflow-x:auto;">────────────────────────────────────────────────────────────
+拟合方法: Stern-Volmer线性拟合
+────────────────────────────────────────────────────────────
+Stern-Volmer猝灭常数 Ksv = 0.084955 ± 0.013980 (L/mmol)
+截距 = 0.9139 ± 0.0060
+I0 (空白荧光强度) = 985.96
+相关系数 R² = 0.786921
+调整 R² = 0.765613
+均方根误差 RMSE = 0.343038
+参与拟合点数 = 12
+
+【拟合警告】
+  ⚠ R²=0.7869，线性相关性较弱，建议检查数据或考虑非线性模型
+  ⚠ 批号 [FQ-2024-0315-A] 有重复记录，已按浓度取均值并入拟合。涉及行: [1, 2]</pre>
+<h3>配平后拟合结果</h3>
+<pre style="background:#f8f9fb;padding:15px;border-radius:6px;font-family:Consolas,monospace;font-size:13px;overflow-x:auto;">────────────────────────────────────────────────────────────
+拟合方法: Stern-Volmer线性拟合
+────────────────────────────────────────────────────────────
+Stern-Volmer猝灭常数 Ksv = 0.083539 ± 0.023556 (L/mmol)
+截距 = 1.0626 ± 0.0102
+I0 (空白荧光强度) = 985.96
+相关系数 R² = 0.557067
+调整 R² = 0.512773
+均方根误差 RMSE = 0.578033
+参与拟合点数 = 12
+
+【拟合警告】
+  ⚠ R²=0.5571，线性相关性较弱，建议检查数据或考虑非线性模型
+  ⚠ 批号 [FQ-2024-0315-A] 有重复记录，已按浓度取均值并入拟合。涉及行: [1, 2]</pre>
+<h3>数据质量检查报告</h3>
+<pre style="background:#f8f9fb;padding:15px;border-radius:6px;font-family:Consolas,monospace;font-size:13px;overflow-x:auto;">============================================================
+数据质量检查报告
+============================================================
+总记录数: 13
+
+【警告】反应时间漏记 (3 条):
+  → 第4行 | 批号: FQ-2024-0316-A | 材料: 异硫氰酸荧光素，备注: 补录，昨天仪器记录丢失
+  → 第7行 | 批号: FQ-2024-0317-A | 材料: 罗丹明B，备注: nan
+  → 第11行 | 批号: FQ-2024-0319-A | 材料: 罗丹明6G，备注: nan
+
+【警告】批号重复 (2 组):
+  → 批号 FQ-2024-0315-A 出现 2 次, 行号: [1, 2], 浓度: [0.0, 0.5]
+  → 批号 FQ-2024-0316-B 出现 2 次, 行号: [5, 6], 浓度: [4.0, 4.0]
+
+【警告】浓度单位漏填 (2 条):
+  → 第3行 | 批号: FQ-2024-0315-B | 材料: 异硫氰酸荧光素，备注: nan
+  → 第12行 | 批号: FQ-2024-0319-B | 材料: 罗丹明6G，备注: 旧表，单位后续补上
+
+【提示】补录/旧表数据 (2 条):
+  → 第4行 | 批号: FQ-2024-0316-A | 备注: 补录，昨天仪器记录丢失
+  → 第12行 | 批号: FQ-2024-0319-B | 备注: 旧表，单位后续补上
+
+【警告】反应时间不一致 (1 条):
+  → 第8行 | 批号: FQ-2024-0317-B | 当前: 30.0min, 标准: 15.0min
+
+【提示】混合材料检测:
+  → 检测到 3 种材料: 异硫氰酸荧光素, 罗丹明B, 罗丹明6G
+
+问题总数: 7 处
+============================================================</pre>
+</div>
+<div class="footer">报告生成时间：2026-06-10 05:53:03 | 荧光猝灭曲线拟合系统 v1.0</div>
+</body></html>
