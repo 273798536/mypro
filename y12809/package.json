@@ -1,0 +1,20 @@
+{
+  "name": "pathology-slice-review-system",
+  "version": "1.0.0",
+  "description": "病理切片区域复核系统 - 支持样本管理、谱系追踪、批次效应检测、报告导出",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "cd server && npm run build && cd ../client && npm run build",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
