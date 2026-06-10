@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>菌落照片自动计数系统</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <div class="brand">
+        <span class="logo">🧫</span>
+        <h1>菌落照片自动计数系统</h1>
+        <span class="tag">Pharma Colony Counter v1.0</span>
+      </div>
+      <div class="user-bar">
+        <span class="current-user">当前用户：<strong id="currentUserName">张研究员</strong></span>
+        <button id="switchUserBtn" class="btn btn-ghost">切换用户</button>
+        <button id="loadSampleBtn" class="btn btn-outline">📥 载入示例数据</button>
+        <button id="resetAllBtn" class="btn btn-danger">🗑 清空所有数据</button>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="dashboard">📊 总览看板</button>
+      <button class="tab" data-tab="count">🔬 计数处理</button>
+      <button class="tab" data-tab="lineage">🌳 谱系追踪</button>
+      <button class="tab" data-tab="review">✅ 复核中心</button>
+      <button class="tab" data-tab="trace">🔍 异常溯源</button>
+      <button class="tab" data-tab="report">📄 报告生成</button>
+    </nav>
+
+    <main class="content">
+      <section id="dashboard" class="tab-panel active">
+        <div class="panel-header">
+          <h2>总览看板</h2>
+          <p class="subtitle">图表、明细、下载全部来自同一批处理数据</p>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card">
+            <div class="kpi-label">处理批次</div>
+            <div class="kpi-value" id="kpiBatches">0</div>
+            <div class="kpi-sub">累计</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">菌落总数</div>
+            <div class="kpi-value" id="kpiColonies">0</div>
+            <div class="kpi-sub">所有样本合计</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">待复核</div>
+            <div class="kpi-value warn" id="kpiPending">0</div>
+            <div class="kpi-sub">含异常样本</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">已通过</div>
+            <div class="kpi-value ok" id="kpiApproved">0</div>
+            <div class="kpi-sub">含异常放行</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>各样本菌落数分布</h3>
+            <canvas id="colonyChart" height="220"></canvas>
+          </div>
+          <div class="card">
+            <h3>物种分类占比</h3>
+            <canvas id="speciesChart" height="220"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>处理明细（所有批次）</h3>
+            <div class="card-actions">
+              <button id="exportCsvBtn" class="btn btn-primary">⬇ 下载明细 CSV</button>
+              <button id="exportJsonBtn" class="btn btn-outline">⬇ 导出 JSON</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table id="dataTable" class="data-table">
+              <thead>
+                <tr>
+                  <th>批次编号</th>
+                  <th>样本名称</th>
+                  <th>照片</th>
+                  <th>自动计数</th>
+                  <th>人工修正</th>
+                  <th>最终结果</th>
+                  <th>物种</th>
+                  <th>阴性对照</th>
+                  <th>状态</th>
+                  <th>处理时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="dataTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="count" class="tab-panel">
+        <div class="panel-header">
+          <h2>计数处理</h2>
+          <p class="subtitle">上传菌落照片，自动识别计数，支持图像标注，标注与谱系共用记录</p>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>① 上传菌落照片</h3>
+            <div id="dropZone" class="drop-zone">
+              <div class="drop-inner">
+                <div class="drop-icon">📷</div>
+                <div class="drop-text">拖拽照片到此处，或 <span class="link">点击选择文件</span></div>
+                <div class="drop-hint">支持 JPG / PNG / BMP，单张不超过 20MB</div>
+              </div>
+              <input id="fileInput" type="file" accept="image/*" multiple hidden />
+            </div>
+            <div id="uploadedList" class="uploaded-list"></div>
+          </div>
+          <div class="card">
+            <h3>② 处理参数</h3>
+            <div class="form-row">
+              <label>批次编号</label>
+              <input id="batchId" type="text" placeholder="自动生成，可修改" />
+            </div>
+            <div class="form-row">
+              <label>样本名称</label>
+              <input id="sampleName" type="text" placeholder="如：批次A-平板3" />
+            </div>
+            <div class="form-row">
+              <label>培养条件</label>
+              <select id="cultureCondition">
+                <option value="需氧37℃ 24h">需氧 37℃ 24h</option>
+                <option value="厌氧37℃ 48h">厌氧 37℃ 48h</option>
+                <option value="霉菌28℃ 72h">霉菌 28℃ 72h</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>预期物种</label>
+              <select id="expectedSpecies">
+                <option value="大肠杆菌">大肠杆菌 (E. coli)</option>
+                <option value="金黄色葡萄球菌">金黄色葡萄球菌 (S. aureus)</option>
+                <option value="枯草芽孢杆菌">枯草芽孢杆菌 (B. subtilis)</option>
+                <option value="白色念珠菌">白色念珠菌 (C. albicans)</option>
+                <option value="黑曲霉">黑曲霉 (A. niger)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>是否阴性对照</label>
+              <label class="switch">
+                <input id="isNegativeControl" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="form-row">
+              <label>检测灵敏度</label>
+              <input id="sensitivity" type="range" min="1" max="10" value="5" />
+              <span id="sensitivityVal" class="range-val">5</span>
+            </div>
+            <button id="runCountBtn" class="btn btn-primary btn-block">▶ 开始自动计数</button>
+          </div>
+        </div>
+
+        <div id="resultCard" class="card hidden">
+          <div class="card-header">
+            <h3>③ 计数结果 & 图像标注</h3>
+            <div class="card-actions">
+              <button id="toggleMarkBtn" class="btn btn-outline">✏ 开启标注模式</button>
+              <button id="saveRecordBtn" class="btn btn-success">💾 保存到数据中心</button>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="annotation-wrap">
+              <canvas id="annotationCanvas"></canvas>
+              <div class="mark-legend">
+                <span><i class="dot green"></i>自动识别</span>
+                <span><i class="dot blue"></i>人工新增</span>
+                <span><i class="dot red"></i>人工删除</span>
+              </div>
+            </div>
+            <div>
+              <div class="form-row">
+                <label>自动识别菌落数</label>
+                <input id="autoCount" type="number" readonly />
+              </div>
+              <div class="form-row">
+                <label>人工修正（+新增/-删除）</label>
+                <div class="row-inline">
+                  <button id="minusBtn" class="btn btn-outline small">-</button>
+                  <input id="manualDelta" type="number" value="0" />
+                  <button id="plusBtn" class="btn btn-outline small">+</button>
+                </div>
+              </div>
+              <div class="form-row">
+                <label>最终菌落数</label>
+                <input id="finalCount" type="number" readonly />
+              </div>
+              <div class="form-row">
+                <label>鉴定物种</label>
+                <select id="identifiedSpecies">
+                  <option value="大肠杆菌">大肠杆菌 (E. coli)</option>
+                  <option value="大肠埃希氏菌">大肠埃希氏菌 (E. coli，异名)</option>
+                  <option value="金黄色葡萄球菌">金黄色葡萄球菌 (S. aureus)</option>
+                  <option value="枯草芽孢杆菌">枯草芽孢杆菌 (B. subtilis)</option>
+                  <option value="白色念珠菌">白色念珠菌 (C. albicans)</option>
+                  <option value="白假丝酵母菌">白假丝酵母菌 (C. albicans，异名)</option>
+                  <option value="黑曲霉">黑曲霉 (A. niger)</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label>处理备注</label>
+                <textarea id="processNote" rows="3" placeholder="如：菌落边缘粘连较严重，已人工复核；疑似杂菌污染..."></textarea>
+              </div>
+              <div class="form-row">
+                <label>谱系关联（同批次其他样本）</label>
+                <select id="lineageLink">
+                  <option value="">— 暂不关联 —</option>
+                </select>
+                <small class="hint">标注结果和谱系追踪共用此条处理记录</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="lineage" class="tab-panel">
+        <div class="panel-header">
+          <h2>谱系追踪</h2>
+          <p class="subtitle">图像标注与谱系追踪共用同一批处理记录，不重复计算</p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>样本谱系树</h3>
+            <div class="card-actions">
+              <select id="lineageFilter">
+                <option value="all">全部批次</option>
+              </select>
+            </div>
+          </div>
+          <div id="lineageTree" class="lineage-tree"></div>
+        </div>
+        <div class="card">
+          <h3>处理记录流水（与标注、报告共用）</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>记录ID</th>
+                  <th>批次</th>
+                  <th>样本</th>
+                  <th>照片快照</th>
+                  <th>菌落数</th>
+                  <th>物种</th>
+                  <th>标注变更</th>
+                  <th>处理人</th>
+                  <th>时间</th>
+                </tr>
+              </thead>
+              <tbody id="lineageLogBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="review" class="tab-panel">
+        <div class="panel-header">
+          <h2>复核中心</h2>
+          <p class="subtitle">阴性对照异常放行必须记录：谁改的、什么时候改的、为什么改</p>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <h3>待复核列表</h3>
+            <div id="pendingList" class="review-list"></div>
+          </div>
+          <div class="card">
+            <h3>复核操作</h3>
+            <div id="reviewDetail" class="review-detail empty">
+              <div class="empty-hint">← 请从左侧选择一条待复核记录</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>审核历史（含异常放行追溯）</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>记录ID</th>
+                  <th>批次</th>
+                  <th>样本</th>
+                  <th>原状态</th>
+                  <th>新状态</th>
+                  <th>是否异常放行</th>
+                  <th>复核人</th>
+                  <th>复核时间</th>
+                  <th>复核原因</th>
+                </tr>
+              </thead>
+              <tbody id="reviewHistoryBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="trace" class="tab-panel">
+        <div class="panel-header">
+          <h2>异常溯源</h2>
+          <p class="subtitle">顺着异常 → 物种名同义 → 显微照片 → 处理意见，一条链路查到底</p>
+        </div>
+        <div class="card">
+          <h3>步骤1：选择一条异常或物种同义记录</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="traceTable">
+              <thead>
+                <tr>
+                  <th>记录ID</th>
+                  <th>批次</th>
+                  <th>样本</th>
+                  <th>异常类型</th>
+                  <th>物种</th>
+                  <th>同义提示</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="traceTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div id="traceChain" class="trace-chain hidden">
+          <div class="trace-title">溯源链路</div>
+          <div class="trace-nodes" id="traceNodes"></div>
+        </div>
+      </section>
+
+      <section id="report" class="tab-panel">
+        <div class="panel-header">
+          <h2>报告生成</h2>
+          <p class="subtitle">报告中含普通话解释，可直接复制给同事；数据与看板完全一致</p>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>参数选择</h3>
+            <div class="card-actions">
+              <button id="generateReportBtn" class="btn btn-primary">📝 生成报告</button>
+            </div>
+          </div>
+          <div class="form-row inline">
+            <label>选择批次</label>
+            <select id="reportBatch">
+              <option value="all">全部批次汇总</option>
+            </select>
+            <label>包含内容</label>
+            <label class="checkbox"><input type="checkbox" class="reportOpt" value="summary" checked />统计摘要</label>
+            <label class="checkbox"><input type="checkbox" class="reportOpt" value="chart" checked />图表</label>
+            <label class="checkbox" class="reportOpt"><input type="checkbox" value="detail" checked />样本明细</label>
+            <label class="checkbox"><input type="checkbox" class="reportOpt" value="explain" checked />普通话解释</label>
+            <label class="checkbox"><input type="checkbox" class="reportOpt" value="review" checked />复核记录</label>
+          </div>
+        </div>
+        <div id="reportContent" class="card report-content hidden">
+          <div class="card-header">
+            <h3>📄 菌落计数报告</h3>
+            <div class="card-actions">
+              <button id="copyPlainBtn" class="btn btn-outline">📋 复制普通话解释</button>
+              <button id="downloadReportBtn" class="btn btn-primary">⬇ 下载完整报告</button>
+            </div>
+          </div>
+          <div id="reportBody"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modal" class="modal hidden">
+    <div class="modal-mask"></div>
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">提示</h3>
+        <button id="modalClose" class="btn btn-ghost small">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
