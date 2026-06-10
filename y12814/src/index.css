@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --color-indigo-deep: #1B2A4A;
+  --color-indigo-mid: #243556;
+  --color-indigo-light: #2E4470;
+  --color-amber-accent: #E8A838;
+  --color-amber-dim: #C48A20;
+  --color-emerald-pass: #34D399;
+  --color-amber-pending: #FBBF24;
+  --color-red-bad: #EF4444;
+  --color-slate-bg: #0F172A;
+  --color-slate-card: #1E293B;
+  --color-slate-border: #334155;
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate-border) transparent;
+}
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background-color: var(--color-slate-bg);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.glow-amber {
+  box-shadow: 0 0 20px rgba(232, 168, 56, 0.15);
+}
+
+.glow-pass {
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.2);
+}
+
+.glow-pending {
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
+}
+
+.glow-bad {
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.2);
+}
+
+.line-indicator {
+  position: relative;
+}
+
+.line-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-amber-accent);
+  transition: width 0.2s ease;
+}
+
+.line-indicator:hover::after {
+  width: 100%;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out forwards;
+}
+
+.recharts-bar-rectangle {
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.recharts-bar-rectangle:hover {
+  filter: brightness(1.2);
+}
