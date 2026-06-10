@@ -1,0 +1,6 @@
+条码,图片名,备注
+CELL-DUP-001,img_dup_001.jpg,重复导入测试-第1条
+CELL-DUP-001,img_dup_001b.jpg,重复导入测试-第2条(与第1条条码相同)
+CELL-DUP-001,img_dup_001c.jpg,重复导入测试-第3条(与第1条条码相同)
+CELL-DUP-002,img_dup_002.jpg,重复导入测试-正常条码
+CELL-DUP-003,img_dup_003.jpg,重复导入测试-正常条码
