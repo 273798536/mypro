@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ocean-800: #0a2540;
+  --ocean-500: #1a5f7a;
+  --ocean-50: #f0f6fc;
+  --parchment-100: #faf7f2;
+  --avail-green: #10b981;
+  --avail-amber: #f59e0b;
+  --avail-red: #ef4444;
+  font-family: "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #0a2540;
+  background: #f7f9fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #b0c7d8;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #86aac3;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-all duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-ocean-400;
+  }
+  .btn-primary {
+    @apply btn bg-ocean-800 text-white shadow hover:bg-ocean-700 hover:shadow-cardHover hover:-translate-y-px;
+  }
+  .btn-secondary {
+    @apply btn border border-ocean-200 bg-white text-ocean-800 hover:bg-ocean-50 hover:shadow-card;
+  }
+  .btn-danger {
+    @apply btn bg-red-50 text-red-700 border border-red-200 hover:bg-red-100;
+  }
+  .btn-ghost {
+    @apply btn text-ocean-600 hover:bg-ocean-50;
+  }
+  .card {
+    @apply bg-white rounded-lg shadow-card border border-steel-100 transition-all duration-200;
+  }
+  .card-hover:hover {
+    @apply shadow-cardHover -translate-y-0.5 border-ocean-200;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .label {
+    @apply text-xs font-medium text-ocean-500 uppercase tracking-wider;
+  }
+  .divider-thin {
+    @apply border-t border-steel-100 my-3;
+  }
+  .formula-block {
+    @apply font-mono text-sm leading-7 bg-parchment-50 rounded-md px-4 py-3 border border-parchment-200;
+  }
+  .field-diff {
+    @apply relative border-2 border-dashed border-amber-400 rounded-md px-2 py-1;
+  }
+  .nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-md text-ocean-100 hover:bg-ocean-700/50 transition-colors cursor-pointer text-sm;
+  }
+  .nav-item-active {
+    @apply bg-ocean-700 text-white shadow-inner;
+  }
+}
