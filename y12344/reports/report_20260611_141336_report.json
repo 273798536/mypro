@@ -1,0 +1,2171 @@
+{
+  "report_id": "report_20260611_141336",
+  "created_at": "2026-06-11T14:13:36.589898",
+  "bounds_config": {
+    "angle": {
+      "unit": "deg",
+      "min": -10.0,
+      "max": 90.0
+    },
+    "wind_speed": {
+      "unit": "m/s",
+      "min": 0.0,
+      "max": 30.0
+    },
+    "coordinate_x": {
+      "unit": "m",
+      "min": 0.0,
+      "max": 1000.0
+    },
+    "coordinate_y": {
+      "unit": "m",
+      "min": -50.0,
+      "max": 500.0
+    },
+    "time": {
+      "unit": "s",
+      "min": 0.0,
+      "max": 60.0
+    }
+  },
+  "events_summary": [
+    {
+      "event_id": "evt_0001",
+      "t": 0.0,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 0.0,
+        "x": 0.0,
+        "y": 0.0,
+        "vx": 35.355,
+        "vy": 35.355
+      },
+      "angle_record": {
+        "t": 0.0,
+        "angle_deg": 45.0
+      },
+      "wind_record": {
+        "t": 0.0,
+        "wind_speed": 1.99,
+        "wind_direction_deg": -2.6
+      }
+    },
+    {
+      "event_id": "evt_0002",
+      "t": 0.2,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 0.2,
+        "x": 7.071,
+        "y": 7.071,
+        "vx": 34.422,
+        "vy": 32.404
+      },
+      "angle_record": {
+        "t": 0.2,
+        "angle_deg": 43.27
+      },
+      "wind_record": {
+        "t": 0.2,
+        "wind_speed": 2.36,
+        "wind_direction_deg": -3.4
+      }
+    },
+    {
+      "event_id": "evt_0003",
+      "t": 0.4,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 0.4,
+        "x": 13.955,
+        "y": 13.552,
+        "vx": 33.566,
+        "vy": 29.587
+      },
+      "angle_record": {
+        "t": 0.4,
+        "angle_deg": 41.39
+      },
+      "wind_record": {
+        "t": 0.4,
+        "wind_speed": 2.15,
+        "wind_direction_deg": 4.5
+      }
+    },
+    {
+      "event_id": "evt_0004",
+      "t": 0.6,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 0.6,
+        "x": 20.669,
+        "y": 19.469,
+        "vx": 32.78,
+        "vy": 26.888
+      },
+      "angle_record": {
+        "t": 0.6,
+        "angle_deg": 39.36
+      },
+      "wind_record": {
+        "t": 0.6,
+        "wind_speed": 1.83,
+        "wind_direction_deg": 3.6
+      }
+    },
+    {
+      "event_id": "evt_0005",
+      "t": 0.8,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 0.8,
+        "x": 27.225,
+        "y": 24.847,
+        "vx": 32.056,
+        "vy": 24.293
+      },
+      "angle_record": {
+        "t": 0.8,
+        "angle_deg": 37.16
+      },
+      "wind_record": {
+        "t": 0.8,
+        "wind_speed": 1.45,
+        "wind_direction_deg": -1.5
+      }
+    },
+    {
+      "event_id": "evt_0006",
+      "t": 1.0,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 1.0,
+        "x": 33.636,
+        "y": 29.705,
+        "vx": 31.387,
+        "vy": 21.791
+      },
+      "angle_record": {
+        "t": 1.0,
+        "angle_deg": 34.77
+      },
+      "wind_record": {
+        "t": 1.0,
+        "wind_speed": 2.22,
+        "wind_direction_deg": 6.8
+      }
+    },
+    {
+      "event_id": "evt_0007",
+      "t": 1.2,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 1.2,
+        "x": 39.913,
+        "y": 34.063,
+        "vx": 30.768,
+        "vy": 19.37
+      },
+      "angle_record": {
+        "t": 1.2,
+        "angle_deg": 32.19
+      },
+      "wind_record": {
+        "t": 1.2,
+        "wind_speed": 2.29,
+        "wind_direction_deg": 1.2
+      }
+    },
+    {
+      "event_id": "evt_0008",
+      "t": 1.4,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 1.4,
+        "x": 46.067,
+        "y": 37.937,
+        "vx": 30.193,
+        "vy": 17.021
+      },
+      "angle_record": {
+        "t": 1.4,
+        "angle_deg": 29.41
+      },
+      "wind_record": {
+        "t": 1.4,
+        "wind_speed": 2.05,
+        "wind_direction_deg": 4.5
+      }
+    },
+    {
+      "event_id": "evt_0009",
+      "t": 1.6,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 1.6,
+        "x": 52.105,
+        "y": 41.342,
+        "vx": 29.659,
+        "vy": 14.736
+      },
+      "angle_record": {
+        "t": 1.6,
+        "angle_deg": 95.0
+      },
+      "wind_record": {
+        "t": 1.6,
+        "wind_speed": null,
+        "wind_direction_deg": null
+      }
+    },
+    {
+      "event_id": "evt_0010",
+      "t": 1.8,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 1.8,
+        "x": 58.037,
+        "y": 44.289,
+        "vx": 29.16,
+        "vy": 12.508
+      },
+      "angle_record": {
+        "t": 1.8,
+        "angle_deg": 23.22
+      },
+      "wind_record": {
+        "t": 1.8,
+        "wind_speed": 2.13,
+        "wind_direction_deg": -2.2
+      }
+    },
+    {
+      "event_id": "evt_0011",
+      "t": 2.0,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 2.0,
+        "x": 63.869,
+        "y": 46.79,
+        "vx": 28.692,
+        "vy": 10.331
+      },
+      "angle_record": {
+        "t": 2.0,
+        "angle_deg": 19.8
+      },
+      "wind_record": {
+        "t": 2.0,
+        "wind_speed": 1.96,
+        "wind_direction_deg": 0.6
+      }
+    },
+    {
+      "event_id": "evt_0012",
+      "t": 2.2,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 2.2,
+        "x": 69.608,
+        "y": 48.857,
+        "vx": 28.252,
+        "vy": 8.199
+      },
+      "angle_record": {
+        "t": 2.2,
+        "angle_deg": 16.18
+      },
+      "wind_record": {
+        "t": 2.2,
+        "wind_speed": 1.72,
+        "wind_direction_deg": -2.9
+      }
+    },
+    {
+      "event_id": "evt_0013",
+      "t": 2.4,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 2.4,
+        "x": 75.258,
+        "y": 50.496,
+        "vx": 27.837,
+        "vy": 6.107
+      },
+      "angle_record": {
+        "t": 2.4,
+        "angle_deg": 12.37
+      },
+      "wind_record": {
+        "t": 2.4,
+        "wind_speed": 2.5,
+        "wind_direction_deg": 0.0
+      }
+    },
+    {
+      "event_id": "evt_0014",
+      "t": 2.6,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 2.6,
+        "x": 80.825,
+        "y": 51.718,
+        "vx": 27.442,
+        "vy": 4.051
+      },
+      "angle_record": {
+        "t": 2.6,
+        "angle_deg": 8.4
+      },
+      "wind_record": {
+        "t": 2.6,
+        "wind_speed": 2.42,
+        "wind_direction_deg": -2.5
+      }
+    },
+    {
+      "event_id": "evt_0015",
+      "t": 2.8,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 2.8,
+        "x": 86.314,
+        "y": 52.528,
+        "vx": 27.064,
+        "vy": 2.029
+      },
+      "angle_record": {
+        "t": 2.8,
+        "angle_deg": 4.29
+      },
+      "wind_record": {
+        "t": 2.8,
+        "wind_speed": 2.27,
+        "wind_direction_deg": -3.2
+      }
+    },
+    {
+      "event_id": "evt_0016",
+      "t": 3.0,
+      "has_trajectory": true,
+      "has_angle": true,
+      "has_wind": true,
+      "sources": [
+        {
+          "material_id": "traj_trajectory_normal.csv",
+          "material_name": "轨迹文件: trajectory_normal.csv"
+        },
+        {
+          "material_id": "angle_angle_with_overflow.csv",
+          "material_name": "角度文件: angle_with_overflow.csv"
+        },
+        {
+          "material_id": "wind_wind_with_missing.csv",
+          "material_name": "风速文件: wind_with_missing.csv"
+        }
+      ],
+      "trajectory_point": {
+        "t": 3.0,
+        "x": 91.727,
+        "y": 52.934,
+        "vx": 26.702,
+        "vy": 0.038
+      },
+      "angle_record": {
+        "t": 3.0,
+        "angle_deg": 0.08
+      },
+      "wind_record": {
+        "t": 3.0,
+        "wind_speed": 1.75,
+        "wind_direction_deg": -3.2
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "anomaly_id": "anom_0001",
+      "anomaly_type": "angle_overflow",
+      "severity": "error",
+      "message": "角度越界: 95.00 deg 高于上限 [-10.0, 90.0] deg, 超出 5.00 deg",
+      "t": 1.6,
+      "value": 95.0,
+      "bound_min": -10.0,
+      "bound_max": 90.0,
+      "unit": "deg",
+      "source_material": "角度文件: angle_with_overflow.csv",
+      "source_file": "/Users/mac/pro/solo/workspaces/y12344/examples/angle_with_overflow.csv",
+      "next_step": "1. 立即检查 t=1.60s 时刻的角度测量设备，确认是否存在传感器故障或读数错误\n2. 角度 95.00° 超过 90°，可能是：① 传感器安装方向颠倒；② 读数时误读了 180°-实际角度；③ 坐标系定义不一致\n3. 核对角度记录文件: /Users/mac/pro/solo/workspaces/y12344/examples/angle_with_overflow.csv\n4. 检查同一时刻 t=1.60s 的轨迹点，从位置变化反推速度方向验证角度\n5. 如确认数据错误，标记该点为无效或进行修正后重试"
+    },
+    {
+      "anomaly_id": "anom_0002",
+      "anomaly_type": "wind_missing",
+      "severity": "warning",
+      "message": "风速记录存在空值 (NaN): t=1.60s",
+      "t": 1.6,
+      "value": null,
+      "bound_min": 0.0,
+      "bound_max": 30.0,
+      "unit": "m/s",
+      "source_material": "风速文件: wind_with_missing.csv",
+      "source_file": "/Users/mac/pro/solo/workspaces/y12344/examples/wind_with_missing.csv",
+      "next_step": "检查风速记录文件 /Users/mac/pro/solo/workspaces/y12344/examples/wind_with_missing.csv，补全 t=1.60s 时刻的风速和风向数据"
+    }
+  ],
+  "fitting_result": {
+    "method": "physics_based",
+    "params": {
+      "v0": 49.99952049770077,
+      "theta0_deg": 45.0,
+      "mass": 0.1,
+      "cross_section_area": 0.001,
+      "drag_coeff": 0.47116935077296995,
+      "wind_speed": 2.0726666666666667,
+      "wind_direction_deg": -0.020000000000000167
+    },
+    "params_units": {
+      "v0": "m/s",
+      "theta0_deg": "deg",
+      "mass": "kg",
+      "cross_section_area": "m^2",
+      "drag_coeff": "dimensionless",
+      "wind_speed": "m/s",
+      "wind_direction_deg": "deg"
+    },
+    "r_squared": 0.999999896660294,
+    "rmse": 0.010503284180121829,
+    "estimated_drag_coeff": 0.47116935077296995,
+    "formula": "物理模型拟合 (有风阻):\nx(t) = x₀ + v₀·cos(θ₀)·t\ny(t) = y₀ + v₀·sin(θ₀)·t - ½·g·t²\nF_drag = ½·ρ·C_d·A·|v_rel|²\na_drag = -F_drag / m · (v_rel / |v_rel|)",
+    "intermediate_values": {
+      "values": {
+        "v0": 49.99952049770077,
+        "theta0_deg": 45.0,
+        "mass": 0.1,
+        "cross_section_area": 0.001,
+        "wind_speed": 2.0726666666666667,
+        "wind_direction_deg": -0.020000000000000167,
+        "cd_bounds_min": 0.01,
+        "cd_bounds_max": 2.0,
+        "best_cd": 0.47116935077296995,
+        "r_squared": 0.999999896660294,
+        "rmse": 0.010503284180121829,
+        "n_points": 16
+      },
+      "units": {
+        "v0": "m/s",
+        "theta0_deg": "deg",
+        "mass": "kg",
+        "cross_section_area": "m^2",
+        "wind_speed": "m/s",
+        "wind_direction_deg": "deg",
+        "cd_bounds_min": "dimensionless",
+        "cd_bounds_max": "dimensionless",
+        "best_cd": "dimensionless",
+        "r_squared": "dimensionless",
+        "rmse": "m",
+        "n_points": "count"
+      },
+      "simulated_x": [
+        0.0,
+        7.071,
+        13.95544584634032,
+        20.668908826099216,
+        27.225273944076587,
+        33.63695275760218,
+        39.915057573511746,
+        46.06954408284008,
+        52.10932798531869,
+        58.042380055456896,
+        63.875803332724026,
+        69.6158956158252,
+        75.26820015465756,
+        80.83754731305979,
+        86.32808995903572,
+        91.74333534522013
+      ],
+      "simulated_y": [
+        0.0,
+        7.071,
+        13.551424079371145,
+        19.46818367559446,
+        24.844973277919955,
+        29.702695661493742,
+        34.05981911516422,
+        37.932680789765925,
+        41.335747420911524,
+        44.281842532076254,
+        46.782347588355954,
+        48.84738328373554,
+        50.48597606846131,
+        51.706214040937965,
+        52.51539534331452,
+        52.920171145669855
+      ],
+      "simulated_vx": [
+        35.355,
+        34.4222292317016,
+        33.567314898794486,
+        32.78182558988685,
+        32.05839406762799,
+        31.390524079547838,
+        30.772432546641696,
+        30.198919512393037,
+        29.665260350691025,
+        29.16711638633566,
+        28.700461415505846,
+        28.261522694161854,
+        27.846735792011067,
+        27.452713229879684,
+        27.076226930922015,
+        26.714204132483196
+      ],
+      "simulated_vy": [
+        35.355,
+        32.40212039685573,
+        29.583797981116575,
+        26.88394801162746,
+        24.28861191786894,
+        21.785617268352397,
+        19.364308373008555,
+        17.015333155727987,
+        14.730475555823647,
+        12.502525281398508,
+        10.325178476897902,
+        8.192963923628874,
+        6.101189862383267,
+        4.045906511882789,
+        2.023879011776643,
+        0.03256509589604106
+      ],
+      "simulated_theta_deg": [
+        45.0,
+        43.26846841792885,
+        41.39061453567684,
+        39.35473205010962,
+        37.148900624159964,
+        34.76137921133398,
+        32.18116229555934,
+        29.398727723260592,
+        26.406991901490958,
+        23.20246143696039,
+        19.786526187534946,
+        16.16677744956562,
+        12.358164830974669,
+        8.383745899564946,
+        4.274764143571092,
+        0.06984455238915163
+      ],
+      "step_infos": [
+        {
+          "values": {
+            "v_x": 35.355,
+            "v_y": 35.355,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 33.2823334596074,
+            "v_rel_y": 35.355723497137895,
+            "v_rel_mag": 48.556574266751674,
+            "direction_x": 0.6854341345574895,
+            "direction_y": 0.7281346353411746,
+            "f_drag": 0.6804233414057995,
+            "mass": 0.1,
+            "a_drag_x": -4.663853841491994,
+            "a_drag_y": -4.954398015721353,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -4.663853841491994,
+            "a_total_y": -14.764398015721355,
+            "dt": 0.2,
+            "x_old": 0.0,
+            "y_old": 0.0,
+            "x_new": 7.071,
+            "y_new": 7.071,
+            "vx_old": 35.355,
+            "vy_old": 35.355,
+            "vx_new": 34.4222292317016,
+            "vy_new": 32.40212039685573
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 34.4222292317016,
+            "v_y": 32.40212039685573,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 32.349562691309,
+            "v_rel_y": 32.40284389399363,
+            "v_rel_mag": 45.786881295164136,
+            "direction_x": 0.7065247026275551,
+            "direction_y": 0.7076883809820852,
+            "f_drag": 0.6050137594111706,
+            "mass": 0.1,
+            "a_drag_x": -4.274571664535564,
+            "a_drag_y": -4.281612078695761,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -4.274571664535564,
+            "a_total_y": -14.09161207869576,
+            "dt": 0.2,
+            "x_old": 7.071,
+            "y_old": 7.071,
+            "x_new": 13.95544584634032,
+            "y_new": 13.551424079371145,
+            "vx_old": 34.4222292317016,
+            "vy_old": 32.40212039685573,
+            "vx_new": 33.567314898794486,
+            "vy_new": 29.583797981116575
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 33.567314898794486,
+            "v_y": 29.583797981116575,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 31.494648358401893,
+            "v_rel_y": 29.584521478254477,
+            "v_rel_mag": 43.210609649907596,
+            "direction_x": 0.7288637816862934,
+            "direction_y": 0.6846587381651937,
+            "f_drag": 0.5388450686151094,
+            "mass": 0.1,
+            "a_drag_x": -3.927446544538189,
+            "a_drag_y": -3.68924984744558,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -3.927446544538189,
+            "a_total_y": -13.499249847445581,
+            "dt": 0.19999999999999996,
+            "x_old": 13.95544584634032,
+            "y_old": 13.551424079371145,
+            "x_new": 20.668908826099216,
+            "y_new": 19.46818367559446,
+            "vx_old": 33.567314898794486,
+            "vy_old": 29.583797981116575,
+            "vx_new": 32.78182558988685,
+            "vy_new": 26.88394801162746
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 32.78182558988685,
+            "v_y": 26.88394801162746,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 30.709159049494257,
+            "v_rel_y": 26.88467150876536,
+            "v_rel_mag": 40.814678874901794,
+            "direction_x": 0.7524047694609761,
+            "direction_y": 0.6587010421218229,
+            "f_drag": 0.4807462363490421,
+            "mass": 0.1,
+            "a_drag_x": -3.6171576112943296,
+            "a_drag_y": -3.166680468792582,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -3.6171576112943296,
+            "a_total_y": -12.976680468792583,
+            "dt": 0.20000000000000007,
+            "x_old": 20.668908826099216,
+            "y_old": 19.46818367559446,
+            "x_new": 27.225273944076587,
+            "y_new": 24.844973277919955,
+            "vx_old": 32.78182558988685,
+            "vy_old": 26.88394801162746,
+            "vx_new": 32.05839406762799,
+            "vy_new": 24.28861191786894
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 32.05839406762799,
+            "v_y": 24.28861191786894,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 29.985727527235394,
+            "v_rel_y": 24.289335415006843,
+            "v_rel_mag": 38.589061536143994,
+            "direction_x": 0.7770525204182437,
+            "direction_y": 0.6294357636102791,
+            "f_drag": 0.4297457189384514,
+            "mass": 0.1,
+            "a_drag_x": -3.339349940400738,
+            "a_drag_y": -2.7049732475827253,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -3.339349940400738,
+            "a_total_y": -12.514973247582725,
+            "dt": 0.19999999999999996,
+            "x_old": 27.225273944076587,
+            "y_old": 24.844973277919955,
+            "x_new": 33.63695275760218,
+            "y_new": 29.702695661493742,
+            "vx_old": 32.05839406762799,
+            "vy_old": 24.28861191786894,
+            "vx_new": 31.390524079547838,
+            "vy_new": 21.785617268352397
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 31.390524079547838,
+            "v_y": 21.785617268352397,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 29.317857539155245,
+            "v_rel_y": 21.786340765490298,
+            "v_rel_mag": 36.52644815248625,
+            "direction_x": 0.8026473698390425,
+            "direction_y": 0.5964538537812186,
+            "f_drag": 0.3850330519553635,
+            "mass": 0.1,
+            "a_drag_x": -3.090457664530719,
+            "a_drag_y": -2.2965444767192076,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -3.090457664530719,
+            "a_total_y": -12.106544476719208,
+            "dt": 0.19999999999999996,
+            "x_old": 33.63695275760218,
+            "y_old": 29.702695661493742,
+            "x_new": 39.915057573511746,
+            "y_new": 34.05981911516422,
+            "vx_old": 31.390524079547838,
+            "vy_old": 21.785617268352397,
+            "vx_new": 30.772432546641696,
+            "vy_new": 19.364308373008555
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 30.772432546641696,
+            "v_y": 19.364308373008555,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 28.699766006249103,
+            "v_rel_y": 19.365031870146456,
+            "v_rel_mag": 34.62197319832074,
+            "direction_x": 0.8289465722202431,
+            "direction_y": 0.5593277933415336,
+            "f_drag": 0.3459288291117295,
+            "mass": 0.1,
+            "a_drag_x": -2.8675651712433043,
+            "a_drag_y": -1.9348760864028414,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -2.8675651712433043,
+            "a_total_y": -11.744876086402842,
+            "dt": 0.19999999999999996,
+            "x_old": 39.915057573511746,
+            "y_old": 34.05981911516422,
+            "x_new": 46.06954408284008,
+            "y_new": 37.932680789765925,
+            "vx_old": 30.772432546641696,
+            "vy_old": 19.364308373008555,
+            "vx_new": 30.198919512393037,
+            "vy_new": 17.015333155727987
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 30.198919512393037,
+            "v_y": 17.015333155727987,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 28.126252972000444,
+            "v_rel_y": 17.01605665286589,
+            "v_rel_mag": 32.872972032636554,
+            "direction_x": 0.855604201046272,
+            "direction_y": 0.5176306126495714,
+            "f_drag": 0.3118609989580621,
+            "mass": 0.1,
+            "a_drag_x": -2.6682958085100497,
+            "a_drag_y": -1.6142879995216903,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -2.6682958085100497,
+            "a_total_y": -11.424287999521692,
+            "dt": 0.20000000000000018,
+            "x_old": 46.06954408284008,
+            "y_old": 37.932680789765925,
+            "x_new": 52.10932798531869,
+            "y_new": 41.335747420911524,
+            "vx_old": 30.198919512393037,
+            "vy_old": 17.015333155727987,
+            "vx_new": 29.665260350691025,
+            "vy_new": 14.730475555823647
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 29.665260350691025,
+            "v_y": 14.730475555823647,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 27.592593810298432,
+            "v_rel_y": 14.731199052961548,
+            "v_rel_mag": 31.27873812541188,
+            "direction_x": 0.8821517575186736,
+            "direction_y": 0.47096526061559485,
+            "f_drag": 0.2823459569794144,
+            "mass": 0.1,
+            "a_drag_x": -2.4907198217768216,
+            "a_drag_y": -1.3297513721256942,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -2.4907198217768216,
+            "a_total_y": -11.139751372125694,
+            "dt": 0.19999999999999996,
+            "x_old": 52.10932798531869,
+            "y_old": 41.335747420911524,
+            "x_new": 58.042380055456896,
+            "y_new": 44.281842532076254,
+            "vx_old": 29.665260350691025,
+            "vy_old": 14.730475555823647,
+            "vx_new": 29.16711638633566,
+            "vy_new": 12.502525281398508
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 29.16711638633566,
+            "v_y": 12.502525281398508,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 27.094449845943068,
+            "v_rel_y": 12.50324877853641,
+            "v_rel_mag": 29.84024869990692,
+            "direction_x": 0.9079833790402553,
+            "direction_y": 0.41900618537992984,
+            "f_drag": 0.2569733001737717,
+            "mass": 0.1,
+            "a_drag_x": -2.33327485414907,
+            "a_drag_y": -1.0767340225030373,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -2.33327485414907,
+            "a_total_y": -10.886734022503038,
+            "dt": 0.19999999999999996,
+            "x_old": 58.042380055456896,
+            "y_old": 44.281842532076254,
+            "x_new": 63.875803332724026,
+            "y_new": 46.782347588355954,
+            "vx_old": 29.16711638633566,
+            "vy_old": 12.502525281398508,
+            "vx_new": 28.700461415505846,
+            "vy_new": 10.325178476897902
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 28.700461415505846,
+            "v_y": 10.325178476897902,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 26.627794875113253,
+            "v_rel_y": 10.325901974035803,
+            "v_rel_mag": 28.55982688127686,
+            "direction_x": 0.9323514104551452,
+            "direction_y": 0.3615533811518031,
+            "f_drag": 0.23539339160205466,
+            "mass": 0.1,
+            "a_drag_x": -2.19469360671996,
+            "a_drag_y": -0.8510727663451331,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -2.19469360671996,
+            "a_total_y": -10.661072766345134,
+            "dt": 0.20000000000000018,
+            "x_old": 63.875803332724026,
+            "y_old": 46.782347588355954,
+            "x_new": 69.6158956158252,
+            "y_new": 48.84738328373554,
+            "vx_old": 28.700461415505846,
+            "vy_old": 10.325178476897902,
+            "vx_new": 28.261522694161854,
+            "vy_new": 8.192963923628874
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 28.261522694161854,
+            "v_y": 8.192963923628874,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 26.18885615376926,
+            "v_rel_y": 8.193687420766775,
+            "v_rel_mag": 27.440712457807102,
+            "direction_x": 0.9543795990733587,
+            "direction_y": 0.29859601616996667,
+            "f_drag": 0.2173070875328427,
+            "mass": 0.1,
+            "a_drag_x": -2.0739345107539364,
+            "a_drag_y": -0.6488703062280505,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -2.0739345107539364,
+            "a_total_y": -10.45887030622805,
+            "dt": 0.19999999999999973,
+            "x_old": 69.6158956158252,
+            "y_old": 48.84738328373554,
+            "x_new": 75.26820015465756,
+            "y_new": 50.48597606846131,
+            "vx_old": 28.261522694161854,
+            "vy_old": 8.192963923628874,
+            "vx_new": 27.846735792011067,
+            "vy_new": 6.101189862383267
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 27.846735792011067,
+            "v_y": 6.101189862383267,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 25.774069251618474,
+            "v_rel_y": 6.101913359521167,
+            "v_rel_mag": 26.48652473304733,
+            "direction_x": 0.9731012094410437,
+            "direction_y": 0.2303780288664216,
+            "f_drag": 0.2024571330857315,
+            "mass": 0.1,
+            "a_drag_x": -1.9701128106569166,
+            "a_drag_y": -0.4664167525023761,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -1.9701128106569166,
+            "a_total_y": -10.276416752502376,
+            "dt": 0.20000000000000018,
+            "x_old": 75.26820015465756,
+            "y_old": 50.48597606846131,
+            "x_new": 80.83754731305979,
+            "y_new": 51.706214040937965,
+            "vx_old": 27.846735792011067,
+            "vy_old": 6.101189862383267,
+            "vx_new": 27.452713229879684,
+            "vy_new": 4.045906511882789
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 27.452713229879684,
+            "v_y": 4.045906511882789,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 25.38004668948709,
+            "v_rel_y": 4.0466300090206895,
+            "v_rel_mag": 25.700622256872528,
+            "direction_x": 0.9875265445256014,
+            "direction_y": 0.15745260829000327,
+            "f_drag": 0.19062085016587024,
+            "mass": 0.1,
+            "a_drag_x": -1.8824314947883423,
+            "a_drag_y": -0.3001375005307417,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -1.8824314947883423,
+            "a_total_y": -10.110137500530742,
+            "dt": 0.19999999999999973,
+            "x_old": 80.83754731305979,
+            "y_old": 51.706214040937965,
+            "x_new": 86.32808995903572,
+            "y_new": 52.51539534331452,
+            "vx_old": 27.452713229879684,
+            "vy_old": 4.045906511882789,
+            "vx_new": 27.076226930922015,
+            "vy_new": 2.023879011776643
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        },
+        {
+          "values": {
+            "v_x": 27.076226930922015,
+            "v_y": 2.023879011776643,
+            "wind_v_x": 2.0726665403925937,
+            "wind_v_y": -0.0007234971379007332,
+            "v_rel_x": 25.003560390529422,
+            "v_rel_y": 2.024602508914544,
+            "v_rel_mag": 25.085395103963478,
+            "direction_x": 0.9967377546538573,
+            "direction_y": 0.0807084162128528,
+            "f_drag": 0.18160383548656614,
+            "mass": 0.1,
+            "a_drag_x": -1.810113992194084,
+            "a_drag_y": -0.14656957940300225,
+            "a_gravity_x": 0.0,
+            "a_gravity_y": -9.81,
+            "a_total_x": -1.810113992194084,
+            "a_total_y": -9.956569579403002,
+            "dt": 0.20000000000000018,
+            "x_old": 86.32808995903572,
+            "y_old": 52.51539534331452,
+            "x_new": 91.74333534522013,
+            "y_new": 52.920171145669855,
+            "vx_old": 27.076226930922015,
+            "vy_old": 2.023879011776643,
+            "vx_new": 26.714204132483196,
+            "vy_new": 0.03256509589604106
+          },
+          "units": {
+            "v_x": "m/s",
+            "v_y": "m/s",
+            "wind_v_x": "m/s",
+            "wind_v_y": "m/s",
+            "v_rel_x": "m/s",
+            "v_rel_y": "m/s",
+            "v_rel_mag": "m/s",
+            "direction_x": "dimensionless",
+            "direction_y": "dimensionless",
+            "f_drag": "N",
+            "mass": "kg",
+            "a_drag_x": "m/s^2",
+            "a_drag_y": "m/s^2",
+            "a_gravity_x": "m/s^2",
+            "a_gravity_y": "m/s^2",
+            "a_total_x": "m/s^2",
+            "a_total_y": "m/s^2",
+            "dt": "s",
+            "x_old": "m",
+            "y_old": "m",
+            "x_new": "m",
+            "y_new": "m",
+            "vx_old": "m/s",
+            "vy_old": "m/s",
+            "vx_new": "m/s",
+            "vy_new": "m/s"
+          }
+        }
+      ]
+    }
+  },
+  "drag_estimation": {
+    "estimated_cd": 0.47116935077296995,
+    "r_squared": 0.999999896660294,
+    "rmse": 0.010503284180121829,
+    "v0": 49.99952049770077,
+    "theta0_deg": 45.0,
+    "avg_wind_speed": 2.0726666666666667,
+    "avg_wind_direction_deg": -0.020000000000000167,
+    "intermediate": {
+      "values": {
+        "v0": 49.99952049770077,
+        "theta0_deg": 45.0,
+        "mass": 0.1,
+        "cross_section_area": 0.001,
+        "wind_speed": 2.0726666666666667,
+        "wind_direction_deg": -0.020000000000000167,
+        "cd_bounds_min": 0.01,
+        "cd_bounds_max": 2.0,
+        "best_cd": 0.47116935077296995,
+        "r_squared": 0.999999896660294,
+        "rmse": 0.010503284180121829,
+        "n_points": 16
+      },
+      "units": {
+        "v0": "m/s",
+        "theta0_deg": "deg",
+        "mass": "kg",
+        "cross_section_area": "m^2",
+        "wind_speed": "m/s",
+        "wind_direction_deg": "deg",
+        "cd_bounds_min": "dimensionless",
+        "cd_bounds_max": "dimensionless",
+        "best_cd": "dimensionless",
+        "r_squared": "dimensionless",
+        "rmse": "m",
+        "n_points": "count"
+      }
+    }
+  },
+  "error_analysis": {
+    "position": {
+      "mae": 0.007872110691445871,
+      "rmse": 0.010503284180121829,
+      "max": 0.021402820270820893,
+      "mean_x_error": -0.005235174485509253,
+      "mean_y_error": 0.005759123576726921,
+      "unit": "m"
+    },
+    "velocity": {
+      "mae": 0.007833083600011998,
+      "rmse": 0.00875815533631495,
+      "max": 0.013359604495889792,
+      "unit": "m/s"
+    },
+    "trajectory_angle": {
+      "mae_deg": 0.010380496280527363,
+      "rmse_deg": 0.01150063296531848,
+      "max_deg": 0.016455487925426837,
+      "unit": "deg"
+    },
+    "per_point": [
+      {
+        "t": 0.0,
+        "x_obs": 0.0,
+        "x_sim": 0.0,
+        "x_error": 0.0,
+        "y_obs": 0.0,
+        "y_sim": 0.0,
+        "y_error": 0.0,
+        "pos_error": 0.0,
+        "vx_obs": 35.355,
+        "vx_sim": 35.355,
+        "vy_obs": 35.355,
+        "vy_sim": 35.355,
+        "theta_obs_deg": 45.0,
+        "theta_sim_deg": 45.0,
+        "theta_error_deg": 0.0,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 0.2,
+        "x_obs": 7.071,
+        "x_sim": 7.071,
+        "x_error": 0.0,
+        "y_obs": 7.071,
+        "y_sim": 7.071,
+        "y_error": 0.0,
+        "pos_error": 0.0,
+        "vx_obs": 34.422,
+        "vx_sim": 34.4222292317016,
+        "vy_obs": 32.404,
+        "vy_sim": 32.40212039685573,
+        "theta_obs_deg": 43.270317594431596,
+        "theta_sim_deg": 43.26846841792885,
+        "theta_error_deg": 0.0018491765027448537,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 0.4,
+        "x_obs": 13.955,
+        "x_sim": 13.95544584634032,
+        "x_error": -0.00044584634031963333,
+        "y_obs": 13.552,
+        "y_sim": 13.551424079371145,
+        "y_error": 0.000575920628854476,
+        "pos_error": 0.00072832927300538,
+        "vx_obs": 33.566,
+        "vx_sim": 33.567314898794486,
+        "vy_obs": 29.587,
+        "vy_sim": 29.583797981116575,
+        "theta_obs_deg": 41.39480387264908,
+        "theta_sim_deg": 41.39061453567684,
+        "theta_error_deg": 0.0041893369722387774,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 0.6,
+        "x_obs": 20.669,
+        "x_sim": 20.668908826099216,
+        "x_error": 9.117390078472454e-05,
+        "y_obs": 19.469,
+        "y_sim": 19.46818367559446,
+        "y_error": 0.0008163244055410246,
+        "pos_error": 0.0008214001553848221,
+        "vx_obs": 32.78,
+        "vx_sim": 32.78182558988685,
+        "vy_obs": 26.888,
+        "vy_sim": 26.88394801162746,
+        "theta_obs_deg": 39.360530680172516,
+        "theta_sim_deg": 39.35473205010962,
+        "theta_error_deg": 0.005798630062898269,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 0.8,
+        "x_obs": 27.225,
+        "x_sim": 27.225273944076587,
+        "x_error": -0.0002739440765857637,
+        "y_obs": 24.847,
+        "y_sim": 24.844973277919955,
+        "y_error": 0.0020267220800462837,
+        "pos_error": 0.0020451522551740643,
+        "vx_obs": 32.056,
+        "vx_sim": 32.05839406762799,
+        "vy_obs": 24.293,
+        "vy_sim": 24.28861191786894,
+        "theta_obs_deg": 37.15594253183301,
+        "theta_sim_deg": 37.148900624159964,
+        "theta_error_deg": 0.007041907673048797,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 1.0,
+        "x_obs": 33.636,
+        "x_sim": 33.63695275760218,
+        "x_error": -0.000952757602178167,
+        "y_obs": 29.705,
+        "y_sim": 29.702695661493742,
+        "y_error": 0.0023043385062564425,
+        "pos_error": 0.0024935362439564546,
+        "vx_obs": 31.387,
+        "vx_sim": 31.390524079547838,
+        "vy_obs": 21.791,
+        "vy_sim": 21.785617268352397,
+        "theta_obs_deg": 34.77102309478596,
+        "theta_sim_deg": 34.76137921133398,
+        "theta_error_deg": 0.009643883451978752,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 1.2,
+        "x_obs": 39.913,
+        "x_sim": 39.915057573511746,
+        "x_error": -0.0020575735117489558,
+        "y_obs": 34.063,
+        "y_sim": 34.05981911516422,
+        "y_error": 0.0031808848357854913,
+        "pos_error": 0.003788355460457878,
+        "vx_obs": 30.768,
+        "vx_sim": 30.772432546641696,
+        "vy_obs": 19.37,
+        "vy_sim": 19.364308373008555,
+        "theta_obs_deg": 32.19247407549994,
+        "theta_sim_deg": 32.18116229555934,
+        "theta_error_deg": 0.011311779940598399,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 1.4,
+        "x_obs": 46.067,
+        "x_sim": 46.06954408284008,
+        "x_error": -0.002544082840081785,
+        "y_obs": 37.937,
+        "y_sim": 37.932680789765925,
+        "y_error": 0.004319210234072557,
+        "pos_error": 0.005012777128829459,
+        "vx_obs": 30.193,
+        "vx_sim": 30.198919512393037,
+        "vy_obs": 17.021,
+        "vy_sim": 17.015333155727987,
+        "theta_obs_deg": 29.41169256901645,
+        "theta_sim_deg": 29.398727723260592,
+        "theta_error_deg": 0.012964845755856658,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 1.6,
+        "x_obs": 52.105,
+        "x_sim": 52.10932798531869,
+        "x_error": -0.004327985318695937,
+        "y_obs": 41.342,
+        "y_sim": 41.335747420911524,
+        "y_error": 0.006252579088474874,
+        "pos_error": 0.007604354159064454,
+        "vx_obs": 29.659,
+        "vx_sim": 29.665260350691025,
+        "vy_obs": 14.736,
+        "vy_sim": 14.730475555823647,
+        "theta_obs_deg": 26.420369080289618,
+        "theta_sim_deg": 26.406991901490958,
+        "theta_error_deg": 0.013377178798659628,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 1.8,
+        "x_obs": 58.037,
+        "x_sim": 58.042380055456896,
+        "x_error": -0.005380055456896571,
+        "y_obs": 44.289,
+        "y_sim": 44.281842532076254,
+        "y_error": 0.007157467923747163,
+        "pos_error": 0.008954012720493091,
+        "vx_obs": 29.16,
+        "vx_sim": 29.16711638633566,
+        "vy_obs": 12.508,
+        "vy_sim": 12.502525281398508,
+        "theta_obs_deg": 23.216610738025437,
+        "theta_sim_deg": 23.20246143696039,
+        "theta_error_deg": 0.014149301065046416,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 2.0,
+        "x_obs": 63.869,
+        "x_sim": 63.875803332724026,
+        "x_error": -0.006803332724025779,
+        "y_obs": 46.79,
+        "y_sim": 46.782347588355954,
+        "y_error": 0.007652411644045287,
+        "pos_error": 0.010239372057099983,
+        "vx_obs": 28.692,
+        "vx_sim": 28.700461415505846,
+        "vy_obs": 10.331,
+        "vy_sim": 10.325178476897902,
+        "theta_obs_deg": 19.802199779708225,
+        "theta_sim_deg": 19.786526187534946,
+        "theta_error_deg": 0.015673592173278905,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 2.2,
+        "x_obs": 69.608,
+        "x_sim": 69.6158956158252,
+        "x_error": -0.007895615825191271,
+        "y_obs": 48.857,
+        "y_sim": 48.84738328373554,
+        "y_error": 0.009616716264460479,
+        "pos_error": 0.012442748127730848,
+        "vx_obs": 28.252,
+        "vx_sim": 28.261522694161854,
+        "vy_obs": 8.199,
+        "vy_sim": 8.192963923628874,
+        "theta_obs_deg": 16.183232937491045,
+        "theta_sim_deg": 16.16677744956562,
+        "theta_error_deg": 0.016455487925426837,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 2.4,
+        "x_obs": 75.258,
+        "x_sim": 75.26820015465756,
+        "x_error": -0.01020015465756785,
+        "y_obs": 50.496,
+        "y_sim": 50.48597606846131,
+        "y_error": 0.010023931538690078,
+        "pos_error": 0.014301131372400184,
+        "vx_obs": 27.837,
+        "vx_sim": 27.846735792011067,
+        "vy_obs": 6.107,
+        "vy_sim": 6.101189862383267,
+        "theta_obs_deg": 12.3737642650768,
+        "theta_sim_deg": 12.358164830974669,
+        "theta_error_deg": 0.01559943410213016,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 2.6,
+        "x_obs": 80.825,
+        "x_sim": 80.83754731305979,
+        "x_error": -0.01254731305978396,
+        "y_obs": 51.718,
+        "y_sim": 51.706214040937965,
+        "y_error": 0.011785959062038387,
+        "pos_error": 0.017214641908336922,
+        "vx_obs": 27.442,
+        "vx_sim": 27.452713229879684,
+        "vy_obs": 4.051,
+        "vy_sim": 4.045906511882789,
+        "theta_obs_deg": 8.39738042891484,
+        "theta_sim_deg": 8.383745899564946,
+        "theta_error_deg": 0.013634529349893398,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 2.8,
+        "x_obs": 86.314,
+        "x_sim": 86.32808995903572,
+        "x_error": -0.014089959035729294,
+        "y_obs": 52.528,
+        "y_sim": 52.51539534331452,
+        "y_error": 0.01260465668547539,
+        "pos_error": 0.01890513993037949,
+        "vx_obs": 27.064,
+        "vx_sim": 27.076226930922015,
+        "vy_obs": 2.029,
+        "vy_sim": 2.023879011776643,
+        "theta_obs_deg": 4.287469160356799,
+        "theta_sim_deg": 4.274764143571092,
+        "theta_error_deg": 0.012705016785706569,
+        "source": "轨迹文件: trajectory_normal.csv"
+      },
+      {
+        "t": 3.0,
+        "x_obs": 91.727,
+        "x_sim": 91.74333534522013,
+        "x_error": -0.016335345220127806,
+        "y_obs": 52.934,
+        "y_sim": 52.920171145669855,
+        "y_error": 0.013828854330142804,
+        "pos_error": 0.021402820270820893,
+        "vx_obs": 26.702,
+        "vx_sim": 26.714204132483196,
+        "vy_obs": 0.038,
+        "vy_sim": 0.03256509589604106,
+        "theta_obs_deg": 0.08153839231808302,
+        "theta_sim_deg": 0.06984455238915163,
+        "theta_error_deg": 0.011693839928931388,
+        "source": "轨迹文件: trajectory_normal.csv"
+      }
+    ],
+    "measured_angle_comparison": [
+      {
+        "t": 0.0,
+        "measured_angle_deg": 45.0,
+        "simulated_angle_deg": 45.0,
+        "error_deg": 0.0
+      },
+      {
+        "t": 0.2,
+        "measured_angle_deg": 43.27,
+        "simulated_angle_deg": 43.26846841792885,
+        "error_deg": 0.0015315820711521155
+      },
+      {
+        "t": 0.4,
+        "measured_angle_deg": 41.39,
+        "simulated_angle_deg": 41.39061453567684,
+        "error_deg": -0.0006145356768385568
+      },
+      {
+        "t": 0.6,
+        "measured_angle_deg": 39.36,
+        "simulated_angle_deg": 39.35473205010962,
+        "error_deg": 0.005267949890381374
+      },
+      {
+        "t": 0.8,
+        "measured_angle_deg": 37.16,
+        "simulated_angle_deg": 37.148900624159964,
+        "error_deg": 0.011099375840032621
+      },
+      {
+        "t": 1.0,
+        "measured_angle_deg": 34.77,
+        "simulated_angle_deg": 34.76137921133398,
+        "error_deg": 0.008620788666021895
+      },
+      {
+        "t": 1.2,
+        "measured_angle_deg": 32.19,
+        "simulated_angle_deg": 32.18116229555934,
+        "error_deg": 0.008837704440658456
+      },
+      {
+        "t": 1.4,
+        "measured_angle_deg": 29.41,
+        "simulated_angle_deg": 29.398727723260592,
+        "error_deg": 0.011272276739408227
+      },
+      {
+        "t": 1.6,
+        "measured_angle_deg": 95.0,
+        "simulated_angle_deg": 26.406991901490958,
+        "error_deg": 68.59300809850905
+      },
+      {
+        "t": 1.8,
+        "measured_angle_deg": 23.22,
+        "simulated_angle_deg": 23.20246143696039,
+        "error_deg": 0.01753856303960788
+      },
+      {
+        "t": 2.0,
+        "measured_angle_deg": 19.8,
+        "simulated_angle_deg": 19.786526187534946,
+        "error_deg": 0.013473812465054635
+      },
+      {
+        "t": 2.2,
+        "measured_angle_deg": 16.18,
+        "simulated_angle_deg": 16.16677744956562,
+        "error_deg": 0.013222550434381475
+      },
+      {
+        "t": 2.4,
+        "measured_angle_deg": 12.37,
+        "simulated_angle_deg": 12.358164830974669,
+        "error_deg": 0.011835169025330217
+      },
+      {
+        "t": 2.6,
+        "measured_angle_deg": 8.4,
+        "simulated_angle_deg": 8.383745899564946,
+        "error_deg": 0.016254100435054042
+      },
+      {
+        "t": 2.8,
+        "measured_angle_deg": 4.29,
+        "simulated_angle_deg": 4.274764143571092,
+        "error_deg": 0.015235856428907901
+      },
+      {
+        "t": 3.0,
+        "measured_angle_deg": 0.08,
+        "simulated_angle_deg": 0.06984455238915163,
+        "error_deg": 0.01015544761084837
+      }
+    ]
+  },
+  "formulas_reference": {
+    "projectile_no_drag": {
+      "name": "无风阻抛体运动",
+      "equations": [
+        "x(t) = x₀ + v₀·cos(θ₀)·t",
+        "y(t) = y₀ + v₀·sin(θ₀)·t - ½·g·t²",
+        "vₓ(t) = v₀·cos(θ₀)",
+        "vᵧ(t) = v₀·sin(θ₀) - g·t"
+      ],
+      "parameters": {
+        "x₀": "初始x坐标, 单位: m",
+        "y₀": "初始y坐标, 单位: m",
+        "v₀": "初速度, 单位: m/s",
+        "θ₀": "初始抛射角, 单位: deg",
+        "g": "重力加速度, 单位: m/s² (固定值: 9.81)"
+      }
+    },
+    "drag_force": {
+      "name": "风阻力",
+      "equations": [
+        "F_drag = ½·ρ·C_d·A·|v_rel|²",
+        "v_rel = v_projectile - v_wind"
+      ],
+      "parameters": {
+        "ρ": "空气密度, 单位: kg/m³ (固定值: 1.225)",
+        "C_d": "风阻系数, 无量纲",
+        "A": "横截面积, 单位: m²",
+        "v_rel": "相对速度, 单位: m/s"
+      }
+    },
+    "drag_acceleration": {
+      "name": "风阻加速度",
+      "equations": [
+        "a_drag = -F_drag / m · (v_rel / |v_rel|)"
+      ],
+      "parameters": {
+        "m": "质量, 单位: kg"
+      }
+    },
+    "trajectory_angle": {
+      "name": "轨迹角",
+      "equations": [
+        "θ = arctan2(vᵧ, vₓ)"
+      ],
+      "parameters": {
+        "vₓ": "x方向速度, 单位: m/s",
+        "vᵧ": "y方向速度, 单位: m/s"
+      }
+    }
+  }
+}

@@ -26,6 +26,31 @@ class AnomalyDetector:
         self._anomaly_counter += 1
         return f"anom_{self._anomaly_counter:04d}"
 
+    @staticmethod
+    def _angle_record_key(ar: AngleRecord) -> Tuple:
+        """生成角度记录的业务唯一键（替代不可靠的 id() 去重）"""
+        fp = ar.source.file_path if ar.source else None
+        return (round(ar.t, 6), round(ar.angle_deg, 6), fp)
+
+    @staticmethod
+    def _trajectory_point_key(tp: TrajectoryPoint) -> Tuple:
+        """生成轨迹点的业务唯一键"""
+        fp = tp.source.file_path if tp.source else None
+        return (round(tp.t, 6), round(tp.x, 6), round(tp.y, 6), fp)
+
+    @staticmethod
+    def _wind_record_key(wr: WindRecord) -> Tuple:
+        """生成风速记录的业务唯一键"""
+        fp = wr.source.file_path if wr.source else None
+        return (round(wr.t, 6), fp)
+
+    @staticmethod
+    def _anomaly_dedup_key(a: Anomaly) -> Tuple:
+        """生成异常的全局去重键，用于 detect_all 最终归并"""
+        fp = a.source.file_path if a.source else None
+        val = round(a.value, 6) if a.value is not None else None
+        return (a.anomaly_type, round(a.t, 6) if a.t is not None else None, val, fp)
+
     def detect_all(
         self,
         events: List[Event],
@@ -43,7 +68,14 @@ class AnomalyDetector:
             trajectory_points, angle_records, wind_records
         ))
 
-        return anomalies
+        seen = set()
+        deduped = []
+        for a in anomalies:
+            key = self._anomaly_dedup_key(a)
+            if key not in seen:
+                seen.add(key)
+                deduped.append(a)
+        return deduped
 
     def detect_angle_overflow(
         self,
@@ -59,11 +91,21 @@ class AnomalyDetector:
         bounds = self.bounds
 
         records_to_check = []
-        if angle_records:
-            records_to_check.extend([(None, ar) for ar in angle_records])
+        seen_keys = set()
+
         for event in events:
             if event.angle_record:
-                records_to_check.append((event, event.angle_record))
+                key = self._angle_record_key(event.angle_record)
+                if key not in seen_keys:
+                    records_to_check.append((event, event.angle_record))
+                    seen_keys.add(key)
+
+        if angle_records:
+            for ar in angle_records:
+                key = self._angle_record_key(ar)
+                if key not in seen_keys:
+                    records_to_check.append((None, ar))
+                    seen_keys.add(key)
 
         for event, angle_record in records_to_check:
             angle = angle_record.angle_deg
@@ -130,9 +172,14 @@ class AnomalyDetector:
 
         event_times = {e.t for e in events if e.trajectory_point or e.angle_record}
         wind_times = set()
+        seen_wr_keys = set()
 
         if wind_records:
             for wr in wind_records:
+                key = self._wind_record_key(wr)
+                if key in seen_wr_keys:
+                    continue
+                seen_wr_keys.add(key)
                 wind_times.add(wr.t)
                 if np.isnan(wr.wind_speed) or np.isnan(wr.wind_direction_deg):
                     source = wr.source
@@ -240,11 +287,21 @@ class AnomalyDetector:
         bounds = self.bounds
 
         all_points: List[TrajectoryPoint] = []
-        if trajectory_points:
-            all_points.extend(trajectory_points)
+        seen_keys = set()
+
         for event in events:
             if event.trajectory_point:
-                all_points.append(event.trajectory_point)
+                key = self._trajectory_point_key(event.trajectory_point)
+                if key not in seen_keys:
+                    all_points.append(event.trajectory_point)
+                    seen_keys.add(key)
+
+        if trajectory_points:
+            for tp in trajectory_points:
+                key = self._trajectory_point_key(tp)
+                if key not in seen_keys:
+                    all_points.append(tp)
+                    seen_keys.add(key)
 
         all_points.sort(key=lambda p: p.t)
 
@@ -368,14 +425,27 @@ class AnomalyDetector:
         """检测时间边界违规"""
         anomalies: List[Anomaly] = []
         bounds = self.bounds
+        seen_keys = set()
 
         all_items = []
         if trajectory_points:
-            all_items.extend(("trajectory", p, p.t, p.source) for p in trajectory_points)
+            for p in trajectory_points:
+                key = ("tp", self._trajectory_point_key(p))
+                if key not in seen_keys:
+                    seen_keys.add(key)
+                    all_items.append(("trajectory", p, p.t, p.source))
         if angle_records:
-            all_items.extend(("angle", r, r.t, r.source) for r in angle_records)
+            for r in angle_records:
+                key = ("ar", self._angle_record_key(r))
+                if key not in seen_keys:
+                    seen_keys.add(key)
+                    all_items.append(("angle", r, r.t, r.source))
         if wind_records:
-            all_items.extend(("wind", r, r.t, r.source) for r in wind_records)
+            for r in wind_records:
+                key = ("wr", self._wind_record_key(r))
+                if key not in seen_keys:
+                    seen_keys.add(key)
+                    all_items.append(("wind", r, r.t, r.source))
 
         for dtype, item, t, source in all_items:
             if t < bounds.time_min or t > bounds.time_max:
