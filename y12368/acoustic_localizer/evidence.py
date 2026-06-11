@@ -326,3 +326,154 @@ class EvidenceManager:
                 resolved=n.get("resolved", False)
             )
             self.tuning_notes.append(note)
+
+    def analyze_microphone_geometry(self, mics_dict: Dict[str, Dict[str, float]]) -> List[CoordinateMisalignment]:
+        issues = []
+        mic_ids = list(mics_dict.keys())
+
+        for i in range(len(mic_ids)):
+            for j in range(i + 1, len(mic_ids)):
+                id1, id2 = mic_ids[i], mic_ids[j]
+                p1 = mics_dict[id1]
+                p2 = mics_dict[id2]
+                dist = np.sqrt(
+                    (p1.get("x", 0) - p2.get("x", 0)) ** 2 +
+                    (p1.get("y", 0) - p2.get("y", 0)) ** 2 +
+                    (p1.get("z", 0) - p2.get("z", 0)) ** 2
+                )
+                if dist < 0.01:
+                    issue = CoordinateMisalignment(
+                        microphone_id=f"{id1}/{id2}",
+                        reported_position={"mic1": p1, "mic2": p2},
+                        verified_position=None,
+                        displacement=dist,
+                        detected_by="overlap_check",
+                        confidence=0.95
+                    )
+                    issues.append(issue)
+                    self.record_coordinate_misalignment(issue)
+
+        if len(mic_ids) >= 3:
+            positions = [np.array([mics_dict[mid].get("x", 0),
+                                   mics_dict[mid].get("y", 0)])
+                         for mid in mic_ids]
+
+            all_collinear = True
+            p0 = positions[0]
+            p1 = positions[1]
+            v1 = p1 - p0
+            base_len = np.linalg.norm(v1)
+
+            if base_len > 0.001:
+                for i in range(2, len(positions)):
+                    v2 = positions[i] - p0
+                    cross = np.abs(np.cross(v1, v2))
+                    height = cross / base_len
+                    if height > 0.01:
+                        all_collinear = False
+                        break
+            else:
+                all_collinear = False
+
+            if all_collinear and len(mic_ids) >= 3:
+                for mid in mic_ids:
+                    issue = CoordinateMisalignment(
+                        microphone_id=mid,
+                        reported_position=mics_dict[mid],
+                        verified_position=None,
+                        displacement=0.0,
+                        detected_by="all_collinear_geometry",
+                        confidence=0.7
+                    )
+                    issues.append(issue)
+                    self.record_coordinate_misalignment(issue)
+
+        return issues
+
+    def analyze_time_difference_quality(self, tds_list: List[Dict],
+                                         mic_positions: Dict[str, Dict[str, float]],
+                                         source_position: List[float],
+                                         speed_of_sound: float = 343.0) -> List[TimeDifferenceGap]:
+        gaps = []
+        src = np.array(source_position[:2])
+
+        for td in tds_list:
+            mic1_id = td.get("mic1_id", td.get("mic1", ""))
+            mic2_id = td.get("mic2_id", td.get("mic2", ""))
+            measured_dt = td.get("delta_t", 0)
+
+            if mic1_id in mic_positions and mic2_id in mic_positions:
+                p1 = np.array([mic_positions[mic1_id].get("x", 0),
+                               mic_positions[mic1_id].get("y", 0)])
+                p2 = np.array([mic_positions[mic2_id].get("x", 0),
+                               mic_positions[mic2_id].get("y", 0)])
+
+                d1 = np.linalg.norm(src - p1)
+                d2 = np.linalg.norm(src - p2)
+                expected_dt = (d1 - d2) / speed_of_sound
+
+                diff = abs(measured_dt - expected_dt)
+                if diff > 0.0005:
+                    pair = f"{mic1_id}-{mic2_id}"
+                    gap_type = "inconsistency"
+                    severity = "high" if diff > 0.002 else "medium" if diff > 0.001 else "low"
+
+                    gap = TimeDifferenceGap(
+                        pair=pair,
+                        expected_value=expected_dt,
+                        actual_value=measured_dt,
+                        gap_type=gap_type,
+                        severity=severity,
+                        impact_description=f"时间差残差 {diff*1000:.2f}ms，超出容忍范围"
+                    )
+                    gaps.append(gap)
+                    self.record_time_difference_gap(gap)
+
+        return gaps
+
+    def archive_time_difference_noise_peaks(self, tds_list: List[Dict]) -> List[NoisePeakRecord]:
+        archived = []
+
+        for td in tds_list:
+            noise_peak = td.get("noise_peak")
+            if noise_peak is not None:
+                mic1_id = td.get("mic1_id", td.get("mic1", ""))
+                mic2_id = td.get("mic2_id", td.get("mic2", ""))
+
+                peak = NoisePeakRecord(
+                    timestamp=datetime.now().isoformat(),
+                    frequency_hz=td.get("frequency_hz", 1000.0),
+                    amplitude_db=float(noise_peak),
+                    microphone_id=f"{mic1_id}/{mic2_id}",
+                    window_start=td.get("window_start", 0.0),
+                    window_end=td.get("window_end", 0.0),
+                    version_tag="v1.0",
+                    is_archived=False
+                )
+                self.archive_noise_peak(peak)
+                archived.append(peak)
+
+        return archived
+
+    def auto_detect_all(self, mics_dict: Dict[str, Dict[str, float]],
+                        tds_list: List[Dict],
+                        source_position: List[float] = None,
+                        speed_of_sound: float = 343.0) -> Dict:
+        geometry_issues = self.analyze_microphone_geometry(mics_dict)
+
+        if source_position is not None:
+            td_gaps = self.analyze_time_difference_quality(
+                tds_list, mic_positions=mics_dict,
+                source_position=source_position,
+                speed_of_sound=speed_of_sound
+            )
+        else:
+            td_gaps = []
+
+        noise_peaks = self.archive_time_difference_noise_peaks(tds_list)
+
+        return {
+            "coordinate_issues": len(geometry_issues),
+            "time_difference_gaps": len(td_gaps),
+            "archived_noise_peaks": len(noise_peaks)
+        }

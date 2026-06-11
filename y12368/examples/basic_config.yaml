@@ -1,0 +1,45 @@
+speed_of_sound: 343.0
+microphones:
+- id: MIC1
+  x: 0.0
+  y: 0.0
+  z: 1.5
+  notes: 舞台左侧
+- id: MIC2
+  x: 5.0
+  y: 0.0
+  z: 1.5
+  notes: 舞台中央
+- id: MIC3
+  x: 10.0
+  y: 0.0
+  z: 1.5
+  notes: 舞台右侧
+- id: MIC4
+  x: 5.0
+  y: 5.0
+  z: 1.5
+  notes: 观众区中央
+time_differences:
+- mic1: MIC1
+  mic2: MIC2
+  delta_t: 0.004373
+  confidence: 0.95
+  noise_peak: 75.2
+  notes: '啸叫频率: 2.3kHz'
+- mic1: MIC1
+  mic2: MIC3
+  delta_t: 0.008746
+  confidence: 0.92
+  noise_peak: 73.1
+- mic1: MIC1
+  mic2: MIC4
+  delta_t: 0.002915
+  confidence: 0.88
+  noise_peak: 70.5
+tuning_notes:
+- author: 调音师A
+  category: observation
+  severity: warning
+  content: 会场左侧扬声器附近可能存在反射面
+  resolved: false

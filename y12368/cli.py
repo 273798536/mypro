@@ -84,6 +84,23 @@ def locate(config, output, name, description, formats):
     click.echo(f"✅ 加载 {len(localizer.microphones)} 个麦克风")
     click.echo(f"✅ 加载 {len(localizer.time_differences)} 个时间差")
 
+    mics_dict = {
+        mid: {"x": m.x, "y": m.y, "z": m.z}
+        for mid, m in localizer.microphones.items()
+    }
+    tds_list = [
+        {
+            "mic1": td.mic1_id,
+            "mic2": td.mic2_id,
+            "delta_t": td.delta_t,
+            "confidence": td.confidence,
+            "noise_peak": td.noise_peak,
+            "notes": td.notes
+        }
+        for td in localizer.time_differences
+    ]
+
+    localization_success = True
     try:
         result = localizer.localize_2d_chan()
         click.echo(f"📍 定位结果: ({result.source_position[0]:.4f}, {result.source_position[1]:.4f}) m")
@@ -96,10 +113,39 @@ def locate(config, output, name, description, formats):
                 click.echo(f"   - {note}")
     except Exception as e:
         click.echo(f"❌ 定位失败: {e}", err=True)
+        localization_success = False
+        evidence_mgr._add_evidence_item(
+            type="localization_failure",
+            description="定位算法执行失败",
+            data={"error": str(e)},
+            source="locate_command"
+        )
+
+    click.echo("")
+    click.echo("🔍 执行声学证据复盘...")
+
+    source_pos = result.source_position.tolist() if localization_success else None
+    detect_result = evidence_mgr.auto_detect_all(
+        mics_dict=mics_dict,
+        tds_list=tds_list,
+        source_position=source_pos,
+        speed_of_sound=localizer.speed_of_sound
+    )
+
+    click.echo(f"   📍 坐标问题检测: {detect_result['coordinate_issues']} 项")
+    click.echo(f"   ⏱️  时间差异常: {detect_result['time_difference_gaps']} 项")
+    click.echo(f"   🎚️  噪声峰值归档: {detect_result['archived_noise_peaks']} 项")
+
+    ev_summary = evidence_mgr.generate_evidence_summary()
+    click.echo(f"   📋 证据总数: {ev_summary['total_evidence_items']} 条")
+
+    if not localization_success:
+        click.echo("")
+        click.echo("⚠️  定位失败，已生成部分证据报告，建议检查输入数据后重试")
         return
 
     click.echo("")
-    click.echo("📄 生成定位报告...")
+    click.echo("� 生成定位报告...")
 
     reporter = ReportGenerator(localizer, evidence_mgr)
     report = reporter.generate_report(
@@ -240,11 +286,19 @@ def example(output, example_type):
 
 @cli.command()
 @click.option('--config', '-c', required=True, help='配置文件路径')
-def validate(config):
+@click.option('--output', '-o', default=None, help='证据导出路径 (JSON)')
+def validate(config, output):
     """验证输入数据的一致性"""
     click.echo(f"🔍 验证配置文件: {config}")
 
-    cfg = load_config(config)
+    try:
+        cfg = load_config(config)
+    except FileNotFoundError:
+        click.echo(f"❌ 配置文件不存在: {config}", err=True)
+        return
+    except Exception as e:
+        click.echo(f"❌ 配置文件加载失败: {e}", err=True)
+        return
 
     mics = cfg.get('microphones', [])
     tds = cfg.get('time_differences', [])
@@ -253,6 +307,8 @@ def validate(config):
     click.echo(f"⏱️  时间差数量: {len(tds)}")
     click.echo("")
 
+    evidence_mgr = EvidenceManager(case_id="validate")
+
     mic_ids = set(m['id'] for m in mics)
     errors = 0
 
@@ -260,9 +316,21 @@ def validate(config):
         if td['mic1'] not in mic_ids:
             click.echo(f"❌ 时间差 #{i}: 麦克风 {td['mic1']} 不存在")
             errors += 1
+            evidence_mgr._add_evidence_item(
+                type="validation_error",
+                description=f"时间差 #{i} 引用不存在的麦克风 {td['mic1']}",
+                data={"td_index": i, "missing_mic": td['mic1']},
+                source="validate_command"
+            )
         if td['mic2'] not in mic_ids:
             click.echo(f"❌ 时间差 #{i}: 麦克风 {td['mic2']} 不存在")
             errors += 1
+            evidence_mgr._add_evidence_item(
+                type="validation_error",
+                description=f"时间差 #{i} 引用不存在的麦克风 {td['mic2']}",
+                data={"td_index": i, "missing_mic": td['mic2']},
+                source="validate_command"
+            )
 
     min_mics = 3
     min_tds = 2
@@ -276,20 +344,69 @@ def validate(config):
         errors += 1
 
     click.echo("")
+    click.echo("🔬 深度质量检测")
+    click.echo("-" * 40)
+
+    mics_dict = {m['id']: {"x": m.get('x', 0), "y": m.get('y', 0), "z": m.get('z', 0)} for m in mics}
+    tds_list = [
+        {
+            "mic1": td['mic1'],
+            "mic2": td['mic2'],
+            "delta_t": td['delta_t'],
+            "confidence": td.get('confidence', 1.0),
+            "noise_peak": td.get('noise_peak'),
+            "notes": td.get('notes', '')
+        }
+        for td in tds
+    ]
+
+    geometry_issues = evidence_mgr.analyze_microphone_geometry(mics_dict)
+    click.echo(f"📍 坐标几何检查: {len(geometry_issues)} 项问题")
+    for issue in geometry_issues:
+        click.echo(f"   ⚠️  {issue.microphone_id}: {issue.detected_by} "
+                   f"(置信度: {issue.confidence:.0%})")
+
+    noise_peaks = evidence_mgr.archive_time_difference_noise_peaks(tds_list)
+    click.echo(f"🎚️  噪声峰值归档: {len(noise_peaks)} 条记录")
+    for peak in noise_peaks:
+        click.echo(f"   📦 {peak.microphone_id}: {peak.amplitude_db:.1f} dB")
+
+    click.echo("")
+    ev_summary = evidence_mgr.generate_evidence_summary()
+    click.echo(f"📊 证据摘要: 总数 {ev_summary['total_evidence_items']} | "
+               f"坐标 {ev_summary['coordinate_issues']} | "
+               f"时差 {ev_summary['time_gaps']} | "
+               f"噪声 {ev_summary['archived_noise_peaks']}")
+
+    if output:
+        evidence_mgr.export_evidence(output)
+        click.echo(f"")
+        click.echo(f"💾 证据已导出: {output}")
+
+    click.echo("")
     if errors == 0:
-        click.echo("✅ 验证通过")
+        click.echo("✅ 基础验证通过")
     else:
         click.echo(f"❌ 发现 {errors} 个问题")
+    if geometry_issues:
+        click.echo(f"⚠️  存在 {len(geometry_issues)} 项几何质量警告")
 
 
 @cli.command()
 @click.option('--config', '-c', required=True, help='配置文件路径')
 def inspect(config):
     """显示详细的中间计算过程"""
-    cfg = load_config(config)
+    try:
+        cfg = load_config(config)
+    except FileNotFoundError:
+        click.echo(f"❌ 配置文件不存在: {config}", err=True)
+        return
+    except Exception as e:
+        click.echo(f"❌ 配置文件加载失败: {e}", err=True)
+        return
 
     localizer = TDOALocalizer(speed_of_sound=cfg.get('speed_of_sound', 343.0))
-    evidence_mgr = EvidenceManager()
+    evidence_mgr = EvidenceManager(case_id="inspect")
 
     for mic_cfg in cfg.get('microphones', []):
         localizer.add_microphone(Microphone(**mic_cfg))
@@ -299,28 +416,111 @@ def inspect(config):
             mic1_id=td_cfg['mic1'],
             mic2_id=td_cfg['mic2'],
             delta_t=td_cfg['delta_t'],
-            confidence=td_cfg.get('confidence', 1.0)
+            confidence=td_cfg.get('confidence', 1.0),
+            noise_peak=td_cfg.get('noise_peak'),
+            notes=td_cfg.get('notes', '')
         )
         localizer.add_time_difference(td)
 
-    result = localizer.localize_2d_chan()
+    for note_cfg in cfg.get('tuning_notes', []):
+        note = TuningNote(
+            id='',
+            timestamp=datetime.now().isoformat(),
+            author=note_cfg.get('author', 'system'),
+            category=note_cfg.get('category', 'general'),
+            content=note_cfg['content'],
+            related_evidence=note_cfg.get('related_evidence', []),
+            severity=note_cfg.get('severity', 'info'),
+            resolved=note_cfg.get('resolved', False)
+        )
+        evidence_mgr.add_tuning_note(note)
 
-    click.echo("=" * 60)
-    click.echo("📊 三角定位计算过程")
-    click.echo("=" * 60)
-    click.echo("")
+    mics_dict = {
+        mid: {"x": m.x, "y": m.y, "z": m.z}
+        for mid, m in localizer.microphones.items()
+    }
+    tds_list = [
+        {
+            "mic1": td.mic1_id,
+            "mic2": td.mic2_id,
+            "delta_t": td.delta_t,
+            "confidence": td.confidence,
+            "noise_peak": td.noise_peak,
+            "notes": td.notes
+        }
+        for td in localizer.time_differences
+    ]
 
-    for i, step in enumerate(result.intermediate_steps, 1):
-        click.echo(f"步骤 {i}: {step.description}")
-        click.echo(f"  公式: {step.formula}")
-        click.echo(f"  结果: {step.value}")
-        click.echo(f"  单位: {step.unit}")
+    localization_success = True
+    try:
+        result = localizer.localize_2d_chan()
+    except Exception as e:
+        click.echo(f"❌ 定位失败: {e}", err=True)
+        localization_success = False
+        evidence_mgr._add_evidence_item(
+            type="localization_failure",
+            description="定位算法执行失败",
+            data={"error": str(e)},
+            source="inspect_command"
+        )
+
+    if localization_success:
+        click.echo("=" * 60)
+        click.echo("📊 三角定位计算过程")
+        click.echo("=" * 60)
         click.echo("")
 
+        for i, step in enumerate(result.intermediate_steps, 1):
+            click.echo(f"步骤 {i}: {step.description}")
+            click.echo(f"  公式: {step.formula}")
+            click.echo(f"  结果: {step.value}")
+            click.echo(f"  单位: {step.unit}")
+            click.echo("")
+
+        click.echo("=" * 60)
+        click.echo(f"📍 最终位置: ({result.source_position[0]:.4f}, {result.source_position[1]:.4f}) m")
+        click.echo(f"📊 残差误差: {result.error:.6f} m")
+        click.echo("=" * 60)
+
+    click.echo("")
+    click.echo("🔍 证据检测详情")
     click.echo("=" * 60)
-    click.echo(f"📍 最终位置: ({result.source_position[0]:.4f}, {result.source_position[1]:.4f}) m")
-    click.echo(f"📊 残差误差: {result.error:.6f} m")
-    click.echo("=" * 60)
+
+    source_pos = result.source_position.tolist() if localization_success else None
+    detect_result = evidence_mgr.auto_detect_all(
+        mics_dict=mics_dict,
+        tds_list=tds_list,
+        source_position=source_pos,
+        speed_of_sound=localizer.speed_of_sound
+    )
+
+    click.echo(f"📍 坐标问题: {detect_result['coordinate_issues']} 项")
+    if evidence_mgr.coordinate_issues:
+        for issue in evidence_mgr.coordinate_issues:
+            click.echo(f"   - {issue.microphone_id}: "
+                       f"位移 {issue.displacement:.4f}m "
+                       f"({issue.detected_by})")
+
+    click.echo(f"⏱️  时间差异常: {detect_result['time_difference_gaps']} 项")
+    if evidence_mgr.time_gaps:
+        for gap in evidence_mgr.time_gaps:
+            click.echo(f"   - {gap.pair}: "
+                       f"预期 {gap.expected_value*1000:.3f}ms, "
+                       f"实际 {gap.actual_value*1000:.3f}ms "
+                       f"[{gap.severity}]")
+
+    click.echo(f"🎚️  噪声峰值归档: {detect_result['archived_noise_peaks']} 项")
+    if evidence_mgr.noise_peak_archive:
+        for peak in evidence_mgr.noise_peak_archive:
+            click.echo(f"   - {peak.microphone_id}: "
+                       f"{peak.amplitude_db:.1f}dB @ {peak.frequency_hz:.0f}Hz")
+
+    ev_summary = evidence_mgr.generate_evidence_summary()
+    click.echo("")
+    click.echo(f"📋 证据摘要: 总数 {ev_summary['total_evidence_items']} | "
+               f"坐标 {ev_summary['coordinate_issues']} | "
+               f"时差 {ev_summary['time_gaps']} | "
+               f"噪声 {ev_summary['archived_noise_peaks']}")
 
 
 if __name__ == '__main__':
