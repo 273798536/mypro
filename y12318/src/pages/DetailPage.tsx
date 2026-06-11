@@ -7,9 +7,9 @@ import {
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
-import * as XLSX from "xlsx";
 import { useStore } from "@/store/useStore";
 import type { ReplenishmentSuggestion, EvidenceItem } from "@/types";
+import * as XLSX from "xlsx";
 
 const PRIORITY_BADGE: Record<string, string> = { critical: "badge-danger", high: "badge-warning", medium: "badge-info", low: "badge-success" };
 const PRIORITY_LABEL: Record<string, string> = { critical: "紧急", high: "高", medium: "中", low: "低" };
@@ -244,6 +244,7 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
   const buildExcel = () => {
     const snap = useStore.getState().inventorySnapshot.find((i) => i.skuId === s.skuId);
     const skuConflicts = useStore.getState().conflicts.filter((c) => c.skuId === s.skuId);
+    const result = exportConsistencyCheck();
 
     const wb = XLSX.utils.book_new();
 
@@ -265,41 +266,34 @@ function ExportPanel({ s, evidences }: { s: ReplenishmentSuggestion; evidences: 
       ["导出时间", new Date().toLocaleString("zh-CN")],
     ];
     const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
-    ws1["!cols"] = [{ wch: 18 }, { wch: 40 }];
+    ws1["!cols"] = [{ wch: 16 }, { wch: 30 }];
     XLSX.utils.book_append_sheet(wb, ws1, "补货决策");
 
     const evHeader = ["证据ID", "事件日期", "事件类型", "描述", "数据源", "是否覆盖", "严重程度", "原始值", "覆盖值"];
-    const evData = [evHeader, ...evidences.map((e) => [
-      e.evidenceId, e.eventDate, EVT[e.eventType]?.label || e.eventType, e.description, e.sourceTable,
-      e.isOverride ? "是" : "否", e.severity, e.originalValue, e.overriddenValue,
-    ])];
-    const ws2 = XLSX.utils.aoa_to_sheet(evData);
-    ws2["!cols"] = [{ wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 40 }, { wch: 14 }, { wch: 8 }, { wch: 8 }, { wch: 20 }, { wch: 20 }];
+    const evRows = evidences.map((e) => [
+      e.evidenceId, e.eventDate, EVT[e.eventType]?.label || e.eventType,
+      e.description, e.sourceTable, e.isOverride ? "是" : "否",
+      e.severity, e.originalValue, e.overriddenValue,
+    ]);
+    const ws2 = XLSX.utils.aoa_to_sheet([evHeader, ...evRows]);
     XLSX.utils.book_append_sheet(wb, ws2, "证据链");
 
     if (skuConflicts.length > 0) {
       const cHeader = ["冲突类型", "销售结论", "库存结论", "严重程度", "描述"];
-      const cData = [cHeader, ...skuConflicts.map((c) =>
-        ["口径冲突", c.salesConclusion, c.inventoryConclusion, c.severity, c.description]
-      )];
-      const ws3 = XLSX.utils.aoa_to_sheet(cData);
-      ws3["!cols"] = [{ wch: 10 }, { wch: 25 }, { wch: 25 }, { wch: 10 }, { wch: 50 }];
+      const cRows = skuConflicts.map((c) => ["口径冲突", c.salesConclusion, c.inventoryConclusion, c.severity, c.description]);
+      const ws3 = XLSX.utils.aoa_to_sheet([cHeader, ...cRows]);
       XLSX.utils.book_append_sheet(wb, ws3, "数据冲突");
     }
 
-    const result = exportConsistencyCheck();
     if (!result.passed) {
-      const warnData = [
-        ["一致性校验警告"],
-        ...result.details.map((d) => [`⚠ ${d}`]),
-      ];
-      const ws4 = XLSX.utils.aoa_to_sheet(warnData);
-      ws4["!cols"] = [{ wch: 80 }];
-      XLSX.utils.book_append_sheet(wb, ws4, "一致性警告");
+      const wHeader = ["警告内容"];
+      const wRows = result.details.map((d) => [`⚠ ${d}`]);
+      const ws4 = XLSX.utils.aoa_to_sheet([wHeader, ...wRows]);
+      XLSX.utils.book_append_sheet(wb, ws4, "一致性校验");
     }
 
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    return new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    return new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
   };
 
   const doDownload = () => {
