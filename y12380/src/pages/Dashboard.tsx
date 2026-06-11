@@ -1,14 +1,23 @@
 import { useMemo } from 'react';
-import { Users, CalendarCheck, AlertTriangle, CheckCircle2, Clock, Database } from 'lucide-react';
+import { Users, CalendarCheck, AlertTriangle, CheckCircle2, Clock, Database, Download, Wand2 } from 'lucide-react';
 import { useScheduleStore } from '@/store';
 import StatCard from '@/components/ui/StatCard';
 import { CONFLICT_TYPE_LABELS, ConflictType } from '@/types';
+import { exportToCSV, downloadBlob } from '@/utils/exporter';
+import { cn } from '@/lib/utils';
 
 export default function Dashboard() {
   const scheduleEntries = useScheduleStore((state) => state.scheduleEntries);
   const volunteers = useScheduleStore((state) => state.volunteers);
   const positions = useScheduleStore((state) => state.positions);
+  const stages = useScheduleStore((state) => state.stages);
+  const timeSlots = useScheduleStore((state) => state.timeSlots);
   const dataSources = useScheduleStore((state) => state.dataSources);
+  const activeDate = useScheduleStore((state) => state.activeDate);
+  const setActiveDate = useScheduleStore((state) => state.setActiveDate);
+  const autoAssign = useScheduleStore((state) => state.autoAssign);
+
+  const availableDates = [...new Set(timeSlots.map(t => t.date))].sort();
 
   const { stats, allConflicts } = useMemo(() => {
     const scheduledIds = new Set(scheduleEntries.map((e) => e.volunteerId));
@@ -52,6 +61,15 @@ export default function Dashboard() {
     };
   }, [scheduleEntries, volunteers, positions]);
 
+  const handleAutoAssign = () => {
+    autoAssign();
+  };
+
+  const handleExport = () => {
+    const blob = exportToCSV(scheduleEntries, volunteers, positions, stages, timeSlots);
+    downloadBlob(blob, `音乐节排班表_${activeDate}.csv`);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -61,9 +79,16 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-sm text-slate-500">活动日期:</span>
-          <select className="px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
-            <option>2026-06-10 (第一天)</option>
-            <option>2026-06-11 (第二天)</option>
+          <select
+            value={activeDate}
+            onChange={(e) => setActiveDate(e.target.value)}
+            className="px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          >
+            {availableDates.map((date, idx) => (
+              <option key={date} value={date}>
+                {date} (第{idx + 1}天)
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -221,10 +246,18 @@ export default function Dashboard() {
             <h3 className="font-semibold text-lg">快速操作</h3>
             <p className="text-white/70 text-sm mt-1">一键完成排班和导出</p>
             <div className="mt-6 space-y-3">
-              <button className="w-full py-3 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-medium transition-colors">
+              <button
+                onClick={handleAutoAssign}
+                className="w-full py-3 bg-white/20 hover:bg-white/30 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <Wand2 className="w-4 h-4" />
                 自动智能排班
               </button>
-              <button className="w-full py-3 bg-white text-indigo-600 hover:bg-white/90 rounded-xl text-sm font-medium transition-colors">
+              <button
+                onClick={handleExport}
+                className="w-full py-3 bg-white text-indigo-600 hover:bg-white/90 rounded-xl text-sm font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <Download className="w-4 h-4" />
                 导出排班表
               </button>
             </div>
@@ -233,8 +266,4 @@ export default function Dashboard() {
       </div>
     </div>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
 }

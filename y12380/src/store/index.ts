@@ -20,7 +20,7 @@ import {
   mockDataSources,
   mockVersions
 } from '../utils/mockData';
-import { createScheduleEntry } from '../utils/scheduler';
+import { createScheduleEntry, autoAssign as autoAssignUtil } from '../utils/scheduler';
 
 interface ScheduleState {
   volunteers: Volunteer[];
@@ -58,6 +58,12 @@ interface ScheduleState {
   addPosition: (position: Position) => void;
   updatePosition: (id: string, updates: Partial<Position>) => void;
   removePosition: (id: string) => void;
+
+  addTimeSlot: (timeSlot: TimeSlot) => void;
+  updateTimeSlot: (id: string, updates: Partial<TimeSlot>) => void;
+  removeTimeSlot: (id: string) => void;
+
+  autoAssign: () => void;
 
   createVersion: (name: string, createdBy: string) => void;
 
@@ -171,6 +177,31 @@ export const useScheduleStore = create<ScheduleState>()(
           positions: state.positions.filter((p) => p.id !== id),
           scheduleEntries: state.scheduleEntries.filter((e) => e.positionId !== id)
         })),
+
+      addTimeSlot: (timeSlot) =>
+        set((state) => ({
+          timeSlots: [...state.timeSlots, timeSlot]
+        })),
+
+      updateTimeSlot: (id, updates) =>
+        set((state) => ({
+          timeSlots: state.timeSlots.map((t) =>
+            t.id === id ? { ...t, ...updates } : t
+          )
+        })),
+
+      removeTimeSlot: (id) =>
+        set((state) => ({
+          timeSlots: state.timeSlots.filter((t) => t.id !== id),
+          positions: state.positions.filter((p) => p.timeSlotId !== id),
+          scheduleEntries: state.scheduleEntries.filter((e) => e.timeSlotId !== id)
+        })),
+
+      autoAssign: () => {
+        const state = get();
+        const newEntries = autoAssignUtil(state.volunteers, state.positions, state.timeSlots);
+        set({ scheduleEntries: newEntries });
+      },
 
       createVersion: (name, createdBy) => {
         const state = get();

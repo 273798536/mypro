@@ -15,7 +15,10 @@ export default function Schedule() {
   const removeScheduleEntry = useScheduleStore((state) => state.removeScheduleEntry);
   const getUnscheduledVolunteers = useScheduleStore((state) => state.getUnscheduledVolunteers);
 
+  const autoAssign = useScheduleStore((state) => state.autoAssign);
+
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [isAutoAssigning, setIsAutoAssigning] = useState(false);
   const unscheduledVolunteers = getUnscheduledVolunteers();
 
   const currentTimeSlots = timeSlots.filter(t => t.date === activeDate);
@@ -44,6 +47,14 @@ export default function Schedule() {
     }
   };
 
+  const handleAutoAssign = () => {
+    setIsAutoAssigning(true);
+    setTimeout(() => {
+      autoAssign();
+      setIsAutoAssigning(false);
+    }, 300);
+  };
+
   const handleExport = () => {
     const blob = exportToCSV(scheduleEntries, volunteers, positions, stages, timeSlots);
     downloadBlob(blob, `音乐节排班表_${activeDate}.csv`);
@@ -64,9 +75,13 @@ export default function Schedule() {
             <Download className="w-4 h-4" />
             导出排班表
           </button>
-          <button className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-indigo-500/25 transition-all">
-            <Wand2 className="w-4 h-4" />
-            智能排班
+          <button
+            onClick={handleAutoAssign}
+            disabled={isAutoAssigning}
+            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl text-sm font-medium hover:shadow-lg hover:shadow-indigo-500/25 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            <Wand2 className={`w-4 h-4 ${isAutoAssigning ? 'animate-spin' : ''}`} />
+            {isAutoAssigning ? '排班中...' : '智能排班'}
           </button>
         </div>
       </div>

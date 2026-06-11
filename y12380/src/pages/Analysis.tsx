@@ -186,7 +186,7 @@ export default function Analysis() {
               <p className="text-sm text-slate-400 mt-1">所有排班状态良好</p>
             </div>
           ) : (
-            allConflicts.map((conflict, idx) => {
+            allConflicts.map((conflict) => {
               const entry = scheduleEntries.find(e => e.conflicts.some(c => c.id === conflict.id));
               const volunteer = volunteers.find(v => v.id === entry?.volunteerId);
               const isExpanded = expandedConflict === conflict.id;
