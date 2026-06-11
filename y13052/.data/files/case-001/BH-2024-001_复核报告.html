@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BH-2024-001 - 滨海步道风场碰撞预审复核报告</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+    padding: 24px;
+    line-height: 1.6;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+  .header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+    color: white;
+    padding: 28px 32px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .header .title {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: #93c5fd;
+    margin-top: 6px;
+    font-family: monospace;
+  }
+  .section {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .section h2 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1e3a5f;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #3b82f6;
+    display: inline-block;
+    font-family: monospace;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 24px;
+  }
+  .info-item { display: flex; gap: 8px; font-size: 14px; }
+  .info-item .label { color: #64748b; min-width: 90px; }
+  .info-item .value { color: #1e293b; font-weight: 500; word-break: break-all; }
+  .status-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 2px;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    background: #10b981;
+  }
+  .timeline { position: relative; padding-left: 20px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #cbd5e1;
+  }
+  .tl-item { position: relative; margin-bottom: 16px; }
+  .tl-item.gap .tl-dot { background: #ef4444; border-color: #fecaca; }
+  .tl-dot {
+    position: absolute;
+    left: -20px;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #3b82f6;
+    border: 2px solid #bfdbfe;
+  }
+  .tl-meta { font-size: 11px; color: #64748b; margin-bottom: 4px; font-family: monospace; }
+  .tl-meta span { margin-right: 8px; }
+  .tl-gap { color: #ef4444; font-weight: 600; }
+  .tl-title { font-size: 14px; font-weight: 600; color: #1e293b; }
+  .tl-desc { font-size: 13px; color: #475569; margin-top: 4px; }
+  .tl-ref { font-size: 11px; color: #3b82f6; margin-top: 3px; font-family: monospace; }
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .photo-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 12px;
+    background: #f8fafc;
+    position: relative;
+  }
+  .photo-num {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: #1e3a5f;
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-bottom-left-radius: 4px;
+    font-family: monospace;
+  }
+  .photo-id { font-size: 11px; color: #64748b; font-family: monospace; margin-bottom: 4px; }
+  .photo-note { font-size: 13px; color: #1e293b; margin-bottom: 6px; }
+  .photo-meta { font-size: 11px; color: #94a3b8; display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 2px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .badge.late { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  .obj-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .obj-card {
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #3b82f6;
+    border-radius: 4px;
+    padding: 12px;
+    background: #f8fafc;
+  }
+  .obj-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .obj-name { font-size: 14px; font-weight: 600; color: #1e3a5f; }
+  .obj-risk { font-size: 11px; font-weight: 700; }
+  .obj-meta { font-size: 11px; color: #64748b; margin-bottom: 6px; display: flex; gap: 12px; }
+  .obj-coord { font-size: 11px; color: #3b82f6; font-family: monospace; margin-bottom: 4px; }
+  .obj-desc { font-size: 12px; color: #475569; }
+  .att-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: #f8fafc;
+  }
+  .att-card.unlinked { border-left: 4px solid #f87171; }
+  .att-card.linked { border-left: 4px solid #34d399; }
+  .att-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .att-name { font-size: 13px; font-weight: 600; color: #1e3a5f; font-family: monospace; }
+  .badge.linked { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+  .badge.unlinked { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+  .att-meta { font-size: 11px; color: #64748b; display: flex; gap: 12px; flex-wrap: wrap; }
+  .att-desc { font-size: 12px; color: #475569; margin-top: 4px; }
+  .att-conclusion { font-size: 11px; color: #059669; margin-top: 4px; font-family: monospace; }
+  .empty { text-align: center; padding: 24px; color: #94a3b8; font-size: 14px; }
+  .footer {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 11px;
+    margin-top: 20px;
+    padding: 12px;
+    font-family: monospace;
+  }
+  @media print {
+    body { background: white; padding: 0; }
+    .section { break-inside: avoid; box-shadow: none; }
+    .header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="title">滨海步道风场碰撞预审 · 复核报告</div>
+    <div class="subtitle">COASTAL-WIND-PRE-REVIEW / FINAL REPORT</div>
+  </div>
+
+  <div class="section">
+    <h2>案件概览</h2>
+    <div class="info-grid">
+      <div class="info-item"><span class="label">案件编号</span><span class="value">BH-2024-001</span></div>
+      <div class="info-item"><span class="label">案件状态</span><span class="status-badge">通过复核</span></div>
+      <div class="info-item"><span class="label">位置</span><span class="value">滨海步道K3+200段北侧</span></div>
+      <div class="info-item"><span class="label">碰撞类型</span><span class="value">风机基础</span></div>
+      <div class="info-item"><span class="label">碰撞摘要</span><span class="value">17号风机基础外缘侵入步道红线0.8米，存在行人刮碰风险</span></div>
+      <div class="info-item"><span class="label">改判次数</span><span class="value">3 次</span></div>
+      <div class="info-item"><span class="label">最后操作人</span><span class="value">测试员</span></div>
+      <div class="info-item"><span class="label">更新时间</span><span class="value">2026-06-11T11:34:45.203Z</span></div>
+      <div class="info-item"><span class="label">照片数量</span><span class="value">3 张</span></div>
+      <div class="info-item"><span class="label">碰撞对象</span><span class="value">2 个</span></div>
+      <div class="info-item"><span class="label">晚到附件</span><span class="value">1 个</span></div>
+      <div class="info-item"><span class="label">含晚到附件</span><span class="value">是</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>时间轴 (7)</h2>
+    <div class="timeline">
+      
+    <div class="tl-item ">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-meta">
+          <span class="tl-time">2024-03-15T09:30:00Z</span>
+          <span class="tl-type">create</span>
+          
+        </div>
+        <div class="tl-title">案件创建</div>
+        <div class="tl-desc">系统巡检异常自动创建预审案件</div>
+        
+        
+      </div>
+    </div>
+  
+    <div class="tl-item ">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-meta">
+          <span class="tl-time">2024-03-15T16:40:00Z</span>
+          <span class="tl-type">inspection</span>
+          
+        </div>
+        <div class="tl-title">现场巡检照片上传（3张）</div>
+        <div class="tl-desc">现场同事张工上传巡检照片，原始二维表第3、7、12行</div>
+        <div class="tl-ref">关联照片: photo-001-1</div>
+        
+      </div>
+    </div>
+  
+    <div class="tl-item ">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-meta">
+          <span class="tl-time">2024-03-17T11:00:00Z</span>
+          <span class="tl-type">review</span>
+          
+        </div>
+        <div class="tl-title">初审完成</div>
+        <div class="tl-desc">初审人员标记为待复核，建议运维工程师现场确认</div>
+        
+        
+      </div>
+    </div>
+  
+    <div class="tl-item ">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-meta">
+          <span class="tl-time">2024-03-18T08:30:00Z</span>
+          <span class="tl-type">attachment</span>
+          
+        </div>
+        <div class="tl-title">晚到附件上传</div>
+        <div class="tl-desc">现场补充测量报告晚到，尚未与结论关联</div>
+        
+        
+      </div>
+    </div>
+  
+    <div class="tl-item ">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-meta">
+          <span class="tl-time">2026-06-11T11:32:20.161Z</span>
+          <span class="tl-type">rejudge</span>
+          
+        </div>
+        <div class="tl-title">改判：pending → approved</div>
+        <div class="tl-desc">测试通过 | 异常说明：测试异常说明 | 已关联晚到附件 1 个</div>
+        
+        
+      </div>
+    </div>
+  
+    <div class="tl-item ">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-meta">
+          <span class="tl-time">2026-06-11T11:32:38.645Z</span>
+          <span class="tl-type">rejudge</span>
+          
+        </div>
+        <div class="tl-title">改判：approved → approved</div>
+        <div class="tl-desc">测试通过 | 异常说明：测试异常说明 | 已关联晚到附件 1 个</div>
+        
+        
+      </div>
+    </div>
+  
+    <div class="tl-item ">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-meta">
+          <span class="tl-time">2026-06-11T11:34:45.202Z</span>
+          <span class="tl-type">rejudge</span>
+          
+        </div>
+        <div class="tl-title">改判：approved → approved</div>
+        <div class="tl-desc">测试通过 | 异常说明：测试异常说明 | 已关联晚到附件 1 个</div>
+        
+        
+      </div>
+    </div>
+  
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>巡检照片 (3)</h2>
+    <div class="photo-grid">
+      
+    <div class="photo-card">
+      <div class="photo-num">行3</div>
+      <div class="photo-info">
+        <div class="photo-id">photo-001-1</div>
+        <div class="photo-note">2024-03-15现场巡检：风机基础西北侧距步道边缘实测0.8m，低于安全距离2.0m要求</div>
+        <div class="photo-meta">
+          <span>拍摄: 2024-03-15T10:15:00Z</span>
+          
+        </div>
+      </div>
+    </div>
+  
+    <div class="photo-card">
+      <div class="photo-num">行7</div>
+      <div class="photo-info">
+        <div class="photo-id">photo-001-2</div>
+        <div class="photo-note">二维表第7行：基础直径12.4m，步道红线坐标E121.5432/N31.7891，实测侵入0.8m</div>
+        <div class="photo-meta">
+          <span>拍摄: 2024-03-15T10:22:00Z</span>
+          
+        </div>
+      </div>
+    </div>
+  
+    <div class="photo-card">
+      <div class="photo-num">行12</div>
+      <div class="photo-info">
+        <div class="photo-id">photo-001-3</div>
+        <div class="photo-note">行人视角可见基础突出部分，无警示标识。原始表第12行，对象ID obj-001-2</div>
+        <div class="photo-meta">
+          <span>拍摄: 2024-03-15T10:30:00Z</span>
+          
+        </div>
+      </div>
+    </div>
+  
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>碰撞对象 (2)</h2>
+    <div class="obj-grid">
+      
+    <div class="obj-card">
+      <div class="obj-head">
+        <span class="obj-name">17号风机基础</span>
+        <span class="obj-risk" style="color:#dc2626">高风险</span>
+      </div>
+      <div class="obj-meta">
+        <span>类型: 风机基础</span>
+        <span>来源行: 7</span>
+      </div>
+      <div class="obj-coord">坐标: 121.5432, 31.7891</div>
+      <div class="obj-desc">风机基础外缘侵入步道红线0.8米，来源巡检照片第7行</div>
+    </div>
+  
+    <div class="obj-card">
+      <div class="obj-head">
+        <span class="obj-name">基础突出构筑物</span>
+        <span class="obj-risk" style="color:#d97706">中风险</span>
+      </div>
+      <div class="obj-meta">
+        <span>类型: 风机基础</span>
+        <span>来源行: 12</span>
+      </div>
+      <div class="obj-coord">坐标: 121.5433, 31.7892</div>
+      <div class="obj-desc">基础附属突出物，来源巡检照片第12行，无警示标识</div>
+    </div>
+  
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>晚到附件 (1)</h2>
+    
+    <div class="att-card linked">
+      <div class="att-head">
+        <span class="att-name">BH-2024-001-补充测量报告.pdf</span>
+        <span class="badge linked">
+          已关联结论
+        </span>
+      </div>
+      <div class="att-meta">
+        <span>类型: PDF</span>
+        <span>上传: 李工 · 2024-03-18T08:30:00Z</span>
+      </div>
+      <div class="att-desc">3月17日现场二次测量数据，含详细坐标对照表</div>
+      <div class="att-conclusion">结论ID: hist-case-001-mq9f7dua</div>
+    </div>
+  
+  </div>
+
+  <div class="footer">
+    报告生成时间: 2026-06-11T11:36:28.835Z · 系统: COASTAL-WIND-PRE-REVIEW v1.0
+  </div>
+</div>
+</body>
+</html>

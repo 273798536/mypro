@@ -1,0 +1,199 @@
+[
+  {
+    "id": "hist-mq9f7dud-xodc0",
+    "caseId": "case-001",
+    "caseNumber": "BH-2024-001",
+    "action": "rejudge",
+    "operator": "测试员",
+    "operatedAt": "2026-06-11T11:34:45.202Z",
+    "fromStatus": "approved",
+    "toStatus": "approved",
+    "reason": "测试通过",
+    "linkedAttachmentIds": [
+      "att-001-1"
+    ],
+    "isSupplement": false,
+    "abnormalNote": "测试异常说明"
+  },
+  {
+    "id": "hist-mq9f7du0-uauya",
+    "caseId": "case-003",
+    "caseNumber": "BH-2024-003",
+    "action": "supplement",
+    "operator": "测试员",
+    "operatedAt": "2026-06-11T11:34:45.186Z",
+    "reason": "测试补录附件",
+    "linkedPhotoIds": [],
+    "linkedObjectIds": [],
+    "linkedAttachmentIds": [
+      "att-mq9f7dtv-4cnrd"
+    ],
+    "isSupplement": true
+  },
+  {
+    "id": "hist-mq9f4o6v-wp55k",
+    "caseId": "case-001",
+    "caseNumber": "BH-2024-001",
+    "action": "rejudge",
+    "operator": "测试员",
+    "operatedAt": "2026-06-11T11:32:38.645Z",
+    "fromStatus": "approved",
+    "toStatus": "approved",
+    "reason": "测试通过",
+    "linkedAttachmentIds": [
+      "att-001-1"
+    ],
+    "isSupplement": false,
+    "abnormalNote": "测试异常说明"
+  },
+  {
+    "id": "hist-mq9f4o6b-sd9a7",
+    "caseId": "case-003",
+    "caseNumber": "BH-2024-003",
+    "action": "supplement",
+    "operator": "测试员",
+    "operatedAt": "2026-06-11T11:32:38.620Z",
+    "reason": "测试补录附件",
+    "linkedPhotoIds": [],
+    "linkedObjectIds": [],
+    "linkedAttachmentIds": [
+      "att-mq9f4o64-m8huc"
+    ],
+    "isSupplement": true
+  },
+  {
+    "id": "hist-mq9f49xf-xv77f",
+    "caseId": "case-001",
+    "caseNumber": "BH-2024-001",
+    "action": "rejudge",
+    "operator": "测试员",
+    "operatedAt": "2026-06-11T11:32:20.161Z",
+    "fromStatus": "pending",
+    "toStatus": "approved",
+    "reason": "测试通过",
+    "linkedAttachmentIds": [
+      "att-001-1"
+    ],
+    "isSupplement": false,
+    "abnormalNote": "测试异常说明"
+  },
+  {
+    "id": "hist-mq9f49wz-onv49",
+    "caseId": "case-003",
+    "caseNumber": "BH-2024-003",
+    "action": "supplement",
+    "operator": "测试员",
+    "operatedAt": "2026-06-11T11:32:20.142Z",
+    "reason": "测试补录附件",
+    "linkedPhotoIds": [],
+    "linkedObjectIds": [],
+    "linkedAttachmentIds": [
+      "att-mq9f49wu-rhh0k"
+    ],
+    "isSupplement": true
+  },
+  {
+    "id": "hist-006",
+    "caseId": "case-004",
+    "caseNumber": "BH-2024-004",
+    "action": "rejudge",
+    "operator": "老何",
+    "operatedAt": "2024-03-25T16:40:00Z",
+    "fromStatus": "pending",
+    "toStatus": "rejected",
+    "reason": "坡度超标13.2%（规范≤8%），排水方案评审未通过，需重做后重新提交",
+    "linkedPhotoIds": [
+      "photo-004-4",
+      "photo-004-5"
+    ],
+    "linkedObjectIds": [
+      "obj-004-1",
+      "obj-004-2"
+    ],
+    "isSupplement": false
+  },
+  {
+    "id": "hist-003",
+    "caseId": "case-003",
+    "caseNumber": "BH-2024-003",
+    "action": "mark_abnormal",
+    "operator": "老何",
+    "operatedAt": "2024-03-22T09:10:00Z",
+    "fromStatus": "abnormal",
+    "toStatus": "abnormal",
+    "reason": "二次确认异常：缺段仍未补齐，3处标志桩缺失位置坐标仍无法确认",
+    "linkedPhotoIds": [
+      "photo-003-1",
+      "photo-003-2"
+    ],
+    "linkedObjectIds": [
+      "obj-003-1",
+      "obj-003-3"
+    ],
+    "isSupplement": false
+  },
+  {
+    "id": "hist-001",
+    "caseId": "case-002",
+    "caseNumber": "BH-2024-002",
+    "action": "rejudge",
+    "operator": "老何",
+    "operatedAt": "2024-03-20T15:00:00Z",
+    "fromStatus": "pending",
+    "toStatus": "approved",
+    "reason": "防护措施到位，迁移方案已评审通过，晚到附件已关联结论",
+    "linkedPhotoIds": [
+      "photo-002-3",
+      "photo-002-4"
+    ],
+    "linkedObjectIds": [
+      "obj-002-1"
+    ],
+    "isSupplement": false
+  },
+  {
+    "id": "hist-002",
+    "caseId": "case-003",
+    "caseNumber": "BH-2024-003",
+    "action": "rejudge",
+    "operator": "老何",
+    "operatedAt": "2024-03-15T14:00:00Z",
+    "fromStatus": "pending",
+    "toStatus": "abnormal",
+    "reason": "原始二维表第2-8行数据丢失，缺段严重，无法做出准确判断，需现场补测",
+    "linkedPhotoIds": [
+      "photo-003-1"
+    ],
+    "linkedObjectIds": [
+      "obj-003-1",
+      "obj-003-2"
+    ],
+    "isSupplement": false
+  },
+  {
+    "id": "hist-005",
+    "caseId": "case-004",
+    "caseNumber": "BH-2024-004",
+    "action": "supplement",
+    "operator": "孙工",
+    "operatedAt": "2024-03-10T18:30:00Z",
+    "reason": "【补录】3月10日方案评审会议记录，第15行原始数据",
+    "linkedPhotoIds": [
+      "photo-004-5"
+    ],
+    "isSupplement": true
+  },
+  {
+    "id": "hist-004",
+    "caseId": "case-004",
+    "caseNumber": "BH-2024-004",
+    "action": "supplement",
+    "operator": "孙工",
+    "operatedAt": "2024-03-05T17:30:00Z",
+    "reason": "【补录】3月5日现场补测便道坡度数据，第12行原始数据",
+    "linkedPhotoIds": [
+      "photo-004-4"
+    ],
+    "isSupplement": true
+  }
+]
