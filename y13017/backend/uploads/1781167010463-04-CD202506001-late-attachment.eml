@@ -1,0 +1,37 @@
+Content-Type: multipart/mixed; boundary="===============7647340756456508286=="
+MIME-Version: 1.0
+From: logistics@vendor.com
+To: ops@company.com
+Subject: =?utf-8?b?UmU6IENEMjAyNTA2MDAxIOeJqea1geWHreivge+8iOaZmuWIsO+8iQ==?=
+Date: Mon, 09 Jun 2025 16:45:00 +0800
+Message-ID: <178094155936.6938.764280734947824431@192.168.10.55>
+
+--===============7647340756456508286==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+5LqJ6K6u5qy+57yW5Y+3OiBDRDIwMjUwNjAwMQoK5YWz5LqOIDIwMjUtMDYtMDEg55qE5Lqk5piT
+77yM6ZmE5LiK54mp5rWB562+5pS25Yet6K+B44CCCuivpemCruS7tuWboOacjeWKoeWZqOmXrumi
+mOW7tui/n+mAgei+vu+8jOivt+ingeiwheOAggoK6KGl5YWF5L+h5oGvOgrnqI7otLk6IDc3Ljk3
+Cuaxh+eOhzogNy4yNDUwCg==
+
+--===============7647340756456508286==
+Content-Type: application/octet-stream
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: =?utf-8?b?YXR0YWNobWVudDsgZmlsZW5hbWU9IueJqea1geetvuaUtuWNlV9DRDIwMjUwNjAwMS5wZGYi?=
+Content-Type: =?utf-8?b?YXBwbGljYXRpb24vcGRmOyBuYW1lPSLnianmtYHnrb7mlLbljZVfQ0QyMDI1MDYwMDEucGRmIg==?=
+
+TEFURSBMT0dJU1RJQ1MgUkVDRUlQVA==
+
+--===============7647340756456508286==
+Content-Type: application/octet-stream
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: =?utf-8?b?YXR0YWNobWVudDsgZmlsZW5hbWU9IuWPkei0p+WNleWJr+acrC5wZGYi?=
+Content-Type: =?utf-8?b?YXBwbGljYXRpb24vcGRmOyBuYW1lPSLlj5HotKfljZXlia/mnKwucGRmIg==?=
+
+U0hJUFBJTkcgT1JERVIgQ09QWQ==
+
+--===============7647340756456508286==--

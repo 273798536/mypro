@@ -1,0 +1,27 @@
+Content-Type: multipart/mixed; boundary="===============0953794030335626662=="
+MIME-Version: 1.0
+From: finance@bank.com
+To: ops@company.com
+Subject: =?utf-8?b?6KGl5YWF77yaQ0QyMDI1MDYwMDIg56iO6LS55rGH546H56Gu6K6k?=
+Date: Mon, 09 Jun 2025 15:20:00 +0800
+Message-ID: <178094155936.6938.995966146749816173@192.168.10.55>
+
+--===============0953794030335626662==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+5LqJ6K6u5qy+57yW5Y+3OiBDRDIwMjUwNjAwMgoK6KGl5YWF56iO6LS55ZKM5rGH546H5L+h5oGv
+OgrnqI7otLk6IDQ0OC4wMArmsYfnjoc6IDAuOTI1MArmuIXnrpfph5Hpop06IENOWSA1MTgwLjAw
+Cg==
+
+--===============0953794030335626662==
+Content-Type: application/octet-stream
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: =?utf-8?b?YXR0YWNobWVudDsgZmlsZW5hbWU9Iuaxh+eOh+ehruiupOWNlS54bHN4Ig==?=
+Content-Type: =?utf-8?b?YXBwbGljYXRpb24vdm5kLm9wZW54bWxmb3JtYXRzLW9mZmljZWRvY3VtZW50LnNwcmVhZHNoZWV0bWwuc2hlZXQ7IG5hbWU9Iuaxh+eOh+ehruiupOWNlS54bHN4Ig==?=
+
+RlggQ09ORklSTUFUSU9OIERBVEE=
+
+--===============0953794030335626662==--

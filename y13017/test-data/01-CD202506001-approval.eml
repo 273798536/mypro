@@ -1,0 +1,30 @@
+Content-Type: multipart/mixed; boundary="===============8082526770101042893=="
+MIME-Version: 1.0
+From: risk@bank.com
+To: ops@company.com
+Subject: =?utf-8?b?5a6h5om577ya5LqJ6K6u5qy+IENEMjAyNTA2MDAxIOS/oeeUqOWNoeaLkuS7mA==?=
+Date: Mon, 09 Jun 2025 10:30:00 +0800
+Message-ID: <178094155926.6938.1430069602599125664@192.168.10.55>
+
+--===============8082526770101042893==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+5LqJ6K6u5qy+57yW5Y+3OiBDRDIwMjUwNjAwMQrljaHlj7c6IDQzMzYqKioqKioqKjc3ODgK5Lqk
+5piT5pel5pyfOiAyMDI1LTA2LTAxCuS6pOaYk+mHkeminTogVVNEIDEyOTkuNTAK5o6I5p2D5Y+3
+OiBBUDg4MjczNArllYbmiLflkI3np7A6IEdMT0JBTCBTSE9QIEhLIExJTUlURUQK5LqJ6K6u57G7
+5Z6LOiDmjIHljaHkurrmnKrmlLbliLDotKfniakK56iO6LS5OiA3Ny45NwrmsYfnjoc6IDcuMjQ1
+MArmuIXnrpfph5Hpop06IENOWSA5NDE0LjU4CgrlrqHmibnmhI/op4E6IOWQjOaEj+aLkuS7mO+8
+jOivt+aPkOS+m+eJqea1geWHreivgeOAggrnirbmgIE6IOW+heihpeadkOaWmQo=
+
+--===============8082526770101042893==
+Content-Type: application/octet-stream
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+Content-Disposition: =?utf-8?b?YXR0YWNobWVudDsgZmlsZW5hbWU9IuaLkuS7mOeUs+ivt+ihqC5wZGYi?=
+Content-Type: =?utf-8?b?YXBwbGljYXRpb24vcGRmOyBuYW1lPSLmi5Lku5jnlLPor7fooagucGRmIg==?=
+
+RkFLRSBQREYgQ09OVEVOVCBGT1IgQ0QyMDI1MDYwMDE=
+
+--===============8082526770101042893==--
