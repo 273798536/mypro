@@ -1,0 +1,64 @@
+{
+  "students": [
+    { "id": "s001", "name": "张小明", "phone": "13800138001", "courseType": "钢琴", "teacher": "李老师", "enrollDate": "2024-09-01", "avatar": "" },
+    { "id": "s002", "name": "王梓涵", "phone": "13800138002", "courseType": "小提琴", "teacher": "王老师", "enrollDate": "2024-10-15", "avatar": "" },
+    { "id": "s003", "name": "李雨桐", "phone": "13800138003", "courseType": "声乐", "teacher": "陈老师", "enrollDate": "2024-08-20", "avatar": "" },
+    { "id": "s004", "name": "孙浩然", "phone": "13800138004", "courseType": "吉他", "teacher": "赵老师", "enrollDate": "2024-11-05", "avatar": "" },
+    { "id": "s005", "name": "周思琪", "phone": "13800138005", "courseType": "古筝", "teacher": "刘老师", "enrollDate": "2024-07-10", "avatar": "" },
+    { "id": "s006", "name": "吴佳怡", "phone": "13800138006", "courseType": "钢琴", "teacher": "李老师", "enrollDate": "2025-01-12", "avatar": "" },
+    { "id": "s007", "name": "郑浩宇", "phone": "13800138007", "courseType": "架子鼓", "teacher": "孙老师", "enrollDate": "2024-12-01", "avatar": "" },
+    { "id": "s008", "name": "陈雅琪", "phone": "13800138008", "courseType": "声乐", "teacher": "陈老师", "enrollDate": "2025-02-20", "avatar": "" },
+    { "id": "s009", "name": "黄俊熙", "phone": "13800138009", "courseType": "钢琴", "teacher": "李老师", "enrollDate": "2024-06-18", "avatar": "" },
+    { "id": "s010", "name": "林诗涵", "phone": "13800138010", "courseType": "小提琴", "teacher": "王老师", "enrollDate": "2024-11-28", "avatar": "" }
+  ],
+  "packages": [
+    { "id": "p001", "studentId": "s001", "packageName": "钢琴启蒙48课时", "totalHours": 48, "remainingHours": 5, "purchaseDate": "2024-09-01", "expireDate": "2026-09-01", "status": "active", "freezeRecords": [{ "id": "f001", "startDate": "2025-02-01", "endDate": "2025-02-14", "reason": "春节假期", "operator": "系统管理员" }] },
+    { "id": "p002", "studentId": "s002", "packageName": "小提琴初级36课时", "totalHours": 36, "remainingHours": 12, "purchaseDate": "2024-10-15", "expireDate": "2025-10-15", "status": "active" },
+    { "id": "p003", "studentId": "s003", "packageName": "声乐进阶24课时", "totalHours": 24, "remainingHours": 2, "purchaseDate": "2024-08-20", "expireDate": "2025-08-20", "status": "active" },
+    { "id": "p004", "studentId": "s004", "packageName": "吉他入门16课时", "totalHours": 16, "remainingHours": 8, "purchaseDate": "2024-11-05", "expireDate": "2025-11-05", "status": "active" },
+    { "id": "p005", "studentId": "s005", "packageName": "古筝初级48课时", "totalHours": 48, "remainingHours": 15, "purchaseDate": "2024-07-10", "expireDate": "2025-07-10", "status": "expired" },
+    { "id": "p006", "studentId": "s006", "packageName": "钢琴基础36课时", "totalHours": 36, "remainingHours": 30, "purchaseDate": "2025-01-12", "expireDate": "2026-01-12", "status": "active" },
+    { "id": "p007", "studentId": "s007", "packageName": "架子鼓24课时", "totalHours": 24, "remainingHours": 4, "purchaseDate": "2024-12-01", "expireDate": "2025-12-01", "status": "active" },
+    { "id": "p008", "studentId": "s008", "packageName": "声乐入门16课时", "totalHours": 16, "remainingHours": 16, "purchaseDate": "2025-02-20", "expireDate": "2026-02-20", "status": "active" },
+    { "id": "p009", "studentId": "s009", "packageName": "钢琴进阶24课时", "totalHours": 24, "remainingHours": 1, "purchaseDate": "2024-06-18", "expireDate": "2025-06-18", "status": "expired" },
+    { "id": "p010", "studentId": "s010", "packageName": "小提琴中级36课时", "totalHours": 36, "remainingHours": 18, "purchaseDate": "2024-11-28", "expireDate": "2025-11-28", "status": "frozen", "freezeRecords": [{ "id": "f002", "startDate": "2025-04-01", "endDate": "2025-05-31", "reason": "艺考集训", "operator": "教务员B" }] }
+  ],
+  "leaves": [
+    { "id": "l001", "studentId": "s001", "leaveDate": "2025-03-10", "reason": "发烧生病", "hours": 1, "status": "approved", "makeUpClass": { "id": "m001", "scheduledDate": "2025-03-17", "teacher": "李老师", "status": "completed" } },
+    { "id": "l002", "studentId": "s003", "leaveDate": "2025-05-05", "reason": "外出演出", "hours": 2, "status": "approved" },
+    { "id": "l003", "studentId": "s005", "leaveDate": "2025-06-15", "reason": "旅游请假", "hours": 1, "status": "pending" },
+    { "id": "l004", "studentId": "s007", "leaveDate": "2025-04-20", "reason": "考试复习", "hours": 1, "status": "rejected" },
+    { "id": "l005", "studentId": "s002", "leaveDate": "2025-05-28", "reason": "身体不适", "hours": 1, "status": "approved", "makeUpClass": { "id": "m002", "scheduledDate": "2025-06-04", "teacher": "王老师", "status": "scheduled" } }
+  ],
+  "evaluations": [
+    { "id": "e001", "studentId": "s001", "evalDate": "2025-03-01", "type": "monthly", "score": 92, "comment": "识谱能力进步明显，节奏稳定性待加强", "status": "completed" },
+    { "id": "e002", "studentId": "s001", "evalDate": "2025-04-05", "type": "monthly", "score": 88, "comment": "练习曲完成度高，表现积极", "status": "completed" },
+    { "id": "e003", "studentId": "s003", "evalDate": "2025-05-10", "type": "quarterly", "score": 95, "comment": "气息控制大幅提升，高音区突破明显", "status": "completed" },
+    { "id": "e004", "studentId": "s005", "evalDate": null, "type": "monthly", "status": "missing" },
+    { "id": "e005", "studentId": "s007", "evalDate": null, "type": "monthly", "status": "pending" },
+    { "id": "e006", "studentId": "s002", "evalDate": "2025-05-15", "type": "monthly", "score": 80, "comment": "左手持琴姿势需纠正，弓法稳定性一般", "status": "completed" },
+    { "id": "e007", "studentId": "s009", "evalDate": "2025-05-20", "type": "final", "score": 78, "comment": "课时即将结束，建议续费进行高级阶段学习", "status": "completed" },
+    { "id": "e008", "studentId": "s010", "evalDate": "2025-03-20", "type": "monthly", "score": 85, "comment": "演奏技巧成熟，表现力待提升", "status": "completed" }
+  ],
+  "alerts": [
+    { "id": "a001", "studentId": "s001", "student": { "id": "s001", "name": "张小明", "phone": "13800138001", "courseType": "钢琴", "teacher": "李老师", "enrollDate": "2024-09-01", "avatar": "" }, "renewalProbability": 0.85, "riskLevel": "medium", "remainingHours": 5, "nextEvalDate": "2025-06-05", "lastEvalDate": "2025-04-05", "hasConflict": false, "processStatus": "pending", "handler": "", "updateTime": "2025-05-30 09:15:22" },
+    { "id": "a002", "studentId": "s002", "student": { "id": "s002", "name": "王梓涵", "phone": "13800138002", "courseType": "小提琴", "teacher": "王老师", "enrollDate": "2024-10-15", "avatar": "" }, "renewalProbability": 0.6, "riskLevel": "high", "remainingHours": 12, "nextEvalDate": "2025-06-15", "lastEvalDate": "2025-05-15", "hasConflict": true, "conflictDetails": "系统记录请假2课时，实际扣课时1课时，数据不一致", "processStatus": "pending", "handler": "", "updateTime": "2025-05-30 10:02:10" },
+    { "id": "a003", "studentId": "s003", "student": { "id": "s003", "name": "李雨桐", "phone": "13800138003", "courseType": "声乐", "teacher": "陈老师", "enrollDate": "2024-08-20", "avatar": "" }, "renewalProbability": 0.3, "riskLevel": "high", "remainingHours": 2, "nextEvalDate": "2025-06-10", "lastEvalDate": "2025-05-10", "hasConflict": false, "processStatus": "processing", "handler": "教务员A", "updateTime": "2025-05-31 14:20:35" },
+    { "id": "a004", "studentId": "s005", "student": { "id": "s005", "name": "周思琪", "phone": "13800138005", "courseType": "古筝", "teacher": "刘老师", "enrollDate": "2024-07-10", "avatar": "" }, "renewalProbability": 0.15, "riskLevel": "critical", "remainingHours": 15, "nextEvalDate": "2025-06-01", "lastEvalDate": null, "hasConflict": true, "conflictDetails": "课包已过期344天，系统仍标记为续费预警，需要人工核对", "processStatus": "pending", "handler": "", "updateTime": "2025-05-29 16:45:08" },
+    { "id": "a005", "studentId": "s007", "student": { "id": "s007", "name": "郑浩宇", "phone": "13800138007", "courseType": "架子鼓", "teacher": "孙老师", "enrollDate": "2024-12-01", "avatar": "" }, "renewalProbability": 0.45, "riskLevel": "high", "remainingHours": 4, "nextEvalDate": "2025-06-01", "lastEvalDate": null, "hasConflict": true, "conflictDetails": "月度测评缺失1次，家长未响应催缴通知", "processStatus": "pending", "handler": "", "updateTime": "2025-05-30 08:30:55" },
+    { "id": "a006", "studentId": "s008", "student": { "id": "s008", "name": "陈雅琪", "phone": "13800138008", "courseType": "声乐", "teacher": "陈老师", "enrollDate": "2025-02-20", "avatar": "" }, "renewalProbability": 0.95, "riskLevel": "low", "remainingHours": 16, "nextEvalDate": "2025-06-20", "lastEvalDate": null, "hasConflict": false, "processStatus": "completed", "handler": "教务员C", "updateTime": "2025-05-28 11:05:19" },
+    { "id": "a007", "studentId": "s009", "student": { "id": "s009", "name": "黄俊熙", "phone": "13800138009", "courseType": "钢琴", "teacher": "李老师", "enrollDate": "2024-06-18", "avatar": "" }, "renewalProbability": 0.25, "riskLevel": "critical", "remainingHours": 1, "nextEvalDate": null, "lastEvalDate": "2025-05-20", "hasConflict": false, "processStatus": "processing", "handler": "教务员A", "updateTime": "2025-05-31 09:48:02" },
+    { "id": "a008", "studentId": "s010", "student": { "id": "s010", "name": "林诗涵", "phone": "13800138010", "courseType": "小提琴", "teacher": "王老师", "enrollDate": "2024-11-28", "avatar": "" }, "renewalProbability": 0.55, "riskLevel": "medium", "remainingHours": 18, "nextEvalDate": "2025-06-25", "lastEvalDate": "2025-03-20", "hasConflict": true, "conflictDetails": "课包状态为冻结但预警仍在监测中，续费逻辑冲突", "processStatus": "pending", "handler": "", "updateTime": "2025-05-30 15:12:47" },
+    { "id": "a009", "studentId": "s006", "student": { "id": "s006", "name": "吴佳怡", "phone": "13800138006", "courseType": "钢琴", "teacher": "李老师", "enrollDate": "2025-01-12", "avatar": "" }, "renewalProbability": 0.9, "riskLevel": "low", "remainingHours": 30, "nextEvalDate": "2025-06-12", "lastEvalDate": null, "hasConflict": false, "processStatus": "completed", "handler": "教务员C", "updateTime": "2025-05-29 10:10:33" },
+    { "id": "a010", "studentId": "s004", "student": { "id": "s004", "name": "孙浩然", "phone": "13800138004", "courseType": "吉他", "teacher": "赵老师", "enrollDate": "2024-11-05", "avatar": "" }, "renewalProbability": 0.7, "riskLevel": "medium", "remainingHours": 8, "nextEvalDate": "2025-06-18", "lastEvalDate": null, "hasConflict": false, "processStatus": "pending", "handler": "", "updateTime": "2025-05-30 11:28:51" }
+  ],
+  "logs": [
+    { "id": "log001", "operator": "教务员A", "operateTime": "2025-05-31 14:20:35", "action": "更新续费预测", "targetId": "a003", "targetType": "renewalAlert", "beforeData": { "processStatus": "pending", "handler": "" }, "afterData": { "processStatus": "processing", "handler": "教务员A" }, "ip": "192.168.1.101" },
+    { "id": "log002", "operator": "教务员C", "operateTime": "2025-05-28 11:05:19", "action": "更新续费预测", "targetId": "a006", "targetType": "renewalAlert", "beforeData": { "processStatus": "pending", "handler": "" }, "afterData": { "processStatus": "completed", "handler": "教务员C" }, "ip": "192.168.1.103" },
+    { "id": "log003", "operator": "教务员A", "operateTime": "2025-05-31 09:48:02", "action": "更新续费预测", "targetId": "a007", "targetType": "renewalAlert", "beforeData": { "processStatus": "pending", "handler": "" }, "afterData": { "processStatus": "processing", "handler": "教务员A" }, "ip": "192.168.1.101" },
+    { "id": "log004", "operator": "教务员C", "operateTime": "2025-05-29 10:10:33", "action": "更新续费预测", "targetId": "a009", "targetType": "renewalAlert", "beforeData": { "processStatus": "pending", "handler": "" }, "afterData": { "processStatus": "completed", "handler": "教务员C" }, "ip": "192.168.1.103" },
+    { "id": "log005", "operator": "系统管理员", "operateTime": "2025-05-29 08:00:00", "action": "生成续费预警", "targetId": "daily-2025-05-29", "targetType": "system", "beforeData": null, "afterData": { "generatedAlerts": 10 }, "ip": "127.0.0.1" },
+    { "id": "log006", "operator": "教务员B", "operateTime": "2025-04-01 09:30:00", "action": "课包冻结", "targetId": "p010", "targetType": "coursePackage", "beforeData": { "status": "active" }, "afterData": { "status": "frozen", "freezeRecords": [{ "id": "f002", "startDate": "2025-04-01", "endDate": "2025-05-31", "reason": "艺考集训", "operator": "教务员B" }] }, "ip": "192.168.1.102" },
+    { "id": "log007", "operator": "教务员B", "operateTime": "2025-03-17 16:00:00", "action": "完成补课", "targetId": "m001", "targetType": "makeUpClass", "beforeData": { "status": "scheduled" }, "afterData": { "status": "completed" }, "ip": "192.168.1.102" }
+  ]
+}

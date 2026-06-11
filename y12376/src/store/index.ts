@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools, persist, createJSONStorage } from 'zustand/middleware';
+import { devtools } from 'zustand/middleware';
 import dayjs from 'dayjs';
 import type {
   RenewalAlert,
@@ -11,14 +11,7 @@ import type {
   LeaveRecord,
   Evaluation,
 } from '../types';
-import {
-  mockAlerts,
-  mockLogs,
-  mockStudents,
-  mockPackages,
-  mockLeaves,
-  mockEvaluations,
-} from '../data/mockData';
+import { api } from '../api/client';
 
 interface AppState {
   students: Student[];
@@ -30,11 +23,15 @@ interface AppState {
   filters: AlertFilters;
   currentAlert: RenewalAlert | null;
   timelineEvents: TimelineEvent[];
+  loading: boolean;
+  loadError: string | null;
+  loadAll: () => Promise<void>;
   setFilters: (filters: AlertFilters) => void;
   setCurrentAlert: (alert: RenewalAlert | null) => void;
-  updateAlert: (id: string, data: Partial<RenewalAlert>) => void;
+  updateAlert: (id: string, data: Partial<RenewalAlert>) => Promise<void>;
   loadTimelineEvents: (studentId: string) => void;
-  addLog: (log: Omit<OperationLog, 'id' | 'operateTime' | 'ip'>) => void;
+  addLog: (log: Omit<OperationLog, 'id' | 'operateTime' | 'ip'>) => Promise<void>;
+  resetBackend: () => Promise<void>;
   getFilteredAlerts: () => RenewalAlert[];
 }
 
@@ -130,87 +127,85 @@ export const buildTimelineEvents = (
 };
 
 export const useAppStore = create<AppState>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        students: mockStudents,
-        packages: mockPackages,
-        leaves: mockLeaves,
-        evaluations: mockEvaluations,
-        alerts: mockAlerts,
-        logs: mockLogs,
-        filters: {},
-        currentAlert: null,
-        timelineEvents: [],
+  devtools((set, get) => ({
+    students: [],
+    packages: [],
+    leaves: [],
+    evaluations: [],
+    alerts: [],
+    logs: [],
+    filters: {},
+    currentAlert: null,
+    timelineEvents: [],
+    loading: false,
+    loadError: null,
 
-        setFilters: (filters) => set({ filters }),
-
-        setCurrentAlert: (alert) => set({ currentAlert: alert }),
-
-        updateAlert: (id, data) =>
-          set((state) => {
-            const updatedAlerts = state.alerts.map((a) =>
-              a.id === id ? { ...a, ...data } : a
-            );
-            return { alerts: updatedAlerts };
-          }),
-
-        loadTimelineEvents: (studentId) => {
-          const { students, packages, leaves, evaluations } = get();
-          const events = buildTimelineEvents(studentId, students, packages, leaves, evaluations);
-          set({ timelineEvents: events });
-        },
-
-        addLog: (log) =>
-          set((state) => {
-            const newLog: OperationLog = {
-              ...log,
-              id: `log${Date.now()}`,
-              operateTime: new Date().toISOString().slice(0, 19).replace('T', ' '),
-              ip: '127.0.0.1',
-            };
-            return { logs: [newLog, ...state.logs] };
-          }),
-
-        getFilteredAlerts: () => {
-          const { alerts, filters } = get();
-          return alerts.filter((alert) => {
-            if (filters.riskLevel && alert.riskLevel !== filters.riskLevel) return false;
-            if (filters.processStatus && alert.processStatus !== filters.processStatus) return false;
-            if (filters.hasConflict !== undefined && alert.hasConflict !== filters.hasConflict)
-              return false;
-            if (filters.courseType && alert.student.courseType !== filters.courseType)
-              return false;
-            if (filters.keyword) {
-              const keyword = filters.keyword.toLowerCase();
-              const matchName = alert.student.name.toLowerCase().includes(keyword);
-              const matchCourse = alert.student.courseType.toLowerCase().includes(keyword);
-              const matchTeacher = alert.student.teacher.toLowerCase().includes(keyword);
-              if (!matchName && !matchCourse && !matchTeacher) return false;
-            }
-            return true;
-          });
-        },
-      }),
-      {
-        name: 'renewal-app-store',
-        storage: createJSONStorage(() => localStorage),
-        partialize: (state) => ({
-          students: state.students,
-          packages: state.packages,
-          leaves: state.leaves,
-          evaluations: state.evaluations,
-          alerts: state.alerts,
-          logs: state.logs,
-        }),
-        merge: (persistedState, currentState) => ({
-          ...currentState,
-          ...(persistedState as Partial<AppState>),
-          filters: {},
-          currentAlert: null,
-          timelineEvents: [],
-        }),
+    loadAll: async () => {
+      set({ loading: true, loadError: null });
+      try {
+        const [students, packages, leaves, evaluations, alerts, logs] = await Promise.all([
+          api.getStudents(),
+          api.getPackages(),
+          api.getLeaves(),
+          api.getEvaluations(),
+          api.getAlerts(),
+          api.getLogs(),
+        ]);
+        set({ students, packages, leaves, evaluations, alerts, logs, loading: false });
+      } catch (e) {
+        set({
+          loading: false,
+          loadError: e instanceof Error ? e.message : String(e),
+        });
       }
-    )
-  )
+    },
+
+    setFilters: (filters) => set({ filters }),
+
+    setCurrentAlert: (alert) => set({ currentAlert: alert }),
+
+    updateAlert: async (id, data) => {
+      const { alert, log } = await api.updateAlert(id, data);
+      set((state) => ({
+        alerts: state.alerts.map((a) => (a.id === id ? alert : a)),
+        logs: [log, ...state.logs],
+      }));
+    },
+
+    loadTimelineEvents: (studentId) => {
+      const { students, packages, leaves, evaluations } = get();
+      const events = buildTimelineEvents(studentId, students, packages, leaves, evaluations);
+      set({ timelineEvents: events });
+    },
+
+    addLog: async (log) => {
+      const created = await api.addLog(log);
+      set((state) => ({ logs: [created, ...state.logs] }));
+    },
+
+    resetBackend: async () => {
+      await api.resetDB();
+      await get().loadAll();
+    },
+
+    getFilteredAlerts: () => {
+      const { alerts, filters } = get();
+      return alerts.filter((alert) => {
+        if (filters.riskLevel && alert.riskLevel !== filters.riskLevel) return false;
+        if (filters.processStatus && alert.processStatus !== filters.processStatus) return false;
+        if (filters.hasConflict !== undefined && alert.hasConflict !== filters.hasConflict)
+          return false;
+        if (filters.courseType && alert.student.courseType !== filters.courseType)
+          return false;
+        if (filters.keyword) {
+          const keyword = filters.keyword.toLowerCase();
+          const matchName = alert.student.name.toLowerCase().includes(keyword);
+          const matchCourse = alert.student.courseType.toLowerCase().includes(keyword);
+          const matchTeacher = alert.student.teacher.toLowerCase().includes(keyword);
+          if (!matchName && !matchCourse && !matchTeacher) return false;
+        }
+        return true;
+      });
+    },
+  }))
 );

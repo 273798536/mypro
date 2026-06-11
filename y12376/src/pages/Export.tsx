@@ -50,7 +50,7 @@ const Export: React.FC = () => {
 
   const previewData = dataToExport.slice(0, 5);
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (selectedFields.length === 0) {
       message.error('请至少选择一个导出字段');
       return;
@@ -81,55 +81,55 @@ const Export: React.FC = () => {
     const interval = setInterval(() => {
       currentProgress += 20;
       setProgress(currentProgress);
-      if (currentProgress >= 100) {
-        clearInterval(interval);
-
-        const fileName = `续费预警数据_${new Date().toISOString().slice(0, 10)}`;
-
-        if (fileFormat === 'csv') {
-          const headerRow = headerLabels.join(',');
-          const rows = exportData.map(row =>
-            selectedFields.map(key => {
-              const val = String(row[key] ?? '');
-              return val.includes(',') || val.includes('"') || val.includes('\n')
-                ? `"${val.replace(/"/g, '""')}"`
-                : val;
-            }).join(',')
-          );
-          const csvContent = '\uFEFF' + [headerRow, ...rows].join('\n');
-          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `${fileName}.csv`;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        } else {
-          const headerRow: Record<string, string> = {};
-          selectedFields.forEach((key, i) => {
-            headerRow[key] = headerLabels[i];
-          });
-          const finalData = [headerRow, ...exportData];
-          const ws = XLSX.utils.json_to_sheet(finalData, { skipHeader: true });
-          const wb = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(wb, ws, '续费预警数据');
-          XLSX.writeFile(wb, `${fileName}.xlsx`);
-        }
-
-        addLog({
-          operator: '教务管理员',
-          action: `导出数据清单（${fileFormat.toUpperCase()}）`,
-          targetId: 'export',
-          targetType: 'system',
-        });
-
-        message.success(`导出成功：${dataToExport.length} 条记录`);
-        setExporting(false);
-        setProgress(0);
-      }
+      if (currentProgress >= 100) clearInterval(interval);
     }, 200);
+
+    const fileName = `续费预警数据_${new Date().toISOString().slice(0, 10)}`;
+
+    if (fileFormat === 'csv') {
+      const headerRow = headerLabels.join(',');
+      const rows = exportData.map(row =>
+        selectedFields.map(key => {
+          const val = String(row[key] ?? '');
+          return val.includes(',') || val.includes('"') || val.includes('\n')
+            ? `"${val.replace(/"/g, '""')}"`
+            : val;
+        }).join(',')
+      );
+      const csvContent = '\uFEFF' + [headerRow, ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${fileName}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else {
+      const headerRow: Record<string, string> = {};
+      selectedFields.forEach((key, i) => {
+        headerRow[key] = headerLabels[i];
+      });
+      const finalData = [headerRow, ...exportData];
+      const ws = XLSX.utils.json_to_sheet(finalData, { skipHeader: true });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, '续费预警数据');
+      XLSX.writeFile(wb, `${fileName}.xlsx`);
+    }
+
+    await addLog({
+      operator: '教务管理员',
+      action: `导出数据清单（${fileFormat.toUpperCase()}）`,
+      targetId: 'export',
+      targetType: 'system',
+    });
+
+    setTimeout(() => {
+      message.success(`导出成功：${dataToExport.length} 条记录`);
+      setExporting(false);
+      setProgress(0);
+    }, 1200);
   };
 
   const stats = useMemo(() => ({

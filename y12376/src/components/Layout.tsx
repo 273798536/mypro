@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Layout as AntLayout, Menu, theme, Dropdown, Button, message } from 'antd';
 import { AlertTriangle, Download, History, Settings } from 'lucide-react';
+import { useAppStore } from '../store';
 
 const { Header, Content, Sider } = AntLayout;
 
@@ -11,6 +12,7 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { resetBackend } = useAppStore();
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -33,21 +35,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     },
   ];
 
-  const handleClearData = () => {
+  const handleResetDB = async () => {
     try {
-      localStorage.removeItem('renewal-app-store');
-      message.success('本地数据已清除，即将刷新恢复初始数据');
-      setTimeout(() => window.location.reload(), 800);
+      await resetBackend();
+      message.success('已从服务端恢复初始数据');
     } catch {
-      message.error('清除本地数据失败');
+      message.error('恢复失败，请确认后端服务运行中');
     }
   };
 
   const userMenuItems = [
     {
-      key: 'clear',
-      label: '清除本地持久化数据（恢复初始mock）',
-      onClick: handleClearData,
+      key: 'reset',
+      label: '重置服务端数据（恢复初始样本）',
+      onClick: handleResetDB,
     },
   ];
 

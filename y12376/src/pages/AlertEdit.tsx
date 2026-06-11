@@ -38,7 +38,7 @@ const AlertEdit: React.FC = () => {
     return <div>学生不存在</div>;
   }
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     const beforeData = {
       renewalProbability: alert.renewalProbability,
       riskLevel: alert.riskLevel,
@@ -46,16 +46,15 @@ const AlertEdit: React.FC = () => {
       handler: alert.handler,
     };
 
-    updateAlert(alert.id, {
+    await updateAlert(alert.id, {
       renewalProbability: values.renewalProbability,
       riskLevel: values.riskLevel,
       processStatus: values.processStatus,
       handler: values.handler,
       hasConflict: conflictResolved ? false : alert.hasConflict,
-      updateTime: new Date().toLocaleString('zh-CN'),
     });
 
-    addLog({
+    await addLog({
       operator: '教务管理员',
       action: '更新续费预测',
       targetId: alert.id,
