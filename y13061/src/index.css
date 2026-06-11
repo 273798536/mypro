@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #0a0e13;
+    color: #e2e8f0;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  body {
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(45, 212, 191, 0.08), transparent 60%),
+      repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.015) 0px,
+        rgba(255, 255, 255, 0.015) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+  }
+}
+
+@layer components {
+  .glass {
+    background: rgba(15, 20, 25, 0.72);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-mono border transition;
+  }
+  .chip-default {
+    @apply bg-white/5 border-white/10 text-slate-300 hover:bg-white/10;
+  }
+  .chip-active {
+    @apply bg-amberx/15 border-amberx/50 text-amberx shadow-glow-amber;
+  }
+  .chip-danger {
+    @apply bg-redx/15 border-redx/50 text-redx;
+  }
+  .label-tag {
+    @apply inline-block px-1.5 py-0.5 rounded text-[10px] font-mono tracking-wider uppercase;
+  }
+}
