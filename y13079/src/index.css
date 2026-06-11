@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #F8FAFC;
+  background-color: #0B1F3A;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(0, 212, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(0, 168, 204, 0.04) 0%, transparent 50%),
+    linear-gradient(180deg, #0B1F3A 0%, #081628 100%);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 212, 255, 0.015) 2px,
+    rgba(0, 212, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(30, 58, 95, 0.3);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 255, 0.5);
+}
+
+.font-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+@layer components {
+  .dc-panel {
+    @apply bg-dc-panel/80 backdrop-blur-sm border border-dc-border rounded-sm;
+  }
+
+  .dc-btn {
+    @apply px-3 py-1.5 bg-dc-bg-2 border border-dc-border text-dc-text text-xs
+           hover:border-dc-cold hover:text-dc-cold transition-all duration-200
+           active:translate-y-px font-mono tracking-wide;
+  }
+
+  .dc-btn-primary {
+    @apply px-3 py-1.5 bg-dc-cold/10 border border-dc-cold/50 text-dc-cold text-xs
+           hover:bg-dc-cold/20 hover:border-dc-cold transition-all duration-200
+           active:translate-y-px font-mono tracking-wide;
+  }
+
+  .dc-tag {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-mono
+           border rounded-sm;
+  }
+
+  .dc-input {
+    @apply w-full bg-dc-bg border border-dc-border text-dc-text text-sm
+           px-3 py-1.5 focus:outline-none focus:border-dc-cold/70
+           transition-colors font-mono;
+  }
+}
