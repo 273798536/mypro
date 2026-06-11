@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  background-color: #f0f4f9;
+  color: #182a44;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #dbe5f0;
+}
+::-webkit-scrollbar-thumb {
+  background: #89aacb;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #5482b1;
+}
+
+.card-shadow {
+  box-shadow: 0 1px 3px rgba(30, 58, 95, 0.08), 0 1px 2px rgba(30, 58, 95, 0.06);
+}
+
+.card-shadow-hover:hover {
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.12), 0 2px 4px rgba(30, 58, 95, 0.08);
+}
+
+.btn-eng {
+  @apply px-4 py-2 text-sm font-medium rounded border transition-all duration-150;
+}
+.btn-eng:active {
+  transform: translateY(1px);
+}
+.btn-primary {
+  @apply bg-engineer-700 text-white border-engineer-700 hover:bg-engineer-800;
+}
+.btn-warn {
+  @apply bg-warn-500 text-white border-warn-500 hover:bg-warn-600;
+}
+.btn-ghost {
+  @apply bg-white text-engineer-700 border-engineer-200 hover:bg-engineer-50;
+}
+.btn-success {
+  @apply bg-success-500 text-white border-success-500 hover:bg-success-600;
+}
+
+.tag {
+  @apply inline-flex items-center px-2 py-0.5 text-xs font-medium rounded;
+}
+.tag-warn {
+  @apply bg-orange-50 text-warn-600 border border-warn-500/30;
+}
+.tag-success {
+  @apply bg-emerald-50 text-success-600 border border-success-500/30;
+}
+.tag-info {
+  @apply bg-engineer-50 text-engineer-700 border border-engineer-200;
+}
+.tag-gray {
+  @apply bg-gray-100 text-gray-600 border border-gray-200;
+}
