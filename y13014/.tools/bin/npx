@@ -1,0 +1,6 @@
+#!/bin/sh
+# Project-local npx launcher paired with the Codex.app node shim. See `npm` shim for details.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+NODE_BIN="$SCRIPT_DIR/node"
+NPX_CLI="/Users/mac/pro/solo/workspaces/y13014/.tools/npm/package/bin/npx-cli.js"
+exec "$NODE_BIN" "$NPX_CLI" "$@"

@@ -1,0 +1,10 @@
+#!/bin/sh
+# Project-local npm launcher that uses Codex.app's bundled Node.js.
+# - Does NOT rely on `env node`, so it works on machines without a system node.
+# - Invokes npm-cli.js via our own `node` shim, which injects .tools/bin into PATH.
+#   This means child spawns (vite/tsc/etc. with `#!/usr/bin/env node` shebangs)
+#   will also resolve `node` successfully without PATH hacks from the caller.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+NODE_BIN="$SCRIPT_DIR/node"
+NPM_CLI="/Users/mac/pro/solo/workspaces/y13014/.tools/npm/package/bin/npm-cli.js"
+exec "$NODE_BIN" "$NPM_CLI" "$@"

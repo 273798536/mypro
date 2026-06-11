@@ -1,0 +1,10 @@
+#!/bin/sh
+# Shims Codex.app's bundled Node.js for environments without system node.
+# Automatically prepends our dir to PATH so child processes (shebang `#!/usr/bin/env node`)
+# can also resolve the `node` command without system node being installed.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+case ":$PATH:" in
+  *":$SCRIPT_DIR:"*) ;;
+  *) export PATH="$SCRIPT_DIR:$PATH" ;;
+esac
+exec "/Applications/Codex.app/Contents/Resources/node" "$@"

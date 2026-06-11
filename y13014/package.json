@@ -1,0 +1,49 @@
+{
+  "name": "bill-pool-warning",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "check": "tsc --noEmit",
+    "codex:check": "./.tools/bin/npm run check",
+    "codex:build": "./.tools/bin/npm run build",
+    "codex:dev": "./.tools/bin/npm run dev",
+    "codex:preview": "./.tools/bin/npm run preview"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "x-codex-entrypoints": {
+    "note": "在没有全局 Node.js/npm 的 Codex 环境中，请使用项目内置入口。不要再额外配置 PATH。",
+    "npm": "./.tools/bin/npm",
+    "node": "./.tools/bin/node",
+    "examples": {
+      "构建": "./.tools/bin/npm run build",
+      "类型检查": "./.tools/bin/npm run check",
+      "启动开发服务器": "./.tools/bin/npm run dev",
+      "预览构建产物": "./.tools/bin/npm run preview"
+    }
+  },
+  "dependencies": {
+    "lucide-react": "^0.294.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.21.0",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@rollup/wasm-node": "^4.61.1",
+    "@types/node": "^20.10.4",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.8"
+  }
+}
