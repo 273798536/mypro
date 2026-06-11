@@ -1,0 +1,3018 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_31968f174f8b3231a8f39b9a9c447f80 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-minimap/3.6.1/Control.MiniMap.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_31968f174f8b3231a8f39b9a9c447f80" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_31968f174f8b3231a8f39b9a9c447f80 = L.map(
+                "map_31968f174f8b3231a8f39b9a9c447f80",
+                {
+                    center: [29.2534586625, 121.97307738750001],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 14,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_cff5641eff414de9445df0e85353ac4c = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_cff5641eff414de9445df0e85353ac4c.addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+            var circle_marker_5046a49a72405ad7d8b0b55aa1552a2e = L.circleMarker(
+                [29.247295, 121.987243],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_4d22f97d33308b903e6a2e48a832cdbf = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_8b3b2cd10824002b2f16bdf701377170 = $(`<div id="html_8b3b2cd10824002b2f16bdf701377170" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00001<br>                 <b>时间:</b> 2024-06-15 05:00<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 134.2 cm<br>                 <b>水深:</b> 14.81 m<br>                 <b>航速:</b> 6.68 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行2<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0500             </div>             </div>`)[0];
+                popup_4d22f97d33308b903e6a2e48a832cdbf.setContent(html_8b3b2cd10824002b2f16bdf701377170);
+            
+        
+
+        circle_marker_5046a49a72405ad7d8b0b55aa1552a2e.bindPopup(popup_4d22f97d33308b903e6a2e48a832cdbf)
+        ;
+
+        
+    
+    
+            circle_marker_5046a49a72405ad7d8b0b55aa1552a2e.bindTooltip(
+                `<div>
+                     浙象渔001 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4965b3f2365ac9c90725f0bf0546ff71 = L.circleMarker(
+                [29.249092, 121.987585],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_46c2c492c4108639c0964e37679bcc46 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_c9eaa67f1b5ad0feada49a0a491e4904 = $(`<div id="html_c9eaa67f1b5ad0feada49a0a491e4904" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00002<br>                 <b>时间:</b> 2024-06-15 05:15<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 130.5 cm<br>                 <b>水深:</b> 8.48 m<br>                 <b>航速:</b> 2.91 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行3<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0515             </div>             </div>`)[0];
+                popup_46c2c492c4108639c0964e37679bcc46.setContent(html_c9eaa67f1b5ad0feada49a0a491e4904);
+            
+        
+
+        circle_marker_4965b3f2365ac9c90725f0bf0546ff71.bindPopup(popup_46c2c492c4108639c0964e37679bcc46)
+        ;
+
+        
+    
+    
+            circle_marker_4965b3f2365ac9c90725f0bf0546ff71.bindTooltip(
+                `<div>
+                     浙象渔001 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ce948d22313b2f6d42b23e7da292eca4 = L.circleMarker(
+                [29.249478, 121.992063],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_465b8a016ac076697f6856fa9999b04e = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_fc871ef6b7012dc2152f0a65e9f5368f = $(`<div id="html_fc871ef6b7012dc2152f0a65e9f5368f" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00003<br>                 <b>时间:</b> 2024-06-15 05:30<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 126.8 cm<br>                 <b>水深:</b> 12.11 m<br>                 <b>航速:</b> 2.39 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行4<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0530             </div>             </div>`)[0];
+                popup_465b8a016ac076697f6856fa9999b04e.setContent(html_fc871ef6b7012dc2152f0a65e9f5368f);
+            
+        
+
+        circle_marker_ce948d22313b2f6d42b23e7da292eca4.bindPopup(popup_465b8a016ac076697f6856fa9999b04e)
+        ;
+
+        
+    
+    
+            circle_marker_ce948d22313b2f6d42b23e7da292eca4.bindTooltip(
+                `<div>
+                     浙象渔001 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2ae473ef02265ceff1c14a9074c89e7f = L.circleMarker(
+                [29.249881, 121.995276],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_c7efa43aa214a6918ff39e94a3dc023f = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d0fa9635c97403e8dc29af2d9dc57df0 = $(`<div id="html_d0fa9635c97403e8dc29af2d9dc57df0" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00004<br>                 <b>时间:</b> 2024-06-15 05:45<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 123.1 cm<br>                 <b>水深:</b> 11.21 m<br>                 <b>航速:</b> 2.54 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行5<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0545             </div>             </div>`)[0];
+                popup_c7efa43aa214a6918ff39e94a3dc023f.setContent(html_d0fa9635c97403e8dc29af2d9dc57df0);
+            
+        
+
+        circle_marker_2ae473ef02265ceff1c14a9074c89e7f.bindPopup(popup_c7efa43aa214a6918ff39e94a3dc023f)
+        ;
+
+        
+    
+    
+            circle_marker_2ae473ef02265ceff1c14a9074c89e7f.bindTooltip(
+                `<div>
+                     浙象渔001 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e67f8a3cb9b0ce238517eadb8ce990df = L.circleMarker(
+                [29.254375, 121.998523],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_935455d6ab7a47a88e94ba246344866d = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_11f40fcb79f83dbfc98e62361690444e = $(`<div id="html_11f40fcb79f83dbfc98e62361690444e" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00005<br>                 <b>时间:</b> 2024-06-15 06:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 119.4 cm<br>                 <b>水深:</b> 13.98 m<br>                 <b>航速:</b> 6.71 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行6<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0600             </div>             </div>`)[0];
+                popup_935455d6ab7a47a88e94ba246344866d.setContent(html_11f40fcb79f83dbfc98e62361690444e);
+            
+        
+
+        circle_marker_e67f8a3cb9b0ce238517eadb8ce990df.bindPopup(popup_935455d6ab7a47a88e94ba246344866d)
+        ;
+
+        
+    
+    
+            circle_marker_e67f8a3cb9b0ce238517eadb8ce990df.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8734ce96d2679d3dd05e029cfbb41d14 = L.circleMarker(
+                [29.253993, 121.997722],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_4f3dd314d9dbd1a4b188141cee2ab629 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_1cdedb418a8d890931bb636e95bed8ef = $(`<div id="html_1cdedb418a8d890931bb636e95bed8ef" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00006<br>                 <b>时间:</b> 2024-06-15 06:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 115.7 cm<br>                 <b>水深:</b> 12.65 m<br>                 <b>航速:</b> 3.48 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行7<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0615             </div>             </div>`)[0];
+                popup_4f3dd314d9dbd1a4b188141cee2ab629.setContent(html_1cdedb418a8d890931bb636e95bed8ef);
+            
+        
+
+        circle_marker_8734ce96d2679d3dd05e029cfbb41d14.bindPopup(popup_4f3dd314d9dbd1a4b188141cee2ab629)
+        ;
+
+        
+    
+    
+            circle_marker_8734ce96d2679d3dd05e029cfbb41d14.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_93c1597922c54e0d1e4b0abd192ad3b5 = L.circleMarker(
+                [29.25433, 121.993919],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_9aacff9f10c05b8847fdf9d8019eeba1 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_8c320c49d99d700fc7fc18307f8e20b7 = $(`<div id="html_8c320c49d99d700fc7fc18307f8e20b7" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00007<br>                 <b>时间:</b> 2024-06-15 06:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 112.0 cm<br>                 <b>水深:</b> 9.67 m<br>                 <b>航速:</b> 4.8 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行8<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0630             </div>             </div>`)[0];
+                popup_9aacff9f10c05b8847fdf9d8019eeba1.setContent(html_8c320c49d99d700fc7fc18307f8e20b7);
+            
+        
+
+        circle_marker_93c1597922c54e0d1e4b0abd192ad3b5.bindPopup(popup_9aacff9f10c05b8847fdf9d8019eeba1)
+        ;
+
+        
+    
+    
+            circle_marker_93c1597922c54e0d1e4b0abd192ad3b5.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ae3474e9a7738c2a6abaaadc4cd82d33 = L.circleMarker(
+                [29.254593, 121.992978],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_a7ccd51d5971bcc13d9b02019f8bc9fb = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_344f7978894c40b2fdb55276c084badd = $(`<div id="html_344f7978894c40b2fdb55276c084badd" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00008<br>                 <b>时间:</b> 2024-06-15 06:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 108.3 cm<br>                 <b>水深:</b> 10.92 m<br>                 <b>航速:</b> 7.81 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行9<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0645             </div>             </div>`)[0];
+                popup_a7ccd51d5971bcc13d9b02019f8bc9fb.setContent(html_344f7978894c40b2fdb55276c084badd);
+            
+        
+
+        circle_marker_ae3474e9a7738c2a6abaaadc4cd82d33.bindPopup(popup_a7ccd51d5971bcc13d9b02019f8bc9fb)
+        ;
+
+        
+    
+    
+            circle_marker_ae3474e9a7738c2a6abaaadc4cd82d33.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6e3bbaf43032084cb0c7989e5a4a86ad = L.circleMarker(
+                [29.256278, 121.994014],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_defae6cd704c11e540645d18d87b2e22 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f33377576bf629b113a85b078a159c97 = $(`<div id="html_f33377576bf629b113a85b078a159c97" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00009<br>                 <b>时间:</b> 2024-06-15 07:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 104.6 cm<br>                 <b>水深:</b> 9.51 m<br>                 <b>航速:</b> 3.97 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行10<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0700             </div>             </div>`)[0];
+                popup_defae6cd704c11e540645d18d87b2e22.setContent(html_f33377576bf629b113a85b078a159c97);
+            
+        
+
+        circle_marker_6e3bbaf43032084cb0c7989e5a4a86ad.bindPopup(popup_defae6cd704c11e540645d18d87b2e22)
+        ;
+
+        
+    
+    
+            circle_marker_6e3bbaf43032084cb0c7989e5a4a86ad.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2978ef8e2f3ee1d6130bf185f6dba0ec = L.circleMarker(
+                [29.254782, 122.000276],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_bdc670283fe80d8e7023362b3abe1113 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_72ea26238c61f8ebc9865a65f342c636 = $(`<div id="html_72ea26238c61f8ebc9865a65f342c636" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00010<br>                 <b>时间:</b> 2024-06-15 07:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 100.9 cm<br>                 <b>水深:</b> 6.88 m<br>                 <b>航速:</b> 5.14 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行11<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0715             </div>             </div>`)[0];
+                popup_bdc670283fe80d8e7023362b3abe1113.setContent(html_72ea26238c61f8ebc9865a65f342c636);
+            
+        
+
+        circle_marker_2978ef8e2f3ee1d6130bf185f6dba0ec.bindPopup(popup_bdc670283fe80d8e7023362b3abe1113)
+        ;
+
+        
+    
+    
+            circle_marker_2978ef8e2f3ee1d6130bf185f6dba0ec.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1f8982b9b40c9f9cc77274d0358e662a = L.circleMarker(
+                [29.258298, 122.000955],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_eaa5e7609c9aa002139f2978929eacd5 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_86cca89298f9a59185541142eb187404 = $(`<div id="html_86cca89298f9a59185541142eb187404" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00011<br>                 <b>时间:</b> 2024-06-15 07:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 97.2 cm<br>                 <b>水深:</b> 7.6 m<br>                 <b>航速:</b> 5.13 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行12<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0730             </div>             </div>`)[0];
+                popup_eaa5e7609c9aa002139f2978929eacd5.setContent(html_86cca89298f9a59185541142eb187404);
+            
+        
+
+        circle_marker_1f8982b9b40c9f9cc77274d0358e662a.bindPopup(popup_eaa5e7609c9aa002139f2978929eacd5)
+        ;
+
+        
+    
+    
+            circle_marker_1f8982b9b40c9f9cc77274d0358e662a.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_82a891db52ee0154a12d06933919a623 = L.circleMarker(
+                [29.254395, 122.001589],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_be3847658efdeea1ea8b1ed48360becc = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7bd293917a21a3216e1917333a92f899 = $(`<div id="html_7bd293917a21a3216e1917333a92f899" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00012<br>                 <b>时间:</b> 2024-06-15 07:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 93.5 cm<br>                 <b>水深:</b> 13.38 m<br>                 <b>航速:</b> 4.22 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行13<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0745             </div>             </div>`)[0];
+                popup_be3847658efdeea1ea8b1ed48360becc.setContent(html_7bd293917a21a3216e1917333a92f899);
+            
+        
+
+        circle_marker_82a891db52ee0154a12d06933919a623.bindPopup(popup_be3847658efdeea1ea8b1ed48360becc)
+        ;
+
+        
+    
+    
+            circle_marker_82a891db52ee0154a12d06933919a623.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_1ec0433b7190f4fa92d3b1ead914e759 = L.circleMarker(
+                [29.255499, 122.00797],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_fc7bb0ab7b43a70e679439506c01c0b2 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_86d504b6e4027f921b46f7c8f71d1c30 = $(`<div id="html_86d504b6e4027f921b46f7c8f71d1c30" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00013<br>                 <b>时间:</b> 2024-06-15 08:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 89.8 cm<br>                 <b>水深:</b> 15.64 m<br>                 <b>航速:</b> 6.35 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行14<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0800             </div>             </div>`)[0];
+                popup_fc7bb0ab7b43a70e679439506c01c0b2.setContent(html_86d504b6e4027f921b46f7c8f71d1c30);
+            
+        
+
+        circle_marker_1ec0433b7190f4fa92d3b1ead914e759.bindPopup(popup_fc7bb0ab7b43a70e679439506c01c0b2)
+        ;
+
+        
+    
+    
+            circle_marker_1ec0433b7190f4fa92d3b1ead914e759.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ed12af5a49e09c7053b280f5dad091d2 = L.circleMarker(
+                [29.2568, 122.006487],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_094716ec6a4c6ff689854a0f7c6146e0 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_e71a84b936a62f6b3927a98c66e4cd56 = $(`<div id="html_e71a84b936a62f6b3927a98c66e4cd56" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00014<br>                 <b>时间:</b> 2024-06-15 08:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 86.1 cm<br>                 <b>水深:</b> 14.57 m<br>                 <b>航速:</b> 3.14 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行15<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0815             </div>             </div>`)[0];
+                popup_094716ec6a4c6ff689854a0f7c6146e0.setContent(html_e71a84b936a62f6b3927a98c66e4cd56);
+            
+        
+
+        circle_marker_ed12af5a49e09c7053b280f5dad091d2.bindPopup(popup_094716ec6a4c6ff689854a0f7c6146e0)
+        ;
+
+        
+    
+    
+            circle_marker_ed12af5a49e09c7053b280f5dad091d2.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4f67cff4ab854468e81dc6262904e3c5 = L.circleMarker(
+                [29.254742, 122.004655],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_e57f5c9c172057e907aaf3f202ffdaa7 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_81e110c9464d8064a57f91cdd58cc394 = $(`<div id="html_81e110c9464d8064a57f91cdd58cc394" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00015<br>                 <b>时间:</b> 2024-06-15 08:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 82.4 cm<br>                 <b>水深:</b> 12.6 m<br>                 <b>航速:</b> 5.72 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行16<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0830             </div>             </div>`)[0];
+                popup_e57f5c9c172057e907aaf3f202ffdaa7.setContent(html_81e110c9464d8064a57f91cdd58cc394);
+            
+        
+
+        circle_marker_4f67cff4ab854468e81dc6262904e3c5.bindPopup(popup_e57f5c9c172057e907aaf3f202ffdaa7)
+        ;
+
+        
+    
+    
+            circle_marker_4f67cff4ab854468e81dc6262904e3c5.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_07a4bb0b772f9a14adeaca4a3154b9aa = L.circleMarker(
+                [29.250904, 122.009059],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_d5dcf789cd963a014c84e894ebf176f2 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_89dacd748f49ddbe035adbde92c1292b = $(`<div id="html_89dacd748f49ddbe035adbde92c1292b" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00016<br>                 <b>时间:</b> 2024-06-15 08:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 78.7 cm<br>                 <b>水深:</b> 5.8 m<br>                 <b>航速:</b> 5.86 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行17<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0845             </div>             </div>`)[0];
+                popup_d5dcf789cd963a014c84e894ebf176f2.setContent(html_89dacd748f49ddbe035adbde92c1292b);
+            
+        
+
+        circle_marker_07a4bb0b772f9a14adeaca4a3154b9aa.bindPopup(popup_d5dcf789cd963a014c84e894ebf176f2)
+        ;
+
+        
+    
+    
+            circle_marker_07a4bb0b772f9a14adeaca4a3154b9aa.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f8b7720e3fbdebaa27ff5869bdf761e9 = L.circleMarker(
+                [29.253859, 122.006049],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_40278c7642a92a66e729ff83f0454caa = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_1f60199e8f9447a84dda0bbd691005a3 = $(`<div id="html_1f60199e8f9447a84dda0bbd691005a3" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00017<br>                 <b>时间:</b> 2024-06-15 09:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 82.5 cm<br>                 <b>水深:</b> 16.69 m<br>                 <b>航速:</b> 4.07 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行18<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0900             </div>             </div>`)[0];
+                popup_40278c7642a92a66e729ff83f0454caa.setContent(html_1f60199e8f9447a84dda0bbd691005a3);
+            
+        
+
+        circle_marker_f8b7720e3fbdebaa27ff5869bdf761e9.bindPopup(popup_40278c7642a92a66e729ff83f0454caa)
+        ;
+
+        
+    
+    
+            circle_marker_f8b7720e3fbdebaa27ff5869bdf761e9.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_95f359b2b14080e7d53b7a758912bbb1 = L.circleMarker(
+                [29.25349, 122.003888],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_a7d6c0f7341a77c29ced44eaa2782b5b = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_73cd31836d3669b52227bf0097dac665 = $(`<div id="html_73cd31836d3669b52227bf0097dac665" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00018<br>                 <b>时间:</b> 2024-06-15 09:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 88.1 cm<br>                 <b>水深:</b> 9.2 m<br>                 <b>航速:</b> 7.56 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行19<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0915             </div>             </div>`)[0];
+                popup_a7d6c0f7341a77c29ced44eaa2782b5b.setContent(html_73cd31836d3669b52227bf0097dac665);
+            
+        
+
+        circle_marker_95f359b2b14080e7d53b7a758912bbb1.bindPopup(popup_a7d6c0f7341a77c29ced44eaa2782b5b)
+        ;
+
+        
+    
+    
+            circle_marker_95f359b2b14080e7d53b7a758912bbb1.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2aefb3073335f2c02f17419ddf071231 = L.circleMarker(
+                [29.253292, 122.001895],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_0c8e3f3e701722eed49984c7ab1e49aa = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_484e7585007f5603fc1e8e3ef6af1f1b = $(`<div id="html_484e7585007f5603fc1e8e3ef6af1f1b" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00019<br>                 <b>时间:</b> 2024-06-15 09:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 93.7 cm<br>                 <b>水深:</b> 3.56 m<br>                 <b>航速:</b> 5.57 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行20<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0930             </div>             </div>`)[0];
+                popup_0c8e3f3e701722eed49984c7ab1e49aa.setContent(html_484e7585007f5603fc1e8e3ef6af1f1b);
+            
+        
+
+        circle_marker_2aefb3073335f2c02f17419ddf071231.bindPopup(popup_0c8e3f3e701722eed49984c7ab1e49aa)
+        ;
+
+        
+    
+    
+            circle_marker_2aefb3073335f2c02f17419ddf071231.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d8d408ab28f4ab2eabaa4b75b611b506 = L.circleMarker(
+                [29.249868, 122.005189],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_bbfc510115c765153294f993011d1258 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_f5ce061c1247d6fd3b6dcee7a911c557 = $(`<div id="html_f5ce061c1247d6fd3b6dcee7a911c557" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔001</b> (S001)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00020<br>                 <b>时间:</b> 2024-06-15 09:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 99.2 cm<br>                 <b>水深:</b> 8.48 m<br>                 <b>航速:</b> 2.28 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行21<br>                 <b>备注:</b> 船队调度系统导出，船舶S001_0945             </div>             </div>`)[0];
+                popup_bbfc510115c765153294f993011d1258.setContent(html_f5ce061c1247d6fd3b6dcee7a911c557);
+            
+        
+
+        circle_marker_d8d408ab28f4ab2eabaa4b75b611b506.bindPopup(popup_bbfc510115c765153294f993011d1258)
+        ;
+
+        
+    
+    
+            circle_marker_d8d408ab28f4ab2eabaa4b75b611b506.bindTooltip(
+                `<div>
+                     浙象渔001 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0588ef43f44f6e49d064d05b0d6deb79 = L.circleMarker(
+                [29.303969, 121.949002],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_14e74f10620ea08499b9c2d419ea0749 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_5082f26352612abb040377ae2bd21c49 = $(`<div id="html_5082f26352612abb040377ae2bd21c49" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00021<br>                 <b>时间:</b> 2024-06-15 05:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 89.4 cm<br>                 <b>水深:</b> 15.77 m<br>                 <b>航速:</b> 4.09 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行22<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0500             </div>             </div>`)[0];
+                popup_14e74f10620ea08499b9c2d419ea0749.setContent(html_5082f26352612abb040377ae2bd21c49);
+            
+        
+
+        circle_marker_0588ef43f44f6e49d064d05b0d6deb79.bindPopup(popup_14e74f10620ea08499b9c2d419ea0749)
+        ;
+
+        
+    
+    
+            circle_marker_0588ef43f44f6e49d064d05b0d6deb79.bindTooltip(
+                `<div>
+                     浙象渔023 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b02f7609bb86a5cd8c3bbb2f6030e241 = L.circleMarker(
+                [29.308513, 121.951195],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_ae3a04c9a25dc9bcfcee48a0f9142974 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_0d9fb2cacc41005ef22db68f61ecff0e = $(`<div id="html_0d9fb2cacc41005ef22db68f61ecff0e" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00022<br>                 <b>时间:</b> 2024-06-15 05:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 84.6 cm<br>                 <b>水深:</b> 15.23 m<br>                 <b>航速:</b> 4.5 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行23<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0515             </div>             </div>`)[0];
+                popup_ae3a04c9a25dc9bcfcee48a0f9142974.setContent(html_0d9fb2cacc41005ef22db68f61ecff0e);
+            
+        
+
+        circle_marker_b02f7609bb86a5cd8c3bbb2f6030e241.bindPopup(popup_ae3a04c9a25dc9bcfcee48a0f9142974)
+        ;
+
+        
+    
+    
+            circle_marker_b02f7609bb86a5cd8c3bbb2f6030e241.bindTooltip(
+                `<div>
+                     浙象渔023 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_bfc270dc79a34a4ff9eba16b33413379 = L.circleMarker(
+                [29.308693, 121.957486],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_9f6fbcc7b553ae80ecddca77c8b5ed78 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_9ee64a22d3576d23dfb70e2867efd293 = $(`<div id="html_9ee64a22d3576d23dfb70e2867efd293" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00023<br>                 <b>时间:</b> 2024-06-15 05:30<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 79.8 cm<br>                 <b>水深:</b> 11.51 m<br>                 <b>航速:</b> 2.38 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行24<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0530             </div>             </div>`)[0];
+                popup_9f6fbcc7b553ae80ecddca77c8b5ed78.setContent(html_9ee64a22d3576d23dfb70e2867efd293);
+            
+        
+
+        circle_marker_bfc270dc79a34a4ff9eba16b33413379.bindPopup(popup_9f6fbcc7b553ae80ecddca77c8b5ed78)
+        ;
+
+        
+    
+    
+            circle_marker_bfc270dc79a34a4ff9eba16b33413379.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_70e1053df462040cdc4a2e624b50fed0 = L.circleMarker(
+                [29.309909, 121.960007],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_42efa857ebb4f80d4bc65345f0028c1d = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3ec69d9724b3ee2dbcd90d986883af7c = $(`<div id="html_3ec69d9724b3ee2dbcd90d986883af7c" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00024<br>                 <b>时间:</b> 2024-06-15 05:45<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 75.1 cm<br>                 <b>水深:</b> 13.0 m<br>                 <b>航速:</b> 2.02 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行25<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0545             </div>             </div>`)[0];
+                popup_42efa857ebb4f80d4bc65345f0028c1d.setContent(html_3ec69d9724b3ee2dbcd90d986883af7c);
+            
+        
+
+        circle_marker_70e1053df462040cdc4a2e624b50fed0.bindPopup(popup_42efa857ebb4f80d4bc65345f0028c1d)
+        ;
+
+        
+    
+    
+            circle_marker_70e1053df462040cdc4a2e624b50fed0.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5c0af5798789afe5c401959083d39a0e = L.circleMarker(
+                [29.31132, 121.959548],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_76cbf97ff96815008a133636a1c95776 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_072dcc639adbb77180d464a500a09344 = $(`<div id="html_072dcc639adbb77180d464a500a09344" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00025<br>                 <b>时间:</b> 2024-06-15 06:00<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 70.3 cm<br>                 <b>水深:</b> 17.76 m<br>                 <b>航速:</b> 4.92 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行26<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0600             </div>             </div>`)[0];
+                popup_76cbf97ff96815008a133636a1c95776.setContent(html_072dcc639adbb77180d464a500a09344);
+            
+        
+
+        circle_marker_5c0af5798789afe5c401959083d39a0e.bindPopup(popup_76cbf97ff96815008a133636a1c95776)
+        ;
+
+        
+    
+    
+            circle_marker_5c0af5798789afe5c401959083d39a0e.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6736d6d8e742621e770ab8b3a7369fae = L.circleMarker(
+                [29.312963, 121.957896],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_d2b45812fb6c82318706b93fbbd885c8 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_38ee758818cd164933ccd7437b004513 = $(`<div id="html_38ee758818cd164933ccd7437b004513" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00026<br>                 <b>时间:</b> 2024-06-15 06:15<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 65.5 cm<br>                 <b>水深:</b> 16.16 m<br>                 <b>航速:</b> 7.25 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行27<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0615             </div>             </div>`)[0];
+                popup_d2b45812fb6c82318706b93fbbd885c8.setContent(html_38ee758818cd164933ccd7437b004513);
+            
+        
+
+        circle_marker_6736d6d8e742621e770ab8b3a7369fae.bindPopup(popup_d2b45812fb6c82318706b93fbbd885c8)
+        ;
+
+        
+    
+    
+            circle_marker_6736d6d8e742621e770ab8b3a7369fae.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_207862bb7d05fb4a3212b02b0c1cf946 = L.circleMarker(
+                [29.318838, 121.955078],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_8889950e9b9e19c258e561db24dc3f42 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_9c152888186d9e5b0bcbda4552cf3da3 = $(`<div id="html_9c152888186d9e5b0bcbda4552cf3da3" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00027<br>                 <b>时间:</b> 2024-06-15 06:30<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 60.8 cm<br>                 <b>水深:</b> 4.45 m<br>                 <b>航速:</b> 4.27 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行28<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0630             </div>             </div>`)[0];
+                popup_8889950e9b9e19c258e561db24dc3f42.setContent(html_9c152888186d9e5b0bcbda4552cf3da3);
+            
+        
+
+        circle_marker_207862bb7d05fb4a3212b02b0c1cf946.bindPopup(popup_8889950e9b9e19c258e561db24dc3f42)
+        ;
+
+        
+    
+    
+            circle_marker_207862bb7d05fb4a3212b02b0c1cf946.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4f6a463aad618d671af6852cd4d9d34d = L.circleMarker(
+                [29.323707, 121.950148],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_35a710fa1af459c4685f4c7dcc39c213 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_b94b987d2489303fca630502b29eb2cd = $(`<div id="html_b94b987d2489303fca630502b29eb2cd" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00028<br>                 <b>时间:</b> 2024-06-15 06:45<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 56.0 cm<br>                 <b>水深:</b> 4.85 m<br>                 <b>航速:</b> 7.92 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行29<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0645             </div>             </div>`)[0];
+                popup_35a710fa1af459c4685f4c7dcc39c213.setContent(html_b94b987d2489303fca630502b29eb2cd);
+            
+        
+
+        circle_marker_4f6a463aad618d671af6852cd4d9d34d.bindPopup(popup_35a710fa1af459c4685f4c7dcc39c213)
+        ;
+
+        
+    
+    
+            circle_marker_4f6a463aad618d671af6852cd4d9d34d.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a6b9dc9024fe51abbb0de8587e35d6dd = L.circleMarker(
+                [29.328983, 121.949007],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_11563c00db7e972f3e4b410743e37c70 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_feb6f4e40e484969bfde27c12d76267e = $(`<div id="html_feb6f4e40e484969bfde27c12d76267e" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00029<br>                 <b>时间:</b> 2024-06-15 07:00<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 51.2 cm<br>                 <b>水深:</b> 14.43 m<br>                 <b>航速:</b> 5.7 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行30<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0700             </div>             </div>`)[0];
+                popup_11563c00db7e972f3e4b410743e37c70.setContent(html_feb6f4e40e484969bfde27c12d76267e);
+            
+        
+
+        circle_marker_a6b9dc9024fe51abbb0de8587e35d6dd.bindPopup(popup_11563c00db7e972f3e4b410743e37c70)
+        ;
+
+        
+    
+    
+            circle_marker_a6b9dc9024fe51abbb0de8587e35d6dd.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8d6bb24d42d0ec675c5d28c93a66bed4 = L.circleMarker(
+                [29.325469, 121.953651],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_0ae1f228250bc5e1c8c2328cf6e77474 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_36251200dfeaf55ccce42ecc164f06a6 = $(`<div id="html_36251200dfeaf55ccce42ecc164f06a6" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00030<br>                 <b>时间:</b> 2024-06-15 07:15<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 46.4 cm<br>                 <b>水深:</b> 9.03 m<br>                 <b>航速:</b> 6.61 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行31<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0715             </div>             </div>`)[0];
+                popup_0ae1f228250bc5e1c8c2328cf6e77474.setContent(html_36251200dfeaf55ccce42ecc164f06a6);
+            
+        
+
+        circle_marker_8d6bb24d42d0ec675c5d28c93a66bed4.bindPopup(popup_0ae1f228250bc5e1c8c2328cf6e77474)
+        ;
+
+        
+    
+    
+            circle_marker_8d6bb24d42d0ec675c5d28c93a66bed4.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9104f003a1f7c9acbe90c5b799a4cb1c = L.circleMarker(
+                [29.329579, 121.959147],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_d13563be26e1fbaddf26f852c1b51597 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_5a1d192d04cd5cfacf93219ed1717ede = $(`<div id="html_5a1d192d04cd5cfacf93219ed1717ede" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00031<br>                 <b>时间:</b> 2024-06-15 07:30<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 41.7 cm<br>                 <b>水深:</b> 13.15 m<br>                 <b>航速:</b> 6.46 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行32<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0730             </div>             </div>`)[0];
+                popup_d13563be26e1fbaddf26f852c1b51597.setContent(html_5a1d192d04cd5cfacf93219ed1717ede);
+            
+        
+
+        circle_marker_9104f003a1f7c9acbe90c5b799a4cb1c.bindPopup(popup_d13563be26e1fbaddf26f852c1b51597)
+        ;
+
+        
+    
+    
+            circle_marker_9104f003a1f7c9acbe90c5b799a4cb1c.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_6e19142b3651a29246810f197d652210 = L.circleMarker(
+                [29.332228, 121.955595],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_af4dca33fc5c378febbbfdbd744685fe = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_a373f2f6250402ba17b5249bc5bf3acd = $(`<div id="html_a373f2f6250402ba17b5249bc5bf3acd" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00032<br>                 <b>时间:</b> 2024-06-15 07:45<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 36.9 cm<br>                 <b>水深:</b> 9.35 m<br>                 <b>航速:</b> 7.77 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行33<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0745             </div>             </div>`)[0];
+                popup_af4dca33fc5c378febbbfdbd744685fe.setContent(html_a373f2f6250402ba17b5249bc5bf3acd);
+            
+        
+
+        circle_marker_6e19142b3651a29246810f197d652210.bindPopup(popup_af4dca33fc5c378febbbfdbd744685fe)
+        ;
+
+        
+    
+    
+            circle_marker_6e19142b3651a29246810f197d652210.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_68e20419847689c8eb18a8d2615069df = L.circleMarker(
+                [29.328708, 121.952949],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_f7ab51bad4fc0b99ca6189c215c498ce = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_e51f8d5616c12cd10a876424dc605470 = $(`<div id="html_e51f8d5616c12cd10a876424dc605470" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00033<br>                 <b>时间:</b> 2024-06-15 08:00<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 32.1 cm<br>                 <b>水深:</b> 16.28 m<br>                 <b>航速:</b> 5.93 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行34<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0800             </div>             </div>`)[0];
+                popup_f7ab51bad4fc0b99ca6189c215c498ce.setContent(html_e51f8d5616c12cd10a876424dc605470);
+            
+        
+
+        circle_marker_68e20419847689c8eb18a8d2615069df.bindPopup(popup_f7ab51bad4fc0b99ca6189c215c498ce)
+        ;
+
+        
+    
+    
+            circle_marker_68e20419847689c8eb18a8d2615069df.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b82a4ccdc201ca254671c59721303d3c = L.circleMarker(
+                [29.329483, 121.955542],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_78f2d2267a4b242d75501a867948cea9 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_574c1aa8df4e412563ef18a461fbcf6b = $(`<div id="html_574c1aa8df4e412563ef18a461fbcf6b" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00034<br>                 <b>时间:</b> 2024-06-15 08:15<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 28.2 cm<br>                 <b>水深:</b> 5.78 m<br>                 <b>航速:</b> 3.11 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行35<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0815             </div>             </div>`)[0];
+                popup_78f2d2267a4b242d75501a867948cea9.setContent(html_574c1aa8df4e412563ef18a461fbcf6b);
+            
+        
+
+        circle_marker_b82a4ccdc201ca254671c59721303d3c.bindPopup(popup_78f2d2267a4b242d75501a867948cea9)
+        ;
+
+        
+    
+    
+            circle_marker_b82a4ccdc201ca254671c59721303d3c.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_3de87b7027ab8e79ac2ff3077c21f072 = L.circleMarker(
+                [29.329889, 121.954944],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_45578e2b28548eddd706b17bc93955f8 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d8934c1cbdd262a5b7e5cd211e13c614 = $(`<div id="html_d8934c1cbdd262a5b7e5cd211e13c614" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00035<br>                 <b>时间:</b> 2024-06-15 08:30<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 29.6 cm<br>                 <b>水深:</b> 15.41 m<br>                 <b>航速:</b> 6.44 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行36<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0830             </div>             </div>`)[0];
+                popup_45578e2b28548eddd706b17bc93955f8.setContent(html_d8934c1cbdd262a5b7e5cd211e13c614);
+            
+        
+
+        circle_marker_3de87b7027ab8e79ac2ff3077c21f072.bindPopup(popup_45578e2b28548eddd706b17bc93955f8)
+        ;
+
+        
+    
+    
+            circle_marker_3de87b7027ab8e79ac2ff3077c21f072.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_04e584d3ada9011cfffb1580bf81ee09 = L.circleMarker(
+                [29.327176, 121.961772],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_118c51d32e544c37c77208f7261e6a77 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_b4f54f6082f36ff45a037166579954a9 = $(`<div id="html_b4f54f6082f36ff45a037166579954a9" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00036<br>                 <b>时间:</b> 2024-06-15 08:45<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 31.0 cm<br>                 <b>水深:</b> 9.29 m<br>                 <b>航速:</b> 2.53 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行37<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0845             </div>             </div>`)[0];
+                popup_118c51d32e544c37c77208f7261e6a77.setContent(html_b4f54f6082f36ff45a037166579954a9);
+            
+        
+
+        circle_marker_04e584d3ada9011cfffb1580bf81ee09.bindPopup(popup_118c51d32e544c37c77208f7261e6a77)
+        ;
+
+        
+    
+    
+            circle_marker_04e584d3ada9011cfffb1580bf81ee09.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c4e17694f12453bbc787dd6297141af5 = L.circleMarker(
+                [29.328798, 121.962288],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_b1610b4ca9e9c0e21c6c6aa77e5ff61a = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_bb54261c66ca5772c6a0f57e90f11e2e = $(`<div id="html_bb54261c66ca5772c6a0f57e90f11e2e" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00037<br>                 <b>时间:</b> 2024-06-15 09:00<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 32.5 cm<br>                 <b>水深:</b> 10.69 m<br>                 <b>航速:</b> 2.79 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行38<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0900             </div>             </div>`)[0];
+                popup_b1610b4ca9e9c0e21c6c6aa77e5ff61a.setContent(html_bb54261c66ca5772c6a0f57e90f11e2e);
+            
+        
+
+        circle_marker_c4e17694f12453bbc787dd6297141af5.bindPopup(popup_b1610b4ca9e9c0e21c6c6aa77e5ff61a)
+        ;
+
+        
+    
+    
+            circle_marker_c4e17694f12453bbc787dd6297141af5.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_42a5241ab0f54f0ac9d16b558bec322b = L.circleMarker(
+                [29.334019, 121.962108],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_3f722709f058828ec66d75d52bdc44c1 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_9e43c847aa41400a7940b240a7f67a32 = $(`<div id="html_9e43c847aa41400a7940b240a7f67a32" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00038<br>                 <b>时间:</b> 2024-06-15 09:15<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 33.9 cm<br>                 <b>水深:</b> 10.21 m<br>                 <b>航速:</b> 7.47 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行39<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0915             </div>             </div>`)[0];
+                popup_3f722709f058828ec66d75d52bdc44c1.setContent(html_9e43c847aa41400a7940b240a7f67a32);
+            
+        
+
+        circle_marker_42a5241ab0f54f0ac9d16b558bec322b.bindPopup(popup_3f722709f058828ec66d75d52bdc44c1)
+        ;
+
+        
+    
+    
+            circle_marker_42a5241ab0f54f0ac9d16b558bec322b.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8be61364e6ac58c466c353f11385d715 = L.circleMarker(
+                [29.334258, 121.964453],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_ef96c9b6af2e82f6593742e4beeff78b = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_009408cf3b758b0a435a7d47b0836cd6 = $(`<div id="html_009408cf3b758b0a435a7d47b0836cd6" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00039<br>                 <b>时间:</b> 2024-06-15 09:30<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 35.3 cm<br>                 <b>水深:</b> 13.52 m<br>                 <b>航速:</b> 3.87 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行40<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0930             </div>             </div>`)[0];
+                popup_ef96c9b6af2e82f6593742e4beeff78b.setContent(html_009408cf3b758b0a435a7d47b0836cd6);
+            
+        
+
+        circle_marker_8be61364e6ac58c466c353f11385d715.bindPopup(popup_ef96c9b6af2e82f6593742e4beeff78b)
+        ;
+
+        
+    
+    
+            circle_marker_8be61364e6ac58c466c353f11385d715.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7862d34285daadb99b74d47766699657 = L.circleMarker(
+                [29.336182, 121.97028],
+                {"bubblingMouseEvents": true, "color": "#e67e22", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#e67e22", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_3b45852312f04bf566e7e8acc1f55d8a = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_bf33b02b7aa7494c5a239c48940275c1 = $(`<div id="html_bf33b02b7aa7494c5a239c48940275c1" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔023</b> (S002)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00040<br>                 <b>时间:</b> 2024-06-15 09:45<br>                 <b>风险等级:</b> <span style="color:#e67e22;font-weight:bold">警告</span><br>                 <b>估算潮位:</b> 36.8 cm<br>                 <b>水深:</b> 14.3 m<br>                 <b>航速:</b> 5.03 kn<br>                 <b>建议:</b> 潮位过低，赶海人员请尽快返回岸边<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行41<br>                 <b>备注:</b> 船队调度系统导出，船舶S002_0945             </div>             </div>`)[0];
+                popup_3b45852312f04bf566e7e8acc1f55d8a.setContent(html_bf33b02b7aa7494c5a239c48940275c1);
+            
+        
+
+        circle_marker_7862d34285daadb99b74d47766699657.bindPopup(popup_3b45852312f04bf566e7e8acc1f55d8a)
+        ;
+
+        
+    
+    
+            circle_marker_7862d34285daadb99b74d47766699657.bindTooltip(
+                `<div>
+                     浙象渔023 警告
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_77bc8941c15ad41e17bae78b21b6d2ec = L.circleMarker(
+                [29.216148, 121.946637],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_38602d8461da1e5af4070fb68a9931ea = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_5e1e6cefc147e2ed52b2d540d1b48505 = $(`<div id="html_5e1e6cefc147e2ed52b2d540d1b48505" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00041<br>                 <b>时间:</b> 2024-06-15 05:00<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 134.2 cm<br>                 <b>水深:</b> 14.66 m<br>                 <b>航速:</b> 6.25 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行42<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0500             </div>             </div>`)[0];
+                popup_38602d8461da1e5af4070fb68a9931ea.setContent(html_5e1e6cefc147e2ed52b2d540d1b48505);
+            
+        
+
+        circle_marker_77bc8941c15ad41e17bae78b21b6d2ec.bindPopup(popup_38602d8461da1e5af4070fb68a9931ea)
+        ;
+
+        
+    
+    
+            circle_marker_77bc8941c15ad41e17bae78b21b6d2ec.bindTooltip(
+                `<div>
+                     浙象渔088 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2cda26b3fa1d22e32f39157f701834fe = L.circleMarker(
+                [29.213175, 121.949096],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_71443215ac9f311779e68a897c9882f5 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_0ae046572c28cdf5249a9fb3697147b1 = $(`<div id="html_0ae046572c28cdf5249a9fb3697147b1" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00042<br>                 <b>时间:</b> 2024-06-15 05:15<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 130.5 cm<br>                 <b>水深:</b> 17.7 m<br>                 <b>航速:</b> 6.55 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行43<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0515             </div>             </div>`)[0];
+                popup_71443215ac9f311779e68a897c9882f5.setContent(html_0ae046572c28cdf5249a9fb3697147b1);
+            
+        
+
+        circle_marker_2cda26b3fa1d22e32f39157f701834fe.bindPopup(popup_71443215ac9f311779e68a897c9882f5)
+        ;
+
+        
+    
+    
+            circle_marker_2cda26b3fa1d22e32f39157f701834fe.bindTooltip(
+                `<div>
+                     浙象渔088 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_44e305622d247015ed780f29c4452306 = L.circleMarker(
+                [29.21107, 121.948302],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_5e19a240f4dab4cff1ae87f356fa3b0d = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3db9ef35e3cba8c58fb723702c08156c = $(`<div id="html_3db9ef35e3cba8c58fb723702c08156c" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00043<br>                 <b>时间:</b> 2024-06-15 05:30<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 126.8 cm<br>                 <b>水深:</b> 14.93 m<br>                 <b>航速:</b> 3.98 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行44<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0530             </div>             </div>`)[0];
+                popup_5e19a240f4dab4cff1ae87f356fa3b0d.setContent(html_3db9ef35e3cba8c58fb723702c08156c);
+            
+        
+
+        circle_marker_44e305622d247015ed780f29c4452306.bindPopup(popup_5e19a240f4dab4cff1ae87f356fa3b0d)
+        ;
+
+        
+    
+    
+            circle_marker_44e305622d247015ed780f29c4452306.bindTooltip(
+                `<div>
+                     浙象渔088 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_57bf981fcf53aaa05c89594045fc3f15 = L.circleMarker(
+                [29.211881, 121.948652],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_602bd3c917c4f6842bdf78968587c249 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_73bb8e833adc3afbb7d819a5109f03c0 = $(`<div id="html_73bb8e833adc3afbb7d819a5109f03c0" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00044<br>                 <b>时间:</b> 2024-06-15 05:45<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 123.1 cm<br>                 <b>水深:</b> 13.0 m<br>                 <b>航速:</b> 3.18 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行45<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0545             </div>             </div>`)[0];
+                popup_602bd3c917c4f6842bdf78968587c249.setContent(html_73bb8e833adc3afbb7d819a5109f03c0);
+            
+        
+
+        circle_marker_57bf981fcf53aaa05c89594045fc3f15.bindPopup(popup_602bd3c917c4f6842bdf78968587c249)
+        ;
+
+        
+    
+    
+            circle_marker_57bf981fcf53aaa05c89594045fc3f15.bindTooltip(
+                `<div>
+                     浙象渔088 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2bb555a37c62adb1b3dde97c38eddf0d = L.circleMarker(
+                [29.213237, 121.953372],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_02427aa8384ff17df2618a4afd0ba6ac = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_4e4cde1f301722a74101074adfd2f387 = $(`<div id="html_4e4cde1f301722a74101074adfd2f387" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00045<br>                 <b>时间:</b> 2024-06-15 06:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 119.4 cm<br>                 <b>水深:</b> 6.93 m<br>                 <b>航速:</b> 2.71 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行46<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0600             </div>             </div>`)[0];
+                popup_02427aa8384ff17df2618a4afd0ba6ac.setContent(html_4e4cde1f301722a74101074adfd2f387);
+            
+        
+
+        circle_marker_2bb555a37c62adb1b3dde97c38eddf0d.bindPopup(popup_02427aa8384ff17df2618a4afd0ba6ac)
+        ;
+
+        
+    
+    
+            circle_marker_2bb555a37c62adb1b3dde97c38eddf0d.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_c15eff246a8a55a43abd9cd5e5530286 = L.circleMarker(
+                [29.218421, 121.96029],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_1b3aaf03984fed5d988f59a4f13dd3f8 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_1cb53fcf8beae7708ad5f27e404c5362 = $(`<div id="html_1cb53fcf8beae7708ad5f27e404c5362" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00046<br>                 <b>时间:</b> 2024-06-15 06:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 115.7 cm<br>                 <b>水深:</b> 10.78 m<br>                 <b>航速:</b> 2.59 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行47<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0615             </div>             </div>`)[0];
+                popup_1b3aaf03984fed5d988f59a4f13dd3f8.setContent(html_1cb53fcf8beae7708ad5f27e404c5362);
+            
+        
+
+        circle_marker_c15eff246a8a55a43abd9cd5e5530286.bindPopup(popup_1b3aaf03984fed5d988f59a4f13dd3f8)
+        ;
+
+        
+    
+    
+            circle_marker_c15eff246a8a55a43abd9cd5e5530286.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_cb838ea22c75a8d881efa8f57038929e = L.circleMarker(
+                [29.214894, 121.959368],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_c9aaa4aaa57fde0f72e4d6ba3ae6fd68 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3996f9c5f51a69dab1580f585a11e168 = $(`<div id="html_3996f9c5f51a69dab1580f585a11e168" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00047<br>                 <b>时间:</b> 2024-06-15 06:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 112.0 cm<br>                 <b>水深:</b> 6.95 m<br>                 <b>航速:</b> 3.57 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行48<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0630             </div>             </div>`)[0];
+                popup_c9aaa4aaa57fde0f72e4d6ba3ae6fd68.setContent(html_3996f9c5f51a69dab1580f585a11e168);
+            
+        
+
+        circle_marker_cb838ea22c75a8d881efa8f57038929e.bindPopup(popup_c9aaa4aaa57fde0f72e4d6ba3ae6fd68)
+        ;
+
+        
+    
+    
+            circle_marker_cb838ea22c75a8d881efa8f57038929e.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e92f64f8a3be295d5a8ad5215e97a57f = L.circleMarker(
+                [29.219844, 121.964869],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_2c5270b38e74e125dec51884ea6dec27 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_1460bb6f5cd1b4601ac42ad5874bce02 = $(`<div id="html_1460bb6f5cd1b4601ac42ad5874bce02" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00048<br>                 <b>时间:</b> 2024-06-15 06:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 108.3 cm<br>                 <b>水深:</b> 8.43 m<br>                 <b>航速:</b> 2.28 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行49<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0645             </div>             </div>`)[0];
+                popup_2c5270b38e74e125dec51884ea6dec27.setContent(html_1460bb6f5cd1b4601ac42ad5874bce02);
+            
+        
+
+        circle_marker_e92f64f8a3be295d5a8ad5215e97a57f.bindPopup(popup_2c5270b38e74e125dec51884ea6dec27)
+        ;
+
+        
+    
+    
+            circle_marker_e92f64f8a3be295d5a8ad5215e97a57f.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7feca1345dca304fcad3228d23aa2c13 = L.circleMarker(
+                [29.221126, 121.970433],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_37c1d07c9c9c599cab14f886efc62370 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_3af6d29d1da8c10e998911b3f9761f37 = $(`<div id="html_3af6d29d1da8c10e998911b3f9761f37" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00049<br>                 <b>时间:</b> 2024-06-15 07:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 104.6 cm<br>                 <b>水深:</b> 10.53 m<br>                 <b>航速:</b> 5.6 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行50<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0700             </div>             </div>`)[0];
+                popup_37c1d07c9c9c599cab14f886efc62370.setContent(html_3af6d29d1da8c10e998911b3f9761f37);
+            
+        
+
+        circle_marker_7feca1345dca304fcad3228d23aa2c13.bindPopup(popup_37c1d07c9c9c599cab14f886efc62370)
+        ;
+
+        
+    
+    
+            circle_marker_7feca1345dca304fcad3228d23aa2c13.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2a61dd8a24109b497dbea969d700f161 = L.circleMarker(
+                [29.220878, 121.978281],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_6d4446f87a3d474ffe00f6e99dcd0982 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_7b3645099dc2332b41330cd810aea351 = $(`<div id="html_7b3645099dc2332b41330cd810aea351" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00050<br>                 <b>时间:</b> 2024-06-15 07:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 100.9 cm<br>                 <b>水深:</b> 11.05 m<br>                 <b>航速:</b> 2.63 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行51<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0715             </div>             </div>`)[0];
+                popup_6d4446f87a3d474ffe00f6e99dcd0982.setContent(html_7b3645099dc2332b41330cd810aea351);
+            
+        
+
+        circle_marker_2a61dd8a24109b497dbea969d700f161.bindPopup(popup_6d4446f87a3d474ffe00f6e99dcd0982)
+        ;
+
+        
+    
+    
+            circle_marker_2a61dd8a24109b497dbea969d700f161.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ae56bd8e6105e73230ff985fbe37180f = L.circleMarker(
+                [29.220013, 121.979512],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_8ef270f9f27100594f16eb71b4fb8852 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_91c99541e48883ebe7b25d5e5edb38aa = $(`<div id="html_91c99541e48883ebe7b25d5e5edb38aa" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00051<br>                 <b>时间:</b> 2024-06-15 07:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 97.2 cm<br>                 <b>水深:</b> 6.52 m<br>                 <b>航速:</b> 2.65 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行52<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0730             </div>             </div>`)[0];
+                popup_8ef270f9f27100594f16eb71b4fb8852.setContent(html_91c99541e48883ebe7b25d5e5edb38aa);
+            
+        
+
+        circle_marker_ae56bd8e6105e73230ff985fbe37180f.bindPopup(popup_8ef270f9f27100594f16eb71b4fb8852)
+        ;
+
+        
+    
+    
+            circle_marker_ae56bd8e6105e73230ff985fbe37180f.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7805a6cfdb380bcd43e5060107851317 = L.circleMarker(
+                [29.223169, 121.980276],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_b55721696b2e222a84725f330d3f6737 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_0f8acdc6074f90bb5712ea19c17ee9c0 = $(`<div id="html_0f8acdc6074f90bb5712ea19c17ee9c0" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00052<br>                 <b>时间:</b> 2024-06-15 07:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 93.5 cm<br>                 <b>水深:</b> 11.94 m<br>                 <b>航速:</b> 4.67 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行53<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0745             </div>             </div>`)[0];
+                popup_b55721696b2e222a84725f330d3f6737.setContent(html_0f8acdc6074f90bb5712ea19c17ee9c0);
+            
+        
+
+        circle_marker_7805a6cfdb380bcd43e5060107851317.bindPopup(popup_b55721696b2e222a84725f330d3f6737)
+        ;
+
+        
+    
+    
+            circle_marker_7805a6cfdb380bcd43e5060107851317.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_dfb34ef035d05a5644f4524920171ccd = L.circleMarker(
+                [29.226006, 121.984539],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_50d00860c19964948a8982921aab68ee = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_5b3f86ccfd9ae1c8ea67303e2804f347 = $(`<div id="html_5b3f86ccfd9ae1c8ea67303e2804f347" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00053<br>                 <b>时间:</b> 2024-06-15 08:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 89.8 cm<br>                 <b>水深:</b> 7.37 m<br>                 <b>航速:</b> 8.15 kn<br>                 <b>建议:</b> 近岸区域请减速航行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行54<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0800             </div>             </div>`)[0];
+                popup_50d00860c19964948a8982921aab68ee.setContent(html_5b3f86ccfd9ae1c8ea67303e2804f347);
+            
+        
+
+        circle_marker_dfb34ef035d05a5644f4524920171ccd.bindPopup(popup_50d00860c19964948a8982921aab68ee)
+        ;
+
+        
+    
+    
+            circle_marker_dfb34ef035d05a5644f4524920171ccd.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_382b3f8464c9801f1955024b1e6f67c8 = L.circleMarker(
+                [29.22268, 121.986065],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_fd865b3fbabe20e395893de4faf23900 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_af5dfc08539ccae6b6064d25bac13a60 = $(`<div id="html_af5dfc08539ccae6b6064d25bac13a60" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00054<br>                 <b>时间:</b> 2024-06-15 08:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 86.1 cm<br>                 <b>水深:</b> 11.84 m<br>                 <b>航速:</b> 8.45 kn<br>                 <b>建议:</b> 近岸区域请减速航行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行55<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0815             </div>             </div>`)[0];
+                popup_fd865b3fbabe20e395893de4faf23900.setContent(html_af5dfc08539ccae6b6064d25bac13a60);
+            
+        
+
+        circle_marker_382b3f8464c9801f1955024b1e6f67c8.bindPopup(popup_fd865b3fbabe20e395893de4faf23900)
+        ;
+
+        
+    
+    
+            circle_marker_382b3f8464c9801f1955024b1e6f67c8.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_efab3412b1f767ab77c8558758f0c009 = L.circleMarker(
+                [29.228519, 121.985259],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_7d16eb0e81161e96c7f2e9e0b2aaae36 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_02f8ad24fb891056dbb0da366640b345 = $(`<div id="html_02f8ad24fb891056dbb0da366640b345" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00055<br>                 <b>时间:</b> 2024-06-15 08:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 82.4 cm<br>                 <b>水深:</b> 7.86 m<br>                 <b>航速:</b> 5.74 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行56<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0830             </div>             </div>`)[0];
+                popup_7d16eb0e81161e96c7f2e9e0b2aaae36.setContent(html_02f8ad24fb891056dbb0da366640b345);
+            
+        
+
+        circle_marker_efab3412b1f767ab77c8558758f0c009.bindPopup(popup_7d16eb0e81161e96c7f2e9e0b2aaae36)
+        ;
+
+        
+    
+    
+            circle_marker_efab3412b1f767ab77c8558758f0c009.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2229fab57f52201293a423ceeedc2fff = L.circleMarker(
+                [29.227332, 121.988507],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_92d23a5519d3c34998e10a096d24c576 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_2364cf25d7738677f1bf736c1a919d8b = $(`<div id="html_2364cf25d7738677f1bf736c1a919d8b" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00056<br>                 <b>时间:</b> 2024-06-15 08:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 78.7 cm<br>                 <b>水深:</b> 17.75 m<br>                 <b>航速:</b> 4.35 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行57<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0845             </div>             </div>`)[0];
+                popup_92d23a5519d3c34998e10a096d24c576.setContent(html_2364cf25d7738677f1bf736c1a919d8b);
+            
+        
+
+        circle_marker_2229fab57f52201293a423ceeedc2fff.bindPopup(popup_92d23a5519d3c34998e10a096d24c576)
+        ;
+
+        
+    
+    
+            circle_marker_2229fab57f52201293a423ceeedc2fff.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_755308dc8bc7b981794294f0025e7a75 = L.circleMarker(
+                [29.228078, 121.985692],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_cc6524d3e2c1e41000f2bd1adede51c4 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_5456967766e4714d43ff751833c2fc54 = $(`<div id="html_5456967766e4714d43ff751833c2fc54" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00057<br>                 <b>时间:</b> 2024-06-15 09:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 82.5 cm<br>                 <b>水深:</b> 7.75 m<br>                 <b>航速:</b> 5.57 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行58<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0900             </div>             </div>`)[0];
+                popup_cc6524d3e2c1e41000f2bd1adede51c4.setContent(html_5456967766e4714d43ff751833c2fc54);
+            
+        
+
+        circle_marker_755308dc8bc7b981794294f0025e7a75.bindPopup(popup_cc6524d3e2c1e41000f2bd1adede51c4)
+        ;
+
+        
+    
+    
+            circle_marker_755308dc8bc7b981794294f0025e7a75.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0febf79d352df2d08375c3ee4fe22eff = L.circleMarker(
+                [29.22434, 121.988909],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_571cea9b5a01a97349189cf025f411e3 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_b861626735e02fe811809e4e54d40b71 = $(`<div id="html_b861626735e02fe811809e4e54d40b71" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00058<br>                 <b>时间:</b> 2024-06-15 09:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 88.1 cm<br>                 <b>水深:</b> 5.34 m<br>                 <b>航速:</b> 7.77 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行59<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0915             </div>             </div>`)[0];
+                popup_571cea9b5a01a97349189cf025f411e3.setContent(html_b861626735e02fe811809e4e54d40b71);
+            
+        
+
+        circle_marker_0febf79d352df2d08375c3ee4fe22eff.bindPopup(popup_571cea9b5a01a97349189cf025f411e3)
+        ;
+
+        
+    
+    
+            circle_marker_0febf79d352df2d08375c3ee4fe22eff.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_8b4140940ba43a0b9eead396a5db06ff = L.circleMarker(
+                [29.220799, 121.994012],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_621629d1f4497b5c5a2568390fab8474 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_db4084392c5e854fb1ef3427fd446734 = $(`<div id="html_db4084392c5e854fb1ef3427fd446734" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00059<br>                 <b>时间:</b> 2024-06-15 09:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 93.7 cm<br>                 <b>水深:</b> 14.56 m<br>                 <b>航速:</b> 6.62 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行60<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0930             </div>             </div>`)[0];
+                popup_621629d1f4497b5c5a2568390fab8474.setContent(html_db4084392c5e854fb1ef3427fd446734);
+            
+        
+
+        circle_marker_8b4140940ba43a0b9eead396a5db06ff.bindPopup(popup_621629d1f4497b5c5a2568390fab8474)
+        ;
+
+        
+    
+    
+            circle_marker_8b4140940ba43a0b9eead396a5db06ff.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7e01cce54475b19be7552a2e2d1d93a1 = L.circleMarker(
+                [29.220329, 121.999707],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_80b33528edd19803b562d1ad49b93033 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_62ec2524f4ef2248ecfbcdf945ea1160 = $(`<div id="html_62ec2524f4ef2248ecfbcdf945ea1160" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>浙象渔088</b> (S003)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00060<br>                 <b>时间:</b> 2024-06-15 09:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 99.2 cm<br>                 <b>水深:</b> 13.64 m<br>                 <b>航速:</b> 8.33 kn<br>                 <b>建议:</b> 近岸区域请减速航行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行61<br>                 <b>备注:</b> 船队调度系统导出，船舶S003_0945             </div>             </div>`)[0];
+                popup_80b33528edd19803b562d1ad49b93033.setContent(html_62ec2524f4ef2248ecfbcdf945ea1160);
+            
+        
+
+        circle_marker_7e01cce54475b19be7552a2e2d1d93a1.bindPopup(popup_80b33528edd19803b562d1ad49b93033)
+        ;
+
+        
+    
+    
+            circle_marker_7e01cce54475b19be7552a2e2d1d93a1.bindTooltip(
+                `<div>
+                     浙象渔088 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_818623d7cebe0279bed9768173e8b10d = L.circleMarker(
+                [29.213535, 121.949893],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_c8a64470caf1b36eb81bb8dc2c92b909 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_06451d7f8fd8d632d71c67fe01333918 = $(`<div id="html_06451d7f8fd8d632d71c67fe01333918" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00061<br>                 <b>时间:</b> 2024-06-15 05:00<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 134.2 cm<br>                 <b>水深:</b> 5.3 m<br>                 <b>航速:</b> 2.44 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行62<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0500             </div>             </div>`)[0];
+                popup_c8a64470caf1b36eb81bb8dc2c92b909.setContent(html_06451d7f8fd8d632d71c67fe01333918);
+            
+        
+
+        circle_marker_818623d7cebe0279bed9768173e8b10d.bindPopup(popup_c8a64470caf1b36eb81bb8dc2c92b909)
+        ;
+
+        
+    
+    
+            circle_marker_818623d7cebe0279bed9768173e8b10d.bindTooltip(
+                `<div>
+                     养殖运输船01 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b71b5cfdd1c8b4bee9441f9f5ddc791f = L.circleMarker(
+                [29.209699, 121.952647],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_0a1c1fdf5c4f80c7cacebc7afb7ff776 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_2ef6ce42d6924a6879a04f1ee69f1ab6 = $(`<div id="html_2ef6ce42d6924a6879a04f1ee69f1ab6" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00062<br>                 <b>时间:</b> 2024-06-15 05:15<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 130.5 cm<br>                 <b>水深:</b> 16.19 m<br>                 <b>航速:</b> 6.69 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行63<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0515             </div>             </div>`)[0];
+                popup_0a1c1fdf5c4f80c7cacebc7afb7ff776.setContent(html_2ef6ce42d6924a6879a04f1ee69f1ab6);
+            
+        
+
+        circle_marker_b71b5cfdd1c8b4bee9441f9f5ddc791f.bindPopup(popup_0a1c1fdf5c4f80c7cacebc7afb7ff776)
+        ;
+
+        
+    
+    
+            circle_marker_b71b5cfdd1c8b4bee9441f9f5ddc791f.bindTooltip(
+                `<div>
+                     养殖运输船01 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_a0704e47029aa255dbcff2ff4b7ff8e9 = L.circleMarker(
+                [29.211099, 121.952374],
+                {"bubblingMouseEvents": true, "color": "#27ae60", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#27ae60", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_e39a1ea6b6126f5624a4285626b1052e = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_e10b2b5770acb5062e87339a2e2f3597 = $(`<div id="html_e10b2b5770acb5062e87339a2e2f3597" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00063<br>                 <b>时间:</b> 2024-06-15 05:30<br>                 <b>风险等级:</b> <span style="color:#27ae60;font-weight:bold">安全</span><br>                 <b>估算潮位:</b> 126.8 cm<br>                 <b>水深:</b> 11.8 m<br>                 <b>航速:</b> 5.69 kn<br>                 <b>建议:</b> 作业条件良好，按计划执行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行64<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0530             </div>             </div>`)[0];
+                popup_e39a1ea6b6126f5624a4285626b1052e.setContent(html_e10b2b5770acb5062e87339a2e2f3597);
+            
+        
+
+        circle_marker_a0704e47029aa255dbcff2ff4b7ff8e9.bindPopup(popup_e39a1ea6b6126f5624a4285626b1052e)
+        ;
+
+        
+    
+    
+            circle_marker_a0704e47029aa255dbcff2ff4b7ff8e9.bindTooltip(
+                `<div>
+                     养殖运输船01 安全
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_543062ad90abd893db72d7dd08bf21a4 = L.circleMarker(
+                [29.210081, 121.955966],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_dc33b58abc3c19e0fe597b6fd8d363d6 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_83cf78ec3f7dcd46474e336732986484 = $(`<div id="html_83cf78ec3f7dcd46474e336732986484" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00064<br>                 <b>时间:</b> 2024-06-15 05:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 123.1 cm<br>                 <b>水深:</b> 4.0 m<br>                 <b>航速:</b> 4.72 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行65<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0545             </div>             </div>`)[0];
+                popup_dc33b58abc3c19e0fe597b6fd8d363d6.setContent(html_83cf78ec3f7dcd46474e336732986484);
+            
+        
+
+        circle_marker_543062ad90abd893db72d7dd08bf21a4.bindPopup(popup_dc33b58abc3c19e0fe597b6fd8d363d6)
+        ;
+
+        
+    
+    
+            circle_marker_543062ad90abd893db72d7dd08bf21a4.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_01d0e82a430a7868c57e41d248e10637 = L.circleMarker(
+                [29.20609, 121.957355],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_1318de1219bcc09945280ac565b626e4 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d2b57f4905cb75de97807ea121e21570 = $(`<div id="html_d2b57f4905cb75de97807ea121e21570" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00065<br>                 <b>时间:</b> 2024-06-15 06:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 119.4 cm<br>                 <b>水深:</b> 10.76 m<br>                 <b>航速:</b> 7.78 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行66<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0600             </div>             </div>`)[0];
+                popup_1318de1219bcc09945280ac565b626e4.setContent(html_d2b57f4905cb75de97807ea121e21570);
+            
+        
+
+        circle_marker_01d0e82a430a7868c57e41d248e10637.bindPopup(popup_1318de1219bcc09945280ac565b626e4)
+        ;
+
+        
+    
+    
+            circle_marker_01d0e82a430a7868c57e41d248e10637.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_0aff121d1c166328d4adda011353b3bd = L.circleMarker(
+                [29.206899, 121.952401],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_6f6db7ad1b017953df30aed52e1dcc20 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_6732f2cdae8260b6ad4444f7f22adb12 = $(`<div id="html_6732f2cdae8260b6ad4444f7f22adb12" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00066<br>                 <b>时间:</b> 2024-06-15 06:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 115.7 cm<br>                 <b>水深:</b> 4.87 m<br>                 <b>航速:</b> 8.03 kn<br>                 <b>建议:</b> 近岸区域请减速航行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行67<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0615             </div>             </div>`)[0];
+                popup_6f6db7ad1b017953df30aed52e1dcc20.setContent(html_6732f2cdae8260b6ad4444f7f22adb12);
+            
+        
+
+        circle_marker_0aff121d1c166328d4adda011353b3bd.bindPopup(popup_6f6db7ad1b017953df30aed52e1dcc20)
+        ;
+
+        
+    
+    
+            circle_marker_0aff121d1c166328d4adda011353b3bd.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ba51b0d1f22d597756abc6738d3c914f = L.circleMarker(
+                [29.211703, 121.956589],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_3a96dd7ebeee9a20331c66eb37f8ea0a = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_17b987d815cfb190bb1149519af4ed67 = $(`<div id="html_17b987d815cfb190bb1149519af4ed67" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00067<br>                 <b>时间:</b> 2024-06-15 06:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 112.0 cm<br>                 <b>水深:</b> 3.89 m<br>                 <b>航速:</b> 5.51 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行68<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0630             </div>             </div>`)[0];
+                popup_3a96dd7ebeee9a20331c66eb37f8ea0a.setContent(html_17b987d815cfb190bb1149519af4ed67);
+            
+        
+
+        circle_marker_ba51b0d1f22d597756abc6738d3c914f.bindPopup(popup_3a96dd7ebeee9a20331c66eb37f8ea0a)
+        ;
+
+        
+    
+    
+            circle_marker_ba51b0d1f22d597756abc6738d3c914f.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_414668dda6790d7a78149c81405a4730 = L.circleMarker(
+                [29.214512, 121.96355],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_eb6dee79b211caaadf00f6cb8d8a3b3f = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_0cd089dc1a22a93a8759fba5017b0c5d = $(`<div id="html_0cd089dc1a22a93a8759fba5017b0c5d" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00068<br>                 <b>时间:</b> 2024-06-15 06:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 108.3 cm<br>                 <b>水深:</b> 11.9 m<br>                 <b>航速:</b> 7.88 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行69<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0645             </div>             </div>`)[0];
+                popup_eb6dee79b211caaadf00f6cb8d8a3b3f.setContent(html_0cd089dc1a22a93a8759fba5017b0c5d);
+            
+        
+
+        circle_marker_414668dda6790d7a78149c81405a4730.bindPopup(popup_eb6dee79b211caaadf00f6cb8d8a3b3f)
+        ;
+
+        
+    
+    
+            circle_marker_414668dda6790d7a78149c81405a4730.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f6a6f67a08b184371ee2dcee21b11208 = L.circleMarker(
+                [29.21402, 121.969435],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_7943908be7e3ca2e61263ffe45956f4f = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_bf19fc6dacb90d0979d0a16b1e927e29 = $(`<div id="html_bf19fc6dacb90d0979d0a16b1e927e29" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00069<br>                 <b>时间:</b> 2024-06-15 07:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 104.6 cm<br>                 <b>水深:</b> 14.44 m<br>                 <b>航速:</b> 7.92 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行70<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0700             </div>             </div>`)[0];
+                popup_7943908be7e3ca2e61263ffe45956f4f.setContent(html_bf19fc6dacb90d0979d0a16b1e927e29);
+            
+        
+
+        circle_marker_f6a6f67a08b184371ee2dcee21b11208.bindPopup(popup_7943908be7e3ca2e61263ffe45956f4f)
+        ;
+
+        
+    
+    
+            circle_marker_f6a6f67a08b184371ee2dcee21b11208.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ffec1a027be6b1d67e487965ec15e0d4 = L.circleMarker(
+                [29.212442, 121.969236],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_af7487af4d7b8c1ff0aaf795c11cc3be = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_6d1f2c3c1e717e3022757748db33e356 = $(`<div id="html_6d1f2c3c1e717e3022757748db33e356" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00070<br>                 <b>时间:</b> 2024-06-15 07:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 100.9 cm<br>                 <b>水深:</b> 12.9 m<br>                 <b>航速:</b> 8.09 kn<br>                 <b>建议:</b> 近岸区域请减速航行<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行71<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0715             </div>             </div>`)[0];
+                popup_af7487af4d7b8c1ff0aaf795c11cc3be.setContent(html_6d1f2c3c1e717e3022757748db33e356);
+            
+        
+
+        circle_marker_ffec1a027be6b1d67e487965ec15e0d4.bindPopup(popup_af7487af4d7b8c1ff0aaf795c11cc3be)
+        ;
+
+        
+    
+    
+            circle_marker_ffec1a027be6b1d67e487965ec15e0d4.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_788cac881d955463446f74c619e5fc18 = L.circleMarker(
+                [29.217365, 121.968106],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_df20c963eda9f98318e7878193312fe8 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_115962d2a75719809d851b2fb34a0b4a = $(`<div id="html_115962d2a75719809d851b2fb34a0b4a" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00071<br>                 <b>时间:</b> 2024-06-15 07:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 97.2 cm<br>                 <b>水深:</b> 9.57 m<br>                 <b>航速:</b> 5.11 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行72<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0730             </div>             </div>`)[0];
+                popup_df20c963eda9f98318e7878193312fe8.setContent(html_115962d2a75719809d851b2fb34a0b4a);
+            
+        
+
+        circle_marker_788cac881d955463446f74c619e5fc18.bindPopup(popup_df20c963eda9f98318e7878193312fe8)
+        ;
+
+        
+    
+    
+            circle_marker_788cac881d955463446f74c619e5fc18.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4ad3f0376da3b3b2fd0ee7d43a3d8a9c = L.circleMarker(
+                [29.221079, 121.968512],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_641f640d9975fceb11e1a234d1b96abd = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_caab7e12a4128aa6daf13cedb64afd44 = $(`<div id="html_caab7e12a4128aa6daf13cedb64afd44" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00072<br>                 <b>时间:</b> 2024-06-15 07:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 93.5 cm<br>                 <b>水深:</b> 17.41 m<br>                 <b>航速:</b> 6.8 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行73<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0745             </div>             </div>`)[0];
+                popup_641f640d9975fceb11e1a234d1b96abd.setContent(html_caab7e12a4128aa6daf13cedb64afd44);
+            
+        
+
+        circle_marker_4ad3f0376da3b3b2fd0ee7d43a3d8a9c.bindPopup(popup_641f640d9975fceb11e1a234d1b96abd)
+        ;
+
+        
+    
+    
+            circle_marker_4ad3f0376da3b3b2fd0ee7d43a3d8a9c.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ec3784d135747951b46d09ab03d3947d = L.circleMarker(
+                [29.219529, 121.969005],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_3f3ddb6973dd68ca18725226c1c09d55 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_0a433c2423590d39644f353c2c96b2b0 = $(`<div id="html_0a433c2423590d39644f353c2c96b2b0" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00073<br>                 <b>时间:</b> 2024-06-15 08:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 89.8 cm<br>                 <b>水深:</b> 14.3 m<br>                 <b>航速:</b> 2.76 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行74<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0800             </div>             </div>`)[0];
+                popup_3f3ddb6973dd68ca18725226c1c09d55.setContent(html_0a433c2423590d39644f353c2c96b2b0);
+            
+        
+
+        circle_marker_ec3784d135747951b46d09ab03d3947d.bindPopup(popup_3f3ddb6973dd68ca18725226c1c09d55)
+        ;
+
+        
+    
+    
+            circle_marker_ec3784d135747951b46d09ab03d3947d.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ed3bc5d5f137ed4f712b0d520707458e = L.circleMarker(
+                [29.220949, 121.968351],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_8eada4195f8e651c5d35052b75e1d3a3 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_02b8050b7478c1483ec9f02ede10f75a = $(`<div id="html_02b8050b7478c1483ec9f02ede10f75a" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00074<br>                 <b>时间:</b> 2024-06-15 08:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 86.1 cm<br>                 <b>水深:</b> 11.69 m<br>                 <b>航速:</b> 5.77 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行75<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0815             </div>             </div>`)[0];
+                popup_8eada4195f8e651c5d35052b75e1d3a3.setContent(html_02b8050b7478c1483ec9f02ede10f75a);
+            
+        
+
+        circle_marker_ed3bc5d5f137ed4f712b0d520707458e.bindPopup(popup_8eada4195f8e651c5d35052b75e1d3a3)
+        ;
+
+        
+    
+    
+            circle_marker_ed3bc5d5f137ed4f712b0d520707458e.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ef2caaf01ef484c11380c91ed9c4e4d7 = L.circleMarker(
+                [29.223718, 121.965839],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_2ace896481d14d898bbdf6c7604aab15 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_d7a98df88152a71205bf0962a353d607 = $(`<div id="html_d7a98df88152a71205bf0962a353d607" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00075<br>                 <b>时间:</b> 2024-06-15 08:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 82.4 cm<br>                 <b>水深:</b> 11.92 m<br>                 <b>航速:</b> 3.4 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行76<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0830             </div>             </div>`)[0];
+                popup_2ace896481d14d898bbdf6c7604aab15.setContent(html_d7a98df88152a71205bf0962a353d607);
+            
+        
+
+        circle_marker_ef2caaf01ef484c11380c91ed9c4e4d7.bindPopup(popup_2ace896481d14d898bbdf6c7604aab15)
+        ;
+
+        
+    
+    
+            circle_marker_ef2caaf01ef484c11380c91ed9c4e4d7.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_202bb7702350defbe2d588673e0aeaa1 = L.circleMarker(
+                [29.225584, 121.969015],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_cb636c086f4fc7ce1a4af80504b963b4 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_ffaa5408f12579344ec3b5a23e2ea00c = $(`<div id="html_ffaa5408f12579344ec3b5a23e2ea00c" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00076<br>                 <b>时间:</b> 2024-06-15 08:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 78.7 cm<br>                 <b>水深:</b> 16.73 m<br>                 <b>航速:</b> 6.7 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行77<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0845             </div>             </div>`)[0];
+                popup_cb636c086f4fc7ce1a4af80504b963b4.setContent(html_ffaa5408f12579344ec3b5a23e2ea00c);
+            
+        
+
+        circle_marker_202bb7702350defbe2d588673e0aeaa1.bindPopup(popup_cb636c086f4fc7ce1a4af80504b963b4)
+        ;
+
+        
+    
+    
+            circle_marker_202bb7702350defbe2d588673e0aeaa1.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_e5b9324f3b86fe79fea3bfd87b288172 = L.circleMarker(
+                [29.223911, 121.971564],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_12bfe2e85601e207d8d4d87b503ab881 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_4914eb6316bbed3fc126e70d21848633 = $(`<div id="html_4914eb6316bbed3fc126e70d21848633" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00077<br>                 <b>时间:</b> 2024-06-15 09:00<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 82.5 cm<br>                 <b>水深:</b> 9.95 m<br>                 <b>航速:</b> 6.85 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行78<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0900             </div>             </div>`)[0];
+                popup_12bfe2e85601e207d8d4d87b503ab881.setContent(html_4914eb6316bbed3fc126e70d21848633);
+            
+        
+
+        circle_marker_e5b9324f3b86fe79fea3bfd87b288172.bindPopup(popup_12bfe2e85601e207d8d4d87b503ab881)
+        ;
+
+        
+    
+    
+            circle_marker_e5b9324f3b86fe79fea3bfd87b288172.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9221e56a7f9e62d995c4d2de454aa2b9 = L.circleMarker(
+                [29.224117, 121.968937],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_ddfe544c39037d235e9f3b2cfe440f01 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_691fb5e346ba349182f7232b7d40c307 = $(`<div id="html_691fb5e346ba349182f7232b7d40c307" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00078<br>                 <b>时间:</b> 2024-06-15 09:15<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 88.1 cm<br>                 <b>水深:</b> 6.94 m<br>                 <b>航速:</b> 7.65 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行79<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0915             </div>             </div>`)[0];
+                popup_ddfe544c39037d235e9f3b2cfe440f01.setContent(html_691fb5e346ba349182f7232b7d40c307);
+            
+        
+
+        circle_marker_9221e56a7f9e62d995c4d2de454aa2b9.bindPopup(popup_ddfe544c39037d235e9f3b2cfe440f01)
+        ;
+
+        
+    
+    
+            circle_marker_9221e56a7f9e62d995c4d2de454aa2b9.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9c28554d2fcc6174bf7db3f5997a233a = L.circleMarker(
+                [29.229654, 121.96826],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_edcea2205a63f1f7720f3367ab809d70 = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_603306fd8db01a7c11dd967a9b89cf10 = $(`<div id="html_603306fd8db01a7c11dd967a9b89cf10" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00079<br>                 <b>时间:</b> 2024-06-15 09:30<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 93.7 cm<br>                 <b>水深:</b> 9.76 m<br>                 <b>航速:</b> 6.28 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行80<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0930             </div>             </div>`)[0];
+                popup_edcea2205a63f1f7720f3367ab809d70.setContent(html_603306fd8db01a7c11dd967a9b89cf10);
+            
+        
+
+        circle_marker_9c28554d2fcc6174bf7db3f5997a233a.bindPopup(popup_edcea2205a63f1f7720f3367ab809d70)
+        ;
+
+        
+    
+    
+            circle_marker_9c28554d2fcc6174bf7db3f5997a233a.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b25d31b56b8b2cce853cb95b4b17fdea = L.circleMarker(
+                [29.23084, 121.967947],
+                {"bubblingMouseEvents": true, "color": "#f1c40f", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "#f1c40f", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 7, "stroke": true, "weight": 3}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+        var popup_8169d5632bb5711dc53bf68e5894833a = L.popup({
+  "maxWidth": 260,
+});
+
+        
+            
+                var html_aadf2989267d666a063c935cfb2961bc = $(`<div id="html_aadf2989267d666a063c935cfb2961bc" style="width: 100.0%; height: 100.0%;">             <div style="font-size:12px;min-width:180px">                 <b>养殖运输船01</b> (S004)<br>                 <hr style="margin:4px 0">                 <b>记录ID:</b> REC-00080<br>                 <b>时间:</b> 2024-06-15 09:45<br>                 <b>风险等级:</b> <span style="color:#f1c40f;font-weight:bold">注意</span><br>                 <b>估算潮位:</b> 99.2 cm<br>                 <b>水深:</b> 13.29 m<br>                 <b>航速:</b> 4.68 kn<br>                 <b>建议:</b> 注意观察潮位和水深变化，谨慎作业<br>                 <hr style="margin:4px 0">                 <b>来源:</b> AIS轨迹_20240615.csv 行81<br>                 <b>备注:</b> 船队调度系统导出，船舶S004_0945             </div>             </div>`)[0];
+                popup_8169d5632bb5711dc53bf68e5894833a.setContent(html_aadf2989267d666a063c935cfb2961bc);
+            
+        
+
+        circle_marker_b25d31b56b8b2cce853cb95b4b17fdea.bindPopup(popup_8169d5632bb5711dc53bf68e5894833a)
+        ;
+
+        
+    
+    
+            circle_marker_b25d31b56b8b2cce853cb95b4b17fdea.bindTooltip(
+                `<div>
+                     养殖运输船01 注意
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var marker_dff6e4b5e8434046f730279577885814 = L.marker(
+                [29.29, 121.955],
+                {
+}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+            var icon_413d8cb8041d1d0be42cbeb8d078585d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ca049e9cdee4f9f58ee2ca736b6461c7 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_a3a613ddeda3ec0fd148f1182bd4eb41 = $(`<div id="html_a3a613ddeda3ec0fd148f1182bd4eb41" style="width: 100.0%; height: 100.0%;">                 <div style="font-size:12px">                     <b>东港养殖场一号站</b> (T001)<br>                     记录数: 6<br>                     异常: <span style="color:#27ae60;font-weight:bold">0</span> 条                 </div>                 </div>`)[0];
+                popup_ca049e9cdee4f9f58ee2ca736b6461c7.setContent(html_a3a613ddeda3ec0fd148f1182bd4eb41);
+            
+        
+
+        marker_dff6e4b5e8434046f730279577885814.bindPopup(popup_ca049e9cdee4f9f58ee2ca736b6461c7)
+        ;
+
+        
+    
+    
+            marker_dff6e4b5e8434046f730279577885814.bindTooltip(
+                `<div>
+                     东港养殖场一号站 (正常)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_dff6e4b5e8434046f730279577885814.setIcon(icon_413d8cb8041d1d0be42cbeb8d078585d);
+            
+    
+            var marker_3904917aca97b3cd66aab9408d83604a = L.marker(
+                [29.285, 121.948],
+                {
+}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+            var icon_172779fbbca9271771a8998c4a9f923d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cfb8c4e0797cd915fb0a23e0e3a28e54 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_e2ad39ed17654b365cc6d4eede990541 = $(`<div id="html_e2ad39ed17654b365cc6d4eede990541" style="width: 100.0%; height: 100.0%;">                 <div style="font-size:12px">                     <b>东港养殖场二号站</b> (T002)<br>                     记录数: 6<br>                     异常: <span style="color:#e74c3c;font-weight:bold">2</span> 条                 </div>                 </div>`)[0];
+                popup_cfb8c4e0797cd915fb0a23e0e3a28e54.setContent(html_e2ad39ed17654b365cc6d4eede990541);
+            
+        
+
+        marker_3904917aca97b3cd66aab9408d83604a.bindPopup(popup_cfb8c4e0797cd915fb0a23e0e3a28e54)
+        ;
+
+        
+    
+    
+            marker_3904917aca97b3cd66aab9408d83604a.bindTooltip(
+                `<div>
+                     东港养殖场二号站 (异常)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_3904917aca97b3cd66aab9408d83604a.setIcon(icon_172779fbbca9271771a8998c4a9f923d);
+            
+    
+            var marker_824b2a9299ec61af7b9e73f64d804824 = L.marker(
+                [29.27, 121.97],
+                {
+}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+            var icon_edb350568ac2ff8907b02cdd6af3c5ef = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_36c7ca6e98c26d4b031df1c5daf97e63 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_fafd85142c2c886b3266a65de00a73da = $(`<div id="html_fafd85142c2c886b3266a65de00a73da" style="width: 100.0%; height: 100.0%;">                 <div style="font-size:12px">                     <b>南岛礁观测站</b> (T003)<br>                     记录数: 6<br>                     异常: <span style="color:#e74c3c;font-weight:bold">2</span> 条                 </div>                 </div>`)[0];
+                popup_36c7ca6e98c26d4b031df1c5daf97e63.setContent(html_fafd85142c2c886b3266a65de00a73da);
+            
+        
+
+        marker_824b2a9299ec61af7b9e73f64d804824.bindPopup(popup_36c7ca6e98c26d4b031df1c5daf97e63)
+        ;
+
+        
+    
+    
+            marker_824b2a9299ec61af7b9e73f64d804824.bindTooltip(
+                `<div>
+                     南岛礁观测站 (异常)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_824b2a9299ec61af7b9e73f64d804824.setIcon(icon_edb350568ac2ff8907b02cdd6af3c5ef);
+            
+    
+            var marker_8c1daabc05532545eeae22496f4c9404 = L.marker(
+                [29.275, 121.935],
+                {
+}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+            var icon_13ef9a3925a7582b27c65dbfe52bb7b9 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ae006346024ebf4da4859908040fed86 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_2430674549103beda967d47906ac7342 = $(`<div id="html_2430674549103beda967d47906ac7342" style="width: 100.0%; height: 100.0%;">                 <div style="font-size:12px">                     <b>西湾深水站</b> (T004)<br>                     记录数: 6<br>                     异常: <span style="color:#27ae60;font-weight:bold">0</span> 条                 </div>                 </div>`)[0];
+                popup_ae006346024ebf4da4859908040fed86.setContent(html_2430674549103beda967d47906ac7342);
+            
+        
+
+        marker_8c1daabc05532545eeae22496f4c9404.bindPopup(popup_ae006346024ebf4da4859908040fed86)
+        ;
+
+        
+    
+    
+            marker_8c1daabc05532545eeae22496f4c9404.bindTooltip(
+                `<div>
+                     西湾深水站 (正常)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_8c1daabc05532545eeae22496f4c9404.setIcon(icon_13ef9a3925a7582b27c65dbfe52bb7b9);
+            
+    
+            var marker_fa6392e3d64a2f45731ecd3ea23dc351 = L.marker(
+                [29.3, 121.96],
+                {
+}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+    
+            var icon_ad5dd6e5cf686a766d6f3df1b044c43b = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "blue",
+  "iconColor": "white",
+  "icon": "tint",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8b920a3af0fb2f5c76e228f379d9ee13 = L.popup({
+  "maxWidth": "100%",
+});
+
+        
+            
+                var html_897b95fb592d09951d6fe27123bcb78f = $(`<div id="html_897b95fb592d09951d6fe27123bcb78f" style="width: 100.0%; height: 100.0%;">                 <div style="font-size:12px">                     <b>北堤外海站</b> (T005)<br>                     记录数: 6<br>                     异常: <span style="color:#27ae60;font-weight:bold">0</span> 条                 </div>                 </div>`)[0];
+                popup_8b920a3af0fb2f5c76e228f379d9ee13.setContent(html_897b95fb592d09951d6fe27123bcb78f);
+            
+        
+
+        marker_fa6392e3d64a2f45731ecd3ea23dc351.bindPopup(popup_8b920a3af0fb2f5c76e228f379d9ee13)
+        ;
+
+        
+    
+    
+            marker_fa6392e3d64a2f45731ecd3ea23dc351.bindTooltip(
+                `<div>
+                     北堤外海站 (正常)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_fa6392e3d64a2f45731ecd3ea23dc351.setIcon(icon_ad5dd6e5cf686a766d6f3df1b044c43b);
+            
+    
+            var tile_layer_ebd89631ff915a1777594f29caf6f3fa = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors", "detect_retina": false, "max_native_zoom": 19, "max_zoom": 19, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            );
+            var mini_map_c4e874b55280fd4c1ffaea1a90fddc6d = new L.Control.MiniMap(
+                tile_layer_ebd89631ff915a1777594f29caf6f3fa,
+                {
+  "position": "bottomright",
+  "width": 150,
+  "height": 150,
+  "collapsedWidth": 25,
+  "collapsedHeight": 25,
+  "zoomLevelOffset": -5,
+  "centerFixed": false,
+  "zoomAnimation": false,
+  "toggleDisplay": false,
+  "autoToggleDisplay": false,
+  "minimized": false,
+}
+            );
+            map_31968f174f8b3231a8f39b9a9c447f80.addControl(mini_map_c4e874b55280fd4c1ffaea1a90fddc6d);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_31968f174f8b3231a8f39b9a9c447f80);
+        
+</script>
+</html>
