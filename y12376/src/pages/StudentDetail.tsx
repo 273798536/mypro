@@ -4,19 +4,18 @@ import { Card, Descriptions, Table, Tag, Button, Tabs, Timeline, Badge, Alert } 
 import { ArrowLeft, Edit, Calendar, Clock, AlertTriangle, BookOpen, User, GraduationCap } from 'lucide-react';
 import { useAppStore } from '../store';
 import RiskTag from '../components/RiskTag';
-import { mockPackages, mockLeaves, mockEvaluations } from '../data/mockData';
 import type { TimelineEventStatus, LeaveRecord } from '../types';
 
 const StudentDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { alerts, timelineEvents, loadTimelineEvents } = useAppStore();
+  const { alerts, packages, leaves, evaluations, timelineEvents, loadTimelineEvents } = useAppStore();
 
   const alert = alerts.find(a => a.studentId === id);
   const student = alert?.student;
-  const packages = mockPackages.filter(p => p.studentId === id);
-  const leaves = mockLeaves.filter(l => l.studentId === id);
-  const evaluations = mockEvaluations.filter(e => e.studentId === id);
+  const studentPackages = packages.filter(p => p.studentId === id);
+  const studentLeaves = leaves.filter(l => l.studentId === id);
+  const studentEvaluations = evaluations.filter(e => e.studentId === id);
 
   useEffect(() => {
     if (id) {
@@ -101,17 +100,17 @@ const StudentDetail: React.FC = () => {
     {
       key: '2',
       label: '课包记录',
-      children: <Table columns={packageColumns} dataSource={packages} rowKey="id" pagination={false} />,
+      children: <Table columns={packageColumns} dataSource={studentPackages} rowKey="id" pagination={false} />,
     },
     {
       key: '3',
       label: '请假补课',
-      children: <Table columns={leaveColumns} dataSource={leaves} rowKey="id" pagination={false} />,
+      children: <Table columns={leaveColumns} dataSource={studentLeaves} rowKey="id" pagination={false} />,
     },
     {
       key: '4',
       label: '测评记录',
-      children: <Table columns={evalColumns} dataSource={evaluations} rowKey="id" pagination={false} />,
+      children: <Table columns={evalColumns} dataSource={studentEvaluations} rowKey="id" pagination={false} />,
     },
   ];
 

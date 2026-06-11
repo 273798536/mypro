@@ -1,9 +1,13 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import type { RenewalAlert, OperationLog, AlertFilters, TimelineEvent } from '../types';
-import { mockAlerts, mockLogs, getTimelineEvents } from '../data/mockData';
+import type { RenewalAlert, OperationLog, AlertFilters, TimelineEvent, Student, CoursePackage, LeaveRecord, Evaluation } from '../types';
+import { mockAlerts, mockLogs, mockStudents, mockPackages, mockLeaves, mockEvaluations, getTimelineEvents } from '../data/mockData';
 
 interface AppState {
+  students: Student[];
+  packages: CoursePackage[];
+  leaves: LeaveRecord[];
+  evaluations: Evaluation[];
   alerts: RenewalAlert[];
   logs: OperationLog[];
   filters: AlertFilters;
@@ -19,6 +23,10 @@ interface AppState {
 
 export const useAppStore = create<AppState>()(
   devtools((set, get) => ({
+    students: mockStudents,
+    packages: mockPackages,
+    leaves: mockLeaves,
+    evaluations: mockEvaluations,
     alerts: mockAlerts,
     logs: mockLogs,
     filters: {},
@@ -57,6 +65,7 @@ export const useAppStore = create<AppState>()(
         if (filters.riskLevel && alert.riskLevel !== filters.riskLevel) return false;
         if (filters.processStatus && alert.processStatus !== filters.processStatus) return false;
         if (filters.hasConflict !== undefined && alert.hasConflict !== filters.hasConflict) return false;
+        if (filters.courseType && alert.student.courseType !== filters.courseType) return false;
         if (filters.keyword) {
           const keyword = filters.keyword.toLowerCase();
           const matchName = alert.student.name.toLowerCase().includes(keyword);

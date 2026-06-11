@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Card,
   Checkbox,
@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import { Download, FileSpreadsheet, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import dayjs from 'dayjs';
 import { useAppStore } from '../store';
 import RiskTag from '../components/RiskTag';
 import { exportFields } from '../data/mockData';
@@ -28,13 +29,26 @@ const { Group: CheckboxGroup } = Checkbox;
 const Export: React.FC = () => {
   const { alerts, getFilteredAlerts, addLog } = useAppStore();
   const [selectedFields, setSelectedFields] = useState<string[]>(exportFields.map(f => f.key));
-  const [dateRange, setDateRange] = useState<any>(null);
+  const [dateRange, setDateRange] = useState<[dayjs.Dayjs | null, dayjs.Dayjs | null] | null>(null);
   const [fileFormat, setFileFormat] = useState<'xlsx' | 'csv'>('xlsx');
   const [includeConflicts, setIncludeConflicts] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const previewData = alerts.slice(0, 5);
+  const dataToExport = useMemo(() => {
+    let data = includeConflicts ? alerts.filter(a => a.hasConflict) : getFilteredAlerts();
+    if (dateRange && dateRange[0] && dateRange[1]) {
+      const start = dateRange[0].startOf('day');
+      const end = dateRange[1].endOf('day');
+      data = data.filter(a => {
+        const t = dayjs(a.updateTime);
+        return !t.isBefore(start) && !t.isAfter(end);
+      });
+    }
+    return data;
+  }, [alerts, includeConflicts, getFilteredAlerts, dateRange]);
+
+  const previewData = dataToExport.slice(0, 5);
 
   const handleExport = () => {
     if (selectedFields.length === 0) {
@@ -45,9 +59,7 @@ const Export: React.FC = () => {
     setExporting(true);
     setProgress(0);
 
-    const data = includeConflicts ? alerts.filter(a => a.hasConflict) : getFilteredAlerts();
-
-    const exportData = data.map(item => {
+    const exportData = dataToExport.map(item => {
       const row: Record<string, any> = {};
       selectedFields.forEach(key => {
         const keys = key.split('.');
@@ -60,13 +72,10 @@ const Export: React.FC = () => {
       return row;
     });
 
-    const headerRow: Record<string, string> = {};
-    selectedFields.forEach(key => {
+    const headerLabels = selectedFields.map(key => {
       const field = exportFields.find(f => f.key === key);
-      headerRow[key] = field?.label || key;
+      return field?.label || key;
     });
-
-    const finalData = [headerRow, ...exportData];
 
     let currentProgress = 0;
     const interval = setInterval(() => {
@@ -75,33 +84,60 @@ const Export: React.FC = () => {
       if (currentProgress >= 100) {
         clearInterval(interval);
 
-        const ws = XLSX.utils.json_to_sheet(finalData, { skipHeader: true });
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, '续费预警数据');
+        const fileName = `续费预警数据_${new Date().toISOString().slice(0, 10)}`;
 
-        const fileName = `续费预警数据_${new Date().toISOString().slice(0, 10)}.${fileFormat}`;
-        XLSX.writeFile(wb, fileName);
+        if (fileFormat === 'csv') {
+          const headerRow = headerLabels.join(',');
+          const rows = exportData.map(row =>
+            selectedFields.map(key => {
+              const val = String(row[key] ?? '');
+              return val.includes(',') || val.includes('"') || val.includes('\n')
+                ? `"${val.replace(/"/g, '""')}"`
+                : val;
+            }).join(',')
+          );
+          const csvContent = '\uFEFF' + [headerRow, ...rows].join('\n');
+          const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${fileName}.csv`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } else {
+          const headerRow: Record<string, string> = {};
+          selectedFields.forEach((key, i) => {
+            headerRow[key] = headerLabels[i];
+          });
+          const finalData = [headerRow, ...exportData];
+          const ws = XLSX.utils.json_to_sheet(finalData, { skipHeader: true });
+          const wb = XLSX.utils.book_new();
+          XLSX.utils.book_append_sheet(wb, ws, '续费预警数据');
+          XLSX.writeFile(wb, `${fileName}.xlsx`);
+        }
 
         addLog({
           operator: '教务管理员',
-          action: '导出数据清单',
+          action: `导出数据清单（${fileFormat.toUpperCase()}）`,
           targetId: 'export',
           targetType: 'system',
         });
 
-        message.success(`导出成功：${fileName}`);
+        message.success(`导出成功：${dataToExport.length} 条记录`);
         setExporting(false);
         setProgress(0);
       }
     }, 200);
   };
 
-  const stats = {
-    total: alerts.length,
-    withConflict: alerts.filter(a => a.hasConflict).length,
-    highRisk: alerts.filter(a => a.riskLevel === 'high' || a.riskLevel === 'critical').length,
-    pending: alerts.filter(a => a.processStatus === 'pending').length,
-  };
+  const stats = useMemo(() => ({
+    total: dataToExport.length,
+    withConflict: dataToExport.filter(a => a.hasConflict).length,
+    highRisk: dataToExport.filter(a => a.riskLevel === 'high' || a.riskLevel === 'critical').length,
+    pending: dataToExport.filter(a => a.processStatus === 'pending').length,
+  }), [dataToExport]);
 
   const previewColumns = selectedFields.map(key => {
     const field = exportFields.find(f => f.key === key);
@@ -126,7 +162,7 @@ const Export: React.FC = () => {
             <Statistic
               title={
                 <span className="flex items-center gap-2 text-gray-600">
-                  <FileSpreadsheet size={16} /> 总记录数
+                  <FileSpreadsheet size={16} /> 导出记录数
                 </span>
               }
               value={stats.total}
@@ -197,12 +233,17 @@ const Export: React.FC = () => {
           </div>
 
           <div>
-            <h4 className="font-medium mb-3">时间范围（可选）</h4>
+            <h4 className="font-medium mb-3">时间范围（按更新时间筛选，可选）</h4>
             <RangePicker
               value={dateRange}
-              onChange={setDateRange}
+              onChange={(dates) => setDateRange(dates as [dayjs.Dayjs | null, dayjs.Dayjs | null] | null)}
               style={{ width: 300 }}
             />
+            {dateRange && dateRange[0] && dateRange[1] && (
+              <span className="ml-3 text-sm text-gray-500">
+                将筛选 {dateRange[0].format('YYYY-MM-DD')} 至 {dateRange[1].format('YYYY-MM-DD')} 期间更新的记录
+              </span>
+            )}
           </div>
 
           <div>
@@ -269,7 +310,7 @@ const Export: React.FC = () => {
         </div>
       </Card>
 
-      <Card title="数据预览（前5条）">
+      <Card title={`数据预览（前5条，共 ${dataToExport.length} 条）`}>
         <Table
           columns={previewColumns}
           dataSource={previewData}
