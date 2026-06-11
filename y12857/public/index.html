@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>船舶 AIS 漂移清洗系统</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>船舶 AIS 漂移清洗系统</h1>
+    <div class="header-actions">
+      <button onclick="loadBatches()" class="btn btn-secondary">刷新</button>
+      <button onclick="showImportModal()" class="btn btn-primary">+ 新建导入</button>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section class="panel">
+      <h2>处理批次</h2>
+      <div id="batchList" class="batch-list">
+        <p class="empty-tip">加载中...</p>
+      </div>
+    </section>
+
+    <section class="panel" id="detailPanel" style="display:none;">
+      <div class="panel-header">
+        <h2 id="batchTitle">批次详情</h2>
+        <div class="panel-actions">
+          <button onclick="runCleaning()" id="btnClean" class="btn btn-primary">开始清洗</button>
+          <button onclick="showReviewModal()" id="btnReview" class="btn btn-secondary">批量复核</button>
+          <button onclick="exportCsv()" class="btn btn-success">导出CSV</button>
+          <button onclick="exportJson()" class="btn btn-secondary">导出JSON</button>
+        </div>
+      </div>
+
+      <div class="batch-stats" id="batchStats"></div>
+
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('anomalies')">异常列表</button>
+        <button class="tab-btn" onclick="switchTab('waterGaps')">水质缺口</button>
+        <button class="tab-btn" onclick="switchTab('reviews')">复核记录</button>
+      </div>
+
+      <div id="tab-anomalies" class="tab-content">
+        <div class="filter-bar">
+          <label>风险等级：</label>
+          <select id="riskFilter" onchange="loadAnomalies()">
+            <option value="">全部</option>
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+        </div>
+        <div id="anomalyList" class="anomaly-list"></div>
+      </div>
+
+      <div id="tab-waterGaps" class="tab-content" style="display:none;">
+        <div id="waterGapList" class="water-gap-list"></div>
+      </div>
+
+      <div id="tab-reviews" class="tab-content" style="display:none;">
+        <div id="reviewList" class="review-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="importModal" class="modal">
+    <div class="modal-content">
+      <h3>新建导入批次</h3>
+      <form id="importForm">
+        <div class="form-group">
+          <label>批次名称 *</label>
+          <input type="text" id="batchName" required placeholder="例如：2026-06-12 东海浮标监测">
+        </div>
+        <div class="form-group">
+          <label>AIS 轨迹 CSV</label>
+          <input type="file" id="aisFile" accept=".csv">
+          <small class="hint">列：mmsi, ship_name, timestamp, lon, lat, speed, course</small>
+        </div>
+        <div class="form-group">
+          <label>水质记录 CSV</label>
+          <input type="file" id="waterFile" accept=".csv">
+          <small class="hint">列：station_id, timestamp, lon, lat, ph, dissolved_oxygen, turbidity</small>
+        </div>
+        <div class="form-group">
+          <label>备注</label>
+          <textarea id="batchNotes" rows="2"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" onclick="closeModal('importModal')" class="btn btn-secondary">取消</button>
+          <button type="submit" class="btn btn-primary">导入</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="reviewModal" class="modal">
+    <div class="modal-content">
+      <h3>添加复核意见</h3>
+      <form id="reviewForm">
+        <input type="hidden" id="reviewAnomalyId">
+        <div class="form-group">
+          <label>复核人</label>
+          <input type="text" id="reviewer" placeholder="潜水教练">
+        </div>
+        <div class="form-group">
+          <label>处理动作</label>
+          <select id="reviewAction">
+            <option value="">无</option>
+            <option value="确认异常">确认异常</option>
+            <option value="误报排除">误报排除</option>
+            <option value="待补材料">待补材料</option>
+            <option value="通报船方">通报船方</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>复核意见 *</label>
+          <textarea id="reviewOpinion" rows="4" required placeholder="填写详细复核意见..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" onclick="closeModal('reviewModal')" class="btn btn-secondary">取消</button>
+          <button type="submit" class="btn btn-primary">提交</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="anomalyDetailModal" class="modal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3>异常详情</h3>
+        <button onclick="closeModal('anomalyDetailModal')" class="btn-close">&times;</button>
+      </div>
+      <div id="anomalyDetail" class="anomaly-detail"></div>
+      <div class="form-actions">
+        <button onclick="openReviewFromDetail()" class="btn btn-primary">添加复核意见</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

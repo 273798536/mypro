@@ -1,0 +1,23 @@
+{
+  "name": "ship-ais-drift-cleaning",
+  "version": "1.0.0",
+  "description": "船舶 AIS 漂移清洗系统",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "cli": "node src/cli/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "cors": "^2.8.6",
+    "csv-parse": "^6.2.1",
+    "dayjs": "^1.11.21",
+    "express": "^5.2.1",
+    "multer": "^2.1.1"
+  }
+}

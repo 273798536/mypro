@@ -1,0 +1,66 @@
+=== 船舶 AIS 漂移清洗系统 全流程验证 ===
+
+1. 导入数据
+   ✓ 批次ID: 1
+   ✓ AIS点数: 25
+   ✓ 水质记录: 15 (缺失: 3 )
+
+2. 执行漂移清洗
+   ✓ 异常数量: 12
+   ✓ 水质缺口: 3
+
+3. 查看异常列表
+   共 12 条异常:
+   [1] 413123456 | position_jump | 风险:medium | 严重度:medium
+   [2] 413123456 | position_jump | 风险:medium | 严重度:medium
+   [3] 413123456 | position_jump | 风险:medium | 严重度:medium
+   [4] 413123456 | position_jump | 风险:medium | 严重度:medium
+   [5] 433445566 | position_jump | 风险:medium | 严重度:medium
+   [6] 433445566 | position_jump | 风险:medium | 严重度:medium
+   [7] 477889900 | position_jump | 风险:medium | 严重度:medium
+   [8] 477889900 | position_jump | 风险:medium | 严重度:medium
+   [9] 477889900 | position_jump | 风险:medium | 严重度:medium
+   [10] 412223333 | speed_discrepancy | 风险:low | 严重度:low
+   [11] 433445566 | abnormal_speed | 风险:high | 严重度:high
+   [12] 433445566 | abnormal_speed | 风险:high | 严重度:high
+
+4. 异常详情追溯（顺一条异常往回查）
+   ✓ 异常信息: 413123456 - position_jump
+   ✓ 关联轨迹点: true
+   ✓ 风险通报: RISK-1-0002
+   ✓ 风险等级: medium
+   ✓ 风险通报标题: 413123456 - 位置跳变风险通报
+   ✓ 复核意见数: 0
+
+5. 添加复核意见
+   ✓ 复核意见ID: 1
+
+6. 复核后追溯验证
+   ✓ 复核意见: 经人工核实，确认为锚泊漂移，建议通知船方检查锚链
+   ✓ 处理动作: 确认异常
+   ✓ 复核人: 潜水教练
+   ✓ 风险通报仍关联: true
+
+7. 水质缺口列表
+   共 3 条缺口:
+   - ST003 2026-06-12 09:00:00
+   - ST004 2026-06-12 09:00:00
+   - ST004 2026-06-12 10:00:00
+
+8. 批次状态检查
+   ✓ 当前状态: cleaned
+   ✓ 状态时间线:
+     - 导入: 2026-06-11 18:48:49
+     - 清洗: 2026-06-11 18:48:49
+
+9. 导出报告
+   ✓ CSV文件名: ais_drift_report_1_20260612_024849.csv
+   ✓ CSV内容长度: 4082 字节
+   ✓ JSON包含字段: batch, anomalies, riskReports, reviews, waterGaps, exportedAt
+
+10. 重启后数据验证（模拟）
+   ✓ 批次仍存在: true
+   ✓ 异常记录保留: 12 条
+   ✓ 复核记录保留: 1 条
+
+=== 全流程验证通过 ✓ ===
