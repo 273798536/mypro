@@ -9,7 +9,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { DataSourceType } from '../../types';
-import { parseFile, downloadTemplate, detectFileType } from '../../engine/importParser';
+import { processImport, downloadTemplate, detectFileType } from '../../engine/importParser';
 import { useDataStore } from '../../store/useDataStore';
 import { generateId } from '../../utils/dateUtils';
 
@@ -74,9 +74,19 @@ export function ImportCard({ type, title, description, icon, count, latestVersio
     setUploadResult(null);
 
     try {
-      const data = await parseFile(file);
-      
-      if (data.length === 0) {
+      const result = await processImport(type, file);
+
+      if (result.errors.length > 0) {
+        const errorPreview = result.errors.slice(0, 5).join('；');
+        const moreHint = result.errors.length > 5 ? `（共 ${result.errors.length} 条错误）` : '';
+        setUploadResult({
+          success: false,
+          message: `导入校验失败: ${errorPreview}${moreHint}`,
+        });
+        return;
+      }
+
+      if (result.data.length === 0) {
         setUploadResult({ success: false, message: '文件为空或解析失败' });
         return;
       }
@@ -84,7 +94,7 @@ export function ImportCard({ type, title, description, icon, count, latestVersio
       const sourceValue = source || '手动导入';
       const versionValue = version || `v${Date.now()}`;
 
-      const typedData = data.map(item => ({
+      const typedData = result.data.map(item => ({
         ...item,
         id: generateId(),
       }));
@@ -97,12 +107,12 @@ export function ImportCard({ type, title, description, icon, count, latestVersio
           source: sourceValue,
           version: versionValue,
         },
-        data,
+        result.rawData,
       );
 
       setUploadResult({
         success: true,
-        message: `成功导入 ${data.length} 条${typeLabels[type]}数据`,
+        message: `成功导入 ${result.data.length} 条${typeLabels[type]}数据`,
       });
 
       setSource('');

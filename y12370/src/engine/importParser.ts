@@ -9,7 +9,7 @@ import {
   ImportResult,
   FieldMapping,
 } from '../types';
-import { generateId, dayjsInstance } from '../utils/dateUtils';
+import { generateId, dayjsInstance, getNextOccurrence } from '../utils/dateUtils';
 
 export const roomFieldMappings: FieldMapping[] = [
   { sourceField: 'name', targetField: 'name', required: true },
@@ -61,6 +61,38 @@ function parseArrayField(value: unknown): string[] {
   return [];
 }
 
+function parseBandMembers(value: unknown): { name: string; role: string }[] {
+  if (Array.isArray(value)) {
+    return value.map((item: unknown) => {
+      if (typeof item === 'string') {
+        const match = item.match(/^(.+?)[（(](.+?)[）)]$/);
+        return match
+          ? { name: match[1].trim(), role: match[2].trim() }
+          : { name: item.trim(), role: '成员' };
+      }
+      if (item && typeof item === 'object') {
+        const obj = item as Record<string, unknown>;
+        return {
+          name: String(obj.name ?? ''),
+          role: String(obj.role ?? '成员'),
+        };
+      }
+      return { name: String(item ?? ''), role: '成员' };
+    });
+  }
+  if (typeof value === 'string') {
+    return value.split(/[,，;；、]/).map(s => {
+      const trimmed = s.trim();
+      if (!trimmed) return null;
+      const match = trimmed.match(/^(.+?)[（(](.+?)[）)]$/);
+      return match
+        ? { name: match[1].trim(), role: match[2].trim() }
+        : { name: trimmed, role: '成员' };
+    }).filter(Boolean) as { name: string; role: string }[];
+  }
+  return [];
+}
+
 function parseNumberField(value: unknown): number {
   if (typeof value === 'number') return value;
   if (typeof value === 'string') {
@@ -70,18 +102,21 @@ function parseNumberField(value: unknown): number {
   return 0;
 }
 
-function mapFields<T extends Record<string, unknown>>(
+export function mapFields<T extends Record<string, unknown>>(
   row: Record<string, unknown>,
   mappings: FieldMapping[],
+  type: DataSourceType,
 ): Partial<T> {
   const result: Record<string, unknown> = {};
-  
+
   for (const mapping of mappings) {
     if (row[mapping.sourceField] !== undefined) {
       const value = row[mapping.sourceField];
-      
-      if (mapping.targetField === 'equipment' || mapping.targetField === 'requiredEquipment' || mapping.targetField === 'members') {
+
+      if (mapping.targetField === 'equipment' || mapping.targetField === 'requiredEquipment') {
         result[mapping.targetField] = parseArrayField(value);
+      } else if (mapping.targetField === 'members') {
+        result[mapping.targetField] = parseBandMembers(value);
       } else if (mapping.targetField === 'capacity' || mapping.targetField === 'dayOfWeek') {
         result[mapping.targetField] = parseNumberField(value);
       } else {
@@ -89,28 +124,63 @@ function mapFields<T extends Record<string, unknown>>(
       }
     }
   }
-  
+
+  if (type === 'band' && result.requiredEquipment && !result.equipmentNeeds) {
+    result.equipmentNeeds = [...(result.requiredEquipment as string[])];
+  }
+
   return result as Partial<T>;
 }
 
-function validateRequiredFields(
+export function validateRequiredFields(
   data: Record<string, unknown>,
   mappings: FieldMapping[],
   rowIndex: number,
+  type: DataSourceType,
 ): string[] {
   const errors: string[] = [];
-  const requiredFields = mappings.filter(m => m.required);
-  
-  for (const field of requiredFields) {
-    const hasField = mappings.some(
-      m => m.targetField === field.targetField && data[m.targetField] !== undefined && data[m.targetField] !== ''
-    );
-    if (!hasField) {
-      errors.push(`第 ${rowIndex + 1} 行缺少必填字段: ${field.targetField}`);
+  const checkedTargets = new Set<string>();
+
+  for (const mapping of mappings) {
+    if (!mapping.required || checkedTargets.has(mapping.targetField)) continue;
+    checkedTargets.add(mapping.targetField);
+
+    const val = data[mapping.targetField];
+    const isEmpty =
+      val === undefined ||
+      val === null ||
+      val === '' ||
+      (Array.isArray(val) && val.length === 0);
+
+    if (isEmpty) {
+      const zhLabel = {
+        room: { name: '房间名称', capacity: '容量' },
+        band: { name: '乐队名称', requiredEquipment: '所需设备' },
+        course: { name: '课程名称', teacher: '老师', startTime: '开始时间', endTime: '结束时间' },
+      }[type] as Record<string, string>;
+      const label = zhLabel?.[mapping.targetField] || mapping.targetField;
+      errors.push(`第 ${rowIndex + 1} 行缺少必填字段: ${label}`);
     }
   }
-  
+
   return errors;
+}
+
+export function enrichCourseTime(
+  mapped: Record<string, unknown>,
+): Record<string, unknown> {
+  const result = { ...mapped };
+  const baseWeek = dayjsInstance().startOf('isoWeek').format('YYYY-MM-DD');
+  const dayOfWeek = (result.dayOfWeek as number) || 1;
+
+  if (typeof result.startTime === 'string' && /^\d{1,2}:\d{2}$/.test(result.startTime)) {
+    result.startTime = getNextOccurrence(dayOfWeek, result.startTime, baseWeek);
+  }
+  if (typeof result.endTime === 'string' && /^\d{1,2}:\d{2}$/.test(result.endTime)) {
+    result.endTime = getNextOccurrence(dayOfWeek, result.endTime, baseWeek);
+  }
+
+  return result;
 }
 
 async function readFileAsArrayBuffer(file: File): Promise<ArrayBuffer> {
@@ -166,15 +236,20 @@ export async function importData<T extends Room | Band | Course>(
   const errors: string[] = [];
   const mappings = getFieldMappings(type);
   const sourceId = generateId();
-  
+
   try {
     const rawData = await parseFile(file);
     const parsedData: T[] = [];
-    
+
     rawData.forEach((row, index) => {
-      const mapped = mapFields<Record<string, unknown>>(row, mappings);
-      const rowErrors = validateRequiredFields(mapped, mappings, index);
-      
+      let mapped = mapFields<Record<string, unknown>>(row, mappings, type);
+
+      if (type === 'course') {
+        mapped = enrichCourseTime(mapped);
+      }
+
+      const rowErrors = validateRequiredFields(mapped, mappings, index, type);
+
       if (rowErrors.length > 0) {
         errors.push(...rowErrors);
       } else {
@@ -186,18 +261,7 @@ export async function importData<T extends Room | Band | Course>(
         } as T);
       }
     });
-    
-    const dataSource: DataSource = {
-      id: sourceId,
-      type,
-      name: file.name,
-      source,
-      version,
-      importedAt: dayjsInstance().toISOString(),
-      snapshot: rawData,
-      recordCount: parsedData.length,
-    };
-    
+
     return {
       success: errors.length === 0,
       data: parsedData,
@@ -210,6 +274,54 @@ export async function importData<T extends Room | Band | Course>(
       data: [],
       errors: [`解析文件失败: ${e instanceof Error ? e.message : String(e)}`],
       sourceId: '',
+    };
+  }
+}
+
+export async function processImport<T extends Room | Band | Course>(
+  type: DataSourceType,
+  file: File,
+): Promise<{
+  success: boolean;
+  data: T[];
+  errors: string[];
+  rawData: Record<string, unknown>[];
+}> {
+  const errors: string[] = [];
+  const mappings = getFieldMappings(type);
+
+  try {
+    const rawData = await parseFile(file);
+    const parsedData: T[] = [];
+
+    rawData.forEach((row, index) => {
+      let mapped = mapFields<Record<string, unknown>>(row, mappings, type);
+
+      if (type === 'course') {
+        mapped = enrichCourseTime(mapped);
+      }
+
+      const rowErrors = validateRequiredFields(mapped, mappings, index, type);
+
+      if (rowErrors.length > 0) {
+        errors.push(...rowErrors);
+      } else {
+        parsedData.push(mapped as unknown as T);
+      }
+    });
+
+    return {
+      success: errors.length === 0,
+      data: parsedData,
+      errors,
+      rawData,
+    };
+  } catch (e) {
+    return {
+      success: false,
+      data: [],
+      errors: [`解析文件失败: ${e instanceof Error ? e.message : String(e)}`],
+      rawData: [],
     };
   }
 }

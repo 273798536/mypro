@@ -102,7 +102,7 @@ export function generateExportData(
         课程名称: course?.name || '',
         授课老师: course?.teacher || '',
         排练室: room?.name || '',
-        设备需求: band?.requiredEquipment.join('、') || '',
+        设备需求: (band?.equipmentNeeds?.length ? band.equipmentNeeds : band?.requiredEquipment || []).join('、'),
         房间设备: room?.equipment.join('、') || '',
         状态: statusText,
         冲突类型: conflictTypes || '无',
