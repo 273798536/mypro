@@ -134,13 +134,16 @@ class NoiseChecker:
     def apply_repair(self, annotation: NoiseAnnotation, repair: RepairAction) -> RecognitionState:
         preview = self.repair_previews.get(annotation.annotation_id)
 
-        if preview and (preview.mis_delete_detected or preview.beat_drift_detected):
+        effective_mis_delete = (preview.mis_delete_detected if preview else False) or repair.mis_deleted_original
+        effective_beat_drift = (preview.beat_drift_detected if preview else False)
+
+        if effective_mis_delete or effective_beat_drift:
             self.history.record(
                 annotation_id=annotation.annotation_id,
                 event_type=HistoryEventType.REPAIR,
                 description=f"修复应用: {repair.action_type.value}"
-                + (" ⚠️ 含误删原声" if preview.mis_delete_detected else "")
-                + (" ⚠️ 含节拍漂移" if preview.beat_drift_detected else ""),
+                + (" ⚠️ 含误删原声" if effective_mis_delete else "")
+                + (" ⚠️ 含节拍漂移" if effective_beat_drift else ""),
             )
         else:
             self.history.record(
@@ -180,13 +183,23 @@ class NoiseChecker:
             note="修复后重新识别",
         )
 
-        if preview:
-            new_state.playback_note = self._update_playback_after_repair(
-                annotation, preview
-            )
-            new_state.error_explanation = self._update_explanation_after_repair(
-                annotation, preview
-            )
+        if preview or repair.mis_deleted_original:
+            mis_delete_flag = effective_mis_delete
+            beat_drift_flag = effective_beat_drift
+            if mis_delete_flag or beat_drift_flag:
+                note = self._generate_playback_note(annotation)
+                if mis_delete_flag:
+                    note += " ⚠️ 部分原声已被误删，音质受损"
+                if beat_drift_flag:
+                    note += " ⚠️ 节拍出现漂移，节奏不稳定"
+                new_state.playback_note = note
+
+                explanation = self._generate_error_explanation(annotation)
+                if mis_delete_flag:
+                    explanation = "误删原声: 修复操作类型与噪声类型不匹配，导致原始音频内容被删除。此问题不可被后续节拍漂移或连续爆音修复掩盖。"
+                if beat_drift_flag:
+                    explanation += " 节拍漂移: 修复操作可能影响了节拍稳定性。"
+                new_state.error_explanation = explanation
 
         return new_state
 
