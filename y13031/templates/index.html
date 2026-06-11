@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应链预付款异常回放</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f6fa;
+    color: #2c3e50;
+    padding: 24px;
+  }
+  .header {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+  }
+  .header h1 {
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .header .hint {
+    color: #7f8c8d;
+    font-size: 13px;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .toolbar {
+    background: #fff;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .btn-primary { background: #3498db; color: #fff; }
+  .btn-primary:hover { background: #2980b9; }
+  .btn-success { background: #27ae60; color: #fff; }
+  .btn-success:hover { background: #219a52; }
+  .btn-warning { background: #f39c12; color: #fff; }
+  .btn-warning:hover { background: #d68910; }
+  .btn-secondary { background: #ecf0f1; color: #34495e; }
+  .btn-secondary:hover { background: #d5dbdb; }
+  .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+
+  .batch-select {
+    padding: 7px 10px;
+    border: 1px solid #dcdde1;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+  }
+  .file-input {
+    font-size: 13px;
+  }
+  .spacer { flex: 1; }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .sum-card {
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    text-align: center;
+  }
+  .sum-card .num {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .sum-card .label {
+    font-size: 12px;
+    color: #7f8c8d;
+  }
+  .sum-card.ok .num { color: #27ae60; }
+  .sum-card.warn .num { color: #f39c12; }
+  .sum-card.err .num { color: #e74c3c; }
+  .sum-card.info .num { color: #3498db; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    font-size: 13px;
+  }
+  thead {
+    background: #f8f9fa;
+  }
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+  }
+  th {
+    font-weight: 600;
+    color: #34495e;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #fafbfc; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .tag-ok { background: #e8f8f0; color: #27ae60; }
+  .tag-warn { background: #fef5e7; color: #d68910; }
+  .tag-err { background: #fdedec; color: #e74c3c; }
+  .tag-info { background: #ebf5fb; color: #2980b9; }
+  .tag-pending { background: #f2f3f4; color: #7f8c8d; }
+
+  .action-cell button {
+    padding: 4px 8px;
+    font-size: 12px;
+    margin-right: 4px;
+    border-radius: 4px;
+  }
+
+  .history-panel {
+    margin-top: 8px;
+    padding: 12px;
+    background: #fafbfc;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .history-item {
+    padding: 6px 0;
+    border-bottom: 1px dashed #ecf0f1;
+  }
+  .history-item:last-child { border-bottom: none; }
+  .history-time { color: #95a5a6; }
+  .history-source { margin: 0 6px; color: #3498db; }
+
+  .modal-mask {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-mask.show { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    min-width: 420px;
+    max-width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal h3 { margin-bottom: 16px; }
+  .form-row { margin-bottom: 14px; }
+  .form-row label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #34495e;
+  }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #dcdde1;
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .toast {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    padding: 12px 20px;
+    background: #2c3e50;
+    color: #fff;
+    border-radius: 6px;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .toast.success { background: #27ae60; }
+  .toast.error { background: #e74c3c; }
+
+  .report-view {
+    margin-top: 20px;
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    white-space: pre-wrap;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+    line-height: 1.8;
+    font-size: 14px;
+  }
+  .report-view h1, .report-view h2, .report-view h3 { margin: 16px 0 8px; }
+  .report-view h1 { font-size: 20px; }
+  .report-view h2 { font-size: 17px; border-bottom: 1px solid #ecf0f1; padding-bottom: 6px; }
+  .report-view h3 { font-size: 15px; }
+  .report-view table { border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+  .report-view th, .report-view td { border: 1px solid #ecf0f1; padding: 6px 10px; }
+  .report-view th { background: #f8f9fa; }
+  .report-view code { background: #f4f6f8; padding: 2px 5px; border-radius: 3px; }
+  .report-view blockquote { border-left: 3px solid #dcdde1; padding-left: 12px; color: #7f8c8d; margin: 8px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>供应链预付款异常回放</h1>
+  <div class="hint">放样例 → 重跑 → 查看 Markdown 报告</div>
+</div>
+
+<div class="container">
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="loadSample()">📋 加载示例数据</button>
+    <label class="btn btn-secondary">
+      📂 导入CSV/Excel
+      <input type="file" class="file-input" accept=".csv,.xlsx,.xls" style="display:none" onchange="importFile(event)">
+    </label>
+    <select id="batchSelect" class="batch-select" onchange="onBatchChange()">
+      <option value="">选择批次...</option>
+    </select>
+    <button class="btn btn-success" onclick="doReplay()">🔄 重新回放</button>
+    <div class="spacer"></div>
+    <button class="btn btn-warning" onclick="viewReport()">📄 查看 Markdown 报告</button>
+    <button class="btn btn-secondary" onclick="downloadReport()">⬇️ 下载报告</button>
+  </div>
+
+  <div class="summary" id="summary"></div>
+
+  <table id="paymentTable">
+    <thead>
+      <tr>
+        <th>付款单号</th>
+        <th>供应商</th>
+        <th>金额</th>
+        <th>日期</th>
+        <th>对账口径</th>
+        <th>凭证号</th>
+        <th>状态</th>
+        <th>下一步</th>
+        <th style="width:220px">操作</th>
+      </tr>
+    </thead>
+    <tbody id="paymentTbody"></tbody>
+  </table>
+
+  <div id="reportArea"></div>
+</div>
+
+<div class="modal-mask" id="statusModal">
+  <div class="modal">
+    <h3>人工改判状态</h3>
+    <div class="form-row">
+      <label>新状态</label>
+      <select id="newStatus">
+        <option value="PENDING">待核实</option>
+        <option value="MATCHED">已匹配</option>
+        <option value="RELEASED">可放行</option>
+        <option value="DISPUTED">有争议</option>
+        <option value="NEED_VOUCHER">待补凭证</option>
+        <option value="NEED_SUPPLEMENT">需补材料</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>操作人</label>
+      <input id="operator" value="老许">
+    </div>
+    <div class="form-row">
+      <label>备注</label>
+      <textarea id="remark" rows="3" placeholder="改判原因，会写入历史"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('statusModal')">取消</button>
+      <button class="btn btn-primary" onclick="submitStatus()">确认改判</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="remarkModal">
+  <div class="modal">
+    <h3>补充备注</h3>
+    <div class="form-row">
+      <label>操作人</label>
+      <input id="remarkOperator" value="老许">
+    </div>
+    <div class="form-row">
+      <label>备注内容</label>
+      <textarea id="remarkText" rows="4" placeholder="补充业务台账备注，历史版本会保留"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('remarkModal')">取消</button>
+      <button class="btn btn-primary" onclick="submitRemark()">保存备注</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="voucherModal">
+  <div class="modal">
+    <h3>录入凭证号</h3>
+    <div class="form-row">
+      <label>凭证号</label>
+      <input id="voucherNo" placeholder="例如 PZ2026060015">
+    </div>
+    <div class="form-row">
+      <label>操作人</label>
+      <input id="voucherOperator" value="老许">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('voucherModal')">取消</button>
+      <button class="btn btn-primary" onclick="submitVoucher()">确认录入</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let currentBatch = '';
+let currentPayments = [];
+let editingPaymentId = null;
+
+function toast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 2000);
+}
+
+async function loadBatches() {
+  const res = await fetch('/api/batches');
+  const data = await res.json();
+  const sel = document.getElementById('batchSelect');
+  sel.innerHTML = '<option value="">选择批次...</option>';
+  data.batches.forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b; opt.textContent = b;
+    if (b === currentBatch) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+async function loadSample() {
+  const res = await fetch('/api/sample', { method: 'POST' });
+  const data = await res.json();
+  toast(data.message, 'success');
+  currentBatch = data.batch_id;
+  await loadBatches();
+  await loadPayments();
+}
+
+async function importFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('file', file);
+  const res = await fetch('/api/import', { method: 'POST', body: fd });
+  const data = await res.json();
+  if (res.ok) {
+    toast(data.message, 'success');
+    currentBatch = data.batch_id;
+    await loadBatches();
+    await loadPayments();
+  } else {
+    toast(data.detail, 'error');
+  }
+  e.target.value = '';
+}
+
+function onBatchChange() {
+  currentBatch = document.getElementById('batchSelect').value;
+  loadPayments();
+}
+
+async function loadPayments() {
+  if (!currentBatch) {
+    document.getElementById('paymentTbody').innerHTML = '<tr><td colspan="9" style="text-align:center;color:#95a5a6;padding:40px">请先选择批次或加载示例数据</td></tr>';
+    document.getElementById('summary').innerHTML = '';
+    document.getElementById('reportArea').innerHTML = '';
+    return;
+  }
+  const res = await fetch(`/api/payments?batch_id=${encodeURIComponent(currentBatch)}`);
+  const data = await res.json();
+  currentPayments = data.payments;
+  renderTable();
+  renderSummary();
+}
+
+function tagClass(status) {
+  const m = { MATCHED:'tag-ok', RELEASED:'tag-ok', NEED_VOUCHER:'tag-warn', NEED_SUPPLEMENT:'tag-warn', DISPUTED:'tag-err', DUPLICATE:'tag-err', PENDING:'tag-pending' };
+  return m[status] || 'tag-pending';
+}
+
+function statusLabel(s) {
+  return { PENDING:'待核实', MATCHED:'已匹配', RELEASED:'可放行', DISPUTED:'有争议', NEED_VOUCHER:'待补凭证', NEED_SUPPLEMENT:'需补材料', DUPLICATE:'重复认领' }[s] || s;
+}
+
+function renderSummary() {
+  const counts = { total: currentPayments.length, ok: 0, warn: 0, err: 0 };
+  currentPayments.forEach(p => {
+    const s = p.current_status;
+    if (['MATCHED','RELEASED'].includes(s)) counts.ok++;
+    else if (['NEED_VOUCHER','NEED_SUPPLEMENT'].includes(s)) counts.warn++;
+    else if (['DISPUTED','DUPLICATE'].includes(s)) counts.err++;
+  });
+  document.getElementById('summary').innerHTML = `
+    <div class="sum-card info"><div class="num">${counts.total}</div><div class="label">总笔数</div></div>
+    <div class="sum-card ok"><div class="num">${counts.ok}</div><div class="label">可放行</div></div>
+    <div class="sum-card warn"><div class="num">${counts.warn}</div><div class="label">催办中</div></div>
+    <div class="sum-card err"><div class="num">${counts.err}</div><div class="label">待核实</div></div>
+  `;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('paymentTbody');
+  if (currentPayments.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#95a5a6;padding:40px">暂无数据</td></tr>';
+    return;
+  }
+  tbody.innerHTML = currentPayments.map(p => `
+    <tr>
+      <td><code>${p.payment_no}</code></td>
+      <td>${p.supplier_name}</td>
+      <td>¥${Number(p.amount).toLocaleString('zh-CN', {minimumFractionDigits:2})}</td>
+      <td>${p.business_date}</td>
+      <td>${p.recon_caliber || '-'}</td>
+      <td>${p.voucher_no || '<span style="color:#e67e22">未到</span>'}</td>
+      <td><span class="tag ${tagClass(p.current_status)}">${p.status_label || statusLabel(p.current_status)}</span></td>
+      <td style="font-size:12px;color:#7f8c8d;max-width:220px">${actionHint(p)}</td>
+      <td class="action-cell">
+        <button class="btn btn-secondary" onclick="toggleHistory('${p.id}')">历史</button>
+        <button class="btn btn-warning" onclick="openStatus('${p.id}')">改判</button>
+        <button class="btn btn-secondary" onclick="openRemark('${p.id}')">备注</button>
+        <button class="btn btn-primary" onclick="openVoucher('${p.id}')">录凭证</button>
+      </td>
+    </tr>
+    <tr id="hist-${p.id}" style="display:none">
+      <td colspan="9">
+        <div class="history-panel">
+          <div style="margin-bottom:6px;font-weight:600;color:#34495e">变更历史（当前备注：${p.current_remark || '无'}）</div>
+          ${p.history.map(h => `
+            <div class="history-item">
+              <span class="history-time">${new Date(h.timestamp).toLocaleString('zh-CN')}</span>
+              <span class="history-source">[${h.source_label || h.source}]</span>
+              <span>${h.operator}</span>
+              <span style="margin:0 6px">→</span>
+              <span>${h.old_status ? (h.old_status_label || statusLabel(h.old_status)) + ' → ' : ''}<strong>${h.new_status_label || statusLabel(h.new_status)}</strong></span>
+              ${h.remark ? `<span style="color:#7f8c8d;margin-left:8px">备注：${h.remark}</span>` : ''}
+              ${h.detail ? `<span style="color:#95a5a6;margin-left:8px">${h.detail}</span>` : ''}
+              ${h.screenshot_ref ? ' 📷' : ''}
+            </div>
+          `).join('')}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function actionHint(p) {
+  if (p.current_status === 'NEED_VOUCHER') return '联系财务确认凭证号，到账后录入即可';
+  if (p.current_status === 'NEED_SUPPLEMENT') return '联系供应商补充合同/发票等材料';
+  if (p.current_status === 'DISPUTED') return '核实该笔是否被其他口径重复认领';
+  if (p.current_status === 'DUPLICATE') return '同金额同日期有多笔，核对原始凭证后处理';
+  if (p.current_status === 'RELEASED' || p.current_status === 'MATCHED') return '材料齐全，可放行';
+  return '';
+}
+
+function toggleHistory(id) {
+  const row = document.getElementById('hist-' + id);
+  row.style.display = row.style.display === 'none' ? '' : 'none';
+}
+
+async function doReplay() {
+  if (!currentBatch) { toast('请先选择批次', 'error'); return; }
+  const res = await fetch(`/api/replay?batch_id=${encodeURIComponent(currentBatch)}`, { method: 'POST' });
+  const data = await res.json();
+  toast(`回放完成：${data.summary.changed_count} 条状态变更`, 'success');
+  await loadPayments();
+}
+
+async function viewReport() {
+  if (!currentBatch) { toast('请先选择批次', 'error'); return; }
+  const res = await fetch(`/api/report/${encodeURIComponent(currentBatch)}`);
+  const md = await res.text();
+  const html = md
+    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/^_(.+)_$/gm, '<em>$1</em>');
+  document.getElementById('reportArea').innerHTML = '<div class="report-view">' + html + '</div>';
+  document.getElementById('reportArea').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function downloadReport() {
+  if (!currentBatch) { toast('请先选择批次', 'error'); return; }
+  const res = await fetch(`/api/report/${encodeURIComponent(currentBatch)}`);
+  const md = await res.text();
+  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `预付款回放报告_${currentBatch}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('报告已下载', 'success');
+}
+
+function openStatus(id) {
+  editingPaymentId = id;
+  document.getElementById('remark').value = '';
+  document.getElementById('statusModal').classList.add('show');
+}
+function openRemark(id) {
+  editingPaymentId = id;
+  document.getElementById('remarkText').value = '';
+  document.getElementById('remarkModal').classList.add('show');
+}
+function openVoucher(id) {
+  editingPaymentId = id;
+  document.getElementById('voucherNo').value = '';
+  document.getElementById('voucherModal').classList.add('show');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+async function submitStatus() {
+  const status = document.getElementById('newStatus').value;
+  const operator = document.getElementById('operator').value;
+  const remark = document.getElementById('remark').value;
+  const params = new URLSearchParams({ new_status: status, operator });
+  if (remark) params.append('remark', remark);
+  const res = await fetch(`/api/payments/${editingPaymentId}/status?${params}`, { method: 'POST' });
+  const data = await res.json();
+  if (res.ok) { toast('改判成功，历史已记录', 'success'); closeModal('statusModal'); await loadPayments(); }
+  else toast(data.detail, 'error');
+}
+
+async function submitRemark() {
+  const remark = document.getElementById('remarkText').value;
+  const operator = document.getElementById('remarkOperator').value;
+  if (!remark.trim()) { toast('请输入备注内容', 'error'); return; }
+  const params = new URLSearchParams({ remark, operator });
+  const res = await fetch(`/api/payments/${editingPaymentId}/remark?${params}`, { method: 'POST' });
+  const data = await res.json();
+  if (res.ok) { toast('备注已添加，历史版本已保留', 'success'); closeModal('remarkModal'); await loadPayments(); }
+  else toast(data.detail, 'error');
+}
+
+async function submitVoucher() {
+  const voucher = document.getElementById('voucherNo').value.trim();
+  const operator = document.getElementById('voucherOperator').value;
+  if (!voucher) { toast('请输入凭证号', 'error'); return; }
+  const params = new URLSearchParams({ voucher_no: voucher, operator });
+  const res = await fetch(`/api/payments/${editingPaymentId}/voucher?${params}`, { method: 'POST' });
+  const data = await res.json();
+  if (res.ok) { toast('凭证已录入，状态自动更新为已匹配', 'success'); closeModal('voucherModal'); await loadPayments(); }
+  else toast(data.detail, 'error');
+}
+
+loadBatches();
+loadPayments();
+</script>
+
+</body>
+</html>
