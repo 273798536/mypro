@@ -126,18 +126,28 @@ export default function ExportPage() {
 
   const anomalySummary = useMemo(() => {
     if (!includeAnomalyMark) return null;
-    return anomalies.map((a) => ({
-      所属版本: getVersionLabel(versions, a.versionId),
-      版本ID: a.versionId,
-      异常类型: ANOMALY_TYPE_LABELS[a.anomalyType] ?? a.anomalyType,
-      关联吊杆: a.pointId ? (store.getPointById(a.pointId)?.rigNo ?? '—') : '批量/整版',
-      描述: a.description,
-      处理状态: a.status === 'open' ? '待处理' : a.status === 'processing' ? '处理中' : '已关闭',
-      处理结果_不可标记正常通过: a.markedAsNormal === false
-        ? 'false - 已按异常处理，非正常通过'
-        : 'true',
-      markedAsNormal: 'false',
-    }));
+    return anomalies.map((a, idx) => {
+      const rigNo = a.pointId ? (store.getPointById(a.pointId)?.rigNo ?? null) : null;
+      let finalDesc = a.description;
+      if (rigNo) {
+        const descHasRig = /RIG-\d{4}/.test(finalDesc);
+        if (!descHasRig) {
+          finalDesc = `【关联吊杆${rigNo}】` + finalDesc;
+        } else {
+          finalDesc = finalDesc.replace(/RIG-\d{4}/, rigNo);
+        }
+      }
+      return {
+        编号: `异常${String(idx + 1).padStart(2, '0')}`,
+        所属版本: getVersionLabel(versions, a.versionId),
+        版本ID: a.versionId,
+        异常类型: ANOMALY_TYPE_LABELS[a.anomalyType] ?? a.anomalyType,
+        关联吊杆: rigNo ?? '批量/整版',
+        状态: a.status === 'open' ? '待处理' : a.status === 'processing' ? '处理中' : '已关闭',
+        描述: finalDesc,
+        markedAsNormal: 'false',
+      };
+    });
   }, [anomalies, includeAnomalyMark, store, versions]);
 
   const handleExport = () => {
@@ -151,41 +161,87 @@ export default function ExportPage() {
       }
 
       const now = dayjs();
-      const allData = [
-        ...csvData,
-        ...(anomalySummary && anomalySummary.length > 0
-          ? [
-              null as any,
-              { 编号: '===== 以下为异常记录汇总 =====' },
-              ...anomalySummary,
-            ]
-          : []),
-      ].filter((x) => x !== null);
+      const nowStr = now.format('YYYY-MM-DD HH:mm:ss');
+      const projectLabel = '国家大剧院主舞台吊杆阵列方案比选';
+      const scopeLabel =
+        filters.versionScope === 'current' ? '仅当前版本' :
+        filters.versionScope === 'includeOld' ? '含旧版数据' : '仅撤回版本';
+      const verLabel = activeVer?.label ?? '导出';
 
-      const csv = Papa.unparse(allData);
+      const columns = Object.keys(csvData[0] ?? {});
+      const makeWideRow = (firstColText: string) => {
+        const row: Record<string, string> = {};
+        columns.forEach((col, i) => {
+          row[col] = i === 0 ? firstColText : '';
+        });
+        return row;
+      };
+      const makeEmptyRow = () => {
+        const row: Record<string, string> = {};
+        columns.forEach((col) => { row[col] = ''; });
+        return row;
+      };
+
+      const headerMeta = [
+        makeWideRow(`【文件头】${projectLabel}`),
+        makeWideRow(`导出时间：${nowStr}；活动版本：${verLabel}；数据范围：${scopeLabel}`),
+        makeWideRow(`点位共 ${csvData.length} 条；异常共 ${anomalySummary?.length ?? 0} 条`),
+        makeEmptyRow(),
+      ];
+
+      const sectionDivider = [
+        makeEmptyRow(),
+        makeWideRow('===== 以上为点位明细 / 以下为异常记录汇总 ====='),
+        makeEmptyRow(),
+      ];
+
+      const anomalySummaryWide = anomalySummary?.map((a) => {
+        const row: Record<string, string> = {};
+        columns.forEach((col) => {
+          row[col] = (a as any)[col] ?? '';
+        });
+        return row;
+      }) ?? [];
+
+      const allData = [
+        ...headerMeta,
+        ...csvData,
+        ...(anomalySummary && anomalySummary.length > 0 ? sectionDivider : []),
+        ...anomalySummaryWide,
+      ];
+
+      const csv = Papa.unparse(allData, {
+        columns,
+        quotes: true,
+        quoteChar: '"',
+        escapeChar: '"',
+        delimiter: ',',
+        newline: '\r\n',
+      });
+
       const BOM = '\uFEFF';
-      const blob = new Blob([BOM + csv], { type: 'text/csv;charset=utf-8;' });
+      const finalContent = BOM + csv;
+      const blob = new Blob([finalContent], { type: 'text/csv;charset=utf-8;header=present' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
 
-      const scopeLabel =
-        filters.versionScope === 'current' ? '仅当前版本' :
-        filters.versionScope === 'includeOld' ? '含旧版数据' : '仅撤回版本';
-      const safeScope = scopeLabel.replace(/[（）\s\/]/g, '_');
-      const verLabel = activeVer?.label?.replace(/[（）\s\/]/g, '_') ?? 'export';
-      link.download = `吊杆方案明细_${verLabel}_${safeScope}_${now.format('YYYYMMDD_HHmmss')}.csv`;
+      const safeScope = scopeLabel.replace(/[（）\s\/\\:?*"<>\|]/g, '_');
+      const safeVer = verLabel.replace(/[（）\s\/\\:?*"<>\|]/g, '_');
+      link.download = `吊杆方案明细_${safeVer}_${safeScope}_${now.format('YYYYMMDD_HHmmss')}.csv`;
 
+      document.body.appendChild(link);
       link.click();
-      URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-      setExportSuccess(`成功导出 ${csvData.length} 条点位明细 + ${anomalySummary?.length ?? 0} 条异常汇总`);
+      setExportSuccess(`成功导出 ${csvData.length} 条点位明细 + ${anomalySummary?.length ?? 0} 条异常汇总（文件名：${link.download}）`);
 
-      setTimeout(() => setExportSuccess(null), 5000);
+      setTimeout(() => setExportSuccess(null), 8000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : '未知错误';
       setExportError(`导出失败：${msg}`);
-      setTimeout(() => setExportError(null), 8000);
+      setTimeout(() => setExportError(null), 10000);
     }
   };
 
