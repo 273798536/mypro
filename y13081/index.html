@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>码头危险品库时序回放系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-title">
+                <span class="title-icon">⚓</span>
+                <h1>码头危险品库时序回放系统</h1>
+            </div>
+            <div class="header-info">
+                <span class="status-badge status-normal">在线</span>
+                <span class="warehouse-name">一号危险品库 · A区</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <aside class="side-panel">
+                <div class="panel-section filter-section">
+                    <h3 class="section-title">筛选条件</h3>
+                    <div class="filter-group">
+                        <label>危险品等级</label>
+                        <select id="filterLevel">
+                            <option value="all">全部等级</option>
+                            <option value="1">一级（极度危险）</option>
+                            <option value="2">二级（高度危险）</option>
+                            <option value="3">三级（中度危险）</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>状态</label>
+                        <select id="filterStatus">
+                            <option value="all">全部状态</option>
+                            <option value="normal">正常</option>
+                            <option value="warning">预警</option>
+                            <option value="error">异常</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>货架区域</label>
+                        <select id="filterArea">
+                            <option value="all">全部区域</option>
+                            <option value="A">A区</option>
+                            <option value="B">B区</option>
+                            <option value="C">C区</option>
+                        </select>
+                    </div>
+                    <button id="applyFilter" class="btn btn-primary">应用筛选</button>
+                    <button id="resetFilter" class="btn btn-secondary">重置</button>
+                </div>
+
+                <div class="panel-section stats-section">
+                    <h3 class="section-title">统计数字</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card stat-total">
+                            <div class="stat-value" id="statTotal">0</div>
+                            <div class="stat-label">总记录数</div>
+                        </div>
+                        <div class="stat-card stat-normal">
+                            <div class="stat-value" id="statNormal">0</div>
+                            <div class="stat-label">正常</div>
+                        </div>
+                        <div class="stat-card stat-warning">
+                            <div class="stat-value" id="statWarning">0</div>
+                            <div class="stat-label">预警</div>
+                        </div>
+                        <div class="stat-card stat-error">
+                            <div class="stat-value" id="statError">0</div>
+                            <div class="stat-label">异常</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section detail-section">
+                    <div class="section-header">
+                        <h3 class="section-title">明细列表</h3>
+                        <span class="detail-count" id="detailCount">0 条</span>
+                    </div>
+                    <div class="detail-table-container">
+                        <table class="detail-table">
+                            <thead>
+                                <tr>
+                                    <th>编号</th>
+                                    <th>位置</th>
+                                    <th>等级</th>
+                                    <th>状态</th>
+                                    <th>温度</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel-section cad-section">
+                    <h3 class="section-title">CAD图层信息</h3>
+                    <div class="cad-info" id="cadInfo">
+                        <p class="cad-hint">选择记录查看CAD原始数据</p>
+                    </div>
+                    <button id="screenshotBtn" class="btn btn-outline">📸 截图说明</button>
+                </div>
+            </aside>
+
+            <main class="viewport-area">
+                <div class="viewport-toolbar">
+                    <div class="toolbar-left">
+                        <button class="tool-btn" id="cadLayerToggle" title="CAD图层">
+                            <span class="tool-icon">📐</span>
+                            <span class="tool-label">CAD图层</span>
+                        </button>
+                        <button class="tool-btn" id="highlightToggle" title="高亮模式">
+                            <span class="tool-icon">🔍</span>
+                            <span class="tool-label">高亮</span>
+                        </button>
+                        <div class="toolbar-divider"></div>
+                        <span class="time-display" id="currentTimeDisplay">--:--:--</span>
+                    </div>
+                    <div class="toolbar-right">
+                        <button class="tool-btn" id="resetView" title="重置视角">
+                            <span class="tool-icon">🎯</span>
+                        </button>
+                        <button class="tool-btn" id="zoomIn" title="放大">
+                            <span class="tool-icon">➕</span>
+                        </button>
+                        <button class="tool-btn" id="zoomOut" title="缩小">
+                            <span class="tool-icon">➖</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="viewport-container" id="viewportContainer">
+                    <canvas id="threeCanvas"></canvas>
+                    <div class="viewport-overlay" id="viewportOverlay">
+                        <div class="data-quality-warning" id="dataQualityWarning" style="display: none;">
+                            <div class="warning-header">
+                                <span class="warning-icon">⚠️</span>
+                                <span class="warning-title">数据质量提示</span>
+                            </div>
+                            <div class="warning-body" id="warningBody">
+                            </div>
+                            <div class="warning-actions">
+                                <button class="btn btn-sm btn-warning-action" id="viewCadBtn">查看CAD原始行</button>
+                                <button class="btn btn-sm btn-secondary" id="dismissWarning">忽略</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-section">
+                    <div class="timeline-controls">
+                        <button class="timeline-btn" id="prevFrame" title="上一帧">⏮</button>
+                        <button class="timeline-btn play-btn" id="playPauseBtn" title="播放/暂停">▶</button>
+                        <button class="timeline-btn" id="nextFrame" title="下一帧">⏭</button>
+                        <div class="speed-control">
+                            <label>速度</label>
+                            <select id="playSpeed">
+                                <option value="0.5">0.5x</option>
+                                <option value="1" selected>1x</option>
+                                <option value="2">2x</option>
+                                <option value="4">4x</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="timeline-track-container">
+                        <div class="timeline-track" id="timelineTrack">
+                            <div class="timeline-progress" id="timelineProgress"></div>
+                            <div class="timeline-marker" id="timelineMarker"></div>
+                            <div class="timeline-events" id="timelineEvents"></div>
+                        </div>
+                        <div class="timeline-labels">
+                            <span>00:00</span>
+                            <span>06:00</span>
+                            <span>12:00</span>
+                            <span>18:00</span>
+                            <span>24:00</span>
+                        </div>
+                    </div>
+                    <div class="timeline-info">
+                        <span class="timeline-date" id="timelineDate">2024-06-15</span>
+                        <span class="timeline-frame" id="timelineFrame">帧 0 / 0</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div class="modal-overlay" id="screenshotModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>截图说明</h3>
+                    <button class="modal-close" id="closeModal">✕</button>
+                </div>
+                <div class="modal-body">
+                    <div class="screenshot-preview" id="screenshotPreview"></div>
+                    <div class="screenshot-meta">
+                        <div class="meta-row">
+                            <span class="meta-label">时间点：</span>
+                            <span class="meta-value" id="screenshotTime">--</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">筛选条件：</span>
+                            <span class="meta-value" id="screenshotFilter">--</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">统计摘要：</span>
+                            <span class="meta-value" id="screenshotStats">--</span>
+                        </div>
+                        <div class="meta-row">
+                            <span class="meta-label">说明备注：</span>
+                            <textarea id="screenshotNote" rows="3" placeholder="输入截图说明..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" id="cancelScreenshot">取消</button>
+                    <button class="btn btn-primary" id="saveScreenshot">保存截图</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/scene.js"></script>
+    <script src="js/timeline.js"></script>
+    <script src="js/panel.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
