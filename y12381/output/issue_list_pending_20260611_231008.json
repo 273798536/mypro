@@ -1,0 +1,267 @@
+{
+  "project_id": "proj_d4d595e6177b",
+  "project_name": "示例乐谱校对项目",
+  "generated_at": "2026-06-11T23:10:08.910844",
+  "filter_status": "pending",
+  "total_issues": 8,
+  "issues": [
+    {
+      "id": "issue_acc_da8c124b",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "measure_number": 2,
+      "description": "第2小节 F4 音符可能缺失升降号",
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求F升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "F",
+            "octave": 4,
+            "has_accidental": false,
+            "confidence": 0.87
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "has_corrections": false,
+      "corrections_count": 0
+    },
+    {
+      "id": "issue_acc_c4f1aaf2",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "measure_number": 2,
+      "description": "第2小节 C4 音符可能缺失升降号",
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求C升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "C",
+            "octave": 4,
+            "has_accidental": false,
+            "confidence": 0.91
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "has_corrections": false,
+      "corrections_count": 0
+    },
+    {
+      "id": "issue_acc_mis_91fbcbd0",
+      "category": "accidental_misread",
+      "severity": "warning",
+      "status": "pending",
+      "measure_number": 3,
+      "description": "第3小节 sharp 识别可信度低（0.55）",
+      "evidence": [
+        {
+          "source": "ocr_confidence",
+          "description": "OCR可信度低",
+          "data": {
+            "confidence": 0.55,
+            "threshold": 0.7
+          }
+        }
+      ],
+      "suggestions": [
+        "对照原谱照片确认该位置的变音记号类型",
+        "当前识别为sharp，请核对是否正确",
+        "检查是否为印刷模糊或拍摄角度导致的识别错误"
+      ],
+      "has_corrections": false,
+      "corrections_count": 0
+    },
+    {
+      "id": "issue_acc_ff41c880",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "measure_number": 5,
+      "description": "第5小节 C5 音符可能缺失升降号",
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求C升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "C",
+            "octave": 5,
+            "has_accidental": false,
+            "confidence": 0.9
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "has_corrections": false,
+      "corrections_count": 0
+    },
+    {
+      "id": "issue_slur_da5d2025",
+      "category": "slur_broken",
+      "severity": "warning",
+      "status": "pending",
+      "measure_number": 2,
+      "description": "第2小节连音线可能断裂: 连音线标记为不完整",
+      "evidence": [
+        {
+          "source": "slur_analysis",
+          "description": "连音线标记为不完整",
+          "data": {
+            "is_complete": false,
+            "has_start": true,
+            "has_end": false
+          }
+        }
+      ],
+      "suggestions": [
+        "在原谱照片中追踪连音线的完整路径",
+        "确认连音线连接的起始和结束音符",
+        "检查是否因换行导致连音线断裂",
+        "如为延音线，请确认两个音符音高是否相同"
+      ],
+      "has_corrections": false,
+      "corrections_count": 0
+    },
+    {
+      "id": "issue_slur_27ae2ff3",
+      "category": "slur_broken",
+      "severity": "warning",
+      "status": "pending",
+      "measure_number": 2,
+      "description": "第2小节连音线可能断裂: 连音线标记为不完整",
+      "evidence": [
+        {
+          "source": "slur_analysis",
+          "description": "连音线标记为不完整",
+          "data": {
+            "is_complete": false,
+            "has_start": false,
+            "has_end": true
+          }
+        }
+      ],
+      "suggestions": [
+        "在原谱照片中追踪连音线的完整路径",
+        "确认连音线连接的起始和结束音符",
+        "检查是否因换行导致连音线断裂",
+        "如为延音线，请确认两个音符音高是否相同"
+      ],
+      "has_corrections": false,
+      "corrections_count": 0
+    },
+    {
+      "id": "issue_bar_dea846d5",
+      "category": "barline_misaligned",
+      "severity": "warning",
+      "status": "pending",
+      "measure_number": 3,
+      "description": "第3小节位置可能错位: 垂直位置偏差过大: 50.0px > 36.0px",
+      "evidence": [
+        {
+          "source": "barline_alignment",
+          "description": "小节线对齐异常",
+          "data": {
+            "y_difference": 50.0,
+            "height_difference": 0.0,
+            "y_threshold": 36.0,
+            "height_threshold": 24.0,
+            "reasons": [
+              "垂直位置偏差过大: 50.0px > 36.0px"
+            ]
+          }
+        }
+      ],
+      "suggestions": [
+        "检查原谱照片中该小节的位置是否正确",
+        "确认小节线是否因拍摄角度或透视变形导致错位",
+        "检查前后小节的边界位置",
+        "如小节编号有误，请重新调整小节划分"
+      ],
+      "has_corrections": false,
+      "corrections_count": 0
+    },
+    {
+      "id": "issue_acc_30e91ad1",
+      "category": "accidental_missing",
+      "severity": "error",
+      "status": "pending",
+      "measure_number": 1,
+      "description": "第1小节 G4 音符可能缺失升降号",
+      "evidence": [
+        {
+          "source": "key_signature_analysis",
+          "description": "调号分析",
+          "data": {
+            "reasons": [
+              "调号3#要求G升半音"
+            ]
+          }
+        },
+        {
+          "source": "note_analysis",
+          "description": "音符检测",
+          "data": {
+            "note_pitch": "G",
+            "octave": 4,
+            "has_accidental": false,
+            "confidence": 0.95
+          }
+        }
+      ],
+      "suggestions": [
+        "检查该音符在原谱照片中的位置，确认是否有升降号",
+        "根据调号判断是否需要补充升降号",
+        "查看前后音符是否有类似变音记号",
+        "如确认需要添加，请在修正时注明升降号类型"
+      ],
+      "has_corrections": false,
+      "corrections_count": 0
+    }
+  ]
+}

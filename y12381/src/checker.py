@@ -24,14 +24,39 @@ from .models import (
 class ScoreChecker:
     def __init__(self, project: ScoreProject):
         self.project = project
-        self._existing_issue_keys = set()
+        self._existing_issue_keys = self._build_existing_issue_keys()
+
+    def _build_existing_issue_keys(self) -> set:
+        keys = set()
+        for issue in self.project.issues:
+            try:
+                if issue.category is None:
+                    continue
+                location_key = f"{issue.measure_id or ''}_{'_'.join(issue.symbol_ids or [])}"
+                key = self._get_issue_key(issue.category, location_key)
+                keys.add(key)
+            except Exception as e:
+                print(f"[警告] 构建去重键时出错，已跳过问题 {issue.id}: {e}")
+                continue
+        return keys
 
     def run_all_checks(self) -> List[Issue]:
         new_issues: List[Issue] = []
 
-        new_issues.extend(self.check_accidental_missing())
-        new_issues.extend(self.check_slur_broken())
-        new_issues.extend(self.check_barline_misaligned())
+        try:
+            new_issues.extend(self.check_accidental_missing())
+        except Exception as e:
+            print(f"[错误] 升降号检查失败: {e}")
+
+        try:
+            new_issues.extend(self.check_slur_broken())
+        except Exception as e:
+            print(f"[错误] 连音线检查失败: {e}")
+
+        try:
+            new_issues.extend(self.check_barline_misaligned())
+        except Exception as e:
+            print(f"[错误] 小节错位检查失败: {e}")
 
         self._deduplicate_and_merge_issues(new_issues)
         return self.project.issues
@@ -41,16 +66,20 @@ class ScoreChecker:
 
     def _deduplicate_and_merge_issues(self, new_issues: List[Issue]):
         for new_issue in new_issues:
-            key = self._get_issue_key(
-                new_issue.category,
-                f"{new_issue.measure_id}_{'_'.join(new_issue.symbol_ids)}"
-            )
+            try:
+                if new_issue.category is None:
+                    continue
+                location_key = f"{new_issue.measure_id or ''}_{'_'.join(new_issue.symbol_ids or [])}"
+                key = self._get_issue_key(new_issue.category, location_key)
 
-            if key in self._existing_issue_keys:
+                if key in self._existing_issue_keys:
+                    continue
+
+                self._existing_issue_keys.add(key)
+                self.project.issues.append(new_issue)
+            except Exception as e:
+                print(f"[警告] 处理问题时出错，已跳过: {e}")
                 continue
-
-            self._existing_issue_keys.add(key)
-            self.project.issues.append(new_issue)
 
     def check_accidental_missing(self) -> List[Issue]:
         issues: List[Issue] = []

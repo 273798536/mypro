@@ -84,7 +84,47 @@ def main():
 
     print(f"    当前版本: v{project.current_version}")
 
-    print("\n[6/7] 生成校对报告")
+    print("\n[6/8] 模拟补材料后重新检查（验证去重逻辑）")
+    print("-" * 70)
+    issue_count_before = len(project.issues)
+    print(f"    重新检查前问题数: {issue_count_before}")
+    print(f"    待确认问题数: {len([i for i in project.issues if i.status == IssueStatus.PENDING])}")
+    print(f"    已确认问题数: {len([i for i in project.issues if i.status == IssueStatus.CONFIRMED])}")
+    print(f"    已解决问题数: {len([i for i in project.issues if i.status == IssueStatus.RESOLVED])}")
+    print(f"    已驳回问题数: {len([i for i in project.issues if i.status == IssueStatus.DISMISSED])}")
+
+    print("\n    模拟补充新的OCR材料并重新检查...")
+    importer2 = ScoreImporter(project)
+    extra_symbols = [
+        {
+            "id": "extra_note_001",
+            "symbol_type": "note",
+            "measure_number": 1,
+            "pitch": "G",
+            "octave": 4,
+            "duration": 0.5,
+            "position": {"x": 500, "y": 150, "width": 30, "height": 50, "confidence": 0.95},
+            "confidence": 0.95,
+        }
+    ]
+    importer2.import_symbol_list(extra_symbols, "补充材料")
+    print(f"    已导入补充材料，新增 {len(extra_symbols)} 个符号")
+
+    checker2 = ScoreChecker(project)
+    print(f"    新检查器实例初始化时从 project.issues 加载了 {len(checker2._existing_issue_keys)} 个已有问题键")
+    issues_after = checker2.run_all_checks()
+    issue_count_after = len(issues_after)
+    print(f"    重新检查后问题数: {issue_count_after}")
+
+    if issue_count_after == issue_count_before:
+        print("    ✅ 去重验证通过：问题数未增加，已有问题未重复生成")
+    elif issue_count_after > issue_count_before:
+        new_count = issue_count_after - issue_count_before
+        print(f"    ✅ 去重验证通过：新增 {new_count} 个问题（来自补充材料的新发现）")
+    else:
+        print(f"    ⚠️  问题数减少了，请检查逻辑")
+
+    print("\n[7/8] 生成校对报告")
 
     output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)
@@ -101,7 +141,7 @@ def main():
     project_file = save_project(project, output_dir)
     print(f"    项目文件: {project_file}")
 
-    print("\n[7/7] 修正后汇总")
+    print("\n[8/8] 修正后汇总")
     print("-" * 70)
     reporter.print_console_summary()
 
