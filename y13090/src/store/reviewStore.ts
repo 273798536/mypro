@@ -1,0 +1,134 @@
+import { create } from 'zustand';
+import type {
+  SensorRecord,
+  Anomaly,
+  ViewSnapshot,
+  FilterConditions,
+  ReviewResult,
+  CameraState,
+} from '@/types';
+import {
+  generateReviewResult,
+  filterReviewResult,
+  MOCK_SNAPSHOTS,
+} from '@/data/mockData';
+
+interface ReviewStore {
+  baseResult: ReviewResult;
+  filteredResult: ReviewResult;
+  filters: FilterConditions;
+  snapshots: ViewSnapshot[];
+  selectedRecordId: string | null;
+  cameraState: CameraState;
+  isScreenshotMode: boolean;
+  screenshotNote: string;
+  activeAnomalyTab: 'name_mismatch' | 'floor_unit_mixed';
+
+  setFilters: (filters: Partial<FilterConditions>) => void;
+  loadSample: () => void;
+  rerunReview: () => void;
+  selectRecord: (id: string | null) => void;
+  setCameraState: (state: CameraState) => void;
+  saveSnapshot: (name: string, screenshotDataUrl?: string) => void;
+  restoreSnapshot: (snapshotId: string) => void;
+  toggleScreenshotMode: () => void;
+  setScreenshotNote: (note: string) => void;
+  setActiveAnomalyTab: (tab: 'name_mismatch' | 'floor_unit_mixed') => void;
+  linkAnomalyConclusion: (anomalyId: string, conclusion: string) => void;
+}
+
+const defaultFilters: FilterConditions = {
+  timeRange: null,
+  area: null,
+  materialType: null,
+  showOnlyAnomaly: false,
+};
+
+const defaultCamera: CameraState = {
+  position: [10, 6, 10],
+  target: [0, 0, 0],
+  fov: 50,
+};
+
+function recompute(base: ReviewResult, filters: FilterConditions): ReviewResult {
+  return filterReviewResult(base, filters);
+}
+
+export const useReviewStore = create<ReviewStore>((set, get) => ({
+  baseResult: { records: [], anomalies: [], stats: { total: 0, anomalyCount: 0, nameMismatchCount: 0, floorUnitMixedCount: 0 } },
+  filteredResult: { records: [], anomalies: [], stats: { total: 0, anomalyCount: 0, nameMismatchCount: 0, floorUnitMixedCount: 0 } },
+  filters: defaultFilters,
+  snapshots: MOCK_SNAPSHOTS,
+  selectedRecordId: null,
+  cameraState: defaultCamera,
+  isScreenshotMode: false,
+  screenshotNote: '',
+  activeAnomalyTab: 'name_mismatch',
+
+  setFilters: (partial) => {
+    const next = { ...get().filters, ...partial };
+    const filtered = recompute(get().baseResult, next);
+    set({ filters: next, filteredResult: filtered });
+  },
+
+  loadSample: () => {
+    const base = generateReviewResult();
+    const filtered = recompute(base, defaultFilters);
+    set({
+      baseResult: base,
+      filteredResult: filtered,
+      filters: defaultFilters,
+      selectedRecordId: null,
+      cameraState: defaultCamera,
+    });
+  },
+
+  rerunReview: () => {
+    const base = generateReviewResult();
+    const filtered = recompute(base, get().filters);
+    set({ baseResult: base, filteredResult: filtered, selectedRecordId: null });
+  },
+
+  selectRecord: (id) => set({ selectedRecordId: id }),
+
+  setCameraState: (state) => set({ cameraState: state }),
+
+  saveSnapshot: (name, screenshotDataUrl) => {
+    const snap: ViewSnapshot = {
+      id: `snap-${Date.now()}`,
+      name,
+      timestamp: new Date().toLocaleString('zh-CN', { hour12: false }),
+      filterConditions: { ...get().filters },
+      cameraState: { ...get().cameraState },
+      screenshotDataUrl,
+    };
+    set({ snapshots: [snap, ...get().snapshots] });
+  },
+
+  restoreSnapshot: (snapshotId) => {
+    const snap = get().snapshots.find(s => s.id === snapshotId);
+    if (!snap) return;
+    const filtered = recompute(get().baseResult, snap.filterConditions);
+    set({
+      filters: snap.filterConditions,
+      cameraState: snap.cameraState,
+      filteredResult: filtered,
+      selectedRecordId: null,
+    });
+  },
+
+  toggleScreenshotMode: () => set({ isScreenshotMode: !get().isScreenshotMode }),
+
+  setScreenshotNote: (note) => set({ screenshotNote: note }),
+
+  setActiveAnomalyTab: (tab) => set({ activeAnomalyTab: tab }),
+
+  linkAnomalyConclusion: (anomalyId, conclusion) => {
+    const update = (list: Anomaly[]) =>
+      list.map(a => (a.id === anomalyId ? { ...a, linkedConclusion: conclusion } : a));
+    set({
+      baseResult: { ...get().baseResult, anomalies: update(get().baseResult.anomalies) },
+      filteredResult: { ...get().filteredResult, anomalies: update(get().filteredResult.anomalies) },
+    });
+  },
+}));
