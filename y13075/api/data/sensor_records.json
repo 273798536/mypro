@@ -1,0 +1,1352 @@
+{
+  "version": 1,
+  "records": [
+    {
+      "id": "rec_0001",
+      "point_id": "A-01-01",
+      "row": 1,
+      "col": 1,
+      "temperature": 24,
+      "humidity": 48,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 2,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-01",
+          "行号": "1",
+          "列号": "1",
+          "温度(℃)": "24",
+          "湿度(%)": "48",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00001"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0002",
+      "point_id": "A-01-02",
+      "row": 1,
+      "col": 2,
+      "temperature": 24.3,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 3,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-02",
+          "行号": "1",
+          "列号": "2",
+          "温度(℃)": "24.3",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00002"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0003",
+      "point_id": "A-01-03",
+      "row": 1,
+      "col": 3,
+      "temperature": 22.3,
+      "humidity": 49,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 4,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-03",
+          "行号": "1",
+          "列号": "3",
+          "温度(℃)": "22.3",
+          "湿度(%)": "49",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00003"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0005",
+      "point_id": "A-01-05",
+      "row": 1,
+      "col": 5,
+      "temperature": null,
+      "humidity": 47,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 6,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-05",
+          "行号": "1",
+          "列号": "5",
+          "温度(℃)": "N/A",
+          "湿度(%)": "",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00005"
+        }
+      },
+      "is_dirty": true,
+      "dirty_reason": "温度字段缺失（原始值为 N/A）"
+    },
+    {
+      "id": "rec_0006",
+      "point_id": "A-01-06",
+      "row": 1,
+      "col": 6,
+      "temperature": 24.4,
+      "humidity": 49,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 7,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-06",
+          "行号": "1",
+          "列号": "6",
+          "温度(℃)": "24.4",
+          "湿度(%)": "49",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00006"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0007",
+      "point_id": "A-01-07",
+      "row": 1,
+      "col": 7,
+      "temperature": 22.7,
+      "humidity": 51,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 8,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-07",
+          "行号": "1",
+          "列号": "7",
+          "温度(℃)": "22.7",
+          "湿度(%)": "51",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00007"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0008",
+      "point_id": "A-01-08",
+      "row": 1,
+      "col": 8,
+      "temperature": 32.1,
+      "humidity": 48,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 9,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-08",
+          "行号": "1",
+          "列号": "8",
+          "温度(℃)": "32.1",
+          "湿度(%)": "48",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00008"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0009",
+      "point_id": "A-01-09",
+      "row": 1,
+      "col": 9,
+      "temperature": 22.5,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 10,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-09",
+          "行号": "1",
+          "列号": "9",
+          "温度(℃)": "22.5",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00009"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0010",
+      "point_id": "A-01-10",
+      "row": 1,
+      "col": 10,
+      "temperature": 24.1,
+      "humidity": 51,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 11,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-10",
+          "行号": "1",
+          "列号": "10",
+          "温度(℃)": "24.1",
+          "湿度(%)": "51",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00010"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0011",
+      "point_id": "A-01-11",
+      "row": 1,
+      "col": 11,
+      "temperature": 22.6,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 12,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-11",
+          "行号": "1",
+          "列号": "11",
+          "温度(℃)": "22.6",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00011"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0012",
+      "point_id": "A-01-12",
+      "row": 1,
+      "col": 12,
+      "temperature": 24.4,
+      "humidity": 46,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 13,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-01-12",
+          "行号": "1",
+          "列号": "12",
+          "温度(℃)": "24.4",
+          "湿度(%)": "46",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00012"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0013",
+      "point_id": "A-02-01",
+      "row": 2,
+      "col": 1,
+      "temperature": 24.5,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 14,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-01",
+          "行号": "2",
+          "列号": "1",
+          "温度(℃)": "24.5",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00013"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0014",
+      "point_id": "A-02-02",
+      "row": 2,
+      "col": 2,
+      "temperature": 24.3,
+      "humidity": 51,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 15,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-02",
+          "行号": "2",
+          "列号": "2",
+          "温度(℃)": "24.3",
+          "湿度(%)": "51",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00014"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0015",
+      "point_id": "A-02-03",
+      "row": 2,
+      "col": 3,
+      "temperature": 23.5,
+      "humidity": 49,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 16,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-03",
+          "行号": "2",
+          "列号": "3",
+          "温度(℃)": "23.5",
+          "湿度(%)": "49",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00015"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0016",
+      "point_id": "A-02-04",
+      "row": 2,
+      "col": 4,
+      "temperature": 24,
+      "humidity": 52,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 17,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-04",
+          "行号": "2",
+          "列号": "4",
+          "温度(℃)": "24",
+          "湿度(%)": "52",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00016"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0017",
+      "point_id": "A-02-05",
+      "row": 2,
+      "col": 5,
+      "temperature": 23.5,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 18,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-05",
+          "行号": "2",
+          "列号": "5",
+          "温度(℃)": "23.5",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00017"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0018",
+      "point_id": "A-02-06",
+      "row": 2,
+      "col": 6,
+      "temperature": 23.3,
+      "humidity": 50,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 19,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-06",
+          "行号": "2",
+          "列号": "6",
+          "温度(℃)": "23.3",
+          "湿度(%)": "50",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00018"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0019",
+      "point_id": "A-02-07",
+      "row": 2,
+      "col": 7,
+      "temperature": 23.7,
+      "humidity": 46,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 20,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-07",
+          "行号": "2",
+          "列号": "7",
+          "温度(℃)": "23.7",
+          "湿度(%)": "46",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00019"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0020",
+      "point_id": "A-02-08",
+      "row": 2,
+      "col": 8,
+      "temperature": 24,
+      "humidity": 49,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 21,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-08",
+          "行号": "2",
+          "列号": "8",
+          "温度(℃)": "24",
+          "湿度(%)": "49",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00020"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0021",
+      "point_id": "A-02-09",
+      "row": 2,
+      "col": 9,
+      "temperature": 23.7,
+      "humidity": 48,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 22,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-09",
+          "行号": "2",
+          "列号": "9",
+          "温度(℃)": "23.7",
+          "湿度(%)": "48",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00021"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0022",
+      "point_id": "A-02-10",
+      "row": 2,
+      "col": 10,
+      "temperature": 22.5,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 23,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-10",
+          "行号": "2",
+          "列号": "10",
+          "温度(℃)": "22.5",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00022"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0023",
+      "point_id": "A-02-11",
+      "row": 2,
+      "col": 11,
+      "temperature": 22.8,
+      "humidity": 51,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 24,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-11",
+          "行号": "2",
+          "列号": "11",
+          "温度(℃)": "22.8",
+          "湿度(%)": "51",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00023"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0024",
+      "point_id": "A-02-12",
+      "row": 2,
+      "col": 12,
+      "temperature": 23,
+      "humidity": 46,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 25,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-12",
+          "行号": "2",
+          "列号": "12",
+          "温度(℃)": "23",
+          "湿度(%)": "46",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00024"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0025",
+      "point_id": "A-03-01",
+      "row": 3,
+      "col": 1,
+      "temperature": 23.7,
+      "humidity": 50,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 26,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-01",
+          "行号": "3",
+          "列号": "1",
+          "温度(℃)": "23.7",
+          "湿度(%)": "50",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00025"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0026",
+      "point_id": "A-03-02",
+      "row": 3,
+      "col": 2,
+      "temperature": 23,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 27,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-02",
+          "行号": "3",
+          "列号": "2",
+          "温度(℃)": "23",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00026"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0027",
+      "point_id": "A-03-03",
+      "row": 3,
+      "col": 3,
+      "temperature": 23.3,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 28,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-03",
+          "行号": "3",
+          "列号": "3",
+          "温度(℃)": "23.3",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00027"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0028",
+      "point_id": "A-03-04",
+      "row": 3,
+      "col": 4,
+      "temperature": 23.9,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 29,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-04",
+          "行号": "3",
+          "列号": "4",
+          "温度(℃)": "23.9",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00028"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0029",
+      "point_id": "A-03-05",
+      "row": 3,
+      "col": 5,
+      "temperature": 24,
+      "humidity": 47,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 30,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-05",
+          "行号": "3",
+          "列号": "5",
+          "温度(℃)": "24",
+          "湿度(%)": "47",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00029"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0030",
+      "point_id": "A-03-06",
+      "row": 3,
+      "col": 6,
+      "temperature": 24.6,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 31,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-06",
+          "行号": "3",
+          "列号": "6",
+          "温度(℃)": "24.6",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00030"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0031",
+      "point_id": "A-03-07",
+      "row": 3,
+      "col": 7,
+      "temperature": 22.7,
+      "humidity": 48,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 32,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-07",
+          "行号": "3",
+          "列号": "7",
+          "温度(℃)": "22.7",
+          "湿度(%)": "48",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00031"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0032",
+      "point_id": "A-03-08",
+      "row": 3,
+      "col": 8,
+      "temperature": 24.4,
+      "humidity": 50,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 33,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-08",
+          "行号": "3",
+          "列号": "8",
+          "温度(℃)": "24.4",
+          "湿度(%)": "50",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00032"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0033",
+      "point_id": "A-03-09",
+      "row": 3,
+      "col": 9,
+      "temperature": 22.5,
+      "humidity": 47,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 34,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-09",
+          "行号": "3",
+          "列号": "9",
+          "温度(℃)": "22.5",
+          "湿度(%)": "47",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00033"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0034",
+      "point_id": "A-03-10",
+      "row": 3,
+      "col": 10,
+      "temperature": 22.7,
+      "humidity": 46,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 35,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-10",
+          "行号": "3",
+          "列号": "10",
+          "温度(℃)": "22.7",
+          "湿度(%)": "46",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00034"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0035",
+      "point_id": "A-03-11",
+      "row": 3,
+      "col": 11,
+      "temperature": 23.9,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 36,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-11",
+          "行号": "3",
+          "列号": "11",
+          "温度(℃)": "23.9",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00035"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0036",
+      "point_id": "A-03-12",
+      "row": 3,
+      "col": 12,
+      "temperature": 22.9,
+      "humidity": 46,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 37,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-03-12",
+          "行号": "3",
+          "列号": "12",
+          "温度(℃)": "22.9",
+          "湿度(%)": "46",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00036"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0037",
+      "point_id": "B-01-01",
+      "row": 1,
+      "col": 1,
+      "temperature": 25,
+      "humidity": 48,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 38,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-01",
+          "行号": "1",
+          "列号": "1",
+          "温度(℃)": "25",
+          "湿度(%)": "48",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00037"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0038",
+      "point_id": "B-01-02",
+      "row": 1,
+      "col": 2,
+      "temperature": 25,
+      "humidity": 48,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 39,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-02",
+          "行号": "1",
+          "列号": "2",
+          "温度(℃)": "25",
+          "湿度(%)": "48",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00038"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0039",
+      "point_id": "B-01-03",
+      "row": 1,
+      "col": 3,
+      "temperature": 23.3,
+      "humidity": 42,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 40,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-03",
+          "行号": "1",
+          "列号": "3",
+          "温度(℃)": "23.3",
+          "湿度(%)": "42",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00039"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0040",
+      "point_id": "B-01-04",
+      "row": 1,
+      "col": 4,
+      "temperature": 23.4,
+      "humidity": 43,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 41,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-04",
+          "行号": "1",
+          "列号": "4",
+          "温度(℃)": "23.4",
+          "湿度(%)": "43",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00040"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0041",
+      "point_id": "B-01-05",
+      "row": 1,
+      "col": 5,
+      "temperature": 23.7,
+      "humidity": 43,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 42,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-05",
+          "行号": "1",
+          "列号": "5",
+          "温度(℃)": "23.7",
+          "湿度(%)": "43",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00041"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0042",
+      "point_id": "B-01-06",
+      "row": 1,
+      "col": 6,
+      "temperature": 24.8,
+      "humidity": 46,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 43,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-06",
+          "行号": "1",
+          "列号": "6",
+          "温度(℃)": "24.8",
+          "湿度(%)": "46",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00042"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0043",
+      "point_id": "B-01-07",
+      "row": 1,
+      "col": 7,
+      "temperature": 25.2,
+      "humidity": 48,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 44,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-07",
+          "行号": "1",
+          "列号": "7",
+          "温度(℃)": "25.2",
+          "湿度(%)": "48",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00043"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0044",
+      "point_id": "B-01-08",
+      "row": 1,
+      "col": 8,
+      "temperature": 24,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 45,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-08",
+          "行号": "1",
+          "列号": "8",
+          "温度(℃)": "24",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00044"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0045",
+      "point_id": "B-01-09",
+      "row": 1,
+      "col": 9,
+      "temperature": 24.3,
+      "humidity": 43,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 46,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-09",
+          "行号": "1",
+          "列号": "9",
+          "温度(℃)": "24.3",
+          "湿度(%)": "43",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00045"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0046",
+      "point_id": "B-01-10",
+      "row": 1,
+      "col": 10,
+      "temperature": 24.4,
+      "humidity": 49,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 47,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-01-10",
+          "行号": "1",
+          "列号": "10",
+          "温度(℃)": "24.4",
+          "湿度(%)": "49",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00046"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0047",
+      "point_id": "B-02-01",
+      "row": 2,
+      "col": 1,
+      "temperature": 24.9,
+      "humidity": 45,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 48,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-01",
+          "行号": "2",
+          "列号": "1",
+          "温度(℃)": "24.9",
+          "湿度(%)": "45",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00047"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0048",
+      "point_id": "B-02-02",
+      "row": 2,
+      "col": 2,
+      "temperature": 24.6,
+      "humidity": 43,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 49,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-02",
+          "行号": "2",
+          "列号": "2",
+          "温度(℃)": "24.6",
+          "湿度(%)": "43",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00048"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0049",
+      "point_id": "B-02-03",
+      "row": 2,
+      "col": 3,
+      "temperature": 24.2,
+      "humidity": 44,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 50,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-03",
+          "行号": "2",
+          "列号": "3",
+          "温度(℃)": "24.2",
+          "湿度(%)": "44",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00049"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0050",
+      "point_id": "B-02-04",
+      "row": 2,
+      "col": 4,
+      "temperature": 24,
+      "humidity": 49,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 51,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-04",
+          "行号": "2",
+          "列号": "4",
+          "温度(℃)": "24",
+          "湿度(%)": "49",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00050"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0051",
+      "point_id": "B-02-05",
+      "row": 2,
+      "col": 5,
+      "temperature": 23.1,
+      "humidity": 42,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 52,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-05",
+          "行号": "2",
+          "列号": "5",
+          "温度(℃)": "23.1",
+          "湿度(%)": "42",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00051"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0052",
+      "point_id": "B-02-06",
+      "row": 2,
+      "col": 6,
+      "temperature": 24.8,
+      "humidity": 47,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 53,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-06",
+          "行号": "2",
+          "列号": "6",
+          "温度(℃)": "24.8",
+          "湿度(%)": "47",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00052"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0053",
+      "point_id": "B-02-07",
+      "row": 2,
+      "col": 7,
+      "temperature": 23.3,
+      "humidity": 50,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 54,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-07",
+          "行号": "2",
+          "列号": "7",
+          "温度(℃)": "23.3",
+          "湿度(%)": "50",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00053"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0054",
+      "point_id": "B-02-08",
+      "row": 2,
+      "col": 8,
+      "temperature": 25.2,
+      "humidity": null,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 55,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-08",
+          "行号": "2",
+          "列号": "8",
+          "温度(℃)": "",
+          "湿度(%)": "异常",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00054"
+        }
+      },
+      "is_dirty": true,
+      "dirty_reason": "湿度格式异常（非数字）"
+    },
+    {
+      "id": "rec_0055",
+      "point_id": "B-02-09",
+      "row": 2,
+      "col": 9,
+      "temperature": 25.2,
+      "humidity": 48,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 56,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-09",
+          "行号": "2",
+          "列号": "9",
+          "温度(℃)": "25.2",
+          "湿度(%)": "48",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00055"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_0056",
+      "point_id": "B-02-10",
+      "row": 2,
+      "col": 10,
+      "temperature": 24.8,
+      "humidity": 44,
+      "raw_source": {
+        "file_name": "dc_sensors_2026Q2.csv",
+        "import_time": "2026-06-11T11:19:55.280Z",
+        "line_number": 57,
+        "raw_values": {
+          "区域编号": "B",
+          "点位编号": "B-02-10",
+          "行号": "2",
+          "列号": "10",
+          "温度(℃)": "24.8",
+          "湿度(%)": "44",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00056"
+        }
+      },
+      "is_dirty": false
+    },
+    {
+      "id": "rec_dup_001",
+      "point_id": "A-02-03",
+      "row": 2,
+      "col": 3,
+      "temperature": 26.7,
+      "humidity": 52,
+      "raw_source": {
+        "file_name": "dc_sensors_extra.csv",
+        "import_time": "2026-06-11T13:20:45.166Z",
+        "line_number": 999,
+        "raw_values": {
+          "区域编号": "A",
+          "点位编号": "A-02-03",
+          "行号": "2",
+          "列号": "3",
+          "温度(℃)": "26.7",
+          "湿度(%)": "52",
+          "采集时间": "2026-06-11T11:19:55.280Z",
+          "采集器SN": "SNS00015",
+          "备注": "重复采集"
+        }
+      },
+      "is_dirty": false
+    }
+  ]
+}

@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "anomalies": [
+    {
+      "id": "anm_001",
+      "sensor_record_id": "rec_0005",
+      "point_id": "A-01-05",
+      "status": "pending",
+      "detection_reason": {
+        "type": "missing_value",
+        "description": "温度字段缺失，原始值为 N/A",
+        "detail": {
+          "field": "temperature",
+          "raw_value": "N/A"
+        }
+      },
+      "affected_points": [
+        "A-01-04",
+        "A-01-05",
+        "A-01-06"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-11T14:20:45.172Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "自动检测：missing_value"
+        }
+      ],
+      "created_at": "2026-06-11T14:20:45.172Z",
+      "updated_at": "2026-06-11T14:20:45.172Z"
+    },
+    {
+      "id": "anm_002",
+      "sensor_record_id": "rec_0008",
+      "point_id": "A-01-08",
+      "status": "pending",
+      "detection_reason": {
+        "type": "temp_delta",
+        "description": "与左邻点 A-01-07 温差 8.3℃，超出阈值 5℃",
+        "detail": {
+          "delta": 8.3,
+          "threshold": 5,
+          "neighbor": "A-01-07"
+        }
+      },
+      "affected_points": [
+        "A-01-06",
+        "A-01-07",
+        "A-01-08",
+        "A-01-09"
+      ],
+      "remark": "运营主管已复核：经与现场运维核对，A-01-08 机柜上方回风温度传感器确已漂移；建议今晚维护窗口更换。关联工单 #INFRA-2026-0611-003。",
+      "operation_logs": [
+        {
+          "time": "2026-06-11T14:20:45.172Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "自动检测：temp_delta"
+        },
+        {
+          "time": "2026-06-11T14:23:33.648Z",
+          "action": "remark_edit",
+          "operator": "operator",
+          "detail": "更新备注（78 字）"
+        }
+      ],
+      "created_at": "2026-06-11T14:20:45.172Z",
+      "updated_at": "2026-06-11T14:23:33.648Z"
+    },
+    {
+      "id": "anm_003",
+      "sensor_record_id": "rec_0003",
+      "point_id": "A-01-03",
+      "status": "pending",
+      "detection_reason": {
+        "type": "gap",
+        "description": "同一行 A-01 中列号不连续（A-01-03 之后是 A-01-05，缺 04）",
+        "detail": {
+          "missing_cols": [
+            4
+          ]
+        }
+      },
+      "affected_points": [
+        "A-01-02",
+        "A-01-03",
+        "A-01-05",
+        "A-00-06"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-11T14:20:45.172Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "自动检测：gap"
+        }
+      ],
+      "created_at": "2026-06-11T14:20:45.172Z",
+      "updated_at": "2026-06-11T14:20:45.172Z"
+    },
+    {
+      "id": "anm_004",
+      "sensor_record_id": "rec_0015",
+      "point_id": "A-02-03",
+      "status": "pending",
+      "detection_reason": {
+        "type": "duplicate",
+        "description": "点位编号 A-02-03 出现 2 条记录（来自不同文件）",
+        "detail": {
+          "count": 2,
+          "file_1": "dc_sensors_2026Q2.csv",
+          "file_2": "dc_sensors_extra.csv"
+        }
+      },
+      "affected_points": [
+        "A-02-02",
+        "A-02-03",
+        "A-02-04"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-11T14:20:45.172Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "自动检测：duplicate"
+        }
+      ],
+      "created_at": "2026-06-11T14:20:45.172Z",
+      "updated_at": "2026-06-11T14:20:45.172Z"
+    },
+    {
+      "id": "anm_mq9l4v0e_24xx",
+      "sensor_record_id": "rec_0005",
+      "point_id": "A-01-05",
+      "status": "pending",
+      "detection_reason": {
+        "type": "missing_value",
+        "description": "温度字段缺失（原始值为 N/A）",
+        "detail": {
+          "temperature": null,
+          "humidity": 47,
+          "reason": "温度字段缺失（原始值为 N/A）"
+        }
+      },
+      "affected_points": [
+        "A-01-05"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-11T14:20:45.182Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "相邻检测：missing_value"
+        }
+      ],
+      "created_at": "2026-06-11T14:20:45.182Z",
+      "updated_at": "2026-06-11T14:20:45.182Z"
+    },
+    {
+      "id": "anm_mq9l4v0e_n57x",
+      "sensor_record_id": "rec_0054",
+      "point_id": "B-02-08",
+      "status": "pending",
+      "detection_reason": {
+        "type": "missing_value",
+        "description": "湿度格式异常（非数字）",
+        "detail": {
+          "temperature": 25.2,
+          "humidity": null,
+          "reason": "湿度格式异常（非数字）"
+        }
+      },
+      "affected_points": [
+        "B-02-08"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-11T14:20:45.182Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "相邻检测：missing_value"
+        }
+      ],
+      "created_at": "2026-06-11T14:20:45.182Z",
+      "updated_at": "2026-06-11T14:20:45.182Z"
+    },
+    {
+      "id": "anm_mq9l4v0e_gjly",
+      "sensor_record_id": "rec_0015",
+      "point_id": "A-02-03",
+      "status": "pending",
+      "detection_reason": {
+        "type": "duplicate",
+        "description": "点位编号 A-02-03 出现 2 条记录（来源：dc_sensors_2026Q2.csv、dc_sensors_extra.csv）",
+        "detail": {
+          "count": 2,
+          "files": [
+            "dc_sensors_2026Q2.csv",
+            "dc_sensors_extra.csv"
+          ]
+        }
+      },
+      "affected_points": [
+        "A-02-02",
+        "A-02-03",
+        "A-02-04"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-11T14:20:45.182Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "相邻检测：duplicate"
+        }
+      ],
+      "created_at": "2026-06-11T14:20:45.182Z",
+      "updated_at": "2026-06-11T14:20:45.182Z"
+    },
+    {
+      "id": "anm_mq9l4v0f_txj6",
+      "sensor_record_id": "rec_0008",
+      "point_id": "A-01-08",
+      "status": "pending",
+      "detection_reason": {
+        "type": "temp_delta",
+        "description": "相邻点 B-01-07(25.2℃) 与 A-01-08(32.1℃) 温差 6.9℃，阈值 5℃",
+        "detail": {
+          "delta": 6.900000000000002,
+          "threshold": 5,
+          "hot_point": "A-01-08",
+          "cold_point": "B-01-07"
+        }
+      },
+      "affected_points": [
+        "A-01-06",
+        "A-01-07",
+        "A-01-08",
+        "A-01-09"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-11T14:20:45.183Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "相邻检测：temp_delta"
+        }
+      ],
+      "created_at": "2026-06-11T14:20:45.183Z",
+      "updated_at": "2026-06-11T14:20:45.183Z"
+    }
+  ]
+}
