@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Upload, Music, User, FileText } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Upload, Music, User, FileText, AlertCircle } from 'lucide-react'
 import Modal from './Modal'
 import { useScoreStore } from '../store/scoreStore'
 import { generateId } from '../utils/helpers'
@@ -13,16 +13,53 @@ interface NewScoreModalProps {
 
 export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewScoreModalProps) {
   const { addScore, addVersion } = useScoreStore()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState({
     title: '',
     composer: '',
     pdfFileName: '',
   })
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [fileError, setFileError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleFileSelect = () => {
+    setFileError('')
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.name.toLowerCase().endsWith('.pdf')) {
+      setFileError('仅支持 PDF 格式文件，请重新选择')
+      setSelectedFile(null)
+      setFormData(prev => ({ ...prev, pdfFileName: '' }))
+      return
+    }
+
+    if (file.size > 100 * 1024 * 1024) {
+      setFileError('文件大小不能超过 100MB')
+      setSelectedFile(null)
+      setFormData(prev => ({ ...prev, pdfFileName: '' }))
+      return
+    }
+
+    setFileError('')
+    setSelectedFile(file)
+    setFormData(prev => ({ ...prev, pdfFileName: file.name }))
+  }
+
+  const canSubmit = () => {
+    if (!formData.title.trim() || !formData.composer.trim()) return false
+    if (mode === 'import' && !selectedFile) return false
+    return true
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!formData.title || !formData.composer) return
+    if (!canSubmit()) return
 
     setIsSubmitting(true)
 
@@ -30,13 +67,16 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
 
     const scoreId = generateId()
     const now = new Date().toISOString()
+    const pdfUrl = selectedFile
+      ? URL.createObjectURL(selectedFile)
+      : `/scores/${scoreId}.pdf`
 
     const newScore: Score = {
       id: scoreId,
-      title: formData.title,
-      composer: formData.composer,
+      title: formData.title.trim(),
+      composer: formData.composer.trim(),
       status: 'pending',
-      pdfUrl: formData.pdfFileName || `/scores/${scoreId}.pdf`,
+      pdfUrl: selectedFile ? selectedFile.name : pdfUrl,
       createdAt: now,
       updatedAt: now,
     }
@@ -45,57 +85,78 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
       id: generateId(),
       scoreId,
       versionNumber: 1,
-      pdfUrl: formData.pdfFileName || `/scores/${scoreId}.pdf`,
-      source: mode === 'import' ? '导入上传' : '手动创建',
+      pdfUrl: selectedFile ? selectedFile.name : pdfUrl,
+      source: mode === 'import' ? `导入上传 - ${selectedFile?.name ?? ''}` : '手动创建',
       createdAt: now,
-      note: '初始版本',
+      note: selectedFile
+        ? `初始版本 (文件: ${selectedFile.name}, ${(selectedFile.size / 1024).toFixed(1)}KB)`
+        : '初始版本',
     }
 
     addScore(newScore)
     addVersion(newVersion)
 
     setFormData({ title: '', composer: '', pdfFileName: '' })
+    setSelectedFile(null)
+    setFileError('')
     setIsSubmitting(false)
     onClose()
   }
 
-  const handleFileSelect = () => {
-    const fileName = mode === 'import' 
-      ? `imported_${Date.now()}_score.pdf` 
-      : ''
-    setFormData({ ...formData, pdfFileName: fileName })
+  const handleClose = () => {
+    if (isSubmitting) return
+    setFormData({ title: '', composer: '', pdfFileName: '' })
+    setSelectedFile(null)
+    setFileError('')
+    onClose()
   }
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       title={mode === 'import' ? '导入曲谱' : '新建曲谱'}
       size="md"
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {mode === 'import' && (
           <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="hidden"
+            />
             <label className="block text-sm font-medium text-navy-300 mb-2">
-              上传PDF文件
+              上传PDF文件 *
             </label>
             <div
               onClick={handleFileSelect}
               className="border-2 border-dashed border-navy-600 rounded-xl p-8 text-center cursor-pointer hover:border-gold-500/50 hover:bg-navy-700/30 transition-all"
             >
               <Upload className="w-10 h-10 mx-auto text-navy-500 mb-3" />
-              {formData.pdfFileName ? (
+              {selectedFile ? (
                 <div>
-                  <p className="text-gold-400 font-medium">{formData.pdfFileName}</p>
+                  <p className="text-gold-400 font-medium">{selectedFile.name}</p>
+                  <p className="text-xs text-navy-400 mt-1">
+                    {(selectedFile.size / 1024).toFixed(1)} KB
+                  </p>
                   <p className="text-xs text-navy-500 mt-1">点击重新选择</p>
                 </div>
               ) : (
                 <div>
                   <p className="text-navy-300">点击选择PDF文件</p>
-                  <p className="text-xs text-navy-500 mt-1">支持 .pdf 格式</p>
+                  <p className="text-xs text-navy-500 mt-1">支持 .pdf 格式，最大 100MB</p>
                 </div>
               )}
             </div>
+            {fileError && (
+              <div className="flex items-center gap-2 mt-2 text-red-400 text-sm">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{fileError}</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -148,7 +209,7 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-navy-700">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="px-5 py-2.5 bg-navy-700 text-white rounded-lg hover:bg-navy-600 transition-colors"
             disabled={isSubmitting}
           >
@@ -157,7 +218,7 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
           <button
             type="submit"
             className="px-5 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 text-navy-900 font-medium rounded-lg hover:from-gold-400 hover:to-gold-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            disabled={isSubmitting || !formData.title || !formData.composer}
+            disabled={isSubmitting || !canSubmit()}
           >
             {isSubmitting ? (
               <>

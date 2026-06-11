@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { GitBranch, FileText, Users, MessageSquare, AlertTriangle, ArrowRight, CheckCircle } from 'lucide-react'
+import { GitBranch, FileText, Users, MessageSquare, AlertTriangle, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react'
 import Modal from './Modal'
 import { useScoreStore } from '../store/scoreStore'
 import { formatDate } from '../utils/helpers'
@@ -17,6 +17,7 @@ export default function ReverseTraceModal({ isOpen, onClose, scoreId }: ReverseT
   const [startPoint, setStartPoint] = useState<TraceStartPoint>('exported')
   const [isTracing, setIsTracing] = useState(false)
   const [traceComplete, setTraceComplete] = useState(false)
+  const [traceError, setTraceError] = useState('')
 
   const score = getScoreById(scoreId)
   const versions = getVersionsByScoreId(scoreId)
@@ -24,17 +25,25 @@ export default function ReverseTraceModal({ isOpen, onClose, scoreId }: ReverseT
   const annotations = getAnnotationsByScoreId(scoreId)
   const anomalies = getAnomaliesByScoreId(scoreId)
 
-  const startPoints: { value: TraceStartPoint; label: string; icon: any; description: string }[] = [
-    { value: 'exported', label: '导出结果', icon: FileText, description: '从最终导出曲谱反查' },
-    { value: 'anomaly', label: '异常记录', icon: AlertTriangle, description: '从异常项追溯来源' },
-    { value: 'annotation', label: '批注记录', icon: MessageSquare, description: '从批注追溯原始来源' },
-    { value: 'part', label: '声部清单', icon: Users, description: '从声部清单追溯总谱' },
+  const startPoints: { value: TraceStartPoint; label: string; icon: any; description: string; available: boolean; unavailabilityReason: string }[] = [
+    { value: 'exported', label: '导出结果', icon: FileText, description: '从最终导出曲谱反查', available: !!score?.exportedUrl, unavailabilityReason: '尚未导出曲谱，无法从导出结果追溯' },
+    { value: 'anomaly', label: '异常记录', icon: AlertTriangle, description: '从异常项追溯来源', available: anomalies.length > 0, unavailabilityReason: '暂无异常记录' },
+    { value: 'annotation', label: '批注记录', icon: MessageSquare, description: '从批注追溯原始来源', available: annotations.length > 0, unavailabilityReason: '暂无批注记录' },
+    { value: 'part', label: '声部清单', icon: Users, description: '从声部清单追溯总谱', available: parts.length > 0, unavailabilityReason: '暂无声部清单数据' },
   ]
 
   const handleStartTrace = async () => {
+    setTraceError('')
+
+    const selectedPoint = startPoints.find(p => p.value === startPoint)
+    if (!selectedPoint?.available) {
+      setTraceError(selectedPoint?.unavailabilityReason || '当前追溯起点无可用数据')
+      return
+    }
+
     setIsTracing(true)
     setTraceComplete(false)
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 1500))
     setIsTracing(false)
     setTraceComplete(true)
   }
@@ -43,39 +52,46 @@ export default function ReverseTraceModal({ isOpen, onClose, scoreId }: ReverseT
     switch (startPoint) {
       case 'exported':
         return [
-          { name: '导出曲谱', item: score?.exportedUrl || 'final_score.pdf', type: 'result' },
+          { name: '导出曲谱', item: score?.exportedUrl?.split('/').pop() || '未知文件', type: 'result' },
           { name: '批注合并', item: `${annotations.length} 条批注`, type: 'annotation' },
           { name: '声部清单', item: `${parts.length} 个声部`, type: 'part' },
-          { name: 'PDF版本', item: `V${versions[0]?.versionNumber || 1}`, type: 'pdf' },
+          { name: 'PDF版本', item: versions[0] ? `V${versions[0].versionNumber} (${versions[0].source})` : '无版本', type: 'pdf' },
         ]
       case 'anomaly':
         return [
-          { name: '异常记录', item: anomalies[0]?.description?.slice(0, 30) + '...' || '无异常', type: 'anomaly' },
-          { name: '比对来源', item: '版本校验任务', type: 'task' },
+          { name: '异常记录', item: anomalies[0]?.description?.slice(0, 40) + (anomalies[0]?.description && anomalies[0].description.length > 40 ? '...' : '') || '无异常', type: 'anomaly' },
+          { name: '比对来源', item: anomalies[0]?.relatedItems?.length ? `关联 ${anomalies[0].relatedItems.length} 项` : '无关联', type: 'task' },
           { name: '声部清单', item: `${parts.length} 个声部`, type: 'part' },
-          { name: '原始PDF', item: versions[versions.length - 1]?.pdfUrl.split('/').pop() || 'unknown', type: 'pdf' },
+          { name: '原始PDF', item: versions[versions.length - 1]?.pdfUrl.split('/').pop() || '无版本记录', type: 'pdf' },
         ]
       case 'annotation':
         return [
-          { name: '批注内容', item: annotations[0]?.content?.slice(0, 30) + '...' || '无批注', type: 'annotation' },
+          { name: '批注内容', item: annotations[0]?.content?.slice(0, 40) + (annotations[0]?.content && annotations[0].content.length > 40 ? '...' : '') || '无批注', type: 'annotation' },
           { name: '批注来源', item: annotations[0]?.source || '未知来源', type: 'source' },
           { name: '对应声部', item: parts[0]?.name || '全声部', type: 'part' },
           { name: '总谱位置', item: annotations[0]?.measureRange || '全曲', type: 'pdf' },
         ]
       case 'part':
         return [
-          { name: '声部', item: parts[0]?.name || '无声部', type: 'part' },
-          { name: '声部清单', item: score?.partListUrl?.split('/').pop() || '未知文件', type: 'file' },
+          { name: '声部', item: parts.map(p => p.name).join('、') || '无声部', type: 'part' },
+          { name: '声部清单', item: score?.partListUrl?.split('/').pop() || '未上传清单文件', type: 'file' },
           { name: '导入时间', item: score?.createdAt ? formatDate(score.createdAt) : '未知', type: 'time' },
-          { name: '原始PDF', item: versions[versions.length - 1]?.pdfUrl.split('/').pop() || 'unknown', type: 'pdf' },
+          { name: '原始PDF', item: versions[versions.length - 1]?.pdfUrl.split('/').pop() || '无版本记录', type: 'pdf' },
         ]
       default:
         return []
     }
   }
 
+  const handleClose = () => {
+    if (isTracing) return
+    setTraceComplete(false)
+    setTraceError('')
+    onClose()
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="反向追溯" size="lg">
+    <Modal isOpen={isOpen} onClose={handleClose} title="反向追溯" size="lg">
       <div className="space-y-5">
         {!traceComplete ? (
           <>
@@ -86,29 +102,36 @@ export default function ReverseTraceModal({ isOpen, onClose, scoreId }: ReverseT
               <div className="grid grid-cols-2 gap-3">
                 {startPoints.map((point) => {
                   const Icon = point.icon
+                  const isSelected = startPoint === point.value
                   return (
                     <button
                       key={point.value}
                       type="button"
-                      onClick={() => setStartPoint(point.value)}
+                      onClick={() => {
+                        setStartPoint(point.value)
+                        setTraceError('')
+                      }}
                       className={`p-4 rounded-xl text-left transition-all ${
-                        startPoint === point.value
+                        isSelected
                           ? 'bg-gold-500/20 border-2 border-gold-500/50'
                           : 'bg-navy-900/50 border-2 border-navy-700 hover:border-navy-600'
-                      } ${isTracing ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'}`}
+                      } ${isTracing ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer'} ${!point.available && !isSelected ? 'opacity-50' : ''}`}
                       disabled={isTracing}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${
-                          startPoint === point.value ? 'bg-gold-500/30' : 'bg-navy-700'
+                          isSelected ? 'bg-gold-500/30' : 'bg-navy-700'
                         }`}>
                           <Icon className={`w-5 h-5 ${
-                            startPoint === point.value ? 'text-gold-400' : 'text-navy-400'
+                            isSelected ? 'text-gold-400' : 'text-navy-400'
                           }`} />
                         </div>
                         <div>
                           <div className="font-medium text-white">{point.label}</div>
                           <div className="text-xs text-navy-400">{point.description}</div>
+                          {!point.available && (
+                            <div className="text-xs text-amber-400/80 mt-1">{point.unavailabilityReason}</div>
+                          )}
                         </div>
                       </div>
                     </button>
@@ -116,6 +139,13 @@ export default function ReverseTraceModal({ isOpen, onClose, scoreId }: ReverseT
                 })}
               </div>
             </div>
+
+            {traceError && (
+              <div className="flex items-center gap-2 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{traceError}</span>
+              </div>
+            )}
 
             {isTracing && (
               <div className="bg-navy-900/50 rounded-xl p-6 text-center">
@@ -128,7 +158,7 @@ export default function ReverseTraceModal({ isOpen, onClose, scoreId }: ReverseT
             <div className="flex items-center justify-end gap-3 pt-4 border-t border-navy-700">
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 className="px-5 py-2.5 bg-navy-700 text-white rounded-lg hover:bg-navy-600 transition-colors"
                 disabled={isTracing}
               >
@@ -189,6 +219,7 @@ export default function ReverseTraceModal({ isOpen, onClose, scoreId }: ReverseT
                 type="button"
                 onClick={() => {
                   setTraceComplete(false)
+                  setTraceError('')
                   setStartPoint('exported')
                 }}
                 className="px-5 py-2.5 bg-navy-700 text-white rounded-lg hover:bg-navy-600 transition-colors"
@@ -197,7 +228,7 @@ export default function ReverseTraceModal({ isOpen, onClose, scoreId }: ReverseT
               </button>
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 className="px-5 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 text-navy-900 font-medium rounded-lg hover:from-gold-400 hover:to-gold-500 transition-all"
               >
                 完成

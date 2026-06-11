@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Upload, Plus, Trash2, FileSpreadsheet } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Upload, Plus, Trash2, FileSpreadsheet, AlertCircle } from 'lucide-react'
 import Modal from './Modal'
 import { useScoreStore } from '../store/scoreStore'
 import { generateId } from '../utils/helpers'
@@ -17,16 +17,42 @@ const defaultPart = {
   measureRange: '',
 }
 
+const ACCEPTED_EXTENSIONS = ['.xlsx', '.xls', '.csv']
+
 export default function AddPartsModal({ isOpen, onClose, scoreId }: AddPartsModalProps) {
   const { addPart, updateScore, getScoreById } = useScoreStore()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [parts, setParts] = useState<Array<{ name: string; instrument: string; measureRange: string }>>([
     { ...defaultPart },
   ])
-  const [fileName, setFileName] = useState('')
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [fileError, setFileError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleFileSelect = () => {
-    setFileName(`parts_list_${Date.now()}.xlsx`)
+    setFileError('')
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const ext = '.' + file.name.split('.').pop()?.toLowerCase()
+    if (!ACCEPTED_EXTENSIONS.includes(ext)) {
+      setFileError(`仅支持 ${ACCEPTED_EXTENSIONS.join('、')} 格式文件`)
+      setSelectedFile(null)
+      return
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      setFileError('文件大小不能超过 50MB')
+      setSelectedFile(null)
+      return
+    }
+
+    setFileError('')
+    setSelectedFile(file)
   }
 
   const addPartRow = () => {
@@ -45,46 +71,66 @@ export default function AddPartsModal({ isOpen, onClose, scoreId }: AddPartsModa
     setParts(newParts)
   }
 
+  const canSubmit = () => {
+    const hasValidParts = parts.some((p) => p.name.trim() && p.instrument.trim())
+    return hasValidParts || selectedFile !== null
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    const validParts = parts.filter((p) => p.name.trim() && p.instrument.trim())
-    if (validParts.length === 0 && !fileName) return
+    if (!canSubmit()) return
 
     setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await new Promise((resolve) => setTimeout(resolve, 800))
 
+    const validParts = parts.filter((p) => p.name.trim() && p.instrument.trim())
     validParts.forEach((partData) => {
       const newPart: Part = {
         id: generateId(),
         scoreId,
-        name: partData.name,
-        instrument: partData.instrument,
-        measureRange: partData.measureRange || '1-999',
+        name: partData.name.trim(),
+        instrument: partData.instrument.trim(),
+        measureRange: partData.measureRange.trim() || '1-999',
         confirmed: false,
       }
       addPart(newPart)
     })
 
-    if (fileName) {
+    if (selectedFile) {
       const score = getScoreById(scoreId)
-      if (score && !score.partListUrl) {
+      if (score) {
         updateScore(scoreId, {
-          partListUrl: `/scores/${fileName}`,
+          partListUrl: `/scores/${selectedFile.name}`,
         })
       }
     }
 
     setParts([{ ...defaultPart }])
-    setFileName('')
+    setSelectedFile(null)
+    setFileError('')
     setIsSubmitting(false)
     onClose()
   }
 
+  const handleClose = () => {
+    if (isSubmitting) return
+    setParts([{ ...defaultPart }])
+    setSelectedFile(null)
+    setFileError('')
+    onClose()
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="补充声部清单" size="lg">
+    <Modal isOpen={isOpen} onClose={handleClose} title="补充声部清单" size="lg">
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".xlsx,.xls,.csv"
+            onChange={handleFileChange}
+            className="hidden"
+          />
           <label className="block text-sm font-medium text-navy-300 mb-2">
             上传声部清单文件（可选）
           </label>
@@ -93,18 +139,27 @@ export default function AddPartsModal({ isOpen, onClose, scoreId }: AddPartsModa
             className="border-2 border-dashed border-navy-600 rounded-xl p-6 text-center cursor-pointer hover:border-gold-500/50 hover:bg-navy-700/30 transition-all"
           >
             <FileSpreadsheet className="w-10 h-10 mx-auto text-navy-500 mb-3" />
-            {fileName ? (
+            {selectedFile ? (
               <div>
-                <p className="text-gold-400 font-medium">{fileName}</p>
+                <p className="text-gold-400 font-medium">{selectedFile.name}</p>
+                <p className="text-xs text-navy-400 mt-1">
+                  {(selectedFile.size / 1024).toFixed(1)} KB
+                </p>
                 <p className="text-xs text-navy-500 mt-1">点击重新选择</p>
               </div>
             ) : (
               <div>
                 <p className="text-navy-300">点击上传声部清单文件</p>
-                <p className="text-xs text-navy-500 mt-1">支持 .xlsx, .csv 格式</p>
+                <p className="text-xs text-navy-500 mt-1">支持 .xlsx, .csv 格式，最大 50MB</p>
               </div>
             )}
           </div>
+          {fileError && (
+            <div className="flex items-center gap-2 mt-2 text-red-400 text-sm">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{fileError}</span>
+            </div>
+          )}
         </div>
 
         <div className="border-t border-navy-700 pt-5">
@@ -166,7 +221,7 @@ export default function AddPartsModal({ isOpen, onClose, scoreId }: AddPartsModa
         <div className="flex items-center justify-end gap-3 pt-4 border-t border-navy-700">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="px-5 py-2.5 bg-navy-700 text-white rounded-lg hover:bg-navy-600 transition-colors"
             disabled={isSubmitting}
           >
@@ -175,7 +230,7 @@ export default function AddPartsModal({ isOpen, onClose, scoreId }: AddPartsModa
           <button
             type="submit"
             className="px-5 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 text-navy-900 font-medium rounded-lg hover:from-gold-400 hover:to-gold-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            disabled={isSubmitting || (parts.every((p) => !p.name.trim() || !p.instrument.trim()) && !fileName)}
+            disabled={isSubmitting || !canSubmit()}
           >
             {isSubmitting ? (
               <>
