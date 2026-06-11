@@ -1,8 +1,13 @@
-import { useState, useRef, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import Scene3D from '@/components/Scene3D'
 import { useStore } from '@/store/useStore'
 import { useToastStore } from '@/store/useToastStore'
-import { FileDown, CheckCircle, Clock, AlertTriangle, ClipboardCheck, Download, MapPin, FileText, Camera, Loader2, Eye, ExternalLink } from 'lucide-react'
-import type { LabelType } from '@/types'
+import {
+  FileDown, CheckCircle, Clock, AlertTriangle, ClipboardCheck, Download,
+  MapPin, FileText, Camera, Loader2, Eye, ExternalLink, RefreshCw,
+  Play, ZoomIn, Info
+} from 'lucide-react'
+import type { LabelType, ScreenshotMark } from '@/types'
 import { composeExportImage, downloadImage, capture3DScene } from '@/utils/export'
 import { useNavigate } from 'react-router-dom'
 
@@ -11,127 +16,96 @@ function isPlaceholderImage(imageData: string | undefined | null): boolean {
   return imageData.includes('svg+xml') || imageData.length < 500
 }
 
-const labelTypeConfig: Record<LabelType, { label: string; color: string; bgColor: string; icon: typeof CheckCircle }> = {
-  resolved: { label: '已处理', color: 'text-emerald-400', bgColor: 'bg-emerald-400/10 border-emerald-400/30', icon: CheckCircle },
-  pending_material: { label: '待补材料', color: 'text-amber-400', bgColor: 'bg-amber-400/10 border-amber-400/30', icon: Clock },
-  manual_override: { label: '人工改判', color: 'text-red-400', bgColor: 'bg-red-400/10 border-red-400/30', icon: AlertTriangle },
+const labelTypeConfig: Record<LabelType, { label: string; color: string; bgColor: string; borderColor: string; icon: typeof CheckCircle }> = {
+  resolved: { label: '已处理', color: 'text-emerald-400', bgColor: 'bg-emerald-400/10', borderColor: 'border-emerald-400/30', icon: CheckCircle },
+  pending_material: { label: '待补材料', color: 'text-amber-400', bgColor: 'bg-amber-400/10', borderColor: 'border-amber-400/30', icon: Clock },
+  manual_override: { label: '人工改判', color: 'text-red-400', bgColor: 'bg-red-400/10', borderColor: 'border-red-400/30', icon: AlertTriangle },
 }
 
 function ExportCard({
-  id,
-  collisionId,
-  objectId,
-  labelType,
-  note,
-  imageData,
-  onExport,
+  screenshot,
+  isActive,
+  onSelect,
 }: {
-  id: string
-  collisionId: string
-  objectId: string
-  labelType: LabelType
-  note: string
-  imageData?: string
-  onExport: (id: string) => Promise<string | null>
+  screenshot: ScreenshotMark
+  isActive: boolean
+  onSelect: () => void
 }) {
   const getBarById = useStore((s) => s.getBarById)
   const currentFrame = useStore((s) => s.currentFrame)
   const getBarPositionAtFrame = useStore((s) => s.getBarPositionAtFrame)
-  const [isExporting, setIsExporting] = useState(false)
-  const [showPreview, setShowPreview] = useState(false)
-  const navigate = useNavigate()
-  const bar = getBarById(objectId)
-  const config = labelTypeConfig[labelType]
+  const bar = getBarById(screenshot.objectId)
+  const config = labelTypeConfig[screenshot.labelType]
   const Icon = config.icon
   const posY = bar ? getBarPositionAtFrame(bar.id, currentFrame) : 0
-  const isPlaceholder = isPlaceholderImage(imageData)
-
-  const handleClick = async () => {
-    if (isPlaceholder) {
-      navigate('/')
-      return
-    }
-    setIsExporting(true)
-    try {
-      await onExport(id)
-    } finally {
-      setIsExporting(false)
-    }
-  }
+  const isPlaceholder = isPlaceholderImage(screenshot.imageData)
 
   return (
-    <div className={`bg-zinc-900/60 border rounded-lg overflow-hidden transition-colors group ${
-      isPlaceholder ? 'border-dashed border-zinc-700' : 'border-zinc-800 hover:border-zinc-700'
-    }`}>
+    <div
+      onClick={onSelect}
+      className={`bg-zinc-900/60 border rounded-lg overflow-hidden cursor-pointer transition-all group ${
+        isActive
+          ? 'border-amber-400/50 ring-1 ring-amber-400/30'
+          : isPlaceholder
+            ? 'border-dashed border-zinc-700 hover:border-zinc-600'
+            : 'border-zinc-800 hover:border-zinc-700'
+      }`}
+    >
       <div className="flex">
-        <div className="w-40 h-28 bg-zinc-800/80 shrink-0 relative overflow-hidden">
-          {!isPlaceholder && imageData ? (
+        <div className="w-32 h-24 bg-zinc-800/80 shrink-0 relative overflow-hidden">
+          {!isPlaceholder && screenshot.imageData ? (
             <img
-              src={imageData}
+              src={screenshot.imageData}
               alt={`${bar?.name} 3D 截图`}
               className="w-full h-full object-cover"
-              onMouseEnter={() => setShowPreview(true)}
-              onMouseLeave={() => setShowPreview(false)}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-zinc-800/50">
               <div className="text-center">
-                <Camera size={20} className="mx-auto text-zinc-600 mb-1" />
-                <span className="text-[10px] text-zinc-500">占位预览</span>
+                <Camera size={18} className="mx-auto text-zinc-600 mb-1" />
+                <span className="text-[9px] text-zinc-500">占位预览</span>
               </div>
             </div>
           )}
-          {showPreview && !isPlaceholder && imageData && (
-            <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-              <Eye size={24} className="text-zinc-300" />
+          {isActive && (
+            <div className="absolute inset-0 bg-amber-400/10 flex items-center justify-center">
+              <Eye size={20} className="text-amber-400" />
             </div>
           )}
         </div>
-        <div className="flex-1 p-3 flex flex-col min-w-0">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-zinc-200 truncate">{bar?.name || objectId}</span>
-            <span className={`text-[10px] px-2 py-0.5 rounded border ${config.bgColor} ${config.color} flex items-center gap-1 shrink-0`}>
-              <Icon size={10} /> {config.label}
+        <div className="flex-1 p-2.5 flex flex-col min-w-0">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-medium text-zinc-200 truncate">{bar?.name || screenshot.objectId}</span>
+            <span className={`text-[9px] px-1.5 py-0.5 rounded border ${config.bgColor} ${config.color} ${config.borderColor} flex items-center gap-1 shrink-0`}>
+              <Icon size={9} /> {config.label}
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-1.5 mb-2">
+          <div className="grid grid-cols-3 gap-1 mb-1.5">
             <div className="bg-zinc-800/50 rounded px-1.5 py-1">
-              <span className="text-[9px] text-zinc-600">X</span>
-              <p className="text-[10px] text-zinc-400 font-mono">{bar?.positionX.toFixed(1) ?? '-'}</p>
+              <span className="text-[8px] text-zinc-600">X</span>
+              <p className="text-[9px] text-zinc-400 font-mono">{bar?.positionX.toFixed(1) ?? '-'}</p>
             </div>
             <div className="bg-zinc-800/50 rounded px-1.5 py-1">
-              <span className="text-[9px] text-zinc-600">Y</span>
-              <p className="text-[10px] text-zinc-400 font-mono">{posY.toFixed(2)}</p>
+              <span className="text-[8px] text-zinc-600">Y</span>
+              <p className="text-[9px] text-zinc-400 font-mono">{posY.toFixed(2)}</p>
             </div>
             <div className="bg-zinc-800/50 rounded px-1.5 py-1">
-              <span className="text-[9px] text-zinc-600">Z</span>
-              <p className="text-[10px] text-zinc-400 font-mono">{bar?.positionZ.toFixed(1) ?? '-'}</p>
+              <span className="text-[8px] text-zinc-600">Z</span>
+              <p className="text-[9px] text-zinc-400 font-mono">{bar?.positionZ.toFixed(1) ?? '-'}</p>
             </div>
           </div>
-          <p className="text-[10px] text-zinc-500 leading-relaxed flex-1">{note}</p>
-          <button
-            onClick={handleClick}
-            disabled={isExporting}
-            className={`mt-2 flex items-center justify-center gap-1.5 w-full py-1.5 rounded text-[10px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-              isPlaceholder
-                ? 'bg-amber-400/10 text-amber-400 hover:bg-amber-400/20 border border-amber-400/20'
-                : 'bg-zinc-800/80 text-zinc-300 hover:bg-zinc-700 hover:text-emerald-400'
-            }`}
-          >
-            {isExporting ? (
-              <>
-                <Loader2 size={10} className="animate-spin" /> 生成中...
-              </>
-            ) : isPlaceholder ? (
-              <>
-                <ExternalLink size={10} /> 去场景页生成
-              </>
+          <p className="text-[9px] text-zinc-500 leading-relaxed flex-1 line-clamp-2">{screenshot.note}</p>
+          <div className="flex items-center gap-1 mt-1.5">
+            {isPlaceholder ? (
+              <span className="text-[9px] text-amber-400 flex items-center gap-1">
+                <Play size={9} /> 点击预览生成
+              </span>
             ) : (
-              <>
-                <Download size={10} /> 下载说明图
-              </>
+              <span className="text-[9px] text-emerald-400 flex items-center gap-1">
+                <CheckCircle size={9} /> 已有真实截图
+              </span>
             )}
-          </button>
+          </div>
         </div>
       </div>
     </div>
@@ -162,16 +136,19 @@ function ChecklistItem({ label, status, materialPath }: { label: string; status:
 export default function Export() {
   const screenshots = useStore((s) => s.screenshots)
   const collisions = useStore((s) => s.collisions)
-  const bars = useStore((s) => s.bars)
   const annotations = useStore((s) => s.annotations)
   const supplements = useStore((s) => s.supplements)
   const getBarById = useStore((s) => s.getBarById)
   const getBarPositionAtFrame = useStore((s) => s.getBarPositionAtFrame)
   const getAnnotationsByCollisionId = useStore((s) => s.getAnnotationsByCollisionId)
-  const addScreenshot = useStore((s) => s.addScreenshot)
   const setScreenshotImageData = useStore((s) => s.setScreenshotImageData)
+  const addScreenshot = useStore((s) => s.addScreenshot)
   const currentFrame = useStore((s) => s.currentFrame)
+  const selectedObjectId = useStore((s) => s.selectedObjectId)
+  const setSelectedObjectId = useStore((s) => s.setSelectedObjectId)
+  const navigate = useNavigate()
 
+  const [exportingSingle, setExportingSingle] = useState(false)
   const [exportingAll, setExportingAll] = useState(false)
 
   const collisionCount = collisions.filter(c => c.status === 'collision').length
@@ -180,42 +157,135 @@ export default function Export() {
   const pendingMaterialCount = screenshots.filter(s => s.labelType === 'pending_material').length
   const manualOverrideCount = screenshots.filter(s => s.labelType === 'manual_override').length
 
-  const checklist = [
-    { label: '所有碰撞项已审查', status: collisionCount === 0 ? 'done' as const : 'pending' as const, materialPath: '场景预审页 → 碰撞检测面板' },
-    { label: '待确认项已补充材料', status: pendingCount === 0 ? 'done' as const : 'missing' as const, materialPath: '批注管理页 → 补充材料区' },
-    { label: '每项碰撞截图标注已生成', status: screenshots.length >= collisionCount ? 'done' as const : 'pending' as const, materialPath: '导出报告页 → 截图说明区' },
-    { label: '行动提示全部处理', status: annotations.filter(a => a.type === 'action_hint').length > 0 ? 'pending' as const : 'done' as const, materialPath: '批注管理页 → 行动提示' },
-    { label: '补充材料版本链完整', status: supplements.length > 0 ? 'done' as const : 'pending' as const, materialPath: '批注管理页 → 版本链' },
-    { label: '负责人确认签字', status: 'missing' as const, materialPath: '' },
-  ]
-
   const realScreenshots = useMemo(
     () => screenshots.filter(s => !isPlaceholderImage(s.imageData)),
     [screenshots]
   )
   const placeholderCount = screenshots.length - realScreenshots.length
 
-  const handleExportSingle = async (screenshotId: string): Promise<string | null> => {
-    const screenshot = screenshots.find(s => s.id === screenshotId)
-    if (!screenshot) return null
+  const activeScreenshot = useMemo(() => {
+    if (selectedObjectId) {
+      return screenshots.find(s => s.objectId === selectedObjectId) || null
+    }
+    return null
+  }, [screenshots, selectedObjectId])
 
-    if (isPlaceholderImage(screenshot.imageData)) {
-      useToastStore.getState().info(
-        '请先生成真实截图',
-        '当前为占位预览图，请前往场景预审页点选该对象并点击「导出当前对象」生成真实截图后再下载。'
-      )
+  const activeBar = selectedObjectId ? getBarById(selectedObjectId) : null
+  const activePosY = activeBar ? getBarPositionAtFrame(activeBar.id, currentFrame) : 0
+  const activeCollision = activeBar
+    ? collisions.find(c => (c.objectAId === activeBar.id || c.objectBId === activeBar.id) && c.frameIndex === currentFrame)
+      || collisions.find(c => c.objectAId === activeBar.id || c.objectBId === activeBar.id)
+      || null
+    : null
+  const activeAnnotations = activeCollision ? getAnnotationsByCollisionId(activeCollision.id) : []
+  const activeLabelType = activeScreenshot?.labelType || (
+    activeAnnotations.length > 5 ? 'resolved'
+      : activeAnnotations.length > 0 ? 'pending_material'
+      : activeCollision ? 'manual_override'
+      : 'pending_material'
+  )
+  const activeNote = activeScreenshot?.note || (
+    activeCollision
+      ? `碰撞间距 ${activeCollision.distance}m · 帧${currentFrame}`
+      : `当前帧无碰撞 · 帧${currentFrame}`
+  )
+
+  useEffect(() => {
+    if (!selectedObjectId && screenshots.length > 0) {
+      setSelectedObjectId(screenshots[0].objectId)
+    }
+  }, [selectedObjectId, screenshots, setSelectedObjectId])
+
+  const handleGenerateAndDownload = async (screenshotId?: string): Promise<string | null> => {
+    const state = useStore.getState()
+    const currentBar = state.selectedObjectId ? state.getBarById(state.selectedObjectId) : null
+
+    if (!currentBar) {
+      useToastStore.getState().warning('请先选择对象', '请在下方截图列表中点击一个对象，或前往场景预审页点选对象。')
       return null
     }
 
-    const bar = getBarById(screenshot.objectId)
-    const filename = `碰撞预审_${bar?.name || screenshot.objectId}_${screenshot.timestamp}.png`
-    downloadImage(screenshot.imageData!, filename)
+    let target: ScreenshotMark | null = null
+    if (screenshotId) {
+      target = state.screenshots.find(s => s.id === screenshotId) || null
+    } else if (state.selectedObjectId) {
+      target = state.screenshots.find(s => s.objectId === state.selectedObjectId) || null
+    }
 
-    useToastStore.getState().success(
-      '下载成功',
-      `已导出 ${bar?.name || screenshot.objectId} 的说明图，空间位置、备注、3D 截图均为生成时的快照。`
+    const currentPosY = state.getBarPositionAtFrame(currentBar.id, state.currentFrame)
+    const currentCollision = state.collisions.find(
+      c => (c.objectAId === currentBar.id || c.objectBId === currentBar.id) && c.frameIndex === state.currentFrame
+    ) || state.collisions.find(
+      c => c.objectAId === currentBar.id || c.objectBId === currentBar.id
+    ) || null
+    const currentAnnotations = currentCollision ? state.getAnnotationsByCollisionId(currentCollision.id) : []
+    const currentNote = target?.note || (
+      currentCollision
+        ? `碰撞间距 ${currentCollision.distance}m · 帧${state.currentFrame}`
+        : `当前帧无碰撞 · 帧${state.currentFrame}`
     )
-    return screenshot.imageData!
+    const currentLabelType = target?.labelType || (
+      currentAnnotations.length > 5 ? 'resolved'
+        : currentAnnotations.length > 0 ? 'pending_material'
+        : currentCollision ? 'manual_override'
+        : 'pending_material'
+    )
+
+    setExportingSingle(true)
+    const toastId = useToastStore.getState().loading(
+      '正在生成说明图',
+      `正在截取 3D 场景并合成 ${currentBar.name} 的说明图...`
+    )
+
+    try {
+      const rawImageData = await capture3DScene()
+      const composed = await composeExportImage({
+        bar: currentBar,
+        positionY: currentPosY,
+        collision: currentCollision,
+        annotations: currentAnnotations,
+        imageData: rawImageData,
+        labelType: currentLabelType,
+        note: currentNote,
+        frameIndex: state.currentFrame,
+      })
+
+      const filename = `碰撞预审_${currentBar.name}_F${state.currentFrame}_${Date.now()}.png`
+      downloadImage(composed, filename)
+
+      if (target) {
+        setScreenshotImageData(target.id, composed)
+      } else {
+        const newId = `scr-${Date.now()}`
+        addScreenshot({
+          id: newId,
+          collisionId: currentCollision?.id || `col-${currentBar.id}-F${state.currentFrame}`,
+          objectId: currentBar.id,
+          imageData: composed,
+          label: `${currentBar.name} - 帧${state.currentFrame}`,
+          labelType: currentLabelType,
+          note: currentNote,
+          timestamp: Date.now(),
+        })
+      }
+
+      useToastStore.getState().updateToast(toastId, {
+        type: 'success',
+        title: '导出成功',
+        description: `已生成 ${filename}，3D 画面、空间位置、备注三者已对齐`,
+      })
+      return composed
+    } catch (e) {
+      const errMsg = e instanceof Error ? e.message : '导出失败'
+      useToastStore.getState().updateToast(toastId, {
+        type: 'error',
+        title: '导出失败',
+        description: errMsg,
+      })
+      return null
+    } finally {
+      setExportingSingle(false)
+    }
   }
 
   const handleExportAll = async () => {
@@ -224,57 +294,93 @@ export default function Export() {
       return
     }
 
-    if (realScreenshots.length === 0) {
-      useToastStore.getState().warning(
-        '暂无可下载的真实截图',
-        `当前 ${screenshots.length} 项均为占位预览图，请前往场景预审页点选对象并生成真实截图。`
-      )
-      return
-    }
-
     setExportingAll(true)
     const toastId = useToastStore.getState().loading(
-      '正在批量下载',
-      `共 ${realScreenshots.length} 张真实截图，正在下载中...`
+      '正在批量生成说明图',
+      `共 ${screenshots.length} 项，正在逐个截取 3D 场景并合成...`
     )
 
     let successCount = 0
-    for (let i = 0; i < realScreenshots.length; i++) {
-      const s = realScreenshots[i]
+    let failCount = 0
+
+    for (let i = 0; i < screenshots.length; i++) {
+      const s = screenshots[i]
       try {
         useToastStore.getState().updateToast(toastId, {
-          description: `正在下载第 ${i + 1}/${realScreenshots.length} 项...`,
+          description: `正在处理第 ${i + 1}/${screenshots.length} 项...`,
         })
         const bar = getBarById(s.objectId)
-        const filename = `碰撞预审_${bar?.name || s.objectId}_${s.timestamp}.png`
-        downloadImage(s.imageData!, filename)
-        successCount++
+        if (!bar) { failCount++; continue }
+
+        setSelectedObjectId(s.objectId)
         await new Promise(resolve => setTimeout(resolve, 300))
+
+        const posY = getBarPositionAtFrame(s.objectId, currentFrame)
+        const collision = collisions.find(c => (c.objectAId === s.objectId || c.objectBId === s.objectId) && c.frameIndex === currentFrame)
+          || collisions.find(c => c.objectAId === s.objectId || c.objectBId === s.objectId)
+          || null
+        const anns = collision ? getAnnotationsByCollisionId(collision.id) : []
+
+        const rawImageData = await capture3DScene()
+        const composed = await composeExportImage({
+          bar,
+          positionY: posY,
+          collision,
+          annotations: anns,
+          imageData: rawImageData,
+          labelType: s.labelType,
+          note: s.note,
+          frameIndex: currentFrame,
+        })
+
+        const filename = `碰撞预审_${bar.name}_F${currentFrame}_${Date.now()}.png`
+        downloadImage(composed, filename)
+        setScreenshotImageData(s.id, composed)
+        successCount++
+        await new Promise(resolve => setTimeout(resolve, 200))
       } catch {
-        // skip
+        failCount++
       }
     }
 
-    const finalDesc = placeholderCount > 0
-      ? `成功下载 ${successCount} 张真实截图，另有 ${placeholderCount} 项为占位预览图（请在场景预审页生成）`
-      : `成功下载 ${successCount} 张说明图`
+    const finalType = failCount === 0 ? 'success' as const : 'error' as const
+    const finalTitle = failCount === 0 ? '批量导出完成' : '批量导出完成（部分失败）'
+    const finalDesc = `成功 ${successCount} 项，失败 ${failCount} 项。所有说明图均为实时 3D 截图 + 数据合成，可验证一致性`
 
     useToastStore.getState().updateToast(toastId, {
-      type: placeholderCount > 0 ? 'warning' as const : 'success' as const,
-      title: placeholderCount > 0 ? '批量下载完成（部分为占位图）' : '批量下载完成',
+      type: finalType,
+      title: finalTitle,
       description: finalDesc,
     })
     setExportingAll(false)
   }
 
+  const goToSceneReview = () => {
+    navigate('/')
+  }
+
+  const checklist = [
+    { label: '所有碰撞项已审查', status: collisionCount === 0 ? 'done' as const : 'pending' as const, materialPath: '场景预审页 → 碰撞检测面板' },
+    { label: '待确认项已补充材料', status: pendingCount === 0 ? 'done' as const : 'missing' as const, materialPath: '批注管理页 → 补充材料区' },
+    { label: '每项碰撞截图标注已生成', status: realScreenshots.length >= collisionCount ? 'done' as const : 'pending' as const, materialPath: '导出报告页 → 截图说明区' },
+    { label: '行动提示全部处理', status: annotations.filter(a => a.type === 'action_hint').length > 0 ? 'pending' as const : 'done' as const, materialPath: '批注管理页 → 行动提示' },
+    { label: '补充材料版本链完整', status: supplements.length > 0 ? 'done' as const : 'pending' as const, materialPath: '批注管理页 → 版本链' },
+    { label: '负责人确认签字', status: 'missing' as const, materialPath: '' },
+  ]
+
+  const activeConfig = labelTypeConfig[activeLabelType]
+  const ActiveIcon = activeConfig.icon
+
   return (
     <div className="h-full overflow-y-auto">
-      <div className="max-w-5xl mx-auto p-6 space-y-8">
+      <div className="max-w-6xl mx-auto p-6 space-y-6">
         <div>
           <h1 className="text-xl font-bold text-zinc-100 flex items-center gap-2">
             <FileDown size={20} className="text-amber-400" /> 导出与报告
           </h1>
-          <p className="text-xs text-zinc-500 mt-1">碰撞预审结果汇总，截图说明三色标签区分处理状态。点击「下载说明图」生成真实交付物</p>
+          <p className="text-xs text-zinc-500 mt-1">
+            碰撞预审结果汇总。左侧 3D 预览为实时画面，与右侧数据实时对齐，导出前可验证一致性。
+          </p>
         </div>
 
         <div className="grid grid-cols-5 gap-3">
@@ -300,43 +406,169 @@ export default function Export() {
           </div>
         </div>
 
-        <div>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
-                  <MapPin size={14} /> 截图说明（按标签类型）
-                </h2>
-                {placeholderCount > 0 && (
-                  <p className="text-[10px] text-amber-400/80 mt-1">
-                    共 {screenshots.length} 项，其中 {placeholderCount} 项为占位预览图，需在场景预审页生成真实截图后才能下载
-                  </p>
-                )}
-              </div>
+        <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800/60 bg-zinc-900/60">
+            <div className="flex items-center gap-2">
+              <Camera size={14} className="text-amber-400" />
+              <h2 className="text-sm font-semibold text-zinc-200">实时导出预览</h2>
+              <span className="text-[10px] text-zinc-500 bg-zinc-800/80 px-2 py-0.5 rounded">
+                3D 画面与数据实时对齐
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
               <button
-                onClick={handleExportAll}
-                disabled={exportingAll || realScreenshots.length === 0}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-400/10 text-amber-400 text-xs font-medium hover:bg-amber-400/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-amber-400/20"
+                onClick={goToSceneReview}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/60 transition-colors"
               >
-                {exportingAll ? (
-                  <>
-                    <Loader2 size={12} className="animate-spin" /> 批量下载中...
-                  </>
+                <ExternalLink size={11} /> 去场景页调整
+              </button>
+              <button
+                onClick={() => handleGenerateAndDownload()}
+                disabled={exportingSingle || !activeBar}
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-amber-400/10 text-amber-400 text-[11px] font-medium hover:bg-amber-400/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-amber-400/20"
+              >
+                {exportingSingle ? (
+                  <><Loader2 size={11} className="animate-spin" /> 生成中...</>
                 ) : (
-                  <>
-                    <Download size={12} /> 下载全部 ({realScreenshots.length})
-                  </>
+                  <><Download size={11} /> 生成说明图并下载</>
                 )}
               </button>
             </div>
+          </div>
+
+          <div className="flex">
+            <div className="flex-1 h-[380px] bg-[#0D1117] relative">
+              <Scene3D />
+              {activeBar && (
+                <div className="absolute top-3 left-3 bg-zinc-900/90 backdrop-blur-sm border border-zinc-700/50 rounded-lg px-3 py-2 flex items-center gap-2 z-10">
+                  <div className={`w-2 h-2 rounded-full ${activeBar.type === 'scenery' ? 'bg-amber-700' : 'bg-amber-400'}`} />
+                  <span className="text-xs font-medium text-zinc-200">{activeBar.name}</span>
+                  <span className="text-[10px] text-zinc-500">帧 {currentFrame}</span>
+                </div>
+              )}
+              <div className="absolute bottom-3 left-3 text-[10px] text-zinc-500 bg-zinc-900/70 px-2 py-1 rounded z-10">
+                <ZoomIn size={10} className="inline mr-1" />
+                鼠标拖拽旋转 · 滚轮缩放
+              </div>
+            </div>
+
+            <div className="w-72 border-l border-zinc-800 p-4 flex flex-col gap-4 bg-zinc-900/30">
+              {activeBar ? (
+                <>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-xs font-semibold text-zinc-200">空间位置</h3>
+                      <span className={`text-[9px] px-2 py-0.5 rounded border ${activeConfig.bgColor} ${activeConfig.color} ${activeConfig.borderColor} flex items-center gap-1`}>
+                        <ActiveIcon size={9} /> {activeConfig.label}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-zinc-800/60 rounded-lg px-2.5 py-2 text-center">
+                        <span className="text-[9px] text-zinc-500 block mb-0.5">X</span>
+                        <p className="text-sm font-bold text-zinc-200 font-mono">{activeBar.positionX.toFixed(1)}</p>
+                      </div>
+                      <div className="bg-zinc-800/60 rounded-lg px-2.5 py-2 text-center">
+                        <span className="text-[9px] text-zinc-500 block mb-0.5">Y</span>
+                        <p className="text-sm font-bold text-zinc-200 font-mono">{activePosY.toFixed(2)}</p>
+                      </div>
+                      <div className="bg-zinc-800/60 rounded-lg px-2.5 py-2 text-center">
+                        <span className="text-[9px] text-zinc-500 block mb-0.5">Z</span>
+                        <p className="text-sm font-bold text-zinc-200 font-mono">{activeBar.positionZ.toFixed(1)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="text-xs font-semibold text-zinc-200 mb-2">备注说明</h3>
+                    <div className="bg-zinc-800/40 rounded-lg px-3 py-2.5 border border-zinc-800">
+                      <p className="text-[11px] text-zinc-300 leading-relaxed">{activeNote}</p>
+                    </div>
+                  </div>
+
+                  {activeCollision && (
+                    <div>
+                      <h3 className="text-xs font-semibold text-zinc-200 mb-2">碰撞信息</h3>
+                      <div className="bg-red-400/5 rounded-lg px-3 py-2 border border-red-400/20">
+                        <p className="text-[11px] text-red-400 font-medium">
+                          碰撞间距 {activeCollision.distance}m · 帧 {activeCollision.frameIndex}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {activeAnnotations.length > 0 && (
+                    <div>
+                      <h3 className="text-xs font-semibold text-zinc-200 mb-2">
+                        最新批注 <span className="text-[10px] text-zinc-500 font-normal">({activeAnnotations.length} 条)</span>
+                      </h3>
+                      <div className="bg-zinc-800/40 rounded-lg px-3 py-2 border border-zinc-800">
+                        <p className="text-[10px] text-amber-400 font-medium mb-1">
+                          {activeAnnotations[activeAnnotations.length - 1].authorName}
+                        </p>
+                        <p className="text-[10px] text-zinc-400 leading-relaxed">
+                          {activeAnnotations[activeAnnotations.length - 1].content.slice(0, 50)}...
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="mt-auto">
+                    <div className="text-[9px] text-zinc-500 flex items-start gap-1.5 bg-blue-400/5 rounded-lg p-2.5 border border-blue-400/10">
+                      <Info size={11} className="text-blue-400 shrink-0 mt-0.5" />
+                      <span className="text-blue-400/80 leading-relaxed">
+                        导出的 PNG 包含 3D 实时截图 + 空间位置 + 备注 + 碰撞信息 + 最新批注，共 900×540 像素
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center text-zinc-500">
+                    <Camera size={28} className="mx-auto mb-2 opacity-50" />
+                    <p className="text-xs">请从下方列表选择一个对象</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-sm font-semibold text-zinc-200 flex items-center gap-2">
+                <MapPin size={14} /> 截图说明（按标签类型）
+              </h2>
+              <p className="text-[11px] text-zinc-500 mt-1">
+                点击卡片可预览对象，确认 3D 画面与数据一致后再导出
+                {placeholderCount > 0 && (
+                  <span className="text-amber-400/80 ml-2">（{placeholderCount} 项为占位预览，需生成真实截图）</span>
+                )}
+              </p>
+            </div>
+            <button
+              onClick={handleExportAll}
+              disabled={exportingAll || screenshots.length === 0}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-400/10 text-amber-400 text-xs font-medium hover:bg-amber-400/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed border border-amber-400/20"
+            >
+              {exportingAll ? (
+                <><Loader2 size={12} className="animate-spin" /> 批量生成中...</>
+              ) : (
+                <><RefreshCw size={12} /> 全部重新生成 ({screenshots.length})</>
+              )}
+            </button>
+          </div>
 
           {screenshots.length === 0 ? (
             <div className="text-center py-12 bg-zinc-900/40 border border-dashed border-zinc-700 rounded-lg">
               <Camera size={32} className="mx-auto text-zinc-600 mb-3" />
               <p className="text-sm text-zinc-500 mb-2">暂无截图标注</p>
-              <p className="text-[11px] text-zinc-600">请回到「场景预审页」点选异常对象，点击右上角「导出当前对象」生成截图标注</p>
+              <p className="text-[11px] text-zinc-600">
+                点击上方「生成说明图并下载」按钮，或前往场景预审页点选对象导出
+              </p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-5">
               {(['resolved', 'pending_material', 'manual_override'] as LabelType[]).map((type) => {
                 const config = labelTypeConfig[type]
                 const Icon = config.icon
@@ -344,22 +576,18 @@ export default function Export() {
                 if (items.length === 0) return null
                 return (
                   <div key={type}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <Icon size={14} className={config.color} />
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <Icon size={13} className={config.color} />
                       <span className={`text-xs font-semibold ${config.color}`}>{config.label}</span>
                       <span className="text-[10px] text-zinc-600">{items.length} 项</span>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                       {items.map((s) => (
                         <ExportCard
                           key={s.id}
-                          id={s.id}
-                          collisionId={s.collisionId}
-                          objectId={s.objectId}
-                          labelType={s.labelType}
-                          note={s.note}
-                          imageData={s.imageData || undefined}
-                          onExport={handleExportSingle}
+                          screenshot={s}
+                          isActive={selectedObjectId === s.objectId}
+                          onSelect={() => setSelectedObjectId(s.objectId)}
                         />
                       ))}
                     </div>
