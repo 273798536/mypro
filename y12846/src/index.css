@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Inter", "Noto Sans SC", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.font-mono {
+  font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* 表格样式增强 */
+.table-zebra tbody tr:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+/* 覆盖缺口的斜线填充图案 */
+.pattern-diagonal-stripes {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(235, 59, 90, 0.15) 6px,
+    rgba(235, 59, 90, 0.15) 12px
+  );
+}
+
+/* SVG的斜线图案定义在组件内使用 */
+
+/* 动画增强 */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* 碱基颜色（用于序列可视化） */
+.base-a { color: #3B82F6; }
+.base-t { color: #EF4444; }
+.base-g { color: #10B981; }
+.base-c { color: #F59E0B; }
+.base-n { color: #6B7280; }
+
+.bg-base-a { background-color: #DBEAFE; }
+.bg-base-t { background-color: #FEE2E2; }
+.bg-base-g { background-color: #D1FAE5; }
+.bg-base-c { background-color: #FEF3C7; }
+.bg-base-n { background-color: #F3F4F6; }
+
+/* 文件拖拽高亮 */
+.dropzone-active {
+  border-color: #0c79f0 !important;
+  background-color: #f0f7ff !important;
+  transform: scale(1.01);
+}
+
+/* 打印样式（报告导出预览） */
+@media print {
+  body {
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* A4报告预览 */
+.a4-page {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 20mm;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
