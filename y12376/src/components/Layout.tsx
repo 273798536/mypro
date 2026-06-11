@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Layout as AntLayout, Menu, theme } from 'antd';
-import { AlertTriangle, Download, History } from 'lucide-react';
+import { Layout as AntLayout, Menu, theme, Dropdown, Button, message } from 'antd';
+import { AlertTriangle, Download, History, Settings } from 'lucide-react';
 
 const { Header, Content, Sider } = AntLayout;
 
@@ -33,6 +33,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     },
   ];
 
+  const handleClearData = () => {
+    try {
+      localStorage.removeItem('renewal-app-store');
+      message.success('本地数据已清除，即将刷新恢复初始数据');
+      setTimeout(() => window.location.reload(), 800);
+    } catch {
+      message.error('清除本地数据失败');
+    }
+  };
+
+  const userMenuItems = [
+    {
+      key: 'clear',
+      label: '清除本地持久化数据（恢复初始mock）',
+      onClick: handleClearData,
+    },
+  ];
+
   return (
     <AntLayout style={{ minHeight: '100vh' }}>
       <Sider breakpoint="lg" collapsedWidth="0" theme="dark">
@@ -57,6 +75,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <h1 className="text-lg font-semibold text-gray-800">音乐课程续费预警工作台</h1>
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-500">欢迎，教务管理员</span>
+              <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
+                <Button type="text" icon={<Settings size={16} />} />
+              </Dropdown>
             </div>
           </div>
         </Header>
