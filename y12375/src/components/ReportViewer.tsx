@@ -84,8 +84,12 @@ export const ReportViewer: React.FC = () => {
     try {
       const report = exportReport(format);
       setSelectedReportId(report.id);
-      setExportSuccess(`${format.toUpperCase()} 报告已生成并开始下载`);
-      setTimeout(() => setExportSuccess(null), 4000);
+      if (format === 'html') {
+        setExportSuccess('HTML 报告已生成并开始下载');
+      } else {
+        setExportSuccess('已打开打印预览，请在打印对话框中选择「另存为 PDF」保存文件');
+      }
+      setTimeout(() => setExportSuccess(null), 5000);
     } catch (err) {
       const msg = err instanceof Error ? err.message : '导出失败，请重试';
       setExportError(msg);

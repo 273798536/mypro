@@ -296,8 +296,11 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     .container { padding: 20px; }
   }
   @media print {
+    @page { size: A4; margin: 12mm; }
     body { background: #fff; padding: 0; }
-    .container { box-shadow: none; border-radius: 0; padding: 20px; }
+    .container { box-shadow: none; border-radius: 0; padding: 0; max-width: none; }
+    h2 { page-break-after: avoid; }
+    .stat-card, .info-item { break-inside: avoid; }
   }
 </style>
 </head>
@@ -345,18 +348,42 @@ export const useAudioStore = create<AudioState>((set, get) => ({
 </html>`;
 
     const safeBaseName = audioFile.name.replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]/g, '_');
-    const fileExt = format === 'pdf' ? 'html' : 'html';
-    const fileName = `合规报告_${safeBaseName}_${formatSafeDate(report.exportedAt)}.${fileExt}`;
 
-    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
+    if (format === 'html') {
+      const fileName = `合规报告_${safeBaseName}_${formatSafeDate(report.exportedAt)}.html`;
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    } else if (format === 'pdf') {
+      const printWindow = window.open('', '_blank', 'width=900,height=1100,scrollbars=yes');
+      if (!printWindow) {
+        throw new Error('弹出窗口被浏览器拦截，请允许弹出窗口后重试，或使用「导出 HTML」后自行打印为 PDF');
+      }
+      printWindow.document.open();
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+
+      const tryPrint = () => {
+        try {
+          printWindow.focus();
+          printWindow.print();
+        } catch (e) {
+          // 忽略打印异常，用户仍可在新窗口手动打印
+        }
+      };
+
+      if (printWindow.document.readyState === 'complete') {
+        setTimeout(tryPrint, 300);
+      } else {
+        printWindow.addEventListener('load', () => setTimeout(tryPrint, 300), { once: true });
+      }
+    }
 
     return report;
   },
