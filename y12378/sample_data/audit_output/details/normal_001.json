@@ -9,20 +9,7 @@
       "expected_chord": "C:maj",
       "actual_chord": "C:maj",
       "match_result": "match",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.95,
       "note": ""
     },
@@ -32,20 +19,7 @@
       "expected_chord": "G:maj",
       "actual_chord": "G:maj",
       "match_result": "match",
-      "chroma_vector": [
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.92,
       "note": ""
     },
@@ -55,20 +29,7 @@
       "expected_chord": "A:min",
       "actual_chord": "A:min",
       "match_result": "match",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.9,
       "note": ""
     },
@@ -78,20 +39,7 @@
       "expected_chord": "F:maj",
       "actual_chord": "F:maj",
       "match_result": "match",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.93,
       "note": ""
     },
@@ -101,20 +49,7 @@
       "expected_chord": "C:maj",
       "actual_chord": "C:maj",
       "match_result": "match",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.96,
       "note": ""
     },
@@ -124,20 +59,7 @@
       "expected_chord": "G:maj",
       "actual_chord": "G:maj",
       "match_result": "match",
-      "chroma_vector": [
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.91,
       "note": ""
     },
@@ -147,20 +69,7 @@
       "expected_chord": "F:maj",
       "actual_chord": "F:maj",
       "match_result": "match",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.88,
       "note": ""
     },
@@ -170,20 +79,7 @@
       "expected_chord": "C:maj",
       "actual_chord": "C:maj",
       "match_result": "match",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.97,
       "note": ""
     }
@@ -213,10 +109,10 @@
   "meta": {
     "description": "C大调简单旋律, AI伴奏和弦完全正确",
     "teacher": "张老师",
-    "_midi_processed": true,
-    "_midi_path": "sample_data/normal_001/melody.mid",
+    "_midi_error": "mido 库未安装, 请运行: pip install -r requirements.txt  或  pip install mido>=1.2.0",
+    "_midi_processed": false,
     "_audit": {
-      "audit_time": "2026-06-11T17:31:40.230873",
+      "audit_time": "2026-06-11T23:08:47.912169",
       "consistency_result": {
         "is_consistent": true,
         "inconsistent_diffs": [],
@@ -241,7 +137,7 @@
       ]
     }
   },
-  "created_at": "2026-06-11T17:31:40.224596",
+  "created_at": "2026-06-11T23:08:47.911508",
   "version_chain": [
     {
       "version_id": "v2",

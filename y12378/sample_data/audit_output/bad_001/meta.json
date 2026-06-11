@@ -9,20 +9,7 @@
       "expected_chord": "F:maj",
       "actual_chord": "F:maj",
       "match_result": "match",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.93,
       "note": ""
     },
@@ -30,22 +17,9 @@
       "bar_start": 2,
       "bar_end": 3,
       "expected_chord": "Bb:maj",
-      "actual_chord": "C:7",
+      "actual_chord": "Bb:maj",
       "match_result": "uncertain",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.88,
       "note": ""
     },
@@ -53,22 +27,9 @@
       "bar_start": 3,
       "bar_end": 4,
       "expected_chord": "C:maj",
-      "actual_chord": "D:min",
-      "match_result": "mismatch",
-      "chroma_vector": [
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0
-      ],
+      "actual_chord": "C:7",
+      "match_result": "uncertain",
+      "chroma_vector": [],
       "confidence": 0.7,
       "note": ""
     },
@@ -76,22 +37,9 @@
       "bar_start": 4,
       "bar_end": 5,
       "expected_chord": "D:min",
-      "actual_chord": "A:maj",
-      "match_result": "mismatch",
-      "chroma_vector": [
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0
-      ],
+      "actual_chord": "D:min",
+      "match_result": "match",
+      "chroma_vector": [],
       "confidence": 0.85,
       "note": ""
     },
@@ -99,22 +47,9 @@
       "bar_start": 5,
       "bar_end": 6,
       "expected_chord": "Bb:maj",
-      "actual_chord": "F:maj",
+      "actual_chord": "A:maj",
       "match_result": "uncertain",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.3,
       "note": "此处已转入d小调, AI错误识别为A大调"
     },
@@ -124,20 +59,7 @@
       "expected_chord": "D:min",
       "actual_chord": "F:maj",
       "match_result": "mismatch",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.5,
-        0.5,
-        0.0,
-        0.5,
-        0.0,
-        0.5,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.25,
       "note": "小节6缺失, 小节7-8应为d小调主和弦"
     },
@@ -145,22 +67,9 @@
       "bar_start": 9,
       "bar_end": 10,
       "expected_chord": "C:7",
-      "actual_chord": "F:maj",
+      "actual_chord": "G:min",
       "match_result": "mismatch",
-      "chroma_vector": [
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.4,
       "note": ""
     },
@@ -170,20 +79,7 @@
       "expected_chord": "F:maj",
       "actual_chord": "F:maj",
       "match_result": "match",
-      "chroma_vector": [
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
+      "chroma_vector": [],
       "confidence": 0.91,
       "note": ""
     }
@@ -220,7 +116,7 @@
   "conflicts": [
     {
       "conflict_type": "chord_conflict",
-      "description": "小节 2-3: 期望和弦 Bb:maj 与实际和弦 C:7 存在不确定性",
+      "description": "小节 2-3: 期望和弦 Bb:maj 与实际和弦 Bb:maj 存在不确定性",
       "severity": "medium",
       "evidence_version_ids": [
         "v1",
@@ -236,11 +132,11 @@
     },
     {
       "conflict_type": "chord_conflict",
-      "description": "小节 3-4: 期望和弦 C:maj 与实际和弦 D:min 冲突",
-      "severity": "high",
+      "description": "小节 3-4: 期望和弦 C:maj 与实际和弦 C:7 存在不确定性",
+      "severity": "medium",
       "evidence_version_ids": [
-        "v2",
         "v1",
+        "v2",
         "v3"
       ],
       "related_bar_range": [
@@ -252,28 +148,12 @@
     },
     {
       "conflict_type": "chord_conflict",
-      "description": "小节 4-5: 期望和弦 D:min 与实际和弦 A:maj 冲突",
-      "severity": "high",
-      "evidence_version_ids": [
-        "v2",
-        "v1",
-        "v3"
-      ],
-      "related_bar_range": [
-        4,
-        5
-      ],
-      "resolution": "",
-      "resolved": false
-    },
-    {
-      "conflict_type": "chord_conflict",
-      "description": "小节 5-6: 期望和弦 Bb:maj 与实际和弦 F:maj 存在不确定性",
+      "description": "小节 5-6: 期望和弦 Bb:maj 与实际和弦 A:maj 存在不确定性",
       "severity": "medium",
       "evidence_version_ids": [
         "v1",
-        "v3",
-        "v2"
+        "v2",
+        "v3"
       ],
       "related_bar_range": [
         5,
@@ -300,12 +180,12 @@
     },
     {
       "conflict_type": "chord_conflict",
-      "description": "小节 9-10: 期望和弦 C:7 与实际和弦 F:maj 冲突",
+      "description": "小节 9-10: 期望和弦 C:7 与实际和弦 G:min 冲突",
       "severity": "high",
       "evidence_version_ids": [
         "v1",
-        "v3",
-        "v2"
+        "v2",
+        "v3"
       ],
       "related_bar_range": [
         9,
@@ -348,23 +228,7 @@
     },
     {
       "conflict_type": "missed_modulation",
-      "description": "疑似漏判转调: 小节 3 处 和弦从 C:7 变为 D:min, 大小调品质切换, 可能存在转调但未被标注",
-      "severity": "high",
-      "evidence_version_ids": [
-        "v1",
-        "v2",
-        "v3"
-      ],
-      "related_bar_range": [
-        2,
-        4
-      ],
-      "resolution": "",
-      "resolved": false
-    },
-    {
-      "conflict_type": "missed_modulation",
-      "description": "疑似漏判转调: 小节 4 处 和弦从 D:min 变为 A:maj, 大小调品质切换, 可能存在转调但未被标注",
+      "description": "疑似漏判转调: 小节 4 处 和弦从 C:7 变为 D:min, 大小调品质切换, 可能存在转调但未被标注",
       "severity": "high",
       "evidence_version_ids": [
         "v1",
@@ -377,6 +241,54 @@
       ],
       "resolution": "",
       "resolved": false
+    },
+    {
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 5 处 和弦从 D:min 变为 A:maj, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "related_bar_range": [
+        4,
+        6
+      ],
+      "resolution": "",
+      "resolved": false
+    },
+    {
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 9 处 和弦从 F:maj 变为 G:min, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "related_bar_range": [
+        7,
+        10
+      ],
+      "resolution": "",
+      "resolved": false
+    },
+    {
+      "conflict_type": "missed_modulation",
+      "description": "疑似漏判转调: 小节 10 处 和弦从 G:min 变为 F:maj, 大小调品质切换, 可能存在转调但未被标注",
+      "severity": "high",
+      "evidence_version_ids": [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      "related_bar_range": [
+        9,
+        11
+      ],
+      "resolution": "",
+      "resolved": false
     }
   ],
   "conclusion_consistent": false,
@@ -384,10 +296,10 @@
     "description": "F大调旋律, 中段转d小调但AI漏判, 小节6-8和弦完全错误, 存在小节错位",
     "teacher": "王老师",
     "note": "转调漏判被新版本覆盖, 原始转调标注丢失",
-    "_midi_processed": true,
-    "_midi_path": "sample_data/bad_001/melody.mid",
+    "_midi_error": "mido 库未安装, 请运行: pip install -r requirements.txt  或  pip install mido>=1.2.0",
+    "_midi_processed": false,
     "_audit": {
-      "audit_time": "2026-06-11T17:31:40.230873",
+      "audit_time": "2026-06-11T23:08:47.912169",
       "consistency_result": {
         "is_consistent": false,
         "inconsistent_diffs": [
@@ -456,5 +368,5 @@
       ]
     }
   },
-  "created_at": "2026-06-11T17:31:40.206679"
+  "created_at": "2026-06-11T23:08:47.906134"
 }

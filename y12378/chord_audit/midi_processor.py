@@ -51,7 +51,7 @@ class BarChroma:
 def _check_mido_available():
     if mido is None:
         raise MIDINotAvailableError(
-            "mido 库未安装, 请运行: pip install mido"
+            "mido 库未安装, 请运行: pip install -r requirements.txt  或  pip install mido>=1.2.0"
         )
 
 

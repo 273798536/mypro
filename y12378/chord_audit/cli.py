@@ -7,14 +7,31 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from chord_audit.audit_engine import AuditEngine
 from chord_audit.models import SampleClassification, ConflictType
-from chord_audit.midi_processor import (
-    analyze_midi_chords,
-    generate_sample_midi,
-    MIDIProcessingError,
-    MIDINotAvailableError,
-)
 from chord_audit.sample_manager import load_sample_from_directory, save_sample
-from chord_audit.chord_parser import NOTE_NAMES
+
+
+def _check_mido_available():
+    try:
+        import mido
+        return True
+    except ImportError:
+        return False
+
+
+def _get_midi_processor():
+    from chord_audit.midi_processor import (
+        analyze_midi_chords,
+        generate_sample_midi,
+        MIDIProcessingError,
+        MIDINotAvailableError,
+    )
+    return analyze_midi_chords, generate_sample_midi, MIDIProcessingError, MIDINotAvailableError
+
+
+def _print_mido_missing_hint():
+    print("[!] 缺少依赖: mido 未安装")
+    print("    安装命令: pip install -r requirements.txt")
+    print("    或单独安装: pip install mido>=1.2.0")
 
 
 def cmd_audit(args):
@@ -329,6 +346,11 @@ def cmd_failures(args):
 
 
 def cmd_midi_analyze(args):
+    if not _check_mido_available():
+        _print_mido_missing_hint()
+        return 1
+    analyze_midi_chords, _, MIDIProcessingError, MIDINotAvailableError = _get_midi_processor()
+
     try:
         result = analyze_midi_chords(args.midi_file, args.beats_per_bar)
     except MIDINotAvailableError as e:
@@ -372,6 +394,11 @@ def cmd_midi_analyze(args):
 
 
 def cmd_midi_generate(args):
+    if not _check_mido_available():
+        _print_mido_missing_hint()
+        return 1
+    _, generate_sample_midi, MIDIProcessingError, MIDINotAvailableError = _get_midi_processor()
+
     chords = args.chords.split(",") if args.chords else [
         "C:maj", "G:maj", "A:min", "F:maj",
         "C:maj", "G:maj", "F:maj", "C:maj",
@@ -401,6 +428,10 @@ def cmd_midi_generate(args):
 
 
 def cmd_process_sample(args):
+    if not _check_mido_available():
+        _print_mido_missing_hint()
+        return 1
+
     sample_dir = args.sample_dir
     if not os.path.isdir(sample_dir):
         print(f"[!] 样本目录不存在: {sample_dir}")
