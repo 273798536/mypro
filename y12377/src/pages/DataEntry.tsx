@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../store/useStore';
 import { FileText, Wrench, Table, Plus, X, Trash2 } from 'lucide-react';
 
@@ -6,7 +6,13 @@ type TabType = 'contract' | 'workOrder' | 'statement';
 
 const DataEntry = () => {
   const [activeTab, setActiveTab] = useState<TabType>('contract');
-  const { createContract, createWorkOrder, createStatement, contracts, loading } = useStore();
+  const { createContract, createWorkOrder, createStatement, contracts, fetchContracts, loading } = useStore();
+
+  useEffect(() => {
+    if (contracts.length === 0) {
+      fetchContracts();
+    }
+  }, []);
 
   const [contractForm, setContractForm] = useState({
     contractNo: '',
