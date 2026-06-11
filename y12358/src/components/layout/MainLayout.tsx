@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Layout, Menu, Button, message } from 'antd';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import {
   Database,
   ShieldCheck,
@@ -19,7 +19,6 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  const navigate = useNavigate();
   const location = useLocation();
   const { initMockData, clearAllData, checkResults } = useAppStore();
 
@@ -28,7 +27,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       initMockData();
       message.success('已加载样例数据');
     }
-  }, []);
+  }, [checkResults.length, initMockData]);
 
   const menuItems = [
     {

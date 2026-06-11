@@ -291,7 +291,7 @@ export const downloadFile = (content: string | Blob, filename: string, mimeType:
 export const checkConclusionConsistency = (
   overloadPassed: boolean,
   pressurePassed: boolean,
-  heightPassed: boolean
+  _heightPassed: boolean
 ): boolean => {
   const hasOverloadIssue = !overloadPassed;
   const hasPressureIssue = !pressurePassed;

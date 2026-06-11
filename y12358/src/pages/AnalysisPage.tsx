@@ -17,7 +17,6 @@ import {
   Row,
   Col,
   Statistic,
-  Tooltip,
   Alert,
 } from 'antd';
 import {
@@ -54,7 +53,6 @@ const AnalysisPage: React.FC = () => {
     ledgers,
     reports,
     loadRecords,
-    oilPressureSeries,
     getLoadRecordById,
     addReport,
     updateCheckResult,
