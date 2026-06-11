@@ -1,0 +1,7 @@
+[
+  {"timestamp": "2026-06-15 06:00:00", "lon": 121.50, "lat": 30.20, "speed": 8.5, "heading": 90},
+  {"timestamp": "2026-06-15 07:30:00", "lon": 121.85, "lat": 30.25, "speed": 9.2, "heading": 85},
+  {"timestamp": "2026-06-15 09:00:00", "lon": 122.10, "lat": 30.30, "speed": 0.0, "heading": 0},
+  {"timestamp": "2026-06-15 12:00:00", "lon": 122.10, "lat": 30.30, "speed": 0.0, "heading": 0},
+  {"timestamp": "2026-06-15 16:00:00", "lon": 121.85, "lat": 30.25, "speed": 10.0, "heading": 270}
+]

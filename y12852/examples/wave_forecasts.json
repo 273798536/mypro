@@ -1,0 +1,42 @@
+[
+  {
+    "forecast_date": "2026-06-15",
+    "wind_farm": "东海一号风场",
+    "wave_height": 1.2,
+    "wind_speed": 8.5,
+    "wind_direction": 135,
+    "forecast_time": "2026-06-14 08:00:00",
+    "is_delayed": 0,
+    "data_source": "国家海洋预报台"
+  },
+  {
+    "forecast_date": "2026-06-16",
+    "wind_farm": "东海一号风场",
+    "wave_height": 2.8,
+    "wind_speed": 16.0,
+    "wind_direction": 90,
+    "forecast_time": "2026-06-15 08:00:00",
+    "is_delayed": 0,
+    "data_source": "国家海洋预报台"
+  },
+  {
+    "forecast_date": "2026-06-17",
+    "wind_farm": "东海一号风场",
+    "wave_height": 1.8,
+    "wind_speed": 9.0,
+    "wind_direction": 45,
+    "forecast_time": "2026-06-16 20:00:00",
+    "is_delayed": 1,
+    "data_source": "国家海洋预报台-补报"
+  },
+  {
+    "forecast_date": "2026-06-15",
+    "wind_farm": "南海二号风场",
+    "wave_height": 0.8,
+    "wind_speed": 5.0,
+    "wind_direction": 180,
+    "forecast_time": "2026-06-14 08:00:00",
+    "is_delayed": 0,
+    "data_source": "国家海洋预报台"
+  }
+]
