@@ -1,0 +1,266 @@
+{
+  "report_id": "LOC-20260611-145332",
+  "timestamp": "2026-06-11 14:53:32",
+  "case_info": {
+    "name": "对比测试",
+    "description": ""
+  },
+  "input_data": {
+    "speed_of_sound": {
+      "value": 343.0,
+      "unit": "m/s",
+      "description": "声速"
+    },
+    "microphones": [
+      {
+        "id": "MIC1",
+        "position": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "unit": "m",
+        "notes": ""
+      },
+      {
+        "id": "MIC2",
+        "position": {
+          "x": 10.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "unit": "m",
+        "notes": ""
+      },
+      {
+        "id": "MIC3",
+        "position": {
+          "x": 5.0,
+          "y": 8.0,
+          "z": 0.0
+        },
+        "unit": "m",
+        "notes": ""
+      }
+    ],
+    "time_differences": [
+      {
+        "pair": "MIC1-MIC2",
+        "delta_t": 0.02,
+        "unit": "s",
+        "confidence": 0.5,
+        "notes": "故意设置错误的时间差数据",
+        "noise_peak": null,
+        "distance_difference": 6.86
+      },
+      {
+        "pair": "MIC1-MIC3",
+        "delta_t": -0.015,
+        "unit": "s",
+        "confidence": 0.4,
+        "notes": "故意设置错误的时间差数据",
+        "noise_peak": null,
+        "distance_difference": -5.145
+      }
+    ]
+  },
+  "triangulation_steps": [
+    {
+      "description": "麦克风坐标",
+      "formula": "麦克风位置列表",
+      "value": [
+        "MIC1: (0.00, 0.00)",
+        "MIC2: (10.00, 0.00)",
+        "MIC3: (5.00, 8.00)"
+      ],
+      "unit": "m"
+    },
+    {
+      "description": "距离差计算",
+      "formula": "Δd = Δt × v_sound (带置信度加权)",
+      "value": [
+        "MIC1-MIC2: 6.8600 m (权重: 0.50)",
+        "MIC1-MIC3: -5.1450 m (权重: 0.40)"
+      ],
+      "unit": "m"
+    },
+    {
+      "description": "搜索范围",
+      "formula": "基于麦克风坐标扩展 (网格分辨率: 80×80)",
+      "value": "X: [-10.0, 20.0], Y: [-10.0, 18.0]",
+      "unit": "m"
+    },
+    {
+      "description": "网格搜索粗定位",
+      "formula": "在 80×80 网格中搜索最小误差点",
+      "value": "位置: (12.7848, -10.0000), 误差: 1.396543",
+      "unit": "m"
+    },
+    {
+      "description": "局部优化精定位",
+      "formula": "梯度下降式邻域搜索 (20 步)",
+      "value": "位置: (16.6848, -15.8000), 误差: 1.322806",
+      "unit": "m"
+    }
+  ],
+  "candidates": [
+    {
+      "rank": 1,
+      "method": "WeightedGrid_2D",
+      "x": 16.684810126582278,
+      "y": -15.8,
+      "error": 1.3228061126586346,
+      "consistency": 0.0,
+      "score": 0.0,
+      "notes_count": 3,
+      "tuning_notes": [
+        "⚠️ 时间差不一致: MIC1-MIC2 | 测量: 20.00ms | 预期: 16.98ms | 差值: 3.02ms",
+        "⚠️ 时间差不一致: MIC1-MIC3 | 测量: -15.00ms | 预期: -10.31ms | 差值: 4.69ms",
+        "⚠️ 声源位于麦克风阵列外 | 位置: (16.68, -15.80) | 阵列范围: X[0.0, 10.0] Y[0.0, 8.0]"
+      ],
+      "mic_distances": {
+        "MIC1": 22.97874863781974,
+        "MIC2": 17.155951924287297,
+        "MIC3": 26.513671712802807
+      }
+    },
+    {
+      "rank": 2,
+      "method": "FineGrid_2D",
+      "x": 16.282326621923936,
+      "y": -15.866666666666667,
+      "error": 1.3434102487875281,
+      "consistency": 0.0,
+      "score": 0.0,
+      "notes_count": 3,
+      "tuning_notes": [
+        "⚠️ 时间差不一致: MIC1-MIC2 | 测量: 20.00ms | 预期: 16.53ms | 差值: 3.47ms",
+        "⚠️ 时间差不一致: MIC1-MIC3 | 测量: -15.00ms | 预期: -10.68ms | 差值: 4.32ms",
+        "⚠️ 声源位于麦克风阵列外 | 位置: (16.28, -15.87) | 阵列范围: X[0.0, 10.0] Y[0.0, 8.0]"
+      ],
+      "mic_distances": {
+        "MIC1": 22.734671128787504,
+        "MIC2": 17.065132255439607,
+        "MIC3": 26.399027856751683
+      }
+    },
+    {
+      "rank": 3,
+      "method": "CoarseGrid_2D",
+      "x": 12.653061224489797,
+      "y": -10.0,
+      "error": 1.4314303527454535,
+      "consistency": 0.0,
+      "score": 0.0,
+      "notes_count": 3,
+      "tuning_notes": [
+        "⚠️ 时间差不一致: MIC1-MIC2 | 测量: 20.00ms | 预期: 16.86ms | 差值: 3.14ms",
+        "⚠️ 时间差不一致: MIC1-MIC3 | 测量: -15.00ms | 预期: -10.01ms | 差值: 4.99ms",
+        "⚠️ 声源位于麦克风阵列外 | 位置: (12.65, -10.00) | 阵列范围: X[0.0, 10.0] Y[0.0, 8.0]"
+      ],
+      "mic_distances": {
+        "MIC1": 16.12761477561661,
+        "MIC2": 10.34595253521353,
+        "MIC3": 19.559380003103094
+      }
+    }
+  ],
+  "error_analysis": {
+    "error_budget": [
+      {
+        "source": "time_measurement",
+        "magnitude": 0.034300000000000004,
+        "unit": "m",
+        "description": "时间测量误差导致的定位误差"
+      },
+      {
+        "source": "microphone_position",
+        "magnitude": 0.015,
+        "unit": "m",
+        "description": "麦克风坐标误差导致的定位误差"
+      },
+      {
+        "source": "sound_speed",
+        "magnitude": 0.01928288793963024,
+        "unit": "m",
+        "description": "声速变化导致的定位误差"
+      }
+    ],
+    "uncertainty": {
+      "center_x": 16.684810126582278,
+      "center_y": -15.8,
+      "major_axis": 1.3914061126586346,
+      "minor_axis": 1.3571061126586346,
+      "angle": 0.0,
+      "unit": "m"
+    },
+    "confidence_interval": {
+      "confidence_level": 0.95,
+      "radius": 2.5926999808109237,
+      "unit": "m",
+      "lower_bound_x": 16.5503876662206,
+      "upper_bound_x": 16.819232586943954,
+      "lower_bound_y": -15.934422460361676,
+      "upper_bound_y": -15.665577539638326
+    }
+  },
+  "evidence_summary": {
+    "case_id": "对比测试",
+    "total_evidence_items": 2,
+    "evidence_by_type": {
+      "time_difference_gap": 2
+    },
+    "tuning_notes": {
+      "total": 1,
+      "resolved": 0,
+      "by_severity": {
+        "warning": 1
+      }
+    },
+    "coordinate_issues": 0,
+    "time_gaps": 2,
+    "archived_noise_peaks": 0
+  },
+  "tuning_notes": [
+    {
+      "id": "note_1_20260611145331",
+      "timestamp": "2026-06-11T14:53:31.852882",
+      "author": "系统",
+      "category": "calibration",
+      "content": "时间差数据存在异常，可能影响定位精度",
+      "related_evidence": [],
+      "severity": "warning",
+      "resolved": false
+    }
+  ],
+  "conclusion": {
+    "final_x": 16.684810126582278,
+    "final_y": -15.8,
+    "final_error": 1.3228061126586346,
+    "confidence": 0.0,
+    "quality_passed": false,
+    "quality_assessment": [
+      {
+        "item": "残差误差",
+        "passed": false,
+        "message": "误差 1.3228m, 阈值 0.5m"
+      },
+      {
+        "item": "一致性检查",
+        "passed": false,
+        "message": "得分 0.00, 阈值 0.6"
+      },
+      {
+        "item": "调音备注",
+        "passed": true,
+        "message": "发现 3 条告警"
+      }
+    ],
+    "recommendations": [
+      "残差较大，建议检查时间差测量精度或增加麦克风数量",
+      "一致性较差，建议验证麦克风坐标是否正确",
+      "存在 3 条调音告警，详见第5.2节",
+      "⚠️ 结果质量未完全达标，建议人工复核中间计算过程"
+    ]
+  }
+}

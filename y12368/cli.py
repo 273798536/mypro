@@ -366,6 +366,50 @@ def validate(config, output):
         click.echo(f"   ⚠️  {issue.microphone_id}: {issue.detected_by} "
                    f"(置信度: {issue.confidence:.0%})")
 
+    td_gaps = []
+    source_position = None
+    if errors == 0 and len(mics) >= 3 and len(tds) >= 2:
+        click.echo("🔧 执行快速定位以验证时间差一致性...")
+        localizer = TDOALocalizer(speed_of_sound=cfg.get('speed_of_sound', 343.0))
+        try:
+            for mic_cfg in mics:
+                localizer.add_microphone(Microphone(**mic_cfg))
+            for td_cfg in tds:
+                localizer.add_time_difference(TimeDifference(
+                    mic1_id=td_cfg['mic1'],
+                    mic2_id=td_cfg['mic2'],
+                    delta_t=td_cfg['delta_t'],
+                    confidence=td_cfg.get('confidence', 1.0),
+                    notes=td_cfg.get('notes', ''),
+                    noise_peak=td_cfg.get('noise_peak')
+                ))
+            result = localizer.localize_2d_chan()
+            source_position = result.source_position.tolist()
+            click.echo(f"   ✅ 快速定位完成: ({source_position[0]:.4f}, {source_position[1]:.4f}) m, "
+                       f"残差 {result.error:.6f} m")
+        except Exception as e:
+            click.echo(f"   ⚠️  快速定位失败: {e}，跳过时间差一致性检测")
+            evidence_mgr._add_evidence_item(
+                type="localization_failure",
+                description="validate阶段快速定位失败",
+                data={"error": str(e)},
+                source="validate_command"
+            )
+
+    if source_position is not None:
+        td_gaps = evidence_mgr.analyze_time_difference_quality(
+            tds_list=tds_list,
+            mic_positions=mics_dict,
+            source_position=source_position,
+            speed_of_sound=cfg.get('speed_of_sound', 343.0)
+        )
+
+    click.echo(f"⏱️  时间差异常检测: {len(td_gaps)} 项问题")
+    for gap in td_gaps:
+        click.echo(f"   ⚠️  {gap.pair}: 预期 {gap.expected_value*1000:.3f}ms, "
+                   f"实际 {gap.actual_value*1000:.3f}ms "
+                   f"[{gap.severity}] - {gap.impact_description}")
+
     noise_peaks = evidence_mgr.archive_time_difference_noise_peaks(tds_list)
     click.echo(f"🎚️  噪声峰值归档: {len(noise_peaks)} 条记录")
     for peak in noise_peaks:
@@ -388,8 +432,10 @@ def validate(config, output):
         click.echo("✅ 基础验证通过")
     else:
         click.echo(f"❌ 发现 {errors} 个问题")
-    if geometry_issues:
-        click.echo(f"⚠️  存在 {len(geometry_issues)} 项几何质量警告")
+    warnings = len(geometry_issues) + len(td_gaps)
+    if warnings > 0:
+        click.echo(f"⚠️  存在 {warnings} 项质量警告 "
+                   f"(坐标 {len(geometry_issues)}, 时间差 {len(td_gaps)})")
 
 
 @cli.command()

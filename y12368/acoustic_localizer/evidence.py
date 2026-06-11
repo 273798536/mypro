@@ -281,16 +281,42 @@ class EvidenceManager:
                 }
                 for n in self.tuning_notes
             ],
+            "coordinate_issues": [
+                {
+                    "microphone_id": c.microphone_id,
+                    "reported_position": c.reported_position,
+                    "verified_position": c.verified_position,
+                    "displacement_m": c.displacement,
+                    "detected_by": c.detected_by,
+                    "confidence": c.confidence
+                }
+                for c in self.coordinate_issues
+            ],
+            "time_gaps": [
+                {
+                    "pair": g.pair,
+                    "expected_value_s": g.expected_value,
+                    "actual_value_s": g.actual_value,
+                    "gap_type": g.gap_type,
+                    "severity": g.severity,
+                    "impact_description": g.impact_description
+                }
+                for g in self.time_gaps
+            ],
             "noise_archive": [
                 {
                     "timestamp": p.timestamp,
                     "frequency_hz": p.frequency_hz,
                     "amplitude_db": p.amplitude_db,
                     "microphone_id": p.microphone_id,
-                    "version_tag": p.version_tag
+                    "version_tag": p.version_tag,
+                    "window_start": p.window_start,
+                    "window_end": p.window_end,
+                    "is_archived": p.is_archived
                 }
                 for p in self.noise_peak_archive
-            ]
+            ],
+            "summary": self.generate_evidence_summary()
         }
 
         Path(filepath).parent.mkdir(parents=True, exist_ok=True)
@@ -326,6 +352,41 @@ class EvidenceManager:
                 resolved=n.get("resolved", False)
             )
             self.tuning_notes.append(note)
+
+        for c in data.get("coordinate_issues", []):
+            issue = CoordinateMisalignment(
+                microphone_id=c["microphone_id"],
+                reported_position=c["reported_position"],
+                verified_position=c.get("verified_position"),
+                displacement=c.get("displacement_m", c.get("displacement", 0)),
+                detected_by=c["detected_by"],
+                confidence=c["confidence"]
+            )
+            self.coordinate_issues.append(issue)
+
+        for g in data.get("time_gaps", []):
+            gap = TimeDifferenceGap(
+                pair=g["pair"],
+                expected_value=g["expected_value_s"],
+                actual_value=g.get("actual_value_s", g.get("actual_value")),
+                gap_type=g["gap_type"],
+                severity=g["severity"],
+                impact_description=g["impact_description"]
+            )
+            self.time_gaps.append(gap)
+
+        for p in data.get("noise_archive", []):
+            peak = NoisePeakRecord(
+                timestamp=p["timestamp"],
+                frequency_hz=p["frequency_hz"],
+                amplitude_db=p["amplitude_db"],
+                microphone_id=p["microphone_id"],
+                window_start=p.get("window_start", 0.0),
+                window_end=p.get("window_end", 0.0),
+                version_tag=p["version_tag"],
+                is_archived=p.get("is_archived", True)
+            )
+            self.noise_peak_archive.append(peak)
 
     def analyze_microphone_geometry(self, mics_dict: Dict[str, Dict[str, float]]) -> List[CoordinateMisalignment]:
         issues = []
