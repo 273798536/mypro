@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./api/dist",
+    "rootDir": "./api",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false,
+    "allowImportingTsExtensions": false,
+    "types": ["node", "express"]
+  },
+  "include": ["api/**/*.ts"],
+  "exclude": ["api/dist/**", "api/data/**"]
+}

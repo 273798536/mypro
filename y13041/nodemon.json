@@ -1,0 +1,21 @@
+{
+  "watch": ["api/routes", "api/db", "api/app.ts", "api/server.ts", "api/index.ts"],
+  "ext": "ts,json",
+  "ignore": [
+    "api/data/*",
+    "api/dist/*",
+    "node_modules/*",
+    ".git/*",
+    "src/*",
+    "dist/*",
+    ".trae/*",
+    "*.md"
+  ],
+  "exec": "tsx api/server.ts",
+  "env": {
+    "NODE_ENV": "development",
+    "CHOKIDAR_USEPOLLING": "0"
+  },
+  "delay": 1500,
+  "quiet": true
+}
