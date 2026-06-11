@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>潜点能见度记录台</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; font-size: 13px; color: #222; background: #f5f6f8; }
+.header { background: #1a365d; color: white; padding: 12px 20px; display: flex; align-items: center; gap: 20px; }
+.header h1 { font-size: 18px; font-weight: 600; }
+.header .tabs { display: flex; gap: 4px; margin-left: 20px; }
+.header .tab { padding: 6px 14px; border-radius: 4px 4px 0 0; cursor: pointer; background: rgba(255,255,255,0.1); color: #ccc; }
+.header .tab.active { background: #f5f6f8; color: #1a365d; font-weight: 600; }
+.main { display: flex; height: calc(100vh - 50px); }
+.sidebar { width: 380px; background: white; border-right: 1px solid #e0e3e8; overflow-y: auto; padding: 16px; }
+.content { flex: 1; padding: 16px; overflow-y: auto; }
+.panel { background: white; border: 1px solid #e0e3e8; border-radius: 6px; padding: 14px; margin-bottom: 14px; }
+.panel h3 { font-size: 14px; color: #1a365d; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #eee; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
+th { background: #f8f9fb; color: #555; font-weight: 600; }
+tr:hover td { background: #f8f9fb; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.badge-ok { background: #d1fae5; color: #065f46; }
+.badge-review { background: #fef3c7; color: #92400e; }
+.badge-missing { background: #fee2e2; color: #991b1b; }
+.badge-violation { background: #fecaca; color: #991b1b; }
+.badge-delayed { background: #fde68a; color: #92400e; }
+button { padding: 6px 14px; border: 1px solid #cbd5e1; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
+button:hover { background: #f1f5f9; }
+button.primary { background: #1a365d; color: white; border-color: #1a365d; }
+button.primary:hover { background: #2c5282; }
+button.danger { background: #dc2626; color: white; border-color: #dc2626; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row + .row { margin-top: 8px; }
+input, select { padding: 5px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; }
+label { font-size: 12px; color: #555; }
+#map { height: 100%; border-radius: 6px; }
+.map-wrap { height: 400px; margin-bottom: 14px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.diff-box { border: 1px solid #e0e3e8; border-radius: 6px; padding: 10px; }
+.diff-box h4 { font-size: 12px; color: #666; margin-bottom: 6px; }
+.diff-bad { background: #fef2f2; }
+.diff-good { background: #f0fdf4; }
+.empty { color: #999; text-align: center; padding: 30px; }
+.tag { display: inline-block; background: #eef2ff; color: #3730a3; padding: 1px 6px; border-radius: 3px; font-size: 11px; margin-right: 4px; }
+.hidden { display: none; }
+textarea { width: 100%; padding: 6px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; resize: vertical; min-height: 60px; font-family: inherit; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🐟 潜点能见度记录台</h1>
+  <div class="tabs">
+    <div class="tab active" data-tab="records">能见度记录</div>
+    <div class="tab" data-tab="tracks">轨迹清洗对比</div>
+    <div class="tab" data-tab="forecasts">预报与补录</div>
+    <div class="tab" data-tab="review">人工复核</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="panel">
+      <h3>🔍 数据筛选</h3>
+      <div class="row">
+        <label>潜点</label>
+        <select id="filterSite"><option value="">全部</option></select>
+      </div>
+      <div class="row">
+        <label>日期</label>
+        <input type="date" id="filterDate">
+      </div>
+      <div class="row">
+        <label>状态</label>
+        <select id="filterStatus">
+          <option value="">全部</option>
+          <option value="ok">正常</option>
+          <option value="review">待复核</option>
+          <option value="data_missing">数据缺失</option>
+          <option value="confirmed">已确认</option>
+        </select>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="primary" onclick="runCalc()">▶ 运行计算</button>
+        <button onclick="loadAll()">🔄 刷新</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>📍 基础数据</h3>
+      <div class="row"><button onclick="loadSites()">潜点: <span id="siteCount">0</span></button></div>
+      <div class="row"><button onclick="loadZones()">禁航区: <span id="zoneCount">0</span></button></div>
+      <div class="row"><button onclick="loadShips()">船舶: <span id="shipCount">0</span></button></div>
+    </div>
+
+    <div class="panel" id="violationPanel">
+      <h3>⚠️ 禁航区越界</h3>
+      <div id="violationList"></div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="tab-records" class="tab-content">
+      <div class="map-wrap"><div id="map"></div></div>
+      <div class="panel">
+        <h3>📋 能见度记录</h3>
+        <table id="recordsTable">
+          <thead>
+            <tr>
+              <th>ID</th><th>潜点</th><th>日期</th><th>能见度(m)</th><th>置信度</th>
+              <th>禁航区</th><th>轨迹缺失</th><th>预报延迟</th><th>状态</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="tab-tracks" class="tab-content hidden">
+      <div class="two-col">
+        <div class="panel">
+          <h3>🗑️ 清洗前（原始数据）</h3>
+          <div class="row">
+            <label>船舶</label>
+            <select id="trackShip"><option value="">全部</option></select>
+            <label>日期</label>
+            <input type="date" id="trackDate">
+            <button onclick="loadTracks()">加载</button>
+          </div>
+          <table id="rawTracksTable">
+            <thead><tr><th>ID</th><th>时间</th><th>坐标</th><th>速度</th><th>清洗</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <h3>✅ 清洗后（有效数据）</h3>
+          <table id="cleanTracksTable">
+            <thead><tr><th>ID</th><th>时间</th><th>坐标</th><th>速度</th><th>原因</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <div class="row" style="margin-top:10px">
+            <button class="primary" onclick="cleanTracks()">🧹 执行轨迹清洗</button>
+            <span id="cleanResult"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>🔍 单条轨迹前后对比</h3>
+        <div class="row">
+          <label>轨迹ID</label>
+          <input type="number" id="compareId" placeholder="输入原始轨迹ID">
+          <button onclick="compareTrack()">对比</button>
+        </div>
+        <div class="two-col" style="margin-top:10px" id="compareBox"></div>
+      </div>
+    </div>
+
+    <div id="tab-forecasts" class="tab-content hidden">
+      <div class="panel">
+        <h3>🌊 风浪预报（含延迟补录）</h3>
+        <div class="row">
+          <button class="primary" onclick="loadForecasts()">刷新预报</button>
+        </div>
+        <table id="forecastTable">
+          <thead>
+            <tr>
+              <th>ID</th><th>适用日期</th><th>发布时间</th><th>风速</th><th>浪高</th>
+              <th>延迟</th><th>状态</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h3>📝 预报补录 / 人工修正</h3>
+        <div class="row">
+          <label>预报ID</label><input type="number" id="fidInput">
+          <label>浪高(m)</label><input type="number" id="waveInput" step="0.1">
+          <label>风速(m/s)</label><input type="number" id="windInput" step="0.1">
+          <label>确认人</label><input type="text" id="confirmerInput" value="海洋老师">
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="primary" onclick="confirmForecast()">✅ 确认并补录</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-review" class="tab-content hidden">
+      <div class="panel">
+        <h3>🧐 待海洋老师复核的记录</h3>
+        <table id="reviewTable">
+          <thead>
+            <tr>
+              <th>ID</th><th>潜点</th><th>日期</th><th>能见度</th><th>问题</th><th>复核</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="panel" id="reviewDetail" style="display:none">
+        <h3>📝 复核详情</h3>
+        <div id="reviewDetailContent"></div>
+        <div class="row" style="margin-top:10px">
+          <label>人工可见度(m)</label>
+          <input type="number" id="overrideVis" step="0.1">
+          <label>复核人</label>
+          <input type="text" id="reviewer" value="海洋老师">
+          <label>备注</label>
+          <input type="text" id="reviewNotes" style="flex:1">
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="primary" onclick="submitReview()">确认通过</button>
+          <button class="danger" onclick="markProblem()">标记有问题</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:5001/api';
+let map, siteMarkers = [], zoneLayers = [], trackLayers = [];
+let currentReviewId = null;
+
+document.querySelectorAll('.tab').forEach(t => {
+  t.onclick = () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden'));
+    document.getElementById('tab-' + t.dataset.tab).classList.remove('hidden');
+    if (t.dataset.tab === 'tracks') loadShipOptions('trackShip');
+    if (t.dataset.tab === 'forecasts') loadForecasts();
+    if (t.dataset.tab === 'review') loadReviews();
+  };
+});
+
+async function api(path, opts = {}) {
+  const r = await fetch(API + path, {
+    headers: {'Content-Type': 'application/json'},
+    ...opts,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  });
+  return r.json();
+}
+
+function initMap() {
+  map = L.map('map').setView([22.5, 113.9], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: 'OSM'
+  }).addTo(map);
+}
+
+function statusBadge(s) {
+  const map = {ok: ['ok', '正常'], review: ['review', '待复核'], data_missing: ['missing', '数据缺失'], confirmed: ['ok', '已确认']};
+  const [cls, txt] = map[s] || ['review', s];
+  return `<span class="badge badge-${cls}">${txt}</span>`;
+}
+
+async function loadSites() {
+  const sites = await api('/dive_sites');
+  document.getElementById('siteCount').textContent = sites.length;
+  const sel = document.getElementById('filterSite');
+  sel.innerHTML = '<option value="">全部</option>' + sites.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+  siteMarkers.forEach(m => map.removeLayer(m));
+  siteMarkers = [];
+  sites.forEach(s => {
+    const c = L.circleMarker([s.lat, s.lng], {radius: 8, color: '#16a34a', fillColor: '#22c55e', fillOpacity: 0.8}).addTo(map);
+    c.bindPopup(`<b>${s.name}</b><br>${s.lat.toFixed(4)}, ${s.lng.toFixed(4)}<br>半径 ${s.radius_m}m`);
+    siteMarkers.push(c);
+    const ring = L.circle([s.lat, s.lng], {radius: s.radius_m, color: '#22c55e', fillOpacity: 0.05}).addTo(map);
+    siteMarkers.push(ring);
+  });
+}
+
+async function loadZones() {
+  const zones = await api('/no_go_zones');
+  document.getElementById('zoneCount').textContent = zones.length;
+  zoneLayers.forEach(l => map.removeLayer(l));
+  zoneLayers = [];
+  const vlist = document.getElementById('violationList');
+  vlist.innerHTML = zones.length ? '' : '<div class="empty">暂无禁航区</div>';
+
+  zones.forEach(z => {
+    const poly = L.polygon(z.polygon, {color: '#dc2626', fillColor: '#ef4444', fillOpacity: 0.2}).addTo(map);
+    poly.bindPopup(`<b>🚫 ${z.name}</b><br>${z.description || ''}`);
+    zoneLayers.push(poly);
+  });
+}
+
+async function loadShips() {
+  const ships = await api('/ships');
+  document.getElementById('shipCount').textContent = ships.length;
+  return ships;
+}
+
+async function loadShipOptions(selId) {
+  const ships = await loadShips();
+  const sel = document.getElementById(selId);
+  sel.innerHTML = '<option value="">全部</option>' + ships.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+}
+
+async function loadTracks() {
+  const sid = document.getElementById('trackShip').value;
+  const dt = document.getElementById('trackDate').value;
+  let url = '/ship_tracks';
+  const params = [];
+  if (sid) params.push('ship_id=' + sid);
+  if (dt) params.push('date=' + dt);
+  if (params.length) url += '?' + params.join('&');
+  const raw = await api(url);
+
+  let curl = '/ship_tracks_clean';
+  if (params.length) curl += '?' + params.join('&');
+  const clean = await api(curl);
+
+  const rawTbl = document.querySelector('#rawTracksTable tbody');
+  rawTbl.innerHTML = raw.map(r => `<tr>
+    <td>${r.id}</td><td>${r.recorded_at}</td>
+    <td>${r.lat?.toFixed(4) ?? '-'}, ${r.lng?.toFixed(4) ?? '-'}</td>
+    <td>${r.speed ?? '-'}</td>
+    <td>${r.is_clean ? '<span class="badge badge-ok">已清洗</span>' : '<span class="badge badge-review">未清洗</span>'}</td>
+  </tr>`).join('') || '<tr><td colspan="5" class="empty">无数据</td></tr>';
+
+  const clTbl = document.querySelector('#cleanTracksTable tbody');
+  clTbl.innerHTML = clean.map(r => `<tr>
+    <td>${r.id} (#${r.original_id})</td><td>${r.recorded_at}</td>
+    <td>${r.lat?.toFixed(4) ?? '-'}, ${r.lng?.toFixed(4) ?? '-'}</td>
+    <td>${r.speed ?? '-'}</td>
+    <td>${r.clean_reason || ''}</td>
+  </tr>`).join('') || '<tr><td colspan="5" class="empty">请先运行清洗</td></tr>';
+}
+
+async function cleanTracks() {
+  const sid = document.getElementById('trackShip').value;
+  const dt = document.getElementById('trackDate').value;
+  const body = {};
+  if (sid) body.ship_id = parseInt(sid);
+  if (dt) body.date = dt;
+  const r = await api('/ship_tracks/clean', {method: 'POST', body});
+  document.getElementById('cleanResult').textContent = `✅ 清洗完成: 保留 ${r.cleaned_count} 条，剔除 ${r.bad_count} 条异常数据`;
+  if (r.bad_records.length) {
+    console.log('Bad records:', r.bad_records);
+  }
+  loadTracks();
+}
+
+async function compareTrack() {
+  const id = parseInt(document.getElementById('compareId').value);
+  if (!id) return;
+  const r = await api(`/ship_tracks/compare/${id}`);
+  const box = document.getElementById('compareBox');
+  if (!r.raw && !r.clean) {
+    box.innerHTML = '<div class="empty">未找到该轨迹</div>';
+    return;
+  }
+  const fmt = (d) => d ? JSON.stringify(d, null, 2) : '无';
+  box.innerHTML = `
+    <div class="diff-box diff-bad"><h4>❌ 原始数据</h4><pre style="font-size:11px">${fmt(r.raw)}</pre></div>
+    <div class="diff-box diff-good"><h4>✅ 清洗后数据</h4><pre style="font-size:11px">${fmt(r.clean)}</pre></div>
+  `;
+}
+
+async function runCalc() {
+  const sid = document.getElementById('filterSite').value;
+  const dt = document.getElementById('filterDate').value;
+  const body = {rerun: true};
+  if (sid) body.site_id = parseInt(sid);
+  if (dt) body.record_date = dt;
+  const r = await api('/visibility/calculate', {method: 'POST', body});
+  alert(`计算完成:\n成功: ${r.processed}\n缺失: ${r.failed}\n缺失轨迹的船舶: ${r.missing_tracks.length ? r.missing_tracks.map(x => x.ship_name).join(', ') : '无'}`);
+  loadRecords();
+}
+
+async function loadRecords() {
+  const sid = document.getElementById('filterSite').value;
+  const st = document.getElementById('filterStatus').value;
+  let url = '/visibility_records?';
+  if (sid) url += 'site_id=' + sid + '&';
+  if (st) url += 'status=' + st;
+  const recs = await api(url);
+  const tbl = document.querySelector('#recordsTable tbody');
+  tbl.innerHTML = recs.map(r => `<tr>
+    <td>${r.id}</td>
+    <td><b>潜点#${r.site_id}</b></td>
+    <td>${r.record_date}</td>
+    <td>${r.visibility_m ?? '<span class="badge badge-missing">缺</span>'}</td>
+    <td>${r.confidence !== null && r.confidence !== undefined ? (r.confidence * 100).toFixed(0) + '%' : '-'}</td>
+    <td>${r.has_no_go_violation ? '<span class="badge badge-violation">越界</span>' : '✅'}</td>
+    <td>${r.track_missing ? '<span class="badge badge-delayed">缺失</span>' : '✅'}</td>
+    <td>${r.forecast_delayed ? '<span class="badge badge-delayed">延迟</span>' : '✅'}</td>
+    <td>${statusBadge(r.status)}</td>
+    <td><button onclick="viewDetail(${r.id})">详情</button></td>
+  </tr>`).join('') || '<tr><td colspan="10" class="empty">暂无记录，请点击"运行计算"</td></tr>';
+
+  const violations = recs.filter(r => r.has_no_go_violation && r.no_go_details);
+  const vlist = document.getElementById('violationList');
+  if (violations.length) {
+    vlist.innerHTML = violations.map(r => {
+      const details = Array.isArray(r.no_go_details) ? r.no_go_details : [];
+      return `<div style="margin-bottom:8px; padding:8px; background:#fef2f2; border-radius:4px">
+        <b>潜点#${r.site_id}</b> - ${r.record_date}<br>
+        ${details.map(d => `<span class="tag">${d.ship}→${d.zone}</span>`).join('')}
+      </div>`;
+    }).join('');
+  } else {
+    vlist.innerHTML = '<div class="empty">暂无越界</div>';
+  }
+
+  trackLayers.forEach(l => map.removeLayer(l));
+  trackLayers = [];
+  const ships = await loadShips();
+  for (const ship of ships) {
+    const tracks = await api('/ship_tracks_clean?ship_id=' + ship.id);
+    if (tracks.length >= 2) {
+      const line = L.polyline(tracks.map(t => [t.lat, t.lng]), {color: '#2563eb', weight: 2}).addTo(map);
+      line.bindTooltip(ship.name, {permanent: false});
+      trackLayers.push(line);
+    }
+  }
+}
+
+async function viewDetail(id) {
+  currentReviewId = id;
+  const recs = await api('/visibility_records');
+  const r = recs.find(x => x.id === id);
+  if (!r) return;
+  alert(`记录 #${r.id} 详情:\n能见度: ${r.visibility_m ?? '缺失'}m\n置信度: ${(r.confidence||0)*100}%\n复核备注: ${r.review_notes || '无'}\n数据来源: ${JSON.stringify(r.sources||[])}`);
+}
+
+async function loadForecasts() {
+  const forecasts = await api('/wind_wave_forecasts');
+  const tbl = document.querySelector('#forecastTable tbody');
+  tbl.innerHTML = forecasts.map(f => `<tr>
+    <td>${f.id}</td>
+    <td>${f.forecast_for}</td>
+    <td>${f.issued_at}</td>
+    <td>${f.wind_speed ?? '-'}</td>
+    <td>${f.wave_height ?? '-'}</td>
+    <td>${f.is_delayed ? '<span class="badge badge-delayed">是</span>' : '否'}</td>
+    <td>${f.status === 'confirmed' ? '<span class="badge badge-ok">已确认</span>' : '<span class="badge badge-review">待确认</span>'}</td>
+    <td><button onclick="prefillForecast(${f.id}, ${f.wave_height ?? 'null'}, ${f.wind_speed ?? 'null'})">选择</button></td>
+  </tr>`).join('') || '<tr><td colspan="8" class="empty">暂无预报</td></tr>';
+}
+
+function prefillForecast(id, wave, wind) {
+  document.getElementById('fidInput').value = id;
+  if (wave) document.getElementById('waveInput').value = wave;
+  if (wind) document.getElementById('windInput').value = wind;
+}
+
+async function confirmForecast() {
+  const fid = parseInt(document.getElementById('fidInput').value);
+  if (!fid) { alert('请选择或输入预报ID'); return; }
+  const wave = document.getElementById('waveInput').value;
+  const wind = document.getElementById('windInput').value;
+  const confirmer = document.getElementById('confirmerInput').value;
+  await api(`/wind_wave_forecasts/${fid}/confirm`, {
+    method: 'POST',
+    body: {confirmed_by: confirmer, update_data: {wave_height: wave ? parseFloat(wave) : undefined, wind_speed: wind ? parseFloat(wind) : undefined}}
+  });
+  alert('✅ 已确认并补录');
+  loadForecasts();
+}
+
+async function loadReviews() {
+  const recs = await api('/visibility_records?status=review');
+  const tbl = document.querySelector('#reviewTable tbody');
+  tbl.innerHTML = recs.map(r => `<tr>
+    <td>${r.id}</td>
+    <td>潜点#${r.site_id}</td>
+    <td>${r.record_date}</td>
+    <td>${r.visibility_m ?? '缺失'}m</td>
+    <td>${r.review_notes || '-'}</td>
+    <td><button onclick="openReview(${r.id})">复核</button></td>
+  </tr>`).join('') || '<tr><td colspan="6" class="empty">暂无待复核记录</td></tr>';
+}
+
+async function openReview(id) {
+  currentReviewId = id;
+  const recs = await api('/visibility_records');
+  const r = recs.find(x => x.id === id);
+  if (!r) return;
+  document.getElementById('reviewDetail').style.display = 'block';
+
+  let issues = '';
+  if (r.has_no_go_violation && r.no_go_details) {
+    issues += '<div style="margin-bottom:8px"><b>🚫 禁航区越界:</b><br>';
+    (Array.isArray(r.no_go_details) ? r.no_go_details : []).forEach(d => {
+      issues += `<span class="tag">${d.ship} ${d.time} ${d.zone}</span>`;
+    });
+    issues += '</div>';
+  }
+  if (r.track_missing && r.track_missing_details) {
+    issues += '<div style="margin-bottom:8px"><b>⚠️ 轨迹缺失:</b><br>';
+    (Array.isArray(r.track_missing_details) ? r.track_missing_details : []).forEach(d => {
+      issues += `<span class="tag">${d.ship_name} 原始${d.raw_count}条/清洗${d.clean_count}条</span>`;
+    });
+    issues += '</div>';
+  }
+  if (r.forecast_delayed) {
+    issues += '<div style="margin-bottom:8px"><b>⏰ 预报延迟未确认</b></div>';
+  }
+
+  document.getElementById('reviewDetailContent').innerHTML = `
+    <div style="margin-bottom:8px"><b>能见度:</b> ${r.visibility_m ?? '缺失'}m (置信度 ${(r.confidence||0)*100}%)</div>
+    <div style="margin-bottom:8px"><b>数据来源:</b> ${JSON.stringify(r.sources||[])}</div>
+    ${issues}
+    <div><b>原始计算:</b><pre style="font-size:11px;background:#f8f9fb;padding:8px;border-radius:4px">${JSON.stringify(r.raw_calculation||{}, null, 2)}</pre></div>
+  `;
+}
+
+async function submitReview() {
+  if (!currentReviewId) return;
+  const vis = document.getElementById('overrideVis').value;
+  const reviewer = document.getElementById('reviewer').value;
+  const notes = document.getElementById('reviewNotes').value;
+  await api(`/visibility_records/${currentReviewId}/review`, {
+    method: 'POST',
+    body: {status: 'confirmed', reviewer, notes, visibility_override: vis ? parseFloat(vis) : undefined}
+  });
+  alert('✅ 复核通过');
+  loadReviews();
+  document.getElementById('reviewDetail').style.display = 'none';
+}
+
+async function markProblem() {
+  if (!currentReviewId) return;
+  const notes = document.getElementById('reviewNotes').value || '有问题需重新处理';
+  await api(`/visibility_records/${currentReviewId}/review`, {
+    method: 'POST',
+    body: {status: 'review', reviewer: document.getElementById('reviewer').value, notes}
+  });
+  alert('⚠️ 已标记问题');
+  loadReviews();
+}
+
+async function loadAll() {
+  await loadSites();
+  await loadZones();
+  await loadShips();
+  await loadRecords();
+}
+
+initMap();
+loadAll();
+</script>
+</body>
+</html>
