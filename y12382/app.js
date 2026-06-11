@@ -364,7 +364,7 @@ var App = (function () {
     var emotionLabel = { positive: '积极', neutral: '中性', negative: '消极' }[record.analysis.emotion] || record.analysis.emotion;
     html += '<table class="detail-table"><tbody>';
     html += '<tr><td style="width:120px;font-weight:600">情绪判定</td><td><span class="badge-emotion ' + record.analysis.emotion + '">' + emotionLabel + '</span></td></tr>';
-    html += '<tr><td style="font-weight:600">情绪分值</td><td>' + record.analysis.emotionScore + '/100</td></tr>';
+    html += '<tr><td style="font-weight:600">情绪分值</td><td>' + (record.analysis.emotionScore != null ? record.analysis.emotionScore + '/100' : '-') + '</td></tr>';
     html += '<tr><td style="font-weight:600">置信度</td><td>' + Math.round(record.analysis.confidence * 100) + '%</td></tr>';
     html += '<tr><td style="font-weight:600">文字心得结论</td><td>' + record.analysis.textInsight + '</td></tr>';
     html += '</tbody></table></div>';
@@ -405,7 +405,7 @@ var App = (function () {
     var sorted = records.slice().sort(function (a, b) { return a.checkInDate.localeCompare(b.checkInDate); });
     var labels = sorted.map(function (r) { return r.checkInDate; });
     var durations = sorted.map(function (r) { return r.raw.practiceDuration || 0; });
-    var scores = sorted.map(function (r) { return r.analysis.emotionScore; });
+    var scores = sorted.map(function (r) { return r.analysis.emotionScore != null ? r.analysis.emotionScore : 0; });
     var emotionCounts = { positive: 0, neutral: 0, negative: 0 };
     sorted.forEach(function (r) { emotionCounts[r.analysis.emotion]++; });
     var anomalyTypeCounts = { audio_gap: 0, track_mismatch: 0, emotion_misjudge: 0 };
@@ -415,7 +415,8 @@ var App = (function () {
 
     document.getElementById('statTotalRecords').textContent = records.length;
     document.getElementById('statTotalDuration').textContent = records.reduce(function (s, r) { return s + (r.raw.practiceDuration || 0); }, 0);
-    document.getElementById('statAvgScore').textContent = records.length > 0 ? Math.round(records.reduce(function (s, r) { return s + r.analysis.emotionScore; }, 0) / records.length) : '-';
+    var validScores = records.filter(function (r) { return r.analysis.emotionScore != null; });
+    document.getElementById('statAvgScore').textContent = validScores.length > 0 ? Math.round(validScores.reduce(function (s, r) { return s + r.analysis.emotionScore; }, 0) / validScores.length) : '-';
     document.getElementById('statAnomalyCount').textContent = records.reduce(function (s, r) { return s + r.analysis.anomalies.length; }, 0);
 
     var chartOptions = {
@@ -518,7 +519,7 @@ var App = (function () {
       lines.push('');
       lines.push('【分析结论】');
       lines.push('情绪判定: ' + emotionLabel);
-      lines.push('情绪分值: ' + r.analysis.emotionScore + '/100');
+      lines.push('情绪分值: ' + (r.analysis.emotionScore != null ? r.analysis.emotionScore + '/100' : '-'));
       lines.push('文字心得结论: ' + r.analysis.textInsight);
       lines.push('');
       if (includeRaw) {
@@ -766,7 +767,7 @@ var App = (function () {
       pendingAnalysis = analyzeCheckIn();
       var emotionLabel = { positive: '积极', neutral: '中性', negative: '消极' }[pendingAnalysis.emotion] || pendingAnalysis.emotion;
       document.getElementById('previewEmotion').textContent = emotionLabel;
-      document.getElementById('previewScore').textContent = pendingAnalysis.emotionScore + '/100';
+      document.getElementById('previewScore').textContent = (pendingAnalysis.emotionScore != null ? pendingAnalysis.emotionScore + '/100' : '-');
       document.getElementById('previewInsight').textContent = pendingAnalysis.textInsight;
       document.getElementById('previewAnomalyCount').textContent = pendingAnalysis.anomalies.length;
       document.getElementById('analysisPreview').classList.remove('hidden');
@@ -902,7 +903,7 @@ var App = (function () {
         raw: s.raw,
         analysis: {
           emotion: textAnalysis.emotion,
-          emotionScore: textAnalysis.emotionScore,
+          emotionScore: textAnalysis.score,
           confidence: textAnalysis.confidence,
           anomalies: anomalies,
           textInsight: insight
