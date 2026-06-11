@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .eng-card {
+    @apply bg-white border border-deepsea-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
+  }
+
+  .eng-btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .eng-btn-primary {
+    @apply eng-btn bg-deepsea-500 text-white hover:bg-deepsea-600 focus:ring-deepsea-500 active:bg-deepsea-700;
+  }
+
+  .eng-btn-secondary {
+    @apply eng-btn bg-deepsea-50 text-deepsea-700 border border-deepsea-200 hover:bg-deepsea-100 focus:ring-deepsea-400;
+  }
+
+  .eng-btn-success {
+    @apply eng-btn bg-passgreen-500 text-white hover:bg-passgreen-600 focus:ring-passgreen-500 active:bg-passgreen-700;
+  }
+
+  .eng-btn-warning {
+    @apply eng-btn bg-warnorange-500 text-white hover:bg-warnorange-600 focus:ring-warnorange-500 active:bg-warnorange-700;
+  }
+
+  .eng-btn-danger {
+    @apply eng-btn bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 active:bg-red-700;
+  }
+
+  .eng-btn-ghost {
+    @apply eng-btn text-deepsea-600 hover:bg-deepsea-50 focus:ring-deepsea-400;
+  }
+
+  .eng-table {
+    @apply w-full border-collapse;
+  }
+  .eng-table th {
+    @apply bg-deepsea-50 text-left text-xs font-semibold text-deepsea-600 uppercase tracking-wide px-4 py-3 border-b border-deepsea-100;
+  }
+  .eng-table td {
+    @apply px-4 py-3 text-sm;
+  }
+}
