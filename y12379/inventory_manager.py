@@ -127,15 +127,31 @@ class InventoryManager:
                 )
         return available
 
-    def get_order_allocation_details(self) -> List[Dict]:
+    def _get_sequential_allocation(self) -> Dict[str, Dict]:
         matching = self.match_versions()
-        details = []
 
-        for order in self.pre_orders:
+        remaining_pool = {}
+        for key, data in matching.items():
+            if data["version_matched"]:
+                remaining_pool[key] = min(data["pressing_qty"], data["sleeve_qty"])
+            else:
+                remaining_pool[key] = 0
+
+        sorted_orders = sorted(
+            self.pre_orders,
+            key=lambda o: (o.order_date, o.order_id)
+        )
+
+        allocation = {}
+        for order in sorted_orders:
             key = self._get_version_key(order.album_name, order.version, order.is_signed)
             match_data = matching.get(key, {})
+            remaining = remaining_pool.get(key, 0)
+            allocated = min(remaining, order.quantity)
+            remaining_pool[key] = remaining - allocated
+            shortage = max(0, order.quantity - allocated)
 
-            detail = {
+            allocation[order.order_id] = {
                 "order_id": order.order_id,
                 "customer_name": order.customer_name,
                 "album_name": order.album_name,
@@ -144,9 +160,36 @@ class InventoryManager:
                 "order_qty": order.quantity,
                 "pressing_available": match_data.get("pressing_qty", 0),
                 "sleeve_available": match_data.get("sleeve_qty", 0),
-                "can_ship": match_data.get("version_matched", False),
+                "aggregate_available": match_data.get("available_qty", 0),
+                "allocated_qty": allocated,
+                "remaining_after": remaining_pool[key],
+                "can_ship": match_data.get("version_matched", False) and allocated > 0,
+                "can_ship_all": match_data.get("version_matched", False) and allocated == order.quantity,
+                "version_matched": match_data.get("version_matched", False),
                 "mismatch_reason": match_data.get("mismatch_reason", ""),
-                "shortage_qty": max(0, order.quantity - match_data.get("available_qty", 0))
+                "shortage_qty": shortage
+            }
+
+        return allocation
+
+    def get_order_allocation_details(self) -> List[Dict]:
+        allocation = self._get_sequential_allocation()
+        details = []
+
+        for order in self.pre_orders:
+            alloc = allocation.get(order.order_id, {})
+            detail = {
+                "order_id": alloc.get("order_id", order.order_id),
+                "customer_name": alloc.get("customer_name", order.customer_name),
+                "album_name": alloc.get("album_name", order.album_name),
+                "version": alloc.get("version", order.version),
+                "is_signed": alloc.get("is_signed", order.is_signed),
+                "order_qty": alloc.get("order_qty", order.quantity),
+                "pressing_available": alloc.get("pressing_available", 0),
+                "sleeve_available": alloc.get("sleeve_available", 0),
+                "can_ship": alloc.get("can_ship", False),
+                "mismatch_reason": alloc.get("mismatch_reason", ""),
+                "shortage_qty": alloc.get("shortage_qty", max(0, order.quantity))
             }
             details.append(detail)
 
@@ -158,18 +201,24 @@ class InventoryManager:
         shipping_counter = 1
         risk_counter = 1
 
-        matching = self.match_versions()
-        allocation_details = self.get_order_allocation_details()
+        allocation = self._get_sequential_allocation()
 
-        for detail in allocation_details:
-            order = next((o for o in self.pre_orders if o.order_id == detail["order_id"]), None)
-            if not order:
+        sorted_orders = sorted(
+            self.pre_orders,
+            key=lambda o: (o.order_date, o.order_id)
+        )
+
+        for order in sorted_orders:
+            alloc = allocation.get(order.order_id)
+            if not alloc:
                 continue
 
-            key = self._get_version_key(order.album_name, order.version, order.is_signed)
-            match_data = matching.get(key, {})
+            allocated_qty = alloc["allocated_qty"]
+            shortage_qty = alloc["shortage_qty"]
+            version_matched = alloc["version_matched"]
+            mismatch_reason = alloc["mismatch_reason"]
 
-            if detail["can_ship"] and detail["shortage_qty"] == 0:
+            if allocated_qty == order.quantity and shortage_qty == 0:
                 shipping_item = ShippingItem(
                     shipping_id=f"SH{shipping_counter:04d}",
                     order_id=order.order_id,
@@ -188,28 +237,26 @@ class InventoryManager:
                 self.shipping_items.append(shipping_item)
                 shipping_counter += 1
 
-            elif detail["shortage_qty"] > 0 and detail["can_ship"]:
-                available_qty = min(match_data.get("available_qty", 0), order.quantity)
-                if available_qty > 0:
-                    shipping_item = ShippingItem(
-                        shipping_id=f"SH{shipping_counter:04d}",
-                        order_id=order.order_id,
-                        customer_name=order.customer_name,
-                        album_name=order.album_name,
-                        version=order.version,
-                        quantity=available_qty,
-                        is_signed=order.is_signed,
-                        status="部分发货",
-                        source_records={
-                            "预售订单": order.order_id,
-                            "版本清单匹配": "成功",
-                            "封套库存": "部分充足",
-                            "匹配数量": available_qty,
-                            "缺货数量": detail["shortage_qty"]
-                        }
-                    )
-                    self.shipping_items.append(shipping_item)
-                    shipping_counter += 1
+            elif allocated_qty > 0 and shortage_qty > 0:
+                shipping_item = ShippingItem(
+                    shipping_id=f"SH{shipping_counter:04d}",
+                    order_id=order.order_id,
+                    customer_name=order.customer_name,
+                    album_name=order.album_name,
+                    version=order.version,
+                    quantity=allocated_qty,
+                    is_signed=order.is_signed,
+                    status="部分发货",
+                    source_records={
+                        "预售订单": order.order_id,
+                        "版本清单匹配": "成功",
+                        "封套库存": "部分充足",
+                        "匹配数量": allocated_qty,
+                        "缺货数量": shortage_qty
+                    }
+                )
+                self.shipping_items.append(shipping_item)
+                shipping_counter += 1
 
                 if order.is_signed:
                     risk = RiskAlert(
@@ -217,39 +264,51 @@ class InventoryManager:
                         risk_type=RiskType.SIGNED_SHORTAGE,
                         album_name=order.album_name,
                         version=order.version,
-                        description=f"签名版缺货，订单 {order.order_id} 需求 {order.quantity}，可用 {available_qty}",
+                        description=f"签名版缺货，订单 {order.order_id} 需求 {order.quantity}，可用 {allocated_qty}",
                         affected_orders=[order.order_id],
-                        shortage_quantity=detail["shortage_qty"]
+                        shortage_quantity=shortage_qty
                     )
                     self.risk_alerts.append(risk)
                     risk_counter += 1
 
-                if order.quantity > available_qty > 0:
-                    risk = RiskAlert(
-                        risk_id=f"RK{risk_counter:04d}",
-                        risk_type=RiskType.ORDER_SPLIT,
-                        album_name=order.album_name,
-                        version=order.version,
-                        description=f"订单 {order.order_id} 需拆分发货，先发 {available_qty}，剩余 {order.quantity - available_qty}",
-                        affected_orders=[order.order_id],
-                        shortage_quantity=order.quantity - available_qty
-                    )
-                    self.risk_alerts.append(risk)
-                    risk_counter += 1
+                risk = RiskAlert(
+                    risk_id=f"RK{risk_counter:04d}",
+                    risk_type=RiskType.ORDER_SPLIT,
+                    album_name=order.album_name,
+                    version=order.version,
+                    description=f"订单 {order.order_id} 需拆分发货，先发 {allocated_qty}，剩余 {shortage_qty}",
+                    affected_orders=[order.order_id],
+                    shortage_quantity=shortage_qty
+                )
+                self.risk_alerts.append(risk)
+                risk_counter += 1
 
             else:
-                if not match_data.get("version_matched", False):
+                if not version_matched:
                     risk = RiskAlert(
                         risk_id=f"RK{risk_counter:04d}",
                         risk_type=RiskType.VERSION_MISMATCH,
                         album_name=order.album_name,
                         version=order.version,
-                        description=f"版本漏配: {match_data.get('mismatch_reason', '未知原因')}",
+                        description=f"版本漏配: {mismatch_reason or '未知原因'}",
                         affected_orders=[order.order_id],
                         shortage_quantity=order.quantity
                     )
                     self.risk_alerts.append(risk)
                     risk_counter += 1
+                else:
+                    if order.is_signed:
+                        risk = RiskAlert(
+                            risk_id=f"RK{risk_counter:04d}",
+                            risk_type=RiskType.SIGNED_SHORTAGE,
+                            album_name=order.album_name,
+                            version=order.version,
+                            description=f"签名版缺货，订单 {order.order_id} 需求 {order.quantity}，库存已被更早订单占用，可用 0",
+                            affected_orders=[order.order_id],
+                            shortage_quantity=shortage_qty
+                        )
+                        self.risk_alerts.append(risk)
+                        risk_counter += 1
 
         return self.shipping_items, self.risk_alerts
 
