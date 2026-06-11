@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-paper text-navy-700 font-mono antialiased;
+    background-image:
+      radial-gradient(at 12% 8%, rgba(11, 37, 69, 0.04) 0px, transparent 50%),
+      radial-gradient(at 88% 92%, rgba(232, 131, 58, 0.05) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+  h1, h2, h3, h4 {
+    @apply font-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-navy-700 text-cream font-medium rounded-[2px]
+           border border-navy-800 shadow-card transition-all duration-150
+           hover:bg-navy-600 hover:shadow-card-hover active:translate-y-px;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-cream text-navy-700 font-medium rounded-[2px]
+           border border-navy-200 shadow-card transition-all duration-150
+           hover:bg-white hover:shadow-card-hover active:translate-y-px;
+  }
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-amber text-white font-medium rounded-[2px]
+           border border-amber-dark shadow-card transition-all duration-150
+           hover:bg-amber-dark hover:shadow-card-hover active:translate-y-px;
+  }
+  .card {
+    @apply bg-white border border-navy-100 rounded-[3px] shadow-card;
+  }
+  .section-title {
+    @apply font-serif text-lg font-semibold text-navy-700 tracking-wide;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-sm;
+  }
+  .input-field {
+    @apply w-full px-3 py-2 bg-cream border border-navy-200 rounded-[2px] font-mono text-sm
+           text-navy-700 placeholder:text-navy-300 focus:outline-none focus:border-navy-500
+           focus:ring-1 focus:ring-navy-500/30 transition-colors;
+  }
+  .label-text {
+    @apply block text-xs font-medium text-navy-500 mb-1 tracking-wide;
+  }
+  .divider-pattern {
+    background-image: linear-gradient(90deg, rgba(11,37,69,0.15) 50%, transparent 50%);
+    background-size: 6px 1px;
+    background-repeat: repeat-x;
+    height: 1px;
+  }
+}
