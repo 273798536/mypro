@@ -32,6 +32,7 @@ const {
   summary,
   toggleStatusFilter,
   toggleRiskFilter,
+  clearRiskFilter,
   setFilter,
   clearFilter,
   selectBar,
@@ -287,6 +288,7 @@ function handleDeleteShot(id: string) {
       :keyword="filter.keyword || ''"
       @toggle-status="toggleStatusFilter"
       @toggle-risk="toggleRiskFilter"
+      @clear-risk="clearRiskFilter"
       @set-zone="(z) => setFilter('zone', z)"
       @set-keyword="(kw) => setFilter('keyword', kw)"
       @clear="clearFilter"

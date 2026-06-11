@@ -13,10 +13,15 @@ defineProps<{
 const emit = defineEmits<{
   (e: 'toggle-status', status: string): void
   (e: 'toggle-risk', risk: RiskLevel): void
+  (e: 'clear-risk'): void
   (e: 'set-zone', zone: string): void
   (e: 'set-keyword', kw: string): void
   (e: 'clear'): void
 }>()
+
+function clearAllRisk() {
+  emit('clear-risk')
+}
 
 const statusOptions = [
   { key: 'pending', label: '待复核', color: 'bg-gray-500' },
@@ -82,7 +87,7 @@ const riskOptions = [
         <button
           class="chip"
           :class="{ 'chip-active': riskLevelFilter.length === 0 }"
-          @click="emit('toggle-risk', '高'); emit('toggle-risk', '中'); emit('toggle-risk', '低')"
+          @click="clearAllRisk"
           v-if="riskLevelFilter.length > 0"
         >
           全部风险
@@ -92,7 +97,7 @@ const riskOptions = [
           :key="opt.key"
           class="chip"
           :class="{ 'chip-active': riskLevelFilter.includes(opt.key) }"
-          @click="emit('toggle-risk', opt.key)"
+          @click="emit('toggle-risk', opt.key as RiskLevel)"
         >
           <span :class="[opt.color, 'w-2 h-2 rounded-full']"></span>
           {{ opt.label }}

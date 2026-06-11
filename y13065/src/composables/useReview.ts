@@ -25,7 +25,7 @@ export function useReview() {
 
   const filteredBars = computed(() => {
     return bars.value.filter(bar => {
-      if (filter.status.length && !filter.status.includes(bar.status)) return false
+      if (filter.status?.length && !filter.status.includes(bar.status)) return false
       if (filter.zone && bar.zone !== filter.zone) return false
       if (filter.riskLevel?.length) {
         if (!bar.riskLevel || !filter.riskLevel.includes(bar.riskLevel)) return false
@@ -42,9 +42,9 @@ export function useReview() {
 
   const filteredComments = computed(() => {
     return comments.value.filter(cmt => {
-      if (filter.status.length) {
+      if (filter.status?.length) {
         const bar = bars.value.find(b => b.id === cmt.barId)
-        if (!bar || !filter.status.includes(bar.status)) return false
+        if (!bar || !filter.status?.includes(bar.status)) return false
       }
       if (filter.zone) {
         const bar = bars.value.find(b => b.id === cmt.barId)
@@ -76,6 +76,7 @@ export function useReview() {
   }
 
   function toggleStatusFilter(status: string) {
+    if (!filter.status) filter.status = []
     const idx = filter.status.indexOf(status)
     if (idx >= 0) filter.status.splice(idx, 1)
     else filter.status.push(status)
@@ -87,6 +88,11 @@ export function useReview() {
     const idx = filter.riskLevel.indexOf(risk)
     if (idx >= 0) filter.riskLevel.splice(idx, 1)
     else filter.riskLevel.push(risk)
+    filter.appliedAt = Date.now()
+  }
+
+  function clearRiskFilter() {
+    filter.riskLevel = []
     filter.appliedAt = Date.now()
   }
 
@@ -168,6 +174,7 @@ export function useReview() {
     setFilter,
     toggleStatusFilter,
     toggleRiskFilter,
+    clearRiskFilter,
     clearFilter,
     selectBar,
     selectComment,
