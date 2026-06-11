@@ -29,34 +29,65 @@ class ExportMapper:
         self.problem_list = problem_list
 
     def build_clip_annotation_report_mapping(self) -> list[dict]:
-        mapping = []
+        ann_to_reports: dict[str, list[ScoreReport]] = {}
         for report in self.reports.values():
-            ann = self.annotations.get(report.annotation_id)
-            clip = self.clips.get(report.clip_id)
+            ann_to_reports.setdefault(report.annotation_id, []).append(report)
 
-            entry = {
-                "report_id": report.report_id,
-                "student_id": report.student_id,
-                "clip_id": report.clip_id,
-                "clip_title": clip.title if clip else "未知",
-                "annotation_id": report.annotation_id,
-                "noise_type": ann.noise_type.value if ann else "未知",
-                "severity": ann.severity.value if ann else "未知",
-                "score": report.score,
-                "accuracy": report.accuracy,
-                "repair_quality": report.repair_quality,
-                "mis_delete_in_history": self.history.has_mis_delete(report.annotation_id),
-                "problems": self._get_related_problems(report),
-            }
+        mapping = []
+        for ann in self.annotations.values():
+            reports = ann_to_reports.get(ann.annotation_id)
+            clip = self.clips.get(ann.clip_id)
 
-            if ann:
+            if reports:
+                for report in reports:
+                    entry = {
+                        "report_id": report.report_id,
+                        "student_id": report.student_id,
+                        "clip_id": report.clip_id,
+                        "clip_title": clip.title if clip else "未知",
+                        "annotation_id": ann.annotation_id,
+                        "noise_type": ann.noise_type.value,
+                        "severity": ann.severity.value,
+                        "score": report.score,
+                        "accuracy": report.accuracy,
+                        "repair_quality": report.repair_quality,
+                        "mis_delete_in_history": self.history.has_mis_delete(ann.annotation_id),
+                        "problems": self._get_related_problems(
+                            annotation_id=ann.annotation_id,
+                            clip_id=ann.clip_id,
+                            report_id=report.report_id,
+                        ),
+                    }
+                    state = self.checker.get_current_state(ann.annotation_id)
+                    if state:
+                        entry["current_recognition_round"] = state.recognition_round
+                        entry["current_playback_note"] = state.playback_note
+                        entry["current_error_explanation"] = state.error_explanation
+                    mapping.append(entry)
+            else:
+                entry = {
+                    "report_id": None,
+                    "student_id": None,
+                    "clip_id": ann.clip_id,
+                    "clip_title": clip.title if clip else "未知",
+                    "annotation_id": ann.annotation_id,
+                    "noise_type": ann.noise_type.value,
+                    "severity": ann.severity.value,
+                    "score": None,
+                    "accuracy": None,
+                    "repair_quality": None,
+                    "mis_delete_in_history": self.history.has_mis_delete(ann.annotation_id),
+                    "problems": self._get_related_problems(
+                        annotation_id=ann.annotation_id,
+                        clip_id=ann.clip_id,
+                    ),
+                }
                 state = self.checker.get_current_state(ann.annotation_id)
                 if state:
                     entry["current_recognition_round"] = state.recognition_round
                     entry["current_playback_note"] = state.playback_note
                     entry["current_error_explanation"] = state.error_explanation
-
-            mapping.append(entry)
+                mapping.append(entry)
 
         clip_groups: dict[str, list[dict]] = {}
         for entry in mapping:
@@ -78,10 +109,20 @@ class ExportMapper:
 
         return result
 
-    def _get_related_problems(self, report: ScoreReport) -> list[dict]:
+    def _get_related_problems(
+        self,
+        annotation_id: str,
+        clip_id: str,
+        report_id: Optional[str] = None,
+    ) -> list[dict]:
         related = []
         for p in self.problem_list.problems:
-            if p.annotation_id == report.annotation_id or p.clip_id == report.clip_id or p.report_id == report.report_id:
+            matched = (
+                p.annotation_id == annotation_id
+                or p.clip_id == clip_id
+                or (report_id is not None and p.report_id == report_id)
+            )
+            if matched:
                 related.append({
                     "problem_id": p.item_id,
                     "level": p.level.value,
@@ -203,13 +244,17 @@ class GradeExporter:
             lines.append(f"     时长: {clip_group['duration']}s | 来源: {clip_group['source']}")
             for ar in clip_group["annotations_and_reports"]:
                 mis_flag = " 🔴误删原声" if ar.get("mis_delete_in_history") else ""
+                no_report_flag = " ⚠️无评分报告" if ar.get("report_id") is None else ""
+                student_part = ar["student_id"] if ar.get("student_id") else "—"
+                score_part = str(ar["score"]) if ar.get("score") is not None else "—"
+                accuracy_part = f"{ar['accuracy']}%" if ar.get("accuracy") is not None else "—"
                 lines.append(
                     f"     ├─ 标注 {ar['annotation_id']}: "
                     f"{ar['noise_type']}/{ar['severity']} | "
-                    f"学生 {ar['student_id']} | "
-                    f"分数 {ar['score']} | "
-                    f"准确率 {ar['accuracy']}%"
-                    f"{mis_flag}"
+                    f"学生 {student_part} | "
+                    f"分数 {score_part} | "
+                    f"准确率 {accuracy_part}"
+                    f"{mis_flag}{no_report_flag}"
                 )
                 if ar.get("current_error_explanation"):
                     lines.append(f"     │  错因: {ar['current_error_explanation']}")

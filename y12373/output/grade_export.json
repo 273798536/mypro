@@ -1,5 +1,5 @@
 {
-  "export_time": "2026-06-01T22:14:30.840063",
+  "export_time": "2026-06-11T14:49:31.885699",
   "summary": {
     "total_clips": 4,
     "total_annotations": 8,
@@ -105,6 +105,52 @@
           "current_recognition_round": 2,
           "current_playback_note": "爆音在标记时段可听到咔嗒声",
           "current_error_explanation": "短促的咔嗒或爆裂声，通常由灰尘或划痕引起，严重程度高，需谨慎处理避免误删原声"
+        },
+        {
+          "report_id": null,
+          "student_id": null,
+          "clip_id": "clip_001",
+          "clip_title": "Miles Davis - So What (1969 再版)",
+          "annotation_id": "ann_007",
+          "noise_type": "底噪",
+          "severity": "中等",
+          "score": null,
+          "accuracy": null,
+          "repair_quality": null,
+          "mis_delete_in_history": false,
+          "problems": [
+            {
+              "problem_id": "prob_0009",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 start_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0010",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 end_time",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0011",
+              "level": "🟡 警告",
+              "category": "噪声标注",
+              "description": "ann_007: 缺少 description",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0012",
+              "level": "🔴 严重",
+              "category": "误删原声",
+              "description": "ann_002: 修复操作 去爆音 导致误删原声",
+              "is_suppressed": false
+            }
+          ],
+          "current_recognition_round": 1,
+          "current_playback_note": "底噪在背景持续可闻",
+          "current_error_explanation": "持续性的低频沙沙声，来自黑胶唱片表面磨损"
         }
       ]
     },
@@ -321,6 +367,53 @@
           "current_error_explanation": "误删原声: 修复操作类型与噪声类型不匹配，导致原始音频内容被删除。此问题不可被后续节拍漂移或连续爆音修复掩盖。"
         }
       ]
+    },
+    {
+      "clip_id": "clip_004",
+      "clip_title": "未命名片段",
+      "duration": 0.0,
+      "source": "",
+      "annotations_and_reports": [
+        {
+          "report_id": null,
+          "student_id": null,
+          "clip_id": "clip_004",
+          "clip_title": "未命名片段",
+          "annotation_id": "ann_008",
+          "noise_type": "爆音",
+          "severity": "中等",
+          "score": null,
+          "accuracy": null,
+          "repair_quality": null,
+          "mis_delete_in_history": false,
+          "problems": [
+            {
+              "problem_id": "prob_0002",
+              "level": "🟡 警告",
+              "category": "音频片段",
+              "description": "clip_004: duration 无效",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0003",
+              "level": "🟡 警告",
+              "category": "音频片段",
+              "description": "clip_004: 缺少 source",
+              "is_suppressed": false
+            },
+            {
+              "problem_id": "prob_0004",
+              "level": "🟡 警告",
+              "category": "音频片段",
+              "description": "clip_004: 缺少 file_path",
+              "is_suppressed": false
+            }
+          ],
+          "current_recognition_round": 1,
+          "current_playback_note": "爆音在标记时段可听到咔嗒声",
+          "current_error_explanation": "短促的咔嗒或爆裂声，通常由灰尘或划痕引起"
+        }
+      ]
     }
   ],
   "problem_summary": {
@@ -371,7 +464,7 @@
       "annotation_id": "ann_001",
       "event_type": "识别",
       "description": "第1轮识别: 底噪/中等 (置信度95%)",
-      "timestamp": "2026-06-01T22:14:30.839554",
+      "timestamp": "2026-06-11T14:49:31.885204",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -381,7 +474,7 @@
       "annotation_id": "ann_002",
       "event_type": "识别",
       "description": "第1轮识别: 爆音/严重 (置信度95%)",
-      "timestamp": "2026-06-01T22:14:30.839600",
+      "timestamp": "2026-06-11T14:49:31.885227",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -391,7 +484,7 @@
       "annotation_id": "ann_003",
       "event_type": "识别",
       "description": "第1轮识别: 节拍漂移/中等 (置信度95%)",
-      "timestamp": "2026-06-01T22:14:30.839612",
+      "timestamp": "2026-06-11T14:49:31.885303",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -401,7 +494,7 @@
       "annotation_id": "ann_004",
       "event_type": "识别",
       "description": "第1轮识别: 底噪/轻微 (置信度95%)",
-      "timestamp": "2026-06-01T22:14:30.839624",
+      "timestamp": "2026-06-11T14:49:31.885315",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -411,7 +504,7 @@
       "annotation_id": "ann_005",
       "event_type": "识别",
       "description": "第1轮识别: 爆音/严重 (置信度95%)",
-      "timestamp": "2026-06-01T22:14:30.839636",
+      "timestamp": "2026-06-11T14:49:31.885323",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -421,7 +514,7 @@
       "annotation_id": "ann_006",
       "event_type": "识别",
       "description": "第1轮识别: 节拍漂移/严重 (置信度95%)",
-      "timestamp": "2026-06-01T22:14:30.839648",
+      "timestamp": "2026-06-11T14:49:31.885331",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -431,7 +524,7 @@
       "annotation_id": "ann_007",
       "event_type": "识别",
       "description": "第1轮识别: 底噪/中等 (置信度95%)",
-      "timestamp": "2026-06-01T22:14:30.839659",
+      "timestamp": "2026-06-11T14:49:31.885338",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -441,7 +534,7 @@
       "annotation_id": "ann_008",
       "event_type": "识别",
       "description": "第1轮识别: 爆音/中等 (置信度95%)",
-      "timestamp": "2026-06-01T22:14:30.839670",
+      "timestamp": "2026-06-11T14:49:31.885344",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -451,7 +544,7 @@
       "annotation_id": "ann_001",
       "event_type": "预览变化",
       "description": "修复预览: 修复前: 底噪/中等 → 降噪处理: 底噪减轻",
-      "timestamp": "2026-06-01T22:14:30.839689",
+      "timestamp": "2026-06-11T14:49:31.885359",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -461,7 +554,7 @@
       "annotation_id": "ann_001",
       "event_type": "修复",
       "description": "修复应用: 降噪 - 底噪降低约60%",
-      "timestamp": "2026-06-01T22:14:30.839699",
+      "timestamp": "2026-06-11T14:49:31.885406",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -471,7 +564,7 @@
       "annotation_id": "ann_001",
       "event_type": "识别",
       "description": "第2轮识别: 底噪/轻微 (置信度90%) - 修复后重新识别",
-      "timestamp": "2026-06-01T22:14:30.839719",
+      "timestamp": "2026-06-11T14:49:31.885451",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -481,7 +574,7 @@
       "annotation_id": "ann_002",
       "event_type": "预览变化",
       "description": "修复预览: 修复前: 爆音/严重 → 去爆音处理: 爆音显著减少",
-      "timestamp": "2026-06-01T22:14:30.839737",
+      "timestamp": "2026-06-11T14:49:31.885461",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -491,7 +584,7 @@
       "annotation_id": "ann_002",
       "event_type": "修复",
       "description": "修复应用: 去爆音 - 爆音消除，但部分小号声被误删",
-      "timestamp": "2026-06-01T22:14:30.839743",
+      "timestamp": "2026-06-11T14:49:31.885467",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -501,7 +594,7 @@
       "annotation_id": "ann_002",
       "event_type": "误删原声",
       "description": "确认误删原声: 去爆音",
-      "timestamp": "2026-06-01T22:14:30.839747",
+      "timestamp": "2026-06-11T14:49:31.885469",
       "is_active": true,
       "is_critical": true,
       "superseded_by": null
@@ -511,7 +604,7 @@
       "annotation_id": "ann_002",
       "event_type": "识别",
       "description": "第2轮识别: 爆音/轻微 (置信度90%) - 修复后重新识别",
-      "timestamp": "2026-06-01T22:14:30.839760",
+      "timestamp": "2026-06-11T14:49:31.885477",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -521,7 +614,7 @@
       "annotation_id": "ann_003",
       "event_type": "预览变化",
       "description": "修复预览: 修复前: 节拍漂移/中等 → 节拍修正: 节拍漂移得到缓解",
-      "timestamp": "2026-06-01T22:14:30.839776",
+      "timestamp": "2026-06-11T14:49:31.885485",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -531,7 +624,7 @@
       "annotation_id": "ann_003",
       "event_type": "修复",
       "description": "修复应用: 节拍修正 - 节拍趋于稳定",
-      "timestamp": "2026-06-01T22:14:30.839782",
+      "timestamp": "2026-06-11T14:49:31.885489",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -541,7 +634,7 @@
       "annotation_id": "ann_003",
       "event_type": "识别",
       "description": "第2轮识别: 节拍漂移/轻微 (置信度90%) - 修复后重新识别",
-      "timestamp": "2026-06-01T22:14:30.839794",
+      "timestamp": "2026-06-11T14:49:31.885495",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -551,7 +644,7 @@
       "annotation_id": "ann_005",
       "event_type": "预览变化",
       "description": "修复预览: 修复前: 爆音/严重 → 去爆音处理: 爆音显著减少",
-      "timestamp": "2026-06-01T22:14:30.839809",
+      "timestamp": "2026-06-11T14:49:31.885502",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -561,7 +654,7 @@
       "annotation_id": "ann_005",
       "event_type": "修复",
       "description": "修复应用: 去爆音 - 连续爆音部分消除，但节拍出现偏移",
-      "timestamp": "2026-06-01T22:14:30.839815",
+      "timestamp": "2026-06-11T14:49:31.885505",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -571,7 +664,7 @@
       "annotation_id": "ann_005",
       "event_type": "识别",
       "description": "第2轮识别: 爆音/轻微 (置信度90%) - 修复后重新识别",
-      "timestamp": "2026-06-01T22:14:30.839827",
+      "timestamp": "2026-06-11T14:49:31.885511",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -581,7 +674,7 @@
       "annotation_id": "ann_006",
       "event_type": "误删原声",
       "description": "修复预览检测到误删原声: 降噪 作用于 节拍漂移",
-      "timestamp": "2026-06-01T22:14:30.839842",
+      "timestamp": "2026-06-11T14:49:31.885518",
       "is_active": true,
       "is_critical": true,
       "superseded_by": null
@@ -591,7 +684,7 @@
       "annotation_id": "ann_006",
       "event_type": "预览变化",
       "description": "修复预览: 修复前: 节拍漂移/严重 → 降噪处理: 对节拍漂移无效果 [误删原声]",
-      "timestamp": "2026-06-01T22:14:30.839846",
+      "timestamp": "2026-06-11T14:49:31.885520",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -601,7 +694,7 @@
       "annotation_id": "ann_006",
       "event_type": "修复",
       "description": "修复应用: 降噪 ⚠️ 含误删原声",
-      "timestamp": "2026-06-01T22:14:30.839853",
+      "timestamp": "2026-06-11T14:49:31.885525",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
@@ -611,7 +704,7 @@
       "annotation_id": "ann_006",
       "event_type": "误删原声",
       "description": "确认误删原声: 降噪",
-      "timestamp": "2026-06-01T22:14:30.839857",
+      "timestamp": "2026-06-11T14:49:31.885527",
       "is_active": true,
       "is_critical": true,
       "superseded_by": null
@@ -621,7 +714,7 @@
       "annotation_id": "ann_006",
       "event_type": "识别",
       "description": "第2轮识别: 节拍漂移/严重 (置信度90%) - 修复后重新识别",
-      "timestamp": "2026-06-01T22:14:30.839869",
+      "timestamp": "2026-06-11T14:49:31.885532",
       "is_active": true,
       "is_critical": false,
       "superseded_by": null
