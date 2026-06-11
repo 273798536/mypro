@@ -1,0 +1,566 @@
+[
+  {
+    "record_id": "908de67f-da36-4b78-8f3b-32b9d6cddcf7",
+    "source_file": "清算运营组_标准字段.csv",
+    "source_row": 2,
+    "bond_code": "2280389.IB",
+    "bond_name": "22陕西绿债01",
+    "raise_amount": 500000000.0,
+    "used_amount": 320000000.0,
+    "tax_amount": null,
+    "exchange_rate": null,
+    "currency": "CNY",
+    "source": "清算运营组",
+    "raw_data": {
+      "债券代码": "2280389.IB",
+      "债券名称": "22陕西绿债01",
+      "募集金额": "500000000.00",
+      "已使用金额": "320000000.00",
+      "币种": "CNY",
+      "数据来源": "清算运营组",
+      "补充说明": "核对通过"
+    },
+    "status": "已确认",
+    "supplement": "核对通过",
+    "impact_scope": "",
+    "late_document": false,
+    "field_mappings": {
+      "债券代码": "bond_code",
+      "债券名称": "bond_name",
+      "募集金额": "raise_amount",
+      "已使用金额": "used_amount",
+      "币种": "currency",
+      "数据来源": "source",
+      "补充说明": "supplement"
+    },
+    "failed_reason": "",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.805090",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "已确认",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:2",
+        "old_values": {},
+        "new_values": {
+          "status": "已确认",
+          "impact_scope": ""
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.805073",
+    "updated_at": "2026-06-11T17:20:10.805102"
+  },
+  {
+    "record_id": "1308f239-2b99-40ad-8bf7-1936128c1767",
+    "source_file": "清算运营组_标准字段.csv",
+    "source_row": 3,
+    "bond_code": "2280390.IB",
+    "bond_name": "22陕西绿债02",
+    "raise_amount": 300000000.0,
+    "used_amount": 350000000.0,
+    "tax_amount": null,
+    "exchange_rate": null,
+    "currency": "CNY",
+    "source": "清算运营组",
+    "raw_data": {
+      "债券代码": "2280390.IB",
+      "债券名称": "22陕西绿债02",
+      "募集金额": "300000000.00",
+      "已使用金额": "350000000.00",
+      "币种": "CNY",
+      "数据来源": "清算运营组",
+      "补充说明": "使用金额超过募集"
+    },
+    "status": "退回",
+    "supplement": "使用金额超过募集",
+    "impact_scope": "",
+    "late_document": false,
+    "field_mappings": {
+      "债券代码": "bond_code",
+      "债券名称": "bond_name",
+      "募集金额": "raise_amount",
+      "已使用金额": "used_amount",
+      "币种": "currency",
+      "数据来源": "source",
+      "补充说明": "supplement"
+    },
+    "failed_reason": "使用金额超过募集金额",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.805407",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "退回",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:3",
+        "old_values": {},
+        "new_values": {
+          "status": "退回",
+          "impact_scope": ""
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.805395",
+    "updated_at": "2026-06-11T17:20:10.805414"
+  },
+  {
+    "record_id": "e3187fc8-41b1-4779-b071-a77d785f6749",
+    "source_file": "清算运营组_标准字段.csv",
+    "source_row": 4,
+    "bond_code": "2280391.IB",
+    "bond_name": "22江苏绿债01",
+    "raise_amount": 800000000.0,
+    "used_amount": 500000000.0,
+    "tax_amount": 1250000.0,
+    "exchange_rate": 7.25,
+    "currency": "CNY",
+    "source": "清算运营组",
+    "raw_data": {
+      "债券代码": "2280391.IB",
+      "债券名称": "22江苏绿债01",
+      "募集金额": "800000000.00",
+      "已使用金额": "500000000.00",
+      "币种": "CNY",
+      "数据来源": "清算运营组",
+      "补充说明": "税费:1250000.00;汇率:7.25;待补件"
+    },
+    "status": "已确认",
+    "supplement": "税费:1250000.00;汇率:7.25;待补件",
+    "impact_scope": "税费:1250000.0;汇率:7.25",
+    "late_document": false,
+    "field_mappings": {
+      "债券代码": "bond_code",
+      "债券名称": "bond_name",
+      "募集金额": "raise_amount",
+      "已使用金额": "used_amount",
+      "币种": "currency",
+      "数据来源": "source",
+      "补充说明": "supplement"
+    },
+    "failed_reason": "",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.805484",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "待补件",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:4",
+        "old_values": {},
+        "new_values": {
+          "status": "待补件",
+          "impact_scope": "税费:1250000.0;汇率:7.25"
+        }
+      },
+      {
+        "timestamp": "2026-06-11T17:20:10.810641",
+        "change_type": "人工改判",
+        "old_status": "待补件",
+        "new_status": "已确认",
+        "operator": "清算运营-阿禾",
+        "remark": "算法值班人补充了完整材料，核对无误",
+        "old_values": {
+          "status": "待补件",
+          "tax_amount": 1250000.0,
+          "late_document": false
+        },
+        "new_values": {
+          "status": "已确认",
+          "tax_amount": 1250000.0,
+          "late_document": false
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.805462",
+    "updated_at": "2026-06-11T17:20:10.810652"
+  },
+  {
+    "record_id": "fe14cfb5-1f85-4a77-a5a4-01ea3479040d",
+    "source_file": "清算运营组_标准字段.csv",
+    "source_row": 5,
+    "bond_code": "2280392.IB",
+    "bond_name": "22江苏绿债02",
+    "raise_amount": 450000000.0,
+    "used_amount": 280000000.0,
+    "tax_amount": null,
+    "exchange_rate": null,
+    "currency": "CNY",
+    "source": "清算运营组",
+    "raw_data": {
+      "债券代码": "2280392.IB",
+      "债券名称": "22江苏绿债02",
+      "募集金额": "450000000.00",
+      "已使用金额": "280000000.00",
+      "币种": "CNY",
+      "数据来源": "清算运营组",
+      "补充说明": "凭证晚到，后续补充"
+    },
+    "status": "已确认",
+    "supplement": "凭证晚到，后续补充",
+    "impact_scope": "凭证晚到",
+    "late_document": false,
+    "field_mappings": {
+      "债券代码": "bond_code",
+      "债券名称": "bond_name",
+      "募集金额": "raise_amount",
+      "已使用金额": "used_amount",
+      "币种": "currency",
+      "数据来源": "source",
+      "补充说明": "supplement"
+    },
+    "failed_reason": "",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.805523",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "待补件",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:5",
+        "old_values": {},
+        "new_values": {
+          "status": "待补件",
+          "impact_scope": "凭证晚到"
+        }
+      },
+      {
+        "timestamp": "2026-06-11T17:20:10.810684",
+        "change_type": "凭证晚到",
+        "old_status": "待补件",
+        "new_status": "已确认",
+        "operator": "清算运营-阿禾",
+        "remark": "凭证已到达，补充核对通过",
+        "old_values": {
+          "status": "待补件",
+          "late_document": true
+        },
+        "new_values": {
+          "status": "已确认",
+          "late_document": false
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.805519",
+    "updated_at": "2026-06-11T17:20:10.810688"
+  },
+  {
+    "record_id": "d8fa1ed5-8bf8-492f-85c4-0ed76826987c",
+    "source_file": "清算运营组_标准字段.csv",
+    "source_row": 6,
+    "bond_code": "2280393.IB",
+    "bond_name": "22广东绿债01",
+    "raise_amount": 600000000.0,
+    "used_amount": 410000000.0,
+    "tax_amount": 980000.0,
+    "exchange_rate": 7.22,
+    "currency": "CNY",
+    "source": "清算运营组",
+    "raw_data": {
+      "债券代码": "2280393.IB",
+      "债券名称": "22广东绿债01",
+      "募集金额": "600000000.00",
+      "已使用金额": "410000000.00",
+      "币种": "CNY",
+      "数据来源": "清算运营组",
+      "补充说明": "税金:980000.00;汇价:7.22;已确认"
+    },
+    "status": "已确认",
+    "supplement": "税金:980000.00;汇价:7.22;已确认",
+    "impact_scope": "税费:980000.0;汇率:7.22",
+    "late_document": false,
+    "field_mappings": {
+      "债券代码": "bond_code",
+      "债券名称": "bond_name",
+      "募集金额": "raise_amount",
+      "已使用金额": "used_amount",
+      "币种": "currency",
+      "数据来源": "source",
+      "补充说明": "supplement"
+    },
+    "failed_reason": "",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.805557",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "已确认",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:6",
+        "old_values": {},
+        "new_values": {
+          "status": "已确认",
+          "impact_scope": "税费:980000.0;汇率:7.22"
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.805551",
+    "updated_at": "2026-06-11T17:20:10.805560"
+  },
+  {
+    "record_id": "d1071c2c-570c-461d-8ecd-f070fbbb8c8e",
+    "source_file": "算法值班组_字段别名.csv",
+    "source_row": 2,
+    "bond_code": "2280394.IB",
+    "bond_name": "22深圳绿债01",
+    "raise_amount": 1000000000.0,
+    "used_amount": 720000000.0,
+    "tax_amount": null,
+    "exchange_rate": null,
+    "currency": "CNY",
+    "source": "算法值班组",
+    "raw_data": {
+      "债券编码": "2280394.IB",
+      "债券简称": "22深圳绿债01",
+      "发行金额": "1000000000.00",
+      "投放金额": "720000000.00",
+      "货币": "CNY",
+      "提供方": "算法值班组",
+      "备注说明": "没问题"
+    },
+    "status": "已确认",
+    "supplement": "没问题",
+    "impact_scope": "",
+    "late_document": false,
+    "field_mappings": {
+      "债券编码": "bond_code",
+      "债券简称": "bond_name",
+      "发行金额": "raise_amount",
+      "投放金额": "used_amount",
+      "货币": "currency",
+      "提供方": "source",
+      "备注说明": "supplement"
+    },
+    "failed_reason": "",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.806009",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "已确认",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:2",
+        "old_values": {},
+        "new_values": {
+          "status": "已确认",
+          "impact_scope": ""
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.806003",
+    "updated_at": "2026-06-11T17:20:10.806015"
+  },
+  {
+    "record_id": "34f01189-d47a-4484-ac1f-0dc639f9eeca",
+    "source_file": "算法值班组_字段别名.csv",
+    "source_row": 3,
+    "bond_code": "2280395.IB",
+    "bond_name": "22深圳绿债02",
+    "raise_amount": 500000000.0,
+    "used_amount": 450000000.0,
+    "tax_amount": null,
+    "exchange_rate": null,
+    "currency": "USD",
+    "source": "算法值班组",
+    "raw_data": {
+      "债券编码": "2280395.IB",
+      "债券简称": "22深圳绿债02",
+      "发行金额": "500000000.00",
+      "投放金额": "450000000.00",
+      "货币": "USD",
+      "提供方": "算法值班组",
+      "备注说明": "缺少材料需补充"
+    },
+    "status": "待补件",
+    "supplement": "缺少材料需补充",
+    "impact_scope": "",
+    "late_document": false,
+    "field_mappings": {
+      "债券编码": "bond_code",
+      "债券简称": "bond_name",
+      "发行金额": "raise_amount",
+      "投放金额": "used_amount",
+      "货币": "currency",
+      "提供方": "source",
+      "备注说明": "supplement"
+    },
+    "failed_reason": "缺少材料需补充",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.806051",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "待补件",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:3",
+        "old_values": {},
+        "new_values": {
+          "status": "待补件",
+          "impact_scope": ""
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.806046",
+    "updated_at": "2026-06-11T17:20:10.806055"
+  },
+  {
+    "record_id": "9d086a34-46da-4795-bec1-0dbaf22a3326",
+    "source_file": "算法值班组_字段别名.csv",
+    "source_row": 4,
+    "bond_code": "2280396.IB",
+    "bond_name": "22北京绿债01",
+    "raise_amount": 250000000.0,
+    "used_amount": 100000000.0,
+    "tax_amount": null,
+    "exchange_rate": null,
+    "currency": "CNY",
+    "source": "算法值班组",
+    "raw_data": {
+      "债券编码": "2280396.IB",
+      "债券简称": "22北京绿债01",
+      "发行金额": "250000000.00",
+      "投放金额": "100000000.00",
+      "货币": "CNY",
+      "提供方": "算法值班组",
+      "备注说明": "不予确认，信息不符"
+    },
+    "status": "退回",
+    "supplement": "不予确认，信息不符",
+    "impact_scope": "",
+    "late_document": false,
+    "field_mappings": {
+      "债券编码": "bond_code",
+      "债券简称": "bond_name",
+      "发行金额": "raise_amount",
+      "投放金额": "used_amount",
+      "货币": "currency",
+      "提供方": "source",
+      "备注说明": "supplement"
+    },
+    "failed_reason": "不予确认，信息不符",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.806083",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "退回",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:4",
+        "old_values": {},
+        "new_values": {
+          "status": "退回",
+          "impact_scope": ""
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.806079",
+    "updated_at": "2026-06-11T17:20:10.806086"
+  },
+  {
+    "record_id": "3c98632c-f7e3-4b38-add1-408a1f895a10",
+    "source_file": "算法值班组_字段别名.csv",
+    "source_row": 5,
+    "bond_code": "2280397.IB",
+    "bond_name": "22北京绿债02",
+    "raise_amount": 700000000.0,
+    "used_amount": 0.0,
+    "tax_amount": 350000.0,
+    "exchange_rate": 7.28,
+    "currency": "CNY",
+    "source": "算法值班组",
+    "raw_data": {
+      "债券编码": "2280397.IB",
+      "债券简称": "22北京绿债02",
+      "发行金额": "700000000.00",
+      "投放金额": "0.00",
+      "货币": "CNY",
+      "提供方": "算法值班组",
+      "备注说明": "税:350000.00;兑换率:7.28;凭证晚到"
+    },
+    "status": "待补件",
+    "supplement": "税:350000.00;兑换率:7.28;凭证晚到",
+    "impact_scope": "税费:350000.0;汇率:7.28;凭证晚到",
+    "late_document": true,
+    "field_mappings": {
+      "债券编码": "bond_code",
+      "债券简称": "bond_name",
+      "发行金额": "raise_amount",
+      "投放金额": "used_amount",
+      "货币": "currency",
+      "提供方": "source",
+      "备注说明": "supplement"
+    },
+    "failed_reason": "凭证晚到，需后续补充核对",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.806129",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "待补件",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:5",
+        "old_values": {},
+        "new_values": {
+          "status": "待补件",
+          "impact_scope": "税费:350000.0;汇率:7.28;凭证晚到"
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.806121",
+    "updated_at": "2026-06-11T17:20:10.806132"
+  },
+  {
+    "record_id": "b39af651-d2dd-49a3-8194-d99cf9ace8ab",
+    "source_file": "算法值班组_字段别名.csv",
+    "source_row": 6,
+    "bond_code": "2280398.IB",
+    "bond_name": "22上海绿债01",
+    "raise_amount": 900000000.0,
+    "used_amount": 650000000.0,
+    "tax_amount": null,
+    "exchange_rate": null,
+    "currency": "CNY",
+    "source": "算法值班组",
+    "raw_data": {
+      "债券编码": "2280398.IB",
+      "债券简称": "22上海绿债01",
+      "发行金额": "900000000.00",
+      "投放金额": "650000000.00",
+      "货币": "CNY",
+      "提供方": "算法值班组",
+      "备注说明": "已核对，通过"
+    },
+    "status": "已确认",
+    "supplement": "已核对，通过",
+    "impact_scope": "",
+    "late_document": false,
+    "field_mappings": {
+      "债券编码": "bond_code",
+      "债券简称": "bond_name",
+      "发行金额": "raise_amount",
+      "投放金额": "used_amount",
+      "货币": "currency",
+      "提供方": "source",
+      "备注说明": "supplement"
+    },
+    "failed_reason": "",
+    "history": [
+      {
+        "timestamp": "2026-06-11T17:20:10.806168",
+        "change_type": "自动识别",
+        "old_status": null,
+        "new_status": "已确认",
+        "operator": "system",
+        "remark": "自动识别状态，来源行:6",
+        "old_values": {},
+        "new_values": {
+          "status": "已确认",
+          "impact_scope": ""
+        }
+      }
+    ],
+    "created_at": "2026-06-11T17:20:10.806163",
+    "updated_at": "2026-06-11T17:20:10.806171"
+  }
+]
