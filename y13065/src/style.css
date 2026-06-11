@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --color-primary: #0F3B4A;
+  --color-accent-warning: #D97706;
+  --color-accent-pass: #059669;
+  --color-accent-danger: #DC2626;
+  --color-canvas-bg: #E0F2FE;
+  --color-canvas-grid: #B8D4E8;
+}
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'JetBrains Mono', 'Source Code Pro', monospace;
+  background-color: #F0F4F8;
+  color: #1F2937;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-title {
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  font-weight: 700;
+}
+
+.font-mono-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-4 py-2 rounded-engineer hover:bg-primary-light transition-colors duration-150 font-medium text-sm;
+  }
+  .btn-secondary {
+    @apply border border-primary text-primary bg-white px-4 py-2 rounded-engineer hover:bg-primary/5 transition-colors duration-150 font-medium text-sm;
+  }
+  .btn-danger {
+    @apply bg-accent-danger text-white px-4 py-2 rounded-engineer hover:bg-red-700 transition-colors duration-150 font-medium text-sm;
+  }
+  .btn-pass {
+    @apply bg-accent-pass text-white px-4 py-2 rounded-engineer hover:bg-green-700 transition-colors duration-150 font-medium text-sm;
+  }
+  .card {
+    @apply bg-white rounded-engineer shadow-sm border border-gray-200;
+  }
+  .badge {
+    @apply px-2 py-0.5 text-xs rounded-engineer font-medium inline-flex items-center gap-1;
+  }
+  .chip {
+    @apply px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer inline-flex items-center gap-1;
+  }
+  .chip-active {
+    @apply bg-primary text-white hover:bg-primary-light;
+  }
+}
+
+@keyframes pulse-overlap {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.animate-overlap {
+  animation: pulse-overlap 1.5s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
