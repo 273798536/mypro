@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Download, Calendar, Clock, AlertTriangle, CheckCircle, Info, Music, User, Link } from 'lucide-react';
+import { FileText, Download, Calendar, Clock, AlertTriangle, CheckCircle, Info, Music, User, Link, AlertCircle, Loader2 } from 'lucide-react';
 import { useAudioStore } from '../store/useAudioStore';
 
 const formatTime = (seconds: number): string => {
@@ -56,6 +56,9 @@ const getSegmentTypeLabel = (type: string) => {
 export const ReportViewer: React.FC = () => {
   const { selectedAudioFile, reports, issues, segments, versions, exportReport, getIssuesForAudio, getSegmentsForAudio } = useAudioStore();
   const [selectedReportId, setSelectedReportId] = useState<string>('');
+  const [isExporting, setIsExporting] = useState<string | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [exportSuccess, setExportSuccess] = useState<string | null>(null);
 
   const audioReports = selectedAudioFile
     ? reports.filter((r) => r.audioFileId === selectedAudioFile.id).sort((a, b) => new Date(b.exportedAt).getTime() - new Date(a.exportedAt).getTime())
@@ -67,9 +70,29 @@ export const ReportViewer: React.FC = () => {
 
   const selectedReport = reports.find((r) => r.id === selectedReportId);
 
-  const handleExportReport = (format: 'pdf' | 'html') => {
-    const report = exportReport(format);
-    setSelectedReportId(report.id);
+  const handleExportReport = async (format: 'pdf' | 'html') => {
+    if (!selectedAudioFile) {
+      setExportError('请先选择音频文件');
+      setTimeout(() => setExportError(null), 4000);
+      return;
+    }
+
+    setIsExporting(format);
+    setExportError(null);
+    setExportSuccess(null);
+
+    try {
+      const report = exportReport(format);
+      setSelectedReportId(report.id);
+      setExportSuccess(`${format.toUpperCase()} 报告已生成并开始下载`);
+      setTimeout(() => setExportSuccess(null), 4000);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '导出失败，请重试';
+      setExportError(msg);
+      setTimeout(() => setExportError(null), 5000);
+    } finally {
+      setIsExporting(null);
+    }
   };
 
   const summary = {
@@ -95,7 +118,7 @@ export const ReportViewer: React.FC = () => {
           <FileText className="w-5 h-5 text-cyan-400" />
           合规报告
         </h3>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           {audioReports.length > 0 && (
             <select
               value={selectedReportId}
@@ -112,20 +135,36 @@ export const ReportViewer: React.FC = () => {
           )}
           <button
             onClick={() => handleExportReport('html')}
-            className="flex items-center gap-2 px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors"
+            disabled={!!isExporting}
+            className="flex items-center gap-2 px-4 py-2 bg-cyan-500/20 text-cyan-400 rounded-lg hover:bg-cyan-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download className="w-4 h-4" />
-            导出 HTML
+            {isExporting === 'html' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            {isExporting === 'html' ? '生成中...' : '导出 HTML'}
           </button>
           <button
             onClick={() => handleExportReport('pdf')}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition-colors"
+            disabled={!!isExporting}
+            className="flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download className="w-4 h-4" />
-            导出 PDF
+            {isExporting === 'pdf' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+            {isExporting === 'pdf' ? '生成中...' : '导出 PDF'}
           </button>
         </div>
       </div>
+
+      {exportError && (
+        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-start gap-2 text-sm">
+          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+          <span className="text-red-400">{exportError}</span>
+        </div>
+      )}
+
+      {exportSuccess && (
+        <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg flex items-start gap-2 text-sm">
+          <CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0 mt-0.5" />
+          <span className="text-green-400">{exportSuccess}</span>
+        </div>
+      )}
 
       <div className="grid grid-cols-5 gap-4 mb-6">
         <div className="p-4 bg-gray-800/50 rounded-lg text-center">
