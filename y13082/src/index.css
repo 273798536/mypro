@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  background-color: #0F172A;
+  color: #E2E8F0;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #0F172A;
+  color: #E2E8F0;
+}
+
+@layer components {
+  .industrial-panel {
+    @apply bg-industrial-panel border border-industrial-border rounded-sm shadow-inner-industrial;
+  }
+
+  .industrial-btn {
+    @apply px-4 py-2 rounded-sm font-medium text-sm transition-all duration-150
+           border border-industrial-border bg-industrial-panel text-industrial-text
+           hover:bg-slate-700 hover:border-slate-500
+           active:shadow-inner-industrial;
+  }
+
+  .industrial-btn-primary {
+    @apply px-4 py-2 rounded-sm font-medium text-sm transition-all duration-150
+           border border-alert-orangeDark bg-alert-orange text-white
+           hover:bg-alert-orangeDark hover:border-alert-orange
+           active:shadow-inner-industrial;
+  }
+
+  .industrial-btn-danger {
+    @apply px-4 py-2 rounded-sm font-medium text-sm transition-all duration-150
+           border border-red-700 bg-alert-red text-white
+           hover:bg-red-700;
+  }
+
+  .industrial-input {
+    @apply w-full px-3 py-2 bg-industrial-bg border border-industrial-border rounded-sm
+           text-industrial-text placeholder-industrial-muted
+           focus:outline-none focus:border-alert-orange focus:ring-1 focus:ring-alert-orange;
+  }
+
+  .industrial-select {
+    @apply w-full px-3 py-2 bg-industrial-bg border border-industrial-border rounded-sm
+           text-industrial-text
+           focus:outline-none focus:border-alert-orange focus:ring-1 focus:ring-alert-orange;
+  }
+
+  .industrial-badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium;
+  }
+
+  .section-title {
+    @apply font-mono text-sm font-semibold uppercase tracking-wider text-industrial-muted mb-3;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F172A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
