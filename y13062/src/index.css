@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', 'Source Han Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background-color: #0A1628;
+  color: #E6EEF7;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 52, 96, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(106, 147, 204, 0.4);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(106, 147, 204, 0.6);
+}
+
+/* 网格背景 */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(106, 147, 204, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(106, 147, 204, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* CAD画布网格 */
+.cad-grid {
+  background-image:
+    linear-gradient(rgba(106, 147, 204, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(106, 147, 204, 0.12) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.cad-grid-major {
+  background-image:
+    linear-gradient(rgba(106, 147, 204, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(106, 147, 204, 0.25) 1px, transparent 1px);
+  background-size: 200px 200px;
+}
+
+/* 渐变边框 */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(62, 115, 187, 0.6), rgba(233, 69, 96, 0.3), rgba(22, 199, 154, 0.4));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 脉冲光晕 */
+.pulse-halo {
+  position: relative;
+}
+
+.pulse-halo::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* 发光文字 */
+.glow-text {
+  text-shadow: 0 0 20px rgba(106, 147, 204, 0.5);
+}
+
+/* 卡片悬浮效果 */
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(106, 147, 204, 0.3);
+}

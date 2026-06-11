@@ -1,0 +1,80 @@
+{
+  "type": "FeatureCollection",
+  "name": "东坝南区补充CAD图层-测试数据",
+  "description": "测试用CAD图层数据，包含监测井和障碍物，用于验证解析和碰撞重算功能",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "监测井",
+        "wellId": "W-DB-TEST-001",
+        "name": "东坝测试井-001",
+        "depth": 12,
+        "备注": "这是一个测试用井，坐标距离管线很近"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [380, 280]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "监测井",
+        "wellId": "W-DB-TEST-002",
+        "name": "东坝测试井-002",
+        "depth": 8,
+        "备注": "这个井与变电站重叠，应该检测为高风险空间重叠"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [390, 240]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "监测井",
+        "wellId": "W-DB-TEST-003",
+        "name": "东坝测试井-003",
+        "depth": 20,
+        "备注": "这个井位置安全，没有碰撞"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [100, 100]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "障碍",
+        "obstacleType": "变电站",
+        "name": "东坝110kV变电站",
+        "bufferZone": 50,
+        "color": "#E94560",
+        "depthRange": "0-5"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [[350, 200], [430, 200], [430, 280], [350, 280], [350, 200]]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "障碍",
+        "obstacleType": "高压线走廊",
+        "name": "东坝220kV高压线",
+        "bufferZone": 30,
+        "color": "#FFB800"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [[380, 280], [450, 300], [520, 290]]
+      }
+    }
+  ]
+}
