@@ -1,0 +1,166 @@
+# =========================================================
+# 细胞冻存复苏台账 - curl 快速参考
+# 服务器地址：http://localhost:3001
+# 前端地址：http://localhost:5173
+# 数据库文件：./data/cryo_ledger.db (SQLite)
+# =========================================================
+
+BASE="http://localhost:3001"
+API="${BASE}/api"
+
+# ========= 1. 台账总览 =========
+# 统计概览
+curl -sS ${API}/statistics | python3 -m json.tool
+
+# 最近 20 条记录
+curl -sS "${API}/records?limit=20" | python3 -m json.tool
+
+# 待复核异常列表
+curl -sS "${API}/anomalies?review_status=pending" | python3 -m json.tool
+
+# ========= 2. 培养记录 CRUD =========
+# 按细胞系筛选 HeLa
+curl -sS "${API}/records?cell_line=HeLa" | python3 -m json.tool
+
+# 按状态筛选待复核
+curl -sS "${API}/records?status=review_needed" | python3 -m json.tool
+
+# 关键词搜索
+curl -sS "${API}/records?search=冻存失败" | python3 -m json.tool
+
+# 获取单条详情（含照片和试剂信息）
+curl -sS ${API}/records/<record_id> | python3 -m json.tool
+
+# 新建冻存记录（自动触发异常检测）
+curl -sS -X POST ${API}/records \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "freeze",
+    "cell_line": "HeLa",
+    "passage_number": 20,
+    "operator": "王技师",
+    "date": "2026-06-11",
+    "freezing_medium": "90%FBS+10%DMSO",
+    "reagent_batch_id": "<reagent_id>",
+    "storage_location": "A区-液氮罐1-架1-盒1",
+    "notes": "常规冻存"
+  }' | python3 -m json.tool
+
+# 新建复苏记录（需关联父记录，自动建立谱系链路）
+curl -sS -X POST ${API}/records \
+  -H "Content-Type: application/json" \
+  -d '{
+    "type": "thaw",
+    "cell_line": "HeLa",
+    "passage_number": 20,
+    "operator": "李技师",
+    "date": "2026-06-12",
+    "freezing_medium": "90%FBS+10%DMSO",
+    "reagent_batch_id": "<reagent_id>",
+    "parent_record_id": "<parent_freeze_id>",
+    "viability_rate": 91
+  }' | python3 -m json.tool
+
+# 更新记录
+curl -sS -X PUT ${API}/records/<record_id> \
+  -H "Content-Type: application/json" \
+  -d '{"notes": "已补充显微照片"}' | python3 -m json.tool
+
+# 删除记录（仅技师）
+curl -sS -X DELETE ${API}/records/<record_id> | python3 -m json.tool
+
+# ========= 3. 显微照片 =========
+# 上传照片（multipart/form-data）
+# photo_type: pre_freeze（冻存前）| post_thaw（复苏后）| observation（观察）
+curl -sS -X POST ${API}/records/<record_id>/photos \
+  -F "file=@/path/to/microscope.jpg" \
+  -F "photo_type=pre_freeze" \
+  -F "label=HeLa-P20-冻存前100x" | python3 -m json.tool
+
+# ========= 4. 分组统计 =========
+# 按细胞系汇总
+curl -sS ${API}/statistics/by-cell-line | python3 -m json.tool
+
+# 按试剂批号汇总
+curl -sS ${API}/statistics/by-batch | python3 -m json.tool
+
+# 按月份时间趋势
+curl -sS ${API}/statistics/by-date | python3 -m json.tool
+
+# ========= 5. 谱系追踪 =========
+# 从任意记录 ID 构建完整谱系树（向上找根+向下找子代）
+curl -sS ${API}/lineage/<record_id> | python3 -m json.tool
+
+# ========= 6. 异常复核 =========
+# 按异常类型筛选（missing_photo|annotation_conflict|viability_anomaly|label_unclear）
+curl -sS "${API}/anomalies?anomaly_type=missing_photo" | python3 -m json.tool
+
+# 提交复核结论（approved=通过 rejected=驳回）
+curl -sS -X PUT ${API}/anomalies/<anomaly_id>/review \
+  -H "Content-Type: application/json" \
+  -d '{
+    "review_status": "approved",
+    "reviewer": "实验室主任",
+    "review_comment": "照片已补拍并标注清晰，数据有效"
+  }' | python3 -m json.tool
+
+# ========= 7. 试剂批号追溯（核心链路：批号->所有记录->结论） =========
+# 用试剂批号字符串直接查（如 DMSO-2024-001）
+curl -sS ${API}/reagents/<batch_number>/trace | python3 -m json.tool
+
+# 返回内容：
+#   - reagent_batch 信息（供应商、有效期、名称）
+#   - linked_records 所有使用该批次的记录（含结论和照片）
+#   - conclusion_summary: { success, failed, pending } 汇总
+
+# ========= 8. 批量导入（防重复） =========
+# Step 1: 只检测不写入
+curl -sS -X POST ${API}/import/check \
+  -H "Content-Type: application/json" \
+  -d '[
+    {"type":"freeze","cell_line":"A549","passage_number":10,"operator":"张","date":"2026-06-01",...},
+    {"type":"thaw","cell_line":"HeLa","passage_number":5,"operator":"李","date":"2026-06-02",...}
+  ]' | python3 -m json.tool
+
+# 返回：new_count / duplicate_count / conflict_count
+#   - 完全重复：四字段（细胞系+日期+类型+代次）完全匹配
+#   - 字段冲突：四字段匹配但其他字段值不同，列出差异字段
+
+# Step 2: 执行导入（指定每条的处理策略）
+# resolutions key = 记录在数组中的索引字符串
+# resolutions value = skip|overwrite|new
+curl -sS -X POST ${API}/import \
+  -H "Content-Type: application/json" \
+  -d '{
+    "records": [
+      {"type":"freeze","cell_line":"A549","passage_number":10,"operator":"张","date":"2026-06-01",...},
+      {"type":"thaw","cell_line":"HeLa","passage_number":5,"operator":"李","date":"2026-06-02",...},
+      {"type":"thaw","cell_line":"CHO-K1","passage_number":3,"operator":"冲突","date":"2024-12-10",...}
+    ],
+    "resolutions": {
+      "0": "new",
+      "1": "skip",
+      "2": "overwrite"
+    }
+  }' | python3 -m json.tool
+
+# ========= 9. 常见错误返回（可操作提示示例） =========
+# 示例：POST /api/records 缺少复苏后照片时返回
+# {
+#   "success": true,
+#   "data": {
+#     "record": {...},
+#     "warnings": ["复苏后显微照片未上传"],
+#     "anomaly_ids": ["xxx-xxx"]
+#   }
+# }
+#
+# 示例：GET /api/records/invalid-id 返回 404
+# { "success": false, "error": "记录不存在，请确认ID是否正确" }
+#
+# 示例：POST /api/records 缺少必填字段返回 400
+# { "success": false, "error": "缺少必填字段 cell_line，请填写细胞系名称" }
+
+# ========= 10. 健康检查 =========
+curl ${API}/health
+# => {"status":"ok","database":"connected","records_count":6}
