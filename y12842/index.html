@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>农田害虫密度预警 - 复核看板</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="title-section">
+      <h1>农田害虫密度预警 · 复核看板</h1>
+      <span class="batch-tag" id="batchTag">批次：20260611-A01</span>
+    </div>
+    <div class="action-section">
+      <span class="user-info">复核人：张研究员</span>
+      <button class="btn btn-secondary" id="btnHistory">操作历史</button>
+      <button class="btn btn-primary" id="btnDownload">下载结果</button>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="overview">总览</button>
+    <button class="tab-btn" data-tab="detail">明细数据</button>
+    <button class="tab-btn" data-tab="review">复核中心</button>
+    <button class="tab-btn" data-tab="trace">谱系追溯</button>
+  </nav>
+
+  <main class="content">
+    <!-- 总览页 -->
+    <section class="tab-panel active" id="tab-overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">监测样点</div>
+          <div class="stat-value" id="statSites">-</div>
+          <div class="stat-delta">覆盖 6 个乡镇</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-label">预警物种</div>
+          <div class="stat-value" id="statSpecies">-</div>
+          <div class="stat-delta">其中高危 <span id="statHighRisk">-</span> 种</div>
+        </div>
+        <div class="stat-card danger">
+          <div class="stat-label">异常记录</div>
+          <div class="stat-value" id="statAbnormal">-</div>
+          <div class="stat-delta">待复核 <span id="statPending">-</span> 条</div>
+        </div>
+        <div class="stat-card info">
+          <div class="stat-label">阴性对照</div>
+          <div class="stat-value" id="statNegCtrl">-</div>
+          <div class="stat-delta" id="negStatus">状态：正常</div>
+        </div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card">
+          <h3>害虫密度趋势（近 7 天）</h3>
+          <canvas id="trendChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <h3>预警等级分布</h3>
+          <canvas id="levelChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card full">
+          <h3>各采样地点密度对比</h3>
+          <canvas id="siteChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 明细数据页 -->
+    <section class="tab-panel" id="tab-detail">
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>采样地点</label>
+          <select id="filterSite">
+            <option value="">全部</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>预警等级</label>
+          <select id="filterLevel">
+            <option value="">全部</option>
+            <option value="高危">高危</option>
+            <option value="中危">中危</option>
+            <option value="低危">低危</option>
+            <option value="正常">正常</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>物种名称</label>
+          <input type="text" id="filterSpecies" placeholder="输入物种名搜索...">
+        </div>
+        <div class="filter-group">
+          <label>复核状态</label>
+          <select id="filterReview">
+            <option value="">全部</option>
+            <option value="待复核">待复核</option>
+            <option value="已通过">已通过</option>
+            <option value="已驳回">已驳回</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table" id="detailTable">
+          <thead>
+            <tr>
+              <th>记录ID</th>
+              <th>采样地点</th>
+              <th>物种名称</th>
+              <th>同义名</th>
+              <th>密度(只/亩)</th>
+              <th>预警等级</th>
+              <th>测序结果</th>
+              <th>阴性对照</th>
+              <th>复核状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="detailTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 复核中心页 -->
+    <section class="tab-panel" id="tab-review">
+      <div class="review-layout">
+        <div class="review-list">
+          <div class="section-header">
+            <h3>待复核记录</h3>
+            <span class="badge" id="pendingCount">0</span>
+          </div>
+          <div class="review-items" id="reviewList"></div>
+        </div>
+
+        <div class="review-detail" id="reviewDetail">
+          <div class="empty-state">
+            <p>请从左侧选择一条记录进行复核</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 谱系追溯页 -->
+    <section class="tab-panel" id="tab-trace">
+      <div class="trace-layout">
+        <div class="trace-sidebar">
+          <div class="section-header">
+            <h3>物种名录</h3>
+          </div>
+          <div class="species-list" id="speciesList"></div>
+        </div>
+
+        <div class="trace-detail" id="traceDetail">
+          <div class="empty-state">
+            <p>请从左侧选择一个物种查看追溯信息</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 操作历史弹窗 -->
+  <div class="modal" id="historyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>操作历史记录</h3>
+        <button class="btn-close" id="closeHistory">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="history-list" id="historyList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 复核操作弹窗 -->
+  <div class="modal" id="reviewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="reviewModalTitle">复核确认</h3>
+        <button class="btn-close" id="closeReviewModal">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>复核结果</label>
+          <div class="radio-group">
+            <label><input type="radio" name="reviewResult" value="通过"> 通过</label>
+            <label><input type="radio" name="reviewResult" value="驳回"> 驳回</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>复核意见 <span class="required">*</span></label>
+          <textarea id="reviewComment" rows="4" placeholder="请填写复核理由，如：数据经二次测序验证，结果可信..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>处理措施</label>
+          <select id="reviewAction">
+            <option value="">请选择</option>
+            <option value="维持原预警">维持原预警等级</option>
+            <option value="降级预警">降低预警等级</option>
+            <option value="升级预警">提升预警等级</option>
+            <option value="解除预警">解除预警</option>
+            <option value="补充采样">补充采样验证</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelReview">取消</button>
+        <button class="btn btn-primary" id="confirmReview">确认提交</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
