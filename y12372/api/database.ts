@@ -98,6 +98,15 @@ export function runMigrations() {
       createdAt TEXT NOT NULL
     );
   `)
+
+  const pragma = db.prepare("PRAGMA table_info(appeals)").all() as any[]
+  const appealCols = new Set(pragma.map((c: any) => c.name))
+  if (!appealCols.has('platformReply')) {
+    db.exec("ALTER TABLE appeals ADD COLUMN platformReply TEXT")
+  }
+  if (!appealCols.has('result')) {
+    db.exec("ALTER TABLE appeals ADD COLUMN result TEXT")
+  }
 }
 
 const now = () => new Date().toISOString()
@@ -228,14 +237,19 @@ function buildSeedCorrections(works: any[]) {
 function buildSeedAppeals(corrections: any[]) {
   const appeals: any[] = []
   const statuses = ['pending', 'platform_replied', 'confirmed']
+  const platformReplies = [null, '平台已核查原始使用日志，确认数据存在差异', '平台已确认修正并补付差额']
+  const results = [null, null, '已补付 ¥3,200.00']
 
   for (let i = 0; i < corrections.length; i++) {
+    const idx = i % 3
     appeals.push({
       id: uuidv4(),
       workId: corrections[i].workId,
       correctionId: corrections[i].id,
       explanation: `对"${corrections[i].type}"类纠正提出申诉，请平台重新核实`,
-      status: statuses[i % 3],
+      status: statuses[idx],
+      platformReply: platformReplies[idx],
+      result: results[idx],
       createdAt: now(),
       updatedAt: now(),
     })
@@ -268,8 +282,8 @@ export function seedData() {
   `)
 
   const insertAppeal = db.prepare(`
-    INSERT INTO appeals (id, workId, correctionId, explanation, status, createdAt, updatedAt)
-    VALUES (@id, @workId, @correctionId, @explanation, @status, @createdAt, @updatedAt)
+    INSERT INTO appeals (id, workId, correctionId, explanation, status, platformReply, result, createdAt, updatedAt)
+    VALUES (@id, @workId, @correctionId, @explanation, @status, @platformReply, @result, @createdAt, @updatedAt)
   `)
 
   const transaction = db.transaction(() => {

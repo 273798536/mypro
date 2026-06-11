@@ -12,8 +12,8 @@ function mapAppeal(a: any, workTitle: string): any {
     workId: a.workId,
     workTitle,
     status: a.status,
-    platformReply: null,
-    result: null,
+    platformReply: a.platformReply || null,
+    result: a.result || null,
     explanation: a.explanation,
     date: a.updatedAt,
   }
@@ -75,7 +75,7 @@ router.post('/', (req: Request, res: Response): void => {
 
 router.put('/:id', (req: Request, res: Response): void => {
   try {
-    const { status } = req.body
+    const { status, platformReply, result } = req.body
 
     if (!status || !VALID_STATUSES.includes(status)) {
       res.status(400).json({ success: false, error: '无效的申诉状态' })
@@ -103,9 +103,20 @@ router.put('/:id', (req: Request, res: Response): void => {
     }
 
     const now = new Date().toISOString()
-    db.prepare(`
-      UPDATE appeals SET status = ?, updatedAt = ? WHERE id = ?
-    `).run(status, now, req.params.id)
+    const updates: string[] = ['status = ?', 'updatedAt = ?']
+    const params: any[] = [status, now]
+
+    if (platformReply !== undefined) {
+      updates.push('platformReply = ?')
+      params.push(String(platformReply))
+    }
+    if (result !== undefined) {
+      updates.push('result = ?')
+      params.push(String(result))
+    }
+
+    params.push(req.params.id)
+    db.prepare(`UPDATE appeals SET ${updates.join(', ')} WHERE id = ?`).run(...params as any)
 
     const updated = db.prepare('SELECT a.*, w.title as workTitle FROM appeals a LEFT JOIN works w ON a.workId = w.id WHERE a.id = ?').get(req.params.id) as any
 

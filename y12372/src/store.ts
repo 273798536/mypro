@@ -44,11 +44,13 @@ interface ProportionVersion {
   note?: string
 }
 
+type CorrectionType = 'under_report' | 'proportion_change' | 'duplicate_use'
+
 interface Correction {
   id: string
   workId: string
   workTitle: string
-  type: 'under_report' | 'proportion_change' | 'duplicate_use' | '漏报' | '比例变更' | '重复使用'
+  type: CorrectionType | '漏报' | '比例变更' | '重复使用'
   before: string
   after: string
   explanation: string
@@ -126,6 +128,7 @@ interface StoreState {
   generateReport: (params: { type: string; works: string[]; period: string; includeAnomaly: boolean; includeTrace: boolean }) => Promise<void>
   createCorrection: (data: Partial<Correction>) => Promise<void>
   createAppeal: (data: Partial<Appeal> & { workId: string; correctionId: string }) => Promise<void>
+  updateAppealStatus: (id: string, status: Appeal['status'], extras?: { platformReply?: string; result?: string }) => Promise<void>
 }
 
 async function api<T>(url: string, options?: RequestInit): Promise<T> {
@@ -276,15 +279,24 @@ export const useStore = create<StoreState>((set, get) => ({
       await api('/api/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: params.type }),
+        body: JSON.stringify({
+          type: params.type,
+          works: params.works,
+          period: params.period,
+          includeAnomaly: params.includeAnomaly,
+          includeTrace: params.includeTrace,
+        }),
       })
       get().fetchReports()
-    } catch {}
+    } catch (e: any) {
+      console.error('generateReport error:', e.message)
+      throw e
+    }
   },
 
   createCorrection: async (data) => {
     try {
-      await api('/api/corrections', {
+      const res = await api<Correction>('/api/corrections', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -296,22 +308,74 @@ export const useStore = create<StoreState>((set, get) => ({
         }),
       })
       get().fetchCorrections()
-    } catch {}
+      const { currentWork } = get()
+      if (currentWork && currentWork.id === data.workId) {
+        set({
+          currentWork: {
+            ...currentWork,
+            corrections: [res, ...currentWork.corrections],
+            status: 'anomaly',
+          },
+        })
+      }
+    } catch (e: any) {
+      console.error('createCorrection error:', e.message)
+      throw e
+    }
   },
 
   createAppeal: async (data) => {
     try {
-      await api('/api/appeals', {
+      const res = await api<Appeal>('/api/appeals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           workId: data.workId,
           correctionId: data.correctionId,
-          plainExplanation: data.explanation,
+          explanation: data.explanation,
         }),
       })
       get().fetchAppeals()
-    } catch {}
+      const { currentWork } = get()
+      if (currentWork && currentWork.id === data.workId) {
+        set({
+          currentWork: {
+            ...currentWork,
+            appeals: [res, ...currentWork.appeals],
+          },
+        })
+      }
+    } catch (e: any) {
+      console.error('createAppeal error:', e.message)
+      throw e
+    }
+  },
+
+  updateAppealStatus: async (id, status, extras) => {
+    try {
+      const res = await api<Appeal>(`/api/appeals/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status,
+          platformReply: extras?.platformReply,
+          result: extras?.result,
+        }),
+      })
+      get().fetchAppeals()
+      const { currentWork } = get()
+      if (currentWork) {
+        set({
+          currentWork: {
+            ...currentWork,
+            appeals: currentWork.appeals.map((a) => (a.id === id ? res : a)),
+          },
+        })
+      }
+    } catch (e: any) {
+      console.error('updateAppealStatus error:', e.message)
+      throw e
+    }
   },
 }))
 

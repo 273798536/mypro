@@ -203,8 +203,8 @@ function mapAppeal(a: any, workTitle: string): any {
     workId: a.workId,
     workTitle,
     status: a.status,
-    platformReply: null,
-    result: null,
+    platformReply: a.platformReply || null,
+    result: a.result || null,
     explanation: a.explanation,
     date: a.updatedAt,
   }
