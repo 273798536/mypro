@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>医院物流机器人时序回放系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+  <div id="app" class="flex flex-col h-screen">
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 px-6 py-3 flex items-center justify-between shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-sm">医</div>
+        <div>
+          <h1 class="text-lg font-semibold tracking-wide">医院物流机器人时序回放系统</h1>
+          <p class="text-xs text-slate-400">Hospital Logistics Robot Timeline Playback</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-sm">
+        <select id="datasetSelect" class="bg-slate-700 border border-slate-600 rounded-md px-3 py-1.5 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          <option value="normal">演示：顺利记录</option>
+          <option value="supplement">演示：补录记录</option>
+          <option value="anomaly" selected>演示：异常记录</option>
+        </select>
+        <button id="btnSaveView" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1.5 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+          保存视图
+        </button>
+        <button id="btnShowHistory" class="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1.5 rounded-md text-sm flex items-center gap-1.5 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          变更历史
+        </button>
+        <div class="h-6 w-px bg-slate-700"></div>
+        <div class="relative group">
+          <button id="btnExportMenu" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-md text-sm flex items-center gap-1.5 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            导出
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="exportDropdown" class="hidden absolute right-0 top-full mt-1 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl py-1 z-50">
+            <button id="btnScreenshotView" class="w-full text-left px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 flex items-center gap-2">
+              <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              截图当前视图
+            </button>
+            <button id="btnExportPng" class="w-full text-left px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 flex items-center gap-2">
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              导出 PNG 图片
+            </button>
+            <div class="border-t border-slate-700 my-1"></div>
+            <button id="btnExportReport" class="w-full text-left px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 flex items-center gap-2">
+              <svg class="w-4 h-4 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              导出 HTML 报告
+            </button>
+          </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden">
+      <aside class="w-64 bg-slate-800/50 border-r border-slate-700 flex flex-col shrink-0">
+        <div class="p-4 border-b border-slate-700">
+          <h2 class="text-sm font-semibold text-slate-200 mb-3">CAD 图层</h2>
+          <div id="cadLayerList" class="space-y-2"></div>
+        </div>
+        <div class="p-4 border-b border-slate-700">
+          <h2 class="text-sm font-semibold text-slate-200 mb-3">材料附件</h2>
+          <div id="materialList" class="space-y-2"></div>
+        </div>
+        <div class="p-4 border-b border-slate-700">
+          <h2 class="text-sm font-semibold text-slate-200 mb-3">已保存视图</h2>
+          <div id="savedViewList" class="space-y-2 max-h-48 overflow-y-auto"></div>
+        </div>
+        <div class="flex-1 p-4 overflow-y-auto">
+          <h2 class="text-sm font-semibold text-slate-200 mb-3">图例</h2>
+          <div class="space-y-2 text-xs">
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-400"></span>正常点位</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-400"></span>延迟点位</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-rose-500 ring-2 ring-rose-500/40 animate-pulse"></span>异常点位</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-cyan-400"></span>机器人当前</div>
+            <div class="flex items-center gap-2"><span class="w-3 h-0.5 bg-cyan-400/60"></span>机器人轨迹</div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="flex-1 flex flex-col overflow-hidden">
+        <div class="flex-1 relative overflow-hidden bg-slate-950" id="cadContainer">
+          <div class="absolute top-4 left-4 z-10 bg-slate-800/80 backdrop-blur border border-slate-700 rounded-lg px-3 py-2 text-xs space-y-1">
+            <div class="flex items-center gap-2"><span class="text-slate-400">院区:</span><span class="text-slate-100 font-medium" id="infoCampus">东院区</span></div>
+            <div class="flex items-center gap-2"><span class="text-slate-400">楼层:</span><span class="text-slate-100 font-medium" id="infoFloor">住院部 3F</span></div>
+            <div class="flex items-center gap-2"><span class="text-slate-400">机器人:</span><span class="text-cyan-300 font-medium" id="infoRobot">LR-2047</span></div>
+          </div>
+          <div class="absolute top-4 right-4 z-10 flex gap-2">
+            <button id="btnZoomIn" class="w-8 h-8 bg-slate-800/80 backdrop-blur border border-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-700 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            </button>
+            <button id="btnZoomOut" class="w-8 h-8 bg-slate-800/80 backdrop-blur border border-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-700 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+            </button>
+            <button id="btnResetView" class="w-8 h-8 bg-slate-800/80 backdrop-blur border border-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-700 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </button>
+          </div>
+          <svg id="cadCanvas" class="w-full h-full"></svg>
+          <div id="pointTooltip" class="hidden absolute z-20 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-xs shadow-xl pointer-events-none max-w-xs"></div>
+        </div>
+
+        <div class="h-72 bg-slate-800/50 border-t border-slate-700 shrink-0 flex flex-col">
+          <div class="px-4 py-2 flex items-center justify-between border-b border-slate-700">
+            <div class="flex items-center gap-3">
+              <h2 class="text-sm font-semibold text-slate-200">时序回放</h2>
+              <span class="text-xs text-slate-400" id="timelineRange">--</span>
+              <span id="playStatus" class="text-xs px-2 py-0.5 rounded bg-slate-700 text-slate-300">已暂停</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button id="btnPrevAnomaly" class="text-xs bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded flex items-center gap-1 transition-colors">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                上一异常
+              </button>
+              <button id="btnNextAnomaly" class="text-xs bg-rose-600 hover:bg-rose-500 text-white px-2.5 py-1 rounded flex items-center gap-1 transition-colors">
+                下一异常
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="flex-1 px-4 py-2 relative">
+            <canvas id="timelineChart"></canvas>
+          </div>
+          <div class="px-4 py-2 border-t border-slate-700 flex items-center gap-3">
+            <button id="btnPlayPause" class="w-9 h-9 rounded-full bg-cyan-600 hover:bg-cyan-500 flex items-center justify-center transition-colors">
+              <svg id="iconPlay" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <svg id="iconPause" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <input id="timelineSlider" type="range" min="0" max="100" value="0" class="flex-1 accent-cyan-500" />
+            <span class="text-xs text-slate-300 font-mono w-40 text-right" id="currentTimeLabel">00:00:00</span>
+            <select id="speedSelect" class="bg-slate-700 border border-slate-600 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-cyan-500">
+              <option value="0.5">0.5x</option>
+              <option value="1" selected>1x</option>
+              <option value="2">2x</option>
+              <option value="4">4x</option>
+              <option value="8">8x</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <aside class="w-80 bg-slate-800/50 border-l border-slate-700 flex flex-col shrink-0">
+        <div class="px-4 py-3 border-b border-slate-700">
+          <h2 class="text-sm font-semibold text-slate-200">点位详情</h2>
+          <p class="text-xs text-slate-400 mt-0.5">点击时序或地图上的点位查看</p>
+        </div>
+        <div id="detailPanel" class="flex-1 overflow-y-auto p-4 space-y-4">
+          <div class="text-sm text-slate-400 italic">暂未选择点位</div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="modalRoot"></div>
+
+  <script src="./js/data.js"></script>
+  <script src="./js/cad.js"></script>
+  <script src="./js/timeline.js"></script>
+  <script src="./js/detail.js"></script>
+  <script src="./js/views.js"></script>
+  <script src="./js/history.js"></script>
+  <script src="./js/export.js"></script>
+  <script src="./js/app.js"></script>
+</body>
+</html>
