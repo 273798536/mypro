@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+{% block title %}批次详情 - {{ batch.batch_no }}{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">批次详情：{{ batch.batch_no }}</h1>
+        <div style="margin-top:4px">
+            <span class="status-tag status-{{ batch.status }}">{{ status_labels.get(batch.status, batch.status) }}</span>
+            {% if batch.source_file %}
+                <span class="tag">来源：{{ batch.source_file }}</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="btn-group">
+        <a class="btn" href="/">← 返回列表</a>
+        {% if batch.status not in ['confirmed', 'withdrawn', 'reversed'] %}
+        <button class="btn btn-success" onclick="confirmBatch()">确认</button>
+        {% endif %}
+        {% if batch.status != 'withdrawn' %}
+        <button class="btn" onclick="withdrawBatch()">撤回</button>
+        {% endif %}
+        <button class="btn btn-danger" onclick="reverseBatch()">负数冲正</button>
+        <button class="btn btn-warning" onclick="supplementBatch()">补录改判</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><div class="card-title">📋 基本信息</div></div>
+    <div class="card-body">
+        <div class="info-grid">
+            <div class="info-item"><div class="label">批次号</div><div class="value">{{ batch.batch_no }}</div></div>
+            <div class="info-item"><div class="label">金额</div><div class="value amount {% if batch.amount < 0 %}negative{% endif %}">{{ '%.2f'|format(batch.amount) }} {{ batch.currency }}</div></div>
+            <div class="info-item"><div class="label">口径</div><div class="value">{{ batch.caliber or '-' }}</div></div>
+            <div class="info-item"><div class="label">保单号</div><div class="value">{{ batch.policy_no or '-' }}</div></div>
+            <div class="info-item"><div class="label">业务类型</div><div class="value">{{ batch.business_type or '-' }}</div></div>
+            <div class="info-item"><div class="label">发生日期</div><div class="value">{{ batch.occur_date or '-' }}</div></div>
+            <div class="info-item"><div class="label">创建时间</div><div class="value">{{ batch.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div></div>
+            <div class="info-item"><div class="label">更新时间</div><div class="value">{{ batch.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}</div></div>
+        </div>
+        {% if batch.remark %}
+        <div class="info-item" style="margin-top:8px"><div class="label">当前备注</div><div class="value" style="background:#f9fafb;padding:10px;border-radius:6px">{{ batch.remark }}</div></div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><div class="card-title">📧 关联审批邮件 ({{ emails|length }})</div></div>
+    <div class="card-body">
+        {% if emails %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr><th>主题</th><th>发件人</th><th>日期</th><th>关联批次号</th><th>关联金额</th><th>操作</th></tr>
+                </thead>
+                <tbody>
+                {% for e in emails %}
+                <tr>
+                    <td>{{ e.email_subject or '(无主题)' }}</td>
+                    <td>{{ e.email_from or '-' }}</td>
+                    <td>{{ e.email_date or '-' }}</td>
+                    <td>{{ e.related_batch_no or '-' }}</td>
+                    <td>{{ '%.2f'|format(e.related_amount) if e.related_amount else '-' }}</td>
+                    <td><button class="btn btn-sm" onclick="showEmailRaw({{ e.id }}, allEmails)">查看原文</button></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><div style="font-size:36px">📭</div><p>暂未关联审批邮件</p></div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><div class="card-title">⚠️ 异常记录 ({{ anomalies|length }})</div></div>
+    <div class="card-body">
+        {% if anomalies %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr><th>异常类型</th><th>描述</th><th>状态</th><th>处理人</th><th>处理备注</th><th>操作</th></tr>
+                </thead>
+                <tbody>
+                {% for a in anomalies %}
+                <tr>
+                    <td><span class="tag tag-danger">{{ '同笔多口径冲突' if a.anomaly_type=='duplicate_caliber' else a.anomaly_type }}</span></td>
+                    <td>{{ a.description }}</td>
+                    <td>{% if a.status=='pending' %}<span class="status-tag status-anomaly">待处理</span>{% else %}<span class="status-tag status-confirmed">已处理</span>{% endif %}</td>
+                    <td>{{ a.handler or '-' }}</td>
+                    <td>{{ a.handle_remark or '-' }}</td>
+                    <td>
+                        {% if a.status=='pending' %}
+                        <button class="btn btn-sm btn-success" onclick="handleAnomaly({{ a.id }})">处理</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><div style="font-size:36px">✅</div><p>无异常记录</p></div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">📜 操作历史 ({{ histories|length }})</div>
+        <div class="btn-group">
+            <a class="btn btn-sm" href="{{ url_for('export_history') }}">⬇️ 导出全部历史</a>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if histories %}
+        <div class="timeline">
+            {% for h in histories %}
+            <div class="timeline-item">
+                <div class="timeline-time">{{ h.operation_time.strftime('%Y-%m-%d %H:%M:%S') }} · {{ h.operator }}
+                    {% if h.is_manual_override %}
+                        <span class="tag tag-danger">人工改判</span>
+                    {% endif %}
+                </div>
+                <div class="timeline-title">
+                    {% if h.operation_type=='confirm' %}✅ 确认通过
+                    {% elif h.operation_type=='withdraw' %}↩️ 撤回
+                    {% elif h.operation_type=='reverse' %}➖ 负数冲正
+                    {% elif h.operation_type=='supplement' %}✏️ 补录改判
+                    {% else %}{{ h.operation_type }}{% endif %}
+                    {% if h.old_status or h.new_status %}
+                        <span class="tag">{{ status_labels.get(h.old_status, h.old_status) }} → {{ status_labels.get(h.new_status, h.new_status) }}</span>
+                    {% endif %}
+                </div>
+                <div class="timeline-content">
+                    {% if h.change_reason %}<p><strong>改判原因：</strong>{{ h.change_reason }}</p>{% endif %}
+                    {% if h.next_step %}<p><strong>下一步：</strong>{{ h.next_step }}</p>{% endif %}
+                    {% if h.old_remark or h.new_remark %}
+                        <p><strong>备注变更：</strong>
+                        {% if h.old_remark %}<span style="text-decoration:line-through;color:#9ca3af">{{ h.old_remark }}</span>{% endif %}
+                        {% if h.old_remark and h.new_remark %} → {% endif %}
+                        {% if h.new_remark %}<span>{{ h.new_remark }}</span>{% endif %}
+                        </p>
+                    {% endif %}
+                    <p><a href="javascript:void(0)" onclick="showSnapshot({{ h.id }}, allHistories)">查看原始快照</a></p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state"><div style="font-size:36px">📝</div><p>暂无操作记录</p></div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><div class="card-title">🔍 原始导入数据（保留痕迹，未清洗）</div></div>
+    <div class="card-body">
+        {% if batch.raw_data %}
+        <div class="raw-box">{{ batch.raw_data }}</div>
+        {% else %}
+        <p style="color:#6b7280">无原始数据</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const batchId = {{ batch.id }};
+const allEmails = {{ emails_json|tojson }};
+const allHistories = {{ histories_json|tojson }};
+
+function confirmBatch() {
+    openModal('确认批次',
+        `<div class="form-group"><label>备注（可选）</label><textarea id="confirmRemark"></textarea></div>
+         <div class="form-group"><label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="confirmOverride"> 标记为人工特殊处理</label></div>`,
+        `<button class="btn" onclick="closeModal()">取消</button><button class="btn btn-success" onclick="doConfirm()">确认通过</button>`);
+}
+function doConfirm() {
+    apiPost('/api/batch/'+batchId+'/confirm', {
+        remark: document.getElementById('confirmRemark').value,
+        is_manual_override: document.getElementById('confirmOverride').checked
+    });
+}
+
+function withdrawBatch() {
+    openModal('撤回批次',
+        `<div class="form-group"><label>撤回原因</label><textarea id="withdrawReason"></textarea></div>
+         <div class="form-group"><label>下一步操作</label><input type="text" id="withdrawNext"></div>`,
+        `<button class="btn" onclick="closeModal()">取消</button><button class="btn btn-warning" onclick="doWithdraw()">确认撤回</button>`);
+}
+function doWithdraw() {
+    apiPost('/api/batch/'+batchId+'/withdraw', {
+        change_reason: document.getElementById('withdrawReason').value,
+        next_step: document.getElementById('withdrawNext').value
+    });
+}
+
+function reverseBatch() {
+    openModal('负数冲正',
+        `<div class="alert alert-warning">负数冲正必须明确原因和下一步，且会标记为人工改判</div>
+         <div class="form-group"><label>冲正原因 <span style="color:#dc2626">*</span></label><textarea id="reverseReason"></textarea></div>
+         <div class="form-group"><label>下一步操作 <span style="color:#dc2626">*</span></label><input type="text" id="reverseNext"></div>
+         <div class="form-group"><label>备注</label><textarea id="reverseRemark"></textarea></div>`,
+        `<button class="btn" onclick="closeModal()">取消</button><button class="btn btn-danger" onclick="doReverse()">确认负数冲正</button>`);
+}
+function doReverse() {
+    apiPost('/api/batch/'+batchId+'/reverse', {
+        change_reason: document.getElementById('reverseReason').value,
+        next_step: document.getElementById('reverseNext').value,
+        remark: document.getElementById('reverseRemark').value
+    });
+}
+
+function supplementBatch() {
+    openModal('补录改判',
+        `<div class="alert alert-info">补录材料后结论变化，需要记录旧状态、新材料备注和改判原因</div>
+         <div class="form-group"><label>改判原因 <span style="color:#dc2626">*</span></label><textarea id="supReason" placeholder="说明为什么补录后结论发生了变化..."></textarea></div>
+         <div class="form-row">
+             <div class="form-group"><label>新状态</label>
+                 <select id="supStatus">
+                     <option value="confirmed">已确认</option>
+                     <option value="reversed">负数冲正</option>
+                     <option value="withdrawn">已撤回</option>
+                     <option value="pending">待复核</option>
+                 </select>
+             </div>
+             <div class="form-group"><label>下一步</label><input type="text" id="supNext"></div>
+         </div>
+         <div class="form-group"><label>新备注（新材料说明）</label><textarea id="supRemark"></textarea></div>`,
+        `<button class="btn" onclick="closeModal()">取消</button><button class="btn btn-warning" onclick="doSupplement()">提交改判</button>`);
+}
+function doSupplement() {
+    apiPost('/api/batch/'+batchId+'/supplement', {
+        change_reason: document.getElementById('supReason').value,
+        new_status: document.getElementById('supStatus').value,
+        next_step: document.getElementById('supNext').value,
+        remark: document.getElementById('supRemark').value
+    });
+}
+
+function showEmailRaw(id, list) {
+    const e = list.find(x => x.id === id);
+    if (!e) return;
+    openModal('邮件原文 - ' + (e.email_subject || '无主题'),
+        `<div class="info-grid" style="margin-bottom:16px">
+            <div class="info-item"><div class="label">发件人</div><div class="value">${e.email_from||'-'}</div></div>
+            <div class="info-item"><div class="label">收件人</div><div class="value">${e.email_to||'-'}</div></div>
+            <div class="info-item"><div class="label">日期</div><div class="value">${e.email_date||'-'}</div></div>
+            <div class="info-item"><div class="label">来源文件</div><div class="value">${e.source_file||'-'}</div></div>
+        </div>
+        <div style="margin-bottom:8px;font-weight:600">正文：</div>
+        <div class="raw-box" style="max-height:200px">${(e.email_body||'').replace(/</g,'&lt;')}</div>
+        <div style="margin:12px 0 8px;font-weight:600">完整原始内容（未清洗）：</div>
+        <div class="raw-box">${(e.raw_content||'').replace(/</g,'&lt;')}</div>`);
+}
+
+function showSnapshot(id, list) {
+    const h = list.find(x => x.id === id);
+    if (!h) return;
+    openModal('操作原始快照',
+        `<div class="alert alert-info">这是操作当时保存的完整原始快照，不可修改</div>
+         <div class="raw-box">${(h.raw_snapshot||'').replace(/</g,'&lt;')}</div>`);
+}
+
+function handleAnomaly(aid) {
+    openModal('处理异常',
+        `<div class="form-group"><label>处理后状态</label>
+            <select id="anomalyStatus">
+                <option value="pending">仍待复核</option>
+                <option value="confirmed">确认通过</option>
+                <option value="withdrawn">撤回</option>
+            </select>
+        </div>
+        <div class="form-group"><label>处理说明</label><textarea id="anomalyRemark"></textarea></div>`,
+        `<button class="btn" onclick="closeModal()">取消</button><button class="btn btn-success" onclick="doHandleAnomaly(`+aid+`)">标记已处理</button>`);
+}
+function doHandleAnomaly(aid) {
+    apiPost('/api/anomaly/'+aid+'/handle', {
+        new_status: document.getElementById('anomalyStatus').value,
+        handle_remark: document.getElementById('anomalyRemark').value
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}操作历史 - 再保分摊批次复核{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">操作历史（最近500条）</h1>
+    <div class="btn-group">
+        <a class="btn" href="{{ url_for('export_history') }}">⬇️ 导出全部历史</a>
+    </div>
+</div>
+
+<div class="alert alert-info">
+    <strong>📌 说明：</strong>所有操作（确认、撤回、负数冲正、补录改判）都会完整记录，包括操作前的原始快照、改判原因和下一步计划。人工改判会特别标记。
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0">
+        {% if histories %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr><th>时间</th><th>操作人</th><th>批次</th><th>操作</th><th>状态变更</th><th>改判原因</th><th>下一步</th><th>人工改判</th><th>快照</th></tr>
+                </thead>
+                <tbody>
+                {% for h in histories %}
+                {% set b = batches_map.get(h.batch_id) %}
+                <tr>
+                    <td style="white-space:nowrap">{{ h.operation_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ h.operator }}</td>
+                    <td>
+                        {% if b %}
+                            <a href="{{ url_for('batch_detail', batch_id=b.id) }}">{{ b.batch_no }}</a>
+                        {% else %}
+                            (批次已删除) #{{ h.batch_id }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if h.operation_type=='confirm' %}<span class="tag tag-success">✅ 确认</span>
+                        {% elif h.operation_type=='withdraw' %}<span class="tag tag-warning">↩️ 撤回</span>
+                        {% elif h.operation_type=='reverse' %}<span class="tag tag-danger">➖ 负数冲正</span>
+                        {% elif h.operation_type=='supplement' %}<span class="tag tag-info">✏️ 补录改判</span>
+                        {% else %}{{ h.operation_type }}{% endif %}
+                    </td>
+                    <td>
+                        {% if h.old_status or h.new_status %}
+                            <span class="tag">{{ status_labels.get(h.old_status, h.old_status) }} → {{ status_labels.get(h.new_status, h.new_status) }}</span>
+                        {% endif %}
+                    </td>
+                    <td style="max-width:250px">{{ h.change_reason or '-' }}</td>
+                    <td style="max-width:200px">{{ h.next_step or '-' }}</td>
+                    <td>{% if h.is_manual_override %}<span class="tag tag-danger">是</span>{% else %}否{% endif %}</td>
+                    <td><button class="btn btn-sm" onclick='showSnapshot({{ histories_json[loop.index0]|tojson }})'>查看</button></td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><div style="font-size:48px">📜</div><p>暂无操作记录</p></div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function showSnapshot(h) {
+    openModal('操作原始快照',
+        `<div class="info-grid" style="margin-bottom:16px">
+            <div class="info-item"><div class="label">操作人</div><div class="value">${h.operator}</div></div>
+            <div class="info-item"><div class="label">操作时间</div><div class="value">${h.operation_time}</div></div>
+            <div class="info-item"><div class="label">原状态</div><div class="value">${h.old_status||'-'}</div></div>
+            <div class="info-item"><div class="label">新状态</div><div class="value">${h.new_status||'-'}</div></div>
+        </div>
+        ${h.old_remark ? `<div style="margin-bottom:8px"><strong>原备注：</strong>${h.old_remark}</div>` : ''}
+        ${h.new_remark ? `<div style="margin-bottom:8px"><strong>新备注：</strong>${h.new_remark}</div>` : ''}
+        ${h.change_reason ? `<div style="margin-bottom:8px"><strong>改判原因：</strong>${h.change_reason}</div>` : ''}
+        ${h.next_step ? `<div style="margin-bottom:12px"><strong>下一步：</strong>${h.next_step}</div>` : ''}
+        <div style="font-weight:600;margin-bottom:8px">完整原始快照（操作时保存，不可修改）：</div>
+        <div class="raw-box">${(h.raw_snapshot||'').replace(/</g,'&lt;')}</div>`);
+}
+</script>
+{% endblock %}

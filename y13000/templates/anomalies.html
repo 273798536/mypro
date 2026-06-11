@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}异常队列 - 再保分摊批次复核{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">异常队列</h1>
+    <div class="btn-group">
+        <button class="btn btn-primary" onclick="apiPost('/api/anomalies/redetect', {}, ()=>location.reload())">🔍 重新检测异常</button>
+    </div>
+</div>
+
+<div class="alert alert-danger">
+    <strong>⚠️ 重点关注：</strong>同一笔金额被多个口径认走的冲突会出现在这里。处理前请核对审批邮件和原始数据。
+</div>
+
+<div class="card">
+    <div class="card-header"><div class="card-title">全部异常 ({{ anomalies|length }})</div></div>
+    <div class="card-body" style="padding:0">
+        {% if anomalies %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr><th>关联批次</th><th>异常类型</th><th>描述</th><th>冲突批次</th><th>状态</th><th>处理人</th><th>处理备注</th><th>创建时间</th><th>操作</th></tr>
+                </thead>
+                <tbody>
+                {% for a in anomalies %}
+                {% set b = batches_map.get(a.batch_id) %}
+                <tr>
+                    <td>
+                        {% if b %}
+                            <a href="{{ url_for('batch_detail', batch_id=b.id) }}">
+                                <strong>{{ b.batch_no }}</strong><br>
+                                <span class="amount {% if b.amount < 0 %}negative{% endif %}">{{ '%.2f'|format(b.amount) }}</span>
+                                {% if b.caliber %}<br><span class="tag tag-info">{{ b.caliber }}</span>{% endif %}
+                            </a>
+                        {% else %}
+                            (批次已删除)
+                        {% endif %}
+                    </td>
+                    <td>{% if a.anomaly_type=='duplicate_caliber' %}<span class="tag tag-danger">同笔多口径冲突</span>{% elif a.anomaly_type=='negative_amount' %}<span class="tag tag-warning">负数金额需确认</span>{% else %}<span class="tag tag-danger">{{ a.anomaly_type }}</span>{% endif %}</td>
+                    <td>{{ a.description }}</td>
+                    <td>
+                        {% if a.related_batch_ids %}
+                            {% for rid in a.related_batch_ids.split(',') %}
+                                {% set rb = batches_map.get(rid|int) %}
+                                {% if rb %}
+                                    <a href="{{ url_for('batch_detail', batch_id=rb.id) }}" style="display:block">
+                                        {{ rb.batch_no }} · {{ rb.caliber or '未标注口径' }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if a.status=='pending' %}
+                            <span class="status-tag status-anomaly">待处理</span>
+                        {% else %}
+                            <span class="status-tag status-confirmed">已处理</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ a.handler or '-' }}</td>
+                    <td>{{ a.handle_remark or '-' }}</td>
+                    <td>{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if a.status=='pending' %}
+                            <button class="btn btn-sm btn-success" onclick="handleAnomaly({{ a.id }})">处理</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state"><div style="font-size:48px">✅</div><p>暂无异常，所有数据正常</p></div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function handleAnomaly(aid) {
+    openModal('处理异常',
+        `<div class="form-group"><label>处理后批次状态</label>
+            <select id="anomalyStatus">
+                <option value="pending">仍待复核</option>
+                <option value="confirmed">确认通过</option>
+                <option value="withdrawn">撤回</option>
+            </select>
+        </div>
+        <div class="form-group"><label>处理说明 <span style="color:#dc2626">*</span></label>
+            <textarea id="anomalyRemark" placeholder="说明保留哪个口径、为什么..."></textarea>
+        </div>`,
+        `<button class="btn" onclick="closeModal()">取消</button>
+         <button class="btn btn-success" onclick="doHandle(`+aid+`)">标记已处理</button>`);
+}
+function doHandle(aid) {
+    apiPost('/api/anomaly/'+aid+'/handle', {
+        new_status: document.getElementById('anomalyStatus').value,
+        handle_remark: document.getElementById('anomalyRemark').value
+    });
+}
+</script>
+{% endblock %}

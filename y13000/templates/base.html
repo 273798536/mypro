@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}再保分摊批次复核{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="nav">
+    <div class="nav-brand">再保分摊批次复核</div>
+    <div class="nav-links">
+        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+            批次列表
+            {% if pending_count is defined and pending_count > 0 %}
+                <span class="nav-badge">{{ pending_count }}</span>
+            {% endif %}
+        </a>
+        <a class="nav-link {% if request.path == '/emails' %}active{% endif %}" href="/emails">
+            审批邮件
+            {% if email_count is defined and email_count > 0 %}
+                <span class="nav-badge" style="background:#2563eb">{{ email_count }}</span>
+            {% endif %}
+        </a>
+        <a class="nav-link {% if request.path == '/anomalies' %}active{% endif %}" href="/anomalies">
+            异常队列
+            {% if anomaly_count is defined and anomaly_count > 0 %}
+                <span class="nav-badge">{{ anomaly_count }}</span>
+            {% endif %}
+        </a>
+        <a class="nav-link {% if request.path == '/history' %}active{% endif %}" href="/history">操作历史</a>
+        <a class="nav-link {% if request.path == '/guide' %}active{% endif %}" href="/guide">📘 使用指引</a>
+    </div>
+</nav>
+<div class="container">
+{% block content %}{% endblock %}
+</div>
+<div class="modal-mask" id="modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">操作</div>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+    </div>
+</div>
+<script>
+function openModal(title, bodyHtml, footerHtml) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalBody').innerHTML = bodyHtml;
+    document.getElementById('modalFooter').innerHTML = footerHtml || '<button class="btn" onclick="closeModal()">关闭</button>';
+    document.getElementById('modal').classList.add('show');
+}
+function closeModal() {
+    document.getElementById('modal').classList.remove('show');
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+function apiPost(url, data, onSuccess) {
+    fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data || {})
+    }).then(r => r.json()).then(res => {
+        if (res.success) {
+            if (onSuccess) onSuccess(res);
+            else location.reload();
+        } else {
+            alert(res.error || '操作失败');
+        }
+    }).catch(() => alert('请求失败'));
+}
+
+function uploadFile(formId, url, onSuccess) {
+    const form = document.getElementById(formId);
+    const fileInput = form.querySelector('input[type=file]');
+    if (!fileInput.files.length) { alert('请选择文件'); return; }
+    const fd = new FormData(form);
+    fetch(url, {method: 'POST', body: fd}).then(r => r.json()).then(res => {
+        if (res.success) {
+            alert('导入成功，共 ' + res.count + ' 条');
+            if (onSuccess) onSuccess(res);
+            else location.reload();
+        } else {
+            alert(res.error || '导入失败');
+        }
+    }).catch(() => alert('请求失败'));
+}
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

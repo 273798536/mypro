@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block title %}批次列表 - 再保分摊批次复核{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">再保分摊批次列表</h1>
+    <div class="btn-group">
+        <button class="btn btn-primary" onclick="showImportBatch()">📥 导入批次数据</button>
+        <button class="btn" onclick="showImportEmail()">📧 导入审批邮件</button>
+        <a class="btn" href="{{ url_for('export_batches') }}">⬇️ 导出批次</a>
+    </div>
+</div>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-label">待复核</div>
+        <div class="stat-value" style="color:#d97706">{{ pending_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">异常待处理</div>
+        <div class="stat-value" style="color:#dc2626">{{ anomaly_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">已关联审批邮件</div>
+        <div class="stat-value" style="color:#2563eb">{{ email_count }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">批次总数</div>
+        <div class="stat-value">{{ batches|length }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">全部批次</div>
+        <div class="btn-group">
+            <button class="btn btn-sm" onclick="apiPost('/api/anomalies/redetect', {}, ()=>location.reload())">🔍 重新检测异常</button>
+        </div>
+    </div>
+    <div class="card-body" style="padding:0">
+        {% if batches %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>批次号</th>
+                    <th>金额</th>
+                    <th>口径</th>
+                    <th>保单号</th>
+                    <th>业务类型</th>
+                    <th>发生日期</th>
+                    <th>状态</th>
+                    <th>关联邮件</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for b in batches %}
+                <tr>
+                    <td><a href="{{ url_for('batch_detail', batch_id=b.id) }}"><strong>{{ b.batch_no }}</strong></a></td>
+                    <td class="amount {% if b.amount < 0 %}negative{% endif %}">{{ '%.2f'|format(b.amount) }} {{ b.currency }}</td>
+                    <td>{{ b.caliber or '-' }}</td>
+                    <td>{{ b.policy_no or '-' }}</td>
+                    <td>{{ b.business_type or '-' }}</td>
+                    <td>{{ b.occur_date or '-' }}</td>
+                    <td><span class="status-tag status-{{ b.status }}">{{ status_labels.get(b.status, b.status) }}</span></td>
+                    <td>
+                        {% set email_count = b.emails|length %}
+                        {% if email_count > 0 %}
+                            <span class="tag tag-info">{{ email_count }} 封</span>
+                        {% else %}
+                            <span class="tag">未关联</span>
+                        {% endif %}
+                        {% if b.anomalies and b.anomalies|selectattr('status','equalto','pending')|list|length > 0 %}
+                            <span class="tag tag-danger">异常</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a class="btn btn-sm" href="{{ url_for('batch_detail', batch_id=b.id) }}">详情</a>
+                            {% if b.status not in ['confirmed', 'withdrawn', 'reversed'] %}
+                            <button class="btn btn-sm btn-success" onclick="confirmBatch({{ b.id }})">确认</button>
+                            {% endif %}
+                            {% if b.status != 'withdrawn' %}
+                            <button class="btn btn-sm" onclick="withdrawBatch({{ b.id }})">撤回</button>
+                            {% endif %}
+                            <button class="btn btn-sm btn-danger" onclick="reverseBatch({{ b.id }})">负数冲正</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div style="font-size:48px">📋</div>
+            <p>暂无批次数据，请先导入CSV文件</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function showImportBatch() {
+    openModal('导入批次数据 (CSV)',
+        `<form id="importBatchForm">
+            <div class="file-input" onclick="document.getElementById('batchFile').click()">
+                <input type="file" id="batchFile" name="file" accept=".csv" onchange="this.parentElement.querySelector('p').textContent=this.files[0]?.name||'点击选择CSV文件'">
+                <p style="font-size:14px;color:#4b5563">点击选择CSV文件</p>
+                <p class="hint" style="margin-top:8px">支持列名：批次号(batch_no)、金额(amount)、币种(currency)、口径(caliber)、保单号(policy_no)、业务类型(business_type)、发生日期(occur_date)</p>
+            </div>
+        </form>`,
+        `<button class="btn" onclick="closeModal()">取消</button>
+         <button class="btn btn-primary" onclick="uploadFile('importBatchForm','/api/batch/import')">导入</button>`
+    );
+}
+
+function showImportEmail() {
+    openModal('导入审批邮件 (CSV/EML/TXT)',
+        `<form id="importEmailForm">
+            <div class="file-input" onclick="document.getElementById('emailFile').click()">
+                <input type="file" id="emailFile" name="file" accept=".csv,.eml,.txt" onchange="this.parentElement.querySelector('p').textContent=this.files[0]?.name||'点击选择邮件文件'">
+                <p style="font-size:14px;color:#4b5563">点击选择邮件文件</p>
+                <p class="hint" style="margin-top:8px">CSV支持：主题(subject)、发件人(from)、收件人(to)、日期(date)、正文(body)、批次号、金额。EML/TXT自动解析。</p>
+            </div>
+        </form>`,
+        `<button class="btn" onclick="closeModal()">取消</button>
+         <button class="btn btn-primary" onclick="uploadFile('importEmailForm','/api/email/import')">导入</button>`
+    );
+}
+
+function confirmBatch(id) {
+    openModal('确认批次',
+        `<div class="form-group">
+            <label>备注（可选）</label>
+            <textarea id="confirmRemark" placeholder="输入确认说明..."></textarea>
+        </div>
+        <div class="form-group">
+            <label style="display:flex;align-items:center;gap:6px">
+                <input type="checkbox" id="confirmOverride"> 标记为人工特殊处理（老许临时改判等）
+            </label>
+        </div>`,
+        `<button class="btn" onclick="closeModal()">取消</button>
+         <button class="btn btn-success" onclick="doConfirm(`+id+`)">确认通过</button>`
+    );
+}
+function doConfirm(id) {
+    apiPost('/api/batch/'+id+'/confirm', {
+        remark: document.getElementById('confirmRemark').value,
+        is_manual_override: document.getElementById('confirmOverride').checked
+    });
+}
+
+function withdrawBatch(id) {
+    openModal('撤回批次',
+        `<div class="form-group">
+            <label>撤回原因</label>
+            <textarea id="withdrawReason" placeholder="请说明撤回原因..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>下一步操作</label>
+            <input type="text" id="withdrawNext" placeholder="例如：退回运营重新核对">
+        </div>`,
+        `<button class="btn" onclick="closeModal()">取消</button>
+         <button class="btn btn-warning" onclick="doWithdraw(`+id+`)">确认撤回</button>`
+    );
+}
+function doWithdraw(id) {
+    apiPost('/api/batch/'+id+'/withdraw', {
+        change_reason: document.getElementById('withdrawReason').value,
+        next_step: document.getElementById('withdrawNext').value
+    });
+}
+
+function reverseBatch(id) {
+    openModal('负数冲正',
+        `<div class="alert alert-warning">负数冲正必须明确原因和下一步，且会标记为人工改判</div>
+        <div class="form-group">
+            <label>冲正原因 <span style="color:#dc2626">*</span></label>
+            <textarea id="reverseReason" placeholder="必填：说明为什么需要负数冲正..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>下一步操作 <span style="color:#dc2626">*</span></label>
+            <input type="text" id="reverseNext" placeholder="必填：例如：联系托管对接老许确认口径">
+        </div>
+        <div class="form-group">
+            <label>备注</label>
+            <textarea id="reverseRemark"></textarea>
+        </div>`,
+        `<button class="btn" onclick="closeModal()">取消</button>
+         <button class="btn btn-danger" onclick="doReverse(`+id+`)">确认负数冲正</button>`
+    );
+}
+function doReverse(id) {
+    apiPost('/api/batch/'+id+'/reverse', {
+        change_reason: document.getElementById('reverseReason').value,
+        next_step: document.getElementById('reverseNext').value,
+        remark: document.getElementById('reverseRemark').value
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}使用指引 - 再保分摊批次复核{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">📘 再保分摊批次复核 · 使用指引</h1>
+    <div class="btn-group">
+        <a class="btn btn-primary" href="/">→ 开始使用</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><div class="card-title">📍 排班同事快速上手（5分钟）</div></div>
+    <div class="card-body">
+        <div class="guide-section">
+            <h3>一、系统功能分布</h3>
+            <ul>
+                <li><strong>📋 批次列表（首页）</strong>：看所有待复核批次，做确认/撤回/负数冲正操作</li>
+                <li><strong>📧 审批邮件</strong>：放材料的地方，所有审批邮件原始内容都在这里</li>
+                <li><strong>⚠️ 异常队列</strong>：看异常的地方，同一笔钱被两个口径认走会出现在这里</li>
+                <li><strong>📜 操作历史</strong>：老许临时改过的判断、补录改判都在这里能看到</li>
+                <li><strong>📘 使用指引</strong>：就是本页面</li>
+            </ul>
+        </div>
+
+        <div class="guide-section">
+            <h3>二、日常复核流程</h3>
+            <ol>
+                <li>打开<strong>批次列表</strong>，看顶部统计卡片，"待复核"和"异常待处理"数字要清掉</li>
+                <li>点击批次号进入<strong>详情页</strong>，核对：金额、口径、保单号、关联的审批邮件</li>
+                <li>没问题 → 点"确认"，可加备注；如果是老许特别交代的，勾"人工特殊处理"</li>
+                <li>有问题：
+                    <ul>
+                        <li>需要退回 → 点"撤回"，填撤回原因和下一步（如：退回运营重提）</li>
+                        <li>需要负数冲正 → 点"负数冲正"，<strong>必须填原因和下一步</strong>，系统自动记人工改判</li>
+                        <li>补了新材料结论变了 → 点"补录改判"，填改判原因、新状态、新材料备注</li>
+                    </ul>
+                </li>
+                <li>如果顶部导航栏"异常队列"有红色数字，务必点进去处理</li>
+            </ol>
+        </div>
+
+        <div class="guide-section">
+            <h3>三、放材料的地方（邮件导入）</h3>
+            <ol>
+                <li>从邮箱导出审批邮件：单个邮件存 <code>.eml</code> 或 <code>.txt</code>，多个邮件汇总存 <code>.csv</code></li>
+                <li>在<strong>批次列表</strong>或<strong>审批邮件</strong>页面点"导入审批邮件"，上传文件即可</li>
+                <li>系统会尝试自动识别批次号和金额，但不会清洗原始内容，原文完整保留</li>
+                <li>如需手动关联邮件和批次：在审批邮件页点"关联批次"，输入批次ID即可</li>
+            </ol>
+        </div>
+
+        <div class="guide-section">
+            <h3>四、看异常的地方</h3>
+            <ul>
+                <li>异常规则：<strong>同一金额+同一保单号+同一日期</strong>下出现<strong>多个不同口径</strong>，即判定为"同笔多口径冲突"</li>
+                <li>异常队列会列出冲突的所有批次，点击可跳转详情核对</li>
+                <li>处理异常时必须填写处理说明（保留哪个口径、依据是什么）</li>
+                <li>可随时点"重新检测异常"按钮扫描最新数据</li>
+            </ul>
+        </div>
+
+        <div class="guide-section">
+            <h3>五、重新导出数据</h3>
+            <ul>
+                <li><strong>批次列表</strong>页右上角 → "导出批次"：导出全部批次及原始数据（CSV）</li>
+                <li><strong>操作历史</strong>页右上角 → "导出全部历史"：导出所有操作记录，含改判原因和原始快照</li>
+                <li><strong>审批邮件</strong>页右上角 → "导出全部"：导出所有邮件及原始内容</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><div class="card-title">🔑 关于"留痕"的设计说明</div></div>
+    <div class="card-body">
+        <div class="guide-section">
+            <h3>为什么这么设计？</h3>
+            <ul>
+                <li><strong>审批邮件保留原始来源</strong>：每个邮件的 <code>raw_content</code> 字段存储完整原文，不做任何清洗，正文提取仅做展示用。脏数据原样保留，方便追溯。</li>
+                <li><strong>批次也有 raw_data</strong>：导入时每一行CSV原始JSON都存下来，后续只改状态不改数据。</li>
+                <li><strong>每次操作存快照</strong>：OperationHistory 表的 <code>raw_snapshot</code> 字段是操作那一刻的完整JSON快照，含时间戳，不可篡改。</li>
+                <li><strong>负数冲正强制留痕</strong>：必须填"改判原因"+"下一步操作"，自动标记 <code>is_manual_override=True</code>，历史页一眼能看出是人工改判的。</li>
+                <li><strong>补录改判完整对比</strong>：历史时间线展示"原备注→新备注"、"原状态→新状态"、改判原因、下一步，一目了然。</li>
+                <li><strong>老许临时改判</strong>：确认操作勾"人工特殊处理"，历史记录会标红"人工改判"标签。</li>
+            </ul>
+        </div>
+
+        <div class="guide-section">
+            <h3>导入CSV模板字段参考</h3>
+            <ul>
+                <li><strong>批次数据CSV</strong>：批次号、金额、币种、口径、保单号、业务类型、发生日期（中文或英文列名均可）</li>
+                <li><strong>邮件CSV</strong>：主题、发件人、收件人、日期、正文、批次号、金额（中文或英文列名均可）</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
