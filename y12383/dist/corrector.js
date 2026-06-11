@@ -48,10 +48,20 @@ function createSideBySideComparison(oldChords, newChords, width = 40) {
 function updateChordProgression(analysis, newProgressionStr, author) {
     const newChords = (0, analyzer_1.parseChordProgression)(newProgressionStr);
     const oldChords = [...analysis.chordProgression];
+    const totalBars = newChords.length > 0 ? Math.max(...newChords.map(c => c.bar)) : 0;
+    const { aligned, issues } = (0, analyzer_1.alignHarmony)(newChords);
+    const motifs = (0, analyzer_1.detectMotifs)(newChords);
+    const beatDrifts = totalBars > 0 ? (0, analyzer_1.detectBeatDriftDetailed)(totalBars, newChords) : [];
+    const segments = totalBars > 0 ? (0, analyzer_1.generatePlaybackSegments)(totalBars) : [];
+    const newStatus = beatDrifts.length > 0 ? 'draft' : 'corrected';
     const updated = {
         ...analysis,
-        chordProgression: newChords,
-        status: 'corrected',
+        chordProgression: aligned,
+        motifs,
+        beatDrifts,
+        harmonyIssues: issues,
+        segments,
+        status: newStatus,
         history: [
             ...analysis.history,
             {

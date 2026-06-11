@@ -1,82 +1,78 @@
 [
   {
-    "exportId": "id_kmokn18ck",
-    "exportedAt": "2026-06-01T17:32:40.769Z",
-    "analysisId": "id_iofqnl17q",
-    "audioFile": "20240520_blues_for_alice.wav",
+    "exportId": "id_mq9p7yih00001",
+    "exportedAt": "2026-06-11T16:15:08.153Z",
+    "analysisId": "id_mq9p7xyj00004",
+    "audioFile": "user_test.wav",
     "chordProgression": [
       {
-        "name": "Dm7",
-        "root": "D",
-        "quality": "dom7",
+        "name": "Am7",
+        "root": "A",
+        "quality": "min7",
         "bar": 1,
         "beat": 1
       },
       {
-        "name": "G7",
-        "root": "G",
+        "name": "D7",
+        "root": "D",
         "quality": "dom7",
         "bar": 2,
         "beat": 1
       },
       {
-        "name": "Cmaj7",
-        "root": "C",
+        "name": "Gmaj7",
+        "root": "G",
         "quality": "maj7",
         "bar": 3,
         "beat": 1
       },
       {
-        "name": "Fmaj7",
-        "root": "F",
+        "name": "Cmaj7",
+        "root": "C",
         "quality": "maj7",
         "bar": 4,
         "beat": 1
-      },
-      {
-        "name": "Bbm7",
-        "root": "Bb",
-        "quality": "dom7",
-        "bar": 5,
-        "beat": 1
-      },
-      {
-        "name": "Eb7",
-        "root": "Eb",
-        "quality": "dom7",
-        "bar": 6,
-        "beat": 1
-      },
+      }
+    ],
+    "reportFile": "id_mq9p7xyj00004_Am7复现测试.txt",
+    "status": "draft"
+  },
+  {
+    "exportId": "id_mq9p7ykg00001",
+    "exportedAt": "2026-06-11T16:15:08.224Z",
+    "analysisId": "id_mq9p7xyj00004",
+    "audioFile": "user_test.wav",
+    "chordProgression": [
       {
         "name": "Am7",
         "root": "A",
-        "quality": "dom7",
-        "bar": 7,
+        "quality": "min7",
+        "bar": 1,
         "beat": 1
       },
       {
-        "name": "Dm7",
+        "name": "D7",
         "root": "D",
         "quality": "dom7",
-        "bar": 8,
+        "bar": 2,
         "beat": 1
       },
       {
-        "name": "G7",
+        "name": "Gmaj7",
         "root": "G",
-        "quality": "dom7",
-        "bar": 8,
-        "beat": 2
+        "quality": "maj7",
+        "bar": 3,
+        "beat": 1
       },
       {
         "name": "Cmaj7",
         "root": "C",
         "quality": "maj7",
-        "bar": 9,
+        "bar": 4,
         "beat": 1
       }
     ],
-    "reportFile": "id_iofqnl17q_Blues_for_Alice.txt",
-    "status": "corrected"
+    "reportFile": "id_mq9p7xyj00004_Am7复现测试.json",
+    "status": "draft"
   }
 ]

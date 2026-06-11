@@ -1,0 +1,152 @@
+{
+  "id": "id_mq9p7xyj00004",
+  "audioFile": "user_test.wav",
+  "title": "Am7复现测试",
+  "artist": "学生A",
+  "dateRecorded": "2026-06-11",
+  "dateAnalyzed": "2026-06-11T16:15:07.435Z",
+  "chordProgression": [
+    {
+      "name": "Am7",
+      "root": "A",
+      "quality": "min7",
+      "bar": 1,
+      "beat": 1
+    },
+    {
+      "name": "D7",
+      "root": "D",
+      "quality": "dom7",
+      "bar": 2,
+      "beat": 1
+    },
+    {
+      "name": "Gmaj7",
+      "root": "G",
+      "quality": "maj7",
+      "bar": 3,
+      "beat": 1
+    },
+    {
+      "name": "Cmaj7",
+      "root": "C",
+      "quality": "maj7",
+      "bar": 4,
+      "beat": 1
+    }
+  ],
+  "motifs": [
+    {
+      "id": "id_mq9p7yck00001",
+      "name": "ii-V-I 终止式",
+      "startBar": 1,
+      "endBar": 3,
+      "startBeat": 1,
+      "endBeat": 4,
+      "type": "response",
+      "confidence": 0.92
+    }
+  ],
+  "beatDrifts": [
+    {
+      "id": "id_mq9p7yck00002",
+      "bar": 4,
+      "beat": 4,
+      "driftAmount": 0.05,
+      "severity": "minor",
+      "detectedAt": "2026-06-11T16:15:07.940Z",
+      "description": "第4小节第4拍检测到轻微节拍漂移（结束段收束偏差）"
+    }
+  ],
+  "harmonyIssues": [],
+  "segments": [
+    {
+      "id": "id_mq9p7ycl00003",
+      "name": "完整段落",
+      "startBar": 1,
+      "endBar": 4,
+      "startTime": 0,
+      "endTime": 8
+    }
+  ],
+  "status": "draft",
+  "notes": "修正：第2-3小节改为ii-V-I",
+  "history": [
+    {
+      "id": "id_mq9p7xyi00002",
+      "timestamp": "2026-06-11T16:15:07.434Z",
+      "action": "created",
+      "author": "system",
+      "description": "创建分析记录"
+    },
+    {
+      "id": "id_mq9p7xyj00003",
+      "timestamp": "2026-06-11T16:15:07.435Z",
+      "action": "analyzed",
+      "author": "system",
+      "description": "完成自动分析",
+      "chordProgression": [
+        {
+          "name": "Am7",
+          "root": "A",
+          "quality": "min7",
+          "bar": 1,
+          "beat": 1
+        },
+        {
+          "name": "Dm7",
+          "root": "D",
+          "quality": "min7",
+          "bar": 2,
+          "beat": 1
+        },
+        {
+          "name": "Cmaj7",
+          "root": "C",
+          "quality": "maj7",
+          "bar": 3,
+          "beat": 1
+        }
+      ]
+    },
+    {
+      "id": "id_mq9p7ycl00004",
+      "timestamp": "2026-06-11T16:15:07.941Z",
+      "action": "corrected",
+      "author": "李老师",
+      "description": "手动修正和弦进行",
+      "chordProgression": [
+        {
+          "name": "Am7",
+          "root": "A",
+          "quality": "min7",
+          "bar": 1,
+          "beat": 1
+        },
+        {
+          "name": "Dm7",
+          "root": "D",
+          "quality": "min7",
+          "bar": 2,
+          "beat": 1
+        },
+        {
+          "name": "Cmaj7",
+          "root": "C",
+          "quality": "maj7",
+          "bar": 3,
+          "beat": 1
+        }
+      ]
+    },
+    {
+      "id": "id_mq9p7yco00005",
+      "timestamp": "2026-06-11T16:15:07.944Z",
+      "action": "noted",
+      "author": "李老师",
+      "description": "更新备注"
+    }
+  ],
+  "hasMissingFields": false,
+  "isLateEntry": false
+}

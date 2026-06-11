@@ -4,14 +4,15 @@
 
 序号  状态    节拍漂移  演奏音频                     和弦数量    报告文件
 ────────────────────────────────────────────────────────────────────────────────────────────────────
-1   草稿    2处      20240515_autumn_leaves.wa  8         id_fqahghsam_Autumn_
-2   修正    2处      20240510_someday_my_princ  9         id_hob5m8p9a_Someday
-3   修正     无      20240520_blues_for_alice.  10        id_iofqnl17q_Blues_f
-4   审核    1处      20240512_all_the_things.m  8         id_lxxufu2sq_All_the
-5   草稿    3处      20240518_giant_steps.wav   8         id_vdfg6nw5x_Giant_S
+1   草稿    2处      20240515_autumn_leaves.wa  8         id_mq9p7xva00001_Aut
+2   修正    2处      20240510_someday_my_princ  9         id_mq9p7xve00005_Som
+3   分析     无      20240520_blues_for_alice.  9         id_mq9p7xvf0000a_Blu
+4   审核    1处      20240512_all_the_things.m  8         id_mq9p7xvf0000c_All
+5   草稿    3处      20240518_giant_steps.wav   8         id_mq9p7xvf0000h_Gia
+6   草稿    1处      user_test.wav              4         id_mq9p7xyj00004_Am7
 
 ====================================================================================================
-总计: 5条记录
-  - 节拍漂移: 4条
-  - 字段完整: 3条
+总计: 6条记录
+  - 节拍漂移: 5条
+  - 字段完整: 4条
   - 晚补记录: 1条

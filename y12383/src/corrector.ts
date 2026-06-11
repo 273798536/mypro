@@ -1,5 +1,12 @@
 import { SoloAnalysis, Chord, HistoryEntry } from './types';
-import { generateId, parseChordProgression } from './analyzer';
+import {
+  generateId,
+  parseChordProgression,
+  detectMotifs,
+  alignHarmony,
+  generatePlaybackSegments,
+  detectBeatDriftDetailed,
+} from './analyzer';
 
 export function formatChordsForDisplay(chords: Chord[]): string {
   const bars: { [key: number]: string[] } = {};
@@ -57,11 +64,23 @@ export function updateChordProgression(
 ): SoloAnalysis {
   const newChords = parseChordProgression(newProgressionStr);
   const oldChords = [...analysis.chordProgression];
+
+  const totalBars = newChords.length > 0 ? Math.max(...newChords.map(c => c.bar)) : 0;
+  const { aligned, issues } = alignHarmony(newChords);
+  const motifs = detectMotifs(newChords);
+  const beatDrifts = totalBars > 0 ? detectBeatDriftDetailed(totalBars, newChords) : [];
+  const segments = totalBars > 0 ? generatePlaybackSegments(totalBars) : [];
+
+  const newStatus: SoloAnalysis['status'] = beatDrifts.length > 0 ? 'draft' : 'corrected';
   
   const updated: SoloAnalysis = {
     ...analysis,
-    chordProgression: newChords,
-    status: 'corrected',
+    chordProgression: aligned,
+    motifs,
+    beatDrifts,
+    harmonyIssues: issues,
+    segments,
+    status: newStatus,
     history: [
       ...analysis.history,
       {
