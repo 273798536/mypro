@@ -167,7 +167,8 @@ export const useAudioStore = create<AudioState>((set, get) => ({
 
     const issues = state.getIssuesForAudio(audioFile.id);
     const segments = state.getSegmentsForAudio(audioFile.id);
-    const latestVersion = state.getVersionsForAudio(audioFile.id).slice(-1)[0];
+    const versionsForAudio = state.getVersionsForAudio(audioFile.id);
+    const latestVersion = versionsForAudio.slice(-1)[0];
 
     const report: Report = {
       id: `report-${Date.now()}`,
@@ -178,9 +179,9 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       exportFormat: format,
       summary: {
         totalIssues: issues.length,
-        highSeverity: issues.filter(i => i.severity === 'high').length,
-        mediumSeverity: issues.filter(i => i.severity === 'medium').length,
-        lowSeverity: issues.filter(i => i.severity === 'low').length,
+        highSeverity: issues.filter(i => i.severity === 'high' && !i.isFixed).length,
+        mediumSeverity: issues.filter(i => i.severity === 'medium' && !i.isFixed).length,
+        lowSeverity: issues.filter(i => i.severity === 'low' && !i.isFixed).length,
         fixedIssues: issues.filter(i => i.isFixed).length,
       },
     };
@@ -205,6 +206,11 @@ export const useAudioStore = create<AudioState>((set, get) => ({
         hour: '2-digit', minute: '2-digit',
       });
     };
+    const formatSafeDate = (date: Date): string => {
+      const d = new Date(date);
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+    };
     const getIssueTypeLabel = (type: string) => {
       switch (type) { case 'loudness': return '响度超标'; case 'silence': return '静音异常'; case 'sampleRate': return '采样率问题'; case 'clipping': return '削波失真'; default: return type; }
     };
@@ -218,26 +224,30 @@ export const useAudioStore = create<AudioState>((set, get) => ({
       switch (severity) { case 'high': return '#ef4444'; case 'medium': return '#eab308'; case 'low': return '#3b82f6'; default: return '#6b7280'; }
     };
 
-    const issuesHtml = issues.map(issue => {
+    const sortedIssues = [...issues].sort((a, b) => {
+      const order = { high: 0, medium: 1, low: 2 } as Record<string, number>;
+      if (a.isFixed !== b.isFixed) return a.isFixed ? 1 : -1;
+      return (order[a.severity] ?? 99) - (order[b.severity] ?? 99);
+    });
+
+    const issuesHtml = sortedIssues.map(issue => {
       const segment = segments.find(s => s.id === issue.segmentId);
       const severityColor = getSeverityColor(issue.severity);
       return `
         <div style="border-left: 4px solid ${severityColor}; padding: 12px 16px; margin-bottom: 12px; background: ${issue.isFixed ? '#f0fdf4' : '#fff'}; border-radius: 4px;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
               <strong style="color: ${issue.isFixed ? '#22c55e' : severityColor}">${getIssueTypeLabel(issue.type)}</strong>
               <span style="background: ${severityColor}20; color: ${severityColor}; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${getSeverityLabel(issue.severity)}</span>
               ${issue.isFixed ? '<span style="background: #22c55e20; color: #22c55e; padding: 2px 8px; border-radius: 4px; font-size: 12px;">已修复</span>' : ''}
+              ${issue.affectedByManualChange ? '<span style="background: #22c55e20; color: #16a34a; padding: 2px 6px; border-radius: 4px; font-size: 12px;">受人工修改影响</span>' : ''}
+              ${issue.affectedByAdAddition ? '<span style="background: #f9731620; color: #ea580c; padding: 2px 6px; border-radius: 4px; font-size: 12px;">受广告补录影响</span>' : ''}
             </div>
-            <span style="color: #6b7280; font-size: 12px;">${formatTime(issue.sourceRef.startTime)}</span>
+            <span style="color: #6b7280; font-size: 12px; font-family: monospace;">${formatTime(issue.sourceRef.startTime)}</span>
           </div>
           <p style="color: #4b5563; font-size: 14px; margin: 8px 0;">${issue.description}</p>
-          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #6b7280;">
-            <span>来源: ${getSegmentTypeLabel(segment?.type || '')}片段 (${formatTime(issue.sourceRef.startTime)} - ${formatTime(issue.sourceRef.endTime)})</span>
-            <div style="display: flex; gap: 6px;">
-              ${issue.affectedByManualChange ? '<span style="background: #22c55e20; color: #16a34a; padding: 2px 6px; border-radius: 4px;">受人工修改影响</span>' : ''}
-              ${issue.affectedByAdAddition ? '<span style="background: #f9731620; color: #ea580c; padding: 2px 6px; border-radius: 4px;">受广告补录影响</span>' : ''}
-            </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #6b7280; flex-wrap: wrap; gap: 8px;">
+            <span>📎 来源追溯: ${getSegmentTypeLabel(segment?.type || '')}片段 &nbsp;|&nbsp; 片段ID: ${issue.sourceRef.segmentId} &nbsp;|&nbsp; 音频文件ID: ${issue.sourceRef.audioFileId} &nbsp;|&nbsp; 时间范围: ${formatTime(issue.sourceRef.startTime)} - ${formatTime(issue.sourceRef.endTime)}</span>
           </div>
         </div>`;
     }).join('');
@@ -248,20 +258,22 @@ export const useAudioStore = create<AudioState>((set, get) => ({
         <td style="padding: 8px 12px; font-family: monospace;">${formatTime(seg.startTime)} - ${formatTime(seg.endTime)}</td>
         <td style="padding: 8px 12px;"><span style="background: #e5e7eb; padding: 2px 10px; border-radius: 4px;">${getSegmentTypeLabel(seg.type)}</span></td>
         <td style="padding: 8px 12px; color: ${seg.loudness > -16 ? '#ef4444' : '#22c55e'}; font-weight: 500;">${seg.loudness.toFixed(1)} LUFS</td>
-        <td style="padding: 8px 12px;">${seg.modifiedBy === 'manual' ? '<span style="color: #9333ea;">✓ 人工</span>' : '<span style="color: #6b7280;">自动</span>'}</td>
+        <td style="padding: 8px 12px;">${seg.modifiedBy === 'manual' ? '<span style="color: #9333ea;">✓ 人工修改</span>' : '<span style="color: #6b7280;">自动检测</span>'}</td>
       </tr>`).join('');
 
     const htmlContent = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>播客响度合规报告 - ${audioFile.name}</title>
 <style>
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f9fafb; color: #111827; margin: 0; padding: 40px 20px; }
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif; background: #f9fafb; color: #111827; margin: 0; padding: 40px 20px; line-height: 1.6; }
   .container { max-width: 960px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 48px; }
   h1 { font-size: 28px; margin: 0 0 8px; color: #111827; }
   h2 { font-size: 20px; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 2px solid #06b6d4; color: #0891b2; }
-  .subtitle { color: #6b7280; margin: 0 0 32px; }
+  .subtitle { color: #6b7280; margin: 0 0 32px; font-size: 14px; }
   .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin: 24px 0; }
   .stat-card { background: #f3f4f6; border-radius: 8px; padding: 20px; text-align: center; }
   .stat-card.high { background: #fef2f2; border: 1px solid #fecaca; }
@@ -275,21 +287,31 @@ export const useAudioStore = create<AudioState>((set, get) => ({
   .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; padding: 16px; background: #f9fafb; border-radius: 8px; }
   .info-item { display: flex; justify-content: space-between; font-size: 14px; }
   .info-label { color: #6b7280; }
-  .info-value { color: #111827; font-weight: 500; }
+  .info-value { color: #111827; font-weight: 500; word-break: break-all; }
   .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 12px; display: flex; gap: 16px; flex-wrap: wrap; }
+  @media (max-width: 640px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .info-grid { grid-template-columns: 1fr; }
+    body { padding: 16px; }
+    .container { padding: 20px; }
+  }
+  @media print {
+    body { background: #fff; padding: 0; }
+    .container { box-shadow: none; border-radius: 0; padding: 20px; }
+  }
 </style>
 </head>
 <body>
 <div class="container">
   <h1>📋 播客响度合规检查报告</h1>
-  <p class="subtitle">文件: ${audioFile.name} &nbsp;|&nbsp; 生成时间: ${formatDate(report.exportedAt)}</p>
+  <p class="subtitle">文件: ${audioFile.name} &nbsp;|&nbsp; 生成时间: ${formatDate(report.exportedAt)} &nbsp;|&nbsp; 报告ID: ${report.id}</p>
   
-  <h2>📊 问题概览</h2>
+  <h2>📊 问题概览（未修复按严重度分类）</h2>
   <div class="stats">
     <div class="stat-card"><div class="stat-value">${report.summary.totalIssues}</div><div class="stat-label">问题总数</div></div>
-    <div class="stat-card high"><div class="stat-value" style="color:#dc2626;">${report.summary.highSeverity}</div><div class="stat-label">高严重</div></div>
-    <div class="stat-card medium"><div class="stat-value" style="color:#ca8a04;">${report.summary.mediumSeverity}</div><div class="stat-label">中严重</div></div>
-    <div class="stat-card low"><div class="stat-value" style="color:#2563eb;">${report.summary.lowSeverity}</div><div class="stat-label">低严重</div></div>
+    <div class="stat-card high"><div class="stat-value" style="color:#dc2626;">${report.summary.highSeverity}</div><div class="stat-label">高严重(未修)</div></div>
+    <div class="stat-card medium"><div class="stat-value" style="color:#ca8a04;">${report.summary.mediumSeverity}</div><div class="stat-label">中严重(未修)</div></div>
+    <div class="stat-card low"><div class="stat-value" style="color:#2563eb;">${report.summary.lowSeverity}</div><div class="stat-label">低严重(未修)</div></div>
     <div class="stat-card fixed"><div class="stat-value" style="color:#16a34a;">${report.summary.fixedIssues}</div><div class="stat-label">已修复</div></div>
   </div>
 
@@ -300,36 +322,41 @@ export const useAudioStore = create<AudioState>((set, get) => ({
     <div class="info-item"><span class="info-label">总时长:</span><span class="info-value">${formatDuration(audioFile.duration)}</span></div>
     <div class="info-item"><span class="info-label">采样率:</span><span class="info-value">${audioFile.sampleRate} Hz</span></div>
     <div class="info-item"><span class="info-label">片段数:</span><span class="info-value">${segments.length}</span></div>
-    <div class="info-item"><span class="info-label">报告版本:</span><span class="info-value">v${latestVersion?.versionNumber || 1}</span></div>
+    <div class="info-item"><span class="info-label">报告版本:</span><span class="info-value">v${latestVersion?.versionNumber || 1}${latestVersion?.note ? ` (${latestVersion.note})` : ''}</span></div>
   </div>
 
-  <h2>🔍 片段分层详情</h2>
+  <h2>🔍 片段分层详情（${segments.length} 段）</h2>
   <table>
     <thead><tr><th style="text-align:center;">#</th><th>时间范围</th><th>类型</th><th>响度</th><th>修改方式</th></tr></thead>
-    <tbody>${segmentsHtml}</tbody>
+    <tbody>${segmentsHtml || '<tr><td colspan="5" style="padding:16px;text-align:center;color:#6b7280;">暂无片段数据</td></tr>'}</tbody>
   </table>
 
-  <h2>⚠️ 问题明细</h2>
-  ${issues.length === 0 ? '<p style="color: #16a34a; padding: 20px; background: #f0fdf4; border-radius: 8px;">✅ 未检测到任何问题，音频合规！</p>' : issuesHtml}
+  <h2>⚠️ 问题明细（${issues.length} 条，按严重度排序，未修复在前）</h2>
+  ${issues.length === 0 ? '<p style="color: #16a34a; padding: 20px; background: #f0fdf4; border-radius: 8px; text-align: center; font-size: 15px;">✅ 未检测到任何问题，音频合规！</p>' : issuesHtml}
 
   <div class="footer">
     <span>报告ID: ${report.id}</span>
     <span>导出格式: ${format.toUpperCase()}</span>
     <span>音频文件ID: ${audioFile.id}</span>
+    <span>生成时间: ${formatDate(report.exportedAt)}</span>
   </div>
 </div>
 </body>
 </html>`;
 
+    const safeBaseName = audioFile.name.replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]/g, '_');
+    const fileExt = format === 'pdf' ? 'html' : 'html';
+    const fileName = `合规报告_${safeBaseName}_${formatSafeDate(report.exportedAt)}.${fileExt}`;
+
     const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `合规报告_${audioFile.name.replace(/\.[^.]+$/, '')}_${formatDate(report.exportedAt).replace(/[\/:\s]/g, '-')}.${format === 'html' ? 'html' : 'html'}`;
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
 
     return report;
   },
@@ -424,11 +451,11 @@ export const useAudioStore = create<AudioState>((set, get) => ({
           segmentId: i.segmentId,
           isFixed: i.isFixed || false,
           sourceRef: {
+            ...i.sourceRef,
             audioFileId,
             segmentId: i.segmentId,
-            startTime: segment?.startTime || i.sourceRef?.startTime || 0,
-            endTime: segment?.endTime || i.sourceRef?.endTime || 0,
-            ...i.sourceRef,
+            startTime: segment?.startTime ?? i.sourceRef?.startTime ?? 0,
+            endTime: segment?.endTime ?? i.sourceRef?.endTime ?? 0,
           },
         };
       });
