@@ -1,0 +1,46 @@
+[
+  {
+    "log_id": "f74c7fcedddb",
+    "schedule_id": "6ad47b93cc93",
+    "field_name": "status",
+    "old_value": "pending",
+    "new_value": "approved",
+    "operator": "李场长",
+    "operation": "复核通过",
+    "remark": "潮位足够，同意补给",
+    "timestamp": "2026-06-12T03:05:07.515199"
+  },
+  {
+    "log_id": "1b77497efd36",
+    "schedule_id": "721aaf828e71",
+    "field_name": "status",
+    "old_value": "pending",
+    "new_value": "rejected",
+    "operator": "李场长",
+    "operation": "复核驳回",
+    "remark": "该船舶淡水需求已在其他港口满足",
+    "timestamp": "2026-06-12T03:05:07.636736"
+  },
+  {
+    "log_id": "e9f86e085f30",
+    "schedule_id": "f7bbacbd9ad0",
+    "field_name": "water_amount",
+    "old_value": "60.0",
+    "new_value": "80.0",
+    "operator": "李场长",
+    "operation": "字段修改",
+    "remark": "船员临时增加20吨需求",
+    "timestamp": "2026-06-12T03:05:07.690464"
+  },
+  {
+    "log_id": "85446a9590d8",
+    "schedule_id": "f7bbacbd9ad0",
+    "field_name": "status",
+    "old_value": "pending",
+    "new_value": "approved",
+    "operator": "李场长",
+    "operation": "复核通过",
+    "remark": "修正后通过",
+    "timestamp": "2026-06-12T03:05:07.728865"
+  }
+]

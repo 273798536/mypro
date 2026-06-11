@@ -1,0 +1,67 @@
+[
+  {
+    "trajectory_id": "6ac74dc60dd1",
+    "vessel_name": "浙渔供668",
+    "vessel_id": "ZYG-0668",
+    "arrival_time": "2026-06-11T02:30:00",
+    "departure_time": "2026-06-11T14:00:00",
+    "water_demand": 80.0,
+    "route": "舟山-东沙",
+    "remark": "渔汛期加急",
+    "source_batch": "测试批次-轨迹",
+    "fingerprint": "7804a79cdcada9fd2bfc4afaf2fba58c",
+    "created_at": "2026-06-12T03:05:07.226819"
+  },
+  {
+    "trajectory_id": "54131838a9a5",
+    "vessel_name": "闽运水12",
+    "vessel_id": "MYS-0012",
+    "arrival_time": "2026-06-11T12:00:00",
+    "departure_time": "2026-06-12T06:00:00",
+    "water_demand": 120.0,
+    "route": "厦门-北礁",
+    "remark": "nan",
+    "source_batch": "测试批次-轨迹",
+    "fingerprint": "a68f10f721ce45e7e4c917b7ad67fef3",
+    "created_at": "2026-06-12T03:05:07.227368"
+  },
+  {
+    "trajectory_id": "9864623a72af",
+    "vessel_name": "琼补给003",
+    "vessel_id": "QBJ-0003",
+    "arrival_time": "2026-06-12T08:00:00",
+    "departure_time": "2026-06-12T20:00:00",
+    "water_demand": 60.0,
+    "route": "三亚-南岛",
+    "remark": "常规补给",
+    "source_batch": "测试批次-轨迹",
+    "fingerprint": "95d12ba989a93fd2d48aaf46de7a633b",
+    "created_at": "2026-06-12T03:05:07.228010"
+  },
+  {
+    "trajectory_id": "fc37caef67af",
+    "vessel_name": "粤水船21",
+    "vessel_id": "YSC-0021",
+    "arrival_time": "2026-06-12T14:30:00",
+    "departure_time": "2026-06-13T02:00:00",
+    "water_demand": 95.0,
+    "route": "广州-东沙",
+    "remark": "临时加单",
+    "source_batch": "测试批次-轨迹",
+    "fingerprint": "238cb6bac9795d494b06fe3276382b78",
+    "created_at": "2026-06-12T03:05:07.228580"
+  },
+  {
+    "trajectory_id": "a525541d655f",
+    "vessel_name": "沪航补88",
+    "vessel_id": "HHB-0088",
+    "arrival_time": "2026-06-13T06:00:00",
+    "departure_time": "2026-06-13T18:00:00",
+    "water_demand": 150.0,
+    "route": "上海-北礁",
+    "remark": "nan",
+    "source_batch": "测试批次-轨迹",
+    "fingerprint": "36a4b0eca1bff7d7f6dafd0f68bc1cb6",
+    "created_at": "2026-06-12T03:05:07.229474"
+  }
+]
