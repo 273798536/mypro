@@ -1,8 +1,9 @@
 import { useState, useRef } from 'react'
-import { Upload, Music, User, FileText, AlertCircle } from 'lucide-react'
+import { Upload, Music, User, FileText, AlertCircle, Eye } from 'lucide-react'
 import Modal from './Modal'
 import { useScoreStore } from '../store/scoreStore'
 import { generateId } from '../utils/helpers'
+import { readFileAsDataUrl } from '../utils/exporter'
 import type { Score, Version } from '../types'
 
 interface NewScoreModalProps {
@@ -20,7 +21,9 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
     pdfFileName: '',
   })
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [selectedFileDataUrl, setSelectedFileDataUrl] = useState<string>('')
   const [fileError, setFileError] = useState('')
+  const [isReading, setIsReading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleFileSelect = () => {
@@ -49,11 +52,26 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
     setFileError('')
     setSelectedFile(file)
     setFormData(prev => ({ ...prev, pdfFileName: file.name }))
+    setIsReading(true)
+    setSelectedFileDataUrl('')
+    readFileAsDataUrl(file)
+      .then((dataUrl) => {
+        setSelectedFileDataUrl(dataUrl)
+      })
+      .catch(() => {
+        setFileError('读取PDF文件内容失败，请重新选择')
+        setSelectedFile(null)
+        setSelectedFileDataUrl('')
+        setFormData(prev => ({ ...prev, pdfFileName: '' }))
+      })
+      .finally(() => {
+        setIsReading(false)
+      })
   }
 
   const canSubmit = () => {
     if (!formData.title.trim() || !formData.composer.trim()) return false
-    if (mode === 'import' && !selectedFile) return false
+    if (mode === 'import' && (!selectedFile || !selectedFileDataUrl || isReading)) return false
     return true
   }
 
@@ -67,16 +85,14 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
 
     const scoreId = generateId()
     const now = new Date().toISOString()
-    const pdfUrl = selectedFile
-      ? URL.createObjectURL(selectedFile)
-      : `/scores/${scoreId}.pdf`
 
     const newScore: Score = {
       id: scoreId,
       title: formData.title.trim(),
       composer: formData.composer.trim(),
       status: 'pending',
-      pdfUrl: selectedFile ? selectedFile.name : pdfUrl,
+      pdfUrl: selectedFile ? selectedFile.name : `/scores/${scoreId}.pdf`,
+      pdfBlobDataUrl: selectedFileDataUrl || undefined,
       createdAt: now,
       updatedAt: now,
     }
@@ -85,11 +101,11 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
       id: generateId(),
       scoreId,
       versionNumber: 1,
-      pdfUrl: selectedFile ? selectedFile.name : pdfUrl,
+      pdfUrl: selectedFile ? selectedFile.name : `/scores/${scoreId}.pdf`,
       source: mode === 'import' ? `导入上传 - ${selectedFile?.name ?? ''}` : '手动创建',
       createdAt: now,
       note: selectedFile
-        ? `初始版本 (文件: ${selectedFile.name}, ${(selectedFile.size / 1024).toFixed(1)}KB)`
+        ? `初始版本 (文件: ${selectedFile.name}, ${(selectedFile.size / 1024).toFixed(1)}KB, 已读取 ${(selectedFileDataUrl.length / 1024).toFixed(0)}KB base64)`
         : '初始版本',
     }
 
@@ -107,6 +123,7 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
     if (isSubmitting) return
     setFormData({ title: '', composer: '', pdfFileName: '' })
     setSelectedFile(null)
+    setSelectedFileDataUrl('')
     setFileError('')
     onClose()
   }
@@ -142,6 +159,17 @@ export default function NewScoreModal({ isOpen, onClose, mode = 'create' }: NewS
                   <p className="text-xs text-navy-400 mt-1">
                     {(selectedFile.size / 1024).toFixed(1)} KB
                   </p>
+                  {isReading ? (
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <div className="w-3 h-3 border-2 border-navy-700 border-t-gold-400 rounded-full animate-spin" />
+                      <span className="text-xs text-navy-400">正在读取文件...</span>
+                    </div>
+                  ) : selectedFileDataUrl ? (
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <Eye className="w-3.5 h-3.5 text-emerald-400" />
+                      <span className="text-xs text-emerald-400">PDF内容已读取，可导出预览</span>
+                    </div>
+                  ) : null}
                   <p className="text-xs text-navy-500 mt-1">点击重新选择</p>
                 </div>
               ) : (

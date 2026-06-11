@@ -13,6 +13,9 @@ import {
   Play,
   FilePlus,
   Link2,
+  Download,
+  Loader2,
+  RefreshCw,
 } from 'lucide-react'
 import { useScoreStore } from '../store/scoreStore'
 import {
@@ -25,6 +28,7 @@ import {
   getStatusLabel,
   getStatusColor,
 } from '../utils/helpers'
+import { createExportFile, downloadBlob } from '../utils/exporter'
 import RunSyncModal from '../components/RunSyncModal'
 import AddPartsModal from '../components/AddPartsModal'
 
@@ -35,6 +39,8 @@ export default function ScoreDetail() {
   const [activeTab, setActiveTab] = useState<TabType>('versions')
   const [syncModalOpen, setSyncModalOpen] = useState(false)
   const [partsModalOpen, setPartsModalOpen] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportError, setExportError] = useState('')
 
   const {
     getScoreById,
@@ -43,6 +49,7 @@ export default function ScoreDetail() {
     getPartsByScoreId,
     getAnomaliesByScoreId,
     updateAnomalyStatus,
+    updateScore,
   } = useScoreStore()
 
   const score = id ? getScoreById(id) : undefined
@@ -63,6 +70,32 @@ export default function ScoreDetail() {
         </div>
       </div>
     )
+  }
+
+  const handleExport = async () => {
+    if (!id || !score) return
+    setExportError('')
+    setIsExporting(true)
+    try {
+      const result = await createExportFile({
+        score,
+        versions,
+        annotations,
+        parts,
+        anomalies,
+        originalPdfDataUrl: score.pdfBlobDataUrl,
+      })
+      downloadBlob(result.blob, result.fileName)
+      updateScore(id, {
+        exportedUrl: result.fileName,
+        exportedBlobDataUrl: result.dataUrl,
+      })
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '导出失败'
+      setExportError(msg)
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   const tabs = [
@@ -103,7 +136,36 @@ export default function ScoreDetail() {
             <Play className="w-4 h-4" />
             执行同步
           </button>
+          <button
+            onClick={handleExport}
+            disabled={isExporting}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-700 rounded-lg text-white font-medium hover:from-emerald-500 hover:to-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isExporting ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                导出中...
+              </>
+            ) : score.exportedUrl ? (
+              <>
+                <RefreshCw className="w-4 h-4" />
+                重新导出
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                导出曲谱
+              </>
+            )}
+          </button>
         </div>
+
+        {exportError && (
+          <div className="flex items-center gap-2 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm mb-6">
+            <XCircle className="w-4 h-4 shrink-0" />
+            <span>{exportError}</span>
+          </div>
+        )}
 
         {/* 文件关联信息 */}
         <div className="bg-navy-800/50 rounded-xl p-5 border border-navy-700/50 mb-6">
@@ -131,9 +193,20 @@ export default function ScoreDetail() {
             {score.exportedUrl && (
               <div className="flex items-center gap-3 px-4 py-3 bg-navy-900/50 rounded-lg border border-navy-700/50">
                 <FileText className="w-5 h-5 text-emerald-400" />
-                <div>
+                <div className="flex-1">
                   <p className="text-sm text-white font-medium">导出曲谱</p>
-                  <p className="text-xs text-navy-400">{score.exportedUrl.split('/').pop()}</p>
+                  {score.exportedBlobDataUrl ? (
+                    <a
+                      href={score.exportedBlobDataUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                    >
+                      {score.exportedUrl.split('/').pop()} · 点击预览
+                    </a>
+                  ) : (
+                    <p className="text-xs text-navy-400">{score.exportedUrl.split('/').pop()}</p>
+                  )}
                 </div>
               </div>
             )}

@@ -1,5 +1,12 @@
 import type { Score, Version, Annotation, Part, Anomaly, SyncTask } from '../types'
 
+const mockSampleExportDataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(
+  `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>示例导出文件</title></head><body style="padding:40px;font-family:sans-serif;background:#0d1326;color:#e5e7eb;">
+  <h1 style="color:#d4af37;">曲谱示例导出</h1>
+  <p>这是 mock 数据的示例导出文件。真实导出请在曲谱详情页点击"导出曲谱"按钮生成。</p>
+  </body></html>`
+)
+
 export const mockScores: Score[] = [
   {
     id: 'score-1',
@@ -9,6 +16,7 @@ export const mockScores: Score[] = [
     pdfUrl: '/scores/beethoven-9.pdf',
     partListUrl: '/scores/beethoven-9-parts.xlsx',
     exportedUrl: '/scores/beethoven-9-exported.pdf',
+    exportedBlobDataUrl: mockSampleExportDataUrl,
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-20T14:30:00Z',
   },
@@ -39,6 +47,7 @@ export const mockScores: Score[] = [
     pdfUrl: '/scores/tchaikovsky-6.pdf',
     partListUrl: '/scores/tchaikovsky-6-parts.xlsx',
     exportedUrl: '/scores/tchaikovsky-6-exported.pdf',
+    exportedBlobDataUrl: mockSampleExportDataUrl,
     createdAt: '2024-01-05T10:00:00Z',
     updatedAt: '2024-01-12T13:00:00Z',
   },
@@ -59,6 +68,7 @@ export const mockScores: Score[] = [
     pdfUrl: '/scores/shostakovich-5.pdf',
     partListUrl: '/scores/shostakovich-5-parts.xlsx',
     exportedUrl: '/scores/shostakovich-5-exported.pdf',
+    exportedBlobDataUrl: mockSampleExportDataUrl,
     createdAt: '2024-01-08T11:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z',
   },

@@ -16,8 +16,10 @@ export interface Score {
   composer: string
   status: ScoreStatus
   pdfUrl: string
+  pdfBlobDataUrl?: string
   partListUrl?: string
   exportedUrl?: string
+  exportedBlobDataUrl?: string
   createdAt: string
   updatedAt: string
 }
