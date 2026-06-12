@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+
+:root {
+  font-family: "Inter", "Noto Sans SC", system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #E6F4FA;
+  background-color: #04101C;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #04101C 0%, #0A2540 40%, #071A2E 100%);
+  background-attachment: fixed;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.6;
+  z-index: 0;
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-ocean-800/60 backdrop-blur-xl border border-ocean-600/30 rounded-xl shadow-2xl;
+  }
+
+  .glass-card-hover {
+    @apply transition-all duration-300 hover:bg-ocean-800/80 hover:border-ocean-500/50 hover:shadow-ocean-500/10;
+  }
+
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-ocean-100/70
+           transition-all duration-200 hover:bg-ocean-700/50 hover:text-ocean-50;
+  }
+
+  .nav-item-active {
+    @apply bg-ocean-700/70 text-ocean-50 border-l-2 border-ocean-500;
+  }
+
+  .btn-primary {
+    @apply px-5 py-2.5 bg-ocean-500 text-white font-medium rounded-md
+           transition-all duration-200
+           hover:bg-ocean-400 hover:shadow-lg hover:shadow-ocean-500/25
+           active:translate-y-px;
+  }
+
+  .btn-secondary {
+    @apply px-5 py-2.5 bg-ocean-700/60 text-ocean-100 font-medium rounded-md
+           border border-ocean-600/40 transition-all duration-200
+           hover:bg-ocean-700 hover:border-ocean-500/50;
+  }
+
+  .btn-danger {
+    @apply px-5 py-2.5 bg-quality-recollect/90 text-white font-medium rounded-md
+           transition-all duration-200 hover:bg-quality-recollect;
+  }
+
+  .tag {
+    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium;
+  }
+
+  .table-header {
+    @apply px-4 py-3 text-left text-xs font-semibold text-ocean-200/70 uppercase tracking-wider;
+  }
+
+  .table-cell {
+    @apply px-4 py-3 text-sm text-ocean-100/90;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-ocean-900/60 border border-ocean-600/30 rounded-md
+           text-ocean-50 placeholder-ocean-300/40
+           focus:outline-none focus:border-ocean-500 focus:ring-1 focus:ring-ocean-500/40
+           transition-all duration-200;
+  }
+
+  .formula-block {
+    @apply bg-ocean-900/70 border border-ocean-600/30 rounded-lg p-4
+           font-mono text-ocean-200 text-sm;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: rgba(0, 180, 216, 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 180, 216, 0.5);
+  }
+}
+
+.empty-cell {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(245, 158, 11, 0.08) 6px,
+    rgba(245, 158, 11, 0.08) 12px
+  );
+}
+
+.duplicate-row {
+  position: relative;
+}
+
+.duplicate-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #ef4444;
+  border-radius: 3px 0 0 3px;
+}
+
+.status-transition {
+  transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+}
