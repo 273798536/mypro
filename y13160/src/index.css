@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: #050d1a;
+  background-image: theme('backgroundImage.wave-grid'),
+    theme('backgroundImage.radial-abyss');
+  background-size: 160px 160px, cover;
+  background-attachment: fixed, fixed;
+}
+
+/* 自定义滚动条 — 深海感 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(10, 22, 40, 0.5);
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00e5ff40, #ff2d8730);
+  border-radius: 999px;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00e5ff70, #ff2d8760);
+}
+
+/* 玻璃卡片通用类 */
+@layer components {
+  .glass-card {
+    @apply rounded-2xl border backdrop-blur-md shadow-glass;
+    background: linear-gradient(
+      145deg,
+      rgba(17, 34, 64, 0.65) 0%,
+      rgba(10, 22, 40, 0.55) 100%
+    );
+    border-color: rgba(0, 229, 255, 0.12);
+  }
+  .glass-card-hover {
+    @apply transition-all duration-300;
+  }
+  .glass-card-hover:hover {
+    border-color: rgba(0, 229, 255, 0.35);
+    box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.35),
+      0 14px 40px rgba(0, 0, 0, 0.5),
+      0 0 24px rgba(0, 229, 255, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .neon-btn {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium
+      transition-all duration-200 select-none border;
+  }
+  .neon-btn-primary {
+    background: linear-gradient(135deg, #00e5ff 0%, #0096c2 100%);
+    color: #03121f;
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 18px rgba(0, 229, 255, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  .neon-btn-primary:hover {
+    box-shadow: 0 0 28px rgba(0, 229, 255, 0.7),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  }
+  .neon-btn-ghost {
+    background: rgba(10, 22, 40, 0.6);
+    color: #8be9f5;
+    border-color: rgba(0, 229, 255, 0.3);
+  }
+  .neon-btn-ghost:hover {
+    background: rgba(0, 229, 255, 0.08);
+    border-color: rgba(0, 229, 255, 0.7);
+    box-shadow: 0 0 16px rgba(0, 229, 255, 0.25);
+  }
+  .neon-btn-amber {
+    background: rgba(255, 176, 32, 0.1);
+    color: #ffd98a;
+    border-color: rgba(255, 176, 32, 0.45);
+  }
+  .neon-btn-amber:hover {
+    background: rgba(255, 176, 32, 0.18);
+    box-shadow: 0 0 16px rgba(255, 176, 32, 0.3);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium;
+  }
+
+  .formula-block {
+    @apply font-mono text-[13px] leading-relaxed px-3 py-2 rounded-lg
+      border border-neon-cyan/20 bg-abyss-900/80 text-neon-cyan/90;
+  }
+}
