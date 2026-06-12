@@ -96,7 +96,7 @@ onMounted(async () => {
 watch(showExportDialog, async (val) => {
   if (val) {
     clearExportError()
-    await validateExport(filter)
+    await validateExport(filter, bars.value, comments.value)
   }
 })
 
@@ -161,8 +161,8 @@ async function handleExportJSON() {
   clearExportError()
   const success = await exportJSON(
     filter,
-    filteredBars.value,
-    filteredComments.value,
+    bars.value,
+    comments.value,
     pairs.value
   )
   if (success) {
@@ -177,8 +177,8 @@ async function handleExportCSV() {
   clearExportError()
   const success = await exportCSV(
     filter,
-    filteredBars.value,
-    filteredComments.value
+    bars.value,
+    comments.value
   )
   if (success) {
     showToast('success', 'CSV 导出成功，坐标数值与屏幕显示一致')

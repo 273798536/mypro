@@ -27,14 +27,21 @@ export function useExport() {
     }
   }
 
-  async function validateExport(filter: FilterCriteria): Promise<ValidateResult | null> {
+  async function validateExport(
+    filter: FilterCriteria,
+    bars?: Bar[],
+    comments?: ReviewComment[]
+  ): Promise<ValidateResult | null> {
     isChecking.value = true
     error.value = null
     try {
+      const body: any = { filter }
+      if (bars) body.bars = bars
+      if (comments) body.comments = comments
       const res = await fetch('/api/export/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filter }),
+        body: JSON.stringify(body),
         signal: AbortSignal.timeout(5000)
       })
       if (!res.ok) {
@@ -50,7 +57,12 @@ export function useExport() {
     }
   }
 
-  async function requestExport(filter: FilterCriteria): Promise<ExportResponse | null> {
+  async function requestExport(
+    filter: FilterCriteria,
+    bars?: Bar[],
+    comments?: ReviewComment[],
+    overlapPairs?: OverlapPair[]
+  ): Promise<ExportResponse | null> {
     isLoading.value = true
     error.value = null
     lastResponse.value = null
@@ -61,11 +73,16 @@ export function useExport() {
         throw new Error('后端导出服务不可用，请确认后端服务已启动 (端口 3001)')
       }
 
+      const body: any = { filter }
+      if (bars) body.bars = bars
+      if (comments) body.comments = comments
+      if (overlapPairs) body.overlapPairs = overlapPairs
+
       const res = await fetch('/api/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filter }),
-        signal: AbortSignal.timeout(10000)
+        body: JSON.stringify(body),
+        signal: AbortSignal.timeout(15000)
       })
 
       if (!res.ok) {
@@ -77,11 +94,7 @@ export function useExport() {
 
       if (data.code !== 0) {
         error.value = data.message
-        if (data.code === 1) {
-          console.warn('导出警告:', data.message)
-        } else {
-          return null
-        }
+        console.warn('导出警告:', data.message)
       }
 
       if (!data.data || !data.data.filterCriteria) {
@@ -98,6 +111,7 @@ export function useExport() {
 
       console.log('导出接口返回成功:', {
         barsCount: data.data.bars.length,
+        commentsCount: data.data.comments.length,
         filterCriteria: data.data.filterCriteria,
         coordinateSystem: data.data.coordinateSystem
       })
@@ -144,20 +158,32 @@ export function useExport() {
     }
   }
 
+  function showConfirm(msg: string): boolean {
+    try {
+      return confirm(msg)
+    } catch {
+      return true
+    }
+  }
+
   async function exportJSON(
     filter: FilterCriteria,
-    fallbackBars?: Bar[],
-    fallbackComments?: ReviewComment[],
-    fallbackOverlaps?: OverlapPair[]
+    allBars: Bar[],
+    allComments: ReviewComment[],
+    allOverlaps: OverlapPair[]
   ) {
-    let exportData: ExportResponse | null = await requestExport(filter)
+    if (!allBars?.length) {
+      error.value = '吊杆数据为空，无法导出'
+      return false
+    }
+    let exportData: ExportResponse | null = await requestExport(filter, allBars, allComments, allOverlaps)
 
-    if (!exportData && fallbackBars && fallbackComments && fallbackOverlaps) {
-      const useFallback = confirm(
+    if (!exportData) {
+      const useFallback = showConfirm(
         `${error.value}\n\n是否使用浏览器本地数据作为兜底导出？\n（筛选口径仍会附带在文件中）`
       )
       if (useFallback) {
-        exportData = buildFallbackExportData(fallbackBars, fallbackComments, fallbackOverlaps, filter)
+        exportData = buildFallbackExportData(allBars, allComments, allOverlaps, filter)
       } else {
         return false
       }
@@ -180,25 +206,29 @@ export function useExport() {
 
   async function exportCSV(
     filter: FilterCriteria,
-    fallbackBars?: Bar[],
-    fallbackComments?: ReviewComment[]
+    allBars: Bar[],
+    allComments: ReviewComment[]
   ) {
-    const apiData = await requestExport(filter)
+    if (!allBars?.length) {
+      error.value = '吊杆数据为空，无法导出'
+      return false
+    }
+    const apiData = await requestExport(filter, allBars, allComments)
     let bars: Bar[]
     let comments: ReviewComment[]
+    let criteria: FilterCriteria = filter
 
     if (apiData?.data) {
       bars = apiData.data.bars
       comments = apiData.data.comments
-    } else if (fallbackBars && fallbackComments) {
-      const useFallback = confirm(
+      criteria = apiData.data.filterCriteria
+    } else {
+      const useFallback = showConfirm(
         `${error.value}\n\n是否使用浏览器本地数据作为兜底导出？`
       )
       if (!useFallback) return false
-      bars = fallbackBars
-      comments = fallbackComments
-    } else {
-      return false
+      bars = allBars
+      comments = allComments
     }
 
     const header = [
@@ -206,34 +236,44 @@ export function useExport() {
       '状态', '风险等级', '区域', '坐标系', '批注数',
       '筛选条件-状态', '筛选条件-风险', '筛选条件-区域', '筛选条件-关键词', '导出时间'
     ]
-    const filterStatus = (filter.status || []).join('|') || '-'
-    const filterRisk = (filter.riskLevel || []).join('|') || '-'
-    const filterZone = filter.zone || '-'
-    const filterKw = filter.keyword || '-'
+    const filterStatus = (criteria.status || []).join('|') || '-'
+    const filterRisk = (criteria.riskLevel || []).join('|') || '-'
+    const filterZone = criteria.zone || '-'
+    const filterKw = criteria.keyword || '-'
     const exportTime = formatDateTime()
+
+    const statusMap: Record<string, string> = {
+      passed: '已通过',
+      'need-fix': '需修改',
+      overlap: '重叠异常',
+      pending: '待复核'
+    }
+
+    function escapeCSV(v: any): string {
+      const s = String(v ?? '-')
+      if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+        return `"${s.replace(/"/g, '""')}"`
+      }
+      return s
+    }
 
     const rows = bars.map(b => {
       const cmtCount = comments.filter(c => c.barId === b.id).length
-      const statusMap: Record<string, string> = {
-        passed: '已通过',
-        'need-fix': '需修改',
-        overlap: '重叠异常',
-        pending: '待复核'
-      }
       return [
         b.id, b.name, b.x, b.y, b.z, b.length,
-        statusMap[b.status] || b.status, b.riskLevel || '-', b.zone, b.coordinateSystem, cmtCount,
+        statusMap[b.status] || b.status,
+        b.riskLevel || '-',
+        b.zone, b.coordinateSystem, cmtCount,
         filterStatus, filterRisk, filterZone, filterKw, exportTime
-      ].map(v => typeof v === 'string' && v.includes(',') ? `"${v}"` : String(v)).join(',')
+      ].map(escapeCSV).join(',')
     })
 
-    const csv = '\uFEFF' + [header.join(','), ...rows].join('\n')
-
     if (rows.length === 0) {
-      const proceed = confirm('当前筛选条件下无数据，确认导出空文件？')
+      const proceed = showConfirm('当前筛选条件下无匹配吊杆，确认导出仅含表头的空文件？')
       if (!proceed) return false
     }
 
+    const csv = '\uFEFF' + [header.join(','), ...rows].join('\n')
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
     triggerDownload(blob, `吊杆复核_${formatDate()}.csv`)
     return true
@@ -251,8 +291,11 @@ export function useExport() {
       if (!Array.isArray(parsed.bars)) {
         return { valid: false, reason: '导出数据 bars 字段格式错误' }
       }
+      if (!Array.isArray(parsed.comments)) {
+        return { valid: false, reason: '导出数据 comments 字段格式错误' }
+      }
       if (criteria.status?.length && parsed.filterCriteria.status) {
-        const match = criteria.status.every(s => parsed.filterCriteria.status.includes(s))
+        const match = criteria.status.every((s: string) => parsed.filterCriteria.status.includes(s))
         if (!match) {
           return { valid: false, reason: '返回的筛选口径与请求不一致' }
         }
@@ -273,15 +316,21 @@ export function useExport() {
   }
 
   function triggerDownload(blob: Blob, filename: string) {
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-    console.log(`文件已下载: ${filename}, 大小: ${Math.round(blob.size / 1024)}KB`)
+    try {
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      const sizeKB = Math.round(blob.size / 1024)
+      console.log(`文件已下载: ${filename}, 大小: ${sizeKB}KB, 行数（不含表头）: ${blob.size > 0 ? '有效' : '空'}`)
+    } catch (err) {
+      console.error('下载触发失败:', err)
+      error.value = `下载失败：${err instanceof Error ? err.message : '浏览器不支持此操作'}`
+    }
   }
 
   function formatDate(): string {

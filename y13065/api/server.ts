@@ -1,6 +1,6 @@
 import express from 'express'
 import cors from 'cors'
-import type { ExportRequest, ExportResponse, FilterCriteria, Bar, ReviewComment, OverlapPair } from '../shared/types'
+import type { ExportRequest, ExportResponse, FilterCriteria, Bar, ReviewComment, OverlapPair, SyncStatusRequest } from '../shared/types'
 
 const app = express()
 const PORT = 3001
@@ -59,7 +59,12 @@ const mockOverlapPairs: OverlapPair[] = [
   { id: 'ov-002', barIdA: 'bar-005', barIdB: 'bar-006', overlapDistance: 18, riskLevel: '中', detectedAt: Date.now() - 86400000 * 0.9 }
 ]
 
-function filterBars(bars: Bar[], filter: FilterCriteria): Bar[] {
+const serverState = {
+  bars: JSON.parse(JSON.stringify(mockBars)) as Bar[],
+  comments: JSON.parse(JSON.stringify(mockComments)) as ReviewComment[]
+}
+
+function filterBars(bars: Bar[], comments: ReviewComment[], filter: FilterCriteria): Bar[] {
   return bars.filter(bar => {
     if (filter.status?.length && !filter.status.includes(bar.status)) return false
     if (filter.zone && bar.zone !== filter.zone) return false
@@ -69,25 +74,25 @@ function filterBars(bars: Bar[], filter: FilterCriteria): Bar[] {
     if (filter.keyword) {
       const kw = filter.keyword.toLowerCase()
       const matched = bar.name.toLowerCase().includes(kw) ||
-        mockComments.filter(c => c.barId === bar.id).some(c => c.content.toLowerCase().includes(kw))
+        comments.filter(c => c.barId === bar.id).some(c => c.content.toLowerCase().includes(kw))
       if (!matched) return false
     }
     return true
   })
 }
 
-function filterComments(comments: ReviewComment[], filter: FilterCriteria): ReviewComment[] {
+function filterComments(bars: Bar[], comments: ReviewComment[], filter: FilterCriteria): ReviewComment[] {
   return comments.filter(cmt => {
     if (filter.status?.length) {
-      const bar = mockBars.find(b => b.id === cmt.barId)
+      const bar = bars.find(b => b.id === cmt.barId)
       if (!bar || !filter.status.includes(bar.status)) return false
     }
     if (filter.zone) {
-      const bar = mockBars.find(b => b.id === cmt.barId)
+      const bar = bars.find(b => b.id === cmt.barId)
       if (!bar || bar.zone !== filter.zone) return false
     }
     if (filter.riskLevel?.length) {
-      const bar = mockBars.find(b => b.id === cmt.barId)
+      const bar = bars.find(b => b.id === cmt.barId)
       if (!bar || !bar.riskLevel || !filter.riskLevel.includes(bar.riskLevel)) return false
     }
     if (filter.keyword && !cmt.content.toLowerCase().includes(filter.keyword.toLowerCase())) return false
@@ -95,86 +100,83 @@ function filterComments(comments: ReviewComment[], filter: FilterCriteria): Revi
   })
 }
 
+function validateFilter(filter: FilterCriteria): { valid: boolean; reason?: string } {
+  const validStatuses = ['pending', 'passed', 'need-fix', 'overlap']
+  if (filter.status?.length && !filter.status.every(s => validStatuses.includes(s))) {
+    return { valid: false, reason: `status 筛选值无效，仅支持：${validStatuses.join(', ')}` }
+  }
+  const validRiskLevels = ['高', '中', '低']
+  if (filter.riskLevel?.length && !filter.riskLevel.every(r => validRiskLevels.includes(r))) {
+    return { valid: false, reason: `riskLevel 筛选值无效，仅支持：${validRiskLevels.join(', ')}` }
+  }
+  return { valid: true }
+}
+
+function buildResponse(bars: Bar[], comments: ReviewComment[], overlapPairs: OverlapPair[], filter: FilterCriteria): ExportResponse {
+  const filterWithTimestamp: FilterCriteria = { ...filter, appliedAt: Date.now() }
+  const filteredBars = filterBars(bars, comments, filterWithTimestamp)
+  const filteredComments = filterComments(bars, comments, filterWithTimestamp)
+  const summary = {
+    passed: filteredBars.filter(b => b.status === 'passed').length,
+    needFix: filteredBars.filter(b => b.status === 'need-fix').length,
+    overlap: filteredBars.filter(b => b.status === 'overlap').length,
+    pending: filteredBars.filter(b => b.status === 'pending').length
+  }
+  return {
+    code: filteredBars.length > 0 ? 0 : 1,
+    message: filteredBars.length > 0
+      ? `导出成功，共 ${filteredBars.length} 条吊杆数据`
+      : '筛选条件下无匹配数据，请调整筛选条件后重试',
+    data: {
+      bars: filteredBars,
+      comments: filteredComments,
+      overlapPairs,
+      summary,
+      filterCriteria: filterWithTimestamp,
+      exportAt: Date.now(),
+      coordinateSystem: 'stage-local'
+    }
+  }
+}
+
 app.get('/api/health', (_req, res) => {
   res.json({ code: 0, message: '剧院吊杆复核服务运行正常', timestamp: Date.now() })
 })
 
+app.post('/api/sync-status', (req, res) => {
+  try {
+    const { commentId, barId, commentStatus, barStatus, reason, operator } = req.body as SyncStatusRequest
+    if (!commentId || !barId || !commentStatus || !barStatus || !operator) {
+      return res.status(400).json({ code: 400, message: '缺少必填参数', data: null })
+    }
+    const comment = serverState.comments.find(c => c.id === commentId)
+    if (comment) comment.status = commentStatus
+    const bar = serverState.bars.find(b => b.id === barId)
+    if (bar && bar.status !== 'overlap') bar.status = barStatus
+    console.log(`[${new Date().toLocaleString('zh-CN')}] 状态同步：${operator} 修改 cmt=${commentId} 为 ${commentStatus}, bar=${barId} 为 ${barStatus} 原因：${reason || '-'}`)
+    res.json({ code: 0, message: '状态同步成功', data: { syncedAt: Date.now() } })
+  } catch (err) {
+    console.error('状态同步异常:', err)
+    res.status(500).json({ code: 500, message: `同步失败：${err instanceof Error ? err.message : String(err)}`, data: null })
+  }
+})
+
 app.post('/api/export', (req, res) => {
   try {
-    const { filter } = req.body as ExportRequest
-
+    const { filter, bars: reqBars, comments: reqComments, overlapPairs: reqOverlaps } = req.body as ExportRequest
     if (!filter) {
-      return res.status(400).json({
-        code: 400,
-        message: '缺少筛选条件 filter 参数',
-        data: null
-      })
+      return res.status(400).json({ code: 400, message: '缺少筛选条件 filter 参数', data: null })
     }
-
-    const validStatuses = ['pending', 'passed', 'need-fix', 'overlap']
-    if (filter.status?.length && !filter.status.every(s => validStatuses.includes(s))) {
-      return res.status(400).json({
-        code: 400,
-        message: `status 筛选值无效，仅支持：${validStatuses.join(', ')}`,
-        data: null
-      })
+    const validation = validateFilter(filter)
+    if (!validation.valid) {
+      return res.status(400).json({ code: 400, message: validation.reason, data: null })
     }
-
-    const validRiskLevels = ['高', '中', '低']
-    if (filter.riskLevel?.length && !filter.riskLevel.every(r => validRiskLevels.includes(r))) {
-      return res.status(400).json({
-        code: 400,
-        message: `riskLevel 筛选值无效，仅支持：${validRiskLevels.join(', ')}`,
-        data: null
-      })
-    }
-
-    const filterWithTimestamp: FilterCriteria = {
-      ...filter,
-      appliedAt: Date.now()
-    }
-
-    const filteredBars = filterBars(mockBars, filterWithTimestamp)
-    const filteredComments = filterComments(mockComments, filterWithTimestamp)
-
-    const summary = {
-      passed: filteredBars.filter(b => b.status === 'passed').length,
-      needFix: filteredBars.filter(b => b.status === 'need-fix').length,
-      overlap: filteredBars.filter(b => b.status === 'overlap').length,
-      pending: filteredBars.filter(b => b.status === 'pending').length
-    }
-
-    if (filteredBars.length === 0) {
-      return res.json({
-        code: 1,
-        message: '筛选条件下无匹配数据，请调整筛选条件后重试',
-        data: {
-          bars: [],
-          comments: [],
-          overlapPairs: mockOverlapPairs,
-          summary,
-          filterCriteria: filterWithTimestamp,
-          exportAt: Date.now(),
-          coordinateSystem: 'stage-local'
-        }
-      })
-    }
-
-    const response: ExportResponse = {
-      code: 0,
-      message: `导出成功，共 ${filteredBars.length} 条吊杆数据`,
-      data: {
-        bars: filteredBars,
-        comments: filteredComments,
-        overlapPairs: mockOverlapPairs,
-        summary,
-        filterCriteria: filterWithTimestamp,
-        exportAt: Date.now(),
-        coordinateSystem: 'stage-local'
-      }
-    }
-
-    console.log(`[${new Date().toLocaleString('zh-CN')}] 导出请求成功：筛选=${JSON.stringify(filter)}, 吊杆数=${filteredBars.length}`)
+    const bars: Bar[] = Array.isArray(reqBars) && reqBars.length > 0 ? reqBars : serverState.bars
+    const comments: ReviewComment[] = Array.isArray(reqComments) && reqComments.length > 0 ? reqComments : serverState.comments
+    const overlapPairs: OverlapPair[] = Array.isArray(reqOverlaps) && reqOverlaps.length > 0 ? reqOverlaps : mockOverlapPairs
+    const response = buildResponse(bars, comments, overlapPairs, filter)
+    const dataSource = Array.isArray(reqBars) ? '前端同步数据' : '服务端缓存数据'
+    console.log(`[${new Date().toLocaleString('zh-CN')}] 导出(${dataSource})：筛选=${JSON.stringify(filter)}, 吊杆数=${response.data.bars.length}`)
     res.json(response)
   } catch (err) {
     console.error('导出接口异常:', err)
@@ -188,15 +190,13 @@ app.post('/api/export', (req, res) => {
 
 app.post('/api/export/validate', (req, res) => {
   try {
-    const { filter } = req.body as ExportRequest
+    const { filter, bars: reqBars, comments: reqComments } = req.body as ExportRequest
     if (!filter) {
-      return res.json({
-        valid: false,
-        reason: '缺少筛选条件',
-        estimatedRows: 0
-      })
+      return res.json({ valid: false, reason: '缺少筛选条件', estimatedRows: 0 })
     }
-    const filteredBars = filterBars(mockBars, filter)
+    const bars: Bar[] = Array.isArray(reqBars) && reqBars.length > 0 ? reqBars : serverState.bars
+    const comments: ReviewComment[] = Array.isArray(reqComments) && reqComments.length > 0 ? reqComments : serverState.comments
+    const filteredBars = filterBars(bars, comments, filter)
     res.json({
       valid: filteredBars.length > 0,
       reason: filteredBars.length > 0 ? '数据有效' : '筛选结果为空',
@@ -214,6 +214,7 @@ app.listen(PORT, () => {
   ║   剧院吊杆阵列空间复核 - 后端服务已启动                     ║
   ║   端口: ${PORT}                                                 ║
   ║   健康检查: http://localhost:${PORT}/api/health                  ║
+  ║   状态同步: POST http://localhost:${PORT}/api/sync-status        ║
   ║   导出接口: POST http://localhost:${PORT}/api/export            ║
   ║   校验接口: POST http://localhost:${PORT}/api/export/validate   ║
   ╚══════════════════════════════════════════════════════════════╝

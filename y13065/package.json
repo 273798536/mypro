@@ -6,7 +6,7 @@
     "dev": "concurrently \"npm:dev:front\" \"npm:dev:server\"",
     "dev:front": "vite",
     "dev:server": "npm run build:server && node dist/api/server.cjs",
-    "build:server": "tsc -p tsconfig.server.json",
+    "build:server": "tsc -p tsconfig.server.json && mv dist/api/server.js dist/api/server.cjs && mv dist/shared/types.js dist/shared/types.cjs",
     "build": "npm run check && vite build",
     "preview": "vite preview",
     "check": "vue-tsc --noEmit",

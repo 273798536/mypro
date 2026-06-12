@@ -122,12 +122,42 @@ export function useReview() {
     }
   }
 
+  async function syncStatusToBackend(
+    commentId: string,
+    barId: string,
+    commentStatus: CommentStatus,
+    barStatus: BarStatus,
+    reason: string
+  ) {
+    try {
+      const res = await fetch('/api/sync-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          commentId,
+          barId,
+          commentStatus,
+          barStatus,
+          reason,
+          operator: '林姐'
+        }),
+        signal: AbortSignal.timeout(5000)
+      })
+      if (!res.ok) {
+        console.warn('状态同步返回非200:', res.status, await res.text())
+      }
+    } catch (err) {
+      console.warn('状态同步后端失败（前端已生效，下次导出会携带前端数据）:', err)
+    }
+  }
+
   function updateCommentStatus(commentId: string, newStatus: CommentStatus, reason: string) {
     const cmt = comments.value.find(c => c.id === commentId)
     if (!cmt) return
     const beforeValue = cmt.status
     cmt.status = newStatus
 
+    let barStatusToSync: BarStatus | null = null
     if (cmt.barId) {
       const bar = bars.value.find(b => b.id === cmt.barId)
       if (bar) {
@@ -139,6 +169,7 @@ export function useReview() {
         if (bar.status !== 'overlap' || newStatus !== '待复核') {
           bar.status = statusMap[newStatus]
         }
+        barStatusToSync = bar.status
       }
     }
 
@@ -151,6 +182,10 @@ export function useReview() {
       reason,
       field: 'status'
     })
+
+    if (cmt.barId && barStatusToSync) {
+      syncStatusToBackend(cmt.id, cmt.barId, newStatus, barStatusToSync, reason)
+    }
   }
 
   function resetAll() {

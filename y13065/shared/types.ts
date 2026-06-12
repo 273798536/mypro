@@ -97,6 +97,18 @@ export interface ExportResponse {
 
 export interface ExportRequest {
   filter: FilterCriteria
+  bars?: Bar[]
+  comments?: ReviewComment[]
+  overlapPairs?: OverlapPair[]
+}
+
+export interface SyncStatusRequest {
+  commentId: string
+  barId: string
+  commentStatus: CommentStatus
+  barStatus: BarStatus
+  reason: string
+  operator: string
 }
 
 export type FinalAction = 'pass' | '补材料' | '待定'
