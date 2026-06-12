@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>组合计数边界校验 - 复核摘要</title>
+  <style>
+{{CSS_STYLE}}
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <header class="page-header">
+      <div class="header-left">
+        <h1>组合计数边界校验</h1>
+        <p class="subtitle">复核摘要页面 · 批次 BATCH-12</p>
+      </div>
+      <div class="header-right">
+        <div class="version-tag">
+          <span class="label">参数版本</span>
+          <span class="value">{{PARAM_VERSION}}</span>
+        </div>
+        <div class="time-tag">
+          <span class="label">生成时间</span>
+          <span class="value">{{GENERATED_AT}}</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="summary-cards">
+      <div class="card card-done">
+        <div class="card-number">{{DONE_COUNT}}</div>
+        <div class="card-label">已处理</div>
+        <div class="card-sub">共 {{TOTAL_COUNT}} 条记录</div>
+      </div>
+      <div class="card card-pending">
+        <div class="card-number">{{PENDING_COUNT}}</div>
+        <div class="card-label">待补材料</div>
+        <div class="card-sub">晚到附件 {{LATE_ATT_COUNT}} 条</div>
+      </div>
+      <div class="card card-manual">
+        <div class="card-number">{{MANUAL_COUNT}}</div>
+        <div class="card-label">人工改判</div>
+        <div class="card-sub">约束组合需复核</div>
+      </div>
+      <div class="card card-boundary">
+        <div class="card-number">{{BOUNDARY_COUNT}}</div>
+        <div class="card-label">边界样本</div>
+        <div class="card-sub">含历史参考 {{BDY_SAMPLE_COUNT}} 条</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>一、异常点速览</h2>
+        <span class="section-tag">需重点关注</span>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>记录ID</th>
+              <th>场景描述</th>
+              <th>n</th>
+              <th>k</th>
+              <th>类型</th>
+              <th>问题说明</th>
+              <th>来源行</th>
+            </tr>
+          </thead>
+          <tbody>
+{{ABN_HTML}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>二、重复样本检测</h2>
+        <span class="section-tag section-tag-warn">{{DUP_GROUPS}} 组重复</span>
+      </div>
+      <p class="section-note">重复样本按 (n, k, 计算类型, 提交结果) 分组，保留影响范围和来源行信息。</p>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>重复组</th>
+              <th>影响条数</th>
+              <th>计算类型</th>
+              <th>参数</th>
+              <th>提交结果</th>
+              <th>涉及记录与来源</th>
+            </tr>
+          </thead>
+          <tbody>
+{{DUP_HTML}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>三、晚到附件（待补材料）</h2>
+        <span class="section-tag section-tag-pending">{{LATE_ATT_COUNT}} 条待处理</span>
+      </div>
+      <p class="section-note">算不出的记录不消失，标注卡在哪一步（公式 / 单位 / 阈值）。</p>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>附件编号</th>
+              <th>提交时间</th>
+              <th>问题类型</th>
+              <th>具体说明</th>
+              <th>当前状态</th>
+              <th>提交人</th>
+              <th>影响记录</th>
+            </tr>
+          </thead>
+          <tbody>
+{{LATE_HTML}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>四、完整校验明细</h2>
+        <span class="section-tag">全量 {{TOTAL_COUNT}} 条</span>
+      </div>
+      <div class="table-container table-wide">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>记录ID</th>
+              <th>场景描述</th>
+              <th>n</th>
+              <th>k</th>
+              <th>计算类型</th>
+              <th>提交结果</th>
+              <th>期望值</th>
+              <th>边界标签</th>
+              <th>问题</th>
+              <th>备注</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody>
+{{ROWS_HTML}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>五、历史答案参考</h2>
+        <span class="section-tag section-tag-muted">累计 {{HIST_COUNT}} 条 · 展示5条</span>
+      </div>
+      <p class="section-note">边界样本太少时凭感觉，现在把历史答案留下来做参考。</p>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>记录ID</th>
+              <th>场景名称</th>
+              <th>n值</th>
+              <th>k值</th>
+              <th>组合类型</th>
+              <th>计算结果</th>
+              <th>边界状态</th>
+              <th>校验结论</th>
+              <th>校验人</th>
+            </tr>
+          </thead>
+          <tbody>
+{{HIST_HTML}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>六、边界样本库</h2>
+        <span class="section-tag section-tag-muted">{{BDY_SAMPLE_COUNT}} 条样本</span>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>样本ID</th>
+              <th>描述</th>
+              <th>n</th>
+              <th>k</th>
+              <th>类型</th>
+              <th>预期结果</th>
+              <th>边界类型</th>
+              <th>数据来源</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+{{BDY_HTML}}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <p>组合计数边界校验 · 复核摘要页 · 参数版本 {{PARAM_VERSION}} · 生成于 {{GENERATED_AT}}</p>
+      <p class="footer-note">本页面由 boundary_check.py 自动生成，如有疑问请联系建模助教小岑。</p>
+    </footer>
+  </div>
+</body>
+</html>

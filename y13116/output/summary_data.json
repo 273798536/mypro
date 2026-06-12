@@ -1,0 +1,14 @@
+{
+  "param_version": "v2.3.1",
+  "generated_at": "2026-06-12 20:09",
+  "total_count": 15,
+  "status_counts": {
+    "已处理": 12,
+    "待补材料": 1,
+    "人工改判": 2
+  },
+  "boundary_count": 6,
+  "duplicate_groups": 1,
+  "late_attachments_count": 3,
+  "abnormal_count": 1
+}

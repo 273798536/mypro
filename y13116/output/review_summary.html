@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>组合计数边界校验 - 复核摘要</title>
+  <style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  font-size: 13px;
+  color: #333;
+  background: #f0f2f5;
+  line-height: 1.5;
+}
+
+.page-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.page-header {
+  background: #fff;
+  border-radius: 6px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  border-left: 4px solid #1890ff;
+}
+
+.header-left h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.header-right {
+  display: flex;
+  gap: 16px;
+}
+
+.version-tag,
+.time-tag {
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: 8px 12px;
+  text-align: right;
+}
+
+.version-tag .label,
+.time-tag .label {
+  display: block;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-bottom: 2px;
+}
+
+.version-tag .value,
+.time-tag .value {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  font-family: "SF Mono", Consolas, monospace;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 6px;
+  padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.card-done::before {
+  background: #52c41a;
+}
+
+.card-pending::before {
+  background: #faad14;
+}
+
+.card-manual::before {
+  background: #722ed1;
+}
+
+.card-boundary::before {
+  background: #13c2c2;
+}
+
+.card-number {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.card-done .card-number {
+  color: #389e0d;
+}
+
+.card-pending .card-number {
+  color: #d48806;
+}
+
+.card-manual .card-number {
+  color: #531dab;
+}
+
+.card-boundary .card-number {
+  color: #08979c;
+}
+
+.card-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 2px;
+}
+
+.card-sub {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.section {
+  background: #fff;
+  border-radius: 6px;
+  padding: 16px 20px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.section-header h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.section-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #e6f7ff;
+  color: #1890ff;
+  font-weight: 500;
+}
+
+.section-tag-warn {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.section-tag-pending {
+  background: #fff1f0;
+  color: #f5222d;
+}
+
+.section-tag-muted {
+  background: #f5f5f5;
+  color: #8c8c8c;
+}
+
+.section-note {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-bottom: 10px;
+  padding-left: 4px;
+}
+
+.table-container {
+  overflow-x: auto;
+  border: 1px solid #f0f0f0;
+  border-radius: 4px;
+}
+
+.table-wide {
+  margin: 0 -4px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.data-table thead th {
+  background: #fafafa;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #595959;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.data-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #fafafa;
+  color: #434343;
+  vertical-align: top;
+}
+
+.data-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.data-table tbody tr.status-error {
+  background: #fff2f0;
+}
+
+.data-table tbody tr.status-error:hover {
+  background: #ffece8;
+}
+
+.data-table tbody tr.status-pending {
+  background: #fffbe6;
+}
+
+.data-table tbody tr.status-pending:hover {
+  background: #fff6cc;
+}
+
+.data-table tbody tr.status-manual {
+  background: #f9f0ff;
+}
+
+.data-table tbody tr.status-manual:hover {
+  background: #f3e8ff;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.status-badge.status-done {
+  background: #f6ffed;
+  color: #52c41a;
+  border: 1px solid #b7eb8f;
+}
+
+.status-badge.status-error {
+  background: #fff2f0;
+  color: #f5222d;
+  border: 1px solid #ffccc7;
+}
+
+.status-badge.status-pending {
+  background: #fffbe6;
+  color: #faad14;
+  border: 1px solid #ffe58f;
+}
+
+.status-badge.status-manual {
+  background: #f9f0ff;
+  color: #722ed1;
+  border: 1px solid #d3adf7;
+}
+
+.boundary-tags {
+  color: #08979c;
+  font-size: 11px;
+}
+
+.issues {
+  color: #cf1322;
+  font-size: 11px;
+}
+
+.notes {
+  color: #8c8c8c;
+  font-size: 11px;
+  font-style: italic;
+}
+
+.issue-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.issue-formula {
+  background: #e6f7ff;
+  color: #1890ff;
+}
+
+.issue-unit {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.issue-threshold {
+  background: #fff2f0;
+  color: #f5222d;
+}
+
+.page-footer {
+  text-align: center;
+  padding: 16px;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.page-footer .footer-note {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #bfbfbf;
+}
+
+@media (max-width: 900px) {
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <header class="page-header">
+      <div class="header-left">
+        <h1>组合计数边界校验</h1>
+        <p class="subtitle">复核摘要页面 · 批次 BATCH-12</p>
+      </div>
+      <div class="header-right">
+        <div class="version-tag">
+          <span class="label">参数版本</span>
+          <span class="value">v2.3.1</span>
+        </div>
+        <div class="time-tag">
+          <span class="label">生成时间</span>
+          <span class="value">2026-06-12 20:09</span>
+        </div>
+      </div>
+    </header>
+
+    <section class="summary-cards">
+      <div class="card card-done">
+        <div class="card-number">12</div>
+        <div class="card-label">已处理</div>
+        <div class="card-sub">共 15 条记录</div>
+      </div>
+      <div class="card card-pending">
+        <div class="card-number">1</div>
+        <div class="card-label">待补材料</div>
+        <div class="card-sub">晚到附件 3 条</div>
+      </div>
+      <div class="card card-manual">
+        <div class="card-number">2</div>
+        <div class="card-label">人工改判</div>
+        <div class="card-sub">约束组合需复核</div>
+      </div>
+      <div class="card card-boundary">
+        <div class="card-number">6</div>
+        <div class="card-label">边界样本</div>
+        <div class="card-sub">含历史参考 8 条</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>一、异常点速览</h2>
+        <span class="section-tag">需重点关注</span>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>记录ID</th>
+              <th>场景描述</th>
+              <th>n</th>
+              <th>k</th>
+              <th>类型</th>
+              <th>问题说明</th>
+              <th>来源行</th>
+            </tr>
+          </thead>
+          <tbody>
+        <tr>
+          <td>CUR-005</td>
+          <td>n=5</td>
+          <td>N/A</td>
+          <td>5</td>
+          <td>5</td>
+          <td>计算类型不明确</td>
+          <td>1</td>
+        </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>二、重复样本检测</h2>
+        <span class="section-tag section-tag-warn">1 组重复</span>
+      </div>
+      <p class="section-note">重复样本按 (n, k, 计算类型, 提交结果) 分组，保留影响范围和来源行信息。</p>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>重复组</th>
+              <th>影响条数</th>
+              <th>计算类型</th>
+              <th>参数</th>
+              <th>提交结果</th>
+              <th>涉及记录与来源</th>
+            </tr>
+          </thead>
+          <tbody>
+        <tr>
+          <td>第1组</td>
+          <td>3条</td>
+          <td>组合</td>
+          <td>n=8, k=3</td>
+          <td>56</td>
+          <td>CUR-001（行12 · 批次12原始表）<br>CUR-009（行36 · 批次12原始表-重复）<br>CUR-013（行48 · 另一来源表）</td>
+        </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>三、晚到附件（待补材料）</h2>
+        <span class="section-tag section-tag-pending">3 条待处理</span>
+      </div>
+      <p class="section-note">算不出的记录不消失，标注卡在哪一步（公式 / 单位 / 阈值）。</p>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>附件编号</th>
+              <th>提交时间</th>
+              <th>问题类型</th>
+              <th>具体说明</th>
+              <th>当前状态</th>
+              <th>提交人</th>
+              <th>影响记录</th>
+            </tr>
+          </thead>
+          <tbody>
+        <tr>
+          <td>LAT-003</td>
+          <td>2025-12-03 14:10</td>
+          <td><span class="issue-tag issue-threshold">阈值超界</span></td>
+          <td>计算结果超过1e18，系统截断了，需要确认是否用大数处理</td>
+          <td>待确认阈值</td>
+          <td>孙宇</td>
+          <td>1条</td>
+        </tr>
+        <tr>
+          <td>LAT-004</td>
+          <td>2025-12-04 10:05</td>
+          <td><span class="issue-tag issue-formula">公式不明确</span></td>
+          <td>带限制条件的排列，限制条件是同时满足还是任选其一</td>
+          <td>待补充说明</td>
+          <td>赵磊</td>
+          <td>2条</td>
+        </tr>
+        <tr>
+          <td>LAT-005</td>
+          <td>2025-12-04 16:30</td>
+          <td><span class="issue-tag issue-unit">单位不统一</span></td>
+          <td>样本中有组"和"队"两种表述，是否等价"</td>
+          <td>待确认口径</td>
+          <td>钱伟</td>
+          <td>1条</td>
+        </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>四、完整校验明细</h2>
+        <span class="section-tag">全量 15 条</span>
+      </div>
+      <div class="table-container table-wide">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>记录ID</th>
+              <th>场景描述</th>
+              <th>n</th>
+              <th>k</th>
+              <th>计算类型</th>
+              <th>提交结果</th>
+              <th>期望值</th>
+              <th>边界标签</th>
+              <th>问题</th>
+              <th>备注</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody>
+        <tr class="status-done">
+          <td>CUR-001</td>
+          <td>从8个不同元素中选3个的组合</td>
+          <td>8</td>
+          <td>3</td>
+          <td>组合</td>
+          <td>56</td>
+          <td>56</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-002</td>
+          <td>6个不同元素的全排列</td>
+          <td>6</td>
+          <td>6</td>
+          <td>排列</td>
+          <td>720</td>
+          <td>720</td>
+          <td class="boundary-tags">全选/全集</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-003</td>
+          <td>从10个元素中选5个排成一列</td>
+          <td>10</td>
+          <td>5</td>
+          <td>排列</td>
+          <td>30240</td>
+          <td>30240</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-004</td>
+          <td>从12人中选0人参加活动</td>
+          <td>12</td>
+          <td>0</td>
+          <td>组合</td>
+          <td>1</td>
+          <td>1</td>
+          <td class="boundary-tags">空选</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-pending">
+          <td>CUR-005</td>
+          <td>n=5</td>
+          <td>N/A</td>
+          <td>5</td>
+          <td>5</td>
+          <td>-</td>
+          <td>N/A</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">计算类型不明确</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-pending">待补材料</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-006</td>
+          <td>从7个球中选4个的组合数</td>
+          <td>7</td>
+          <td>4</td>
+          <td>组合</td>
+          <td>35</td>
+          <td>35</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-007</td>
+          <td>9个元素中选2个的排列</td>
+          <td>9</td>
+          <td>2</td>
+          <td>排列</td>
+          <td>72</td>
+          <td>72</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-008</td>
+          <td>子集总数(n=5)</td>
+          <td>5</td>
+          <td>N/A</td>
+          <td>2^n</td>
+          <td>32</td>
+          <td>32</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-009</td>
+          <td>从8个不同元素中选3个的组合</td>
+          <td>8</td>
+          <td>3</td>
+          <td>组合</td>
+          <td>56</td>
+          <td>56</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-010</td>
+          <td>k>n的组合(10选15)</td>
+          <td>10</td>
+          <td>15</td>
+          <td>组合</td>
+          <td>0</td>
+          <td>0</td>
+          <td class="boundary-tags">越界(k>n)</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-manual">
+          <td>CUR-011</td>
+          <td>从11人中选5人且含特定2人</td>
+          <td>11</td>
+          <td>5</td>
+          <td>约束组合</td>
+          <td>126</td>
+          <td>126</td>
+          <td class="boundary-tags">带约束</td>
+          <td class="issues">-</td>
+          <td class="notes">约束组合/排列需人工复核公式</td>
+          <td><span class="status-badge status-manual">人工改判</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-012</td>
+          <td>n=0的排列数</td>
+          <td>0</td>
+          <td>0</td>
+          <td>排列</td>
+          <td>1</td>
+          <td>1</td>
+          <td class="boundary-tags">零值、空选、全选/全集</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-013</td>
+          <td>从8个不同元素中选3个的组合</td>
+          <td>8</td>
+          <td>3</td>
+          <td>组合</td>
+          <td>56</td>
+          <td>56</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-done">
+          <td>CUR-014</td>
+          <td>20个元素选3个的组合</td>
+          <td>20</td>
+          <td>3</td>
+          <td>组合</td>
+          <td>1140</td>
+          <td>1140</td>
+          <td class="boundary-tags">-</td>
+          <td class="issues">-</td>
+          <td class="notes">-</td>
+          <td><span class="status-badge status-done">已处理</span></td>
+        </tr>
+        <tr class="status-manual">
+          <td>CUR-015</td>
+          <td>带约束的排列（甲不站排头）</td>
+          <td>6</td>
+          <td>6</td>
+          <td>约束排列</td>
+          <td>504</td>
+          <td>504</td>
+          <td class="boundary-tags">全选/全集、带约束</td>
+          <td class="issues">-</td>
+          <td class="notes">约束组合/排列需人工复核公式</td>
+          <td><span class="status-badge status-manual">人工改判</span></td>
+        </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>五、历史答案参考</h2>
+        <span class="section-tag section-tag-muted">累计 10 条 · 展示5条</span>
+      </div>
+      <p class="section-note">边界样本太少时凭感觉，现在把历史答案留下来做参考。</p>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>记录ID</th>
+              <th>场景名称</th>
+              <th>n值</th>
+              <th>k值</th>
+              <th>组合类型</th>
+              <th>计算结果</th>
+              <th>边界状态</th>
+              <th>校验结论</th>
+              <th>校验人</th>
+            </tr>
+          </thead>
+          <tbody>
+        <tr>
+          <td>HIS-001</td>
+          <td>从10人中选3人组队</td>
+          <td>10</td>
+          <td>3</td>
+          <td>组合C(n</td>
+          <td>k)</td>
+          <td>120</td>
+          <td>正常</td>
+          <td>通过</td>
+        </tr>
+        <tr>
+          <td>HIS-002</td>
+          <td>排列5个不同颜色的球</td>
+          <td>5</td>
+          <td>5</td>
+          <td>排列P(n</td>
+          <td>n)</td>
+          <td>120</td>
+          <td>边界-全排列</td>
+          <td>通过</td>
+        </tr>
+        <tr>
+          <td>HIS-003</td>
+          <td>从8本书中选0本</td>
+          <td>8</td>
+          <td>0</td>
+          <td>组合C(n</td>
+          <td>0)</td>
+          <td>1</td>
+          <td>边界-空集</td>
+          <td>通过</td>
+        </tr>
+        <tr>
+          <td>HIS-004</td>
+          <td>15人选5人排成一排</td>
+          <td>15</td>
+          <td>5</td>
+          <td>排列P(n</td>
+          <td>k)</td>
+          <td>360360</td>
+          <td>正常</td>
+          <td>通过</td>
+        </tr>
+        <tr>
+          <td>HIS-005</td>
+          <td>从20人中选20人</td>
+          <td>20</td>
+          <td>20</td>
+          <td>组合C(n</td>
+          <td>n)</td>
+          <td>1</td>
+          <td>边界-全集</td>
+          <td>通过</td>
+        </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2>六、边界样本库</h2>
+        <span class="section-tag section-tag-muted">8 条样本</span>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>样本ID</th>
+              <th>描述</th>
+              <th>n</th>
+              <th>k</th>
+              <th>类型</th>
+              <th>预期结果</th>
+              <th>边界类型</th>
+              <th>数据来源</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody>
+        <tr>
+          <td>BDY-001</td>
+          <td>n=k=1的最小非平凡组合</td>
+          <td>1</td>
+          <td>1</td>
+          <td>组合</td>
+          <td>1</td>
+          <td>边界-极小值</td>
+          <td>教材P32例2</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>BDY-002</td>
+          <td>k=n-1的组合等于n</td>
+          <td>5</td>
+          <td>4</td>
+          <td>组合</td>
+          <td>5</td>
+          <td>边界-近全集</td>
+          <td>教材P35习题6</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>BDY-003</td>
+          <td>n=0</td>
+          <td>k=0空组合</td>
+          <td>0</td>
+          <td>0</td>
+          <td>组合</td>
+          <td>1</td>
+          <td>边界-零空</td>
+          <td>论文《组合数学基础》</td>
+        </tr>
+        <tr>
+          <td>BDY-004</td>
+          <td>k>n时组合为0</td>
+          <td>5</td>
+          <td>7</td>
+          <td>组合</td>
+          <td>0</td>
+          <td>边界-越界</td>
+          <td>自测用例</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>BDY-005</td>
+          <td>负n值的组合数</td>
+          <td>-3</td>
+          <td>2</td>
+          <td>组合</td>
+          <td>NA</td>
+          <td>边界-负数</td>
+          <td>异常数据集</td>
+          <td>需确认是否有意义</td>
+        </tr>
+        <tr>
+          <td>BDY-006</td>
+          <td>单元素集合的子集数</td>
+          <td>1</td>
+          <td>NA</td>
+          <td>2^n</td>
+          <td>2</td>
+          <td>边界-极小值</td>
+          <td>教材P41</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>BDY-007</td>
+          <td>空集的子集数</td>
+          <td>0</td>
+          <td>NA</td>
+          <td>2^n</td>
+          <td>1</td>
+          <td>边界-零空</td>
+          <td>教材P41</td>
+          <td>-</td>
+        </tr>
+        <tr>
+          <td>BDY-008</td>
+          <td>k=1时排列等于n</td>
+          <td>10</td>
+          <td>1</td>
+          <td>排列</td>
+          <td>10</td>
+          <td>边界-单元素</td>
+          <td>自测用例</td>
+          <td>-</td>
+        </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="page-footer">
+      <p>组合计数边界校验 · 复核摘要页 · 参数版本 v2.3.1 · 生成于 2026-06-12 20:09</p>
+      <p class="footer-note">本页面由 boundary_check.py 自动生成，如有疑问请联系建模助教小岑。</p>
+    </footer>
+  </div>
+</body>
+</html>
