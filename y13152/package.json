@@ -1,0 +1,22 @@
+{
+  "name": "acoustic-reverb-playback",
+  "version": "1.0.0",
+  "description": "声学混响参数回放工具 - 用于回放、校验和追溯声学混响参数记录",
+  "main": "src/index.js",
+  "bin": {
+    "reverb-playback": "src/cli.js"
+  },
+  "scripts": {
+    "start": "node src/cli.js",
+    "playback": "node src/cli.js playback -i ./data/input -o ./data/output",
+    "playback:demo": "node src/cli.js playback -i ./data/input -o ./data/output --non-interactive",
+    "prepare-materials": "node src/cli.js prepare -o ./data/input"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
