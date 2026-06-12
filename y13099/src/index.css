@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #E6E8EB;
+  background-color: #0F1419;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: linear-gradient(135deg, #0F1419 0%, #121820 100%);
+  background-attachment: fixed;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1A1F26;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A3139;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3A4149;
+}
+
+/* 状态徽章样式 */
+@layer components {
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium font-mono;
+  }
+  .status-pass {
+    @apply bg-success/15 text-success border border-success/30;
+  }
+  .status-supplement {
+    @apply bg-warning/15 text-warning border border-warning/30;
+  }
+  .status-exception {
+    @apply bg-danger/15 text-danger border border-danger/30;
+  }
+  .status-withdrawn {
+    @apply bg-muted/15 text-muted border border-muted/30;
+  }
+  .filter-chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-border rounded-lg text-sm text-text-secondary hover:bg-surface-hover hover:text-text transition-all;
+  }
+  .filter-chip-active {
+    @apply bg-primary/10 border-primary/40 text-primary;
+  }
+  .card {
+    @apply bg-surface border border-border rounded-xl shadow-card hover:shadow-glow-soft transition-all duration-300;
+  }
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-primary text-background font-medium rounded-lg hover:bg-primary-hover transition-all disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-surface border border-border text-text font-medium rounded-lg hover:bg-surface-hover hover:border-primary/40 transition-all;
+  }
+  .btn-danger {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-danger/10 border border-danger/40 text-danger font-medium rounded-lg hover:bg-danger/20 transition-all;
+  }
+}
