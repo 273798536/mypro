@@ -168,7 +168,14 @@ export default function ExportPage() {
         filters.versionScope === 'includeOld' ? '含旧版数据' : '仅撤回版本';
       const verLabel = activeVer?.label ?? '导出';
 
-      const columns = Object.keys(csvData[0] ?? {});
+      const pointCols = Object.keys(csvData[0] ?? {});
+      const anomalyCols = anomalySummary && anomalySummary.length > 0
+        ? Object.keys(anomalySummary[0] ?? {})
+        : [];
+      const columns: string[] = [];
+      pointCols.forEach((c) => { if (!columns.includes(c)) columns.push(c); });
+      anomalyCols.forEach((c) => { if (!columns.includes(c)) columns.push(c); });
+
       const makeWideRow = (firstColText: string) => {
         const row: Record<string, string> = {};
         columns.forEach((col, i) => {
@@ -179,6 +186,14 @@ export default function ExportPage() {
       const makeEmptyRow = () => {
         const row: Record<string, string> = {};
         columns.forEach((col) => { row[col] = ''; });
+        return row;
+      };
+      const projectRow = (obj: Record<string, any>) => {
+        const row: Record<string, string> = {};
+        columns.forEach((col) => {
+          const v = obj[col];
+          row[col] = (v === undefined || v === null) ? '' : String(v);
+        });
         return row;
       };
 
@@ -195,17 +210,12 @@ export default function ExportPage() {
         makeEmptyRow(),
       ];
 
-      const anomalySummaryWide = anomalySummary?.map((a) => {
-        const row: Record<string, string> = {};
-        columns.forEach((col) => {
-          row[col] = (a as any)[col] ?? '';
-        });
-        return row;
-      }) ?? [];
+      const csvDataWide = csvData.map((r: any) => projectRow(r));
+      const anomalySummaryWide = anomalySummary ? anomalySummary.map((a: any) => projectRow(a)) : [];
 
       const allData = [
         ...headerMeta,
-        ...csvData,
+        ...csvDataWide,
         ...(anomalySummary && anomalySummary.length > 0 ? sectionDivider : []),
         ...anomalySummaryWide,
       ];
