@@ -1,0 +1,85 @@
+[
+  {
+    "record_id": "REC-0001",
+    "problem_id": "STU-003",
+    "operator": "建模助教-小岑",
+    "action": "人工修正",
+    "before_snapshot": {
+      "problem_id": "STU-003",
+      "formula_used": "质量计算",
+      "raw_result": 9.42,
+      "result_unit": "kg",
+      "params": {
+        "density": {
+          "value": 7.85,
+          "unit": "g/cm³"
+        },
+        "volume": {
+          "value": 1200,
+          "unit": "cm³"
+        }
+      },
+      "material_check": {
+        "input_name": "Q235",
+        "is_standard": false,
+        "standard_name": "钢材",
+        "is_alias": true,
+        "is_unknown": false,
+        "note": "输入名称「Q235」为标准名称「钢材」的别名"
+      },
+      "next_steps": [
+        "参数「体积」当前值 1200 cm³ 高于上限 100 cm³，请检查小数点位置或单位换算。",
+        "输入名称「Q235」为标准名称「钢材」的别名。计算时已按标准名称对应密度取值，请注意核对。"
+      ],
+      "timestamp": "2026-06-12 20:22:59"
+    },
+    "after_snapshot": {
+      "problem_id": "STU-003",
+      "formula_used": "质量计算",
+      "raw_result": 9.42,
+      "result_unit": "kg",
+      "params": {
+        "density": {
+          "value": 7.85,
+          "unit": "g/cm³"
+        },
+        "volume": {
+          "value": 1200,
+          "unit": "cm³"
+        }
+      },
+      "material_check": {
+        "input_name": "钢材",
+        "is_standard": true,
+        "standard_name": "钢材",
+        "is_alias": false,
+        "is_unknown": false,
+        "note": ""
+      },
+      "next_steps": [
+        "参数「体积」当前值 1200 cm³ 高于上限 100 cm³，请检查小数点位置或单位换算。"
+      ],
+      "timestamp": "2026-06-12 20:22:59"
+    },
+    "remark": "学生写的Q235是钢材的牌号，对应标准材料名称为钢材，密度单位补充为 g/cm³",
+    "timestamp": "2026-06-12 20:22:59"
+  },
+  {
+    "record_id": "REC-0002",
+    "problem_id": "STU-004",
+    "operator": "建模助教-小岑",
+    "action": "参数调整",
+    "before_snapshot": {
+      "param": "density",
+      "value": 0.6,
+      "unit": ""
+    },
+    "after_snapshot": {
+      "param": "density",
+      "value": 0.6,
+      "unit": "g/cm³"
+    },
+    "remark": "学生漏写密度单位，根据题目描述补充为 g/cm³",
+    "timestamp": "2026-06-12 20:22:59"
+  }
+]
