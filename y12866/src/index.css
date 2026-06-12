@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  --ocean-800: #0A3D6B;
+  --aqua-400: #2DD4BF;
+  --risk-high: #EF4444;
+  --risk-medium: #F97316;
+  --risk-low: #EAB308;
+  --risk-safe: #22C55E;
+}
+
+body {
+  background-color: #F8FAFC;
+  color: #334155;
+}
+
+@layer components {
+  .card-ocean {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm;
+    border-bottom: 2px solid var(--ocean-800);
+  }
+
+  .card-risk {
+    @apply bg-white border border-gray-200 rounded-lg shadow-sm relative overflow-hidden;
+  }
+
+  .card-risk::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+  }
+
+  .card-risk-high::before { background-color: var(--risk-high); }
+  .card-risk-medium::before { background-color: var(--risk-medium); }
+  .card-risk-low::before { background-color: var(--risk-low); }
+  .card-risk-safe::before { background-color: var(--risk-safe); }
+
+  .badge-risk {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-risk-high { @apply bg-red-100 text-red-800; }
+  .badge-risk-medium { @apply bg-orange-100 text-orange-800; }
+  .badge-risk-low { @apply bg-yellow-100 text-yellow-800; }
+  .badge-risk-safe { @apply bg-green-100 text-green-800; }
+  .badge-risk-pending { @apply bg-gray-100 text-gray-600; }
+
+  .out-of-bounds {
+    @apply border-2 animate-pulse-border relative;
+  }
+
+  .tab-active {
+    @apply text-ocean-800 border-b-[3px] border-ocean-800 font-medium;
+  }
+
+  .stagger-item {
+    opacity: 0;
+    animation: stagger-in 0.4s ease-out forwards;
+  }
+}
+
+@layer utilities {
+  .corner-fold::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, transparent 50%, #FEE2E2 50%);
+    border-bottom-left-radius: 4px;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94A3B8;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
+}
