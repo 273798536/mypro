@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #CBD5E1;
+  background-color: #0A2540;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-ocean-700 text-white rounded-md border border-ocean-600 hover:bg-ocean-600 hover:shadow-md transition-all duration-200 active:translate-y-px text-sm font-medium;
+  }
+  .btn-success {
+    @apply px-4 py-2 bg-emerald-600 text-white rounded-md border border-emerald-500 hover:bg-emerald-500 hover:shadow-glow-green transition-all duration-200 active:translate-y-px text-sm font-medium;
+  }
+  .btn-warning {
+    @apply px-4 py-2 bg-amber-600 text-white rounded-md border border-amber-500 hover:bg-amber-500 hover:shadow-glow-orange transition-all duration-200 active:translate-y-px text-sm font-medium;
+  }
+  .btn-danger {
+    @apply px-4 py-2 bg-red-600 text-white rounded-md border border-red-500 hover:bg-red-500 hover:shadow-glow-red transition-all duration-200 active:translate-y-px text-sm font-medium;
+  }
+  .btn-outline {
+    @apply px-4 py-2 bg-transparent text-channel-text rounded-md border border-channel-border hover:bg-channel-card hover:border-channel-muted transition-all duration-200 text-sm font-medium;
+  }
+  .card {
+    @apply bg-channel-card border border-channel-border rounded-lg shadow-sm;
+  }
+  .card-hover {
+    @apply hover:shadow-card-hover hover:border-channel-muted/60 transition-all duration-200;
+  }
+  .severity-red {
+    @apply bg-red-500/15 border-l-4 border-red-500 text-red-300;
+  }
+  .severity-orange {
+    @apply bg-amber-500/15 border-l-4 border-amber-500 text-amber-300;
+  }
+  .severity-yellow {
+    @apply bg-yellow-500/15 border-l-4 border-yellow-500 text-yellow-300;
+  }
+  .severity-blue {
+    @apply bg-blue-500/15 border-l-4 border-blue-500 text-blue-300;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border;
+  }
+  .chip-green {
+    @apply chip bg-emerald-500/15 border-emerald-600/40 text-emerald-300;
+  }
+  .chip-orange {
+    @apply chip bg-amber-500/15 border-amber-600/40 text-amber-300;
+  }
+  .chip-red {
+    @apply chip bg-red-500/15 border-red-600/40 text-red-300;
+  }
+  .chip-blue {
+    @apply chip bg-blue-500/15 border-blue-600/40 text-blue-300;
+  }
+  .chip-gray {
+    @apply chip bg-slate-500/15 border-slate-600/40 text-slate-300;
+  }
+  .data-value {
+    @apply font-mono text-sm text-channel-text;
+  }
+  .label-muted {
+    @apply text-xs text-channel-muted uppercase tracking-wider;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 #0F172A;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #0F172A;
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 3px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+  .report-page {
+    @apply bg-white text-slate-800 shadow-2xl rounded-sm bg-paper-texture;
+    width: 210mm;
+    min-height: 297mm;
+    padding: 20mm;
+    margin: 0 auto;
+    font-family: 'Noto Serif SC', 'Noto Sans SC', Georgia, serif;
+  }
+  .report-h1 {
+    @apply text-3xl font-serif font-bold text-slate-900 mb-4 pb-3 border-b-2 border-slate-300;
+  }
+  .report-h2 {
+    @apply text-2xl font-serif font-bold text-slate-900 mt-6 mb-3;
+  }
+  .report-h3 {
+    @apply text-lg font-serif font-semibold text-slate-800 mt-4 mb-2;
+  }
+  .report-p {
+    @apply text-sm text-slate-700 leading-7 mb-3;
+  }
+  .report-table {
+    @apply w-full text-sm border-collapse my-4;
+  }
+  .report-th {
+    @apply bg-slate-100 font-semibold text-left p-2 border border-slate-300;
+  }
+  .report-td {
+    @apply p-2 border border-slate-300;
+  }
+  .drop-cap::first-letter {
+    @apply text-4xl font-serif font-bold text-ocean-700 float-left mr-2 leading-none;
+  }
+}
+
+.radix-slider-track {
+  @apply relative flex items-center select-none touch-none h-5;
+}
+.radix-slider-range {
+  @apply absolute bg-ocean-500 h-full;
+}
+.radix-slider-thumb {
+  @apply block w-4 h-4 bg-white rounded-full border-2 border-ocean-500 shadow-md hover:scale-110 transition-transform;
+}
+
+.clipping-plane-helper {
+  outline: 2px dashed rgba(59, 130, 246, 0.6);
+  outline-offset: 2px;
+}
