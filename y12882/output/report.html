@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>潮间带物种分布调查报告</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+            background: #f3f4f6;
+            color: #1f2937;
+            line-height: 1.7;
+            padding: 20px;
+        }
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #0ea5e9, #0369a1);
+            color: white;
+            padding: 32px 40px;
+        }
+        .header h1 { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+        .header .subtitle { font-size: 14px; opacity: 0.9; }
+        .section { padding: 28px 40px; border-bottom: 1px solid #e5e7eb; }
+        .section:last-child { border-bottom: none; }
+        .section h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section h2 .icon { font-size: 20px; }
+
+        .plain-text-box {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 16px 20px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .plain-text-box .label {
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .copy-note {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-card .num { font-size: 28px; font-weight: 700; color: #0ea5e9; }
+        .stat-card .label { font-size: 13px; color: #6b7280; margin-top: 4px; }
+        .stat-card.error .num { color: #ef4444; }
+        .stat-card.warning .num { color: #f59e0b; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 12px;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        tr:hover { background: #f9fafb; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .tag.error { background: #fee2e2; color: #dc2626; }
+        .tag.warning { background: #fef3c7; color: #d97706; }
+        .tag.info { background: #dbeafe; color: #2563eb; }
+        .tag.success { background: #dcfce7; color: #16a34a; }
+
+        .record-id {
+            font-family: 'SF Mono', 'Menlo', monospace;
+            font-size: 12px;
+            color: #2563eb;
+            background: #eff6ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .chart-img {
+            width: 100%;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            margin: 12px 0;
+        }
+
+        .trace-section {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+        .trace-section h4 {
+            color: #92400e;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .trace-section p { font-size: 13px; color: #78350f; }
+
+        .footer {
+            padding: 20px 40px;
+            background: #f9fafb;
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+        }
+
+        .map-frame {
+            width: 100%;
+            height: 400px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin: 12px 0;
+        }
+
+        .review-entry {
+            background: #eff6ff;
+            border: 1px dashed #93c5fd;
+            border-radius: 8px;
+            padding: 14px 18px;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+        .review-entry strong { color: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌊 潮间带物种分布调查报告</h1>
+            <div class="subtitle">生成时间：2026-06-12 23:13:13 · 会话：demo_session</div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">📋</span> 核心结论（可直接复制给同事）</h2>
+            <div class="plain-text-box">
+                <div class="label">💡 普通话版本 · 一键复制</div>
+                各位同事好，这是本次潮间带物种分布调查的处理结果：<br><br>一、调查概况：本次共记录了 20 个物种观测点位，涉及 10 种潮间带生物。<br>数量最多的前三种是：红树林（3处）、互花米草（2处）、芦苇（2处）。<br><br>二、数据处理情况：配套的潮汐数据有 24 条，盐度数据有 20 条。<br>注意：盐度数据存在单位混用的情况，已经标注出来需要复核，海事处那边可能会追问依据。<br><br>三、质量检查：一共发现 15 个问题，其中错误 15 个、警告 0 个。<br>错误的地方需要大家重点复核，特别是潮位时区和盐度单位这两块。<br><br>四、关于复核：地图、表格、报告都是同一批数据算出来的，对得上。<br>如果发现哪条记录有问题，可以直接用记录ID反查到原始数据和处理意见，不用重新导一遍。<br><br>有问题随时找我。
+            </div>
+            <p class="copy-note">注：以上文字可直接复制转发，数据来源于本次处理的 20 条物种观测记录、24 条潮汐数据、20 条盐度数据。</p>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">📊</span> 数据概览</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="num">20</div>
+                    <div class="label">物种观测点</div>
+                </div>
+                <div class="stat-card">
+                    <div class="num">10</div>
+                    <div class="label">物种种类</div>
+                </div>
+                <div class="stat-card error">
+                    <div class="num">15</div>
+                    <div class="label">校验错误</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="num">0</div>
+                    <div class="label">校验警告</div>
+                </div>
+            </div>
+            <p style="font-size:13px;color:#6b7280;">
+                本次共处理 79 条处理记录，所有地图、图表、报告数据均来自同一批处理结果，
+                可通过记录ID回溯到原始数据和处理意见。
+            </p>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🗺️</span> 物种分布地图</h2>
+            <p style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+                点击地图上的标记点可查看详细信息和处理记录ID。
+            </p>
+            <p style="color:#9ca3af;font-size:13px;">暂无地图</p>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">📈</span> 统计图表</h2>
+            
+            <div style="margin-bottom:20px;">
+                <h3 style="font-size:15px;color:#374151;margin-bottom:8px;">物种数量统计</h3>
+                <img src="charts/species_count.png" class="chart-img" alt="物种数量统计">
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <h3 style="font-size:15px;color:#374151;margin-bottom:8px;">潮汐水位曲线</h3>
+                <img src="charts/tide_curve.png" class="chart-img" alt="潮汐水位曲线">
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <h3 style="font-size:15px;color:#374151;margin-bottom:8px;">盐度分布</h3>
+                <img src="charts/salinity_distribution.png" class="chart-img" alt="盐度分布">
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <h3 style="font-size:15px;color:#374151;margin-bottom:8px;">校验问题统计</h3>
+                <img src="charts/issue_summary.png" class="chart-img" alt="校验问题统计">
+            </div>
+            
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">🔍</span> 校验问题清单</h2>
+            
+        <table>
+            <thead>
+                <tr>
+                    <th>问题ID</th>
+                    <th>严重程度</th>
+                    <th>问题类型</th>
+                    <th>来源</th>
+                    <th>描述</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><span class="record-id">ISS-7F33C14C</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 1 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-FF6E9F45</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 2 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-318FE346</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 5 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-5BBD87B8</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 6 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-037CB717</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 7 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-E5923074</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 8 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-5187F463</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 9 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-322169CC</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 12 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-9DD7EF32</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>salinity_unit_mixed</td>
+                <td>salinity 第 13 行</td>
+                <td>盐度单位混用：检测到 {'psu', 'ms/cm', 'ppt', '‰'}，海事处要求统一使用 ...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-35DCC458</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>tide_timezone_error</td>
+                <td>tide 第 18 行</td>
+                <td>潮位时区 'PST' 不标准。中国沿岸潮汐表应使用 UTC+8（北京时间）。若实际是其他时区，会导致...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-289BEEAB</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>tide_timezone_error</td>
+                <td>tide 第 19 行</td>
+                <td>潮位时区 'PST' 不标准。中国沿岸潮汐表应使用 UTC+8（北京时间）。若实际是其他时区，会导致...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-115F7F2B</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>tide_timezone_error</td>
+                <td>tide 第 20 行</td>
+                <td>潮位时区 'PST' 不标准。中国沿岸潮汐表应使用 UTC+8（北京时间）。若实际是其他时区，会导致...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-A04269D8</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>tide_timezone_error</td>
+                <td>tide 第 21 行</td>
+                <td>潮位时区 'PST' 不标准。中国沿岸潮汐表应使用 UTC+8（北京时间）。若实际是其他时区，会导致...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-EF1ACF33</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>tide_timezone_error</td>
+                <td>tide 第 22 行</td>
+                <td>潮位时区 'PST' 不标准。中国沿岸潮汐表应使用 UTC+8（北京时间）。若实际是其他时区，会导致...</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">ISS-0711E6CD</span></td>
+                <td><span class="tag error">错误</span></td>
+                <td>tide_timezone_error</td>
+                <td>tide 第 23 行</td>
+                <td>潮位时区 'PST' 不标准。中国沿岸潮汐表应使用 UTC+8（北京时间）。若实际是其他时区，会导致...</td>
+            </tr>
+            </tbody>
+        </table>
+        
+
+            
+        <div class="trace-section">
+            <h4>🔎 追溯示例：从一条潮位时区错记录怎么倒查？</h4>
+            <p>
+                以问题 <span class="record-id">ISS-35DCC458</span> 为例：<br>
+                1. 该问题来自 <strong>tide</strong> 数据第 <strong>18</strong> 行<br>
+                2. 对应处理记录：<span class="record-id">REC-AB964599</span>、<span class="record-id">REC-38825131</span><br>
+                3. 原始值：<code>PST</code><br>
+                4. 期望：<code>UTC+8 或 Asia/Shanghai</code><br>
+                5. 处理意见：潮位时区 'PST' 不标准。中国沿岸潮汐表应使用 UTC+8（北京时间）。若实际是其他时区，会导致潮高与物种观测时间对不上。<br>
+                6. 可直接使用 <code>python cli.py review --issue-id ISS-35DCC458</code> 进入复核模式修正
+            </p>
+        </div>
+        
+
+            <div class="review-entry">
+                <strong>🔧 复核入口提示：</strong>
+                如需修正某条记录，可使用命令行工具的复核模式：
+                <code style="background:#dbeafe;padding:2px 6px;border-radius:4px;">python cli.py review --issue-id 问题ID</code>
+                或
+                <code style="background:#dbeafe;padding:2px 6px;border-radius:4px;">python cli.py review --record-id 记录ID</code>
+                ，无需重新导入全部数据。
+            </div>
+        </div>
+
+        <div class="section">
+            <h2><span class="icon">📝</span> 处理记录摘要</h2>
+            <p style="font-size:13px;color:#6b7280;margin-bottom:8px;">
+                以下为最近 20 条处理记录，完整记录见审计日志 JSON 文件。
+            </p>
+            
+        <table>
+            <thead>
+                <tr>
+                    <th>记录ID</th>
+                    <th>操作</th>
+                    <th>来源类型</th>
+                    <th>原因</th>
+                    <th>时间</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><span class="record-id">REC-1022CBA1</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 15:15 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-10628DB9</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 10:05 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-4E3C1613</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 13:45 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-35E83DCF</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 12:00 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-9417755B</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 14:45 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-35F318E9</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 14:20 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-033D037F</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 11:35 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-A918D96A</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 11:00 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-B749DB50</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 10:30 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-D917A5F7</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 09:50 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-7BDED9EE</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 15:30 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-6971D5BB</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 13:30 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-FC384A7A</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 11:45 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-3E77E567</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 15:00 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-A926E047</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 14:30 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-5CD0CAE5</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 14:00 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-31C0FF62</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 11:20 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-3E7860DD</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 10:45 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-C1FAF4F2</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 10:15 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            
+            <tr>
+                <td><span class="record-id">REC-632B116E</span></td>
+                <td>link_tide_data</td>
+                <td>species</td>
+                <td>根据观测时间 2025-09-15 09:30 内插对应潮位...</td>
+                <td style="font-size:11px;color:#9ca3af;">23:13:10</td>
+            </tr>
+            </tbody>
+        </table>
+        <p style="font-size:12px;color:#9ca3af;margin-top:8px;">
+            共 79 条处理记录 · 显示最近 20 条
+        </p>
+        
+        </div>
+
+        <div class="footer">
+            本报告由潮间带物种分布图工具自动生成 · 所有数据可追溯 · 版本 1.0.0
+        </div>
+    </div>
+</body>
+</html>
