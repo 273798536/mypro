@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ app_name }}</h1>
+            <div class="status-badges">
+                <span class="badge processed">已处理</span>
+                <span class="badge pending">待补材料</span>
+                <span class="badge manual">人工改判</span>
+            </div>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="parameters">参数管理</button>
+            <button class="tab-btn" data-tab="calculation">分段回归试算</button>
+            <button class="tab-btn" data-tab="demo">演示流程</button>
+        </nav>
+
+        <main>
+            <section id="parameters" class="tab-content active">
+                <div class="panel">
+                    <h2>参数列表</h2>
+                    <button class="btn primary" onclick="showCreateParameterModal()">+ 新建参数</button>
+                    <div id="parameter-list" class="parameter-list"></div>
+                </div>
+
+                <div id="parameter-detail" class="panel hidden">
+                    <div class="detail-header">
+                        <h2 id="detail-title">参数详情</h2>
+                        <button class="btn" onclick="hideParameterDetail()">返回列表</button>
+                    </div>
+                    <div id="detail-content"></div>
+                </div>
+            </section>
+
+            <section id="calculation" class="tab-content">
+                <div class="panel">
+                    <h2>分段回归参数试算</h2>
+                    <div class="form-group">
+                        <label>选择参数</label>
+                        <select id="calc-parameter-select"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>样本数据 (JSON格式，[{"x": 1, "y": 2}, ...])</label>
+                        <textarea id="calc-sample-data" rows="8" placeholder='[{"x": 1, "y": 2.1}, {"x": 2, "y": 3.8}, {"x": 5, "y": 15.2}, {"x": 10, "y": 50.1}, {"x": 15, "y": 80.5}, {"x": 20, "y": 110.2}]'></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>幂等性Key (可选，用于重复提交检测)</label>
+                        <input type="text" id="calc-idempotency-key" placeholder="留空则自动生成">
+                    </div>
+                    <div class="button-group">
+                        <button class="btn primary" onclick="performCalculation()">执行试算</button>
+                        <button class="btn" onclick="checkIdempotency()">检查重复提交</button>
+                    </div>
+
+                    <div id="idempotency-result" class="result-box hidden"></div>
+                    <div id="calculation-result" class="result-box hidden"></div>
+                </div>
+            </section>
+
+            <section id="demo" class="tab-content">
+                <div class="panel">
+                    <h2>演示流程 - 复核人操作指南</h2>
+                    <div class="demo-cards">
+                        <div class="demo-card success">
+                            <h3>案例一：顺利记录</h3>
+                            <p>参数：血糖浓度 (单位: mmol/L)</p>
+                            <p>阈值：低3.9，高6.1</p>
+                            <p>边界样本充足，单位完整</p>
+                            <button class="btn primary" onclick="runDemo('success')">运行演示</button>
+                        </div>
+                        <div class="demo-card warning">
+                            <h3>案例二：补录记录</h3>
+                            <p>参数：血压收缩压 (单位缺失)</p>
+                            <p>边界样本不足，需补充</p>
+                            <p>添加后补备注和旧版截图</p>
+                            <button class="btn primary" onclick="runDemo('supplement')">运行演示</button>
+                        </div>
+                        <div class="demo-card danger">
+                            <h3>案例三：异常记录</h3>
+                            <p>参数：心率 (单位: 次/分)</p>
+                            <p>结果跳变，阈值变更导致</p>
+                            <p>系统自动检测并溯源</p>
+                            <button class="btn primary" onclick="runDemo('abnormal')">运行演示</button>
+                        </div>
+                    </div>
+                    <div id="demo-result" class="result-box hidden"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="create-parameter-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>新建参数</h3>
+            <div class="form-group">
+                <label>参数键名</label>
+                <input type="text" id="new-param-key" placeholder="例如: blood_glucose">
+            </div>
+            <div class="form-group">
+                <label>参数名称</label>
+                <input type="text" id="new-param-name" placeholder="例如: 血糖浓度">
+            </div>
+            <div class="form-group">
+                <label>当前值</label>
+                <input type="number" id="new-param-value" step="0.01" placeholder="例如: 5.6">
+            </div>
+            <div class="form-group">
+                <label>单位</label>
+                <input type="text" id="new-param-unit" placeholder="例如: mmol/L">
+            </div>
+            <div class="form-group">
+                <label>低阈值</label>
+                <input type="number" id="new-param-threshold-low" step="0.01" placeholder="例如: 3.9">
+            </div>
+            <div class="form-group">
+                <label>高阈值</label>
+                <input type="number" id="new-param-threshold-high" step="0.01" placeholder="例如: 6.1">
+            </div>
+            <div class="form-group">
+                <label>分段数</label>
+                <input type="number" id="new-param-segment" value="2" min="2">
+            </div>
+            <div class="button-group">
+                <button class="btn primary" onclick="createParameter()">创建</button>
+                <button class="btn" onclick="hideCreateParameterModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-remark-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>添加后补备注</h3>
+            <div class="form-group">
+                <label>备注内容</label>
+                <textarea id="remark-content" rows="4" placeholder="请输入备注内容..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>备注类型</label>
+                <input type="text" id="remark-type" value="后补备注">
+            </div>
+            <div class="form-group">
+                <label>操作人</label>
+                <input type="text" id="remark-creator" placeholder="复核人姓名">
+            </div>
+            <div class="button-group">
+                <button class="btn primary" onclick="submitRemark()">提交</button>
+                <button class="btn" onclick="hideAddRemarkModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="add-screenshot-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>添加截图</h3>
+            <div class="form-group">
+                <label>文件路径</label>
+                <input type="text" id="screenshot-path" placeholder="/screenshots/version1.png">
+            </div>
+            <div class="form-group">
+                <label>描述</label>
+                <input type="text" id="screenshot-desc" placeholder="版本1截图 - 2024年1月数据">
+            </div>
+            <div class="form-group">
+                <label>状态</label>
+                <select id="screenshot-status">
+                    <option value="待补材料">待补材料</option>
+                    <option value="已处理">已处理</option>
+                    <option value="人工改判">人工改判</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>版本标签</label>
+                <input type="text" id="screenshot-version" placeholder="v1.0">
+            </div>
+            <div class="button-group">
+                <button class="btn primary" onclick="submitScreenshot()">提交</button>
+                <button class="btn" onclick="hideAddScreenshotModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
