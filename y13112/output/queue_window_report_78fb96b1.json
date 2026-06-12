@@ -1,0 +1,360 @@
+{
+  "batch_id": "78fb96b1",
+  "total_questions": 5,
+  "success_count": 2,
+  "warning_count": 2,
+  "failed_count": 0,
+  "needs_confirmation_count": 1,
+  "results": [
+    {
+      "result_id": "94b94612",
+      "question_id": "Q001",
+      "question_name": "观众入场平均排队时长",
+      "raw_value": 720.0,
+      "raw_unit": "分钟",
+      "adjusted_value": 720.0,
+      "adjusted_unit": "分钟",
+      "final_value": 720.0,
+      "final_unit": "分钟",
+      "conclusion": "【观众入场平均排队时长】排队窗口参数试算结果：720.0 分钟；备注关联：备注：彩排日早高峰为 08:30-10:00，该参数用于窗口开放数量决策；触发 1 项异常，需关注。",
+      "linked_note": "备注：彩排日早高峰为 08:30-10:00，该参数用于窗口开放数量决策",
+      "value_trace": [
+        {
+          "step": "question_context",
+          "question_id": "Q001",
+          "question_name": "观众入场平均排队时长",
+          "formula": "arrival_rate / (service_rate * window_count) * 60",
+          "source_trace": {
+            "arrival_rate": "彩排场地容量估算表-第3行",
+            "service_rate": "窗口作业标准-SOP-第2.1条",
+            "window_count": "场地资源配置表-A区"
+          }
+        },
+        {
+          "step": "input",
+          "params": {
+            "arrival_rate": 120,
+            "service_rate": 2,
+            "window_count": 5
+          },
+          "expression": "arrival_rate / (service_rate * window_count) * 60"
+        },
+        {
+          "step": "eval",
+          "used_params": [
+            "arrival_rate",
+            "service_rate",
+            "window_count"
+          ],
+          "result_raw": 720.0
+        },
+        {
+          "step": "final",
+          "result": 720.0
+        }
+      ],
+      "exceptions": [
+        {
+          "exception_id": "a2117c10",
+          "exception_type": "extrapolation_out_of_range",
+          "question_id": "Q001",
+          "message": "外推越界：计算值为历史均值的 9000.0%（高于 500.0% 阈值）",
+          "detail": {
+            "computed_value": 720.0,
+            "historical_average": 8.0,
+            "ratio_to_historical": 90.0,
+            "max_ratio_threshold": 5.0
+          },
+          "suggestion": "请确认是否为特殊情况导致数值偏离，如是请进行人工确认后继续。",
+          "timestamp": "2026-06-12T19:21:41"
+        }
+      ],
+      "confirmations": [
+        {
+          "confirmation_id": "3274eed3",
+          "question_id": "Q001",
+          "reason": "计算值为历史均值的 9000.0%（高于 500.0% 阈值）",
+          "original_value": 720.0,
+          "original_unit": null,
+          "adjusted_value": null,
+          "adjusted_unit": null,
+          "operator": "",
+          "status": "pending_confirmation",
+          "next_step": "请运营主管或投研助理审核该结果：若为异常请调整参数后重算，若为特殊情况请确认通过。",
+          "timestamp": "2026-06-12T19:21:41"
+        }
+      ],
+      "status": "needs_confirmation",
+      "timestamp": "2026-06-12T19:21:41"
+    },
+    {
+      "result_id": "0c0d464e",
+      "question_id": "Q002",
+      "question_name": "车辆安检排队窗口数量",
+      "raw_value": 7.0,
+      "raw_unit": "辆",
+      "adjusted_value": 7.0,
+      "adjusted_unit": "辆",
+      "final_value": 7.0,
+      "final_unit": "辆",
+      "conclusion": "【车辆安检排队窗口数量】排队窗口参数试算结果：7.0 辆；备注关联：备注：车辆入口共 3 条车道，建议窗口数不超过车道数的 2 倍",
+      "linked_note": "备注：车辆入口共 3 条车道，建议窗口数不超过车道数的 2 倍",
+      "value_trace": [
+        {
+          "step": "question_context",
+          "question_id": "Q002",
+          "question_name": "车辆安检排队窗口数量",
+          "formula": "ceil(vehicle_flow / (per_window_per_hour * safety_factor))",
+          "source_trace": {
+            "vehicle_flow": "安保方案-车辆流量预测",
+            "per_window_per_hour": "安检设备规格书",
+            "safety_factor": "运营风险管理规范"
+          }
+        },
+        {
+          "step": "input",
+          "params": {
+            "vehicle_flow": 450,
+            "per_window_per_hour": 60,
+            "safety_factor": 1.2
+          },
+          "expression": "ceil(vehicle_flow / (per_window_per_hour * safety_factor))"
+        },
+        {
+          "step": "eval",
+          "used_params": [
+            "per_window_per_hour",
+            "safety_factor",
+            "vehicle_flow"
+          ],
+          "result_raw": 7
+        },
+        {
+          "step": "final",
+          "result": 7.0
+        }
+      ],
+      "exceptions": [],
+      "confirmations": [],
+      "status": "success",
+      "timestamp": "2026-06-12T19:21:41"
+    },
+    {
+      "result_id": "7d8a44e1",
+      "question_id": "Q003",
+      "question_name": "单位换算异常-小时转分钟",
+      "raw_value": 1.5,
+      "raw_unit": "小时",
+      "adjusted_value": 90.0,
+      "adjusted_unit": "分钟",
+      "final_value": 90.0,
+      "final_unit": "分钟",
+      "conclusion": "【单位换算异常-小时转分钟】排队窗口参数试算结果：90.0 分钟；备注关联：备注：该题目用于验证公式正确但单位不同时的自动换算",
+      "linked_note": "备注：该题目用于验证公式正确但单位不同时的自动换算",
+      "value_trace": [
+        {
+          "step": "question_context",
+          "question_id": "Q003",
+          "question_name": "单位换算异常-小时转分钟",
+          "formula": "wait_hours",
+          "source_trace": {
+            "wait_hours": "历史数据抽样-待换算"
+          }
+        },
+        {
+          "step": "input",
+          "params": {
+            "wait_hours": 1.5
+          },
+          "expression": "wait_hours"
+        },
+        {
+          "step": "eval",
+          "used_params": [
+            "wait_hours"
+          ],
+          "result_raw": 1.5
+        },
+        {
+          "step": "final",
+          "result": 1.5
+        },
+        {
+          "step": "unit_conversion",
+          "from_value": 1.5,
+          "from_unit": "小时",
+          "to_value": 90.0,
+          "to_unit": "分钟"
+        }
+      ],
+      "exceptions": [],
+      "confirmations": [],
+      "status": "success",
+      "timestamp": "2026-06-12T19:21:41"
+    },
+    {
+      "result_id": "be4e8eb4",
+      "question_id": "Q004",
+      "question_name": "外推越界样例-极端值",
+      "raw_value": 1000.0,
+      "raw_unit": "人",
+      "adjusted_value": 1000.0,
+      "adjusted_unit": "人",
+      "final_value": 1000,
+      "final_unit": "人",
+      "conclusion": "【外推越界样例-极端值】排队窗口参数试算结果：1000.0 人；备注关联：备注：该样例将触发外推越界，进入人工确认流程；触发 1 项异常，需关注。",
+      "linked_note": "备注：该样例将触发外推越界，进入人工确认流程",
+      "value_trace": [
+        {
+          "step": "question_context",
+          "question_id": "Q004",
+          "question_name": "外推越界样例-极端值",
+          "formula": "arrival_rate / service_rate",
+          "source_trace": {
+            "arrival_rate": "极端压力测试参数",
+            "service_rate": "极端压力测试参数"
+          }
+        },
+        {
+          "step": "input",
+          "params": {
+            "arrival_rate": 1000,
+            "service_rate": 1
+          },
+          "expression": "arrival_rate / service_rate"
+        },
+        {
+          "step": "eval",
+          "used_params": [
+            "arrival_rate",
+            "service_rate"
+          ],
+          "result_raw": 1000.0
+        },
+        {
+          "step": "final",
+          "result": 1000.0
+        },
+        {
+          "step": "manual_confirmation",
+          "confirmation_id": "CFM-SAMPLE-001",
+          "original_value": 1000.0,
+          "status": "confirmed",
+          "operator": "运营主管-彩排负责人",
+          "reason": "彩排日极端压力测试，预期值偏离历史区间属正常",
+          "adjusted_value": 1000,
+          "action": "adjusted"
+        }
+      ],
+      "exceptions": [
+        {
+          "exception_id": "771532f5",
+          "exception_type": "extrapolation_out_of_range",
+          "question_id": "Q004",
+          "message": "外推越界：计算值为历史均值的 2000.0%（高于 500.0% 阈值）",
+          "detail": {
+            "computed_value": 1000.0,
+            "historical_average": 50.0,
+            "ratio_to_historical": 20.0,
+            "max_ratio_threshold": 5.0
+          },
+          "suggestion": "请确认是否为特殊情况导致数值偏离，如是请进行人工确认后继续。",
+          "timestamp": "2026-06-12T19:21:41"
+        }
+      ],
+      "confirmations": [
+        {
+          "confirmation_id": "CFM-SAMPLE-001",
+          "question_id": "Q004",
+          "reason": "彩排日极端压力测试，预期值偏离历史区间属正常",
+          "original_value": 1000,
+          "original_unit": "人",
+          "adjusted_value": 1000,
+          "adjusted_unit": "人",
+          "operator": "运营主管-彩排负责人",
+          "status": "confirmed",
+          "next_step": "已确认该极端值有效，可用于彩排预案",
+          "timestamp": "2026-06-10T14:30:00"
+        }
+      ],
+      "status": "warning",
+      "timestamp": "2026-06-12T19:21:41"
+    },
+    {
+      "result_id": "2e300fad",
+      "question_id": "Q005",
+      "question_name": "单位不兼容异常样例",
+      "raw_value": 1500.0,
+      "raw_unit": "米",
+      "adjusted_value": 1500.0,
+      "adjusted_unit": "米",
+      "final_value": 1500.0,
+      "final_unit": "米",
+      "conclusion": "【单位不兼容异常样例】排队窗口参数试算结果：1500.0 米；备注关联：备注：该样例应触发单位不兼容异常；触发 1 项异常，需关注。",
+      "linked_note": "备注：该样例应触发单位不兼容异常",
+      "value_trace": [
+        {
+          "step": "question_context",
+          "question_id": "Q005",
+          "question_name": "单位不兼容异常样例",
+          "formula": "length * width",
+          "source_trace": {
+            "length": "场地尺寸",
+            "width": "场地尺寸"
+          }
+        },
+        {
+          "step": "input",
+          "params": {
+            "length": 50,
+            "width": 30
+          },
+          "expression": "length * width"
+        },
+        {
+          "step": "eval",
+          "used_params": [
+            "length",
+            "width"
+          ],
+          "result_raw": 1500.0
+        },
+        {
+          "step": "final",
+          "result": 1500.0
+        }
+      ],
+      "exceptions": [
+        {
+          "exception_id": "4ed7fe4f",
+          "exception_type": "unit_mismatch",
+          "question_id": "",
+          "message": "公式结果单位 米 与目标单位 人 量纲不同",
+          "detail": {
+            "raw_value": 1500.0,
+            "raw_unit": "米",
+            "expected_unit": "人",
+            "raw_group": "length",
+            "expected_group": "count"
+          },
+          "suggestion": "请核对题目清单中公式输出量纲与 expected_output_unit 是否一致。",
+          "timestamp": "2026-06-12T19:21:41"
+        }
+      ],
+      "confirmations": [],
+      "status": "warning",
+      "timestamp": "2026-06-12T19:21:41"
+    }
+  ],
+  "exceptions_summary": [
+    {
+      "exception_type": "extrapolation_out_of_range",
+      "count": 2
+    },
+    {
+      "exception_type": "unit_mismatch",
+      "count": 1
+    }
+  ],
+  "generated_at": "2026-06-12T19:21:41"
+}

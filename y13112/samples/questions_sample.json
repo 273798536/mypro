@@ -1,0 +1,107 @@
+[
+  {
+    "question_id": "Q001",
+    "name": "观众入场平均排队时长",
+    "description": "根据客流量与窗口吞吐计算观众平均排队等待时长（单位：分钟）",
+    "formula_expression": "arrival_rate / (service_rate * window_count) * 60",
+    "input_params": {
+      "arrival_rate": 120,
+      "service_rate": 2,
+      "window_count": 5
+    },
+    "input_unit": "分钟",
+    "expected_output_unit": "分钟",
+    "supplementary_note": "备注：彩排日早高峰为 08:30-10:00，该参数用于窗口开放数量决策",
+    "historical_reference": {
+      "average": 8,
+      "min": 3,
+      "max": 15,
+      "source": "2025年同类型活动记录"
+    },
+    "source_trace": {
+      "arrival_rate": "彩排场地容量估算表-第3行",
+      "service_rate": "窗口作业标准-SOP-第2.1条",
+      "window_count": "场地资源配置表-A区"
+    }
+  },
+  {
+    "question_id": "Q002",
+    "name": "车辆安检排队窗口数量",
+    "description": "根据车流量推算需要开放的安检窗口数量",
+    "formula_expression": "ceil(vehicle_flow / (per_window_per_hour * safety_factor))",
+    "input_params": {
+      "vehicle_flow": 450,
+      "per_window_per_hour": 60,
+      "safety_factor": 1.2
+    },
+    "input_unit": "辆",
+    "expected_output_unit": "辆",
+    "supplementary_note": "备注：车辆入口共 3 条车道，建议窗口数不超过车道数的 2 倍",
+    "historical_reference": {
+      "average": 7,
+      "source": "上次活动车辆安检配置"
+    },
+    "source_trace": {
+      "vehicle_flow": "安保方案-车辆流量预测",
+      "per_window_per_hour": "安检设备规格书",
+      "safety_factor": "运营风险管理规范"
+    }
+  },
+  {
+    "question_id": "Q003",
+    "name": "单位换算异常-小时转分钟",
+    "description": "测试单位换算：输入小时输出分钟",
+    "formula_expression": "wait_hours",
+    "input_params": {
+      "wait_hours": 1.5
+    },
+    "input_unit": "小时",
+    "expected_output_unit": "分钟",
+    "supplementary_note": "备注：该题目用于验证公式正确但单位不同时的自动换算",
+    "historical_reference": {
+      "average": 90
+    },
+    "source_trace": {
+      "wait_hours": "历史数据抽样-待换算"
+    }
+  },
+  {
+    "question_id": "Q004",
+    "name": "外推越界样例-极端值",
+    "description": "测试外推越界检测：计算值远超历史均值",
+    "formula_expression": "arrival_rate / service_rate",
+    "input_params": {
+      "arrival_rate": 1000,
+      "service_rate": 1
+    },
+    "input_unit": "人",
+    "expected_output_unit": "人",
+    "supplementary_note": "备注：该样例将触发外推越界，进入人工确认流程",
+    "historical_reference": {
+      "average": 50,
+      "source": "正常活动客流"
+    },
+    "source_trace": {
+      "arrival_rate": "极端压力测试参数",
+      "service_rate": "极端压力测试参数"
+    }
+  },
+  {
+    "question_id": "Q005",
+    "name": "单位不兼容异常样例",
+    "description": "测试：输入输出量纲不一致时应报异常",
+    "formula_expression": "length * width",
+    "input_params": {
+      "length": 50,
+      "width": 30
+    },
+    "input_unit": "米",
+    "expected_output_unit": "人",
+    "supplementary_note": "备注：该样例应触发单位不兼容异常",
+    "historical_reference": {},
+    "source_trace": {
+      "length": "场地尺寸",
+      "width": "场地尺寸"
+    }
+  }
+]

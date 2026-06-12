@@ -1,0 +1,15 @@
+[
+  {
+    "confirmation_id": "CFM-SAMPLE-001",
+    "question_id": "Q004",
+    "reason": "彩排日极端压力测试，预期值偏离历史区间属正常",
+    "original_value": 1000,
+    "original_unit": "人",
+    "adjusted_value": 1000,
+    "adjusted_unit": "人",
+    "operator": "运营主管-彩排负责人",
+    "status": "confirmed",
+    "next_step": "已确认该极端值有效，可用于彩排预案",
+    "timestamp": "2026-06-10T14:30:00"
+  }
+]
