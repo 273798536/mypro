@@ -1,0 +1,19 @@
+教研编辑阿宁 - 排队窗口边界校验 交接卡
+------------------------------------
+
+[样例在哪]
+  - 现场案例A: samples/现场案例A.csv
+  - 现场案例B（并列数量）: samples/现场案例B.csv
+  - 现场案例C（空集合）: samples/现场案例C.csv
+  - 现场案例D（边界样本）: samples/现场案例D.csv
+  - 报告输出目录: /Users/mac/pro/solo/workspaces/y13111/output
+
+[异常在哪]
+  - 报告异常列表 sheet / JSON anomalies 字段
+  - 异常含源行号 & 原始引用，可回溯历史答案原始行
+  - 空集合、排序不稳定会触发【挂起】，需人工确认
+
+[结果怎么导出]
+  - TXT:  check_report.txt   (给复核人看的简明报告)
+  - Excel: check_report.xlsx (含 概览/材料/步骤追踪/异常/边界样本/调参差异)
+  - JSON:  check_report.json (结构化，对接系统)

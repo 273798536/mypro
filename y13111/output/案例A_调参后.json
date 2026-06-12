@@ -1,0 +1,239 @@
+{
+  "historical_answer": {
+    "answer_id": "现场案例A",
+    "source_file": "samples/现场案例A.csv",
+    "materials": [
+      {
+        "material_id": "M001",
+        "name": "小学数学练习册",
+        "expected_name": "小学数学练习册",
+        "name_matched": true,
+        "quantity": 120.0,
+        "unit": "个",
+        "source_line": 2
+      },
+      {
+        "material_id": "M002",
+        "name": "初中语文作业本",
+        "expected_name": "初中语文作业本",
+        "name_matched": true,
+        "quantity": 80.0,
+        "unit": "个",
+        "source_line": 3
+      },
+      {
+        "material_id": "M003",
+        "name": "高中英语字帖",
+        "expected_name": "高中英语同步字帖",
+        "name_matched": false,
+        "quantity": 45.0,
+        "unit": "个",
+        "source_line": 4
+      },
+      {
+        "material_id": "M004",
+        "name": "科学实验材料包",
+        "expected_name": "科学实验材料包",
+        "name_matched": true,
+        "quantity": 60.0,
+        "unit": "个",
+        "source_line": 5
+      },
+      {
+        "material_id": "M005",
+        "name": "美术绘画工具",
+        "expected_name": "美术绘画工具",
+        "name_matched": true,
+        "quantity": 95.0,
+        "unit": "个",
+        "source_line": 6
+      }
+    ]
+  },
+  "result": {
+    "status": "不通过",
+    "computed_value": 6.666666666666667,
+    "computed_unit": "个",
+    "formula_applied": "avg_throughput = total_count / window_size",
+    "sort_stable": true,
+    "anomalies": [
+      {
+        "type": "名称不一致",
+        "message": "材料名称不一致：期望「高中英语同步字帖」，实际「高中英语字帖」",
+        "material_id": "M003",
+        "source_line": 4,
+        "raw_reference": "{'id': 'M003', 'name': '高中英语字帖', 'expected': '高中英语同步字帖', 'qty': 45, 'unit': '本'}"
+      },
+      {
+        "type": "越界",
+        "message": "计算值 6.6667 个 低于下限 10.0",
+        "material_id": null,
+        "source_line": null,
+        "raw_reference": "computed=6.666666666666667, lower=10.0, upper=8.0"
+      }
+    ],
+    "boundary_samples": [
+      {
+        "label": "材料最小值",
+        "value": 45.0,
+        "bound_type": "material_min",
+        "unit": "个",
+        "within_bound": true
+      },
+      {
+        "label": "材料最大值",
+        "value": 120.0,
+        "bound_type": "material_max",
+        "unit": "个",
+        "within_bound": true
+      },
+      {
+        "label": "窗口下限",
+        "value": 10.0,
+        "bound_type": "lower",
+        "unit": "个",
+        "within_bound": false
+      },
+      {
+        "label": "窗口上限",
+        "value": 8.0,
+        "bound_type": "upper",
+        "unit": "个",
+        "within_bound": true
+      },
+      {
+        "label": "实际计算值",
+        "value": 6.666666666666667,
+        "bound_type": "computed",
+        "unit": "个",
+        "within_bound": false
+      }
+    ],
+    "steps": [
+      {
+        "step_id": "s01",
+        "step_name": "空集合检查",
+        "description": "检测历史答案材料集合是否为空",
+        "changed": false,
+        "before": "PASS",
+        "after": "PASS",
+        "detail": "空集合将导致校验挂起，等待复核人确认"
+      },
+      {
+        "step_id": "s02",
+        "step_name": "名称一致性校验",
+        "description": "逐条比对材料名称与期望名称",
+        "changed": true,
+        "before": "0",
+        "after": "1",
+        "detail": "新增 1 条名称不一致异常"
+      },
+      {
+        "step_id": "s03",
+        "step_name": "单位可换算性检查",
+        "description": "校验材料单位与窗口目标单位是否可换算",
+        "changed": false,
+        "before": "1",
+        "after": "1",
+        "detail": "新增 0 条单位异常"
+      },
+      {
+        "step_id": "s04",
+        "step_name": "排序稳定性检测",
+        "description": "检测是否存在并列数量导致排序顺序不稳定",
+        "changed": true,
+        "before": "None",
+        "after": "True",
+        "detail": "并列组数: 0; 是否稳定: True"
+      },
+      {
+        "step_id": "s05",
+        "step_name": "材料数量汇总",
+        "description": "对所有材料的数量求和作为总处理量",
+        "changed": true,
+        "before": "None",
+        "after": "400.0",
+        "detail": "材料数 5，单位: 个"
+      },
+      {
+        "step_id": "s06",
+        "step_name": "窗口大小单位换算",
+        "description": "将窗口大小换算为分钟（基准单位），公式: 原值 * 换算系数",
+        "changed": true,
+        "before": "None",
+        "after": "60.0",
+        "detail": "60.0 分钟 = 60.0 分钟"
+      },
+      {
+        "step_id": "s07",
+        "step_name": "应用窗口公式",
+        "description": "应用公式: avg_throughput = total_count / window_size",
+        "changed": true,
+        "before": "None",
+        "after": "6.666666666666667",
+        "detail": "计算结果: 6.666666666666667 个/分钟"
+      },
+      {
+        "step_id": "s08",
+        "step_name": "边界判定",
+        "description": "判断计算值是否落在 [下限, 上限] 区间（考虑容差）",
+        "changed": true,
+        "before": "True",
+        "after": "False",
+        "detail": "容差=0.0; 结果=越界"
+      }
+    ]
+  },
+  "param_diffs": [
+    {
+      "config_before": {
+        "window_size": 30.0,
+        "window_unit": "分钟",
+        "lower_bound": 10.0,
+        "upper_bound": 15.0,
+        "value_unit": "个",
+        "formula": "avg_throughput = total_count / window_size",
+        "tolerance": 0.0
+      },
+      "config_after": {
+        "window_size": 60.0,
+        "window_unit": "分钟",
+        "lower_bound": 10.0,
+        "upper_bound": 8.0,
+        "value_unit": "个",
+        "formula": "avg_throughput = total_count / window_size",
+        "tolerance": 0.0
+      },
+      "fields_changed": [
+        {
+          "field": "window_size",
+          "old_value": 30.0,
+          "new_value": 60.0,
+          "impact": "窗口大小从 30.0 变为 60.0，将直接改变分母，从而改变平均吞吐量计算结果"
+        },
+        {
+          "field": "upper_bound",
+          "old_value": 15.0,
+          "new_value": 8.0,
+          "impact": "窗口上限从 15.0 变为 8.0，边界判定的通过区间将收窄"
+        }
+      ],
+      "result_diff": {
+        "computed_value": {
+          "before": 13.333333333333334,
+          "after": 6.666666666666667
+        },
+        "status": {
+          "before": "通过",
+          "after": "不通过"
+        },
+        "anomaly_types": {
+          "added": [
+            "越界"
+          ],
+          "removed": []
+        }
+      }
+    }
+  ]
+}
