@@ -1,0 +1,218 @@
+{
+  "question_history": [
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "change_type": "raw_source",
+      "source_name": "2026年6月建模题库原始导出",
+      "raw_content": "{\n  \"_source_note\": \"2026年6月建模题库原始导出文件，包含脏数据和不齐整记录\",\n  \"questions\": [\n    {\n      \"qid\": \"Q001\",\n      \"text\": \"从5个红球和3个蓝球中选3个球，求恰好选到2个红球的组合数\",\n      \"category\": \"组合基础\",\n      \"difficulty\": \"简单\"\n    },\n    {\n      \"qid\": \"Q002\",\n      \"text\": \"某班有10名男生和8名女生，从中选4人参加比赛，要求至少有1名女生，有多少种选法\",\n      \"category\": \"组合基础\",\n      \"difficulty\": \"中等\"\n    },\n    {\n      \"qid\": \"Q003\",\n      \"text\": \"从1到100的自然数中，任取3个数使它们的和是偶数，有多少种取法\",\n      \"category\": \"组合应用\",\n      \"difficulty\": \"中等\"\n    },\n    {\n      \"qid\": \"Q004\",\n      \"text\": \"书架上有5本不同的数学书和4本不同的物理书，从中选3本，要求数学书和物理书都至少有1本，有多少种选法\",\n      \"category\": \"组合应用\",\n      \"difficulty\": \"中等\"\n    },\n    {\n      \"qid\": \"Q005\",\n      \"text\": \"将6个不同的小球放入3个不同的盒子，每个盒子至少放1个，有多少种放法\",\n      \"category\": \"组合进阶\",\n      \"difficulty\": \"困难\"\n    },\n    {\n      \"qid\": \"Q006\",\n      \"text\": \"从1,2,3,...,10中任取3个数，使它们成等差数列，这样的等差数列共有多少个\",\n      \"category\": \"组合进阶\",\n      \"difficulty\": \"困难\",\n      \"_dirty\": true,\n      \"_dirty_reason\": \"原题答案存疑，暂不修正，保留原始记录\"\n    },\n    {\n      \"qid\": \"Q007\",\n      \"text\": \"题目内容缺失，导入时字段不完整\",\n      \"category\": \"\",\n      \"difficulty\": \"\",\n      \"_dirty\": true,\n      \"_dirty_reason\": \"导入时字段不齐整，text字段为空或缺失关键字段\"\n    },\n    {\n      \"qid\": \"Q008\",\n      \"text\": \"某会议有10人参加，每两人握手一次，共握手多少次\",\n      \"category\": \"组合基础\",\n      \"difficulty\": \"简单\"\n    }\n  ]\n}\n",
+      "notes": "文件来源: questions_sample.json"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "system",
+      "change_type": "question_list",
+      "added_qids": [
+        "Q001",
+        "Q002",
+        "Q003",
+        "Q004",
+        "Q005",
+        "Q006",
+        "Q007",
+        "Q008"
+      ],
+      "removed_qids": [],
+      "old_count": 0,
+      "new_count": 8,
+      "reason": "从 2026年6月建模题库原始导出 加载题目清单"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "change_type": "raw_source",
+      "source_name": "2026年6月建模题库原始导出",
+      "raw_content": "{\n  \"_source_note\": \"2026年6月建模题库原始导出文件，包含脏数据和不齐整记录\",\n  \"questions\": [\n    {\n      \"qid\": \"Q001\",\n      \"text\": \"从5个红球和3个蓝球中选3个球，求恰好选到2个红球的组合数\",\n      \"category\": \"组合基础\",\n      \"difficulty\": \"简单\"\n    },\n    {\n      \"qid\": \"Q002\",\n      \"text\": \"某班有10名男生和8名女生，从中选4人参加比赛，要求至少有1名女生，有多少种选法\",\n      \"category\": \"组合基础\",\n      \"difficulty\": \"中等\"\n    },\n    {\n      \"qid\": \"Q003\",\n      \"text\": \"从1到100的自然数中，任取3个数使它们的和是偶数，有多少种取法\",\n      \"category\": \"组合应用\",\n      \"difficulty\": \"中等\"\n    },\n    {\n      \"qid\": \"Q004\",\n      \"text\": \"书架上有5本不同的数学书和4本不同的物理书，从中选3本，要求数学书和物理书都至少有1本，有多少种选法\",\n      \"category\": \"组合应用\",\n      \"difficulty\": \"中等\"\n    },\n    {\n      \"qid\": \"Q005\",\n      \"text\": \"将6个不同的小球放入3个不同的盒子，每个盒子至少放1个，有多少种放法\",\n      \"category\": \"组合进阶\",\n      \"difficulty\": \"困难\"\n    },\n    {\n      \"qid\": \"Q006\",\n      \"text\": \"从1,2,3,...,10中任取3个数，使它们成等差数列，这样的等差数列共有多少个\",\n      \"category\": \"组合进阶\",\n      \"difficulty\": \"困难\",\n      \"_dirty\": true,\n      \"_dirty_reason\": \"原题答案存疑，暂不修正，保留原始记录\"\n    },\n    {\n      \"qid\": \"Q007\",\n      \"text\": \"题目内容缺失，导入时字段不完整\",\n      \"category\": \"\",\n      \"difficulty\": \"\",\n      \"_dirty\": true,\n      \"_dirty_reason\": \"导入时字段不齐整，text字段为空或缺失关键字段\"\n    },\n    {\n      \"qid\": \"Q008\",\n      \"text\": \"某会议有10人参加，每两人握手一次，共握手多少次\",\n      \"category\": \"组合基础\",\n      \"difficulty\": \"简单\"\n    }\n  ]\n}\n",
+      "notes": "文件来源: questions_sample.json"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "system",
+      "change_type": "question_list",
+      "added_qids": [
+        "Q001",
+        "Q002",
+        "Q003",
+        "Q004",
+        "Q005",
+        "Q006",
+        "Q007",
+        "Q008"
+      ],
+      "removed_qids": [],
+      "old_count": 0,
+      "new_count": 8,
+      "reason": "从 2026年6月建模题库原始导出 加载题目清单"
+    }
+  ],
+  "weight_history": [
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q001",
+      "previous_weight": null,
+      "new_weight": 10.0,
+      "delta": null,
+      "reason": "基础题，权重适中"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q002",
+      "previous_weight": null,
+      "new_weight": 20.0,
+      "delta": null,
+      "reason": "中等题，权重较高"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q003",
+      "previous_weight": null,
+      "new_weight": 25.0,
+      "delta": null,
+      "reason": "应用类，权重较高"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q004",
+      "previous_weight": null,
+      "new_weight": 25.0,
+      "delta": null,
+      "reason": "应用类，权重较高"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "外推测试",
+      "change_type": "weight",
+      "qid": "Q005",
+      "previous_weight": null,
+      "new_weight": 150.0,
+      "delta": null,
+      "reason": "【外推越界测试用例】权重超出正常范围[0,100]，用于验证边界检测"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q006",
+      "previous_weight": null,
+      "new_weight": 35.0,
+      "delta": null,
+      "reason": "进阶级，权重高"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "系统",
+      "change_type": "weight",
+      "qid": "Q007",
+      "previous_weight": null,
+      "new_weight": 5.0,
+      "delta": null,
+      "reason": "脏数据，低权重"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:24",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q008",
+      "previous_weight": null,
+      "new_weight": 8.0,
+      "delta": null,
+      "reason": "简单题，权重较低"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q001",
+      "previous_weight": null,
+      "new_weight": 10.0,
+      "delta": null,
+      "reason": "基础题，权重适中"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q002",
+      "previous_weight": null,
+      "new_weight": 20.0,
+      "delta": null,
+      "reason": "中等题，权重较高"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q003",
+      "previous_weight": null,
+      "new_weight": 25.0,
+      "delta": null,
+      "reason": "应用类，权重较高"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q004",
+      "previous_weight": null,
+      "new_weight": 25.0,
+      "delta": null,
+      "reason": "应用类，权重较高"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "外推测试",
+      "change_type": "weight",
+      "qid": "Q005",
+      "previous_weight": null,
+      "new_weight": 150.0,
+      "delta": null,
+      "reason": "【外推越界测试用例】权重超出正常范围[0,100]，用于验证边界检测"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q006",
+      "previous_weight": null,
+      "new_weight": 35.0,
+      "delta": null,
+      "reason": "进阶级，权重高"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "系统",
+      "change_type": "weight",
+      "qid": "Q007",
+      "previous_weight": null,
+      "new_weight": 5.0,
+      "delta": null,
+      "reason": "脏数据，低权重"
+    },
+    {
+      "timestamp": "2026-06-12T21:35:31",
+      "changed_by": "小岑",
+      "change_type": "weight",
+      "qid": "Q008",
+      "previous_weight": null,
+      "new_weight": 8.0,
+      "delta": null,
+      "reason": "简单题，权重较低"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "_note": "权重配置文件，Q005的权重故意设为150，用于测试外推越界检测",
+  "weights": [
+    {
+      "qid": "Q001",
+      "weight": 10.0,
+      "changed_by": "小岑",
+      "reason": "基础题，权重适中"
+    },
+    {
+      "qid": "Q002",
+      "weight": 20.0,
+      "changed_by": "小岑",
+      "reason": "中等题，权重较高"
+    },
+    {
+      "qid": "Q003",
+      "weight": 25.0,
+      "changed_by": "小岑",
+      "reason": "应用类，权重较高"
+    },
+    {
+      "qid": "Q004",
+      "weight": 25.0,
+      "changed_by": "小岑",
+      "reason": "应用类，权重较高"
+    },
+    {
+      "qid": "Q005",
+      "weight": 150.0,
+      "changed_by": "外推测试",
+      "reason": "【外推越界测试用例】权重超出正常范围[0,100]，用于验证边界检测"
+    },
+    {
+      "qid": "Q006",
+      "weight": 35.0,
+      "changed_by": "小岑",
+      "reason": "进阶级，权重高"
+    },
+    {
+      "qid": "Q007",
+      "weight": 5.0,
+      "changed_by": "系统",
+      "reason": "脏数据，低权重"
+    },
+    {
+      "qid": "Q008",
+      "weight": 8.0,
+      "changed_by": "小岑",
+      "reason": "简单题，权重较低"
+    }
+  ],
+  "occurrence_counts": {
+    "Q001": 15,
+    "Q002": 12,
+    "Q003": 10,
+    "Q004": 10,
+    "Q005": 5,
+    "Q006": 3,
+    "Q007": 2,
+    "Q008": 18
+  },
+  "weight_bounds": [0.0, 100.0]
+}
