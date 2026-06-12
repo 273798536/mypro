@@ -1,0 +1,135 @@
+# ==========================================================
+#  海上施工禁区核查系统 - curl 操作示例
+# ==========================================================
+
+# ----------------------------------------------------------
+#  一、启动检查
+# ----------------------------------------------------------
+
+# 1. 检查服务健康状态
+curl http://localhost:5001/api/health
+
+# ----------------------------------------------------------
+#  二、导入数据
+# ----------------------------------------------------------
+
+# 2. 导入新的核查记录
+curl -X POST http://localhost:5001/api/records/import \
+  -H "Content-Type: application/json" \
+  -d '{
+    "record_no": "HJ202606006",
+    "project_name": "测试项目-海底管道检修",
+    "construction_area": "杭州湾跨海大桥南侧海域",
+    "coordinates": "121.3456,30.6789",
+    "planned_date": "2026-06-15",
+    "construction_type": "水下焊接作业",
+    "submitter": "测试人员",
+    "submit_time": "2026-06-12 10:00:00"
+  }'
+
+# 3. 导入气象预报数据（补录）
+#    注意：record_id 需要替换为实际的记录ID
+curl -X POST http://localhost:5001/api/forecasts/import \
+  -H "Content-Type: application/json" \
+  -d '{
+    "record_id": 1,
+    "forecast_date": "2026-06-13",
+    "wind_level": 5,
+    "wave_height": 1.8,
+    "visibility": 6,
+    "forecast_source": "国家海洋预报台",
+    "forecast_time": "2026-06-12 08:00:00",
+    "is_delayed": 0
+  }'
+
+# 4. 导入有延迟标记的气象预报（模拟风浪预报晚到场景）
+curl -X POST http://localhost:5001/api/forecasts/import \
+  -H "Content-Type: application/json" \
+  -d '{
+    "record_id": 1,
+    "forecast_date": "2026-06-13",
+    "wind_level": 4,
+    "wave_height": 1.2,
+    "visibility": 8,
+    "forecast_source": "浙江省海洋监测站",
+    "forecast_time": "2026-06-10 20:00:00",
+    "is_delayed": 1,
+    "delay_reason": "监测浮标通信中断，数据延迟48小时"
+  }'
+
+# ----------------------------------------------------------
+#  三、查看异常
+# ----------------------------------------------------------
+
+# 5. 查看所有异常汇总（含下一步操作建议）
+curl http://localhost:5001/api/anomalies
+
+# 6. 查看单条记录详情（含评估历史、预报数据、异常记录）
+curl http://localhost:5001/api/records/3
+
+# 7. 查看所有记录列表
+curl http://localhost:5001/api/records
+
+# ----------------------------------------------------------
+#  四、风险评估
+# ----------------------------------------------------------
+
+# 8. 评估全部记录
+curl -X POST http://localhost:5001/api/assess \
+  -H "Content-Type: application/json" \
+  -d '{"assessor": "your_name"}'
+
+# 9. 评估单条记录
+curl -X POST http://localhost:5001/api/assess \
+  -H "Content-Type: application/json" \
+  -d '{"record_id": 3, "assessor": "your_name"}'
+
+# ----------------------------------------------------------
+#  五、导出结果
+# ----------------------------------------------------------
+
+# 10. 导出全部记录的TXT报告（自动下载）
+curl -OJ http://localhost:5001/api/export
+
+# 11. 导出单条记录的TXT报告
+curl -OJ "http://localhost:5001/api/export?record_id=3"
+
+# 12. 以JSON格式获取报告内容
+curl "http://localhost:5001/api/export?format=json"
+
+# ----------------------------------------------------------
+#  六、异常处理
+# ----------------------------------------------------------
+
+# 13. 标记异常为已解决
+curl -X POST http://localhost:5001/api/anomalies/1/resolve \
+  -H "Content-Type: application/json" \
+  -d '{"resolution_note": "已联系预报台补发最新数据"}'
+
+# ==========================================================
+#  典型工作流示例
+# ==========================================================
+
+# 场景：处理一条风浪预报晚到的记录
+# 步骤1：查看异常，找到预报晚到的记录
+curl http://localhost:5001/api/anomalies
+
+# 步骤2：查看该记录详情，了解具体情况
+curl http://localhost:5001/api/records/3
+
+# 步骤3：补录最新的气象预报（系统会自动重新评估）
+curl -X POST http://localhost:5001/api/forecasts/import \
+  -H "Content-Type: application/json" \
+  -d '{
+    "record_id": 3,
+    "forecast_date": "2026-06-14",
+    "wind_level": 3,
+    "wave_height": 0.8,
+    "visibility": 10,
+    "forecast_source": "温州海洋预报台",
+    "forecast_time": "2026-06-12 16:00:00",
+    "is_delayed": 0
+  }'
+
+# 步骤4：导出最新报告
+curl -OJ "http://localhost:5001/api/export?record_id=3"
