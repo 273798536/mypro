@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>组合计数错题复盘</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>组合计数错题复盘</h1>
+      <p class="subtitle">灰度发布版 · 判题溯源 · 备注影响 · 越界告警 · 撤回复算</p>
+    </div>
+    <div class="header-actions">
+      <button id="btnRefresh" class="btn">刷新数据</button>
+      <button id="btnDelivery" class="btn btn-primary">导出交付说明</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="stats-card">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-label">错题总数</div>
+          <div class="stat-value" id="statTotal">-</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">判题记录</div>
+          <div class="stat-value" id="statJudgments">-</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">老师备注</div>
+          <div class="stat-value" id="statNotes">-</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">越界告警</div>
+          <div class="stat-value" id="statAlerts">-</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">临时改动</div>
+          <div class="stat-value" id="statTemp">-</div>
+        </div>
+      </div>
+
+      <div class="consistency-box">
+        <h3>📊 图表 · 明细 一致性校验</h3>
+        <div class="consistency-grid">
+          <div class="consistency-col">
+            <div class="consistency-title">图表口径</div>
+            <div class="consistency-row"><span>正确</span><strong id="chartCorrect">-</strong></div>
+            <div class="consistency-row"><span>错误</span><strong id="chartWrong">-</strong></div>
+            <div class="consistency-row"><span>待处理</span><strong id="chartPending">-</strong></div>
+          </div>
+          <div class="consistency-col">
+            <div class="consistency-title">明细口径</div>
+            <div class="consistency-row"><span>正确</span><strong id="detailCorrect">-</strong></div>
+            <div class="consistency-row"><span>错误</span><strong id="detailWrong">-</strong></div>
+            <div class="consistency-row"><span>待处理</span><strong id="detailPending">-</strong></div>
+          </div>
+          <div class="consistency-col">
+            <div class="consistency-title">校验结果</div>
+            <div id="consistencyResult" class="consistency-result pending">等待校验</div>
+            <button id="btnVerifyConsistency" class="btn btn-primary mt-s">立即复算校验</button>
+            <div id="recalcInfo" class="mt-s recalc-info"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tabs">
+      <button class="tab-btn active" data-tab="questions">错题列表</button>
+      <button class="tab-btn" data-tab="alerts">外推越界告警</button>
+      <button class="tab-btn" data-tab="audit">操作审计</button>
+    </section>
+
+    <section id="tab-questions" class="tab-content active">
+      <div id="questionsList" class="questions-list"></div>
+    </section>
+
+    <section id="tab-alerts" class="tab-content">
+      <div id="alertsList" class="alerts-list"></div>
+    </section>
+
+    <section id="tab-audit" class="tab-content">
+      <div id="auditList" class="audit-list"></div>
+    </section>
+  </main>
+
+  <div id="modalRoot"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
