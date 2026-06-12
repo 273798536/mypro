@@ -1,0 +1,64 @@
+[
+  {
+    "record_id": "Q-001",
+    "source": "official",
+    "question_text": "已知 3 阶方阵 A 的特征值为 1, 2, 3，求 cond₂(A) 的近似值。",
+    "student_answer": "3",
+    "correct_answer": "3",
+    "condition_number": 3,
+    "unit": "无量纲"
+  },
+  {
+    "record_id": "Q-002",
+    "source": "student_old_version",
+    "question_text": "设 A 为 2 阶矩阵 [[1, 2], [3, 4]]，求其无穷范数条件数。",
+    "student_answer": "21",
+    "correct_answer": "21",
+    "condition_number": 21,
+    "unit": "无量纲"
+  },
+  {
+    "record_id": "Q-003",
+    "source": "manual_revision",
+    "question_text": "已知 Hilbert 矩阵 H₃，求其 1-范数条件数。",
+    "student_answer": "约 492",
+    "correct_answer": "约 748（已人工改判，原答案错误）",
+    "condition_number": 748,
+    "unit": "无量纲"
+  },
+  {
+    "record_id": "Q-004",
+    "source": "verbal_note",
+    "question_text": "（口头补录）学生提到对角矩阵 diag(1,10,100) 的条件数是 100。",
+    "student_answer": "100",
+    "correct_answer": "100",
+    "condition_number": 100,
+    "unit": "无量纲"
+  },
+  {
+    "record_id": "Q-005",
+    "source": "official",
+    "question_text": "求 2 阶单位矩阵的 2-范数条件数。",
+    "student_answer": "1",
+    "correct_answer": "1",
+    "condition_number": 1
+  },
+  {
+    "record_id": "Q-006",
+    "source": "official",
+    "question_text": "",
+    "student_answer": "",
+    "correct_answer": "",
+    "condition_number": null,
+    "unit": ""
+  },
+  {
+    "record_id": "Q-007",
+    "source": "official",
+    "question_text": "某矩阵条件数为 N/A，判断其数值稳定性。",
+    "student_answer": "不稳定",
+    "correct_answer": "无法判断",
+    "condition_number": "N/A",
+    "unit": "无量纲"
+  }
+]
