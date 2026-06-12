@@ -1,0 +1,15 @@
+{
+  "name": "shortest-path-trial",
+  "version": "1.0.0",
+  "description": "最短路径参数试算工具",
+  "bin": {
+    "sptrial": "./bin/sptrial.js"
+  },
+  "scripts": {
+    "start": "node bin/sptrial.js",
+    "demo": "node bin/sptrial.js ./samples/question-list.csv"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
