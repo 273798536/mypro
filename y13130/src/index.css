@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  background: #fbfaf7;
+  color: #0f172a;
+}
+
+.font-display {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+.card {
+  @apply bg-white border border-paper-200 rounded-[6px] shadow-card;
+}
+
+.tag {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded;
+}
+
+.btn {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-[6px] font-medium text-sm transition-all;
+}
+
+.btn-primary {
+  @apply btn bg-ink-800 text-white hover:bg-ink-700 active:bg-ink-900;
+}
+
+.btn-ghost {
+  @apply btn bg-transparent text-ink-800 hover:bg-paper-100;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 1.6s ease-in-out infinite;
+}
