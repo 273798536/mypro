@@ -1,0 +1,40 @@
+{
+  "filter_conditions": {
+    "data_set": "2026-Q2 教研样本",
+    "include_empty_input": true,
+    "matrix_dimension_max": 2,
+    "note": "复盘补充：此筛选改变了原判断——空集合不计入异常，而计入合法样本分类"
+  },
+  "param_groups": [
+    {
+      "label": "A组-对照（正常2x2，单位mm）",
+      "original_st_source": "计算草稿 v3 第17行",
+      "meta": {
+        "units": "mm"
+      },
+      "matrix": [
+        [1.0, 0.0],
+        [0.0, 1.0]
+      ]
+    },
+    {
+      "label": "B组-对照（正常2x2，单位缺失）",
+      "original_st_source": "计算草稿 v3 第22行",
+      "meta": {
+        "units": ""
+      },
+      "matrix": [
+        [2.0, 1.0],
+        [1.0, 2.0]
+      ]
+    },
+    {
+      "label": "C组-空集合输入（空列表）",
+      "original_st_source": "计算草稿 v3 第28行",
+      "meta": {
+        "units": "m"
+      },
+      "matrix": []
+    }
+  ]
+}
