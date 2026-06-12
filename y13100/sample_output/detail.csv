@@ -1,0 +1,9 @@
+record_id,segment,historical_answer,actual_value,abs_diff,unit,sort_key,flag,withdrawal_reason,final_conclusion,final_value,source
+R001,seg_A,1.5,1.5,0.0000000000,%,1,OK,,,,sample_answers.csv#L2
+R002,seg_A,2.3,2.31,0.0100000000,%,2,ERROR|WITHDRAWN|SORT_UNSTABLE,样本量不足边界值偏差,修正为2.30,2.30,sample_answers.csv#L3
+R003,seg_A,0.8,1.2,0.4000000000,%,2,ERROR|SORT_UNSTABLE,,,,sample_answers.csv#L4
+R004,seg_B,100.0,95.0,5.0000000000,bp,3,ERROR,,,,sample_answers.csv#L5
+R005,seg_B,150.0,1.5,0.0000000000,bp,4,WITHDRAWN,单位换算错误,bp改为%,1.5,sample_answers.csv#L6
+R006,seg_B,205.0,2.05,0.0000000000,bp,5,OK,,,,sample_answers.csv#L7
+R008,seg_C,25000.0,25000.0,0.0000000000,万,7,OK,,,,sample_answers.csv#L9
+R009,seg_C,50000.0,50000.0,0.0000000000,,8,OK,,,,sample_answers.csv#L10

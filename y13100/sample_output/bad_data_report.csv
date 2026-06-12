@@ -1,0 +1,3 @@
+file,row,record_id,error,detail
+./sample_input/sample_answers.csv,8,R007,non-numeric actual_value,actual_value=1万
+./sample_input/sample_answers.csv,11,R010,missing historical_answer,historical_answer is empty

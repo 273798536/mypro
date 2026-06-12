@@ -1,0 +1,11 @@
+record_id,segment,historical_answer,actual_value,unit,sort_key,source_file,source_row,actual_unit
+R001,seg_A,1.5,1.5,%,1,sample_answers.csv,2,%
+R002,seg_A,2.3,2.31,%,2,sample_answers.csv,3,%
+R003,seg_A,0.8,1.2,%,2,sample_answers.csv,4,%
+R004,seg_B,100,95,bp,3,sample_answers.csv,5,bp
+R005,seg_B,150,1.5,bp,4,sample_answers.csv,6,%
+R006,seg_B,205,2.05,bp,5,sample_answers.csv,7,%
+R007,seg_C,10000,1万,万,6,sample_answers.csv,8,万
+R008,seg_C,25000,25000,万,7,sample_answers.csv,9,万
+R009,seg_C,50000,50000,,8,sample_answers.csv,10,
+R010,seg_A,,1.0,%,9,sample_answers.csv,11,%

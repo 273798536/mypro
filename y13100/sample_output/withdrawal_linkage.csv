@@ -1,0 +1,4 @@
+withdrawal_id,withdrawn_record_id,withdrawal_reason,final_conclusion,final_value,final_unit,original_answer,original_actual,original_diff,link_status,source_row
+W001,R002,样本量不足边界值偏差,修正为2.30,2.30,%,2.3,2.31,0.0100000000,linked,sample_answers.csv#L3
+W002,R005,单位换算错误,bp改为%,1.5,%,150.0,1.5,0.0000000000,linked,sample_answers.csv#L6
+W003,R999,测试断链记录,该记录不存在,0.0,%,NOT_FOUND,NOT_FOUND,N/A,broken,
