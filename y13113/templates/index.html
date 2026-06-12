@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排队窗口图表解释 - 数据处理链</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+        .header { background: linear-gradient(135deg, #1976d2, #2196f3); color: white; padding: 24px 32px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 24px; margin-bottom: 4px; }
+        .header .subtitle { opacity: 0.9; font-size: 14px; }
+        .container { max-width: 1400px; margin: 24px auto; padding: 0 24px; }
+        .status-bar { background: white; border-radius: 8px; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); display: flex; flex-wrap: wrap; gap: 32px; align-items: center; }
+        .status-item { display: flex; flex-direction: column; }
+        .status-label { font-size: 12px; color: #666; margin-bottom: 2px; }
+        .status-value { font-size: 20px; font-weight: 600; color: #1976d2; }
+        .status-value.warning { color: #f57c00; }
+        .status-value.danger { color: #d32f2f; }
+        .status-value.success { color: #388e3c; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        @media (max-width: 1024px) { .grid { grid-template-columns: 1fr; } }
+        .card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .card h2 { font-size: 18px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #e3f2fd; color: #1976d2; display: flex; align-items: center; gap: 8px; }
+        .card h2 .badge { font-size: 12px; padding: 2px 8px; border-radius: 12px; font-weight: normal; }
+        .badge-processed { background: #c8e6c9; color: #2e7d32; }
+        .badge-pending { background: #ffe0b2; color: #e65100; }
+        .badge-manual { background: #bbdefb; color: #1565c0; }
+        .form-group { margin-bottom: 16px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; font-weight: 500; }
+        input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: border-color 0.2s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #1976d2; }
+        button { background: #1976d2; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #1565c0; }
+        button.danger { background: #d32f2f; }
+        button.danger:hover { background: #b71c1c; }
+        button.success { background: #388e3c; }
+        button.success:hover { background: #2e7d32; }
+        button.warning { background: #f57c00; }
+        button.warning:hover { background: #e65100; }
+        .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+        .record-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .record-table th, .record-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .record-table th { background: #f5f5f5; font-weight: 600; color: #555; font-size: 12px; text-transform: uppercase; }
+        .record-table tr.boundary { background: #ffebee; }
+        .record-table tr.boundary td { color: #c62828; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+        .tag-normal { background: #c8e6c9; color: #2e7d32; }
+        .tag-boundary { background: #ffcdd2; color: #c62828; }
+        .material-item { background: #fafafa; border-left: 3px solid #1976d2; padding: 12px 16px; margin-bottom: 12px; border-radius: 4px; }
+        .material-item.history { border-left-color: #7b1fa2; }
+        .material-item.supplement { border-left-color: #f57c00; }
+        .material-item.normal { border-left-color: #388e3c; }
+        .material-meta { font-size: 11px; color: #888; margin-top: 6px; }
+        .screenshot-container { margin-bottom: 24px; }
+        .screenshot-container img { width: 100%; border-radius: 6px; border: 1px solid #eee; }
+        .screenshot-desc { margin-top: 8px; font-size: 13px; color: #555; line-height: 1.5; }
+        .calc-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .calc-modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 8px; padding: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .modal-content h3 { margin-bottom: 16px; color: #1976d2; }
+        .calc-step { background: #f5f5f5; padding: 10px 14px; margin-bottom: 8px; border-radius: 4px; font-family: 'Monaco', 'Consolas', monospace; font-size: 13px; line-height: 1.6; }
+        .calc-step.warning { background: #fff3e0; border-left: 3px solid #f57c00; }
+        .close-modal { float: right; background: none; color: #999; font-size: 24px; padding: 0; cursor: pointer; }
+        .close-modal:hover { color: #333; background: none; }
+        .step-indicator { display: flex; justify-content: space-between; margin-bottom: 24px; }
+        .step { flex: 1; text-align: center; padding: 12px; background: white; border-radius: 6px; margin: 0 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+        .step.active { background: #1976d2; color: white; }
+        .step-number { font-size: 20px; font-weight: bold; }
+        .step-label { font-size: 12px; margin-top: 4px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #888; }
+        .empty-state svg { width: 64px; height: 64px; margin-bottom: 12px; opacity: 0.5; }
+        .link-btn { background: none; color: #1976d2; padding: 4px 8px; font-size: 12px; text-decoration: underline; }
+        .link-btn:hover { background: #e3f2fd; }
+        .manual-form { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #ddd; }
+        .session-info { background: #e3f2fd; padding: 8px 16px; border-radius: 4px; font-size: 12px; color: #1565c0; margin-left: auto; }
+        .section-divider { height: 2px; background: linear-gradient(90deg, transparent, #1976d2, transparent); margin: 32px 0; }
+        .demo-banner { background: linear-gradient(135deg, #fff3e0, #ffe0b2); border: 1px solid #ffb74d; border-radius: 8px; padding: 16px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .demo-banner .text { font-size: 14px; color: #e65100; }
+        .demo-banner .text strong { display: block; font-size: 15px; margin-bottom: 4px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 排队窗口图表解释 - 数据处理链</h1>
+        <div class="subtitle">边界样本检测 · 计算过程透明化 · 结果分类归档</div>
+    </div>
+
+    <div class="container">
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-label">处理状态</span>
+                <span class="status-value {{ 'success' if state.status == 'screenshots_generated' else 'warning' }}">
+                    {% if state.status == 'ready' %}待开始
+                    {% elif state.status == 'demo_loaded' %}演示数据已加载
+                    {% elif state.status == 'processing' %}处理中
+                    {% elif state.status == 'screenshots_generated' %}已完成
+                    {% else %}{{ state.status }}
+                    {% endif %}
+                </span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">总记录数</span>
+                <span class="status-value">{{ state.total_records }}</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">正常处理</span>
+                <span class="status-value success">{{ state.processed_count }}</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">除零边界</span>
+                <span class="status-value danger">{{ state.boundary_count }}</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">当前步骤</span>
+                <span class="status-value">{{ state.current_step }} / {{ state.total_records if state.total_records > 0 else '-' }}</span>
+            </div>
+            <div class="session-info">
+                会话ID: {{ state.session_id }}<br>
+                上次更新: {{ state.updated_at.strftime('%Y-%m-%d %H:%M:%S') }}
+            </div>
+        </div>
+
+        <div class="step-indicator">
+            <div class="step {{ 'active' if state.current_step >= 0 else '' }}">
+                <div class="step-number">1</div>
+                <div class="step-label">材料准备</div>
+            </div>
+            <div class="step {{ 'active' if state.current_step >= 1 else '' }}">
+                <div class="step-number">2</div>
+                <div class="step-label">记录录入</div>
+            </div>
+            <div class="step {{ 'active' if state.current_step >= 2 else '' }}">
+                <div class="step-number">3</div>
+                <div class="step-label">边界检测</div>
+            </div>
+            <div class="step {{ 'active' if state.status == 'screenshots_generated' else '' }}">
+                <div class="step-number">4</div>
+                <div class="step-label">生成图表</div>
+            </div>
+            <div class="step {{ 'active' if screenshots_manual else '' }}">
+                <div class="step-number">5</div>
+                <div class="step-label">人工改判</div>
+            </div>
+        </div>
+
+        {% if state.status == 'ready' or state.total_records == 0 %}
+        <div class="demo-banner">
+            <div class="text">
+                <strong>🎯 快速演示</strong>
+                系统预置了演示数据：1条正常记录(A-01) + 1条除零边界(B-03)，点击加载可一键查看完整处理流程
+            </div>
+            <form action="/load_demo_data" method="POST">
+                <button type="submit" class="warning">📥 加载演示数据</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="grid">
+            <div class="card">
+                <h2>📝 添加排队记录</h2>
+                <form action="/add_record" method="POST">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>窗口编号</label>
+                            <input type="text" name="window_id" placeholder="如：A-01" required>
+                        </div>
+                        <div class="form-group">
+                            <label>时间单位</label>
+                            <select name="unit">
+                                <option value="seconds">秒 (seconds)</option>
+                                <option value="minutes">分钟 (minutes)</option>
+                                <option value="hours">小时 (hours)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>总等待时间</label>
+                            <input type="number" step="0.1" name="total_wait_time" placeholder="如：1250.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>排队人数</label>
+                            <input type="number" name="queue_length" placeholder="如：25（填0触发除零边界）" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>已服务人数</label>
+                        <input type="number" name="service_count" placeholder="如：23" required>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit">➕ 添加并处理</button>
+                    </div>
+                </form>
+
+                <div class="section-divider"></div>
+
+                <h2>📚 添加说明材料</h2>
+                <form action="/add_material" method="POST">
+                    <div class="form-group">
+                        <label>材料分类</label>
+                        <select name="category">
+                            <option value="history">📜 历史答案</option>
+                            <option value="normal">📋 正常记录说明</option>
+                            <option value="supplement">📎 后补说明</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>来源</label>
+                        <input type="text" name="source" placeholder="如：历史答案库-案例#20260610">
+                    </div>
+                    <div class="form-group">
+                        <label>内容</label>
+                        <textarea name="content" rows="3" placeholder="请输入材料内容..." required></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit">📎 添加材料</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>📊 排队记录列表 <span class="badge badge-pending">{{ boundary_records|length }} 条边界</span></h2>
+                {% if records %}
+                <table class="record-table">
+                    <thead>
+                        <tr>
+                            <th>窗口</th>
+                            <th>总等待</th>
+                            <th>排队人数</th>
+                            <th>已服务</th>
+                            <th>平均等待</th>
+                            <th>类型</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in records %}
+                        <tr class="{{ 'boundary' if r.is_boundary else '' }}">
+                            <td><strong>{{ r.window_id }}</strong></td>
+                            <td>{{ r.total_wait_time }}{{ r.unit }}</td>
+                            <td>{{ r.queue_length }} 人</td>
+                            <td>{{ r.service_count }} 人</td>
+                            <td>
+                                {% if r.is_boundary %}
+                                <span style="color:#d32f2f">除零错误</span>
+                                {% else %}
+                                {{ "%.2f"|format(r.avg_wait_time) }} 分钟
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if r.is_boundary %}
+                                <span class="tag tag-boundary">除零边界</span>
+                                {% else %}
+                                <span class="tag tag-normal">正常</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="link-btn" onclick="showCalc({{ r.id }})">查看计算过程</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    <p>暂无排队记录<br><small>请点击左侧"加载演示数据"或手动添加</small></p>
+                </div>
+                {% endif %}
+
+                {% if records %}
+                <div style="margin-top: 20px;">
+                    <form action="/generate_screenshots" method="POST" id="screenshot-form">
+                        <button type="submit" class="success">🖼️ 生成图表截图</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if materials_history or materials_normal or materials_supplement %}
+        <div class="card" style="margin-bottom: 24px;">
+            <h2>📚 说明材料库</h2>
+            <div class="grid" style="margin-bottom: 0;">
+                <div>
+                    <h3 style="font-size: 14px; color:#7b1fa2; margin-bottom: 12px;">📜 历史答案 ({{ materials_history|length }})</h3>
+                    {% for m in materials_history %}
+                    <div class="material-item history">
+                        <div>{{ m.content }}</div>
+                        <div class="material-meta">来源: {{ m.source }} · {{ m.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    </div>
+                    {% else %}
+                    <p style="color:#888; font-size:13px;">暂无历史答案材料</p>
+                    {% endfor %}
+                </div>
+                <div>
+                    <h3 style="font-size: 14px; color:#f57c00; margin-bottom: 12px;">📎 后补说明 ({{ materials_supplement|length }})</h3>
+                    {% for m in materials_supplement %}
+                    <div class="material-item supplement">
+                        <div>{{ m.content }}</div>
+                        <div class="material-meta">来源: {{ m.source }} · {{ m.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    </div>
+                    {% else %}
+                    <p style="color:#888; font-size:13px;">暂无后补说明材料</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if materials_normal %}
+            <div style="margin-top: 20px;">
+                <h3 style="font-size: 14px; color:#388e3c; margin-bottom: 12px;">📋 正常记录说明 ({{ materials_normal|length }})</h3>
+                {% for m in materials_normal %}
+                <div class="material-item normal">
+                    <div>{{ m.content }}</div>
+                    <div class="material-meta">来源: {{ m.source }} · {{ m.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div class="section-divider"></div>
+
+        <h2 style="font-size: 20px; margin-bottom: 20px; color: #1976d2;">🖼️ 截图说明归档</h2>
+
+        <div class="grid">
+            <div class="card">
+                <h2>✅ 已处理 <span class="badge badge-processed">{{ screenshots_processed|length }}</span></h2>
+                {% for s in screenshots_processed %}
+                <div class="screenshot-container">
+                    <h4 style="margin-bottom: 8px; color: #388e3c;">{{ s.title }}</h4>
+                    <img src="data:image/png;base64,{{ s.image_base64 }}" alt="{{ s.title }}">
+                    <div class="screenshot-desc">{{ s.description }}</div>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <p>暂无已处理截图</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="card">
+                <h2>⏳ 待补材料 <span class="badge badge-pending">{{ screenshots_pending|length }}</span></h2>
+                {% for s in screenshots_pending %}
+                <div class="screenshot-container">
+                    <h4 style="margin-bottom: 8px; color: #f57c00;">{{ s.title }}</h4>
+                    <img src="data:image/png;base64,{{ s.image_base64 }}" alt="{{ s.title }}">
+                    <div class="screenshot-desc">{{ s.description }}</div>
+                    <div class="manual-form">
+                        <form action="/mark_manual" method="POST">
+                            <input type="hidden" name="screenshot_id" value="{{ s.id }}">
+                            <input type="hidden" name="description" value="{{ s.description }}">
+                            <div class="form-group">
+                                <label>人工改判说明</label>
+                                <textarea name="judgment" rows="2" placeholder="请输入人工判定结果，如：此为设备维护期间误记录，予以剔除..." required></textarea>
+                            </div>
+                            <button type="submit" class="warning">✋ 标记为人工改判</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <p>暂无待补材料<br><small>除零边界记录会自动出现在这里</small></p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if screenshots_manual %}
+        <div class="card" style="margin-top: 24px;">
+            <h2>✋ 人工改判 <span class="badge badge-manual">{{ screenshots_manual|length }}</span></h2>
+            <div class="grid" style="margin-bottom: 0;">
+                {% for s in screenshots_manual %}
+                <div class="screenshot-container">
+                    <h4 style="margin-bottom: 8px; color: #1565c0;">{{ s.title }}</h4>
+                    <img src="data:image/png;base64,{{ s.image_base64 }}" alt="{{ s.title }}">
+                    <div class="screenshot-desc" style="white-space: pre-line;">{{ s.description }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div style="margin-top: 32px; text-align: center; padding: 20px;">
+            <form action="/reset_session" method="POST" onsubmit="return confirm('确定要重置当前会话吗？所有数据将被清除。');">
+                <button type="submit" class="danger">🔄 重置当前会话</button>
+            </form>
+            <p style="margin-top: 16px; font-size: 12px; color: #888;">
+                💡 提示：数据保存在本地 SQLite 数据库中，服务重启后仍可通过 Cookie 恢复上次会话状态
+            </p>
+        </div>
+    </div>
+
+    <div class="calc-modal" id="calcModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+            <h3 id="modalTitle">计算过程详情</h3>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        function showCalc(recordId) {
+            fetch('/api/record/' + recordId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('modalTitle').textContent =
+                        '窗口 ' + data.window_id + ' - 计算过程详情';
+
+                    let html = '';
+                    if (data.is_boundary) {
+                        html += '<div style="background:#ffebee; padding:12px; border-radius:6px; margin-bottom:16px; border-left:4px solid #d32f2f;">';
+                        html += '<strong style="color:#c62828;">⚠️ 除零边界记录</strong><br>';
+                        html += '排队人数=' + data.queue_length + '，平均等待时间计算出现除零错误';
+                        html += '</div>';
+                    }
+
+                    html += '<div style="margin-bottom:16px;">';
+                    html += '<strong>输入参数：</strong><br>';
+                    html += '• 总等待时间：' + data.total_wait_time + ' ' + data.unit + '<br>';
+                    html += '• 排队人数：' + data.queue_length + ' 人<br>';
+                    html += '• 已服务人数：' + data.service_count + ' 人<br>';
+                    html += '</div>';
+
+                    html += '<strong>计算步骤：</strong>';
+                    data.calculation_steps.forEach((step, index) => {
+                        const isWarning = step.includes('⚠️') || step.includes('除零') || step.includes('边界');
+                        html += '<div class="calc-step ' + (isWarning ? 'warning' : '') + '">';
+                        html += '<span style="color:#1976d2; font-weight:bold;">步骤' + (index + 1) + '：</span> ';
+                        html += step.replace('⚠️ ', '');
+                        html += '</div>';
+                    });
+
+                    if (!data.is_boundary) {
+                        html += '<div style="margin-top:16px; background:#e8f5e9; padding:12px; border-radius:6px; border-left:4px solid #388e3c;">';
+                        html += '<strong style="color:#2e7d32;">✅ 计算结果：</strong> 平均等待时间 = ' +
+                            data.avg_wait_time.toFixed(4) + ' 分钟';
+                        html += '</div>';
+                    }
+
+                    document.getElementById('modalBody').innerHTML = html;
+                    document.getElementById('calcModal').classList.add('active');
+                });
+        }
+
+        function closeModal() {
+            document.getElementById('calcModal').classList.remove('active');
+        }
+
+        document.getElementById('calcModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.getElementById('screenshot-form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = this.querySelector('button');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ 正在生成图表...';
+            btn.disabled = true;
+
+            fetch(this.action, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                        btn.textContent = originalText;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                });
+        });
+    </script>
+</body>
+</html>
