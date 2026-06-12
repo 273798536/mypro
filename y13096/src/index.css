@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #C9E4FF;
+  background: #0A1628;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: #0A1628;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(30, 58, 95, 0.25);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 170, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 170, 0.7);
+}
+
+.font-display { font-family: 'Orbitron', sans-serif; letter-spacing: 0.02em; }
+.font-mono    { font-family: 'JetBrains Mono', monospace; }
+
+/* ===== Aero-Industrial Utility Classes ===== */
+.aero-panel {
+  background: linear-gradient(180deg, rgba(15, 32, 56, 0.95) 0%, rgba(10, 22, 40, 0.95) 100%);
+  border: 1px solid #1E3A5F;
+  border-radius: 6px;
+  backdrop-filter: blur(8px);
+}
+.aero-panel-inner {
+  background: rgba(6, 18, 36, 0.6);
+  border: 1px solid rgba(30, 58, 95, 0.6);
+  border-radius: 4px;
+}
+.aero-border-glow {
+  box-shadow: inset 0 0 0 1px rgba(0, 212, 170, 0.15), 0 0 18px rgba(0, 212, 170, 0.05);
+}
+.aero-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 4px;
+  background: rgba(30, 58, 95, 0.5);
+  border: 1px solid rgba(0, 212, 170, 0.25);
+  color: #C9E4FF; font-size: 12px; font-weight: 500;
+  transition: all .18s ease;
+  cursor: pointer;
+}
+.aero-btn:hover {
+  background: rgba(0, 212, 170, 0.15);
+  border-color: rgba(0, 212, 170, 0.6);
+  box-shadow: 0 0 10px rgba(0, 212, 170, 0.2);
+}
+.aero-btn-primary {
+  background: linear-gradient(180deg, rgba(0, 212, 170, 0.35), rgba(0, 212, 170, 0.15));
+  border-color: rgba(0, 212, 170, 0.6);
+}
+.aero-btn-danger {
+  background: rgba(255, 77, 79, 0.12);
+  border-color: rgba(255, 77, 79, 0.5);
+  color: #FFB4B6;
+}
+.aero-btn-danger:hover {
+  background: rgba(255, 77, 79, 0.22);
+  box-shadow: 0 0 10px rgba(255, 77, 79, 0.25);
+}
+.aero-input {
+  background: rgba(6, 18, 36, 0.8);
+  border: 1px solid rgba(30, 58, 95, 0.8);
+  color: #C9E4FF;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  outline: none;
+  transition: all .15s ease;
+}
+.aero-input:focus {
+  border-color: rgba(0, 212, 170, 0.6);
+  box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.12);
+}
+.aero-tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 3px;
+  font-size: 11px; font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+}
+.aero-corner {
+  position: relative;
+}
+.aero-corner::before, .aero-corner::after {
+  content: ''; position: absolute; width: 10px; height: 10px;
+  border: 1px solid rgba(0, 212, 170, 0.6);
+}
+.aero-corner::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
+.aero-corner::after  { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+
+/* ===== Leaflet overrides (dark aero theme) ===== */
+.leaflet-container {
+  background: #061224 !important;
+  outline: none;
+}
+.leaflet-tile-container { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(1.1) saturate(0.6); }
+.leaflet-control-attribution {
+  background: rgba(10, 22, 40, 0.7) !important;
+  color: rgba(107, 139, 168, 0.6) !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a { color: rgba(0, 212, 170, 0.6) !important; }
+.leaflet-control-zoom a {
+  background: rgba(15, 32, 56, 0.9) !important;
+  color: #00D4AA !important;
+  border-color: #1E3A5F !important;
+  width: 28px !important; height: 28px !important;
+  line-height: 26px !important;
+}
+.leaflet-control-zoom a:hover { background: rgba(0, 212, 170, 0.2) !important; }
+.leaflet-popup-content-wrapper {
+  background: rgba(10, 22, 40, 0.95) !important;
+  color: #C9E4FF !important;
+  border: 1px solid #1E3A5F !important;
+  border-radius: 4px !important;
+}
+.leaflet-popup-tip { background: #1E3A5F !important; }
+.leaflet-tooltip {
+  background: rgba(10, 22, 40, 0.95) !important;
+  border: 1px solid rgba(0, 212, 170, 0.4) !important;
+  color: #C9E4FF !important;
+  font-size: 11px !important;
+  padding: 3px 8px !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+  border-color: transparent !important;
+}
+.custom-point-marker {
+  position: relative;
+  width: 22px; height: 22px;
+  transform: translate(-50%, -50%);
+}
+.custom-point-marker .core {
+  position: absolute; inset: 6px;
+  border-radius: 50%;
+  background: #00D4AA;
+  box-shadow: 0 0 8px rgba(0, 212, 170, 0.8);
+  z-index: 2;
+}
+.custom-point-marker .ring {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 212, 170, 0.6);
+  animation: pulseRing 2s ease-out infinite;
+  z-index: 1;
+}
+.custom-point-marker.anomaly .core { background: #FF4D4F; box-shadow: 0 0 10px rgba(255, 77, 79, 0.9); }
+.custom-point-marker.anomaly .ring { border-color: rgba(255, 77, 79, 0.7); }
+.custom-point-marker.warn .core { background: #FF7A45; box-shadow: 0 0 10px rgba(255, 122, 69, 0.9); }
+.custom-point-marker.warn .ring { border-color: rgba(255, 122, 69, 0.7); }
+.custom-point-marker.selected .core {
+  background: #FFD93D;
+  box-shadow: 0 0 14px rgba(255, 217, 61, 1);
+}
+@keyframes pulseRing {
+  0% { transform: scale(0.7); opacity: 0.85; }
+  100% { transform: scale(2.0); opacity: 0; }
+}
+
+/* ===== D3 timeline ===== */
+.timeline-grid line {
+  stroke: rgba(0, 212, 170, 0.12);
+  stroke-dasharray: 2 4;
+}
+.timeline-axis path, .timeline-axis line {
+  stroke: rgba(0, 212, 170, 0.35);
+}
+.timeline-axis text {
+  fill: #6B8BA8;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+}
+.timeline-gap-critical {
+  fill: url(#gapCriticalPattern);
+  stroke: #FF4D4F;
+  stroke-width: 1;
+}
+.timeline-gap-warning {
+  fill: url(#gapWarningPattern);
+  stroke: #FF7A45;
+  stroke-width: 1;
+}
+.timeline-playhead {
+  stroke: #FFD93D;
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px rgba(255, 217, 61, 0.8));
+  pointer-events: none;
+}
+.timeline-marker-dot {
+  cursor: pointer;
+  transition: r .15s ease;
+}
+.timeline-marker-dot:hover { stroke: #FFD93D; stroke-width: 2; }
+
+/* ===== Drawer animation ===== */
+.drawer-enter { transform: translateX(100%); }
+.drawer-enter-active { transform: translateX(0); transition: transform .28s ease; }
+.drawer-exit { transform: translateX(0); }
+.drawer-exit-active { transform: translateX(100%); transition: transform .24s ease; }
