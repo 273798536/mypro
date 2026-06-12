@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>养殖网箱缺氧预警 · 历史回看</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <header class="brand">
+      <div class="logo">🐟</div>
+      <div>
+        <h1>养殖网箱缺氧预警</h1>
+        <p class="subtitle">历史回看 · 风险通报留痕</p>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <button class="nav-item active" data-view="history">
+        <span class="nav-icon">🕒</span>历史回看<span class="badge">日常入口</span>
+      </button>
+      <button class="nav-item" data-view="map">
+        <span class="nav-icon">🗺️</span>地图联动<span class="badge muted">月底/课前</span>
+      </button>
+      <button class="nav-item" data-view="import">
+        <span class="nav-icon">📥</span>浮标导入
+      </button>
+      <button class="nav-item" data-view="audit">
+        <span class="nav-icon">🔍</span>修正审计链
+      </button>
+    </nav>
+
+    <section class="panel" id="filter-panel">
+      <h3>筛选条件</h3>
+      <div class="filter-row">
+        <label>风险等级</label>
+        <div class="chip-group" id="risk-filter">
+          <button class="chip active" data-risk="all">全部</button>
+          <button class="chip danger" data-risk="high">高危</button>
+          <button class="chip warn" data-risk="mid">中危</button>
+          <button class="chip ok" data-risk="low">正常</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <label>数据状态</label>
+        <div class="chip-group" id="data-filter">
+          <button class="chip active" data-status="all">全部</button>
+          <button class="chip ok" data-status="ok">可用</button>
+          <button class="chip warn" data-status="hold">暂缓</button>
+          <button class="chip danger" data-status="recollect">待重采</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <label>修正状态</label>
+        <div class="chip-group" id="review-filter">
+          <button class="chip active" data-review="all">全部</button>
+          <button class="chip warn" data-review="pending">待确认</button>
+          <button class="chip ok" data-review="approved">已通过</button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <label>剖切深度</label>
+        <input type="range" id="clip-depth" min="0" max="100" value="100" />
+        <div class="range-label"><span>水面</span><span id="clip-value">0 m</span><span>海底</span></div>
+      </div>
+    </section>
+
+    <section class="panel" id="timeline-panel">
+      <h3>时间轴 · 历史回看</h3>
+      <div id="timeline"></div>
+      <div class="version-compare" id="version-compare"></div>
+    </section>
+  </aside>
+
+  <main id="main">
+    <div id="topbar">
+      <div class="crumb" id="breadcrumb">历史回看 / 当前批次 2026-06-12-A</div>
+      <div class="actions">
+        <button id="btn-rotate" class="action-btn active">🔄 自动旋转</button>
+        <button id="btn-reset" class="action-btn">🎯 重置视角</button>
+        <button id="btn-export" class="action-btn">📤 导出通报</button>
+      </div>
+    </div>
+
+    <div id="viewport-wrap">
+      <div id="viewport"></div>
+      <div id="legend">
+        <div class="legend-title">图例</div>
+        <div class="legend-item"><span class="dot high"></span>高危 (DO &lt; 3 mg/L)</div>
+        <div class="legend-item"><span class="dot mid"></span>中危 (3-5 mg/L)</div>
+        <div class="legend-item"><span class="dot low"></span>正常 (&gt; 5 mg/L)</div>
+        <div class="legend-divider"></div>
+        <div class="legend-item"><span class="dot ok"></span>数据可用</div>
+        <div class="legend-item"><span class="dot hold"></span>数据暂缓</div>
+        <div class="legend-item"><span class="dot recollect"></span>待重采</div>
+        <div class="legend-divider"></div>
+        <div class="legend-item"><span class="dot pending"></span>待确认修正</div>
+      </div>
+    </div>
+
+    <section id="detail-panel">
+      <div class="detail-header">
+        <h3 id="detail-title">选择一个网箱或浮标查看明细</h3>
+        <div class="detail-status" id="detail-status"></div>
+      </div>
+      <div class="detail-body" id="detail-body">
+        <p class="placeholder">点击 3D 场景中的网箱、浮标，或在下方通报列表中选择条目。</p>
+      </div>
+    </section>
+
+    <section id="alert-panel">
+      <div class="alert-header">
+        <h3>风险通报 · 去重展示</h3>
+        <div class="alert-meta" id="alert-meta">同一批次数据合并显示，重复导入自动归档</div>
+      </div>
+      <div id="alert-list"></div>
+    </section>
+  </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
