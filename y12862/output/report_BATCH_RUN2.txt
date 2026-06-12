@@ -1,0 +1,263 @@
+============================================================
+  SEAGRASS BED COVERAGE ESTIMATION REPORT
+============================================================
+  Batch ID:       BATCH_RUN2
+  Run Time:       2026-06-12T08:06:53.042784+00:00
+  Total Records:  10
+
+--- Coverage Statistics ---
+  Estimated:      7 / 10
+  Average:        4.10%
+  Median:         1.92%
+  Max:            17.08%
+  Min:            -5.18%
+
+--- Quality Flags ---
+  Flagged:        6 / 10
+  Weather issues: 1
+  Tide issues:    1
+  Track issues:   4
+  Duplicates:     1
+
+  *** DUPLICATE REPORT (NOT just a vague reminder) ***
+    Record 2e3e9ff9b40a: 与记录 568e79ae970b 重复（同船同时同位置）
+
+--- Anomaly Traceback (for acceptance review) ---
+  记录 2e3e9ff9b40a (状态: cleaned)
+    船: V001, 时间: 2026-06-10T08:00:00+00:00 (UTC+8)
+    位置: (118.5000, 24.3000), 深度: 5.20m
+    标记: duplicate
+    重复于: 568e79ae970b
+    处理意见:
+      [weather_forecast] weather_module - 气象条件可用 -> accept
+        证据: forecast_id = fc_e35f4dc7
+        证据: wind_speed_mps = 9.43
+        证据: wave_height_m = 0.7
+        证据: visibility_km = 10.7
+        证据: weather_condition = clear
+      [duplicate_check] duplicate_detector - 与记录 568e79ae970b 重复（同船同时同位置） -> mark_duplicate
+        证据: fingerprint = 28aceefc8a40e3cb9021c800e637d051
+        证据: duplicate_of = 568e79ae970b
+        证据: duplicate_fields = ['vessel_id', 'survey_time', 'longitude', 'latitude']
+      [tide_computation] tide_module - 潮位计算完成，时区一致 -> accept
+        证据: tide_level_m = -0.631
+        证据: tide_phase = rising
+        证据: station = 厦门潮位站
+        证据: timezone_match = True
+      [track_cleaning] track_cleaner - 轨迹清洗通过 -> keep
+        证据: point_index = 1
+        证据: depth_valid = True
+        证据: speed_valid = True
+        证据: heading_valid = True
+        证据: is_outlier = False
+      [coverage_estimation] coverage_estimator - 重复上报记录，不参与覆盖度估算 -> skip_duplicate
+        证据: coverage = None
+        证据: confidence = duplicate
+        证据: depth_m = 5.2
+        证据: tide_level_m = -0.631
+        证据: wind_speed_mps = 9.43
+        证据: visibility_km = 10.7
+        证据: weather_condition = clear
+    来源:
+      weather_forecast/marine_weather_center (id=fc_e35f4dc7)
+      tide_station/厦门潮位站 (id=TIDE_XM_001)
+  记录 96aedf33e511 (状态: estimated)
+    船: V002, 时间: 2026-06-10T08:05:00+00:00 (UTC+8)
+    位置: (118.5020, 24.3010), 深度: 6.00m
+    覆盖度: -3.48%
+    标记: track_heading_jump
+    处理意见:
+      [weather_forecast] weather_module - 气象条件可用 -> accept
+        证据: forecast_id = fc_9a24d4f4
+        证据: wind_speed_mps = 9.43
+        证据: wave_height_m = 0.7
+        证据: visibility_km = 10.7
+        证据: weather_condition = clear
+      [duplicate_check] duplicate_detector - 指纹唯一，无重复 -> keep
+        证据: fingerprint = 08ce495b724a199109fd2b707804791a
+        证据: duplicate_group_size = 1
+      [tide_computation] tide_module - 潮位计算完成，时区一致 -> accept
+        证据: tide_level_m = -0.571
+        证据: tide_phase = rising
+        证据: station = 厦门潮位站
+        证据: timezone_match = True
+      [track_cleaning] track_cleaner - 轨迹清洗发现异常点，已标记 -> flag_outlier
+        证据: point_index = 2
+        证据: speed_kmh = 2.77
+        证据: heading_deg = 63.4
+        证据: depth_valid = True
+        证据: speed_valid = True
+        证据: heading_valid = False
+        证据: is_outlier = True
+      [coverage_estimation] coverage_estimator - 覆盖度估算完成，置信度high -> estimated
+        证据: coverage = -0.0348
+        证据: confidence = high
+        证据: depth_m = 6.0
+        证据: tide_level_m = -0.571
+        证据: wind_speed_mps = 9.43
+        证据: visibility_km = 10.7
+        证据: weather_condition = clear
+    来源:
+      weather_forecast/marine_weather_center (id=fc_9a24d4f4)
+      tide_station/厦门潮位站 (id=TIDE_XM_001)
+  记录 9964f0b19632 (状态: flagged)
+    船: V001, 时间: 2026-06-10T08:31:00+00:00 (UTC+8)
+    位置: (119.5100, 25.3060), 深度: 10.00m
+    标记: track_speed_anomaly
+    处理意见:
+      [weather_forecast] weather_module - 气象条件可用 -> accept
+        证据: forecast_id = fc_8f9904dd
+        证据: wind_speed_mps = 9.53
+        证据: wave_height_m = 0.7
+        证据: visibility_km = 10.7
+        证据: weather_condition = clear
+      [duplicate_check] duplicate_detector - 指纹唯一，无重复 -> keep
+        证据: fingerprint = 821b832f931ef90d333407da7f9d0076
+        证据: duplicate_group_size = 1
+      [tide_computation] tide_module - 潮位计算完成，时区一致 -> accept
+        证据: tide_level_m = -0.237
+        证据: tide_phase = rising
+        证据: station = 厦门潮位站
+        证据: timezone_match = True
+      [track_cleaning] track_cleaner - 轨迹清洗发现异常点，已标记 -> flag_outlier
+        证据: point_index = 6
+        证据: speed_kmh = 9010.35
+        证据: heading_deg = 45.0
+        证据: depth_valid = True
+        证据: speed_valid = False
+        证据: heading_valid = True
+        证据: is_outlier = True
+      [coverage_estimation] coverage_estimator - 因轨迹异常，不参与覆盖度估算 -> skip_track_outlier
+        证据: coverage = None
+        证据: confidence = invalid
+        证据: depth_m = 10.0
+        证据: tide_level_m = -0.237
+        证据: wind_speed_mps = 9.53
+        证据: visibility_km = 10.7
+        证据: weather_condition = clear
+    来源:
+      weather_forecast/marine_weather_center (id=fc_8f9904dd)
+      tide_station/厦门潮位站 (id=TIDE_XM_001)
+  记录 19a15d97ec2c (状态: flagged)
+    船: V001, 时间: 2026-06-10T08:45:00+00:00 (UTC+8)
+    位置: (118.5150, 24.3090), 深度: 120.00m
+    标记: track_depth_anomaly, track_speed_anomaly
+    处理意见:
+      [weather_forecast] weather_module - 气象条件可用 -> accept
+        证据: forecast_id = fc_d03bf049
+        证据: wind_speed_mps = 9.43
+        证据: wave_height_m = 0.7
+        证据: visibility_km = 10.7
+        证据: weather_condition = clear
+      [duplicate_check] duplicate_detector - 指纹唯一，无重复 -> keep
+        证据: fingerprint = 75057a870f147cd81029073600e267c2
+        证据: duplicate_group_size = 1
+      [tide_computation] tide_module - 潮位计算完成，时区一致 -> accept
+        证据: tide_level_m = -0.043
+        证据: tide_phase = rising
+        证据: station = 厦门潮位站
+        证据: timezone_match = True
+      [track_cleaning] track_cleaner - 轨迹清洗发现异常点，已标记 -> flag_outlier
+        证据: point_index = 7
+        证据: speed_kmh = 641.08
+        证据: heading_deg = 224.9
+        证据: depth_valid = False
+        证据: speed_valid = False
+        证据: heading_valid = True
+        证据: is_outlier = True
+      [coverage_estimation] coverage_estimator - 因轨迹异常，不参与覆盖度估算 -> skip_track_outlier
+        证据: coverage = None
+        证据: confidence = invalid
+        证据: depth_m = 120.0
+        证据: tide_level_m = -0.043
+        证据: wind_speed_mps = 9.43
+        证据: visibility_km = 10.7
+        证据: weather_condition = clear
+    来源:
+      weather_forecast/marine_weather_center (id=fc_d03bf049)
+      tide_station/厦门潮位站 (id=TIDE_XM_001)
+  记录 bbbfc90470d8 (状态: estimated)
+    船: V003, 时间: 2026-06-10T10:00:00+00:00 (UTC+0)
+    位置: (118.4900, 24.2950), 深度: 4.50m
+    覆盖度: 17.08%
+    标记: tide_timezone_mismatch
+    处理意见:
+      [weather_forecast] weather_module - 气象条件可用 -> accept
+        证据: forecast_id = fc_ed07363b
+        证据: wind_speed_mps = 9.93
+        证据: wave_height_m = 0.75
+        证据: visibility_km = 10.3
+        证据: weather_condition = clear
+      [duplicate_check] duplicate_detector - 指纹唯一，无重复 -> keep
+        证据: fingerprint = 37be4fceea5dbc336f556158e5be93de
+        证据: duplicate_group_size = 1
+      [tide_computation] tide_module - 潮位计算完成，但时区不一致：记录时区UTC+0，潮位站时区UTC+8 -> flag_timezone_mismatch
+        证据: tide_level_m = 1.052
+        证据: tide_phase = rising
+        证据: station = 厦门潮位站
+        证据: record_timezone_offset_hours = 0
+        证据: station_timezone_offset_hours = 8
+        证据: timezone_match = False
+        证据: note = 时区不一致可能导致潮位相位偏差约1小时
+      [track_cleaning] track_cleaner - 轨迹清洗通过 -> keep
+        证据: point_index = 8
+        证据: speed_kmh = 2.38
+        证据: heading_deg = 240.8
+        证据: depth_valid = True
+        证据: speed_valid = True
+        证据: heading_valid = True
+        证据: is_outlier = False
+      [coverage_estimation] coverage_estimator - 覆盖度估算完成，置信度high -> estimated
+        证据: coverage = 0.1708
+        证据: confidence = high
+        证据: depth_m = 4.5
+        证据: tide_level_m = 1.052
+        证据: wind_speed_mps = 9.93
+        证据: visibility_km = 10.3
+        证据: weather_condition = clear
+    来源:
+      weather_forecast/marine_weather_center (id=fc_ed07363b)
+      tide_station/厦门潮位站 (id=TIDE_XM_001)
+  记录 b0d802ec9187 (状态: estimated)
+    船: V002, 时间: 2026-06-10T22:30:00+00:00 (UTC+8)
+    位置: (118.5200, 24.3100), 深度: 6.50m
+    覆盖度: 12.51%
+    标记: weather_windy, track_heading_jump
+    处理意见:
+      [weather_forecast] weather_module - 气象条件风力偏大，覆盖度可能偏低 -> accept_with_caveat
+        证据: forecast_id = fc_c3fc9ebe
+        证据: wind_speed_mps = 12.93
+        证据: wave_height_m = 1.05
+        证据: visibility_km = 8.3
+        证据: weather_condition = windy
+      [duplicate_check] duplicate_detector - 指纹唯一，无重复 -> keep
+        证据: fingerprint = 9cca3d4a931e4ced5e5499e5902ba5f9
+        证据: duplicate_group_size = 1
+      [tide_computation] tide_module - 潮位计算完成，时区一致 -> accept
+        证据: tide_level_m = 1.105
+        证据: tide_phase = rising
+        证据: station = 厦门潮位站
+        证据: timezone_match = True
+      [track_cleaning] track_cleaner - 轨迹清洗发现异常点，已标记 -> flag_outlier
+        证据: point_index = 9
+        证据: speed_kmh = 0.28
+        证据: heading_deg = 63.4
+        证据: depth_valid = True
+        证据: speed_valid = True
+        证据: heading_valid = False
+        证据: is_outlier = True
+      [coverage_estimation] coverage_estimator - 覆盖度估算完成，置信度medium -> estimated
+        证据: coverage = 0.1251
+        证据: confidence = medium
+        证据: depth_m = 6.5
+        证据: tide_level_m = 1.105
+        证据: wind_speed_mps = 12.93
+        证据: visibility_km = 8.3
+        证据: weather_condition = windy
+    来源:
+      weather_forecast/marine_weather_center (id=fc_c3fc9ebe)
+      tide_station/厦门潮位站 (id=TIDE_XM_001)
+
+============================================================
+  END OF REPORT
+============================================================

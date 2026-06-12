@@ -1,0 +1,11 @@
+record_id	vessel_id	survey_time	tz_offset	lon	lat	depth_m	coverage	weather	wind_mps	tide_m	tide_phase	status	flags	duplicate_of
+56ce2e8c5783	V001	2026-06-10T08:00:00+00:00	UTC+8	118.5	24.3	5.0	-5.18%	clear	9.43	-0.631	rising	estimated	-	-
+f30562aba21a	V001	2026-06-10T08:00:00+00:00	UTC+8	118.5	24.3	5.2	N/A	clear	9.43	-0.631	rising	cleaned	duplicate	56ce2e8c5783
+63123d55a9ad	V002	2026-06-10T08:05:00+00:00	UTC+8	118.502	24.301	6.0	-3.48%	clear	9.43	-0.571	rising	estimated	track_heading_jump	-
+ceddcace418f	V001	2026-06-10T08:15:00+00:00	UTC+8	118.505	24.303	7.2	0.06%	clear	9.43	-0.448	rising	estimated	-	-
+dccf10309b8a	V002	2026-06-10T08:20:00+00:00	UTC+8	118.508	24.305	4.2	1.92%	clear	9.43	-0.384	rising	estimated	-	-
+f9aba6a137be	V001	2026-06-10T08:30:00+00:00	UTC+8	118.51	24.306	3.8	5.80%	clear	9.43	-0.251	rising	estimated	-	-
+65e2edacc800	V001	2026-06-10T08:31:00+00:00	UTC+8	119.51	25.306	10.0	N/A	clear	9.53	-0.237	rising	flagged	track_speed_anomaly	-
+ae41ee015979	V001	2026-06-10T08:45:00+00:00	UTC+8	118.515	24.309	120.0	N/A	clear	9.43	-0.043	rising	flagged	track_depth_anomaly, track_speed_anomaly	-
+44115278e3dc	V003	2026-06-10T10:00:00+00:00	UTC+0	118.49	24.295	4.5	17.08%	clear	9.93	1.052	rising	estimated	tide_timezone_mismatch	-
+38fe0a9d0347	V002	2026-06-10T22:30:00+00:00	UTC+8	118.52	24.31	6.5	12.51%	windy	12.93	1.105	rising	estimated	weather_windy, track_heading_jump	-
