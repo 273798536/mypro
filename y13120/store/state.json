@@ -1,0 +1,3478 @@
+{
+  "runs": [
+    {
+      "run_id": "2026-06-12_21-43-04",
+      "started_at": "2026-06-12 21:43:04",
+      "samples": [
+        {
+          "file": "sample01_basic_ok.csv",
+          "fingerprint": "444c368e875e",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "3",
+              "origin_draft": "草稿P12-3",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 3,
+              "source_line": "4",
+              "origin_draft": "草稿P12-4",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 4,
+              "source_line": "5",
+              "origin_draft": "草稿P12-5",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 5,
+              "source_line": "6",
+              "origin_draft": "草稿P12-6",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 6,
+              "source_line": "7",
+              "origin_draft": "草稿P12-7",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 7,
+              "source_line": "8",
+              "origin_draft": "草稿P12-8",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 8,
+              "source_line": "9",
+              "origin_draft": "草稿P12-9",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            }
+          ],
+          "row_count": 7
+        },
+        {
+          "file": "sample02_wrong_distance.csv",
+          "fingerprint": "b7dff56afa94",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "11",
+              "origin_draft": "草稿P13-2",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 3,
+              "source_line": "12",
+              "origin_draft": "草稿P13-3",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 4,
+              "source_line": "13",
+              "origin_draft": "草稿P13-4",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 5,
+              "source_line": "14",
+              "origin_draft": "草稿P13-5",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 6,
+              "source_line": "15",
+              "origin_draft": "草稿P13-6",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 7,
+              "source_line": "16",
+              "origin_draft": "草稿P13-7",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 8,
+              "source_line": "17",
+              "origin_draft": "草稿P13-8",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            }
+          ],
+          "row_count": 7
+        },
+        {
+          "file": "sample03_sort_unstable.csv",
+          "fingerprint": "25ab5555fa03",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "21",
+              "origin_draft": "草稿P14-2 注意B=5,E=5同权",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 3,
+              "source_line": "22",
+              "origin_draft": "草稿P14-3",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 4,
+              "source_line": "23",
+              "origin_draft": "草稿P14-4",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 5,
+              "source_line": "24",
+              "origin_draft": "草稿P14-5",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 6,
+              "source_line": "25",
+              "origin_draft": "草稿P14-6",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 7,
+              "source_line": "26",
+              "origin_draft": "草稿P14-7",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            }
+          ],
+          "row_count": 6
+        },
+        {
+          "file": "sample04_empty_set.csv",
+          "fingerprint": "5c7d4fe852af",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "31",
+              "origin_draft": "草稿P15-1 空了!!",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 3,
+              "source_line": "32",
+              "origin_draft": "草稿P15-2",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 4,
+              "source_line": "33",
+              "origin_draft": "草稿P15-3",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 5,
+              "source_line": "34",
+              "origin_draft": "草稿P15-4",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 6,
+              "source_line": "35",
+              "origin_draft": "草稿P15-5",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            }
+          ],
+          "row_count": 5
+        },
+        {
+          "file": "sample05_dirty_draft.csv",
+          "fingerprint": "e8dc2b6e8bd9",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "41",
+              "origin_draft": "学生手写: 边权写了问号/草稿P16左页",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 3,
+              "source_line": "42",
+              "origin_draft": "草稿P16-2 学生用INF代表无穷",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 4,
+              "source_line": "43",
+              "origin_draft": "草稿P16-3",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 5,
+              "source_line": "44",
+              "origin_draft": "草稿P16-4 学生D的距离写了两个问号",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 6,
+              "source_line": "45",
+              "origin_draft": "草稿P16-5",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            }
+          ],
+          "row_count": 5
+        }
+      ],
+      "totals": {
+        "total_rows": 30,
+        "ok_rows": 7,
+        "distance_error_rows": 12,
+        "sort_unstable_rows": 6,
+        "empty_input_rows": 5,
+        "parse_error_rows": 0,
+        "unique_sort_unstable_cases": 1
+      },
+      "exit_code": 4,
+      "exit_hint": "空集合输入 5 行 (阿宁别再被拖了) | 排序不稳定卡住 @ sample03_sort_unstable.csv 距离=5: 第0位 学生写B 但应为E; 涉及节点['B', 'E'], 影响6行 | 距离值错误 12 行",
+      "sort_unstable_impacts": [
+        {
+          "file": "sample03_sort_unstable.csv",
+          "same_distance": 5,
+          "nodes": [
+            "B",
+            "E"
+          ],
+          "student_order": [
+            "B",
+            "E"
+          ],
+          "expected_order": [
+            "E",
+            "B"
+          ],
+          "stuck_position": 0,
+          "source_lines": [
+            {
+              "source_line": "21",
+              "origin_draft": "草稿P14-2 注意B=5,E=5同权",
+              "csv_line": 2
+            },
+            {
+              "source_line": "22",
+              "origin_draft": "草稿P14-3",
+              "csv_line": 3
+            },
+            {
+              "source_line": "23",
+              "origin_draft": "草稿P14-4",
+              "csv_line": 4
+            },
+            {
+              "source_line": "24",
+              "origin_draft": "草稿P14-5",
+              "csv_line": 5
+            },
+            {
+              "source_line": "25",
+              "origin_draft": "草稿P14-6",
+              "csv_line": 6
+            },
+            {
+              "source_line": "26",
+              "origin_draft": "草稿P14-7",
+              "csv_line": 7
+            }
+          ],
+          "row_count": 6
+        }
+      ],
+      "finished_at": "2026-06-12 21:43:04"
+    },
+    {
+      "run_id": "2026-06-12_21-50-08",
+      "started_at": "2026-06-12 21:50:08",
+      "samples": [
+        {
+          "file": "sample01_basic_ok.csv",
+          "fingerprint": "444c368e875e",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "3",
+              "origin_draft": "草稿P12-3",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 3,
+              "source_line": "4",
+              "origin_draft": "草稿P12-4",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 4,
+              "source_line": "5",
+              "origin_draft": "草稿P12-5",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 5,
+              "source_line": "6",
+              "origin_draft": "草稿P12-6",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 6,
+              "source_line": "7",
+              "origin_draft": "草稿P12-7",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 7,
+              "source_line": "8",
+              "origin_draft": "草稿P12-8",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 8,
+              "source_line": "9",
+              "origin_draft": "草稿P12-9",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [],
+              "ok": true,
+              "sort_unstable_detail": null
+            }
+          ],
+          "row_count": 7
+        },
+        {
+          "file": "sample02_wrong_distance.csv",
+          "fingerprint": "b7dff56afa94",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "11",
+              "origin_draft": "草稿P13-2",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 3,
+              "source_line": "12",
+              "origin_draft": "草稿P13-3",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 4,
+              "source_line": "13",
+              "origin_draft": "草稿P13-4",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 5,
+              "source_line": "14",
+              "origin_draft": "草稿P13-5",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 6,
+              "source_line": "15",
+              "origin_draft": "草稿P13-6",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 7,
+              "source_line": "16",
+              "origin_draft": "草稿P13-7",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 8,
+              "source_line": "17",
+              "origin_draft": "草稿P13-8",
+              "raw_student_answer": "[('A',0),('B',4),('C',9),('D',6),('E',8)]",
+              "raw_expected_answer": "[('A',0),('B',4),('C',8),('D',6),('E',8)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  9
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  4
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  6
+                ],
+                [
+                  "E",
+                  8
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 9, 8)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            }
+          ],
+          "row_count": 7
+        },
+        {
+          "file": "sample03_sort_unstable.csv",
+          "fingerprint": "25ab5555fa03",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "21",
+              "origin_draft": "草稿P14-2 注意B=5,E=5同权",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 3,
+              "source_line": "22",
+              "origin_draft": "草稿P14-3",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 4,
+              "source_line": "23",
+              "origin_draft": "草稿P14-4",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 5,
+              "source_line": "24",
+              "origin_draft": "草稿P14-5",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 6,
+              "source_line": "25",
+              "origin_draft": "草稿P14-6",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            },
+            {
+              "csv_line": 7,
+              "source_line": "26",
+              "origin_draft": "草稿P14-7",
+              "raw_student_answer": "[('A',0),('B',5),('E',5),('C',8),('D',9)]",
+              "raw_expected_answer": "[('A',0),('E',5),('B',5),('C',8),('D',9)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "E",
+                  5
+                ],
+                [
+                  "B",
+                  5
+                ],
+                [
+                  "C",
+                  8
+                ],
+                [
+                  "D",
+                  9
+                ]
+              ],
+              "issues": [
+                "SORT_UNSTABLE@dist=5:stu=['B', 'E'] vs exp=['E', 'B']"
+              ],
+              "ok": false,
+              "sort_unstable_detail": {
+                "same_distance": 5,
+                "same_weight_nodes": [
+                  "B",
+                  "E"
+                ],
+                "student_order": [
+                  "B",
+                  "E"
+                ],
+                "expected_order": [
+                  "E",
+                  "B"
+                ],
+                "stuck_position": 0,
+                "stuck_student_node": "B",
+                "stuck_expected_node": "E"
+              }
+            }
+          ],
+          "row_count": 6
+        },
+        {
+          "file": "sample04_empty_set.csv",
+          "fingerprint": "5c7d4fe852af",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "31",
+              "origin_draft": "草稿P15-1 空了!!",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 3,
+              "source_line": "32",
+              "origin_draft": "草稿P15-2",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 4,
+              "source_line": "33",
+              "origin_draft": "草稿P15-3",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 5,
+              "source_line": "34",
+              "origin_draft": "草稿P15-4",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 6,
+              "source_line": "35",
+              "origin_draft": "草稿P15-5",
+              "raw_student_answer": "[]",
+              "raw_expected_answer": "[('A',0),('B',2),('C',5),('D',6)]",
+              "parsed_student": [],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  2
+                ],
+                [
+                  "C",
+                  5
+                ],
+                [
+                  "D",
+                  6
+                ]
+              ],
+              "issues": [
+                "EMPTY_INPUT"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            }
+          ],
+          "row_count": 5
+        },
+        {
+          "file": "sample05_dirty_draft.csv",
+          "fingerprint": "e8dc2b6e8bd9",
+          "desc": "",
+          "rows": [
+            {
+              "csv_line": 2,
+              "source_line": "41",
+              "origin_draft": "学生手写: 边权写了问号/草稿P16左页",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 3,
+              "source_line": "42",
+              "origin_draft": "草稿P16-2 学生用INF代表无穷",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 4,
+              "source_line": "43",
+              "origin_draft": "草稿P16-3",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 5,
+              "source_line": "44",
+              "origin_draft": "草稿P16-4 学生D的距离写了两个问号",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            },
+            {
+              "csv_line": 6,
+              "source_line": "45",
+              "origin_draft": "草稿P16-5",
+              "raw_student_answer": "{A->0,B->10,C->INF,D->??}",
+              "raw_expected_answer": "[('A',0),('B',10),('C',14),('D',16)]",
+              "parsed_student": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  "INF"
+                ],
+                [
+                  "D",
+                  "??"
+                ]
+              ],
+              "parsed_expected": [
+                [
+                  "A",
+                  0
+                ],
+                [
+                  "B",
+                  10
+                ],
+                [
+                  "C",
+                  14
+                ],
+                [
+                  "D",
+                  16
+                ]
+              ],
+              "issues": [
+                "DISTANCE_WRONG:[('C', 'INF', 14), ('D', '??', 16)]"
+              ],
+              "ok": false,
+              "sort_unstable_detail": null
+            }
+          ],
+          "row_count": 5
+        }
+      ],
+      "totals": {
+        "total_rows": 30,
+        "ok_rows": 7,
+        "distance_error_rows": 12,
+        "sort_unstable_rows": 6,
+        "empty_input_rows": 5,
+        "parse_error_rows": 0,
+        "unique_sort_unstable_cases": 1
+      },
+      "exit_code": 4,
+      "exit_hint": "空集合输入 5 行 (阿宁别再被拖了) | 排序不稳定卡住 @ sample03_sort_unstable.csv 距离=5: 第0位 学生写B 但应为E; 涉及节点['B', 'E'], 影响6行 | 距离值错误 12 行",
+      "sort_unstable_impacts": [
+        {
+          "file": "sample03_sort_unstable.csv",
+          "same_distance": 5,
+          "nodes": [
+            "B",
+            "E"
+          ],
+          "student_order": [
+            "B",
+            "E"
+          ],
+          "expected_order": [
+            "E",
+            "B"
+          ],
+          "stuck_position": 0,
+          "source_lines": [
+            {
+              "source_line": "21",
+              "origin_draft": "草稿P14-2 注意B=5,E=5同权",
+              "csv_line": 2
+            },
+            {
+              "source_line": "22",
+              "origin_draft": "草稿P14-3",
+              "csv_line": 3
+            },
+            {
+              "source_line": "23",
+              "origin_draft": "草稿P14-4",
+              "csv_line": 4
+            },
+            {
+              "source_line": "24",
+              "origin_draft": "草稿P14-5",
+              "csv_line": 5
+            },
+            {
+              "source_line": "25",
+              "origin_draft": "草稿P14-6",
+              "csv_line": 6
+            },
+            {
+              "source_line": "26",
+              "origin_draft": "草稿P14-7",
+              "csv_line": 7
+            }
+          ],
+          "row_count": 6
+        }
+      ],
+      "finished_at": "2026-06-12 21:50:08"
+    }
+  ],
+  "notes": {
+    "2026-06-12_21-43-04": [
+      {
+        "time": "2026-06-12 21:43:04",
+        "text": "首轮验证 - 社区公示前"
+      },
+      {
+        "time": "2026-06-12 21:43:38",
+        "text": "与教研王老师确认: 样例3是heapq不稳定导致, 样例4学生漏填了答案"
+      },
+      {
+        "time": "2026-06-12 21:44:48",
+        "text": "和教研王老师确认_样例3是heapq不稳定导致_样例4学生漏填了答案"
+      }
+    ],
+    "2026-06-12_21-50-08": [
+      {
+        "time": "2026-06-12 21:50:08",
+        "text": "第二轮_样例数据不变重跑验证持久化"
+      }
+    ]
+  },
+  "screenshots": {
+    "2026-06-12_21-43-04": [
+      {
+        "path": "screenshots/sort_unstable_whiteboard.png",
+        "caption": "白板书: 样例3距离=5时 B先于E的排序过程",
+        "added_at": "2026-06-12 21:43:38"
+      },
+      {
+        "path": "screenshots/empty_input_example.png",
+        "caption": "样例4草稿扫描件: 学生5道题都空着没写",
+        "added_at": "2026-06-12 21:43:38"
+      },
+      {
+        "path": "screenshots/sort_unstable_whiteboard.png",
+        "caption": "白板书_样例3距离5时B先于E的排序过程",
+        "added_at": "2026-06-12 21:44:54"
+      },
+      {
+        "path": "screenshots/empty_input_example.png",
+        "caption": "样例4草稿扫描件_学生5道题都空着没写",
+        "added_at": "2026-06-12 21:45:00"
+      }
+    ]
+  },
+  "current_run_id": "2026-06-12_21-50-08",
+  "last_updated": "2026-06-12 21:50:08"
+}
