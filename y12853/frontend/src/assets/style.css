@@ -1,0 +1,73 @@
+html, body, #app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f7fa;
+}
+.page-wrapper {
+  padding: 20px;
+}
+.status-tag {
+  margin-right: 6px;
+}
+.detail-block {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.detail-block h3 {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  color: #303133;
+  border-left: 3px solid #409eff;
+  padding-left: 8px;
+}
+.formula-card {
+  background: #f0f9ff;
+  border: 1px dashed #909399;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin: 8px 0;
+}
+.formula-card .title {
+  font-weight: 600;
+  color: #1f6feb;
+  margin-bottom: 6px;
+}
+.formula-card .expr {
+  font-family: monospace;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 4px 0;
+}
+.summary-text {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  font-size: 13px;
+  color: #606266;
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 6px;
+  border-left: 4px solid #67c23a;
+}
+.summary-text.pending { border-left-color: #e6a23c; }
+.summary-text.recollect { border-left-color: #f56c6c; }
+.summary-text.confirmed { border-left-color: #409eff; }
+.dashboard-card {
+  text-align: center;
+  padding: 20px;
+}
+.dashboard-card .num {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+.dashboard-card .label {
+  color: #909399;
+  font-size: 13px;
+}
