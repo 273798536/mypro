@@ -1,0 +1,40 @@
+{
+  "windows": [
+    {
+      "window_id": "WIN-001",
+      "window_name": "一号办事窗口",
+      "arrival_rate_row_id": "ROW-0001",
+      "service_time_row_id": "ROW-0002",
+      "window_count_row_id": "ROW-0003",
+      "wait_threshold_row_id": "ROW-0004",
+      "utilization_weight_row_id": "ROW-0005"
+    },
+    {
+      "window_id": "WIN-002",
+      "window_name": "二号综合窗口",
+      "arrival_rate_row_id": "ROW-0006",
+      "service_time_row_id": "ROW-0007",
+      "window_count_row_id": "ROW-0008",
+      "wait_threshold_row_id": "ROW-0004",
+      "utilization_weight_row_id": "ROW-0005"
+    },
+    {
+      "window_id": "WIN-003",
+      "window_name": "三号证件窗口",
+      "arrival_rate_row_id": "ROW-0009",
+      "service_time_row_id": "ROW-0010",
+      "window_count_row_id": "ROW-0011",
+      "wait_threshold_row_id": "ROW-0004",
+      "utilization_weight_row_id": "ROW-0005"
+    },
+    {
+      "window_id": "WIN-004",
+      "window_name": "四号咨询窗口",
+      "arrival_rate_row_id": "ROW-0012",
+      "service_time_row_id": "ROW-0013",
+      "window_count_row_id": "ROW-0014",
+      "wait_threshold_row_id": "ROW-0004",
+      "utilization_weight_row_id": "ROW-0005"
+    }
+  ]
+}

@@ -1,0 +1,1942 @@
+{
+  "report_id": "QWV-20260612-202459-326217",
+  "generated_at": "2026-06-12T20:24:59.180685",
+  "param_table_version_a": "params_A_202605_v1.0",
+  "param_table_version_b": "params_B_202606_v1.2",
+  "param_rows": [
+    {
+      "row_id": "ROW-0001",
+      "row_number": 1,
+      "param_name": "一号窗口·到达率",
+      "param_value": 90.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "一号办事窗口每小时到达人数（6月社区集中办事高峰期实测）",
+      "source_line": "参数表B第1行/20260610现场计数",
+      "valid_range": {
+        "min": 10.0,
+        "max": 80.0
+      }
+    },
+    {
+      "row_id": "ROW-0002",
+      "row_number": 2,
+      "param_name": "一号窗口·平均服务时长",
+      "param_value": 7.5,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "一号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表B第2行/叫号系统导出0601-0610",
+      "valid_range": {
+        "min": 2.0,
+        "max": 20.0
+      }
+    },
+    {
+      "row_id": "ROW-0003",
+      "row_number": 3,
+      "param_name": "一号窗口·开设窗口数",
+      "param_value": 2.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "一号窗口同时开放的物理窗口数量（人员培训减编）",
+      "source_line": "参数表B第3行/6月临时排班",
+      "valid_range": {
+        "min": 1.0,
+        "max": 10.0
+      }
+    },
+    {
+      "row_id": "ROW-0004",
+      "row_number": 4,
+      "param_name": "等待时间阈值",
+      "param_value": 15.0,
+      "unit": "minute",
+      "weight": 3.5,
+      "description": "可接受平均等待时间上限(分钟)（服务质量考核指标调高权重）",
+      "source_line": "参数表B第4行/服务质量规范v3修订",
+      "valid_range": {
+        "min": 5.0,
+        "max": 60.0
+      }
+    },
+    {
+      "row_id": "ROW-0005",
+      "row_number": 5,
+      "param_name": "利用率权重",
+      "param_value": 1.0,
+      "unit": "ratio",
+      "weight": 0.7,
+      "description": "综合评分中窗口利用率所占权重（老叶口头调整后补录）",
+      "source_line": "参数表B第5行/20260608评审会口头决议",
+      "valid_range": {
+        "min": 0.5,
+        "max": 3.0
+      }
+    },
+    {
+      "row_id": "ROW-0006",
+      "row_number": 6,
+      "param_name": "二号窗口·到达率",
+      "param_value": 55.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "二号综合窗口每小时到达人数",
+      "source_line": "参数表B第6行/20260610现场计数",
+      "valid_range": {
+        "min": 10.0,
+        "max": 100.0
+      }
+    },
+    {
+      "row_id": "ROW-0007",
+      "row_number": 7,
+      "param_name": "二号窗口·平均服务时长",
+      "param_value": 8.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "二号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表B第7行/叫号系统导出",
+      "valid_range": {
+        "min": 2.0,
+        "max": 30.0
+      }
+    },
+    {
+      "row_id": "ROW-0008",
+      "row_number": 8,
+      "param_name": "二号窗口·开设窗口数",
+      "param_value": 5.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "二号窗口同时开放的物理窗口数量（新增1名见习人员）",
+      "source_line": "参数表B第8行/6月岗位增补",
+      "valid_range": {
+        "min": 1.0,
+        "max": 15.0
+      }
+    },
+    {
+      "row_id": "ROW-0009",
+      "row_number": 9,
+      "param_name": "三号窗口·到达率",
+      "param_value": 28.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "三号证件窗口每小时到达人数",
+      "source_line": "参数表B第9行/20260610现场计数",
+      "valid_range": {
+        "min": 10.0,
+        "max": 80.0
+      }
+    },
+    {
+      "row_id": "ROW-0010",
+      "row_number": 10,
+      "param_name": "三号窗口·平均服务时长",
+      "param_value": 10.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "三号窗口单人平均服务时长(分钟)（流程优化后缩短）",
+      "source_line": "参数表B第10行/预审机制上线后数据",
+      "valid_range": {
+        "min": 2.0,
+        "max": 30.0
+      }
+    },
+    {
+      "row_id": "ROW-0011",
+      "row_number": 11,
+      "param_name": "三号窗口·开设窗口数",
+      "param_value": 4.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "三号窗口同时开放的物理窗口数量（1名调岗）",
+      "source_line": "参数表B第11行/6月调岗排班",
+      "valid_range": {
+        "min": 1.0,
+        "max": 15.0
+      }
+    },
+    {
+      "row_id": "ROW-0012",
+      "row_number": 12,
+      "param_name": "四号窗口·到达率",
+      "param_value": 70.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "四号咨询窗口每小时到达人数（政策咨询高峰外推）",
+      "source_line": "参数表B第12行/政策发布后流量推演",
+      "valid_range": {
+        "min": 5.0,
+        "max": 60.0
+      }
+    },
+    {
+      "row_id": "ROW-0013",
+      "row_number": 13,
+      "param_name": "四号窗口·平均服务时长",
+      "param_value": 5.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "四号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表B第13行/叫号系统导出",
+      "valid_range": {
+        "min": 1.0,
+        "max": 15.0
+      }
+    },
+    {
+      "row_id": "ROW-0014",
+      "row_number": 14,
+      "param_name": "四号窗口·开设窗口数",
+      "param_value": 3.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "四号窗口同时开放的物理窗口数量（临时增派）",
+      "source_line": "参数表B第14行/6月政策窗口临时排班",
+      "valid_range": {
+        "min": 1.0,
+        "max": 8.0
+      }
+    }
+  ],
+  "weight_changes": [
+    {
+      "row_id": "ROW-0004",
+      "param_name": "等待时间阈值",
+      "old_weight": 2.0,
+      "new_weight": 3.5,
+      "changed_by": "老叶_批量验算_20260612",
+      "changed_at": "2026-06-12T20:24:59.179850",
+      "reason": "参数表A与参数表B权重对比差异"
+    },
+    {
+      "row_id": "ROW-0005",
+      "param_name": "利用率权重",
+      "old_weight": 1.0,
+      "new_weight": 0.7,
+      "changed_by": "老叶_批量验算_20260612",
+      "changed_at": "2026-06-12T20:24:59.179909",
+      "reason": "参数表A与参数表B权重对比差异"
+    }
+  ],
+  "notes": [
+    {
+      "note_id": "NOTE-0001",
+      "target_type": "ROW",
+      "target_id": "ROW-0004",
+      "content": "社区公示前权重临时上调至3.5,见服务质量规范v3第2.3条",
+      "author": "老叶_批量验算_20260612",
+      "created_at": "2026-06-12T20:24:59.178852",
+      "is_temporary": true
+    },
+    {
+      "note_id": "NOTE-0002",
+      "target_type": "ROW",
+      "target_id": "ROW-0005",
+      "content": "社区公示前利用率权重临时下调至0.7,20260608评审会口头决议补录",
+      "author": "老叶_批量验算_20260612",
+      "created_at": "2026-06-12T20:24:59.178882",
+      "is_temporary": true
+    },
+    {
+      "note_id": "NOTE-0003",
+      "target_type": "ROW",
+      "target_id": "ROW-0001",
+      "content": "一号窗口到达率90为6月集中办事期峰值外推,尚需下周实测数据佐证",
+      "author": "老叶_批量验算_20260612",
+      "created_at": "2026-06-12T20:24:59.178888",
+      "is_temporary": true
+    }
+  ],
+  "judgments": [
+    {
+      "judgment_id": "JUD-0001",
+      "rule_name": "排队窗口判定::四号咨询窗口",
+      "old_outcome": "PASS",
+      "new_outcome": "FAIL",
+      "affected_window_ids": [
+        "WIN-004"
+      ],
+      "explanation": "四号咨询窗口 的判定从「PASS」变为「FAIL」；综合评分从 88.89 变为 25.00；触发参数: 四号窗口·到达率数值变更、四号窗口·平均服务时长数值变更、四号窗口·开设窗口数数值变更、等待时间阈值权重变更",
+      "related_param_changes": [
+        "四号窗口·到达率数值变更",
+        "四号窗口·平均服务时长数值变更",
+        "四号窗口·开设窗口数数值变更",
+        "等待时间阈值权重变更"
+      ],
+      "related_steps": [
+        "STEP-0047",
+        "STEP-0048"
+      ]
+    }
+  ],
+  "extrapolation_issues": [
+    {
+      "issue_id": "EXT-0001",
+      "window_id": "WIN-001",
+      "param_name": "一号窗口·到达率",
+      "row_id": "ROW-0001",
+      "source_line": "参数表B第1行/20260610现场计数",
+      "extrapolated_value": 90.0,
+      "valid_min": 10.0,
+      "valid_max": 80.0,
+      "direction": "OVERFLOW",
+      "impact_scope": [
+        "一号办事窗口·到达率",
+        "一号办事窗口·服务时长",
+        "一号办事窗口·窗口数",
+        "一号办事窗口·等待阈值"
+      ],
+      "impact_description": "参数「一号窗口·到达率」=90.0person 高于上限 有效区间[10.0, 80.0], 影响窗口排队强度和等待时间评估"
+    },
+    {
+      "issue_id": "EXT-0002",
+      "window_id": "WIN-004",
+      "param_name": "四号窗口·到达率",
+      "row_id": "ROW-0012",
+      "source_line": "参数表B第12行/政策发布后流量推演",
+      "extrapolated_value": 70.0,
+      "valid_min": 5.0,
+      "valid_max": 60.0,
+      "direction": "OVERFLOW",
+      "impact_scope": [
+        "四号咨询窗口·到达率",
+        "四号咨询窗口·服务时长",
+        "四号咨询窗口·窗口数",
+        "四号咨询窗口·等待阈值"
+      ],
+      "impact_description": "参数「四号窗口·到达率」=70.0person 高于上限 有效区间[5.0, 60.0], 影响窗口排队强度和等待时间评估"
+    }
+  ],
+  "evidences": [
+    {
+      "evidence_id": "EVI-0001",
+      "ref_type": "WINDOW",
+      "ref_id": "WIN-001",
+      "title": "一号办事窗口 排队失败补证",
+      "description": "窗口「一号办事窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。",
+      "status": "PENDING",
+      "provided_by": "",
+      "provided_at": null,
+      "attachment_ref": ""
+    },
+    {
+      "evidence_id": "EVI-0002",
+      "ref_type": "WINDOW",
+      "ref_id": "WIN-002",
+      "title": "二号综合窗口 排队失败补证",
+      "description": "窗口「二号综合窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。",
+      "status": "PENDING",
+      "provided_by": "",
+      "provided_at": null,
+      "attachment_ref": ""
+    },
+    {
+      "evidence_id": "EVI-0003",
+      "ref_type": "WINDOW",
+      "ref_id": "WIN-003",
+      "title": "三号证件窗口 排队失败补证",
+      "description": "窗口「三号证件窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。",
+      "status": "PENDING",
+      "provided_by": "",
+      "provided_at": null,
+      "attachment_ref": ""
+    },
+    {
+      "evidence_id": "EVI-0004",
+      "ref_type": "WINDOW",
+      "ref_id": "WIN-004",
+      "title": "四号咨询窗口 排队失败补证",
+      "description": "窗口「四号咨询窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。",
+      "status": "PENDING",
+      "provided_by": "",
+      "provided_at": null,
+      "attachment_ref": ""
+    }
+  ],
+  "timeline": [
+    {
+      "event_id": "TL-0031",
+      "event_type": "NOTE_ADD",
+      "timestamp": "2026-06-12T20:24:59.178852",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "[临时]备注(ROW=ROW-0004): 社区公示前权重临时上调至3.5,见服务质量规范v3第2.3条",
+      "details": {
+        "note_id": "NOTE-0001",
+        "target_type": "ROW",
+        "target_id": "ROW-0004",
+        "content": "社区公示前权重临时上调至3.5,见服务质量规范v3第2.3条",
+        "is_temporary": true
+      }
+    },
+    {
+      "event_id": "TL-0032",
+      "event_type": "NOTE_ADD",
+      "timestamp": "2026-06-12T20:24:59.178882",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "[临时]备注(ROW=ROW-0005): 社区公示前利用率权重临时下调至0.7,20260608评审会口头决议补录",
+      "details": {
+        "note_id": "NOTE-0002",
+        "target_type": "ROW",
+        "target_id": "ROW-0005",
+        "content": "社区公示前利用率权重临时下调至0.7,20260608评审会口头决议补录",
+        "is_temporary": true
+      }
+    },
+    {
+      "event_id": "TL-0033",
+      "event_type": "NOTE_ADD",
+      "timestamp": "2026-06-12T20:24:59.178888",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "[临时]备注(ROW=ROW-0001): 一号窗口到达率90为6月集中办事期峰值外推,尚需下周实测数据佐证",
+      "details": {
+        "note_id": "NOTE-0003",
+        "target_type": "ROW",
+        "target_id": "ROW-0001",
+        "content": "一号窗口到达率90为6月集中办事期峰值外推,尚需下周实测数据佐证",
+        "is_temporary": true
+      }
+    },
+    {
+      "event_id": "TL-0029",
+      "event_type": "WEIGHT_CHANGE",
+      "timestamp": "2026-06-12T20:24:59.179850",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "权重变更: 等待时间阈值 2.0 → 3.5",
+      "details": {
+        "row_id": "ROW-0004",
+        "old_weight": 2.0,
+        "new_weight": 3.5,
+        "reason": "参数表A与参数表B权重对比差异"
+      }
+    },
+    {
+      "event_id": "TL-0030",
+      "event_type": "WEIGHT_CHANGE",
+      "timestamp": "2026-06-12T20:24:59.179909",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "权重变更: 利用率权重 1.0 → 0.7",
+      "details": {
+        "row_id": "ROW-0005",
+        "old_weight": 1.0,
+        "new_weight": 0.7,
+        "reason": "参数表A与参数表B权重对比差异"
+      }
+    },
+    {
+      "event_id": "TL-0001",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.179990",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 一号窗口·到达率 = 45.0person, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0001",
+        "param_name": "一号窗口·到达率",
+        "value": 45.0,
+        "unit": "person",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0002",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180012",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 一号窗口·平均服务时长 = 6.0minute, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0002",
+        "param_name": "一号窗口·平均服务时长",
+        "value": 6.0,
+        "unit": "minute",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0003",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180021",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 一号窗口·开设窗口数 = 3.0window, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0003",
+        "param_name": "一号窗口·开设窗口数",
+        "value": 3.0,
+        "unit": "window",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0004",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180045",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 等待时间阈值 = 15.0minute, 权重=2.0",
+      "details": {
+        "row_id": "ROW-0004",
+        "param_name": "等待时间阈值",
+        "value": 15.0,
+        "unit": "minute",
+        "weight": 2.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0005",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180053",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 利用率权重 = 1.0ratio, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0005",
+        "param_name": "利用率权重",
+        "value": 1.0,
+        "unit": "ratio",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0006",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180060",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 二号窗口·到达率 = 60.0person, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0006",
+        "param_name": "二号窗口·到达率",
+        "value": 60.0,
+        "unit": "person",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0007",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180067",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 二号窗口·平均服务时长 = 8.0minute, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0007",
+        "param_name": "二号窗口·平均服务时长",
+        "value": 8.0,
+        "unit": "minute",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0008",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180074",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 二号窗口·开设窗口数 = 4.0window, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0008",
+        "param_name": "二号窗口·开设窗口数",
+        "value": 4.0,
+        "unit": "window",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0009",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180082",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 三号窗口·到达率 = 30.0person, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0009",
+        "param_name": "三号窗口·到达率",
+        "value": 30.0,
+        "unit": "person",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0010",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180090",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 三号窗口·平均服务时长 = 12.0minute, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0010",
+        "param_name": "三号窗口·平均服务时长",
+        "value": 12.0,
+        "unit": "minute",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0011",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180108",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 三号窗口·开设窗口数 = 5.0window, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0011",
+        "param_name": "三号窗口·开设窗口数",
+        "value": 5.0,
+        "unit": "window",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0012",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180118",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 四号窗口·到达率 = 20.0person, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0012",
+        "param_name": "四号窗口·到达率",
+        "value": 20.0,
+        "unit": "person",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0013",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180125",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 四号窗口·平均服务时长 = 4.0minute, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0013",
+        "param_name": "四号窗口·平均服务时长",
+        "value": 4.0,
+        "unit": "minute",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0014",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180131",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_A_202605_v1.0」载入: 四号窗口·开设窗口数 = 2.0window, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0014",
+        "param_name": "四号窗口·开设窗口数",
+        "value": 2.0,
+        "unit": "window",
+        "weight": 1.0,
+        "version": "params_A_202605_v1.0"
+      }
+    },
+    {
+      "event_id": "TL-0015",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180143",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 一号窗口·到达率 = 90.0person, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0001",
+        "param_name": "一号窗口·到达率",
+        "value": 90.0,
+        "unit": "person",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0016",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180151",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 一号窗口·平均服务时长 = 7.5minute, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0002",
+        "param_name": "一号窗口·平均服务时长",
+        "value": 7.5,
+        "unit": "minute",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0017",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180159",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 一号窗口·开设窗口数 = 2.0window, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0003",
+        "param_name": "一号窗口·开设窗口数",
+        "value": 2.0,
+        "unit": "window",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0018",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180166",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 等待时间阈值 = 15.0minute, 权重=3.5",
+      "details": {
+        "row_id": "ROW-0004",
+        "param_name": "等待时间阈值",
+        "value": 15.0,
+        "unit": "minute",
+        "weight": 3.5,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0019",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180173",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 利用率权重 = 1.0ratio, 权重=0.7",
+      "details": {
+        "row_id": "ROW-0005",
+        "param_name": "利用率权重",
+        "value": 1.0,
+        "unit": "ratio",
+        "weight": 0.7,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0020",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180179",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 二号窗口·到达率 = 55.0person, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0006",
+        "param_name": "二号窗口·到达率",
+        "value": 55.0,
+        "unit": "person",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0021",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180190",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 二号窗口·平均服务时长 = 8.0minute, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0007",
+        "param_name": "二号窗口·平均服务时长",
+        "value": 8.0,
+        "unit": "minute",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0022",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180197",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 二号窗口·开设窗口数 = 5.0window, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0008",
+        "param_name": "二号窗口·开设窗口数",
+        "value": 5.0,
+        "unit": "window",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0023",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180204",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 三号窗口·到达率 = 28.0person, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0009",
+        "param_name": "三号窗口·到达率",
+        "value": 28.0,
+        "unit": "person",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0024",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180274",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 三号窗口·平均服务时长 = 10.0minute, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0010",
+        "param_name": "三号窗口·平均服务时长",
+        "value": 10.0,
+        "unit": "minute",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0025",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180291",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 三号窗口·开设窗口数 = 4.0window, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0011",
+        "param_name": "三号窗口·开设窗口数",
+        "value": 4.0,
+        "unit": "window",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0026",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180404",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 四号窗口·到达率 = 70.0person, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0012",
+        "param_name": "四号窗口·到达率",
+        "value": 70.0,
+        "unit": "person",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0027",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180412",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 四号窗口·平均服务时长 = 5.0minute, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0013",
+        "param_name": "四号窗口·平均服务时长",
+        "value": 5.0,
+        "unit": "minute",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0028",
+      "event_type": "PARAM_INIT",
+      "timestamp": "2026-06-12T20:24:59.180420",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "参数表「params_B_202606_v1.2」载入: 四号窗口·开设窗口数 = 3.0window, 权重=1.0",
+      "details": {
+        "row_id": "ROW-0014",
+        "param_name": "四号窗口·开设窗口数",
+        "value": 3.0,
+        "unit": "window",
+        "weight": 1.0,
+        "version": "params_B_202606_v1.2"
+      }
+    },
+    {
+      "event_id": "TL-0034",
+      "event_type": "JUDGMENT_CHANGE",
+      "timestamp": "2026-06-12T20:24:59.180484",
+      "actor": "排队窗口批量验算",
+      "summary": "判断变更: 排队窗口判定::四号咨询窗口 PASS → FAIL",
+      "details": {
+        "judgment_id": "JUD-0001",
+        "old": "PASS",
+        "new": "FAIL",
+        "explanation": "四号咨询窗口 的判定从「PASS」变为「FAIL」；综合评分从 88.89 变为 25.00；触发参数: 四号窗口·到达率数值变更、四号窗口·平均服务时长数值变更、四号窗口·开设窗口数数值变更、等待时间阈值权重变更",
+        "related_params": [
+          "四号窗口·到达率数值变更",
+          "四号窗口·平均服务时长数值变更",
+          "四号窗口·开设窗口数数值变更",
+          "等待时间阈值权重变更"
+        ]
+      }
+    },
+    {
+      "event_id": "TL-0035",
+      "event_type": "EVIDENCE_PENDING",
+      "timestamp": "2026-06-12T20:24:59.180503",
+      "actor": "系统",
+      "summary": "证据待补: 一号办事窗口 排队失败补证",
+      "details": {
+        "evidence_id": "EVI-0001",
+        "ref_type": "WINDOW",
+        "ref_id": "WIN-001",
+        "description": "窗口「一号办事窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。"
+      }
+    },
+    {
+      "event_id": "TL-0036",
+      "event_type": "EVIDENCE_PENDING",
+      "timestamp": "2026-06-12T20:24:59.180509",
+      "actor": "系统",
+      "summary": "证据待补: 二号综合窗口 排队失败补证",
+      "details": {
+        "evidence_id": "EVI-0002",
+        "ref_type": "WINDOW",
+        "ref_id": "WIN-002",
+        "description": "窗口「二号综合窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。"
+      }
+    },
+    {
+      "event_id": "TL-0037",
+      "event_type": "EVIDENCE_PENDING",
+      "timestamp": "2026-06-12T20:24:59.180514",
+      "actor": "系统",
+      "summary": "证据待补: 三号证件窗口 排队失败补证",
+      "details": {
+        "evidence_id": "EVI-0003",
+        "ref_type": "WINDOW",
+        "ref_id": "WIN-003",
+        "description": "窗口「三号证件窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。"
+      }
+    },
+    {
+      "event_id": "TL-0038",
+      "event_type": "EVIDENCE_PENDING",
+      "timestamp": "2026-06-12T20:24:59.180519",
+      "actor": "系统",
+      "summary": "证据待补: 四号咨询窗口 排队失败补证",
+      "details": {
+        "evidence_id": "EVI-0004",
+        "ref_type": "WINDOW",
+        "ref_id": "WIN-004",
+        "description": "窗口「四号咨询窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。"
+      }
+    },
+    {
+      "event_id": "TL-0039",
+      "event_type": "VERIFY_RUN",
+      "timestamp": "2026-06-12T20:24:59.180798",
+      "actor": "老叶_批量验算_20260612",
+      "summary": "执行「排队窗口批量验算」: 参数变更14项, 判断变更1项, 外推越界2处, 待补证据4条",
+      "details": {
+        "report_id": "QWV-20260612-202459-326217",
+        "param_rows": 14,
+        "weight_changes": 2,
+        "judgments": 1,
+        "judgment_changes": 1,
+        "extrapolation_issues": 2,
+        "evidences_pending": 4,
+        "evidences_provided": 0,
+        "windows_handled": 0,
+        "windows_need_evidence": 4,
+        "windows_todo": 0
+      }
+    }
+  ],
+  "window_verdicts": [
+    {
+      "window_id": "WIN-001",
+      "window_name": "一号办事窗口",
+      "final_score": 25.0,
+      "outcome": "FAIL",
+      "handling_status": "NEED_EVIDENCE",
+      "steps": [
+        {
+          "step_id": "STEP-0001",
+          "step_name": "[A组] 服务时长单位换算",
+          "description": "将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配",
+          "inputs": {
+            "平均服务时长(分钟)": 6.0
+          },
+          "conversions": [
+            {
+              "from_unit": "minute",
+              "to_unit": "hour",
+              "from_value": 6.0,
+              "to_value": 0.1,
+              "conversion_formula": "6.0 分钟 ÷ 60 = 0.1 小时"
+            }
+          ],
+          "calculation": "6.0 分钟 ÷ 60 = 0.1 小时",
+          "result_value": 0.1,
+          "result_unit": "hour",
+          "source_row_ids": [
+            "ROW-0002"
+          ]
+        },
+        {
+          "step_id": "STEP-0002",
+          "step_name": "[A组] 单窗口服务率",
+          "description": "每小时每个窗口能服务的人数",
+          "inputs": {
+            "平均服务时长(小时)": 0.1
+          },
+          "conversions": [],
+          "calculation": "μ = 1 / 0.100000 = 10.0000 人/小时",
+          "result_value": 10.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0002"
+          ]
+        },
+        {
+          "step_id": "STEP-0003",
+          "step_name": "[A组] 系统总服务率",
+          "description": "所有窗口合计每小时能服务的人数",
+          "inputs": {
+            "单窗口服务率": 10.0,
+            "窗口数": 3.0
+          },
+          "conversions": [],
+          "calculation": "总μ = 10.0000 × 3.0 = 30.0000 人/小时",
+          "result_value": 30.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0002",
+            "ROW-0003"
+          ]
+        },
+        {
+          "step_id": "STEP-0004",
+          "step_name": "[A组] 排队强度 ρ",
+          "description": "到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）",
+          "inputs": {
+            "到达率(人/小时)": 45.0,
+            "总服务率": 30.0
+          },
+          "conversions": [],
+          "calculation": "ρ = 45.0 / 30.0000 = 1.5000",
+          "result_value": 1.5,
+          "result_unit": "ratio",
+          "source_row_ids": [
+            "ROW-0001",
+            "ROW-0002",
+            "ROW-0003"
+          ]
+        },
+        {
+          "step_id": "STEP-0005",
+          "step_name": "[A组] 平均等待时间",
+          "description": "用 M/M/c 模型估算排队中的平均等待时长",
+          "inputs": {
+            "排队强度 ρ": 1.5,
+            "到达率": 45.0
+          },
+          "conversions": [
+            {
+              "from_unit": "hour",
+              "to_unit": "minute",
+              "from_value": Infinity,
+              "to_value": Infinity,
+              "conversion_formula": "inf 小时 × 60 = inf 分钟"
+            }
+          ],
+          "calculation": "ρ ≥ 1, 等待时间发散(无穷大)",
+          "result_value": Infinity,
+          "result_unit": "minute",
+          "source_row_ids": [
+            "ROW-0001",
+            "ROW-0002",
+            "ROW-0003"
+          ]
+        },
+        {
+          "step_id": "STEP-0006",
+          "step_name": "[A组] 加权综合评分",
+          "description": "等待时间得分与利用率得分按参数表权重加权",
+          "inputs": {
+            "等待得分": 10.0,
+            "等待阈值权重": 2.0,
+            "利用率得分": 100.0,
+            "利用率权重": 1.0
+          },
+          "conversions": [],
+          "calculation": "score = (10.0 × 2.0 + 100.00 × 1.0) / (2.0 + 1.0) = 40.00",
+          "result_value": 40.0,
+          "result_unit": "score",
+          "source_row_ids": [
+            "ROW-0004",
+            "ROW-0005"
+          ]
+        },
+        {
+          "step_id": "STEP-0007",
+          "step_name": "[B组] 服务时长单位换算",
+          "description": "将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配",
+          "inputs": {
+            "平均服务时长(分钟)": 7.5
+          },
+          "conversions": [
+            {
+              "from_unit": "minute",
+              "to_unit": "hour",
+              "from_value": 7.5,
+              "to_value": 0.125,
+              "conversion_formula": "7.5 分钟 ÷ 60 = 0.125 小时"
+            }
+          ],
+          "calculation": "7.5 分钟 ÷ 60 = 0.125 小时",
+          "result_value": 0.125,
+          "result_unit": "hour",
+          "source_row_ids": [
+            "ROW-0002"
+          ]
+        },
+        {
+          "step_id": "STEP-0008",
+          "step_name": "[B组] 单窗口服务率",
+          "description": "每小时每个窗口能服务的人数",
+          "inputs": {
+            "平均服务时长(小时)": 0.125
+          },
+          "conversions": [],
+          "calculation": "μ = 1 / 0.125000 = 8.0000 人/小时",
+          "result_value": 8.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0002"
+          ]
+        },
+        {
+          "step_id": "STEP-0009",
+          "step_name": "[B组] 系统总服务率",
+          "description": "所有窗口合计每小时能服务的人数",
+          "inputs": {
+            "单窗口服务率": 8.0,
+            "窗口数": 2.0
+          },
+          "conversions": [],
+          "calculation": "总μ = 8.0000 × 2.0 = 16.0000 人/小时",
+          "result_value": 16.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0002",
+            "ROW-0003"
+          ]
+        },
+        {
+          "step_id": "STEP-0010",
+          "step_name": "[B组] 排队强度 ρ",
+          "description": "到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）",
+          "inputs": {
+            "到达率(人/小时)": 90.0,
+            "总服务率": 16.0
+          },
+          "conversions": [],
+          "calculation": "ρ = 90.0 / 16.0000 = 5.6250",
+          "result_value": 5.625,
+          "result_unit": "ratio",
+          "source_row_ids": [
+            "ROW-0001",
+            "ROW-0002",
+            "ROW-0003"
+          ]
+        },
+        {
+          "step_id": "STEP-0011",
+          "step_name": "[B组] 平均等待时间",
+          "description": "用 M/M/c 模型估算排队中的平均等待时长",
+          "inputs": {
+            "排队强度 ρ": 5.625,
+            "到达率": 90.0
+          },
+          "conversions": [
+            {
+              "from_unit": "hour",
+              "to_unit": "minute",
+              "from_value": Infinity,
+              "to_value": Infinity,
+              "conversion_formula": "inf 小时 × 60 = inf 分钟"
+            }
+          ],
+          "calculation": "ρ ≥ 1, 等待时间发散(无穷大)",
+          "result_value": Infinity,
+          "result_unit": "minute",
+          "source_row_ids": [
+            "ROW-0001",
+            "ROW-0002",
+            "ROW-0003"
+          ]
+        },
+        {
+          "step_id": "STEP-0012",
+          "step_name": "[B组] 加权综合评分",
+          "description": "等待时间得分与利用率得分按参数表权重加权",
+          "inputs": {
+            "等待得分": 10.0,
+            "等待阈值权重": 3.5,
+            "利用率得分": 100.0,
+            "利用率权重": 0.7
+          },
+          "conversions": [],
+          "calculation": "score = (10.0 × 3.5 + 100.00 × 0.7) / (3.5 + 0.7) = 25.00",
+          "result_value": 25.0,
+          "result_unit": "score",
+          "source_row_ids": [
+            "ROW-0004",
+            "ROW-0005"
+          ]
+        }
+      ],
+      "issues": [
+        "EXT-0001"
+      ],
+      "evidence_ids": [
+        "EVI-0001"
+      ]
+    },
+    {
+      "window_id": "WIN-002",
+      "window_name": "二号综合窗口",
+      "final_score": 25.0,
+      "outcome": "FAIL",
+      "handling_status": "NEED_EVIDENCE",
+      "steps": [
+        {
+          "step_id": "STEP-0013",
+          "step_name": "[A组] 服务时长单位换算",
+          "description": "将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配",
+          "inputs": {
+            "平均服务时长(分钟)": 8.0
+          },
+          "conversions": [
+            {
+              "from_unit": "minute",
+              "to_unit": "hour",
+              "from_value": 8.0,
+              "to_value": 0.13333333333333333,
+              "conversion_formula": "8.0 分钟 ÷ 60 = 0.13333333333333333 小时"
+            }
+          ],
+          "calculation": "8.0 分钟 ÷ 60 = 0.13333333333333333 小时",
+          "result_value": 0.13333333333333333,
+          "result_unit": "hour",
+          "source_row_ids": [
+            "ROW-0007"
+          ]
+        },
+        {
+          "step_id": "STEP-0014",
+          "step_name": "[A组] 单窗口服务率",
+          "description": "每小时每个窗口能服务的人数",
+          "inputs": {
+            "平均服务时长(小时)": 0.13333333333333333
+          },
+          "conversions": [],
+          "calculation": "μ = 1 / 0.133333 = 7.5000 人/小时",
+          "result_value": 7.5,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0007"
+          ]
+        },
+        {
+          "step_id": "STEP-0015",
+          "step_name": "[A组] 系统总服务率",
+          "description": "所有窗口合计每小时能服务的人数",
+          "inputs": {
+            "单窗口服务率": 7.5,
+            "窗口数": 4.0
+          },
+          "conversions": [],
+          "calculation": "总μ = 7.5000 × 4.0 = 30.0000 人/小时",
+          "result_value": 30.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0007",
+            "ROW-0008"
+          ]
+        },
+        {
+          "step_id": "STEP-0016",
+          "step_name": "[A组] 排队强度 ρ",
+          "description": "到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）",
+          "inputs": {
+            "到达率(人/小时)": 60.0,
+            "总服务率": 30.0
+          },
+          "conversions": [],
+          "calculation": "ρ = 60.0 / 30.0000 = 2.0000",
+          "result_value": 2.0,
+          "result_unit": "ratio",
+          "source_row_ids": [
+            "ROW-0006",
+            "ROW-0007",
+            "ROW-0008"
+          ]
+        },
+        {
+          "step_id": "STEP-0017",
+          "step_name": "[A组] 平均等待时间",
+          "description": "用 M/M/c 模型估算排队中的平均等待时长",
+          "inputs": {
+            "排队强度 ρ": 2.0,
+            "到达率": 60.0
+          },
+          "conversions": [
+            {
+              "from_unit": "hour",
+              "to_unit": "minute",
+              "from_value": Infinity,
+              "to_value": Infinity,
+              "conversion_formula": "inf 小时 × 60 = inf 分钟"
+            }
+          ],
+          "calculation": "ρ ≥ 1, 等待时间发散(无穷大)",
+          "result_value": Infinity,
+          "result_unit": "minute",
+          "source_row_ids": [
+            "ROW-0006",
+            "ROW-0007",
+            "ROW-0008"
+          ]
+        },
+        {
+          "step_id": "STEP-0018",
+          "step_name": "[A组] 加权综合评分",
+          "description": "等待时间得分与利用率得分按参数表权重加权",
+          "inputs": {
+            "等待得分": 10.0,
+            "等待阈值权重": 2.0,
+            "利用率得分": 100.0,
+            "利用率权重": 1.0
+          },
+          "conversions": [],
+          "calculation": "score = (10.0 × 2.0 + 100.00 × 1.0) / (2.0 + 1.0) = 40.00",
+          "result_value": 40.0,
+          "result_unit": "score",
+          "source_row_ids": [
+            "ROW-0004",
+            "ROW-0005"
+          ]
+        },
+        {
+          "step_id": "STEP-0019",
+          "step_name": "[B组] 服务时长单位换算",
+          "description": "将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配",
+          "inputs": {
+            "平均服务时长(分钟)": 8.0
+          },
+          "conversions": [
+            {
+              "from_unit": "minute",
+              "to_unit": "hour",
+              "from_value": 8.0,
+              "to_value": 0.13333333333333333,
+              "conversion_formula": "8.0 分钟 ÷ 60 = 0.13333333333333333 小时"
+            }
+          ],
+          "calculation": "8.0 分钟 ÷ 60 = 0.13333333333333333 小时",
+          "result_value": 0.13333333333333333,
+          "result_unit": "hour",
+          "source_row_ids": [
+            "ROW-0007"
+          ]
+        },
+        {
+          "step_id": "STEP-0020",
+          "step_name": "[B组] 单窗口服务率",
+          "description": "每小时每个窗口能服务的人数",
+          "inputs": {
+            "平均服务时长(小时)": 0.13333333333333333
+          },
+          "conversions": [],
+          "calculation": "μ = 1 / 0.133333 = 7.5000 人/小时",
+          "result_value": 7.5,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0007"
+          ]
+        },
+        {
+          "step_id": "STEP-0021",
+          "step_name": "[B组] 系统总服务率",
+          "description": "所有窗口合计每小时能服务的人数",
+          "inputs": {
+            "单窗口服务率": 7.5,
+            "窗口数": 5.0
+          },
+          "conversions": [],
+          "calculation": "总μ = 7.5000 × 5.0 = 37.5000 人/小时",
+          "result_value": 37.5,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0007",
+            "ROW-0008"
+          ]
+        },
+        {
+          "step_id": "STEP-0022",
+          "step_name": "[B组] 排队强度 ρ",
+          "description": "到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）",
+          "inputs": {
+            "到达率(人/小时)": 55.0,
+            "总服务率": 37.5
+          },
+          "conversions": [],
+          "calculation": "ρ = 55.0 / 37.5000 = 1.4667",
+          "result_value": 1.4666666666666666,
+          "result_unit": "ratio",
+          "source_row_ids": [
+            "ROW-0006",
+            "ROW-0007",
+            "ROW-0008"
+          ]
+        },
+        {
+          "step_id": "STEP-0023",
+          "step_name": "[B组] 平均等待时间",
+          "description": "用 M/M/c 模型估算排队中的平均等待时长",
+          "inputs": {
+            "排队强度 ρ": 1.4666666666666666,
+            "到达率": 55.0
+          },
+          "conversions": [
+            {
+              "from_unit": "hour",
+              "to_unit": "minute",
+              "from_value": Infinity,
+              "to_value": Infinity,
+              "conversion_formula": "inf 小时 × 60 = inf 分钟"
+            }
+          ],
+          "calculation": "ρ ≥ 1, 等待时间发散(无穷大)",
+          "result_value": Infinity,
+          "result_unit": "minute",
+          "source_row_ids": [
+            "ROW-0006",
+            "ROW-0007",
+            "ROW-0008"
+          ]
+        },
+        {
+          "step_id": "STEP-0024",
+          "step_name": "[B组] 加权综合评分",
+          "description": "等待时间得分与利用率得分按参数表权重加权",
+          "inputs": {
+            "等待得分": 10.0,
+            "等待阈值权重": 3.5,
+            "利用率得分": 100.0,
+            "利用率权重": 0.7
+          },
+          "conversions": [],
+          "calculation": "score = (10.0 × 3.5 + 100.00 × 0.7) / (3.5 + 0.7) = 25.00",
+          "result_value": 25.0,
+          "result_unit": "score",
+          "source_row_ids": [
+            "ROW-0004",
+            "ROW-0005"
+          ]
+        }
+      ],
+      "issues": [],
+      "evidence_ids": [
+        "EVI-0002"
+      ]
+    },
+    {
+      "window_id": "WIN-003",
+      "window_name": "三号证件窗口",
+      "final_score": 25.0,
+      "outcome": "FAIL",
+      "handling_status": "NEED_EVIDENCE",
+      "steps": [
+        {
+          "step_id": "STEP-0025",
+          "step_name": "[A组] 服务时长单位换算",
+          "description": "将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配",
+          "inputs": {
+            "平均服务时长(分钟)": 12.0
+          },
+          "conversions": [
+            {
+              "from_unit": "minute",
+              "to_unit": "hour",
+              "from_value": 12.0,
+              "to_value": 0.2,
+              "conversion_formula": "12.0 分钟 ÷ 60 = 0.2 小时"
+            }
+          ],
+          "calculation": "12.0 分钟 ÷ 60 = 0.2 小时",
+          "result_value": 0.2,
+          "result_unit": "hour",
+          "source_row_ids": [
+            "ROW-0010"
+          ]
+        },
+        {
+          "step_id": "STEP-0026",
+          "step_name": "[A组] 单窗口服务率",
+          "description": "每小时每个窗口能服务的人数",
+          "inputs": {
+            "平均服务时长(小时)": 0.2
+          },
+          "conversions": [],
+          "calculation": "μ = 1 / 0.200000 = 5.0000 人/小时",
+          "result_value": 5.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0010"
+          ]
+        },
+        {
+          "step_id": "STEP-0027",
+          "step_name": "[A组] 系统总服务率",
+          "description": "所有窗口合计每小时能服务的人数",
+          "inputs": {
+            "单窗口服务率": 5.0,
+            "窗口数": 5.0
+          },
+          "conversions": [],
+          "calculation": "总μ = 5.0000 × 5.0 = 25.0000 人/小时",
+          "result_value": 25.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0010",
+            "ROW-0011"
+          ]
+        },
+        {
+          "step_id": "STEP-0028",
+          "step_name": "[A组] 排队强度 ρ",
+          "description": "到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）",
+          "inputs": {
+            "到达率(人/小时)": 30.0,
+            "总服务率": 25.0
+          },
+          "conversions": [],
+          "calculation": "ρ = 30.0 / 25.0000 = 1.2000",
+          "result_value": 1.2,
+          "result_unit": "ratio",
+          "source_row_ids": [
+            "ROW-0009",
+            "ROW-0010",
+            "ROW-0011"
+          ]
+        },
+        {
+          "step_id": "STEP-0029",
+          "step_name": "[A组] 平均等待时间",
+          "description": "用 M/M/c 模型估算排队中的平均等待时长",
+          "inputs": {
+            "排队强度 ρ": 1.2,
+            "到达率": 30.0
+          },
+          "conversions": [
+            {
+              "from_unit": "hour",
+              "to_unit": "minute",
+              "from_value": Infinity,
+              "to_value": Infinity,
+              "conversion_formula": "inf 小时 × 60 = inf 分钟"
+            }
+          ],
+          "calculation": "ρ ≥ 1, 等待时间发散(无穷大)",
+          "result_value": Infinity,
+          "result_unit": "minute",
+          "source_row_ids": [
+            "ROW-0009",
+            "ROW-0010",
+            "ROW-0011"
+          ]
+        },
+        {
+          "step_id": "STEP-0030",
+          "step_name": "[A组] 加权综合评分",
+          "description": "等待时间得分与利用率得分按参数表权重加权",
+          "inputs": {
+            "等待得分": 10.0,
+            "等待阈值权重": 2.0,
+            "利用率得分": 100.0,
+            "利用率权重": 1.0
+          },
+          "conversions": [],
+          "calculation": "score = (10.0 × 2.0 + 100.00 × 1.0) / (2.0 + 1.0) = 40.00",
+          "result_value": 40.0,
+          "result_unit": "score",
+          "source_row_ids": [
+            "ROW-0004",
+            "ROW-0005"
+          ]
+        },
+        {
+          "step_id": "STEP-0031",
+          "step_name": "[B组] 服务时长单位换算",
+          "description": "将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配",
+          "inputs": {
+            "平均服务时长(分钟)": 10.0
+          },
+          "conversions": [
+            {
+              "from_unit": "minute",
+              "to_unit": "hour",
+              "from_value": 10.0,
+              "to_value": 0.16666666666666666,
+              "conversion_formula": "10.0 分钟 ÷ 60 = 0.16666666666666666 小时"
+            }
+          ],
+          "calculation": "10.0 分钟 ÷ 60 = 0.16666666666666666 小时",
+          "result_value": 0.16666666666666666,
+          "result_unit": "hour",
+          "source_row_ids": [
+            "ROW-0010"
+          ]
+        },
+        {
+          "step_id": "STEP-0032",
+          "step_name": "[B组] 单窗口服务率",
+          "description": "每小时每个窗口能服务的人数",
+          "inputs": {
+            "平均服务时长(小时)": 0.16666666666666666
+          },
+          "conversions": [],
+          "calculation": "μ = 1 / 0.166667 = 6.0000 人/小时",
+          "result_value": 6.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0010"
+          ]
+        },
+        {
+          "step_id": "STEP-0033",
+          "step_name": "[B组] 系统总服务率",
+          "description": "所有窗口合计每小时能服务的人数",
+          "inputs": {
+            "单窗口服务率": 6.0,
+            "窗口数": 4.0
+          },
+          "conversions": [],
+          "calculation": "总μ = 6.0000 × 4.0 = 24.0000 人/小时",
+          "result_value": 24.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0010",
+            "ROW-0011"
+          ]
+        },
+        {
+          "step_id": "STEP-0034",
+          "step_name": "[B组] 排队强度 ρ",
+          "description": "到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）",
+          "inputs": {
+            "到达率(人/小时)": 28.0,
+            "总服务率": 24.0
+          },
+          "conversions": [],
+          "calculation": "ρ = 28.0 / 24.0000 = 1.1667",
+          "result_value": 1.1666666666666667,
+          "result_unit": "ratio",
+          "source_row_ids": [
+            "ROW-0009",
+            "ROW-0010",
+            "ROW-0011"
+          ]
+        },
+        {
+          "step_id": "STEP-0035",
+          "step_name": "[B组] 平均等待时间",
+          "description": "用 M/M/c 模型估算排队中的平均等待时长",
+          "inputs": {
+            "排队强度 ρ": 1.1666666666666667,
+            "到达率": 28.0
+          },
+          "conversions": [
+            {
+              "from_unit": "hour",
+              "to_unit": "minute",
+              "from_value": Infinity,
+              "to_value": Infinity,
+              "conversion_formula": "inf 小时 × 60 = inf 分钟"
+            }
+          ],
+          "calculation": "ρ ≥ 1, 等待时间发散(无穷大)",
+          "result_value": Infinity,
+          "result_unit": "minute",
+          "source_row_ids": [
+            "ROW-0009",
+            "ROW-0010",
+            "ROW-0011"
+          ]
+        },
+        {
+          "step_id": "STEP-0036",
+          "step_name": "[B组] 加权综合评分",
+          "description": "等待时间得分与利用率得分按参数表权重加权",
+          "inputs": {
+            "等待得分": 10.0,
+            "等待阈值权重": 3.5,
+            "利用率得分": 100.0,
+            "利用率权重": 0.7
+          },
+          "conversions": [],
+          "calculation": "score = (10.0 × 3.5 + 100.00 × 0.7) / (3.5 + 0.7) = 25.00",
+          "result_value": 25.0,
+          "result_unit": "score",
+          "source_row_ids": [
+            "ROW-0004",
+            "ROW-0005"
+          ]
+        }
+      ],
+      "issues": [],
+      "evidence_ids": [
+        "EVI-0003"
+      ]
+    },
+    {
+      "window_id": "WIN-004",
+      "window_name": "四号咨询窗口",
+      "final_score": 25.0,
+      "outcome": "FAIL",
+      "handling_status": "NEED_EVIDENCE",
+      "steps": [
+        {
+          "step_id": "STEP-0037",
+          "step_name": "[A组] 服务时长单位换算",
+          "description": "将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配",
+          "inputs": {
+            "平均服务时长(分钟)": 4.0
+          },
+          "conversions": [
+            {
+              "from_unit": "minute",
+              "to_unit": "hour",
+              "from_value": 4.0,
+              "to_value": 0.06666666666666667,
+              "conversion_formula": "4.0 分钟 ÷ 60 = 0.06666666666666667 小时"
+            }
+          ],
+          "calculation": "4.0 分钟 ÷ 60 = 0.06666666666666667 小时",
+          "result_value": 0.06666666666666667,
+          "result_unit": "hour",
+          "source_row_ids": [
+            "ROW-0013"
+          ]
+        },
+        {
+          "step_id": "STEP-0038",
+          "step_name": "[A组] 单窗口服务率",
+          "description": "每小时每个窗口能服务的人数",
+          "inputs": {
+            "平均服务时长(小时)": 0.06666666666666667
+          },
+          "conversions": [],
+          "calculation": "μ = 1 / 0.066667 = 15.0000 人/小时",
+          "result_value": 15.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0013"
+          ]
+        },
+        {
+          "step_id": "STEP-0039",
+          "step_name": "[A组] 系统总服务率",
+          "description": "所有窗口合计每小时能服务的人数",
+          "inputs": {
+            "单窗口服务率": 15.0,
+            "窗口数": 2.0
+          },
+          "conversions": [],
+          "calculation": "总μ = 15.0000 × 2.0 = 30.0000 人/小时",
+          "result_value": 30.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0013",
+            "ROW-0014"
+          ]
+        },
+        {
+          "step_id": "STEP-0040",
+          "step_name": "[A组] 排队强度 ρ",
+          "description": "到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）",
+          "inputs": {
+            "到达率(人/小时)": 20.0,
+            "总服务率": 30.0
+          },
+          "conversions": [],
+          "calculation": "ρ = 20.0 / 30.0000 = 0.6667",
+          "result_value": 0.6666666666666666,
+          "result_unit": "ratio",
+          "source_row_ids": [
+            "ROW-0012",
+            "ROW-0013",
+            "ROW-0014"
+          ]
+        },
+        {
+          "step_id": "STEP-0041",
+          "step_name": "[A组] 平均等待时间",
+          "description": "用 M/M/c 模型估算排队中的平均等待时长",
+          "inputs": {
+            "排队强度 ρ": 0.6666666666666666,
+            "到达率": 20.0
+          },
+          "conversions": [
+            {
+              "from_unit": "hour",
+              "to_unit": "minute",
+              "from_value": 0.06666666666666665,
+              "to_value": 3.999999999999999,
+              "conversion_formula": "0.06666666666666665 小时 × 60 = 3.999999999999999 分钟"
+            }
+          ],
+          "calculation": "Lq = ρ²/(1-ρ) = 0.4444/0.3333 = 1.3333 人\nWq = Lq / λ × 60 = 4.00 分钟",
+          "result_value": 3.999999999999999,
+          "result_unit": "minute",
+          "source_row_ids": [
+            "ROW-0012",
+            "ROW-0013",
+            "ROW-0014"
+          ]
+        },
+        {
+          "step_id": "STEP-0042",
+          "step_name": "[A组] 加权综合评分",
+          "description": "等待时间得分与利用率得分按参数表权重加权",
+          "inputs": {
+            "等待得分": 100.0,
+            "等待阈值权重": 2.0,
+            "利用率得分": 66.67,
+            "利用率权重": 1.0
+          },
+          "conversions": [],
+          "calculation": "score = (100.0 × 2.0 + 66.67 × 1.0) / (2.0 + 1.0) = 88.89",
+          "result_value": 88.88888888888887,
+          "result_unit": "score",
+          "source_row_ids": [
+            "ROW-0004",
+            "ROW-0005"
+          ]
+        },
+        {
+          "step_id": "STEP-0043",
+          "step_name": "[B组] 服务时长单位换算",
+          "description": "将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配",
+          "inputs": {
+            "平均服务时长(分钟)": 5.0
+          },
+          "conversions": [
+            {
+              "from_unit": "minute",
+              "to_unit": "hour",
+              "from_value": 5.0,
+              "to_value": 0.08333333333333333,
+              "conversion_formula": "5.0 分钟 ÷ 60 = 0.08333333333333333 小时"
+            }
+          ],
+          "calculation": "5.0 分钟 ÷ 60 = 0.08333333333333333 小时",
+          "result_value": 0.08333333333333333,
+          "result_unit": "hour",
+          "source_row_ids": [
+            "ROW-0013"
+          ]
+        },
+        {
+          "step_id": "STEP-0044",
+          "step_name": "[B组] 单窗口服务率",
+          "description": "每小时每个窗口能服务的人数",
+          "inputs": {
+            "平均服务时长(小时)": 0.08333333333333333
+          },
+          "conversions": [],
+          "calculation": "μ = 1 / 0.083333 = 12.0000 人/小时",
+          "result_value": 12.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0013"
+          ]
+        },
+        {
+          "step_id": "STEP-0045",
+          "step_name": "[B组] 系统总服务率",
+          "description": "所有窗口合计每小时能服务的人数",
+          "inputs": {
+            "单窗口服务率": 12.0,
+            "窗口数": 3.0
+          },
+          "conversions": [],
+          "calculation": "总μ = 12.0000 × 3.0 = 36.0000 人/小时",
+          "result_value": 36.0,
+          "result_unit": "person",
+          "source_row_ids": [
+            "ROW-0013",
+            "ROW-0014"
+          ]
+        },
+        {
+          "step_id": "STEP-0046",
+          "step_name": "[B组] 排队强度 ρ",
+          "description": "到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）",
+          "inputs": {
+            "到达率(人/小时)": 70.0,
+            "总服务率": 36.0
+          },
+          "conversions": [],
+          "calculation": "ρ = 70.0 / 36.0000 = 1.9444",
+          "result_value": 1.9444444444444444,
+          "result_unit": "ratio",
+          "source_row_ids": [
+            "ROW-0012",
+            "ROW-0013",
+            "ROW-0014"
+          ]
+        },
+        {
+          "step_id": "STEP-0047",
+          "step_name": "[B组] 平均等待时间",
+          "description": "用 M/M/c 模型估算排队中的平均等待时长",
+          "inputs": {
+            "排队强度 ρ": 1.9444444444444444,
+            "到达率": 70.0
+          },
+          "conversions": [
+            {
+              "from_unit": "hour",
+              "to_unit": "minute",
+              "from_value": Infinity,
+              "to_value": Infinity,
+              "conversion_formula": "inf 小时 × 60 = inf 分钟"
+            }
+          ],
+          "calculation": "ρ ≥ 1, 等待时间发散(无穷大)",
+          "result_value": Infinity,
+          "result_unit": "minute",
+          "source_row_ids": [
+            "ROW-0012",
+            "ROW-0013",
+            "ROW-0014"
+          ]
+        },
+        {
+          "step_id": "STEP-0048",
+          "step_name": "[B组] 加权综合评分",
+          "description": "等待时间得分与利用率得分按参数表权重加权",
+          "inputs": {
+            "等待得分": 10.0,
+            "等待阈值权重": 3.5,
+            "利用率得分": 100.0,
+            "利用率权重": 0.7
+          },
+          "conversions": [],
+          "calculation": "score = (10.0 × 3.5 + 100.00 × 0.7) / (3.5 + 0.7) = 25.00",
+          "result_value": 25.0,
+          "result_unit": "score",
+          "source_row_ids": [
+            "ROW-0004",
+            "ROW-0005"
+          ]
+        }
+      ],
+      "issues": [
+        "EXT-0002"
+      ],
+      "evidence_ids": [
+        "EVI-0004"
+      ]
+    }
+  ]
+}

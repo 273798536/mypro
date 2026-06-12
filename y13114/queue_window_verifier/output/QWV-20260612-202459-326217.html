@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>排队窗口批量验算报告 - QWV-20260612-202459-326217</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; padding: 20px; background: #f5f7fa; color: #2c3e50; }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 12px; }
+  h2 { color: #34495e; border-left: 4px solid #3498db; padding-left: 12px; margin-top: 36px; }
+  h3 { color: #2980b9; }
+  .meta-bar { background: white; border-radius: 8px; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .meta-item { font-size: 14px; }
+  .meta-item strong { color: #7f8c8d; margin-right: 6px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0 32px; }
+  .summary-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; }
+  .summary-card .num { font-size: 32px; font-weight: bold; }
+  .summary-card .label { color: #7f8c8d; font-size: 13px; margin-top: 6px; }
+  .num-handled { color: #27ae60; }
+  .num-pending { color: #e67e22; }
+  .num-todo { color: #f39c12; }
+  .num-fail { color: #e74c3c; }
+  .num-change { color: #8e44ad; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 28px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  th, td { padding: 10px 14px; text-align: left; font-size: 13px; border-bottom: 1px solid #ecf0f1; }
+  th { background: #34495e; color: white; font-weight: 600; }
+  tr:hover td { background: #f8f9fa; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge-PASS { background: #d4efdf; color: #1e8449; }
+  .badge-WARN { background: #fdebd0; color: #ca6f1e; }
+  .badge-FAIL { background: #fadbd8; color: #c0392b; }
+  .badge-NEUTRAL { background: #d6dbdf; color: #566573; }
+  .badge-PROVIDED { background: #d4efdf; color: #1e8449; }
+  .badge-PENDING { background: #fadbd8; color: #c0392b; }
+  .badge-WAIVED { background: #ebedef; color: #566573; }
+  .badge-HANDLED { background: #d4efdf; color: #1e8449; }
+  .badge-NEED_EVIDENCE { background: #fadbd8; color: #c0392b; }
+  .badge-TODO { background: #fdebd0; color: #ca6f1e; }
+  .section { background: white; border-radius: 10px; padding: 24px; margin-bottom: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .step-box { background: #f8f9fa; border-left: 3px solid #3498db; padding: 12px 16px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .step-box .step-title { font-weight: 600; color: #2980b9; margin-bottom: 6px; }
+  .step-box .calc { font-family: "SF Mono", Menlo, Consolas, monospace; background: white; padding: 8px; border-radius: 4px; margin-top: 6px; white-space: pre-wrap; border: 1px solid #ecf0f1; }
+  .conv { color: #16a085; }
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: #d5dbdb; }
+  .tl-item { position: relative; padding: 8px 0 16px 0; }
+  .tl-item::before { content: ''; position: absolute; left: -22px; top: 12px; width: 12px; height: 12px; border-radius: 50%; background: #3498db; border: 2px solid white; box-shadow: 0 0 0 2px #3498db; }
+  .tl-time { font-size: 12px; color: #7f8c8d; }
+  .tl-text { font-size: 14px; margin-top: 2px; }
+  .tl-actor { display: inline-block; background: #d6eaf8; color: #21618c; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 6px; }
+  .tl-type { display: inline-block; background: #f4ecf7; color: #6c3483; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 6px; }
+  .note-temp { background: #fef9e7; border: 1px solid #f9e79f; }
+  details { margin: 10px 0; }
+  summary { cursor: pointer; color: #2980b9; font-weight: 600; padding: 6px 0; }
+  .impact-list { font-size: 12px; color: #7f8c8d; margin-top: 4px; }
+  .tag { display: inline-block; background: #eaf2f8; color: #1f618d; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px 4px 2px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>排队窗口批量验算报告</h1>
+  <div class="meta-bar">
+    <div class="meta-item"><strong>报告编号</strong>QWV-20260612-202459-326217</div>
+    <div class="meta-item"><strong>生成时间</strong>2026-06-12 20:24:59</div>
+    <div class="meta-item"><strong>参数表A</strong>params_A_202605_v1.0</div>
+    <div class="meta-item"><strong>参数表B</strong>params_B_202606_v1.2</div>
+  </div>
+
+  <h2>一、总览速览（项目经理视图）</h2>
+  <div class="summary-grid">
+    <div class="summary-card"><div class="num num-handled">0</div><div class="label">窗口·已处理</div></div>
+    <div class="summary-card"><div class="num num-pending">4</div><div class="label">窗口·需补证据</div></div>
+    <div class="summary-card"><div class="num num-todo">0</div><div class="label">窗口·待跟进</div></div>
+    <div class="summary-card"><div class="num num-change">1</div><div class="label">判断结果变更</div></div>
+    <div class="summary-card"><div class="num num-fail">2</div><div class="label">外推越界问题</div></div>
+    <div class="summary-card"><div class="num num-pending">4</div><div class="label">待补证据</div></div>
+    <div class="summary-card"><div class="num num-handled">0</div><div class="label">已提证据</div></div>
+    <div class="summary-card"><div class="num">2</div><div class="label">权重变更记录</div></div>
+  </div>
+
+  <h2>二、参数表对照（老叶复核起点）</h2>
+  <div class="section">
+    <h3>2.1 参数行一览</h3>
+    <table>
+      <thead><tr>
+        <th>行号</th><th>参数名</th><th>数值</th><th>单位</th><th>权重</th><th>有效范围</th><th>来源行</th><th>备注</th>
+      </tr></thead>
+      <tbody>
+      
+      <tr>
+        <td>1</td>
+        <td><strong>一号窗口·到达率</strong></td>
+        <td>90.0</td>
+        <td>person</td>
+        <td>1.0</td>
+        <td>[10.0, 80.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第1行/20260610现场计数</td>
+        <td>
+          
+          <div class="tag note-temp">
+            [临时]一号窗口到达率90为6月集中办事期峰值外
+            …</div>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>2</td>
+        <td><strong>一号窗口·平均服务时长</strong></td>
+        <td>7.5</td>
+        <td>minute</td>
+        <td>1.0</td>
+        <td>[2.0, 20.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第2行/叫号系统导出0601-0610</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>3</td>
+        <td><strong>一号窗口·开设窗口数</strong></td>
+        <td>2.0</td>
+        <td>window</td>
+        <td>1.0</td>
+        <td>[1.0, 10.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第3行/6月临时排班</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>4</td>
+        <td><strong>等待时间阈值</strong></td>
+        <td>15.0</td>
+        <td>minute</td>
+        <td>3.5</td>
+        <td>[5.0, 60.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第4行/服务质量规范v3修订</td>
+        <td>
+          
+          <div class="tag note-temp">
+            [临时]社区公示前权重临时上调至3.5,见服务质
+            …</div>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>5</td>
+        <td><strong>利用率权重</strong></td>
+        <td>1.0</td>
+        <td>ratio</td>
+        <td>0.7</td>
+        <td>[0.5, 3.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第5行/20260608评审会口头决议</td>
+        <td>
+          
+          <div class="tag note-temp">
+            [临时]社区公示前利用率权重临时下调至0.7,2
+            …</div>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>6</td>
+        <td><strong>二号窗口·到达率</strong></td>
+        <td>55.0</td>
+        <td>person</td>
+        <td>1.0</td>
+        <td>[10.0, 100.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第6行/20260610现场计数</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>7</td>
+        <td><strong>二号窗口·平均服务时长</strong></td>
+        <td>8.0</td>
+        <td>minute</td>
+        <td>1.0</td>
+        <td>[2.0, 30.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第7行/叫号系统导出</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>8</td>
+        <td><strong>二号窗口·开设窗口数</strong></td>
+        <td>5.0</td>
+        <td>window</td>
+        <td>1.0</td>
+        <td>[1.0, 15.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第8行/6月岗位增补</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>9</td>
+        <td><strong>三号窗口·到达率</strong></td>
+        <td>28.0</td>
+        <td>person</td>
+        <td>1.0</td>
+        <td>[10.0, 80.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第9行/20260610现场计数</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>10</td>
+        <td><strong>三号窗口·平均服务时长</strong></td>
+        <td>10.0</td>
+        <td>minute</td>
+        <td>1.0</td>
+        <td>[2.0, 30.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第10行/预审机制上线后数据</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>11</td>
+        <td><strong>三号窗口·开设窗口数</strong></td>
+        <td>4.0</td>
+        <td>window</td>
+        <td>1.0</td>
+        <td>[1.0, 15.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第11行/6月调岗排班</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>12</td>
+        <td><strong>四号窗口·到达率</strong></td>
+        <td>70.0</td>
+        <td>person</td>
+        <td>1.0</td>
+        <td>[5.0, 60.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第12行/政策发布后流量推演</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>13</td>
+        <td><strong>四号窗口·平均服务时长</strong></td>
+        <td>5.0</td>
+        <td>minute</td>
+        <td>1.0</td>
+        <td>[1.0, 15.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第13行/叫号系统导出</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      <tr>
+        <td>14</td>
+        <td><strong>四号窗口·开设窗口数</strong></td>
+        <td>3.0</td>
+        <td>window</td>
+        <td>1.0</td>
+        <td>[1.0, 8.0]</td>
+        <td style="font-size:12px;color:#7f8c8d;">参数表B第14行/6月政策窗口临时排班</td>
+        <td>
+          
+        </td>
+      </tr>
+      
+      </tbody>
+    </table>
+
+    
+    <h3>2.2 权重变更记录（谁改了、什么时候、为什么）</h3>
+    <table>
+      <thead><tr><th>变更时间</th><th>操作人</th><th>参数名</th><th>旧权重</th><th>新权重</th><th>原因</th></tr></thead>
+      <tbody>
+      
+      <tr>
+        <td style="font-size:12px;">2026-06-12 20:24</td>
+        <td>老叶_批量验算_20260612</td>
+        <td>等待时间阈值</td>
+        <td style="color:#e74c3c;">2.0</td>
+        <td style="color:#27ae60;font-weight:600;">3.5</td>
+        <td>参数表A与参数表B权重对比差异</td>
+      </tr>
+      
+      <tr>
+        <td style="font-size:12px;">2026-06-12 20:24</td>
+        <td>老叶_批量验算_20260612</td>
+        <td>利用率权重</td>
+        <td style="color:#e74c3c;">1.0</td>
+        <td style="color:#27ae60;font-weight:600;">0.7</td>
+        <td>参数表A与参数表B权重对比差异</td>
+      </tr>
+      
+      </tbody>
+    </table>
+    
+
+    
+    <h3>2.3 参数表备注（含社区公示前临时补注）</h3>
+    <table>
+      <thead><tr><th>创建时间</th><th>作者</th><th>类型</th><th>目标</th><th>内容</th></tr></thead>
+      <tbody>
+      
+      <tr class="note-temp">
+        <td style="font-size:12px;">2026-06-12 20:24</td>
+        <td>老叶_批量验算_20260612</td>
+        <td><span class="badge badge-FAIL">临时</span></td>
+        <td>ROW=ROW-0004</td>
+        <td style="white-space:pre-wrap;">社区公示前权重临时上调至3.5,见服务质量规范v3第2.3条</td>
+      </tr>
+      
+      <tr class="note-temp">
+        <td style="font-size:12px;">2026-06-12 20:24</td>
+        <td>老叶_批量验算_20260612</td>
+        <td><span class="badge badge-FAIL">临时</span></td>
+        <td>ROW=ROW-0005</td>
+        <td style="white-space:pre-wrap;">社区公示前利用率权重临时下调至0.7,20260608评审会口头决议补录</td>
+      </tr>
+      
+      <tr class="note-temp">
+        <td style="font-size:12px;">2026-06-12 20:24</td>
+        <td>老叶_批量验算_20260612</td>
+        <td><span class="badge badge-FAIL">临时</span></td>
+        <td>ROW=ROW-0001</td>
+        <td style="white-space:pre-wrap;">一号窗口到达率90为6月集中办事期峰值外推,尚需下周实测数据佐证</td>
+      </tr>
+      
+      </tbody>
+    </table>
+    
+  </div>
+
+  <h2>三、窗口验算明细（中间计算不藏）</h2>
+  <div class="section">
+    
+    <details open>
+    <summary>一号办事窗口 · 最终得分 25.0 ·
+      <span class="badge badge-FAIL">FAIL</span>
+      <span class="badge badge-NEED_EVIDENCE">NEED_EVIDENCE</span>
+    </summary>
+    <div style="padding: 8px 4px 0 4px;">
+      
+      <div class="step-box" style="border-left-color:#e74c3c;">
+        <div class="step-title">⚠️ 外推越界 / 数据异常（1）</div>
+        
+        <div style="margin:8px 0; padding:8px; background:white; border-radius:4px;">
+          <strong>一号窗口·到达率</strong>
+          = 90.0 (方向: <span style="color:#c0392b;">OVERFLOW</span>)<br>
+          <span style="font-size:12px; color:#7f8c8d;">
+            有效区间: [10.0, 80.0] ·
+            来源行: 参数表B第1行/20260610现场计数 (row_id=ROW-0001)
+          </span>
+          <div class="impact-list">影响范围:
+            <span class="tag">一号办事窗口·到达率</span><span class="tag">一号办事窗口·服务时长</span><span class="tag">一号办事窗口·窗口数</span><span class="tag">一号办事窗口·等待阈值</span>
+          </div>
+          <div style="margin-top:6px; color:#566573;">参数「一号窗口·到达率」=90.0person 高于上限 有效区间[10.0, 80.0], 影响窗口排队强度和等待时间评估</div>
+        </div>
+        
+      </div>
+      
+
+      <h3 style="margin-top:16px;">中间计算步骤</h3>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 服务时长单位换算 <span style="font-size:11px;color:#95a5a6;">(STEP-0001)</span></div>
+        <div style="color:#566573;">将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(分钟) = 6.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">6.0 分钟 ÷ 60 = 0.1 小时</span>
+          
+        </div>
+        
+        <div class="calc">6.0 分钟 ÷ 60 = 0.1 小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.1 hour</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0002</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 单窗口服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0002)</span></div>
+        <div style="color:#566573;">每小时每个窗口能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(小时) = 0.1</span>
+        </div>
+        
+        
+        <div class="calc">μ = 1 / 0.100000 = 10.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">10.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0002</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 系统总服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0003)</span></div>
+        <div style="color:#566573;">所有窗口合计每小时能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">单窗口服务率 = 10.0</span><span class="tag">窗口数 = 3.0</span>
+        </div>
+        
+        
+        <div class="calc">总μ = 10.0000 × 3.0 = 30.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">30.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0002</code> <code>ROW-0003</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 排队强度 ρ <span style="font-size:11px;color:#95a5a6;">(STEP-0004)</span></div>
+        <div style="color:#566573;">到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">到达率(人/小时) = 45.0</span><span class="tag">总服务率 = 30.0</span>
+        </div>
+        
+        
+        <div class="calc">ρ = 45.0 / 30.0000 = 1.5000</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">1.5 ratio</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0001</code> <code>ROW-0002</code> <code>ROW-0003</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 平均等待时间 <span style="font-size:11px;color:#95a5a6;">(STEP-0005)</span></div>
+        <div style="color:#566573;">用 M/M/c 模型估算排队中的平均等待时长</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">排队强度 ρ = 1.5</span><span class="tag">到达率 = 45.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">inf 小时 × 60 = inf 分钟</span>
+          
+        </div>
+        
+        <div class="calc">ρ ≥ 1, 等待时间发散(无穷大)</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">inf minute</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0001</code> <code>ROW-0002</code> <code>ROW-0003</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 加权综合评分 <span style="font-size:11px;color:#95a5a6;">(STEP-0006)</span></div>
+        <div style="color:#566573;">等待时间得分与利用率得分按参数表权重加权</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">等待得分 = 10.0</span><span class="tag">等待阈值权重 = 2.0</span><span class="tag">利用率得分 = 100.0</span><span class="tag">利用率权重 = 1.0</span>
+        </div>
+        
+        
+        <div class="calc">score = (10.0 × 2.0 + 100.00 × 1.0) / (2.0 + 1.0) = 40.00</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">40.0 score</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0004</code> <code>ROW-0005</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 服务时长单位换算 <span style="font-size:11px;color:#95a5a6;">(STEP-0007)</span></div>
+        <div style="color:#566573;">将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(分钟) = 7.5</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">7.5 分钟 ÷ 60 = 0.125 小时</span>
+          
+        </div>
+        
+        <div class="calc">7.5 分钟 ÷ 60 = 0.125 小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.125 hour</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0002</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 单窗口服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0008)</span></div>
+        <div style="color:#566573;">每小时每个窗口能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(小时) = 0.125</span>
+        </div>
+        
+        
+        <div class="calc">μ = 1 / 0.125000 = 8.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">8.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0002</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 系统总服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0009)</span></div>
+        <div style="color:#566573;">所有窗口合计每小时能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">单窗口服务率 = 8.0</span><span class="tag">窗口数 = 2.0</span>
+        </div>
+        
+        
+        <div class="calc">总μ = 8.0000 × 2.0 = 16.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">16.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0002</code> <code>ROW-0003</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 排队强度 ρ <span style="font-size:11px;color:#95a5a6;">(STEP-0010)</span></div>
+        <div style="color:#566573;">到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">到达率(人/小时) = 90.0</span><span class="tag">总服务率 = 16.0</span>
+        </div>
+        
+        
+        <div class="calc">ρ = 90.0 / 16.0000 = 5.6250</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">5.625 ratio</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0001</code> <code>ROW-0002</code> <code>ROW-0003</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 平均等待时间 <span style="font-size:11px;color:#95a5a6;">(STEP-0011)</span></div>
+        <div style="color:#566573;">用 M/M/c 模型估算排队中的平均等待时长</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">排队强度 ρ = 5.625</span><span class="tag">到达率 = 90.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">inf 小时 × 60 = inf 分钟</span>
+          
+        </div>
+        
+        <div class="calc">ρ ≥ 1, 等待时间发散(无穷大)</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">inf minute</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0001</code> <code>ROW-0002</code> <code>ROW-0003</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 加权综合评分 <span style="font-size:11px;color:#95a5a6;">(STEP-0012)</span></div>
+        <div style="color:#566573;">等待时间得分与利用率得分按参数表权重加权</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">等待得分 = 10.0</span><span class="tag">等待阈值权重 = 3.5</span><span class="tag">利用率得分 = 100.0</span><span class="tag">利用率权重 = 0.7</span>
+        </div>
+        
+        
+        <div class="calc">score = (10.0 × 3.5 + 100.00 × 0.7) / (3.5 + 0.7) = 25.00</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">25.0 score</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0004</code> <code>ROW-0005</code> 
+          </span>
+        </div>
+      </div>
+      
+
+      
+      <h3 style="margin-top:16px;">关联证据</h3>
+      <table>
+        <thead><tr><th>证据ID</th><th>标题</th><th>状态</th><th>说明</th></tr></thead>
+        <tbody>
+        
+        <tr>
+          <td>EVI-0001</td>
+          <td>一号办事窗口 排队失败补证</td>
+          <td><span class="badge badge-PENDING">PENDING</span></td>
+          <td style="font-size:12px;">窗口「一号办事窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。</td>
+        </tr>
+        
+        </tbody>
+      </table>
+      
+    </div>
+    </details>
+    
+    <details open>
+    <summary>二号综合窗口 · 最终得分 25.0 ·
+      <span class="badge badge-FAIL">FAIL</span>
+      <span class="badge badge-NEED_EVIDENCE">NEED_EVIDENCE</span>
+    </summary>
+    <div style="padding: 8px 4px 0 4px;">
+      
+
+      <h3 style="margin-top:16px;">中间计算步骤</h3>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 服务时长单位换算 <span style="font-size:11px;color:#95a5a6;">(STEP-0013)</span></div>
+        <div style="color:#566573;">将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(分钟) = 8.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">8.0 分钟 ÷ 60 = 0.13333333333333333 小时</span>
+          
+        </div>
+        
+        <div class="calc">8.0 分钟 ÷ 60 = 0.13333333333333333 小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.1333 hour</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0007</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 单窗口服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0014)</span></div>
+        <div style="color:#566573;">每小时每个窗口能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(小时) = 0.13333333333333333</span>
+        </div>
+        
+        
+        <div class="calc">μ = 1 / 0.133333 = 7.5000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">7.5 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0007</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 系统总服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0015)</span></div>
+        <div style="color:#566573;">所有窗口合计每小时能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">单窗口服务率 = 7.5</span><span class="tag">窗口数 = 4.0</span>
+        </div>
+        
+        
+        <div class="calc">总μ = 7.5000 × 4.0 = 30.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">30.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0007</code> <code>ROW-0008</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 排队强度 ρ <span style="font-size:11px;color:#95a5a6;">(STEP-0016)</span></div>
+        <div style="color:#566573;">到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">到达率(人/小时) = 60.0</span><span class="tag">总服务率 = 30.0</span>
+        </div>
+        
+        
+        <div class="calc">ρ = 60.0 / 30.0000 = 2.0000</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">2.0 ratio</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0006</code> <code>ROW-0007</code> <code>ROW-0008</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 平均等待时间 <span style="font-size:11px;color:#95a5a6;">(STEP-0017)</span></div>
+        <div style="color:#566573;">用 M/M/c 模型估算排队中的平均等待时长</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">排队强度 ρ = 2.0</span><span class="tag">到达率 = 60.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">inf 小时 × 60 = inf 分钟</span>
+          
+        </div>
+        
+        <div class="calc">ρ ≥ 1, 等待时间发散(无穷大)</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">inf minute</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0006</code> <code>ROW-0007</code> <code>ROW-0008</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 加权综合评分 <span style="font-size:11px;color:#95a5a6;">(STEP-0018)</span></div>
+        <div style="color:#566573;">等待时间得分与利用率得分按参数表权重加权</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">等待得分 = 10.0</span><span class="tag">等待阈值权重 = 2.0</span><span class="tag">利用率得分 = 100.0</span><span class="tag">利用率权重 = 1.0</span>
+        </div>
+        
+        
+        <div class="calc">score = (10.0 × 2.0 + 100.00 × 1.0) / (2.0 + 1.0) = 40.00</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">40.0 score</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0004</code> <code>ROW-0005</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 服务时长单位换算 <span style="font-size:11px;color:#95a5a6;">(STEP-0019)</span></div>
+        <div style="color:#566573;">将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(分钟) = 8.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">8.0 分钟 ÷ 60 = 0.13333333333333333 小时</span>
+          
+        </div>
+        
+        <div class="calc">8.0 分钟 ÷ 60 = 0.13333333333333333 小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.1333 hour</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0007</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 单窗口服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0020)</span></div>
+        <div style="color:#566573;">每小时每个窗口能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(小时) = 0.13333333333333333</span>
+        </div>
+        
+        
+        <div class="calc">μ = 1 / 0.133333 = 7.5000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">7.5 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0007</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 系统总服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0021)</span></div>
+        <div style="color:#566573;">所有窗口合计每小时能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">单窗口服务率 = 7.5</span><span class="tag">窗口数 = 5.0</span>
+        </div>
+        
+        
+        <div class="calc">总μ = 7.5000 × 5.0 = 37.5000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">37.5 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0007</code> <code>ROW-0008</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 排队强度 ρ <span style="font-size:11px;color:#95a5a6;">(STEP-0022)</span></div>
+        <div style="color:#566573;">到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">到达率(人/小时) = 55.0</span><span class="tag">总服务率 = 37.5</span>
+        </div>
+        
+        
+        <div class="calc">ρ = 55.0 / 37.5000 = 1.4667</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">1.4667 ratio</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0006</code> <code>ROW-0007</code> <code>ROW-0008</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 平均等待时间 <span style="font-size:11px;color:#95a5a6;">(STEP-0023)</span></div>
+        <div style="color:#566573;">用 M/M/c 模型估算排队中的平均等待时长</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">排队强度 ρ = 1.4666666666666666</span><span class="tag">到达率 = 55.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">inf 小时 × 60 = inf 分钟</span>
+          
+        </div>
+        
+        <div class="calc">ρ ≥ 1, 等待时间发散(无穷大)</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">inf minute</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0006</code> <code>ROW-0007</code> <code>ROW-0008</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 加权综合评分 <span style="font-size:11px;color:#95a5a6;">(STEP-0024)</span></div>
+        <div style="color:#566573;">等待时间得分与利用率得分按参数表权重加权</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">等待得分 = 10.0</span><span class="tag">等待阈值权重 = 3.5</span><span class="tag">利用率得分 = 100.0</span><span class="tag">利用率权重 = 0.7</span>
+        </div>
+        
+        
+        <div class="calc">score = (10.0 × 3.5 + 100.00 × 0.7) / (3.5 + 0.7) = 25.00</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">25.0 score</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0004</code> <code>ROW-0005</code> 
+          </span>
+        </div>
+      </div>
+      
+
+      
+      <h3 style="margin-top:16px;">关联证据</h3>
+      <table>
+        <thead><tr><th>证据ID</th><th>标题</th><th>状态</th><th>说明</th></tr></thead>
+        <tbody>
+        
+        <tr>
+          <td>EVI-0002</td>
+          <td>二号综合窗口 排队失败补证</td>
+          <td><span class="badge badge-PENDING">PENDING</span></td>
+          <td style="font-size:12px;">窗口「二号综合窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。</td>
+        </tr>
+        
+        </tbody>
+      </table>
+      
+    </div>
+    </details>
+    
+    <details >
+    <summary>三号证件窗口 · 最终得分 25.0 ·
+      <span class="badge badge-FAIL">FAIL</span>
+      <span class="badge badge-NEED_EVIDENCE">NEED_EVIDENCE</span>
+    </summary>
+    <div style="padding: 8px 4px 0 4px;">
+      
+
+      <h3 style="margin-top:16px;">中间计算步骤</h3>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 服务时长单位换算 <span style="font-size:11px;color:#95a5a6;">(STEP-0025)</span></div>
+        <div style="color:#566573;">将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(分钟) = 12.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">12.0 分钟 ÷ 60 = 0.2 小时</span>
+          
+        </div>
+        
+        <div class="calc">12.0 分钟 ÷ 60 = 0.2 小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.2 hour</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0010</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 单窗口服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0026)</span></div>
+        <div style="color:#566573;">每小时每个窗口能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(小时) = 0.2</span>
+        </div>
+        
+        
+        <div class="calc">μ = 1 / 0.200000 = 5.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">5.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0010</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 系统总服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0027)</span></div>
+        <div style="color:#566573;">所有窗口合计每小时能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">单窗口服务率 = 5.0</span><span class="tag">窗口数 = 5.0</span>
+        </div>
+        
+        
+        <div class="calc">总μ = 5.0000 × 5.0 = 25.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">25.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0010</code> <code>ROW-0011</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 排队强度 ρ <span style="font-size:11px;color:#95a5a6;">(STEP-0028)</span></div>
+        <div style="color:#566573;">到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">到达率(人/小时) = 30.0</span><span class="tag">总服务率 = 25.0</span>
+        </div>
+        
+        
+        <div class="calc">ρ = 30.0 / 25.0000 = 1.2000</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">1.2 ratio</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0009</code> <code>ROW-0010</code> <code>ROW-0011</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 平均等待时间 <span style="font-size:11px;color:#95a5a6;">(STEP-0029)</span></div>
+        <div style="color:#566573;">用 M/M/c 模型估算排队中的平均等待时长</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">排队强度 ρ = 1.2</span><span class="tag">到达率 = 30.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">inf 小时 × 60 = inf 分钟</span>
+          
+        </div>
+        
+        <div class="calc">ρ ≥ 1, 等待时间发散(无穷大)</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">inf minute</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0009</code> <code>ROW-0010</code> <code>ROW-0011</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 加权综合评分 <span style="font-size:11px;color:#95a5a6;">(STEP-0030)</span></div>
+        <div style="color:#566573;">等待时间得分与利用率得分按参数表权重加权</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">等待得分 = 10.0</span><span class="tag">等待阈值权重 = 2.0</span><span class="tag">利用率得分 = 100.0</span><span class="tag">利用率权重 = 1.0</span>
+        </div>
+        
+        
+        <div class="calc">score = (10.0 × 2.0 + 100.00 × 1.0) / (2.0 + 1.0) = 40.00</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">40.0 score</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0004</code> <code>ROW-0005</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 服务时长单位换算 <span style="font-size:11px;color:#95a5a6;">(STEP-0031)</span></div>
+        <div style="color:#566573;">将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(分钟) = 10.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">10.0 分钟 ÷ 60 = 0.16666666666666666 小时</span>
+          
+        </div>
+        
+        <div class="calc">10.0 分钟 ÷ 60 = 0.16666666666666666 小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.1667 hour</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0010</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 单窗口服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0032)</span></div>
+        <div style="color:#566573;">每小时每个窗口能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(小时) = 0.16666666666666666</span>
+        </div>
+        
+        
+        <div class="calc">μ = 1 / 0.166667 = 6.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">6.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0010</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 系统总服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0033)</span></div>
+        <div style="color:#566573;">所有窗口合计每小时能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">单窗口服务率 = 6.0</span><span class="tag">窗口数 = 4.0</span>
+        </div>
+        
+        
+        <div class="calc">总μ = 6.0000 × 4.0 = 24.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">24.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0010</code> <code>ROW-0011</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 排队强度 ρ <span style="font-size:11px;color:#95a5a6;">(STEP-0034)</span></div>
+        <div style="color:#566573;">到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">到达率(人/小时) = 28.0</span><span class="tag">总服务率 = 24.0</span>
+        </div>
+        
+        
+        <div class="calc">ρ = 28.0 / 24.0000 = 1.1667</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">1.1667 ratio</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0009</code> <code>ROW-0010</code> <code>ROW-0011</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 平均等待时间 <span style="font-size:11px;color:#95a5a6;">(STEP-0035)</span></div>
+        <div style="color:#566573;">用 M/M/c 模型估算排队中的平均等待时长</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">排队强度 ρ = 1.1666666666666667</span><span class="tag">到达率 = 28.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">inf 小时 × 60 = inf 分钟</span>
+          
+        </div>
+        
+        <div class="calc">ρ ≥ 1, 等待时间发散(无穷大)</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">inf minute</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0009</code> <code>ROW-0010</code> <code>ROW-0011</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 加权综合评分 <span style="font-size:11px;color:#95a5a6;">(STEP-0036)</span></div>
+        <div style="color:#566573;">等待时间得分与利用率得分按参数表权重加权</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">等待得分 = 10.0</span><span class="tag">等待阈值权重 = 3.5</span><span class="tag">利用率得分 = 100.0</span><span class="tag">利用率权重 = 0.7</span>
+        </div>
+        
+        
+        <div class="calc">score = (10.0 × 3.5 + 100.00 × 0.7) / (3.5 + 0.7) = 25.00</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">25.0 score</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0004</code> <code>ROW-0005</code> 
+          </span>
+        </div>
+      </div>
+      
+
+      
+      <h3 style="margin-top:16px;">关联证据</h3>
+      <table>
+        <thead><tr><th>证据ID</th><th>标题</th><th>状态</th><th>说明</th></tr></thead>
+        <tbody>
+        
+        <tr>
+          <td>EVI-0003</td>
+          <td>三号证件窗口 排队失败补证</td>
+          <td><span class="badge badge-PENDING">PENDING</span></td>
+          <td style="font-size:12px;">窗口「三号证件窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。</td>
+        </tr>
+        
+        </tbody>
+      </table>
+      
+    </div>
+    </details>
+    
+    <details >
+    <summary>四号咨询窗口 · 最终得分 25.0 ·
+      <span class="badge badge-FAIL">FAIL</span>
+      <span class="badge badge-NEED_EVIDENCE">NEED_EVIDENCE</span>
+    </summary>
+    <div style="padding: 8px 4px 0 4px;">
+      
+      <div class="step-box" style="border-left-color:#e74c3c;">
+        <div class="step-title">⚠️ 外推越界 / 数据异常（1）</div>
+        
+        <div style="margin:8px 0; padding:8px; background:white; border-radius:4px;">
+          <strong>四号窗口·到达率</strong>
+          = 70.0 (方向: <span style="color:#c0392b;">OVERFLOW</span>)<br>
+          <span style="font-size:12px; color:#7f8c8d;">
+            有效区间: [5.0, 60.0] ·
+            来源行: 参数表B第12行/政策发布后流量推演 (row_id=ROW-0012)
+          </span>
+          <div class="impact-list">影响范围:
+            <span class="tag">四号咨询窗口·到达率</span><span class="tag">四号咨询窗口·服务时长</span><span class="tag">四号咨询窗口·窗口数</span><span class="tag">四号咨询窗口·等待阈值</span>
+          </div>
+          <div style="margin-top:6px; color:#566573;">参数「四号窗口·到达率」=70.0person 高于上限 有效区间[5.0, 60.0], 影响窗口排队强度和等待时间评估</div>
+        </div>
+        
+      </div>
+      
+
+      <h3 style="margin-top:16px;">中间计算步骤</h3>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 服务时长单位换算 <span style="font-size:11px;color:#95a5a6;">(STEP-0037)</span></div>
+        <div style="color:#566573;">将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(分钟) = 4.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">4.0 分钟 ÷ 60 = 0.06666666666666667 小时</span>
+          
+        </div>
+        
+        <div class="calc">4.0 分钟 ÷ 60 = 0.06666666666666667 小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.0667 hour</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0013</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 单窗口服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0038)</span></div>
+        <div style="color:#566573;">每小时每个窗口能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(小时) = 0.06666666666666667</span>
+        </div>
+        
+        
+        <div class="calc">μ = 1 / 0.066667 = 15.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">15.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0013</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 系统总服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0039)</span></div>
+        <div style="color:#566573;">所有窗口合计每小时能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">单窗口服务率 = 15.0</span><span class="tag">窗口数 = 2.0</span>
+        </div>
+        
+        
+        <div class="calc">总μ = 15.0000 × 2.0 = 30.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">30.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0013</code> <code>ROW-0014</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 排队强度 ρ <span style="font-size:11px;color:#95a5a6;">(STEP-0040)</span></div>
+        <div style="color:#566573;">到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">到达率(人/小时) = 20.0</span><span class="tag">总服务率 = 30.0</span>
+        </div>
+        
+        
+        <div class="calc">ρ = 20.0 / 30.0000 = 0.6667</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.6667 ratio</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0012</code> <code>ROW-0013</code> <code>ROW-0014</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 平均等待时间 <span style="font-size:11px;color:#95a5a6;">(STEP-0041)</span></div>
+        <div style="color:#566573;">用 M/M/c 模型估算排队中的平均等待时长</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">排队强度 ρ = 0.6666666666666666</span><span class="tag">到达率 = 20.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">0.06666666666666665 小时 × 60 = 3.999999999999999 分钟</span>
+          
+        </div>
+        
+        <div class="calc">Lq = ρ²/(1-ρ) = 0.4444/0.3333 = 1.3333 人
+Wq = Lq / λ × 60 = 4.00 分钟</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">4.0 minute</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0012</code> <code>ROW-0013</code> <code>ROW-0014</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[A组] 加权综合评分 <span style="font-size:11px;color:#95a5a6;">(STEP-0042)</span></div>
+        <div style="color:#566573;">等待时间得分与利用率得分按参数表权重加权</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">等待得分 = 100.0</span><span class="tag">等待阈值权重 = 2.0</span><span class="tag">利用率得分 = 66.67</span><span class="tag">利用率权重 = 1.0</span>
+        </div>
+        
+        
+        <div class="calc">score = (100.0 × 2.0 + 66.67 × 1.0) / (2.0 + 1.0) = 88.89</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">88.8889 score</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0004</code> <code>ROW-0005</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 服务时长单位换算 <span style="font-size:11px;color:#95a5a6;">(STEP-0043)</span></div>
+        <div style="color:#566573;">将平均服务时长从分钟换算为小时，以便与到达率（人/小时）匹配</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(分钟) = 5.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">5.0 分钟 ÷ 60 = 0.08333333333333333 小时</span>
+          
+        </div>
+        
+        <div class="calc">5.0 分钟 ÷ 60 = 0.08333333333333333 小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">0.0833 hour</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0013</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 单窗口服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0044)</span></div>
+        <div style="color:#566573;">每小时每个窗口能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">平均服务时长(小时) = 0.08333333333333333</span>
+        </div>
+        
+        
+        <div class="calc">μ = 1 / 0.083333 = 12.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">12.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0013</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 系统总服务率 <span style="font-size:11px;color:#95a5a6;">(STEP-0045)</span></div>
+        <div style="color:#566573;">所有窗口合计每小时能服务的人数</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">单窗口服务率 = 12.0</span><span class="tag">窗口数 = 3.0</span>
+        </div>
+        
+        
+        <div class="calc">总μ = 12.0000 × 3.0 = 36.0000 人/小时</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">36.0 person</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0013</code> <code>ROW-0014</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 排队强度 ρ <span style="font-size:11px;color:#95a5a6;">(STEP-0046)</span></div>
+        <div style="color:#566573;">到达率与总服务率的比值，用于判断系统稳定性（ρ<1 稳定）</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">到达率(人/小时) = 70.0</span><span class="tag">总服务率 = 36.0</span>
+        </div>
+        
+        
+        <div class="calc">ρ = 70.0 / 36.0000 = 1.9444</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">1.9444 ratio</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0012</code> <code>ROW-0013</code> <code>ROW-0014</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 平均等待时间 <span style="font-size:11px;color:#95a5a6;">(STEP-0047)</span></div>
+        <div style="color:#566573;">用 M/M/c 模型估算排队中的平均等待时长</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">排队强度 ρ = 1.9444444444444444</span><span class="tag">到达率 = 70.0</span>
+        </div>
+        
+        
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          
+          <span class="conv">inf 小时 × 60 = inf 分钟</span>
+          
+        </div>
+        
+        <div class="calc">ρ ≥ 1, 等待时间发散(无穷大)</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">inf minute</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0012</code> <code>ROW-0013</code> <code>ROW-0014</code> 
+          </span>
+        </div>
+      </div>
+      
+      <div class="step-box">
+        <div class="step-title">[B组] 加权综合评分 <span style="font-size:11px;color:#95a5a6;">(STEP-0048)</span></div>
+        <div style="color:#566573;">等待时间得分与利用率得分按参数表权重加权</div>
+        
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          <span class="tag">等待得分 = 10.0</span><span class="tag">等待阈值权重 = 3.5</span><span class="tag">利用率得分 = 100.0</span><span class="tag">利用率权重 = 0.7</span>
+        </div>
+        
+        
+        <div class="calc">score = (10.0 × 3.5 + 100.00 × 0.7) / (3.5 + 0.7) = 25.00</div>
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">25.0 score</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: <code>ROW-0004</code> <code>ROW-0005</code> 
+          </span>
+        </div>
+      </div>
+      
+
+      
+      <h3 style="margin-top:16px;">关联证据</h3>
+      <table>
+        <thead><tr><th>证据ID</th><th>标题</th><th>状态</th><th>说明</th></tr></thead>
+        <tbody>
+        
+        <tr>
+          <td>EVI-0004</td>
+          <td>四号咨询窗口 排队失败补证</td>
+          <td><span class="badge badge-PENDING">PENDING</span></td>
+          <td style="font-size:12px;">窗口「四号咨询窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。</td>
+        </tr>
+        
+        </tbody>
+      </table>
+      
+    </div>
+    </details>
+    
+  </div>
+
+  <h2>四、判断变更清单（变了哪些判断、为什么变）</h2>
+  <div class="section">
+    
+    <table>
+      <thead><tr><th>规则</th><th>旧结果</th><th>新结果</th><th>说明</th><th>触发参数</th><th>关联步骤</th></tr></thead>
+      <tbody>
+      
+      <tr>
+        <td><strong>排队窗口判定::四号咨询窗口</strong></td>
+        <td><span class="badge badge-PASS">PASS</span></td>
+        <td><span class="badge badge-FAIL">FAIL</span></td>
+        <td style="white-space:pre-wrap;">四号咨询窗口 的判定从「PASS」变为「FAIL」；综合评分从 88.89 变为 25.00；触发参数: 四号窗口·到达率数值变更、四号窗口·平均服务时长数值变更、四号窗口·开设窗口数数值变更、等待时间阈值权重变更</td>
+        <td><span class="tag">四号窗口·到达率数值变更</span><span class="tag">四号窗口·平均服务时长数值变更</span><span class="tag">四号窗口·开设窗口数数值变更</span><span class="tag">等待时间阈值权重变更</span></td>
+        <td><code>STEP-0047</code> <code>STEP-0048</code> </td>
+      </tr>
+      
+      </tbody>
+    </table>
+    
+  </div>
+
+  <h2>五、证据清单（已处理 vs 待补）</h2>
+  <div class="section">
+    
+    <table>
+      <thead><tr><th>ID</th><th>标题</th><th>状态</th><th>关联对象</th><th>说明</th><th>提交人</th><th>提交时间</th></tr></thead>
+      <tbody>
+      
+      <tr>
+        <td>EVI-0001</td>
+        <td>一号办事窗口 排队失败补证</td>
+        <td><span class="badge badge-PENDING">PENDING</span></td>
+        <td>WINDOW=WIN-001</td>
+        <td style="font-size:12px;">窗口「一号办事窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。</td>
+        <td>-</td>
+        <td style="font-size:12px;">-</td>
+      </tr>
+      
+      <tr>
+        <td>EVI-0002</td>
+        <td>二号综合窗口 排队失败补证</td>
+        <td><span class="badge badge-PENDING">PENDING</span></td>
+        <td>WINDOW=WIN-002</td>
+        <td style="font-size:12px;">窗口「二号综合窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。</td>
+        <td>-</td>
+        <td style="font-size:12px;">-</td>
+      </tr>
+      
+      <tr>
+        <td>EVI-0003</td>
+        <td>三号证件窗口 排队失败补证</td>
+        <td><span class="badge badge-PENDING">PENDING</span></td>
+        <td>WINDOW=WIN-003</td>
+        <td style="font-size:12px;">窗口「三号证件窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。</td>
+        <td>-</td>
+        <td style="font-size:12px;">-</td>
+      </tr>
+      
+      <tr>
+        <td>EVI-0004</td>
+        <td>四号咨询窗口 排队失败补证</td>
+        <td><span class="badge badge-PENDING">PENDING</span></td>
+        <td>WINDOW=WIN-004</td>
+        <td style="font-size:12px;">窗口「四号咨询窗口」判定为FAIL, 综合评分25.00, 需要补充现场流量、服务时长或窗口配置的实际数据。</td>
+        <td>-</td>
+        <td style="font-size:12px;">-</td>
+      </tr>
+      
+      </tbody>
+    </table>
+    
+  </div>
+
+  <h2>六、历史时间线（老叶给别人看的完整脉络）</h2>
+  <div class="section">
+    <div class="timeline">
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">NOTE_ADD</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          [临时]备注(ROW=ROW-0004): 社区公示前权重临时上调至3.5,见服务质量规范v3第2.3条
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">NOTE_ADD</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          [临时]备注(ROW=ROW-0005): 社区公示前利用率权重临时下调至0.7,20260608评审会口头决议补录
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">NOTE_ADD</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          [临时]备注(ROW=ROW-0001): 一号窗口到达率90为6月集中办事期峰值外推,尚需下周实测数据佐证
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">WEIGHT_CHANGE</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          权重变更: 等待时间阈值 2.0 → 3.5
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">WEIGHT_CHANGE</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          权重变更: 利用率权重 1.0 → 0.7
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 一号窗口·到达率 = 45.0person, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 一号窗口·平均服务时长 = 6.0minute, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 一号窗口·开设窗口数 = 3.0window, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 等待时间阈值 = 15.0minute, 权重=2.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 利用率权重 = 1.0ratio, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 二号窗口·到达率 = 60.0person, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 二号窗口·平均服务时长 = 8.0minute, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 二号窗口·开设窗口数 = 4.0window, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 三号窗口·到达率 = 30.0person, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 三号窗口·平均服务时长 = 12.0minute, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 三号窗口·开设窗口数 = 5.0window, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 四号窗口·到达率 = 20.0person, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 四号窗口·平均服务时长 = 4.0minute, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_A_202605_v1.0」载入: 四号窗口·开设窗口数 = 2.0window, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 一号窗口·到达率 = 90.0person, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 一号窗口·平均服务时长 = 7.5minute, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 一号窗口·开设窗口数 = 2.0window, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 等待时间阈值 = 15.0minute, 权重=3.5
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 利用率权重 = 1.0ratio, 权重=0.7
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 二号窗口·到达率 = 55.0person, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 二号窗口·平均服务时长 = 8.0minute, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 二号窗口·开设窗口数 = 5.0window, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 三号窗口·到达率 = 28.0person, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 三号窗口·平均服务时长 = 10.0minute, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 三号窗口·开设窗口数 = 4.0window, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 四号窗口·到达率 = 70.0person, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 四号窗口·平均服务时长 = 5.0minute, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">PARAM_INIT</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          参数表「params_B_202606_v1.2」载入: 四号窗口·开设窗口数 = 3.0window, 权重=1.0
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">JUDGMENT_CHANGE</span>
+          <span class="tl-actor">排队窗口批量验算</span>
+          判断变更: 排队窗口判定::四号咨询窗口 PASS → FAIL
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">EVIDENCE_PENDING</span>
+          <span class="tl-actor">系统</span>
+          证据待补: 一号办事窗口 排队失败补证
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">EVIDENCE_PENDING</span>
+          <span class="tl-actor">系统</span>
+          证据待补: 二号综合窗口 排队失败补证
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">EVIDENCE_PENDING</span>
+          <span class="tl-actor">系统</span>
+          证据待补: 三号证件窗口 排队失败补证
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">EVIDENCE_PENDING</span>
+          <span class="tl-actor">系统</span>
+          证据待补: 四号咨询窗口 排队失败补证
+        </div>
+      </div>
+      
+      <div class="tl-item">
+        <div class="tl-time">2026-06-12 20:24:59</div>
+        <div class="tl-text">
+          <span class="tl-type">VERIFY_RUN</span>
+          <span class="tl-actor">老叶_批量验算_20260612</span>
+          执行「排队窗口批量验算」: 参数变更14项, 判断变更1项, 外推越界2处, 待补证据4条
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <div style="text-align:center; color:#95a5a6; font-size:12px; margin:32px 0;">
+    排队窗口批量验算 · 交付说明: 参数表 → 处理记录 → 时间线, 三者相互关联可追溯
+  </div>
+</div>
+</body>
+</html>

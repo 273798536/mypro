@@ -1,0 +1,159 @@
+{
+  "version": "params_B_202606_v1.2",
+  "rows": [
+    {
+      "row_id": "ROW-0001",
+      "row_number": 1,
+      "param_name": "一号窗口·到达率",
+      "param_value": 90.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "一号办事窗口每小时到达人数（6月社区集中办事高峰期实测）",
+      "source_line": "参数表B第1行/20260610现场计数",
+      "valid_range": {"min": 10.0, "max": 80.0}
+    },
+    {
+      "row_id": "ROW-0002",
+      "row_number": 2,
+      "param_name": "一号窗口·平均服务时长",
+      "param_value": 7.5,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "一号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表B第2行/叫号系统导出0601-0610",
+      "valid_range": {"min": 2.0, "max": 20.0}
+    },
+    {
+      "row_id": "ROW-0003",
+      "row_number": 3,
+      "param_name": "一号窗口·开设窗口数",
+      "param_value": 2.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "一号窗口同时开放的物理窗口数量（人员培训减编）",
+      "source_line": "参数表B第3行/6月临时排班",
+      "valid_range": {"min": 1.0, "max": 10.0}
+    },
+    {
+      "row_id": "ROW-0004",
+      "row_number": 4,
+      "param_name": "等待时间阈值",
+      "param_value": 15.0,
+      "unit": "minute",
+      "weight": 3.5,
+      "description": "可接受平均等待时间上限(分钟)（服务质量考核指标调高权重）",
+      "source_line": "参数表B第4行/服务质量规范v3修订",
+      "valid_range": {"min": 5.0, "max": 60.0}
+    },
+    {
+      "row_id": "ROW-0005",
+      "row_number": 5,
+      "param_name": "利用率权重",
+      "param_value": 1.0,
+      "unit": "ratio",
+      "weight": 0.7,
+      "description": "综合评分中窗口利用率所占权重（老叶口头调整后补录）",
+      "source_line": "参数表B第5行/20260608评审会口头决议",
+      "valid_range": {"min": 0.5, "max": 3.0}
+    },
+    {
+      "row_id": "ROW-0006",
+      "row_number": 6,
+      "param_name": "二号窗口·到达率",
+      "param_value": 55.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "二号综合窗口每小时到达人数",
+      "source_line": "参数表B第6行/20260610现场计数",
+      "valid_range": {"min": 10.0, "max": 100.0}
+    },
+    {
+      "row_id": "ROW-0007",
+      "row_number": 7,
+      "param_name": "二号窗口·平均服务时长",
+      "param_value": 8.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "二号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表B第7行/叫号系统导出",
+      "valid_range": {"min": 2.0, "max": 30.0}
+    },
+    {
+      "row_id": "ROW-0008",
+      "row_number": 8,
+      "param_name": "二号窗口·开设窗口数",
+      "param_value": 5.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "二号窗口同时开放的物理窗口数量（新增1名见习人员）",
+      "source_line": "参数表B第8行/6月岗位增补",
+      "valid_range": {"min": 1.0, "max": 15.0}
+    },
+    {
+      "row_id": "ROW-0009",
+      "row_number": 9,
+      "param_name": "三号窗口·到达率",
+      "param_value": 28.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "三号证件窗口每小时到达人数",
+      "source_line": "参数表B第9行/20260610现场计数",
+      "valid_range": {"min": 10.0, "max": 80.0}
+    },
+    {
+      "row_id": "ROW-0010",
+      "row_number": 10,
+      "param_name": "三号窗口·平均服务时长",
+      "param_value": 10.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "三号窗口单人平均服务时长(分钟)（流程优化后缩短）",
+      "source_line": "参数表B第10行/预审机制上线后数据",
+      "valid_range": {"min": 2.0, "max": 30.0}
+    },
+    {
+      "row_id": "ROW-0011",
+      "row_number": 11,
+      "param_name": "三号窗口·开设窗口数",
+      "param_value": 4.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "三号窗口同时开放的物理窗口数量（1名调岗）",
+      "source_line": "参数表B第11行/6月调岗排班",
+      "valid_range": {"min": 1.0, "max": 15.0}
+    },
+    {
+      "row_id": "ROW-0012",
+      "row_number": 12,
+      "param_name": "四号窗口·到达率",
+      "param_value": 70.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "四号咨询窗口每小时到达人数（政策咨询高峰外推）",
+      "source_line": "参数表B第12行/政策发布后流量推演",
+      "valid_range": {"min": 5.0, "max": 60.0}
+    },
+    {
+      "row_id": "ROW-0013",
+      "row_number": 13,
+      "param_name": "四号窗口·平均服务时长",
+      "param_value": 5.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "四号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表B第13行/叫号系统导出",
+      "valid_range": {"min": 1.0, "max": 15.0}
+    },
+    {
+      "row_id": "ROW-0014",
+      "row_number": 14,
+      "param_name": "四号窗口·开设窗口数",
+      "param_value": 3.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "四号窗口同时开放的物理窗口数量（临时增派）",
+      "source_line": "参数表B第14行/6月政策窗口临时排班",
+      "valid_range": {"min": 1.0, "max": 8.0}
+    }
+  ]
+}

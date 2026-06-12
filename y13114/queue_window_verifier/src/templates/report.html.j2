@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>排队窗口批量验算报告 - {{ report.report_id }}</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; padding: 20px; background: #f5f7fa; color: #2c3e50; }
+  .container { max-width: 1400px; margin: 0 auto; }
+  h1 { color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 12px; }
+  h2 { color: #34495e; border-left: 4px solid #3498db; padding-left: 12px; margin-top: 36px; }
+  h3 { color: #2980b9; }
+  .meta-bar { background: white; border-radius: 8px; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .meta-item { font-size: 14px; }
+  .meta-item strong { color: #7f8c8d; margin-right: 6px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0 32px; }
+  .summary-card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; }
+  .summary-card .num { font-size: 32px; font-weight: bold; }
+  .summary-card .label { color: #7f8c8d; font-size: 13px; margin-top: 6px; }
+  .num-handled { color: #27ae60; }
+  .num-pending { color: #e67e22; }
+  .num-todo { color: #f39c12; }
+  .num-fail { color: #e74c3c; }
+  .num-change { color: #8e44ad; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 28px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  th, td { padding: 10px 14px; text-align: left; font-size: 13px; border-bottom: 1px solid #ecf0f1; }
+  th { background: #34495e; color: white; font-weight: 600; }
+  tr:hover td { background: #f8f9fa; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge-PASS { background: #d4efdf; color: #1e8449; }
+  .badge-WARN { background: #fdebd0; color: #ca6f1e; }
+  .badge-FAIL { background: #fadbd8; color: #c0392b; }
+  .badge-NEUTRAL { background: #d6dbdf; color: #566573; }
+  .badge-PROVIDED { background: #d4efdf; color: #1e8449; }
+  .badge-PENDING { background: #fadbd8; color: #c0392b; }
+  .badge-WAIVED { background: #ebedef; color: #566573; }
+  .badge-HANDLED { background: #d4efdf; color: #1e8449; }
+  .badge-NEED_EVIDENCE { background: #fadbd8; color: #c0392b; }
+  .badge-TODO { background: #fdebd0; color: #ca6f1e; }
+  .section { background: white; border-radius: 10px; padding: 24px; margin-bottom: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .step-box { background: #f8f9fa; border-left: 3px solid #3498db; padding: 12px 16px; margin: 10px 0; border-radius: 4px; font-size: 13px; }
+  .step-box .step-title { font-weight: 600; color: #2980b9; margin-bottom: 6px; }
+  .step-box .calc { font-family: "SF Mono", Menlo, Consolas, monospace; background: white; padding: 8px; border-radius: 4px; margin-top: 6px; white-space: pre-wrap; border: 1px solid #ecf0f1; }
+  .conv { color: #16a085; }
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: #d5dbdb; }
+  .tl-item { position: relative; padding: 8px 0 16px 0; }
+  .tl-item::before { content: ''; position: absolute; left: -22px; top: 12px; width: 12px; height: 12px; border-radius: 50%; background: #3498db; border: 2px solid white; box-shadow: 0 0 0 2px #3498db; }
+  .tl-time { font-size: 12px; color: #7f8c8d; }
+  .tl-text { font-size: 14px; margin-top: 2px; }
+  .tl-actor { display: inline-block; background: #d6eaf8; color: #21618c; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 6px; }
+  .tl-type { display: inline-block; background: #f4ecf7; color: #6c3483; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-right: 6px; }
+  .note-temp { background: #fef9e7; border: 1px solid #f9e79f; }
+  details { margin: 10px 0; }
+  summary { cursor: pointer; color: #2980b9; font-weight: 600; padding: 6px 0; }
+  .impact-list { font-size: 12px; color: #7f8c8d; margin-top: 4px; }
+  .tag { display: inline-block; background: #eaf2f8; color: #1f618d; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px 4px 2px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>排队窗口批量验算报告</h1>
+  <div class="meta-bar">
+    <div class="meta-item"><strong>报告编号</strong>{{ report.report_id }}</div>
+    <div class="meta-item"><strong>生成时间</strong>{{ report.generated_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+    <div class="meta-item"><strong>参数表A</strong>{{ report.param_table_version_a }}</div>
+    <div class="meta-item"><strong>参数表B</strong>{{ report.param_table_version_b }}</div>
+  </div>
+
+  <h2>一、总览速览（项目经理视图）</h2>
+  <div class="summary-grid">
+    <div class="summary-card"><div class="num num-handled">{{ counts.windows_handled }}</div><div class="label">窗口·已处理</div></div>
+    <div class="summary-card"><div class="num num-pending">{{ counts.windows_need_evidence }}</div><div class="label">窗口·需补证据</div></div>
+    <div class="summary-card"><div class="num num-todo">{{ counts.windows_todo }}</div><div class="label">窗口·待跟进</div></div>
+    <div class="summary-card"><div class="num num-change">{{ counts.judgment_changes }}</div><div class="label">判断结果变更</div></div>
+    <div class="summary-card"><div class="num num-fail">{{ counts.extrapolation_issues }}</div><div class="label">外推越界问题</div></div>
+    <div class="summary-card"><div class="num num-pending">{{ counts.evidences_pending }}</div><div class="label">待补证据</div></div>
+    <div class="summary-card"><div class="num num-handled">{{ counts.evidences_provided }}</div><div class="label">已提证据</div></div>
+    <div class="summary-card"><div class="num">{{ counts.weight_changes }}</div><div class="label">权重变更记录</div></div>
+  </div>
+
+  <h2>二、参数表对照（老叶复核起点）</h2>
+  <div class="section">
+    <h3>2.1 参数行一览</h3>
+    <table>
+      <thead><tr>
+        <th>行号</th><th>参数名</th><th>数值</th><th>单位</th><th>权重</th><th>有效范围</th><th>来源行</th><th>备注</th>
+      </tr></thead>
+      <tbody>
+      {% for row in report.param_rows %}
+      <tr>
+        <td>{{ row.row_number }}</td>
+        <td><strong>{{ row.param_name }}</strong></td>
+        <td>{{ row.param_value }}</td>
+        <td>{{ row.unit.value }}</td>
+        <td>{{ row.weight }}</td>
+        <td>{% if row.valid_range %}[{{ row.valid_range.min }}, {{ row.valid_range.max }}]{% else %}-{% endif %}</td>
+        <td style="font-size:12px;color:#7f8c8d;">{{ row.source_line }}</td>
+        <td>
+          {% for n in report.notes if n.target_type == 'ROW' and n.target_id == row.row_id %}
+          <div class="tag {% if n.is_temporary %}note-temp{% endif %}">
+            {% if n.is_temporary %}[临时]{% endif %}{{ n.content[:20] }}
+            {% if n.content|length > 20 %}…{% endif %}</div>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    {% if report.weight_changes %}
+    <h3>2.2 权重变更记录（谁改了、什么时候、为什么）</h3>
+    <table>
+      <thead><tr><th>变更时间</th><th>操作人</th><th>参数名</th><th>旧权重</th><th>新权重</th><th>原因</th></tr></thead>
+      <tbody>
+      {% for c in report.weight_changes %}
+      <tr>
+        <td style="font-size:12px;">{{ c.changed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ c.changed_by }}</td>
+        <td>{{ c.param_name }}</td>
+        <td style="color:#e74c3c;">{{ c.old_weight }}</td>
+        <td style="color:#27ae60;font-weight:600;">{{ c.new_weight }}</td>
+        <td>{{ c.reason or '-' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    {% if report.notes %}
+    <h3>2.3 参数表备注（含社区公示前临时补注）</h3>
+    <table>
+      <thead><tr><th>创建时间</th><th>作者</th><th>类型</th><th>目标</th><th>内容</th></tr></thead>
+      <tbody>
+      {% for n in report.notes %}
+      <tr {% if n.is_temporary %}class="note-temp"{% endif %}>
+        <td style="font-size:12px;">{{ n.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ n.author }}</td>
+        <td>{% if n.is_temporary %}<span class="badge badge-FAIL">临时</span>{% else %}正式{% endif %}</td>
+        <td>{{ n.target_type }}={{ n.target_id }}</td>
+        <td style="white-space:pre-wrap;">{{ n.content }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+
+  <h2>三、窗口验算明细（中间计算不藏）</h2>
+  <div class="section">
+    {% for w in report.window_verdicts %}
+    <details {% if loop.index <= 2 %}open{% endif %}>
+    <summary>{{ w.window_name }} · 最终得分 {{ w.final_score | round(2) }} ·
+      <span class="badge badge-{{ w.outcome.value }}">{{ w.outcome.value }}</span>
+      <span class="badge badge-{{ w.handling_status.value }}">{{ w.handling_status.value }}</span>
+    </summary>
+    <div style="padding: 8px 4px 0 4px;">
+      {% if w.issues %}
+      <div class="step-box" style="border-left-color:#e74c3c;">
+        <div class="step-title">⚠️ 外推越界 / 数据异常（{{ w.issues | length }}）</div>
+        {% for issue in report.extrapolation_issues if issue.issue_id in w.issues %}
+        <div style="margin:8px 0; padding:8px; background:white; border-radius:4px;">
+          <strong>{{ issue.param_name }}</strong>
+          = {{ issue.extrapolated_value }} (方向: <span style="color:#c0392b;">{{ issue.direction }}</span>)<br>
+          <span style="font-size:12px; color:#7f8c8d;">
+            有效区间: [{{ issue.valid_min }}, {{ issue.valid_max }}] ·
+            来源行: {{ issue.source_line }} (row_id={{ issue.row_id }})
+          </span>
+          <div class="impact-list">影响范围:
+            {% for s in issue.impact_scope %}<span class="tag">{{ s }}</span>{% endfor %}
+          </div>
+          <div style="margin-top:6px; color:#566573;">{{ issue.impact_description }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <h3 style="margin-top:16px;">中间计算步骤</h3>
+      {% for s in w.steps %}
+      <div class="step-box">
+        <div class="step-title">{{ s.step_name }} <span style="font-size:11px;color:#95a5a6;">({{ s.step_id }})</span></div>
+        <div style="color:#566573;">{{ s.description }}</div>
+        {% if s.inputs %}
+        <div style="margin-top:6px;"><strong>输入:</strong>
+          {% for k,v in s.inputs.items() %}<span class="tag">{{ k }} = {{ v }}</span>{% endfor %}
+        </div>
+        {% endif %}
+        {% if s.conversions %}
+        <div style="margin-top:6px;">
+          <strong class="conv">单位换算:</strong>
+          {% for c in s.conversions %}
+          <span class="conv">{{ c.conversion_formula }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% if s.calculation %}<div class="calc">{{ s.calculation }}</div>{% endif %}
+        <div style="margin-top:8px;">
+          <strong>结果:</strong>
+          <span style="font-weight:600; color:#2980b9;">{{ s.result_value | round(4) }} {{ s.result_unit.value }}</span>
+          <span style="font-size:11px;color:#95a5a6; margin-left:10px;">
+            来源行: {% for rid in s.source_row_ids %}<code>{{ rid }}</code> {% endfor %}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+
+      {% if w.evidence_ids %}
+      <h3 style="margin-top:16px;">关联证据</h3>
+      <table>
+        <thead><tr><th>证据ID</th><th>标题</th><th>状态</th><th>说明</th></tr></thead>
+        <tbody>
+        {% for e in report.evidences if e.evidence_id in w.evidence_ids %}
+        <tr>
+          <td>{{ e.evidence_id }}</td>
+          <td>{{ e.title }}</td>
+          <td><span class="badge badge-{{ e.status.value }}">{{ e.status.value }}</span></td>
+          <td style="font-size:12px;">{{ e.description }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+    </details>
+    {% endfor %}
+  </div>
+
+  <h2>四、判断变更清单（变了哪些判断、为什么变）</h2>
+  <div class="section">
+    {% if report.judgments %}
+    <table>
+      <thead><tr><th>规则</th><th>旧结果</th><th>新结果</th><th>说明</th><th>触发参数</th><th>关联步骤</th></tr></thead>
+      <tbody>
+      {% for j in report.judgments %}
+      <tr>
+        <td><strong>{{ j.rule_name }}</strong></td>
+        <td><span class="badge badge-{{ j.old_outcome.value }}">{{ j.old_outcome.value }}</span></td>
+        <td><span class="badge badge-{{ j.new_outcome.value }}">{{ j.new_outcome.value }}</span></td>
+        <td style="white-space:pre-wrap;">{{ j.explanation }}</td>
+        <td>{% for p in j.related_param_changes %}<span class="tag">{{ p }}</span>{% endfor %}</td>
+        <td>{% for s in j.related_steps %}<code>{{ s }}</code> {% endfor %}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color:#7f8c8d;">两组参数下所有判断结果一致，无变更。</p>
+    {% endif %}
+  </div>
+
+  <h2>五、证据清单（已处理 vs 待补）</h2>
+  <div class="section">
+    {% if report.evidences %}
+    <table>
+      <thead><tr><th>ID</th><th>标题</th><th>状态</th><th>关联对象</th><th>说明</th><th>提交人</th><th>提交时间</th></tr></thead>
+      <tbody>
+      {% for e in report.evidences %}
+      <tr>
+        <td>{{ e.evidence_id }}</td>
+        <td>{{ e.title }}</td>
+        <td><span class="badge badge-{{ e.status.value }}">{{ e.status.value }}</span></td>
+        <td>{{ e.ref_type }}={{ e.ref_id }}</td>
+        <td style="font-size:12px;">{{ e.description }}</td>
+        <td>{{ e.provided_by or '-' }}</td>
+        <td style="font-size:12px;">{{ e.provided_at.strftime('%Y-%m-%d %H:%M') if e.provided_at else '-' }}</td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color:#7f8c8d;">暂无需证据跟进的事项。</p>
+    {% endif %}
+  </div>
+
+  <h2>六、历史时间线（老叶给别人看的完整脉络）</h2>
+  <div class="section">
+    <div class="timeline">
+      {% for e in timeline_events %}
+      <div class="tl-item">
+        <div class="tl-time">{{ e.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+        <div class="tl-text">
+          <span class="tl-type">{{ e.event_type }}</span>
+          <span class="tl-actor">{{ e.actor }}</span>
+          {{ e.summary }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="text-align:center; color:#95a5a6; font-size:12px; margin:32px 0;">
+    排队窗口批量验算 · 交付说明: 参数表 → 处理记录 → 时间线, 三者相互关联可追溯
+  </div>
+</div>
+</body>
+</html>

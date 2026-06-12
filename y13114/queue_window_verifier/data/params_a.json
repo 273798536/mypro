@@ -1,0 +1,159 @@
+{
+  "version": "params_A_202605_v1.0",
+  "rows": [
+    {
+      "row_id": "ROW-0001",
+      "row_number": 1,
+      "param_name": "一号窗口·到达率",
+      "param_value": 45.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "一号办事窗口每小时到达人数",
+      "source_line": "参数表A第1行/人流量统计表2026Q1",
+      "valid_range": {"min": 10.0, "max": 80.0}
+    },
+    {
+      "row_id": "ROW-0002",
+      "row_number": 2,
+      "param_name": "一号窗口·平均服务时长",
+      "param_value": 6.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "一号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表A第2行/叫号系统导出",
+      "valid_range": {"min": 2.0, "max": 20.0}
+    },
+    {
+      "row_id": "ROW-0003",
+      "row_number": 3,
+      "param_name": "一号窗口·开设窗口数",
+      "param_value": 3.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "一号窗口同时开放的物理窗口数量",
+      "source_line": "参数表A第3行/岗位排班表",
+      "valid_range": {"min": 1.0, "max": 10.0}
+    },
+    {
+      "row_id": "ROW-0004",
+      "row_number": 4,
+      "param_name": "等待时间阈值",
+      "param_value": 15.0,
+      "unit": "minute",
+      "weight": 2.0,
+      "description": "可接受平均等待时间上限(分钟)",
+      "source_line": "参数表A第4行/服务质量规范v2",
+      "valid_range": {"min": 5.0, "max": 60.0}
+    },
+    {
+      "row_id": "ROW-0005",
+      "row_number": 5,
+      "param_name": "利用率权重",
+      "param_value": 1.0,
+      "unit": "ratio",
+      "weight": 1.0,
+      "description": "综合评分中窗口利用率所占权重",
+      "source_line": "参数表A第5行/评审会20260428",
+      "valid_range": {"min": 0.5, "max": 3.0}
+    },
+    {
+      "row_id": "ROW-0006",
+      "row_number": 6,
+      "param_name": "二号窗口·到达率",
+      "param_value": 60.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "二号综合窗口每小时到达人数",
+      "source_line": "参数表A第6行/人流量统计表2026Q1",
+      "valid_range": {"min": 10.0, "max": 100.0}
+    },
+    {
+      "row_id": "ROW-0007",
+      "row_number": 7,
+      "param_name": "二号窗口·平均服务时长",
+      "param_value": 8.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "二号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表A第7行/叫号系统导出",
+      "valid_range": {"min": 2.0, "max": 30.0}
+    },
+    {
+      "row_id": "ROW-0008",
+      "row_number": 8,
+      "param_name": "二号窗口·开设窗口数",
+      "param_value": 4.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "二号窗口同时开放的物理窗口数量",
+      "source_line": "参数表A第8行/岗位排班表",
+      "valid_range": {"min": 1.0, "max": 15.0}
+    },
+    {
+      "row_id": "ROW-0009",
+      "row_number": 9,
+      "param_name": "三号窗口·到达率",
+      "param_value": 30.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "三号证件窗口每小时到达人数",
+      "source_line": "参数表A第9行/人流量统计表2026Q1",
+      "valid_range": {"min": 10.0, "max": 80.0}
+    },
+    {
+      "row_id": "ROW-0010",
+      "row_number": 10,
+      "param_name": "三号窗口·平均服务时长",
+      "param_value": 12.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "三号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表A第10行/叫号系统导出",
+      "valid_range": {"min": 2.0, "max": 30.0}
+    },
+    {
+      "row_id": "ROW-0011",
+      "row_number": 11,
+      "param_name": "三号窗口·开设窗口数",
+      "param_value": 5.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "三号窗口同时开放的物理窗口数量",
+      "source_line": "参数表A第11行/岗位排班表",
+      "valid_range": {"min": 1.0, "max": 15.0}
+    },
+    {
+      "row_id": "ROW-0012",
+      "row_number": 12,
+      "param_name": "四号窗口·到达率",
+      "param_value": 20.0,
+      "unit": "person",
+      "weight": 1.0,
+      "description": "四号咨询窗口每小时到达人数",
+      "source_line": "参数表A第12行/人流量统计表2026Q1",
+      "valid_range": {"min": 5.0, "max": 60.0}
+    },
+    {
+      "row_id": "ROW-0013",
+      "row_number": 13,
+      "param_name": "四号窗口·平均服务时长",
+      "param_value": 4.0,
+      "unit": "minute",
+      "weight": 1.0,
+      "description": "四号窗口单人平均服务时长(分钟)",
+      "source_line": "参数表A第13行/叫号系统导出",
+      "valid_range": {"min": 1.0, "max": 15.0}
+    },
+    {
+      "row_id": "ROW-0014",
+      "row_number": 14,
+      "param_name": "四号窗口·开设窗口数",
+      "param_value": 2.0,
+      "unit": "window",
+      "weight": 1.0,
+      "description": "四号窗口同时开放的物理窗口数量",
+      "source_line": "参数表A第14行/岗位排班表",
+      "valid_range": {"min": 1.0, "max": 8.0}
+    }
+  ]
+}
