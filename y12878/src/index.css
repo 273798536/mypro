@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #0A2540;
+  background-color: #E8F4F8;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: #E8F4F8;
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/60 backdrop-blur-md border border-white/80 rounded-xl shadow-lg;
+  }
+
+  .glass-card-dark {
+    @apply bg-deep-sea/60 backdrop-blur-md border border-ocean/30 rounded-xl shadow-lg text-white;
+  }
+
+  .section-title {
+    @apply font-serif text-lg font-semibold text-deep-sea mb-3 flex items-center gap-2;
+  }
+
+  .section-title-light {
+    @apply font-serif text-lg font-semibold text-white mb-3 flex items-center gap-2;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-deep-sea text-white rounded-md text-sm font-medium
+           hover:bg-deep-sea-light transition-all duration-200
+           hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-ocean {
+    @apply px-4 py-2 bg-ocean text-white rounded-md text-sm font-medium
+           hover:bg-ocean-light transition-all duration-200
+           hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border border-deep-sea/30 text-deep-sea rounded-md text-sm font-medium
+           hover:bg-deep-sea/5 transition-all duration-200;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 border border-deep-sea/20 rounded-md text-sm
+           bg-white/80 focus:outline-none focus:ring-2 focus:ring-ocean/40
+           focus:border-ocean transition-all;
+  }
+
+  .data-table {
+    @apply w-full text-sm border-collapse;
+  }
+
+  .data-table th {
+    @apply px-3 py-2 text-left font-medium text-deep-sea/70 bg-sea-gray/80
+           border-b border-deep-sea/10 text-xs uppercase tracking-wider;
+  }
+
+  .data-table td {
+    @apply px-3 py-2 border-b border-deep-sea/5 text-deep-sea/90;
+  }
+
+  .data-table tr:hover td {
+    @apply bg-ocean/5;
+  }
+
+  .null-filled-cell {
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 5px,
+      rgba(255, 179, 0, 0.15) 5px,
+      rgba(255, 179, 0, 0.15) 10px
+    );
+  }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 37, 64, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 184, 212, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 184, 212, 0.5);
+}
