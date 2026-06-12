@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #E8EEF4;
+  background-color: #0A1929;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #0A1929;
+  background-image: linear-gradient(rgba(30, 58, 95, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(30, 58, 95, 0.2) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+h1, h2, h3, h4, h5 {
+  font-family: 'Space Mono', monospace;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0F2540;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2A4F78;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3D6899;
+}
+
+/* Table zebra stripes */
+.row-zebra:nth-child(even) {
+  background-color: rgba(27, 58, 92, 0.3);
+}
+
+.row-zebra:nth-child(odd) {
+  background-color: rgba(15, 37, 64, 0.5);
+}
+
+/* Pulse animation for anomaly points */
+@keyframes anomaly-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0.5;
+  }
+}
+
+.anomaly-dot {
+  animation: anomaly-pulse 2s ease-in-out infinite;
+}
+
+/* Blinking cursor for terminal effect */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.cursor-blink::after {
+  content: '▋';
+  animation: blink 1s step-end infinite;
+  margin-left: 2px;
+}
+
+/* Card hover effect */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: #3D6899;
+}
+
+/* Input styling */
+input, textarea, select {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #2EC4B6;
+  box-shadow: 0 0 0 2px rgba(46, 196, 182, 0.2);
+}
