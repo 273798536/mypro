@@ -1,0 +1,5 @@
+combo_key,category,region,channel,current_count,extrapolation_flag,data_source,stat_date,note
+A|华东|线上,A,华东,线上,1249,False,ods_main_table,2026-06-10,一条正常记录
+A|华东|线下,A,华东,线下,831,False,ods_main_table,2026-06-10,正常
+B|华北|线上,B,华北,线上,5200000,True,extrapolated_fill,2026-06-10,外推越界样例：历史2100，当前外推到520万，明显越界
+B|华北|线下,B,华北,线下,641,False,ods_main_table,2026-06-10,正常

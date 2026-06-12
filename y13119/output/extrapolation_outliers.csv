@@ -1,0 +1,2 @@
+combo_key,category,region,channel,current_count,extrapolation_flag,data_source,stat_date,note,historical_count,outlier_reason
+B|华北|线上,B,华北,线上,5200000,True,extrapolated_fill,2026-06-10,外推越界样例：历史2100，当前外推到520万，明显越界,2100,标记为外推填充; 较历史上升247519.0%，超过阈值50%; 绝对值 5200000 超过上限 1000000.0

@@ -1,0 +1,5 @@
+combo_key,category,region,channel,historical_count,answer_version,answered_by,answered_at,note,source
+A|华东|线上,A,华东,线上,1250,v2025.11,analyst_meng,2025-11-20,旧口径：含试用用户,history
+A|华东|线下,A,华东,线下,830,v2025.11,analyst_meng,2025-11-20,旧口径,history
+B|华北|线上,B,华北,线上,2100,v2025.10,analyst_old,2025-10-15,历史旧说法，已作废但仍在库里,history
+B|华北|线下,B,华北,线下,640,v2025.11,analyst_meng,2025-11-21,正常历史答案,history

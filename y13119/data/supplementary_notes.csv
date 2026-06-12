@@ -1,0 +1,3 @@
+combo_key,note_type,note_content,added_by,added_at
+A|华东|线上,caliber_change,2025-12起口径调整：试用用户不再计入，历史值未回刷,analyst_meng,2026-06-09
+B|华北|线上,data_quality,当日源数据缺失，采用线性外推填充，需人工复核,etl_ops,2026-06-11
