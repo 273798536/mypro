@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}样品箱总览 - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-title">数据汇总</div>
+    <div class="summary-grid">
+        <div class="summary-item" style="background: linear-gradient(135deg, #6c757d, #495057);">
+            <div class="num">{{ summary.total }}</div>
+            <div class="label">样品箱总数</div>
+        </div>
+        <div class="summary-item" style="background: linear-gradient(135deg, #28a745, #20c997);">
+            <div class="num">{{ summary.normal }}</div>
+            <div class="label">正常</div>
+        </div>
+        <div class="summary-item" style="background: linear-gradient(135deg, #ffc107, #ffca2c);">
+            <div class="num">{{ summary.warning }}</div>
+            <div class="label">预警</div>
+        </div>
+        <div class="summary-item" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+            <div class="num">{{ summary.abnormal }}</div>
+            <div class="label">异常</div>
+        </div>
+        <div class="summary-item" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+            <div class="num">{{ summary.reviewed }}</div>
+            <div class="label">已复核</div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">
+        样品箱列表
+        <span style="font-size: 12px; color: #909399; font-weight: normal;">共 {{ boxes|length }} 条</span>
+    </div>
+    
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: {{ STATUS_COLORS.normal }};"></div>
+            <span>正常</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: {{ STATUS_COLORS.warning }};"></div>
+            <span>预警</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: {{ STATUS_COLORS.abnormal }};"></div>
+            <span>异常</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: {{ STATUS_COLORS.reviewed }};"></div>
+            <span>已复核</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: {{ STATUS_COLORS.pending }};"></div>
+            <span>待处理</span>
+        </div>
+    </div>
+
+    <div class="filter-bar">
+        <form method="get" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <select name="status">
+                <option value="">全部状态</option>
+                {% for key, label in STATUS_LABELS.items() %}
+                <option value="{{ key }}" {% if current_status == key %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="keyword" placeholder="搜索箱号/站点/航次..." value="{{ keyword }}">
+            <button type="submit" class="btn btn-primary">筛选</button>
+            <a href="{{ url_for('index') }}" class="btn btn-outline">重置</a>
+        </form>
+    </div>
+
+    {% if boxes %}
+    <table>
+        <thead>
+            <tr>
+                <th>状态</th>
+                <th>样品箱编号</th>
+                <th>站点名称</th>
+                <th>样品类型</th>
+                <th>采样时间</th>
+                <th>存储温度</th>
+                <th>异常类型</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for box in boxes %}
+            <tr>
+                <td>
+                    <span class="status-badge" style="background: {{ STATUS_COLORS.get(box.status, '#ccc') }};">
+                        {{ STATUS_LABELS.get(box.status, box.status) }}
+                    </span>
+                </td>
+                <td><strong>{{ box.box_code }}</strong></td>
+                <td>{{ box.station_name or '-' }}</td>
+                <td>{{ box.sample_type or '-' }}</td>
+                <td>{{ box.collection_time or '-' }}</td>
+                <td>{{ box.storage_temp if box.storage_temp is not none else '-' }} ℃</td>
+                <td>
+                    {% if box.abnormal_list %}
+                        {% for ab in box.abnormal_list %}
+                            <span style="color: {{ STATUS_COLORS.abnormal }}; font-size: 12px;">
+                                {{ ABNORMAL_TYPES.get(ab, ab) }}
+                            </span>
+                            {% if not loop.last %}、{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <span style="color: #909399;">-</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ url_for('box_detail', box_id=box.id) }}" class="btn btn-outline" style="padding: 4px 10px; font-size: 12px;">查看/追溯</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty">暂无样品箱数据</div>
+    {% endif %}
+</div>
+
+<div class="alert alert-info">
+    <strong>💡 提示：</strong> 点击"查看/追溯"可进入详情页，查看完整追溯链路（养殖日志、风浪预报、处理记录、复核记录）。此页面适合截图用于评审或讲解。
+</div>
+{% endblock %}

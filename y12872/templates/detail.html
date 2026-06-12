@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block title %}{{ box.box_code }} - 样品箱详情 - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-title">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="status-badge" style="background: {{ STATUS_COLORS.get(box.status, '#ccc') }}; font-size: 14px; padding: 6px 14px;">
+                {{ STATUS_LABELS.get(box.status, box.status) }}
+            </span>
+            <span style="font-size: 20px;">{{ box.box_code }}</span>
+        </div>
+        <div>
+            <a href="{{ url_for('index') }}" class="btn btn-outline" style="font-size: 12px;">← 返回列表</a>
+        </div>
+    </div>
+
+    <div class="two-column">
+        <div>
+            <h4 style="font-size: 14px; margin-bottom: 12px; color: #303133;">基本信息</h4>
+            <div class="detail-row">
+                <span class="detail-label">航次名称</span>
+                <span class="detail-value">{{ box.expedition_name or '-' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">站点名称</span>
+                <span class="detail-value">{{ box.station_name or '-' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">样品类型</span>
+                <span class="detail-value">{{ box.sample_type or '-' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">采样时间</span>
+                <span class="detail-value">{{ box.collection_time or '-' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">存储温度</span>
+                <span class="detail-value">
+                    {{ box.storage_temp if box.storage_temp is not none else '-' }} ℃
+                    {% if box.storage_temp is not none and (box.storage_temp > 8 or box.storage_temp < 2) %}
+                    <span style="color: #dc3545; margin-left: 8px;">⚠ 越界</span>
+                    {% endif %}
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">运输状态</span>
+                <span class="detail-value">{{ box.transport_status or '-' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">创建时间</span>
+                <span class="detail-value">{{ box.created_at or '-' }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">更新时间</span>
+                <span class="detail-value">{{ box.updated_at or '-' }}</span>
+            </div>
+        </div>
+        
+        <div>
+            <h4 style="font-size: 14px; margin-bottom: 12px; color: #303133;">异常信息</h4>
+            {% if box.abnormal_list %}
+                <div class="alert alert-danger">
+                    <strong>检测到 {{ box.abnormal_list|length }} 项异常：</strong>
+                    <ul style="margin-top: 8px; padding-left: 20px;">
+                        {% for ab in box.abnormal_list %}
+                        <li>{{ ABNORMAL_TYPES.get(ab, ab) }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    ✅ 未检测到异常
+                </div>
+            {% endif %}
+            
+            <div style="margin-top: 20px;">
+                <h4 style="font-size: 14px; margin-bottom: 12px; color: #303133;">快捷操作</h4>
+                <button onclick="document.getElementById('review-section').scrollIntoView({behavior: 'smooth'})" class="btn btn-primary" style="width: 100%;">
+                    ✏️ 立即复核
+                </button>
+                <div style="height: 8px;"></div>
+                <button onclick="exportSingle()" class="btn btn-outline" style="width: 100%;">
+                    📊 导出本箱详情报告
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">🔗 追溯链路</div>
+    
+    <div class="alert alert-info">
+        从结果（样品箱状态）向下追溯到处理记录、关联的原始数据（养殖日志、风浪预报）和复核意见，每一步都有来源可查。
+    </div>
+
+    <div class="trace-chain">
+        <div class="trace-node">
+            <h4>📦 最终结果：样品箱状态</h4>
+            <div class="meta">{{ box.updated_at }}</div>
+            <div class="content">
+                状态：<span class="status-badge" style="background: {{ STATUS_COLORS.get(box.status, '#ccc') }};">{{ STATUS_LABELS.get(box.status, box.status) }}</span>
+                {% if box.abnormal_list %}
+                <div style="margin-top: 6px;">
+                    异常类型：
+                    {% for ab in box.abnormal_list %}
+                    <span style="color: {{ STATUS_COLORS.abnormal }};">{{ ABNORMAL_TYPES.get(ab, ab) }}</span>
+                    {% if not loop.last %}、{% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="trace-node" style="border-left-color: #ffc107;">
+            <h4>📝 处理记录</h4>
+            <div class="meta">所有对该样品箱的操作记录</div>
+            <div class="content">
+                {% if box.processing_records %}
+                <table style="font-size: 12px;">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>操作</th>
+                            <th>操作人</th>
+                            <th>详情</th>
+                            <th>来源</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rec in box.processing_records %}
+                        <tr>
+                            <td>{{ rec.created_at }}</td>
+                            <td>{{ rec.action }}</td>
+                            <td>{{ rec.operator }}</td>
+                            <td>{{ rec.detail }}</td>
+                            <td>
+                                {% if rec.source_file %}
+                                {{ rec.source_file }} @第{{ rec.source_row }}行
+                                {% else %}-{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                暂无处理记录
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="trace-node" style="border-left-color: #28a745;">
+            <h4>🌊 关联原始数据</h4>
+            <div class="meta">根据采样时间和站点自动关联</div>
+            <div class="content">
+                <div class="two-column" style="gap: 12px;">
+                    <div style="padding: 12px; background: white; border-radius: 6px; border: 1px solid #e4e7ed;">
+                        <strong style="font-size: 13px;">养殖日志</strong>
+                        {% if box.aquaculture_log %}
+                        <div style="margin-top: 8px; font-size: 12px;">
+                            <div>日期：{{ box.aquaculture_log.log_date }}</div>
+                            <div>站点：{{ box.aquaculture_log.station_name }}</div>
+                            <div>水温：{{ box.aquaculture_log.water_temp }} ℃</div>
+                            <div>溶解氧：{{ box.aquaculture_log.dissolved_oxygen }} mg/L</div>
+                            <div>PH值：{{ box.aquaculture_log.ph }}</div>
+                            <div>投饵量：{{ box.aquaculture_log.feeding_amount }} kg</div>
+                            <div>死亡数：{{ box.aquaculture_log.mortality }} 尾</div>
+                            <div>备注：{{ box.aquaculture_log.notes or '-' }}</div>
+                            <div style="color: #909399; margin-top: 6px;">
+                                来源：{{ box.aquaculture_log.source_file }}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div style="color: #dc3545; font-size: 12px; margin-top: 8px;">
+                            ⚠ 未找到对应日期的养殖日志
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="padding: 12px; background: white; border-radius: 6px; border: 1px solid #e4e7ed;">
+                        <strong style="font-size: 13px;">风浪预报</strong>
+                        {% if box.wave_forecast %}
+                        <div style="margin-top: 8px; font-size: 12px;">
+                            <div>预报日期：{{ box.wave_forecast.forecast_date }}</div>
+                            <div>站点：{{ box.wave_forecast.station_name }}</div>
+                            <div>浪高：{{ box.wave_forecast.wave_height }} m</div>
+                            <div>风速：{{ box.wave_forecast.wind_speed }} m/s</div>
+                            <div>风向：{{ box.wave_forecast.wind_direction }}</div>
+                            <div>
+                                是否延迟：
+                                {% if box.wave_forecast.is_delayed %}
+                                <span style="color: #dc3545; font-weight: 600;">是 ⚠</span>
+                                {% else %}
+                                <span style="color: #28a745;">否</span>
+                                {% endif %}
+                            </div>
+                            {% if box.wave_forecast.delay_reason %}
+                            <div style="color: #dc3545;">延迟原因：{{ box.wave_forecast.delay_reason }}</div>
+                            {% endif %}
+                            <div style="color: #909399; margin-top: 6px;">
+                                来源：{{ box.wave_forecast.source_file }}
+                            </div>
+                        </div>
+                        {% else %}
+                        <div style="color: #909399; font-size: 12px; margin-top: 8px;">
+                            未找到对应日期的风浪预报
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="trace-node" style="border-left-color: #17a2b8;">
+            <h4>✅ 复核意见</h4>
+            <div class="meta">复核人员的处理意见和结论</div>
+            <div class="content">
+                {% if box.review_notes %}
+                    {% for note in box.review_notes %}
+                    <div style="padding: 10px; background: white; border-radius: 6px; border: 1px solid #e4e7ed; margin-bottom: 8px;">
+                        <div style="font-size: 12px; color: #909399; margin-bottom: 6px;">
+                            {{ note.reviewer }} · {{ note.created_at }}
+                        </div>
+                        <div style="font-size: 13px;">
+                            结果：<strong>{{ note.review_result }}</strong>
+                        </div>
+                        {% if note.opinion %}
+                        <div style="font-size: 12px; color: #606266; margin-top: 4px;">
+                            意见：{{ note.opinion }}
+                        </div>
+                        {% endif %}
+                        {% if note.handling_suggestion %}
+                        <div style="font-size: 12px; color: #2d5a87; margin-top: 4px;">
+                            处理建议：{{ note.handling_suggestion }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="color: #909399; font-size: 12px;">
+                        暂无复核记录。可使用下方的复核功能添加意见。
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" id="review-section">
+    <div class="card-title">✏️ 复核入口</div>
+    
+    <div class="alert alert-warning">
+        复核结果和意见会自动记录到处理记录中，报告导出时会包含这些信息，确保界面和报告数据一致。
+    </div>
+
+    <form method="post" action="{{ url_for('box_review', box_id=box.id) }}" class="review-form">
+        <div class="form-row">
+            <div class="form-group">
+                <label>复核人</label>
+                <input type="text" name="reviewer" value="海洋老师" required>
+            </div>
+            <div class="form-group">
+                <label>复核结果</label>
+                <select name="result" required>
+                    <option value="通过">通过</option>
+                    <option value="待跟进" selected>待跟进</option>
+                    <option value="驳回">驳回</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>复核意见</label>
+            <textarea name="opinion" placeholder="请输入复核意见..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>处理建议</label>
+            <textarea name="suggestion" placeholder="请输入处理建议..."></textarea>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">提交复核</button>
+            <button type="reset" class="btn btn-outline">重置</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function exportSingle() {
+    if (confirm('确定要导出本样品箱的详情报告吗？')) {
+        fetch("{{ url_for('export_single', box_id=box.id) }}")
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    alert('导出成功！文件名：' + data.file_name);
+                    window.location.href = "{{ url_for('download_file', filename='') }}" + data.file_name;
+                } else {
+                    alert('导出失败：' + (data.message || '未知错误'));
+                }
+            });
+    }
+}
+</script>
+{% endblock %}

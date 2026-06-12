@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}报告导出 - {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-title">报告导出</div>
+    
+    <div class="alert alert-info">
+        报告导出和界面展示共用同一批处理记录，确保数据一致性。导出的报告包含样品箱信息、处理记录、复核记录等完整数据。
+    </div>
+
+    <form id="exportForm" class="review-form" style="max-width: 500px;">
+        <div class="form-group">
+            <label>导出格式</label>
+            <select name="format">
+                <option value="excel">Excel (.xlsx) - 推荐</option>
+                <option value="csv">CSV (.csv)</option>
+                <option value="json">JSON (.json)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>状态筛选</label>
+            <select name="status">
+                <option value="">全部</option>
+                {% for key, label in STATUS_LABELS.items() %}
+                <option value="{{ key }}">{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="button" onclick="doExport()" class="btn btn-primary">📊 生成报告</button>
+        </div>
+    </form>
+</div>
+
+<div class="card" id="resultCard" style="display: none;">
+    <div class="card-title">导出结果</div>
+    <div id="resultContent"></div>
+</div>
+
+<div class="card">
+    <div class="card-title">导出内容说明</div>
+    <div style="font-size: 13px; color: #606266; line-height: 1.8;">
+        <p><strong>Excel 报告包含以下工作表：</strong></p>
+        <ul style="margin-left: 20px;">
+            <li><strong>汇总</strong> - 各状态样品箱数量统计</li>
+            <li><strong>样品箱列表</strong> - 所有样品箱的基本信息和状态</li>
+            <li><strong>复核记录</strong> - 所有复核意见（含复核人、结果、处理建议）</li>
+            <li><strong>处理记录</strong> - 所有操作记录，每一步都有来源文件和行号可追溯</li>
+        </ul>
+        <p style="margin-top: 12px;"><strong>数据一致性保证：</strong></p>
+        <ul style="margin-left: 20px;">
+            <li>界面展示和报告导出使用同一数据库中的处理记录</li>
+            <li>复核操作同时更新样品箱状态和处理记录表</li>
+            <li>所有导入、检测、复核操作都有时间戳和操作人记录</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function doExport() {
+    const form = document.getElementById('exportForm');
+    const formData = new FormData(form);
+    
+    const resultCard = document.getElementById('resultCard');
+    const resultContent = document.getElementById('resultContent');
+    
+    resultCard.style.display = 'block';
+    resultContent.innerHTML = '<p style="color: #606266;">正在生成报告，请稍候...</p>';
+    
+    fetch("{{ url_for('generate_export') }}", {
+        method: 'POST',
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            resultContent.innerHTML = `
+                <div class="alert alert-info">
+                    <strong>✓ 导出成功！</strong>
+                    <p style="margin-top: 8px;">文件名：${data.file_name}</p>
+                    <p>包含样品箱：${data.box_count} 个</p>
+                    <p style="margin-top: 8px;">
+                        <a href="{{ url_for('download_file', filename='') }}${data.file_name}" class="btn btn-primary" download>
+                            ⬇️ 下载报告
+                        </a>
+                    </p>
+                </div>
+            `;
+        } else {
+            resultContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <strong>✗ 导出失败</strong>
+                    <p style="margin-top: 8px;">${data.message || '未知错误'}</p>
+                </div>
+            `;
+        }
+    })
+    .catch(err => {
+        resultContent.innerHTML = `
+            <div class="alert alert-danger">
+                <strong>✗ 导出失败</strong>
+                <p style="margin-top: 8px;">${err.message}</p>
+            </div>
+        `;
+    });
+}
+</script>
+{% endblock %}
