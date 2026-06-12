@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海港船期冲突台</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; color: #1d2129; line-height: 1.6; }
+.header { background: #1a3a5c; color: #fff; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .status-bar { font-size: 13px; opacity: 0.8; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.tabs { display: flex; gap: 0; background: #fff; border-radius: 8px 8px 0 0; overflow: hidden; border-bottom: 2px solid #e5e6eb; }
+.tab { padding: 12px 24px; cursor: pointer; font-size: 14px; background: #fff; border: none; color: #4e5969; transition: all 0.2s; }
+.tab:hover { background: #f2f3f5; }
+.tab.active { color: #1a3a5c; font-weight: 600; border-bottom: 2px solid #1a3a5c; margin-bottom: -2px; }
+.panel { display: none; background: #fff; border-radius: 0 0 8px 8px; padding: 24px; }
+.panel.active { display: block; }
+.card { background: #fff; border: 1px solid #e5e6eb; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+.card-title { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: #1d2129; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; color: #4e5969; margin-bottom: 4px; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px 12px; border: 1px solid #e5e6eb; border-radius: 6px; font-size: 14px; }
+.form-group textarea { min-height: 80px; font-family: monospace; }
+.btn { padding: 8px 20px; border: none; border-radius: 6px; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+.btn-primary { background: #1a3a5c; color: #fff; }
+.btn-primary:hover { background: #2a5a8c; }
+.btn-danger { background: #cb2634; color: #fff; }
+.btn-danger:hover { background: #d94050; }
+.btn-secondary { background: #f2f3f5; color: #4e5969; }
+.btn-secondary:hover { background: #e5e6eb; }
+.btn-success { background: #00b42a; color: #fff; }
+.btn-success:hover { background: #00c930; }
+.btn-warning { background: #ff7d00; color: #fff; }
+.btn-warning:hover { background: #ff9a2e; }
+.btn-sm { padding: 4px 12px; font-size: 12px; }
+.btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e5e6eb; }
+th { background: #f7f8fa; color: #4e5969; font-weight: 600; white-space: nowrap; }
+tr:hover { background: #f7f8fa; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+.badge-imported { background: #e8f3ff; color: #3491fa; }
+.badge-reviewing { background: #fff7e8; color: #ff7d00; }
+.badge-approved { background: #e8ffea; color: #00b42a; }
+.badge-exported { background: #f2f3f5; color: #86909c; }
+.badge-high { background: #ffece8; color: #cb2634; }
+.badge-medium { background: #fff7e8; color: #ff7d00; }
+.badge-low { background: #e8ffea; color: #00b42a; }
+.badge-missing { background: #ffece8; color: #cb2634; }
+.alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; }
+.alert-error { background: #ffece8; color: #cb2634; border: 1px solid #fdcdc5; }
+.alert-warning { background: #fff7e8; color: #ff7d00; border: 1px solid #ffe4ba; }
+.alert-success { background: #e8ffea; color: #00b42a; border: 1px solid #bef5cb; }
+.alert-info { background: #e8f3ff; color: #3491fa; border: 1px solid #bedaff; }
+.trace-chain { border-left: 3px solid #1a3a5c; padding-left: 16px; margin-left: 8px; }
+.trace-node { margin-bottom: 16px; }
+.trace-node .node-label { font-size: 12px; color: #86909c; margin-bottom: 2px; }
+.trace-node .node-content { font-size: 14px; }
+.log-timeline { border-left: 2px solid #e5e6eb; padding-left: 16px; margin-left: 8px; }
+.log-entry { position: relative; margin-bottom: 12px; }
+.log-entry::before { content: ''; position: absolute; left: -20px; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: #1a3a5c; }
+.log-entry .log-time { font-size: 12px; color: #86909c; }
+.log-entry .log-step { font-weight: 600; font-size: 13px; }
+.log-entry .log-detail { font-size: 13px; color: #4e5969; }
+.dialog-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); z-index: 100; }
+.dialog-overlay.active { display: flex; align-items: center; justify-content: center; }
+.dialog { background: #fff; border-radius: 12px; padding: 24px; width: 560px; max-width: 90vw; max-height: 80vh; overflow-y: auto; }
+.dialog h3 { margin-bottom: 16px; font-size: 16px; }
+.empty { text-align: center; padding: 40px; color: #86909c; font-size: 14px; }
+.inline-edit { display: inline; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>海港船期冲突台</h1>
+  <div class="status-bar" id="headerStatus">就绪</div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('import')">数据导入</button>
+    <button class="tab" onclick="switchTab('history')">历史批次</button>
+    <button class="tab" onclick="switchTab('detail')">批次详情</button>
+    <button class="tab" onclick="switchTab('trace')">异常追溯</button>
+  </div>
+
+  <div class="panel active" id="panel-import">
+    <div class="alert alert-info">
+      导入船期和水质检测数据。盐度单位请统一使用 PPT、PSU 或 ‰，不可混用。缺少风险通报不会导致整批失败，系统会先处理可处理部分并列出缺口。
+    </div>
+    <div class="form-group">
+      <label>批次标签（选填，用于区分不同批次）</label>
+      <input type="text" id="importLabel" placeholder="如：2026年6月第一周">
+    </div>
+    <div class="form-group">
+      <label>船期记录（JSON 格式）</label>
+      <textarea id="importSchedule" placeholder='[
+  {"ship_name": "远洋号", "berth": "A1", "eta": "2026-06-15T08:00", "etd": "2026-06-15T18:00", "cargo_type": "集装箱", "ref": "s1"},
+  {"ship_name": "海鹰号", "berth": "B3", "eta": "2026-06-15T10:00", "etd": "2026-06-16T06:00", "cargo_type": "散货", "ref": "s2"}
+]'></textarea>
+    </div>
+    <div class="form-group">
+      <label>水质检测记录（JSON 格式，schedule_ref 对应船期记录的 ref）</label>
+      <textarea id="importWQ" placeholder='[
+  {"schedule_ref": "s1", "salinity_value": 3.2, "salinity_unit": "PPT", "temperature": 22.5, "turbidity": 60, "measured_at": "2026-06-15T07:30"},
+  {"schedule_ref": "s2", "salinity_value": 32.5, "salinity_unit": "PPT", "temperature": 21.0, "turbidity": 15, "measured_at": "2026-06-15T09:45"}
+]'></textarea>
+    </div>
+    <div class="form-group">
+      <label>风险通报（选填，冲突ID在导入后才能获取）</label>
+      <textarea id="importNotifications" placeholder='[]'></textarea>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="doImport()">导入并检测冲突</button>
+      <button class="btn btn-secondary" onclick="fillDemoData()">填入示例数据</button>
+    </div>
+    <div id="importResult"></div>
+  </div>
+
+  <div class="panel" id="panel-history">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="font-size:16px;">历史批次</h3>
+      <button class="btn btn-secondary btn-sm" onclick="loadBatches()">刷新</button>
+    </div>
+    <div id="batchList"></div>
+  </div>
+
+  <div class="panel" id="panel-detail">
+    <div id="detailContent">
+      <div class="empty">请先从历史批次中选择一个批次查看</div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-trace">
+    <div class="form-group">
+      <label>输入冲突记录 ID 进行追溯</label>
+      <div style="display:flex;gap:8px;">
+        <input type="number" id="traceConflictId" placeholder="冲突ID">
+        <button class="btn btn-primary btn-sm" onclick="doTrace()">追溯</button>
+      </div>
+    </div>
+    <div id="traceResult"></div>
+  </div>
+</div>
+
+<div class="dialog-overlay" id="reviewDialog">
+  <div class="dialog">
+    <h3>复核冲突</h3>
+    <div id="reviewConflictInfo" style="margin-bottom:16px;"></div>
+    <div class="form-group">
+      <label>复核人</label>
+      <input type="text" id="reviewReviewer" value="海事安全员">
+    </div>
+    <div class="form-group">
+      <label>复核意见</label>
+      <textarea id="reviewOpinion" placeholder="请输入对该冲突的复核意见"></textarea>
+    </div>
+    <div class="form-group">
+      <label>处置措施</label>
+      <input type="text" id="reviewAction" placeholder="如：已通知船方调整航线">
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="submitReview()">提交复核</button>
+      <button class="btn btn-secondary" onclick="closeReviewDialog()">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-overlay" id="editReviewDialog">
+  <div class="dialog">
+    <h3>修改复核</h3>
+    <input type="hidden" id="editReviewId">
+    <div class="form-group">
+      <label>复核意见</label>
+      <textarea id="editReviewOpinion"></textarea>
+    </div>
+    <div class="form-group">
+      <label>处置措施</label>
+      <input type="text" id="editReviewAction">
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="submitEditReview()">保存修改</button>
+      <button class="btn btn-secondary" onclick="closeEditReviewDialog()">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="dialog-overlay" id="fillNotifDialog">
+  <div class="dialog">
+    <h3>补充风险通报</h3>
+    <input type="hidden" id="fillNotifId">
+    <div id="fillNotifConflictInfo" style="margin-bottom:16px;"></div>
+    <div class="form-group">
+      <label>通报类型</label>
+      <select id="fillNotifType">
+        <option value="紧急通报">紧急通报</option>
+        <option value="常规通报">常规通报</option>
+        <option value="预警通报">预警通报</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>通报内容</label>
+      <textarea id="fillNotifContent" placeholder="请输入风险通报内容"></textarea>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="submitFillNotif()">提交</button>
+      <button class="btn btn-secondary" onclick="closeFillNotifDialog()">取消</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentBatchId = null;
+let pendingReviewConflictId = null;
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+  if (name === 'history') loadBatches();
+}
+
+function setHeaderStatus(text) {
+  document.getElementById('headerStatus').textContent = text;
+}
+
+async function api(method, url, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  if (url.includes('/export')) return res;
+  return res.json();
+}
+
+function fillDemoData() {
+  document.getElementById('importSchedule').value = JSON.stringify([
+    {"ship_name": "远洋号", "berth": "A1", "eta": "2026-06-15T08:00", "etd": "2026-06-15T18:00", "cargo_type": "集装箱", "ref": "s1"},
+    {"ship_name": "海鹰号", "berth": "B3", "eta": "2026-06-15T10:00", "etd": "2026-06-16T06:00", "cargo_type": "散货", "ref": "s2"},
+    {"ship_name": "碧波号", "berth": "C2", "eta": "2026-06-15T14:00", "etd": "2026-06-15T22:00", "cargo_type": "油品", "ref": "s3"}
+  ], null, 2);
+  document.getElementById('importWQ').value = JSON.stringify([
+    {"schedule_ref": "s1", "salinity_value": 3.2, "salinity_unit": "PPT", "temperature": 22.5, "turbidity": 60, "measured_at": "2026-06-15T07:30"},
+    {"schedule_ref": "s2", "salinity_value": 32.5, "salinity_unit": "PPT", "temperature": 21.0, "turbidity": 15, "measured_at": "2026-06-15T09:45"},
+    {"schedule_ref": "s3", "salinity_value": 28.0, "salinity_unit": "PPT", "temperature": 23.0, "turbidity": 8, "measured_at": "2026-06-15T13:50"}
+  ], null, 2);
+  document.getElementById('importNotifications').value = '[]';
+}
+
+async function doImport() {
+  const label = document.getElementById('importLabel').value.trim();
+  let schedule, wq, notifs;
+  try {
+    schedule = JSON.parse(document.getElementById('importSchedule').value);
+  } catch(e) {
+    document.getElementById('importResult').innerHTML = '<div class="alert alert-error">船期记录 JSON 格式错误：' + e.message + '</div>';
+    return;
+  }
+  try {
+    wq = JSON.parse(document.getElementById('importWQ').value || '[]');
+  } catch(e) {
+    document.getElementById('importResult').innerHTML = '<div class="alert alert-error">水质记录 JSON 格式错误：' + e.message + '</div>';
+    return;
+  }
+  try {
+    notifs = JSON.parse(document.getElementById('importNotifications').value || '[]');
+  } catch(e) {
+    notifs = [];
+  }
+
+  setHeaderStatus('正在导入...');
+  const data = { schedule_records: schedule, water_quality_records: wq, risk_notifications: notifs };
+  if (label) data.label = label;
+
+  const result = await api('POST', '/api/import', data);
+  const el = document.getElementById('importResult');
+
+  if (result.ok) {
+    currentBatchId = result.batch_id;
+    let html = '<div class="alert alert-success">导入成功！批次 ID: ' + result.batch_id + '，标签: ' + result.label + '，检测到冲突: ' + result.conflict_count + ' 条</div>';
+    if (result.warning) {
+      html += '<div class="alert alert-warning">' + result.warning + '</div>';
+    }
+    if (result.gaps && result.gaps.length > 0) {
+      html += '<div class="card"><div class="card-title">需补充的风险通报</div><table><tr><th>冲突ID</th><th>类型</th><th>说明</th><th>提示</th></tr>';
+      result.gaps.forEach(g => {
+        html += '<tr><td>' + g.conflict_id + '</td><td>' + g.conflict_type + '</td><td>' + g.description + '</td><td>' + g.hint + '</td></tr>';
+      });
+      html += '</table></div>';
+    }
+    html += '<div class="btn-group" style="margin-top:12px;"><button class="btn btn-primary btn-sm" onclick="viewBatch(' + result.batch_id + ')">查看批次详情</button></div>';
+    el.innerHTML = html;
+    setHeaderStatus('批次 ' + result.batch_id + ' 已导入');
+  } else {
+    el.innerHTML = '<div class="alert alert-error">' + result.error + '</div>';
+    setHeaderStatus('导入失败');
+  }
+}
+
+async function loadBatches() {
+  const result = await api('GET', '/api/batches');
+  const el = document.getElementById('batchList');
+  if (!result.length) {
+    el.innerHTML = '<div class="empty">暂无批次，请先导入数据</div>';
+    return;
+  }
+  let html = '<table><tr><th>ID</th><th>标签</th><th>状态</th><th>冲突</th><th>已复核</th><th>创建时间</th><th>操作</th></tr>';
+  result.forEach(b => {
+    html += '<tr>' +
+      '<td>' + b.id + '</td>' +
+      '<td>' + b.label + '</td>' +
+      '<td><span class="badge badge-' + b.status + '">' + b.status_label + '</span></td>' +
+      '<td>' + b.conflict_count + '</td>' +
+      '<td>' + b.review_count + '</td>' +
+      '<td>' + b.created_at.substring(0, 19).replace('T', ' ') + '</td>' +
+      '<td><div class="btn-group">' +
+        '<button class="btn btn-primary btn-sm" onclick="viewBatch(' + b.id + ')">详情</button>' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteBatch(' + b.id + ')">删除</button>' +
+      '</div></td>' +
+    '</tr>';
+  });
+  html += '</table>';
+  el.innerHTML = html;
+}
+
+async function viewBatch(id) {
+  currentBatchId = id;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab')[2].classList.add('active');
+  document.getElementById('panel-detail').classList.add('active');
+
+  const data = await api('GET', '/api/batches/' + id);
+  renderBatchDetail(data);
+}
+
+function renderBatchDetail(data) {
+  const b = data.batch;
+  const el = document.getElementById('detailContent');
+  let html = '';
+
+  html += '<div class="card"><div class="card-title">批次信息</div>';
+  html += '<p>标签: ' + b.label + ' | 状态: <span class="badge badge-' + b.status + '">' + b.status_label + '</span> | 创建: ' + b.created_at.substring(0, 19).replace('T', ' ') + ' | 更新: ' + b.updated_at.substring(0, 19).replace('T', ' ') + '</p>';
+  html += '<div class="btn-group" style="margin-top:8px;">';
+
+  const statusIdx = ['imported', 'reviewing', 'approved', 'exported'].indexOf(b.status);
+  if (statusIdx < 3) {
+    const nextLabel = {'imported':'开始复核','reviewing':'审批通过','approved':'导出报告'}[b.status];
+    html += '<button class="btn btn-success btn-sm" onclick="advanceBatch(' + b.id + ')">' + nextLabel + '</button>';
+  }
+  html += '<button class="btn btn-primary btn-sm" onclick="exportBatch(' + b.id + ')">下载报告</button>';
+  html += '<button class="btn btn-secondary btn-sm" onclick="viewBatch(' + b.id + ')">刷新</button>';
+  html += '</div></div>';
+
+  if (data.schedule_records.length) {
+    html += '<div class="card"><div class="card-title">船期记录（' + data.schedule_records.length + ' 条）</div>';
+    html += '<table><tr><th>ID</th><th>船舶</th><th>泊位</th><th>预计到港</th><th>预计离港</th><th>货类</th></tr>';
+    data.schedule_records.forEach(s => {
+      html += '<tr><td>' + s.id + '</td><td>' + s.ship_name + '</td><td>' + s.berth + '</td><td>' + s.eta + '</td><td>' + s.etd + '</td><td>' + s.cargo_type + '</td></tr>';
+    });
+    html += '</table></div>';
+  }
+
+  if (data.water_quality_records.length) {
+    html += '<div class="card"><div class="card-title">水质检测记录（' + data.water_quality_records.length + ' 条）</div>';
+    html += '<table><tr><th>ID</th><th>关联船期ID</th><th>盐度</th><th>单位</th><th>水温(°C)</th><th>浊度(NTU)</th><th>检测时间</th></tr>';
+    data.water_quality_records.forEach(w => {
+      html += '<tr><td>' + w.id + '</td><td>' + (w.schedule_record_id || '-') + '</td><td>' + (w.salinity_value != null ? w.salinity_value : '-') + '</td><td>' + (w.salinity_unit || '-') + '</td><td>' + (w.temperature != null ? w.temperature : '-') + '</td><td>' + (w.turbidity != null ? w.turbidity : '-') + '</td><td>' + (w.measured_at || '-') + '</td></tr>';
+    });
+    html += '</table></div>';
+  }
+
+  if (data.conflicts.length) {
+    html += '<div class="card"><div class="card-title">冲突记录（' + data.conflicts.length + ' 条）</div>';
+    data.conflicts.forEach(c => {
+      const reviews = data.reviews.filter(r => r.conflict_id === c.id);
+      html += '<div style="border:1px solid #e5e6eb;border-radius:6px;padding:12px;margin-bottom:8px;">';
+      html += '<div><span class="badge badge-' + c.severity + '">' + c.severity.toUpperCase() + '</span> <strong>' + c.conflict_type + '</strong> (ID: ' + c.id + ')</div>';
+      html += '<div style="margin:6px 0;color:#4e5969;">' + c.description + '</div>';
+
+      if (reviews.length) {
+        reviews.forEach(rv => {
+          html += '<div style="background:#f7f8fa;padding:8px;border-radius:4px;margin:4px 0;">';
+          html += '<strong>复核:</strong> ' + rv.reviewer + ' - ' + rv.opinion;
+          if (rv.action_taken) html += ' (措施: ' + rv.action_taken + ')';
+          html += ' <button class="btn btn-secondary btn-sm" onclick="openEditReview(' + rv.id + ', \'' + escapeHtml(rv.opinion) + '\', \'' + escapeHtml(rv.action_taken) + '\')">修改</button>';
+          html += '</div>';
+        });
+      } else {
+        html += '<div style="color:#86909c;margin:4px 0;">尚未复核</div>';
+      }
+
+      html += '<div class="btn-group" style="margin-top:4px;">';
+      html += '<button class="btn btn-warning btn-sm" onclick="openReviewDialog(' + c.id + ', \'' + escapeHtml(c.description) + '\')">复核</button>';
+      html += '<button class="btn btn-secondary btn-sm" onclick="traceConflict(' + c.id + ')">追溯</button>';
+      html += '</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
+  const missingNotifs = data.risk_notifications.filter(n => n.is_missing);
+  if (missingNotifs.length) {
+    html += '<div class="card"><div class="card-title" style="color:#cb2634;">缺失风险通报（' + missingNotifs.length + ' 条）</div>';
+    html += '<table><tr><th>ID</th><th>冲突ID</th><th>操作</th></tr>';
+    missingNotifs.forEach(n => {
+      html += '<tr><td>' + n.id + '</td><td>' + n.conflict_id + '</td><td><button class="btn btn-warning btn-sm" onclick="openFillNotifDialog(' + n.id + ', ' + n.conflict_id + ')">补充通报</button></td></tr>';
+    });
+    html += '</table></div>';
+  }
+
+  const filledNotifs = data.risk_notifications.filter(n => !n.is_missing);
+  if (filledNotifs.length) {
+    html += '<div class="card"><div class="card-title">已有风险通报（' + filledNotifs.length + ' 条）</div>';
+    html += '<table><tr><th>ID</th><th>冲突ID</th><th>类型</th><th>内容</th></tr>';
+    filledNotifs.forEach(n => {
+      html += '<tr><td>' + n.id + '</td><td>' + n.conflict_id + '</td><td>' + n.notification_type + '</td><td>' + (n.content || '-') + '</td></tr>';
+    });
+    html += '</table></div>';
+  }
+
+  if (data.processing_log.length) {
+    html += '<div class="card"><div class="card-title">处理日志</div><div class="log-timeline">';
+    data.processing_log.forEach(l => {
+      html += '<div class="log-entry"><div class="log-time">' + l.created_at.substring(0, 19).replace('T', ' ') + '</div><div class="log-step">' + l.step + '</div><div class="log-detail">' + l.detail + '</div></div>';
+    });
+    html += '</div></div>';
+  }
+
+  el.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function openReviewDialog(conflictId, desc) {
+  pendingReviewConflictId = conflictId;
+  document.getElementById('reviewConflictInfo').innerHTML = '<div class="alert alert-info">' + desc + '</div>';
+  document.getElementById('reviewOpinion').value = '';
+  document.getElementById('reviewAction').value = '';
+  document.getElementById('reviewDialog').classList.add('active');
+}
+
+function closeReviewDialog() {
+  document.getElementById('reviewDialog').classList.remove('active');
+  pendingReviewConflictId = null;
+}
+
+async function submitReview() {
+  if (!currentBatchId || !pendingReviewConflictId) return;
+  const body = {
+    conflict_id: pendingReviewConflictId,
+    reviewer: document.getElementById('reviewReviewer').value,
+    opinion: document.getElementById('reviewOpinion').value,
+    action_taken: document.getElementById('reviewAction').value,
+  };
+  const result = await api('PUT', '/api/batches/' + currentBatchId + '/review', body);
+  if (result.ok) {
+    closeReviewDialog();
+    viewBatch(currentBatchId);
+  } else {
+    alert(result.error);
+  }
+}
+
+function openEditReview(id, opinion, action) {
+  document.getElementById('editReviewId').value = id;
+  document.getElementById('editReviewOpinion').value = opinion;
+  document.getElementById('editReviewAction').value = action;
+  document.getElementById('editReviewDialog').classList.add('active');
+}
+
+function closeEditReviewDialog() {
+  document.getElementById('editReviewDialog').classList.remove('active');
+}
+
+async function submitEditReview() {
+  const id = document.getElementById('editReviewId').value;
+  const body = {
+    opinion: document.getElementById('editReviewOpinion').value,
+    action_taken: document.getElementById('editReviewAction').value,
+  };
+  const result = await api('PUT', '/api/reviews/' + id, body);
+  if (result.ok) {
+    closeEditReviewDialog();
+    viewBatch(currentBatchId);
+  } else {
+    alert(result.error);
+  }
+}
+
+function openFillNotifDialog(notifId, conflictId) {
+  document.getElementById('fillNotifId').value = notifId;
+  document.getElementById('fillNotifConflictInfo').innerHTML = '<div class="alert alert-warning">冲突 ID: ' + conflictId + ' 的风险通报缺失，请补充</div>';
+  document.getElementById('fillNotifContent').value = '';
+  document.getElementById('fillNotifDialog').classList.add('active');
+}
+
+function closeFillNotifDialog() {
+  document.getElementById('fillNotifDialog').classList.remove('active');
+}
+
+async function submitFillNotif() {
+  const id = document.getElementById('fillNotifId').value;
+  const body = {
+    notification_type: document.getElementById('fillNotifType').value,
+    content: document.getElementById('fillNotifContent').value,
+  };
+  const result = await api('PUT', '/api/risk_notifications/' + id, body);
+  if (result.ok) {
+    closeFillNotifDialog();
+    viewBatch(currentBatchId);
+  } else {
+    alert(result.error);
+  }
+}
+
+async function advanceBatch(id) {
+  const result = await api('POST', '/api/batches/' + id + '/advance');
+  if (result.ok) {
+    viewBatch(id);
+  } else {
+    alert(result.error);
+  }
+}
+
+async function exportBatch(id) {
+  window.open('/api/batches/' + id + '/export', '_blank');
+}
+
+async function deleteBatch(id) {
+  if (!confirm('确定删除批次 ' + id + '？此操作不可恢复。')) return;
+  const result = await api('DELETE', '/api/batches/' + id);
+  if (result.ok) loadBatches();
+  else alert(result.error);
+}
+
+function traceConflict(id) {
+  document.getElementById('traceConflictId').value = id;
+  doTrace();
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab')[3].classList.add('active');
+  document.getElementById('panel-trace').classList.add('active');
+}
+
+async function doTrace() {
+  const id = document.getElementById('traceConflictId').value;
+  if (!id) { alert('请输入冲突ID'); return; }
+  const data = await api('GET', '/api/conflicts/' + id + '/trace');
+  const el = document.getElementById('traceResult');
+
+  if (data.error) {
+    el.innerHTML = '<div class="alert alert-error">' + data.error + '</div>';
+    return;
+  }
+
+  let html = '<div class="trace-chain">';
+
+  html += '<div class="trace-node"><div class="node-label">冲突记录</div><div class="node-content">';
+  html += '<span class="badge badge-' + data.conflict.severity + '">' + data.conflict.severity.toUpperCase() + '</span> ';
+  html += '<strong>' + data.conflict.conflict_type + '</strong> (ID: ' + data.conflict.id + ')';
+  html += '<div style="color:#4e5969;margin-top:4px;">' + data.conflict.description + '</div>';
+  html += '</div></div>';
+
+  if (data.water_quality_record) {
+    html += '<div class="trace-node"><div class="node-label">↑ 关联水质记录</div><div class="node-content">';
+    html += '盐度: ' + data.water_quality_record.salinity_value + ' ' + data.water_quality_record.salinity_unit;
+    html += ' | 水温: ' + data.water_quality_record.temperature + '°C';
+    html += ' | 浊度: ' + data.water_quality_record.turbidity + ' NTU';
+    html += '<br>检测时间: ' + data.water_quality_record.measured_at;
+    html += '</div></div>';
+  }
+
+  if (data.schedule_record) {
+    html += '<div class="trace-node"><div class="node-label">↑ 关联船期记录</div><div class="node-content">';
+    html += '船舶: ' + data.schedule_record.ship_name + ' | 泊位: ' + data.schedule_record.berth;
+    html += '<br>到港: ' + data.schedule_record.eta + ' | 离港: ' + data.schedule_record.etd + ' | 货类: ' + data.schedule_record.cargo_type;
+    html += '</div></div>';
+  }
+
+  if (data.reviews && data.reviews.length) {
+    html += '<div class="trace-node"><div class="node-label">处理意见</div><div class="node-content">';
+    data.reviews.forEach(rv => {
+      html += '<div style="background:#f7f8fa;padding:8px;border-radius:4px;margin:4px 0;">';
+      html += '<strong>' + rv.reviewer + '</strong>: ' + rv.opinion;
+      if (rv.action_taken) html += ' (措施: ' + rv.action_taken + ')';
+      html += '<br><span style="font-size:12px;color:#86909c;">' + rv.reviewed_at + '</span>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  }
+
+  if (data.risk_notifications && data.risk_notifications.length) {
+    html += '<div class="trace-node"><div class="node-label">风险通报</div><div class="node-content">';
+    data.risk_notifications.forEach(n => {
+      const tag = n.is_missing ? '<span class="badge badge-missing">缺失</span>' : '';
+      html += '<div style="padding:4px 0;">' + tag + ' ' + n.notification_type + ': ' + (n.content || '(无内容)') + '</div>';
+    });
+    html += '</div></div>';
+  }
+
+  if (data.batch) {
+    html += '<div class="trace-node"><div class="node-label">所属批次</div><div class="node-content">';
+    html += data.batch.label + ' (ID: ' + data.batch.id + ') | 状态: ' + data.batch.status;
+    html += '</div></div>';
+  }
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+loadBatches();
+</script>
+</body>
+</html>
