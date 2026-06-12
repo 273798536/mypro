@@ -1,0 +1,26 @@
+[project]
+name = "bayesian-prior-check"
+version = "0.1.0"
+description = "贝叶斯先验边界校验工具 - 保留原始来源、追踪除零边界、分类输出处理记录"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "pydantic>=2.0.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.23.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+bayes-check = "bayesian_prior_check.cli:main"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bayesian_prior_check*"]

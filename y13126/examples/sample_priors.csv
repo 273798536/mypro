@@ -1,0 +1,17 @@
+prior_type,field_name,value,alpha,beta,shape,rate,mu,nu,numerator,denominator,formula,remark
+probability,click_through_rate,0.023,,,,,,,,,,,正常概率值
+probability,conversion_rate,1.25,,,,,,,,,,,概率越界：大于1
+probability,bounce_rate,-0.05,,,,,,,,,,,概率越界：小于0
+beta,ctr_prior,,2.5,3.0,,,,,,,,Beta分布正常参数
+beta,ctr_prior,,0.0,5.0,,,,,,,,Beta分布参数越界：alpha=0
+beta,ctr_prior,,-1.0,5.0,,,,,,,,Beta分布参数越界：alpha<0
+dirichlet,category_prior,,0.5,,,,,,,,,Dirichlet正常参数
+gamma,noise_prior,,,,2.0,1.0,,,,,Gamma正常参数
+gamma,noise_prior,,,,0.0,1.0,,,,,Gamma参数越界：shape=0
+normal_inverse_gamma,mean_prior,,,,,0.0,5.0,2.0,3.0,,,NIG正常参数
+probability,calc_ratio,,,,,,,,125,0,impressions/clicks,除零：分母为0，原始草稿说"clicks=0"
+probability,another_ratio,,,,,,,,200,5,users/sessions,正常除法
+,,,,,,,,,,,,,完全空行：所有数值字段和prior_type都为空
+,,header_line,,,,,,,,,,,,这行只是备注
+bad_row,abc,not_a_number,xyz,,,,,,,,,坏行：多个解析错误
+probability,good_case,0.88,,,,,,,,,,,另一个正常行

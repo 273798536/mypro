@@ -1,0 +1,72 @@
+default_boundaries:
+  probability:
+    min: 0.0
+    max: 1.0
+    min_inclusive: true
+    max_inclusive: true
+    description: "概率值必须在闭区间 [0, 1] 内"
+
+conjugate_priors:
+  beta:
+    alpha:
+      min: 0.0
+      max: null
+      min_inclusive: false
+      max_inclusive: true
+      description: "Beta分布的alpha参数必须 > 0"
+    beta:
+      min: 0.0
+      max: null
+      min_inclusive: false
+      max_inclusive: true
+      description: "Beta分布的beta参数必须 > 0"
+  dirichlet:
+    alpha:
+      min: 0.0
+      max: null
+      min_inclusive: false
+      max_inclusive: true
+      description: "Dirichlet分布的alpha参数必须 > 0"
+  gamma:
+    shape:
+      min: 0.0
+      max: null
+      min_inclusive: false
+      max_inclusive: true
+      description: "Gamma分布的shape参数必须 > 0"
+    rate:
+      min: 0.0
+      max: null
+      min_inclusive: false
+      max_inclusive: true
+      description: "Gamma分布的rate参数必须 > 0"
+  normal_inverse_gamma:
+    mu:
+      min: null
+      max: null
+      min_inclusive: true
+      max_inclusive: true
+      description: "正态-逆Gamma分布的mu参数无边界限制"
+    nu:
+      min: 0.0
+      max: null
+      min_inclusive: false
+      max_inclusive: true
+      description: "正态-逆Gamma分布的nu参数必须 > 0"
+    alpha:
+      min: 0.0
+      max: null
+      min_inclusive: false
+      max_inclusive: true
+      description: "正态-逆Gamma分布的alpha参数必须 > 0"
+    beta:
+      min: 0.0
+      max: null
+      min_inclusive: false
+      max_inclusive: true
+      description: "正态-逆Gamma分布的beta参数必须 > 0"
+
+division_zero_tracking:
+  enabled: true
+  track_origin: true
+  description: "除零操作必须追踪分子分母的原始来源字段"
