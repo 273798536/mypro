@@ -1,0 +1,36 @@
+﻿时间,事件类型,标题,描述,矩阵名称,来源文件,来源行号,状态,操作人,关联违规ID
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_A,来源文件 sample_draft.csv 第 2 行，由 系统 登记入库,Cov_Mat_A,sample_draft.csv,2,,系统,
+2026-06-12 18:27:41,已处理,[已处理] Cov_Mat_A,来源 sample_draft.csv 第 2 行：校验通过，已归档。最新备注：[2026-06-12 18:27:41] 系统: 校验通过，条件数=15.3 (待处理 → 已处理),Cov_Mat_A,sample_draft.csv,2,已处理,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_B,来源文件 sample_draft.csv 第 3 行，由 系统 登记入库,Cov_Mat_B,sample_draft.csv,3,,系统,
+2026-06-12 18:27:41,待补材料,[待补材料] Cov_Mat_B,来源 sample_draft.csv 第 3 行：等待补充材料后复算。最新备注：[2026-06-12 18:27:41] 系统: 外推越界：高于上界 100.0，差值 5.7，需补充数据 (待处理 → 待补材料),Cov_Mat_B,sample_draft.csv,3,待补材料,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_C,来源文件 sample_draft.csv 第 4 行，由 系统 登记入库,Cov_Mat_C,sample_draft.csv,4,,系统,
+2026-06-12 18:27:41,待补材料,[待补材料] Cov_Mat_C,来源 sample_draft.csv 第 4 行：等待补充材料后复算。最新备注：[2026-06-12 18:27:41] 系统: 数值越界：低于下界 1.0，差值 0.5 (待处理 → 待补材料),Cov_Mat_C,sample_draft.csv,4,待补材料,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_D,来源文件 sample_draft.csv 第 5 行，由 系统 登记入库,Cov_Mat_D,sample_draft.csv,5,,系统,
+2026-06-12 18:27:41,单位提示,[单位提示] Cov_Mat_D,文件 sample_draft.csv 第 5 行：预期单位[无量纲]，实际检测到[百分比]，需确认是否换算,Cov_Mat_D,sample_draft.csv,5,待补材料,系统,
+2026-06-12 18:27:41,待补材料,[待补材料] Cov_Mat_D,来源 sample_draft.csv 第 5 行：等待补充材料后复算。最新备注：[2026-06-12 18:27:41] 系统: 校验数值通过，但单位不一致需确认（预期:无量纲 检测:百分比） (待处理 → 待补材料),Cov_Mat_D,sample_draft.csv,5,待补材料,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_E,来源文件 sample_draft.csv 第 6 行，由 系统 登记入库,Cov_Mat_E,sample_draft.csv,6,,系统,
+2026-06-12 18:27:41,已处理,[已处理] Cov_Mat_E,来源 sample_draft.csv 第 6 行：校验通过，已归档。最新备注：[2026-06-12 18:27:41] 系统: 校验通过，条件数=42.0 (待处理 → 已处理),Cov_Mat_E,sample_draft.csv,6,已处理,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_F,来源文件 sample_draft.csv 第 7 行，由 系统 登记入库,Cov_Mat_F,sample_draft.csv,7,,系统,
+2026-06-12 18:27:41,待补材料,[待补材料] Cov_Mat_F,来源 sample_draft.csv 第 7 行：等待补充材料后复算。最新备注：[2026-06-12 18:27:41] 系统: 外推越界：高于上界 100.0，差值 899.9，需补充数据 (待处理 → 待补材料),Cov_Mat_F,sample_draft.csv,7,待补材料,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_G,来源文件 sample_draft.csv 第 8 行，由 系统 登记入库,Cov_Mat_G,sample_draft.csv,8,,系统,
+2026-06-12 18:27:41,待补材料,[待补材料] Cov_Mat_G,来源 sample_draft.csv 第 8 行：等待补充材料后复算。最新备注：[2026-06-12 18:27:41] 系统: 条件数缺失，需补充计算结果 (待处理 → 待补材料),Cov_Mat_G,sample_draft.csv,8,待补材料,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_H,来源文件 sample_draft.csv 第 9 行，由 系统 登记入库,Cov_Mat_H,sample_draft.csv,9,,系统,
+2026-06-12 18:27:41,已处理,[已处理] Cov_Mat_H,来源 sample_draft.csv 第 9 行：校验通过，已归档。最新备注：[2026-06-12 18:27:41] 系统: 校验通过，条件数=30.5 (待处理 → 已处理),Cov_Mat_H,sample_draft.csv,9,已处理,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_D,来源文件 late_attachment.csv 第 2 行，由 系统 登记入库,Cov_Mat_D,late_attachment.csv,2,,系统,
+2026-06-12 18:27:41,已处理,[已处理] Cov_Mat_D,来源 late_attachment.csv 第 2 行：校验通过，已归档。最新备注：[2026-06-12 18:27:41] 系统: 校验通过，条件数=88.2 (待处理 → 已处理),Cov_Mat_D,late_attachment.csv,2,已处理,系统,
+2026-06-12 18:27:41,数据摄入,[数据摄入] Cov_Mat_I,来源文件 late_attachment.csv 第 3 行，由 系统 登记入库,Cov_Mat_I,late_attachment.csv,3,,系统,
+2026-06-12 18:27:41,已处理,[已处理] Cov_Mat_I,来源 late_attachment.csv 第 3 行：校验通过，已归档。最新备注：[2026-06-12 18:27:41] 系统: 校验通过，条件数=55.0 (待处理 → 已处理),Cov_Mat_I,late_attachment.csv,3,已处理,系统,
+2026-06-12 18:27:41,校验违规,[外推越界] Cov_Mat_B,"外推时越界：高于上界 100.0，差值 5.7（条件数=105.7，区间[1.0, 100.0]） | 影响行号: [2, 3, 4, 5, 6, 7, 8, 9], 关联矩阵: ['Cov_Mat_A', 'Cov_Mat_B', 'Cov_Mat_C', 'Cov_Mat_D', 'Cov_Mat_E', 'Cov_Mat_F', 'Cov_Mat_G', 'Cov_Mat_H']",Cov_Mat_B,sample_draft.csv,3,待处理,系统,V0001_Cov_Mat_B
+2026-06-12 18:27:41,校验违规,[内插越界] Cov_Mat_C,"内插时越界：低于下界 1.0，差值 0.5（条件数=0.5，区间[1.0, 100.0]） | 影响行号: [4], 关联矩阵: ['Cov_Mat_C']",Cov_Mat_C,sample_draft.csv,4,待处理,系统,V0002_Cov_Mat_C
+2026-06-12 18:27:41,校验违规,[外推临界] Cov_Mat_D,"外推临界：在边界内（条件数=88.2，接近边界） | 影响行号: [2, 3, 4, 5, 6, 7, 8, 9], 关联矩阵: ['Cov_Mat_A', 'Cov_Mat_B', 'Cov_Mat_C', 'Cov_Mat_D', 'Cov_Mat_E', 'Cov_Mat_F', 'Cov_Mat_G', 'Cov_Mat_H']",Cov_Mat_D,sample_draft.csv,5,待处理,系统,V0003_Cov_Mat_D
+2026-06-12 18:27:41,校验违规,[外推越界] Cov_Mat_F,"外推时越界：高于上界 100.0，差值 899.9（条件数=999.9，区间[1.0, 100.0]） | 影响行号: [2, 3, 4, 5, 6, 7, 8, 9], 关联矩阵: ['Cov_Mat_A', 'Cov_Mat_B', 'Cov_Mat_C', 'Cov_Mat_D', 'Cov_Mat_E', 'Cov_Mat_F', 'Cov_Mat_G', 'Cov_Mat_H']",Cov_Mat_F,sample_draft.csv,7,待处理,系统,V0004_Cov_Mat_F
+2026-06-12 18:27:41,校验违规,[数值无效] Cov_Mat_G,"条件数值无效（NaN/Inf/缺失） | 影响行号: [8], 关联矩阵: ['Cov_Mat_G']",Cov_Mat_G,sample_draft.csv,8,待处理,系统,V0005_Cov_Mat_G
+2026-06-12 18:27:41,校验违规,[外推临界] Cov_Mat_D,"外推临界：在边界内（条件数=88.2，接近边界） | 影响行号: [2, 3], 关联矩阵: ['Cov_Mat_D', 'Cov_Mat_I']",Cov_Mat_D,late_attachment.csv,2,待处理,系统,V0006_Cov_Mat_D
+2026-06-12 18:27:41,复算结果,[复算结果] Cov_Mat_A,来源 sample_draft.csv 第 2 行：复算口径一致，结果不变：通过。晚到附件复算，条件数=15.3 单位=无量纲,Cov_Mat_A,sample_draft.csv,2,已复算,系统,
+2026-06-12 18:27:41,复算结果,[复算结果] Cov_Mat_B,来源 sample_draft.csv 第 3 行：复算口径一致，结果不变：未通过。晚到附件复算，条件数=105.7 单位=无量纲,Cov_Mat_B,sample_draft.csv,3,已复算,系统,
+2026-06-12 18:27:41,复算结果,[复算结果] Cov_Mat_C,来源 sample_draft.csv 第 4 行：复算口径一致，结果不变：未通过。晚到附件复算，条件数=0.5 单位=无量纲,Cov_Mat_C,sample_draft.csv,4,已复算,系统,
+2026-06-12 18:27:41,复算结果,[复算结果] Cov_Mat_D,来源 sample_draft.csv 第 5 行：复算口径一致，结果不变：通过。晚到附件复算，条件数=88.2 单位=百分比,Cov_Mat_D,sample_draft.csv,5,已复算,系统,
+2026-06-12 18:27:41,复算结果,[复算结果] Cov_Mat_E,来源 sample_draft.csv 第 6 行：复算口径一致，结果不变：通过。晚到附件复算，条件数=42.0 单位=无量纲,Cov_Mat_E,sample_draft.csv,6,已复算,系统,
+2026-06-12 18:27:41,复算结果,[复算结果] Cov_Mat_F,来源 sample_draft.csv 第 7 行：复算口径一致，结果不变：未通过。晚到附件复算，条件数=999.9 单位=无量纲,Cov_Mat_F,sample_draft.csv,7,已复算,系统,
+2026-06-12 18:27:41,复算结果,[复算结果] Cov_Mat_G,来源 sample_draft.csv 第 8 行：复算口径一致，结果不变：未通过。晚到附件复算，条件数=None 单位=无量纲,Cov_Mat_G,sample_draft.csv,8,已复算,系统,
+2026-06-12 18:27:41,复算结果,[复算结果] Cov_Mat_H,来源 sample_draft.csv 第 9 行：复算口径一致，结果不变：通过。晚到附件复算，条件数=30.5 单位=无量纲,Cov_Mat_H,sample_draft.csv,9,已复算,系统,

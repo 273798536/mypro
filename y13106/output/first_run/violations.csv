@@ -1,0 +1,6 @@
+﻿违规ID,矩阵名称,违规类型,严重程度,条件数,下界,上界,偏差,是否外推,来源文件,来源行号,影响行号,关联矩阵,描述
+V0001_Cov_Mat_B,Cov_Mat_B,外推越界,critical,105.7,1.0,100.0,5.700000000000003,是,sample_draft.csv,3,"2,3,4,5,6,7,8,9","Cov_Mat_A,Cov_Mat_B,Cov_Mat_C,Cov_Mat_D,Cov_Mat_E,Cov_Mat_F,Cov_Mat_G,Cov_Mat_H","外推时越界：高于上界 100.0，差值 5.7（条件数=105.7，区间[1.0, 100.0]）"
+V0002_Cov_Mat_C,Cov_Mat_C,内插越界,high,0.5,1.0,100.0,-0.5,否,sample_draft.csv,4,4,Cov_Mat_C,"内插时越界：低于下界 1.0，差值 0.5（条件数=0.5，区间[1.0, 100.0]）"
+V0003_Cov_Mat_D,Cov_Mat_D,外推临界,low,88.2,1.0,100.0,,是,sample_draft.csv,5,"2,3,4,5,6,7,8,9","Cov_Mat_A,Cov_Mat_B,Cov_Mat_C,Cov_Mat_D,Cov_Mat_E,Cov_Mat_F,Cov_Mat_G,Cov_Mat_H",外推临界：在边界内（条件数=88.2，接近边界）
+V0004_Cov_Mat_F,Cov_Mat_F,外推越界,critical,999.9,1.0,100.0,899.9,是,sample_draft.csv,7,"2,3,4,5,6,7,8,9","Cov_Mat_A,Cov_Mat_B,Cov_Mat_C,Cov_Mat_D,Cov_Mat_E,Cov_Mat_F,Cov_Mat_G,Cov_Mat_H","外推时越界：高于上界 100.0，差值 899.9（条件数=999.9，区间[1.0, 100.0]）"
+V0005_Cov_Mat_G,Cov_Mat_G,数值无效,high,,1.0,100.0,,否,sample_draft.csv,8,8,Cov_Mat_G,条件数值无效（NaN/Inf/缺失）
