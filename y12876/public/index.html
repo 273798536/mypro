@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>海底地形剖面课堂</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <h1>🌊 海底地形剖面课堂</h1>
+      <span class="subtitle">海洋监测员培训系统</span>
+    </div>
+    <div class="header-right">
+      <span id="statusIndicator" class="status-indicator status-ok">● 服务正常</span>
+    </div>
+  </header>
+
+  <nav class="app-nav">
+    <button class="nav-btn active" data-tab="profile">地形剖面</button>
+    <button class="nav-btn" data-tab="zones">禁航区与轨迹</button>
+    <button class="nav-btn" data-tab="analysis">越界分析</button>
+    <button class="nav-btn" data-tab="compare">版本对比</button>
+    <button class="nav-btn" data-tab="reports">报告与证据</button>
+    <button class="nav-btn" data-tab="gaps">数据缺口</button>
+  </nav>
+
+  <main class="app-main">
+    <section id="tab-profile" class="tab-content active">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>海底地形剖面</h2>
+          <select id="profileSelector"></select>
+        </div>
+        <div class="panel-body">
+          <canvas id="profileCanvas" width="900" height="400"></canvas>
+          <div class="profile-info" id="profileInfo"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-zones" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>禁航区与船舶轨迹</h2>
+          <div class="header-actions">
+            <label><input type="checkbox" id="showZones" checked> 显示禁航区</label>
+            <label><input type="checkbox" id="showTracks" checked> 显示船舶轨迹</label>
+          </div>
+        </div>
+        <div class="panel-body">
+          <canvas id="mapCanvas" width="900" height="500"></canvas>
+          <div class="map-legend">
+            <span class="legend-item"><span class="legend-color zone-aqua"></span> 养殖禁航区</span>
+            <span class="legend-item"><span class="legend-color zone-fairway"></span> 航道禁锚区</span>
+            <span class="legend-item"><span class="legend-color zone-reserve"></span> 种质保护区</span>
+            <span class="legend-item"><span class="legend-dot vessel-1"></span> 浙渔12345</span>
+            <span class="legend-item"><span class="legend-dot vessel-2"></span> 远顺号</span>
+            <span class="legend-item"><span class="legend-dot vessel-3"></span> 海巡01</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-analysis" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>越界分析任务</h2>
+          <div class="header-actions">
+            <button id="newAnalysisBtn" class="btn btn-primary">新建分析</button>
+            <select id="tideVersionSelect">
+              <option value="v1">潮汐计算 v1</option>
+              <option value="v2">潮汐计算 v2</option>
+            </select>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="analysisList" class="analysis-list"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>越界告警详情</h2>
+          <span id="violationCount" class="badge badge-danger">0 条</span>
+        </div>
+        <div class="panel-body">
+          <div id="violationDetail" class="violation-detail">
+            <p class="empty-hint">请选择一个分析任务查看详情</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-compare" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>历史版本对比</h2>
+          <button id="compareBtn" class="btn btn-secondary">开始对比</button>
+        </div>
+        <div class="panel-body">
+          <div class="compare-selector">
+            <div>
+              <label>版本 1：</label>
+              <select id="compareRun1"></select>
+            </div>
+            <div>
+              <label>版本 2：</label>
+              <select id="compareRun2"></select>
+            </div>
+          </div>
+          <div id="compareResult" class="compare-result">
+            <p class="empty-hint">选择两个分析版本进行对比，查看潮汐计算改变带来的差异</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-reports" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>海事处报告</h2>
+          <button id="generateReportBtn" class="btn btn-primary">生成报告</button>
+        </div>
+        <div class="panel-body">
+          <div id="reportList" class="report-list"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2>报告与证据追溯</h2>
+          <span class="subtitle">海事处可查看每条越界对应的证据材料</span>
+        </div>
+        <div class="panel-body">
+          <div id="reportDetail" class="report-detail">
+            <p class="empty-hint">选择一份报告查看详情</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-gaps" class="tab-content">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>数据缺口清单</h2>
+          <span class="subtitle">养殖日志缺失、风浪预报晚到等，先算能算的，再补缺口</span>
+        </div>
+        <div class="panel-body">
+          <div id="gapList" class="gap-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="analysisModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>新建分析任务</h3>
+        <button class="close-btn" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>任务名称：</label>
+          <input type="text" id="runNameInput" placeholder="例如：6月15日日常巡检">
+        </div>
+        <div class="form-group">
+          <label>潮汐计算版本：</label>
+          <select id="runTideVersion">
+            <option value="v1">v1（原始算法）</option>
+            <option value="v2">v2（修正算法）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>参考时间（风浪预报截止）：</label>
+          <input type="text" id="refTimeInput" placeholder="留空则使用全部预报">
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="checkAqua" checked> 检查养殖日志完整性</label>
+        </div>
+        <div class="form-group">
+          <label>备注：</label>
+          <textarea id="runNotes" rows="2"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+        <button class="btn btn-primary" onclick="submitAnalysis()">开始分析</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
