@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: #E2E8F0;
+  background-color: #051324;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #123D72 #0A2342;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #0A2342;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #123D72;
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #194C91;
+}
+
+@layer components {
+  .nautical-card {
+    @apply bg-ocean-900/80 backdrop-blur-sm border border-ocean-700/50 rounded-xl shadow-card;
+  }
+
+  .nautical-btn {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium
+           bg-ocean-700 hover:bg-ocean-600 text-white transition-all duration-200
+           border border-ocean-600/50 hover:border-seafoam-400/50
+           active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .nautical-btn-primary {
+    @apply nautical-btn bg-gradient-to-br from-seafoam-500 to-seafoam-400
+           hover:from-seafoam-400 hover:to-seafoam-300 border-seafoam-400/30
+           shadow-glow text-ocean-950 font-semibold;
+  }
+
+  .nautical-btn-danger {
+    @apply nautical-btn border-coral-500/50 text-coral-400 hover:bg-coral-500/10
+           hover:border-coral-400 hover:text-coral-300;
+  }
+
+  .nautical-btn-warn {
+    @apply nautical-btn border-sand-500/50 text-sand-400 hover:bg-sand-500/10
+           hover:border-sand-400 hover:text-sand-300;
+  }
+
+  .nautical-btn-success {
+    @apply nautical-btn border-seaweed-500/50 text-seaweed-400 hover:bg-seaweed-500/10
+           hover:border-seaweed-400 hover:text-seaweed-300;
+  }
+
+  .status-dot {
+    @apply w-2.5 h-2.5 rounded-full inline-block;
+  }
+
+  .status-normal {
+    @apply bg-seaweed-500 shadow-[0_0_8px_rgba(60,179,113,0.6)];
+  }
+
+  .status-offline {
+    @apply bg-ocean-500 shadow-[0_0_8px_rgba(35,97,181,0.6)];
+  }
+
+  .status-anomaly {
+    @apply bg-coral-500 shadow-[0_0_8px_rgba(232,72,85,0.6)] animate-pulse-slow;
+  }
+
+  .status-out_of_range {
+    @apply bg-coral-500 shadow-[0_0_8px_rgba(232,72,85,0.8)] animate-pulse-slow;
+  }
+
+  .status-pending {
+    @apply bg-sand-500 shadow-[0_0_8px_rgba(244,185,66,0.6)];
+  }
+
+  .diff-added {
+    @apply bg-seaweed-500/20 text-seaweed-300 underline decoration-seaweed-400/60;
+  }
+
+  .diff-deleted {
+    @apply bg-coral-500/20 text-coral-300 line-through decoration-coral-400/60;
+  }
+
+  .diff-modified {
+    @apply bg-sand-500/20 text-sand-300;
+  }
+
+  .tag {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+
+  .tag-available {
+    @apply bg-seaweed-500/20 text-seaweed-300 border border-seaweed-500/30;
+  }
+
+  .tag-pending {
+    @apply bg-sand-500/20 text-sand-300 border border-sand-500/30;
+  }
+
+  .tag-recollect {
+    @apply bg-coral-500/20 text-coral-300 border border-coral-500/30;
+  }
+
+  .tag-direct {
+    @apply bg-seaweed-500 text-ocean-950 font-semibold;
+  }
+
+  .tag-review {
+    @apply bg-sand-500 text-ocean-950 font-semibold;
+  }
+
+  .section-title {
+    @apply font-display text-xl text-seafoam-300 border-l-4 border-seafoam-500 pl-3;
+  }
+
+  .data-value {
+    @apply font-mono text-sm text-ocean-200;
+  }
+
+  .input-nautical {
+    @apply w-full px-3 py-2 bg-ocean-800/60 border border-ocean-600/50 rounded-md
+           text-sm text-ocean-100 placeholder:text-ocean-400
+           focus:outline-none focus:ring-2 focus:ring-seafoam-500/50 focus:border-seafoam-400/50
+           transition-all duration-200;
+  }
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at top left, rgba(44, 166, 164, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(35, 97, 181, 0.1) 0%, transparent 50%),
+    #051324;
+}
+
+@keyframes waveProgress {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.wave-progress {
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(44, 166, 164, 0.4) 25%,
+    rgba(44, 166, 164, 0.8) 50%,
+    rgba(44, 166, 164, 0.4) 75%,
+    transparent 100%);
+  background-size: 200% 100%;
+  animation: waveProgress 1.5s ease-in-out infinite;
+}
