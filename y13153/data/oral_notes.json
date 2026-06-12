@@ -1,0 +1,13 @@
+[
+  {
+    "room_id": "A-101",
+    "override_volume_m3": 125.0,
+    "surface_corrections": [
+      {"material_name": "混凝土墙", "absorption_coeff": 0.03}
+    ]
+  },
+  {
+    "room_id": "C-312",
+    "override_t60_s": 0.98
+  }
+]

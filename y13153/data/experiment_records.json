@@ -1,0 +1,84 @@
+[
+  {
+    "room_id": "A-101",
+    "volume_m3": 120.0,
+    "measured_t60_s": 1.85,
+    "frequency_hz": 1000,
+    "timestamp": "2025-11-10T09:30:00",
+    "surfaces": [
+      {"material_name": "混凝土墙", "area_m2": 80.0, "absorption_coeff": 0.02},
+      {"material_name": "玻璃窗", "area_m2": 12.0, "absorption_coeff": 0.35},
+      {"material_name": "木地板", "area_m2": 40.0, "absorption_coeff": 0.10},
+      {"material_name": "石膏天花板", "area_m2": 40.0, "absorption_coeff": 0.05}
+    ]
+  },
+  {
+    "room_id": "B-205",
+    "volume_m3": 250.0,
+    "measured_t60_s": 2.40,
+    "frequency_hz": 1000,
+    "timestamp": "2025-11-10T10:15:00",
+    "surfaces": [
+      {"material_name": "砖墙", "area_m2": 100.0, "absorption_coeff": 0.03},
+      {"material_name": "吸声板", "area_m2": 60.0, "absorption_coeff": 0.75},
+      {"material_name": "地毯", "area_m2": 50.0, "absorption_coeff": 0.55},
+      {"material_name": "石膏天花板", "area_m2": 50.0, "absorption_coeff": 0.05}
+    ]
+  },
+  {
+    "room_id": "C-312",
+    "volume_m3": 85.0,
+    "measured_t60_s": 0.92,
+    "frequency_hz": 500,
+    "timestamp": "2025-11-10T11:00:00",
+    "surfaces": [
+      {"material_name": "混凝土墙", "area_m2": 55.0, "absorption_coeff": 0.02},
+      {"material_name": "布帘", "area_m2": 20.0, "absorption_coeff": 0.45},
+      {"material_name": "木地板", "area_m2": 28.0, "absorption_coeff": 0.10}
+    ]
+  },
+  {
+    "room_id": "D-404",
+    "volume_m3": 500.0,
+    "measured_t60_s": 3.80,
+    "frequency_hz": 1000,
+    "timestamp": "2025-11-10T14:00:00",
+    "surfaces": [
+      {"material_name": "混凝土墙", "area_m2": 150.0, "absorption_coeff": 0.02},
+      {"material_name": "玻璃窗", "area_m2": 30.0, "absorption_coeff": 0.35},
+      {"material_name": "木地板", "area_m2": 100.0, "absorption_coeff": 0.10},
+      {"material_name": "石膏天花板", "area_m2": 100.0, "absorption_coeff": 0.05}
+    ]
+  },
+  {
+    "room_id": "E-506",
+    "volume_m3": -10.0,
+    "measured_t60_s": 1.20,
+    "frequency_hz": 1000,
+    "timestamp": "2025-11-10T15:30:00",
+    "surfaces": [
+      {"material_name": "混凝土墙", "area_m2": 60.0, "absorption_coeff": 0.02},
+      {"material_name": "木地板", "area_m2": 25.0, "absorption_coeff": 0.10}
+    ]
+  },
+  {
+    "room_id": "F-607",
+    "volume_m3": 180.0,
+    "measured_t60_s": 1.55,
+    "frequency_hz": 2000,
+    "timestamp": "2025-11-10T16:00:00",
+    "surfaces": [
+      {"material_name": "混凝土墙", "area_m2": 90.0, "absorption_coeff": 0.02},
+      {"material_name": "超吸声材料", "area_m2": 30.0, "absorption_coeff": 1.55},
+      {"material_name": "木地板", "area_m2": 50.0, "absorption_coeff": 0.10}
+    ]
+  },
+  {
+    "room_id": "G-708",
+    "volume_m3": 300.0,
+    "measured_t60_s": 0.0,
+    "frequency_hz": 1000,
+    "timestamp": "2025-11-10T16:30:00",
+    "surfaces": []
+  }
+]
