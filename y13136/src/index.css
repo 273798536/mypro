@@ -1,0 +1,88 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.table-fixed-header thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-count-up {
+  animation: countUp 0.4s ease-out;
+}
+
+.zero-division-row {
+  background-color: rgba(251, 191, 36, 0.08);
+}
+
+.zero-division-row:hover {
+  background-color: rgba(251, 191, 36, 0.15);
+}
+
+.breathe-glow {
+  animation: breatheGlow 2.5s ease-in-out infinite;
+}
+
+@keyframes breatheGlow {
+  0%, 100% {
+    box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.2);
+  }
+  50% {
+    box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.5), 0 0 12px rgba(251, 191, 36, 0.1);
+  }
+}
