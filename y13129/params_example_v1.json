@@ -1,0 +1,70 @@
+{
+  "run_meta": {
+    "operator": "小岑",
+    "parameter_set_name": "2026Q2_排班先验_v1",
+    "run_notes": [
+      {"timestamp": "2026-06-12T09:00:00", "operator": "小岑", "text": "基于2025Q4排班数据首次拟定先验参数"}
+    ]
+  },
+  "priors": [
+    {
+      "name": "早班出勤率",
+      "distribution": "Beta",
+      "params": {"alpha": 8.2, "beta": 3.1},
+      "unit": "概率",
+      "source": "2025Q4排班记录",
+      "source_line": "表3-2, 第15行",
+      "status": "processed",
+      "notes": [
+        {"timestamp": "2026-06-10T14:30:00", "operator": "小岑", "text": "原始α=5.0, β=2.0, 根据Q4实际出勤82%调整"}
+      ],
+      "evidence": "已提供Q4原始出勤数据表"
+    },
+    {
+      "name": "午间故障率",
+      "distribution": "Beta",
+      "params": {"alpha": 2.5, "beta": 47.5},
+      "unit": "概率",
+      "source": "2025全年运维日志",
+      "source_line": "故障汇总表, 第8行",
+      "status": "needs_evidence",
+      "evidence": "",
+      "notes": []
+    },
+    {
+      "name": "夜班响应时间",
+      "distribution": "Gamma",
+      "params": {"shape": 4.0, "rate": 0.8},
+      "unit": "分钟",
+      "source": "2025Q3-Q4响应时间统计",
+      "source_line": "附件A, 图2",
+      "status": "needs_evidence",
+      "evidence": "",
+      "notes": [
+        {"timestamp": "2026-06-11T10:00:00", "operator": "小岑", "text": "shape和rate是从均值5分钟反推的，需要验证"}
+      ]
+    },
+    {
+      "name": "日均工时偏差",
+      "distribution": "Normal",
+      "params": {"mu": 0.3, "sigma": 1.2},
+      "unit": "小时",
+      "source": "2025年考勤系统",
+      "source_line": "月度汇总, 12月",
+      "status": "processed",
+      "evidence": "已附考勤系统导出截图",
+      "notes": []
+    },
+    {
+      "name": "加班时长分布",
+      "distribution": "Lognormal",
+      "params": {"mu_log": 2.1, "sigma_log": 0.6},
+      "unit": "小时",
+      "source": "2025年加班记录",
+      "source_line": "汇总表, 第3行",
+      "status": "needs_evidence",
+      "evidence": "",
+      "notes": []
+    }
+  ]
+}

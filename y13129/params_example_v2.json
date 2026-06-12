@@ -1,0 +1,86 @@
+{
+  "run_meta": {
+    "operator": "小岑",
+    "parameter_set_name": "2026Q2_排班先验_v2",
+    "run_notes": [
+      {"timestamp": "2026-06-12T16:00:00", "operator": "小岑", "text": "v2调整：午间故障率根据6月最新数据上调α；夜班响应时间换用更大shape"}
+    ]
+  },
+  "priors": [
+    {
+      "name": "早班出勤率",
+      "distribution": "Beta",
+      "params": {"alpha": 8.2, "beta": 3.1},
+      "unit": "概率",
+      "source": "2025Q4排班记录",
+      "source_line": "表3-2, 第15行",
+      "status": "processed",
+      "notes": [
+        {"timestamp": "2026-06-10T14:30:00", "operator": "小岑", "text": "原始α=5.0, β=2.0, 根据Q4实际出勤82%调整"}
+      ],
+      "evidence": "已提供Q4原始出勤数据表"
+    },
+    {
+      "name": "午间故障率",
+      "distribution": "Beta",
+      "params": {"alpha": 4.0, "beta": 46.0},
+      "unit": "概率",
+      "source": "2025全年运维日志 + 2026年6月补充数据",
+      "source_line": "故障汇总表, 第8行; 6月补充表第2行",
+      "status": "needs_evidence",
+      "evidence": "",
+      "notes": [
+        {"timestamp": "2026-06-12T15:00:00", "operator": "小岑", "text": "α从2.5调到4.0, 6月故障频率高于Q4均值"}
+      ]
+    },
+    {
+      "name": "夜班响应时间",
+      "distribution": "Gamma",
+      "params": {"shape": 6.0, "rate": 1.0},
+      "unit": "分钟",
+      "source": "2025Q3-Q4 + 2026Q1响应时间统计",
+      "source_line": "附件A, 图2; 附件C, 图1",
+      "status": "needs_evidence",
+      "evidence": "",
+      "notes": [
+        {"timestamp": "2026-06-11T10:00:00", "operator": "小岑", "text": "shape和rate是从均值5分钟反推的，需要验证"},
+        {"timestamp": "2026-06-12T16:00:00", "operator": "小岑", "text": "shape调为6, rate调为1.0, 均值6分钟更符合Q1实际"}
+      ]
+    },
+    {
+      "name": "日均工时偏差",
+      "distribution": "Normal",
+      "params": {"mu": 0.3, "sigma": 1.2},
+      "unit": "小时",
+      "source": "2025年考勤系统",
+      "source_line": "月度汇总, 12月",
+      "status": "processed",
+      "evidence": "已附考勤系统导出截图",
+      "notes": []
+    },
+    {
+      "name": "加班时长分布",
+      "distribution": "Lognormal",
+      "params": {"mu_log": 2.3, "sigma_log": 0.6},
+      "unit": "小时",
+      "source": "2025年加班记录 + 2026年1-5月加班",
+      "source_line": "汇总表, 第3行; 2026更新表第1行",
+      "status": "needs_evidence",
+      "evidence": "",
+      "notes": [
+        {"timestamp": "2026-06-12T16:30:00", "operator": "小岑", "text": "mu_log从2.1调到2.3, 2026年加班明显增多"}
+      ]
+    },
+    {
+      "name": "周末排班覆盖率",
+      "distribution": "Beta",
+      "params": {"alpha": 5.5, "beta": 4.5},
+      "unit": "概率",
+      "source": "2026年1-5月排班执行表",
+      "source_line": "汇总表, 第7行",
+      "status": "needs_evidence",
+      "evidence": "",
+      "notes": []
+    }
+  ]
+}
