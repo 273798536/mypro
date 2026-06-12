@@ -16,6 +16,20 @@ function isPlaceholderImage(imageData: string | undefined | null): boolean {
   return imageData.includes('svg+xml') || imageData.length < 500
 }
 
+function resolveFrameForScreenshot(
+  screenshot: ScreenshotMark,
+  collisions: ReturnType<typeof useStore.getState>['collisions'],
+  fallbackFrame: number
+): number {
+  if (screenshot.collisionId) {
+    const col = collisions.find(c => c.id === screenshot.collisionId)
+    if (col) return col.frameIndex
+  }
+  const m = screenshot.note?.match(/帧\s*(\d+)/)
+  if (m) return parseInt(m[1], 10)
+  return fallbackFrame
+}
+
 const labelTypeConfig: Record<LabelType, { label: string; color: string; bgColor: string; borderColor: string; icon: typeof CheckCircle }> = {
   resolved: { label: '已处理', color: 'text-emerald-400', bgColor: 'bg-emerald-400/10', borderColor: 'border-emerald-400/30', icon: CheckCircle },
   pending_material: { label: '待补材料', color: 'text-amber-400', bgColor: 'bg-amber-400/10', borderColor: 'border-amber-400/30', icon: Clock },
@@ -32,12 +46,14 @@ function ExportCard({
   onSelect: () => void
 }) {
   const getBarById = useStore((s) => s.getBarById)
-  const currentFrame = useStore((s) => s.currentFrame)
   const getBarPositionAtFrame = useStore((s) => s.getBarPositionAtFrame)
+  const collisions = useStore((s) => s.collisions)
+  const currentFrame = useStore((s) => s.currentFrame)
   const bar = getBarById(screenshot.objectId)
   const config = labelTypeConfig[screenshot.labelType]
   const Icon = config.icon
-  const posY = bar ? getBarPositionAtFrame(bar.id, currentFrame) : 0
+  const frameForCard = resolveFrameForScreenshot(screenshot, collisions, currentFrame)
+  const posY = bar ? getBarPositionAtFrame(bar.id, frameForCard) : 0
   const isPlaceholder = isPlaceholderImage(screenshot.imageData)
 
   return (
@@ -143,6 +159,7 @@ export default function Export() {
   const getAnnotationsByCollisionId = useStore((s) => s.getAnnotationsByCollisionId)
   const setScreenshotImageData = useStore((s) => s.setScreenshotImageData)
   const addScreenshot = useStore((s) => s.addScreenshot)
+  const setCurrentFrame = useStore((s) => s.setCurrentFrame)
   const currentFrame = useStore((s) => s.currentFrame)
   const selectedObjectId = useStore((s) => s.selectedObjectId)
   const setSelectedObjectId = useStore((s) => s.setSelectedObjectId)
@@ -170,10 +187,17 @@ export default function Export() {
     return null
   }, [screenshots, selectedObjectId])
 
+  const activeFrame = useMemo(() => {
+    if (activeScreenshot) {
+      return resolveFrameForScreenshot(activeScreenshot, collisions, currentFrame)
+    }
+    return currentFrame
+  }, [activeScreenshot, collisions, currentFrame])
+
   const activeBar = selectedObjectId ? getBarById(selectedObjectId) : null
-  const activePosY = activeBar ? getBarPositionAtFrame(activeBar.id, currentFrame) : 0
+  const activePosY = activeBar ? getBarPositionAtFrame(activeBar.id, activeFrame) : 0
   const activeCollision = activeBar
-    ? collisions.find(c => (c.objectAId === activeBar.id || c.objectBId === activeBar.id) && c.frameIndex === currentFrame)
+    ? collisions.find(c => (c.objectAId === activeBar.id || c.objectBId === activeBar.id) && c.frameIndex === activeFrame)
       || collisions.find(c => c.objectAId === activeBar.id || c.objectBId === activeBar.id)
       || null
     : null
@@ -186,93 +210,102 @@ export default function Export() {
   )
   const activeNote = activeScreenshot?.note || (
     activeCollision
-      ? `碰撞间距 ${activeCollision.distance}m · 帧${currentFrame}`
-      : `当前帧无碰撞 · 帧${currentFrame}`
+      ? `碰撞间距 ${activeCollision.distance}m · 帧${activeFrame}`
+      : `当前帧无碰撞 · 帧${activeFrame}`
   )
 
   useEffect(() => {
     if (!selectedObjectId && screenshots.length > 0) {
-      setSelectedObjectId(screenshots[0].objectId)
+      const first = screenshots[0]
+      setSelectedObjectId(first.objectId)
+      const frame = resolveFrameForScreenshot(first, collisions, currentFrame)
+      setCurrentFrame(frame)
     }
-  }, [selectedObjectId, screenshots, setSelectedObjectId])
+  }, [selectedObjectId, screenshots, collisions, currentFrame, setSelectedObjectId, setCurrentFrame])
+
+  const handleSelectScreenshot = (s: ScreenshotMark) => {
+    setSelectedObjectId(s.objectId)
+    const frame = resolveFrameForScreenshot(s, collisions, currentFrame)
+    setCurrentFrame(frame)
+  }
 
   const handleGenerateAndDownload = async (screenshotId?: string): Promise<string | null> => {
-    const state = useStore.getState()
-    const currentBar = state.selectedObjectId ? state.getBarById(state.selectedObjectId) : null
+    const initialState = useStore.getState()
 
-    if (!currentBar) {
+    let target: ScreenshotMark | null = null
+    if (screenshotId) {
+      target = initialState.screenshots.find(s => s.id === screenshotId) || null
+    } else if (initialState.selectedObjectId) {
+      target = initialState.screenshots.find(s => s.objectId === initialState.selectedObjectId) || null
+    }
+
+    if (!target) {
       useToastStore.getState().warning('请先选择对象', '请在下方截图列表中点击一个对象，或前往场景预审页点选对象。')
       return null
     }
 
-    let target: ScreenshotMark | null = null
-    if (screenshotId) {
-      target = state.screenshots.find(s => s.id === screenshotId) || null
-    } else if (state.selectedObjectId) {
-      target = state.screenshots.find(s => s.objectId === state.selectedObjectId) || null
+    const targetFrame = resolveFrameForScreenshot(target, initialState.collisions, initialState.currentFrame)
+    const state = useStore.getState()
+    const currentBar = state.getBarById(target.objectId)
+    if (!currentBar) {
+      useToastStore.getState().error('导出失败', `找不到对象 ${target.objectId}`)
+      return null
     }
 
-    const currentPosY = state.getBarPositionAtFrame(currentBar.id, state.currentFrame)
-    const currentCollision = state.collisions.find(
-      c => (c.objectAId === currentBar.id || c.objectBId === currentBar.id) && c.frameIndex === state.currentFrame
-    ) || state.collisions.find(
-      c => c.objectAId === currentBar.id || c.objectBId === currentBar.id
-    ) || null
-    const currentAnnotations = currentCollision ? state.getAnnotationsByCollisionId(currentCollision.id) : []
-    const currentNote = target?.note || (
-      currentCollision
-        ? `碰撞间距 ${currentCollision.distance}m · 帧${state.currentFrame}`
-        : `当前帧无碰撞 · 帧${state.currentFrame}`
+    setSelectedObjectId(target.objectId)
+    setCurrentFrame(targetFrame)
+    await new Promise(resolve => setTimeout(resolve, 350))
+
+    const liveState = useStore.getState()
+    const liveBar = liveState.getBarById(target.objectId)!
+    const livePosY = liveState.getBarPositionAtFrame(liveBar.id, targetFrame)
+    const liveCollision =
+      liveState.collisions.find(
+        c => (c.objectAId === liveBar.id || c.objectBId === liveBar.id) && c.frameIndex === targetFrame
+      ) ||
+      liveState.collisions.find(c => c.objectAId === liveBar.id || c.objectBId === liveBar.id) ||
+      null
+    const liveAnnotations = liveCollision ? liveState.getAnnotationsByCollisionId(liveCollision.id) : []
+    const liveNote = target.note || (
+      liveCollision
+        ? `碰撞间距 ${liveCollision.distance}m · 帧${targetFrame}`
+        : `当前帧无碰撞 · 帧${targetFrame}`
     )
-    const currentLabelType = target?.labelType || (
-      currentAnnotations.length > 5 ? 'resolved'
-        : currentAnnotations.length > 0 ? 'pending_material'
-        : currentCollision ? 'manual_override'
+    const liveLabelType = target.labelType || (
+      liveAnnotations.length > 5 ? 'resolved'
+        : liveAnnotations.length > 0 ? 'pending_material'
+        : liveCollision ? 'manual_override'
         : 'pending_material'
     )
 
     setExportingSingle(true)
     const toastId = useToastStore.getState().loading(
       '正在生成说明图',
-      `正在截取 3D 场景并合成 ${currentBar.name} 的说明图...`
+      `正在截取 3D 场景并合成 ${liveBar.name}（帧 ${targetFrame}）的说明图...`
     )
 
     try {
       const rawImageData = await capture3DScene()
       const composed = await composeExportImage({
-        bar: currentBar,
-        positionY: currentPosY,
-        collision: currentCollision,
-        annotations: currentAnnotations,
+        bar: liveBar,
+        positionY: livePosY,
+        collision: liveCollision,
+        annotations: liveAnnotations,
         imageData: rawImageData,
-        labelType: currentLabelType,
-        note: currentNote,
-        frameIndex: state.currentFrame,
+        labelType: liveLabelType,
+        note: liveNote,
+        frameIndex: targetFrame,
       })
 
-      const filename = `碰撞预审_${currentBar.name}_F${state.currentFrame}_${Date.now()}.png`
+      const filename = `碰撞预审_${liveBar.name}_F${targetFrame}_${Date.now()}.png`
       downloadImage(composed, filename)
 
-      if (target) {
-        setScreenshotImageData(target.id, composed)
-      } else {
-        const newId = `scr-${Date.now()}`
-        addScreenshot({
-          id: newId,
-          collisionId: currentCollision?.id || `col-${currentBar.id}-F${state.currentFrame}`,
-          objectId: currentBar.id,
-          imageData: composed,
-          label: `${currentBar.name} - 帧${state.currentFrame}`,
-          labelType: currentLabelType,
-          note: currentNote,
-          timestamp: Date.now(),
-        })
-      }
+      setScreenshotImageData(target.id, composed)
 
       useToastStore.getState().updateToast(toastId, {
         type: 'success',
         title: '导出成功',
-        description: `已生成 ${filename}，3D 画面、空间位置、备注三者已对齐`,
+        description: `已生成 ${filename}（帧 ${targetFrame}），3D 画面、空间位置、备注三者已对齐`,
       })
       return composed
     } catch (e) {
@@ -289,37 +322,57 @@ export default function Export() {
   }
 
   const handleExportAll = async () => {
-    if (screenshots.length === 0) {
+    const initialState = useStore.getState()
+    if (initialState.screenshots.length === 0) {
       useToastStore.getState().info('暂无可导出内容', '请先在场景预审页点选对象并导出，或生成截图标注')
       return
     }
 
+    const originalFrame = initialState.currentFrame
+    const originalObjectId = initialState.selectedObjectId
+    const items = [...initialState.screenshots]
+
     setExportingAll(true)
     const toastId = useToastStore.getState().loading(
       '正在批量生成说明图',
-      `共 ${screenshots.length} 项，正在逐个截取 3D 场景并合成...`
+      `共 ${items.length} 项，正在逐个切换到碰撞帧并截取 3D 场景...`
     )
 
     let successCount = 0
     let failCount = 0
+    const failedItems: string[] = []
 
-    for (let i = 0; i < screenshots.length; i++) {
-      const s = screenshots[i]
+    for (let i = 0; i < items.length; i++) {
+      const s = items[i]
       try {
         useToastStore.getState().updateToast(toastId, {
-          description: `正在处理第 ${i + 1}/${screenshots.length} 项...`,
+          description: `正在处理第 ${i + 1}/${items.length} 项：切换到碰撞帧...`,
         })
-        const bar = getBarById(s.objectId)
-        if (!bar) { failCount++; continue }
 
+        const targetFrame = resolveFrameForScreenshot(s, initialState.collisions, originalFrame)
         setSelectedObjectId(s.objectId)
-        await new Promise(resolve => setTimeout(resolve, 300))
+        setCurrentFrame(targetFrame)
+        await new Promise(resolve => setTimeout(resolve, 400))
 
-        const posY = getBarPositionAtFrame(s.objectId, currentFrame)
-        const collision = collisions.find(c => (c.objectAId === s.objectId || c.objectBId === s.objectId) && c.frameIndex === currentFrame)
-          || collisions.find(c => c.objectAId === s.objectId || c.objectBId === s.objectId)
-          || null
-        const anns = collision ? getAnnotationsByCollisionId(collision.id) : []
+        const live = useStore.getState()
+        const bar = live.getBarById(s.objectId)
+        if (!bar) { failCount++; failedItems.push(s.objectId); continue }
+
+        const posY = live.getBarPositionAtFrame(bar.id, targetFrame)
+        const collision =
+          live.collisions.find(
+            c => (c.objectAId === bar.id || c.objectBId === bar.id) && c.frameIndex === targetFrame
+          ) ||
+          live.collisions.find(c => c.objectAId === bar.id || c.objectBId === bar.id) ||
+          null
+        const anns = collision ? live.getAnnotationsByCollisionId(collision.id) : []
+        const note = s.note || (
+          collision ? `碰撞间距 ${collision.distance}m · 帧${targetFrame}` : `当前帧无碰撞 · 帧${targetFrame}`
+        )
+
+        useToastStore.getState().updateToast(toastId, {
+          description: `正在处理第 ${i + 1}/${items.length} 项：截取 ${bar.name}（帧 ${targetFrame}）...`,
+        })
 
         const rawImageData = await capture3DScene()
         const composed = await composeExportImage({
@@ -329,23 +382,27 @@ export default function Export() {
           annotations: anns,
           imageData: rawImageData,
           labelType: s.labelType,
-          note: s.note,
-          frameIndex: currentFrame,
+          note,
+          frameIndex: targetFrame,
         })
 
-        const filename = `碰撞预审_${bar.name}_F${currentFrame}_${Date.now()}.png`
+        const filename = `碰撞预审_${bar.name}_F${targetFrame}_${Date.now()}.png`
         downloadImage(composed, filename)
         setScreenshotImageData(s.id, composed)
         successCount++
         await new Promise(resolve => setTimeout(resolve, 200))
-      } catch {
+      } catch (e) {
         failCount++
+        failedItems.push(s.objectId)
       }
     }
 
+    if (originalObjectId) setSelectedObjectId(originalObjectId)
+    setCurrentFrame(originalFrame)
+
     const finalType = failCount === 0 ? 'success' as const : 'error' as const
     const finalTitle = failCount === 0 ? '批量导出完成' : '批量导出完成（部分失败）'
-    const finalDesc = `成功 ${successCount} 项，失败 ${failCount} 项。所有说明图均为实时 3D 截图 + 数据合成，可验证一致性`
+    const finalDesc = `成功 ${successCount} 项，失败 ${failCount} 项。每项均切换到对应碰撞帧后实时截图，坐标/碰撞/备注与帧一致${failedItems.length > 0 ? `；失败：${failedItems.join('、')}` : ''}`
 
     useToastStore.getState().updateToast(toastId, {
       type: finalType,
@@ -443,7 +500,7 @@ export default function Export() {
                 <div className="absolute top-3 left-3 bg-zinc-900/90 backdrop-blur-sm border border-zinc-700/50 rounded-lg px-3 py-2 flex items-center gap-2 z-10">
                   <div className={`w-2 h-2 rounded-full ${activeBar.type === 'scenery' ? 'bg-amber-700' : 'bg-amber-400'}`} />
                   <span className="text-xs font-medium text-zinc-200">{activeBar.name}</span>
-                  <span className="text-[10px] text-zinc-500">帧 {currentFrame}</span>
+                  <span className="text-[10px] text-zinc-500">帧 {activeFrame}</span>
                 </div>
               )}
               <div className="absolute bottom-3 left-3 text-[10px] text-zinc-500 bg-zinc-900/70 px-2 py-1 rounded z-10">
@@ -587,7 +644,7 @@ export default function Export() {
                           key={s.id}
                           screenshot={s}
                           isActive={selectedObjectId === s.objectId}
-                          onSelect={() => setSelectedObjectId(s.objectId)}
+                          onSelect={() => handleSelectScreenshot(s)}
                         />
                       ))}
                     </div>

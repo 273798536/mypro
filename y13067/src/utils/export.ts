@@ -39,7 +39,7 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
 export function capture3DScene(): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
-      const canvas = document.querySelector('canvas[data-engine="three.js"]') as HTMLCanvasElement | null
+      const canvas = document.querySelector('canvas[data-engine^="three.js"]') as HTMLCanvasElement | null
                     || document.querySelector('main canvas') as HTMLCanvasElement | null
                     || document.querySelector('canvas') as HTMLCanvasElement | null
       if (!canvas) {
