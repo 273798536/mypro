@@ -1,0 +1,10 @@
+{
+  "sample_rate": 48000,
+  "frequency_bands": ["125Hz", "250Hz", "500Hz", "1kHz", "2kHz", "4kHz", "8kHz"],
+  "reverb_target_t60": 1.1,
+  "window_size_ms": 40,
+  "gap_tolerance_samples": 2,
+  "smoothing": "hann",
+  "denoise_enabled": false,
+  "extra_filter": "lowpass_10kHz"
+}
