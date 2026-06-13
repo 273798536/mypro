@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDataStore } from '../store/dataStore';
+import { useToastStore } from '../store/toastStore';
 import { downloadCsv, recordsToCsv } from '../utils/csvParser';
 import { formatTimestamp, getAnomalyTypeLabel } from '../utils/dataProcessor';
 import { PROCESS_STATUS_OPTIONS, ANOMALY_TYPE_OPTIONS } from '../utils/constants';
@@ -14,6 +15,7 @@ export const CsvDetailPage = () => {
   const records = useDataStore((s) => s.records);
   const anomalies = useDataStore((s) => s.anomalies);
   const loadDemoData = useDataStore((s) => s.loadDemoData);
+  const addToast = useToastStore((s) => s.addToast);
   
   const [searchTerm, setSearchTerm] = useState('');
   const [sortField, setSortField] = useState<string>('rowNumber');
@@ -21,7 +23,7 @@ export const CsvDetailPage = () => {
   const [highlightRow, setHighlightRow] = useState<number | null>(null);
   
   const tableRef = useRef<HTMLDivElement>(null);
-  const rowRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map());
 
   useEffect(() => {
     if (records.length === 0) {
@@ -39,12 +41,16 @@ export const CsvDetailPage = () => {
           if (rowEl) {
             rowEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
-        }, 100);
+        }, 200);
         
-        setTimeout(() => setHighlightRow(null), 3000);
+        setTimeout(() => setHighlightRow(null), 4000);
+        addToast({
+          type: 'info',
+          message: `已定位到第 ${rowNum} 行`,
+        });
       }
     }
-  }, [rowParam, records]);
+  }, [rowParam, records, addToast]);
 
   const recordAnomalies = useMemo(() => {
     const map = new Map<string, typeof anomalies>();
@@ -109,7 +115,14 @@ export const CsvDetailPage = () => {
 
   const handleExport = () => {
     const csv = recordsToCsv(filteredAndSortedRecords);
-    downloadCsv(csv, `索道站剖面数据_${new Date().toISOString().slice(0, 10)}.csv`);
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10);
+    const timeStr = now.toTimeString().slice(0, 5).replace(':', '');
+    downloadCsv(csv, `索道站剖面数据_${dateStr}_${timeStr}.csv`);
+    addToast({
+      type: 'success',
+      message: `已导出 ${filteredAndSortedRecords.length} 条记录`,
+    });
   };
 
   const getStatusInfo = (status: string) => {
@@ -220,12 +233,12 @@ export const CsvDetailPage = () => {
                       }}
                       className={`hover:bg-slate-700/30 transition-colors ${
                         isHighlighted
-                          ? 'bg-yellow-500/20 animate-pulse'
+                          ? 'bg-yellow-500/20'
                           : hasAnomaly
                           ? 'bg-red-500/5'
                           : ''
                       }`}
-                    >
+                      style={isHighlighted ? { animation: 'highlight 1.5s ease-in-out 3' } : undefined}>
                       <td className="px-4 py-3 font-mono text-yellow-400">
                         #{record.rowNumber}
                       </td>

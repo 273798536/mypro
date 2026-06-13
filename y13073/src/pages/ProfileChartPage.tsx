@@ -11,7 +11,9 @@ import { useFilterStore } from '../store/filterStore';
 import { useViewStore } from '../store/viewStore';
 import { filterRecords } from '../utils/dataProcessor';
 import { ANOMALY_TYPE_OPTIONS, PROCESS_STATUS_OPTIONS } from '../utils/constants';
-import { Play, RefreshCw, FileSpreadsheet, Settings, HelpCircle, Upload, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Play, RefreshCw, FileSpreadsheet, Settings, HelpCircle, Upload, AlertTriangle, Download } from 'lucide-react';
+import { useToastStore } from '../store/toastStore';
+import { downloadCsv, recordsToCsv } from '../utils/csvParser';
 
 export const ProfileChartPage = () => {
   const navigate = useNavigate();
@@ -35,10 +37,17 @@ export const ProfileChartPage = () => {
   const toggleGuide = useViewStore((s) => s.toggleGuide);
   const setShowGuide = useViewStore((s) => s.setShowGuide);
 
+  const addToast = useToastStore((s) => s.addToast);
+
+  const hasShownGuide = useRef(false);
+
   useEffect(() => {
     if (records.length === 0) {
       loadDemoData();
-      setTimeout(() => setShowGuide(true), 500);
+      if (!hasShownGuide.current) {
+        setTimeout(() => setShowGuide(true), 500);
+        hasShownGuide.current = true;
+      }
     }
   }, [records.length, loadDemoData, setShowGuide]);
 
@@ -55,16 +64,36 @@ export const ProfileChartPage = () => {
     loadDemoData();
     resetFilters();
     setShowGuide(false);
-  }, [loadDemoData, resetFilters, setShowGuide]);
+    addToast({
+      type: 'success',
+      message: '演示数据加载成功，包含边界样本和时间轴缺段',
+    });
+  }, [loadDemoData, resetFilters, setShowGuide, addToast]);
 
   const handleRerun = useCallback(() => {
     reprocessData();
-  }, [reprocessData]);
+    addToast({
+      type: 'info',
+      message: '异常检测已重新运行',
+    });
+  }, [reprocessData, addToast]);
 
   const handleViewCsv = useCallback(() => {
     navigate('/csv');
     setShowGuide(false);
   }, [navigate, setShowGuide]);
+
+  const handleExportCsv = useCallback(() => {
+    const csv = recordsToCsv(records);
+    const now = new Date();
+    const dateStr = now.toISOString().slice(0, 10);
+    const timeStr = now.toTimeString().slice(0, 5).replace(':', '');
+    downloadCsv(csv, `索道站剖面数据_${dateStr}_${timeStr}.csv`);
+    addToast({
+      type: 'success',
+      message: `已导出 ${records.length} 条记录`,
+    });
+  }, [records, addToast]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -73,8 +102,25 @@ export const ProfileChartPage = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
-      loadCsvData(content);
-      resetFilters();
+      try {
+        loadCsvData(content);
+        resetFilters();
+        addToast({
+          type: 'success',
+          message: `CSV文件加载成功，共解析 ${file.name}`,
+        });
+      } catch (err) {
+        addToast({
+          type: 'error',
+          message: 'CSV文件解析失败，请检查文件格式',
+        });
+      }
+    };
+    reader.onerror = () => {
+      addToast({
+        type: 'error',
+        message: '文件读取失败',
+      });
     };
     reader.readAsText(file);
     
@@ -157,6 +203,14 @@ export const ProfileChartPage = () => {
               >
                 <FileSpreadsheet className="w-4 h-4" />
                 查看CSV明细
+              </button>
+              <button
+                onClick={handleExportCsv}
+                disabled={records.length === 0}
+                className="flex items-center gap-2 px-3 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:cursor-not-allowed text-slate-200 rounded-lg transition-colors text-sm"
+              >
+                <Download className="w-4 h-4" />
+                导出CSV
               </button>
               <div className="w-px h-6 bg-slate-700" />
               <button

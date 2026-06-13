@@ -1,57 +1,86 @@
-# React + TypeScript + Vite
+# 山地索道站剖面讲解
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+CAD 图层数据复核工具——把截图离开筛选条件就说不清的记录捋顺，让复核人从图表一路点回原始材料。
 
-Currently, two official plugins are available:
+## 启动
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+浏览器打开终端提示的地址（默认 `http://localhost:5173`），首次加载自动填入演示数据并弹出操作指南。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 三件事
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 1. 放样例
+
+点击顶部 **「放样例」** 按钮加载内置演示数据。
+
+演示数据刻意不干净，包含：
+- **边界样本**（第 46 行）：高程偏移 +180m，被 IQR 边界检测标为橙色
+- **数据不完整**（第 47 行）：高程字段缺失，标记为黄色
+- **突变异常**（第 49 行）：高程骤降 150m，标记为红色
+- **时间轴缺段**（第 49→61 行）：12 个采样间隔（60 分钟），时间轴红色虚线区段
+
+加载后顶部实时显示异常数量和时间缺段数量；图表上异常点带脉冲动画，点击即可查看追溯信息。
+
+### 2. 重跑
+
+点击 **「重跑」** 按钮重新执行异常检测算法。
+
+使用场景：调整了字段映射、导入了新 CSV，或想用当前数据重新计算边界值异常 / 突变异常 / 时间轴缺段。重跑后统计数字和图表标记即时刷新。
+
+### 3. 查看CSV明细
+
+点击 **「查看CSV明细」** 按钮进入数据表格页面。
+
+- 支持搜索（ID、来源、图层、原始字段）、排序、按行号定位
+- 从异常追溯面板点击「查看CSV明细」会自动跳转并高亮定位到目标行
+- 点击 **「导出CSV」** 按钮下载当前数据，文件名带日期时间戳（如 `索道站剖面数据_2024-01-15_0930.csv`），BOM 头保证 Excel 中文不乱码
+
+## 核心交互
+
+| 操作 | 结果 |
+|------|------|
+| 点击图表数据点 | 右侧追溯面板显示来源、处理状态（强制保留）、原始 CAD 字段、影响范围 |
+| 点击异常标记 | 追溯面板显示异常来源信息快照（数据来源 + 处理状态 + 影响范围） |
+| 追溯面板 → 查看CSV明细 | 跳转明细页，自动滚动到目标行并黄色闪烁高亮 |
+| 调整筛选条件 + 缩放 → 保存视图 | 筛选条件、缩放级别、中心位置一并保存，切换视图时自动恢复 |
+| 上传 CSV 文件 | 自动模糊匹配字段名（如"数据源"→"来源"），缺少强制字段时顶部黄色警告 |
+
+## 字段映射
+
+复核人交来的 CAD 图层字段名可能前后不一。系统自动模糊匹配同义字段（配置在 `src/data/fieldMappings.ts` 的 `synonymMap`）。
+
+**来源**和**处理状态**为强制保留字段，在字段映射配置页面锁定不可修改。其他字段可自由调整映射关系。
+
+点击顶部齿轮图标进入字段映射配置页面。
+
+## 技术栈
+
+- React 18 + TypeScript 5 + Vite
+- Zustand（状态管理）、D3.js（图表）、PapaParse（CSV 解析/导出）
+- TailwindCSS 3（深色工程风格）
+
+## 项目结构
+
+```
+src/
+├── pages/
+│   ├── ProfileChartPage.tsx   主页面：图表 + 筛选 + 追溯
+│   ├── CsvDetailPage.tsx      CSV 明细表格
+│   └── FieldMappingPage.tsx   字段映射配置
+├── components/
+│   ├── chart/ProfileChart.tsx        剖面图（D3 SVG）
+│   ├── timeline/Timeline.tsx         时间轴 + 缺段标记
+│   ├── trace/TracePanel.tsx          异常追溯面板
+│   ├── filter/FilterPanel.tsx        筛选面板
+│   ├── viewManagement/ViewManager.tsx 视图条件管理
+│   ├── guide/GuidePanel.tsx          操作指南弹窗
+│   └── common/ToastContainer.tsx     操作反馈提示
+├── store/             Zustand stores（data / filter / view / toast）
+├── utils/             数据处理、CSV 解析、异常检测算法
+├── data/              演示数据、字段映射配置
+└── types/             TypeScript 类型定义
 ```

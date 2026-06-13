@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDataStore } from '../store/dataStore';
+import { useToastStore } from '../store/toastStore';
 import { ArrowLeft, Lock, Unlock, Save, AlertCircle } from 'lucide-react';
 import { FieldMapping } from '../types';
 import { STANDARD_FIELDS } from '../utils/constants';
@@ -10,6 +11,7 @@ export const FieldMappingPage = () => {
   const fieldMappings = useDataStore((s) => s.fieldMappings);
   const updateFieldMapping = useDataStore((s) => s.updateFieldMapping);
   const records = useDataStore((s) => s.records);
+  const addToast = useToastStore((s) => s.addToast);
 
   const [mappings, setMappings] = useState<FieldMapping[]>(fieldMappings);
   const [hasChanges, setHasChanges] = useState(false);
@@ -31,6 +33,10 @@ export const FieldMappingPage = () => {
       }
     });
     setHasChanges(false);
+    addToast({
+      type: 'success',
+      message: '字段映射配置已保存',
+    });
   };
 
   const lockedMappings = mappings.filter((m) => m.locked);

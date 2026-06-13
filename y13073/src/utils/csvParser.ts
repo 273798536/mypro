@@ -80,20 +80,24 @@ export const parseCsvToRecords = (
 };
 
 export const recordsToCsv = (records: CadRecord[]): string => {
-  const headers = ['行号', '来源', '处理状态', 'X坐标', 'Y坐标', '时间戳', '图层', '原始字段'];
-  
-  const rows = records.map(record => [
-    record.rowNumber,
-    record.source,
-    record.processStatus,
-    record.x,
-    isNaN(record.y) ? '' : record.y,
-    record.timestamp,
-    record.layer,
-    JSON.stringify(record.originalFields),
-  ]);
-  
-  return [headers, ...rows].map(row => row.join(',')).join('\n');
+  const rows = records.map(record => ({
+    '行号': record.rowNumber,
+    '记录ID': record.id,
+    '来源': record.source,
+    '处理状态': record.processStatus,
+    'X坐标(m)': record.x,
+    'Y坐标(高程m)': isNaN(record.y) ? '' : record.y,
+    '时间戳': record.timestamp,
+    '图层': record.layer,
+    ...Object.fromEntries(
+      Object.entries(record.originalFields).map(([k, v]) => [k, String(v)])
+    ),
+  }));
+
+  return Papa.unparse(rows, {
+    header: true,
+    skipEmptyLines: true,
+  });
 };
 
 export const downloadCsv = (content: string, filename: string): void => {
