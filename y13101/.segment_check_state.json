@@ -61,7 +61,7 @@
           }
         ]
       },
-      "source_file": "tmpnqe_t2yk.json",
+      "source_file": "tmpizehvuld.json",
       "source_line": 1,
       "parsed_data": {
         "低温段": [
@@ -231,7 +231,7 @@
           }
         ]
       },
-      "source_file": "tmpnqe_t2yk.json",
+      "source_file": "tmpizehvuld.json",
       "source_line": 2,
       "parsed_data": {
         "低温段": [
@@ -401,7 +401,7 @@
           }
         ]
       },
-      "source_file": "tmpnqe_t2yk.json",
+      "source_file": "tmpizehvuld.json",
       "source_line": 3,
       "parsed_data": {
         "低温段": [
@@ -571,7 +571,7 @@
           }
         ]
       },
-      "source_file": "tmpwp1rapqv.json",
+      "source_file": "tmpnsa1yaws.json",
       "source_line": 1,
       "parsed_data": null,
       "status": "bad",
@@ -672,7 +672,7 @@
     {
       "record_id": "MAT-OLD-003",
       "material_name": "砷化镓外延-C",
-      "status": "suspended",
+      "status": "warning",
       "segment_metrics": {
         "低温段": {
           "point_count": 4
@@ -704,7 +704,8 @@
         "高温段": true
       },
       "warnings": [
-        "低温段: 低温段 Y轴方差为零，所有Y值相同"
+        "低温段: 低温段 Y轴方差为零，所有Y值相同",
+        "[人工调整] 操作人: 小孟; 原因: 低温段属已知工艺问题，月底前暂不挂起"
       ],
       "errors": [],
       "suspension_reason": "低温段 Y轴方差为零，所有Y值相同"
@@ -724,10 +725,10 @@
   ],
   "anomaly_items": [
     {
-      "timestamp": "2026-06-12 15:29:11.441763",
+      "timestamp": "2026-06-14T03:57:37.468444",
       "record_id": "MAT-OLD-003",
       "material_name": "砷化镓外延-C",
-      "source": "tmpnqe_t2yk.json:3",
+      "source": "tmpizehvuld.json:3",
       "anomaly_types": [
         "挂起待确认",
         "边界警告"
@@ -740,7 +741,7 @@
       "errors": [],
       "suspension_reason": "低温段 Y轴方差为零，所有Y值相同",
       "raw_data_trace": {
-        "source_file": "tmpnqe_t2yk.json",
+        "source_file": "tmpizehvuld.json",
         "source_line": 3,
         "original_fields": [
           "record_id",
@@ -754,10 +755,10 @@
       "action_required": true
     },
     {
-      "timestamp": "2026-06-12 15:29:11.442938",
+      "timestamp": "2026-06-14T03:57:37.469399",
       "record_id": "MAT-OLD-003",
       "material_name": "砷化镓外延-C",
-      "source": "tmpnqe_t2yk.json:3",
+      "source": "tmpizehvuld.json:3",
       "anomaly_types": [
         "边界警告",
         "状态变更: suspended→warning"
@@ -771,7 +772,7 @@
       "errors": [],
       "suspension_reason": "低温段 Y轴方差为零，所有Y值相同",
       "raw_data_trace": {
-        "source_file": "tmpnqe_t2yk.json",
+        "source_file": "tmpizehvuld.json",
         "source_line": 3,
         "original_fields": [
           "record_id",
@@ -785,10 +786,10 @@
       "action_required": false
     },
     {
-      "timestamp": "2026-06-12 15:29:11.451890",
+      "timestamp": "2026-06-14T03:57:37.477633",
       "record_id": "MAT-OLD-003",
       "material_name": "砷化镓外延-C",
-      "source": "tmpnqe_t2yk.json:3",
+      "source": "tmpizehvuld.json:3",
       "anomaly_types": [
         "挂起待确认",
         "边界警告",
@@ -802,7 +803,7 @@
       "errors": [],
       "suspension_reason": "低温段 Y轴方差为零，所有Y值相同",
       "raw_data_trace": {
-        "source_file": "tmpnqe_t2yk.json",
+        "source_file": "tmpizehvuld.json",
         "source_line": 3,
         "original_fields": [
           "record_id",
@@ -816,10 +817,10 @@
       "action_required": true
     },
     {
-      "timestamp": "2026-06-12 15:29:11.454084",
+      "timestamp": "2026-06-14T03:57:37.479673",
       "record_id": "MAT-NEW-004",
       "material_name": "氮化镓基片A",
-      "source": "tmpwp1rapqv.json:1",
+      "source": "tmpnsa1yaws.json:1",
       "anomaly_types": [
         "校验失败",
         "数据质量异常"
@@ -832,7 +833,7 @@
       ],
       "suspension_reason": null,
       "raw_data_trace": {
-        "source_file": "tmpwp1rapqv.json",
+        "source_file": "tmpnsa1yaws.json",
         "source_line": 1,
         "original_fields": [
           "record_id",
@@ -844,6 +845,97 @@
       },
       "change_context": "",
       "action_required": true
+    },
+    {
+      "timestamp": "2026-06-14T03:58:17.948887",
+      "record_id": "MAT-OLD-003",
+      "material_name": "砷化镓外延-C",
+      "source": "tmpizehvuld.json:3",
+      "anomaly_types": [
+        "挂起待确认",
+        "边界警告"
+      ],
+      "current_status": "suspended",
+      "previous_status": "suspended",
+      "warnings": [
+        "低温段: 低温段 Y轴方差为零，所有Y值相同"
+      ],
+      "errors": [],
+      "suspension_reason": "低温段 Y轴方差为零，所有Y值相同",
+      "raw_data_trace": {
+        "source_file": "tmpizehvuld.json",
+        "source_line": 3,
+        "original_fields": [
+          "record_id",
+          "material_name",
+          "低温段",
+          "中温段",
+          "高温段"
+        ]
+      },
+      "change_context": "",
+      "action_required": true
+    },
+    {
+      "timestamp": "2026-06-14T03:58:17.951732",
+      "record_id": "MAT-NEW-004",
+      "material_name": "氮化镓基片A",
+      "source": "tmpnsa1yaws.json:1",
+      "anomaly_types": [
+        "校验失败",
+        "数据质量异常"
+      ],
+      "current_status": "fail",
+      "previous_status": "fail",
+      "warnings": [],
+      "errors": [
+        "数据质量问题: 材料名称不匹配: 期望 '氮化镓基片-A', 实际 '氮化镓基片A'。请确认是否为同一材料后手动处理。"
+      ],
+      "suspension_reason": null,
+      "raw_data_trace": {
+        "source_file": "tmpnsa1yaws.json",
+        "source_line": 1,
+        "original_fields": [
+          "record_id",
+          "material_name",
+          "低温段",
+          "中温段",
+          "高温段"
+        ]
+      },
+      "change_context": "",
+      "action_required": true
+    },
+    {
+      "timestamp": "2026-06-14T03:58:19.173287",
+      "record_id": "MAT-OLD-003",
+      "material_name": "砷化镓外延-C",
+      "source": "tmpizehvuld.json:3",
+      "anomaly_types": [
+        "边界警告",
+        "状态变更: suspended→warning"
+      ],
+      "current_status": "warning",
+      "previous_status": "suspended",
+      "warnings": [
+        "低温段: 低温段 Y轴方差为零，所有Y值相同",
+        "[人工调整] 操作人: 小孟; 原因: 低温段属已知工艺问题，月底前暂不挂起"
+      ],
+      "errors": [],
+      "suspension_reason": "低温段 Y轴方差为零，所有Y值相同",
+      "raw_data_trace": {
+        "source_file": "tmpizehvuld.json",
+        "source_line": 3,
+        "original_fields": [
+          "record_id",
+          "material_name",
+          "低温段",
+          "中温段",
+          "高温段"
+        ]
+      },
+      "change_context": "人工调整: suspended→warning",
+      "action_required": false
     }
   ]
 }

@@ -262,7 +262,16 @@ class AnomalyQueue:
             self._items.append(item)
 
     def get_all(self) -> List[Dict]:
-        return sorted(self._items, key=lambda x: x["timestamp"], reverse=True)
+        def _sort_key(x):
+            ts = x["timestamp"]
+            if isinstance(ts, str):
+                from datetime import datetime
+                try:
+                    return datetime.fromisoformat(ts)
+                except (ValueError, TypeError):
+                    return datetime.min
+            return ts
+        return sorted(self._items, key=_sort_key, reverse=True)
 
     def get_pending(self) -> List[Dict]:
         return [item for item in self.get_all() if item["action_required"]]
@@ -273,8 +282,19 @@ class AnomalyQueue:
     def to_table_data(self) -> List[Dict]:
         table = []
         for item in self.get_all():
+            ts = item["timestamp"]
+            if isinstance(ts, str):
+                from datetime import datetime
+                try:
+                    ts = datetime.fromisoformat(ts)
+                except (ValueError, TypeError):
+                    ts_str = ts
+                else:
+                    ts_str = ts.strftime("%H:%M:%S")
+            else:
+                ts_str = ts.strftime("%H:%M:%S")
             table.append({
-                "时间": item["timestamp"].strftime("%H:%M:%S"),
+                "时间": ts_str,
                 "材料名称": item["material_name"],
                 "异常类型": " | ".join(item["anomaly_types"]),
                 "当前状态": item["current_status"],

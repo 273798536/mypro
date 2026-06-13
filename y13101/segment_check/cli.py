@@ -203,16 +203,40 @@ def anomaly(cli_obj, pending_only):
     """查看异常队列"""
     _load_state(cli_obj)
 
+    all_items = cli_obj.anomaly_queue.get_all()
+    pending_items = cli_obj.anomaly_queue.get_pending()
+
     if pending_only:
-        items = cli_obj.anomaly_queue.get_pending()
-        click.echo(f"\n⚠  待处理异常: {len(items)} 条")
+        items = pending_items
+        click.echo(f"\n⚠  待处理异常: {len(items)} / 累计 {len(all_items)} 条")
     else:
-        items = cli_obj.anomaly_queue.get_all()
-        click.echo(f"\n⚠  异常队列累计: {len(items)} 条")
+        items = all_items
+        click.echo(f"\n⚠  异常队列累计: {len(items)} 条 (待处理 {len(pending_items)} 条)")
+
+    if not items:
+        click.echo("   (无异常记录)\n")
+        return
+
+    class QueueView:
+        def get_all(s): return items
+        def get_pending(s):
+            return [i for i in items if i.get("action_required")]
+        def to_table_data(s):
+            table = []
+            for item in items:
+                table.append({
+                    "时间": item["timestamp"].strftime("%H:%M:%S") if hasattr(item["timestamp"], "strftime") else str(item["timestamp"]),
+                    "材料名称": item["material_name"],
+                    "异常类型": " | ".join(item["anomaly_types"]),
+                    "当前状态": item["current_status"],
+                    "来源": item["source"],
+                    "说明": (item["change_context"] or item["warnings"][0] if item["warnings"] else "")[:50],
+                    "需处理": "是" if item["action_required"] else "否",
+                })
+            return table
 
     renderer = CLIRenderer()
-    queue_wrapper = type("Q", (), {"get_all": lambda s: items, "to_table_data": cli_obj.anomaly_queue.to_table_data})()
-    click.echo(renderer.render_anomaly_queue(queue_wrapper))
+    click.echo(renderer.render_anomaly_queue(QueueView()))
 
 
 @cli.command()
@@ -407,6 +431,15 @@ def _state_path(cli_obj):
 
 
 def _save_state(cli_obj):
+    import copy
+    anomaly_items = []
+    for item in cli_obj.anomaly_queue._items:
+        item_copy = copy.deepcopy(item)
+        ts = item_copy.get("timestamp")
+        if ts and not isinstance(ts, str):
+            item_copy["timestamp"] = ts.isoformat()
+        anomaly_items.append(item_copy)
+
     state = {
         "records": [
             {
@@ -434,7 +467,7 @@ def _save_state(cli_obj):
             }
             for r in cli_obj.results
         ],
-        "anomaly_items": cli_obj.anomaly_queue._items,
+        "anomaly_items": anomaly_items,
     }
     try:
         with open(_state_path(cli_obj), "w", encoding="utf-8") as f:
@@ -482,7 +515,14 @@ def _load_state(cli_obj) -> bool:
             )
             cli_obj.results.append(res)
 
-        cli_obj.anomaly_queue._items = state.get("anomaly_items", [])
+        anomaly_items = state.get("anomaly_items", [])
+        for item in anomaly_items:
+            if isinstance(item.get("timestamp"), str):
+                try:
+                    item["timestamp"] = datetime.fromisoformat(item["timestamp"])
+                except (ValueError, TypeError):
+                    item["timestamp"] = datetime.now()
+        cli_obj.anomaly_queue._items = anomaly_items
         return True
     except Exception:
         return False

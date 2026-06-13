@@ -159,13 +159,19 @@ class CLIRenderer:
 
     @staticmethod
     def render_anomaly_queue(queue: AnomalyQueue) -> str:
-        pending = queue.get_pending()
-        if not pending:
+        all_items = queue.get_all()
+        if not all_items:
             return ""
+
+        pending = queue.get_pending()
 
         lines = []
         lines.append("")
         lines.append("░░░ 异常队列 ░░░")
+        if pending:
+            lines.append(f"  ⏰ 待处理: {len(pending)} 条  |  累计: {len(all_items)} 条")
+        else:
+            lines.append(f"  ✅ 无需处理  |  累计: {len(all_items)} 条")
         lines.append("")
         table_data = queue.to_table_data()
         lines.append(tabulate(table_data, headers="keys", tablefmt="simple"))

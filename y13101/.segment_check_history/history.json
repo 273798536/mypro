@@ -1,13 +1,13 @@
 [
   {
-    "entry_id": "1bd030aa",
+    "entry_id": "f22af02e",
     "record_id": "MAT-OLD-001",
     "material_name": "氮化镓基片-A",
     "change_type": "import",
     "previous_status": null,
     "new_status": null,
     "operator": "system",
-    "comment": "从 tmpnqe_t2yk.json 第1行导入",
+    "comment": "从 tmpizehvuld.json 第1行导入",
     "previous_data": null,
     "new_data": {
       "status": "pending",
@@ -71,17 +71,17 @@
       },
       "error_message": null
     },
-    "timestamp": "2026-06-12T15:29:11.435809"
+    "timestamp": "2026-06-14T03:57:37.463896"
   },
   {
-    "entry_id": "f6a942f8",
+    "entry_id": "9b8238b9",
     "record_id": "MAT-OLD-002",
     "material_name": "碳化硅衬底-B",
     "change_type": "import",
     "previous_status": null,
     "new_status": null,
     "operator": "system",
-    "comment": "从 tmpnqe_t2yk.json 第2行导入",
+    "comment": "从 tmpizehvuld.json 第2行导入",
     "previous_data": null,
     "new_data": {
       "status": "pending",
@@ -145,17 +145,17 @@
       },
       "error_message": null
     },
-    "timestamp": "2026-06-12T15:29:11.436352"
+    "timestamp": "2026-06-14T03:57:37.464395"
   },
   {
-    "entry_id": "92f30f39",
+    "entry_id": "79865989",
     "record_id": "MAT-OLD-003",
     "material_name": "砷化镓外延-C",
     "change_type": "import",
     "previous_status": null,
     "new_status": null,
     "operator": "system",
-    "comment": "从 tmpnqe_t2yk.json 第3行导入",
+    "comment": "从 tmpizehvuld.json 第3行导入",
     "previous_data": null,
     "new_data": {
       "status": "pending",
@@ -219,10 +219,10 @@
       },
       "error_message": null
     },
-    "timestamp": "2026-06-12T15:29:11.436844"
+    "timestamp": "2026-06-14T03:57:37.464836"
   },
   {
-    "entry_id": "8f476c44",
+    "entry_id": "7ca6c4cf",
     "record_id": "MAT-OLD-001",
     "material_name": "氮化镓基片-A",
     "change_type": "revalidate",
@@ -278,10 +278,10 @@
       "errors": [],
       "suspension_reason": null
     },
-    "timestamp": "2026-06-12T15:29:11.438806"
+    "timestamp": "2026-06-14T03:57:37.466280"
   },
   {
-    "entry_id": "0c2fbf0b",
+    "entry_id": "1dc18eb7",
     "record_id": "MAT-OLD-002",
     "material_name": "碳化硅衬底-B",
     "change_type": "revalidate",
@@ -337,10 +337,10 @@
       "errors": [],
       "suspension_reason": null
     },
-    "timestamp": "2026-06-12T15:29:11.439566"
+    "timestamp": "2026-06-14T03:57:37.466925"
   },
   {
-    "entry_id": "86154aff",
+    "entry_id": "a22b3810",
     "record_id": "MAT-OLD-003",
     "material_name": "砷化镓外延-C",
     "change_type": "revalidate",
@@ -391,10 +391,10 @@
       "errors": [],
       "suspension_reason": "低温段 Y轴方差为零，所有Y值相同"
     },
-    "timestamp": "2026-06-12T15:29:11.440508"
+    "timestamp": "2026-06-14T03:57:37.467648"
   },
   {
-    "entry_id": "afd09cbc",
+    "entry_id": "7dd7698a",
     "record_id": "MAT-OLD-003",
     "material_name": "砷化镓外延-C",
     "change_type": "manual_override",
@@ -468,17 +468,17 @@
       },
       "manual_note": "人工判断已记录，下一班可查历史"
     },
-    "timestamp": "2026-06-12T15:29:11.442015"
+    "timestamp": "2026-06-14T03:57:37.468653"
   },
   {
-    "entry_id": "57dba5a6",
+    "entry_id": "8e1f1227",
     "record_id": "MAT-NEW-004",
     "material_name": "氮化镓基片A",
     "change_type": "import",
     "previous_status": null,
     "new_status": null,
     "operator": "system",
-    "comment": "从 tmpwp1rapqv.json 第1行导入",
+    "comment": "从 tmpnsa1yaws.json 第1行导入",
     "previous_data": null,
     "new_data": {
       "status": "bad",
@@ -542,10 +542,10 @@
       },
       "error_message": "材料名称不匹配: 期望 '氮化镓基片-A', 实际 '氮化镓基片A'。请确认是否为同一材料后手动处理。"
     },
-    "timestamp": "2026-06-12T15:29:11.444302"
+    "timestamp": "2026-06-14T03:57:37.470662"
   },
   {
-    "entry_id": "651fd57c",
+    "entry_id": "b4fe2e02",
     "record_id": "MAT-OLD-001",
     "material_name": "氮化镓基片-A",
     "change_type": "revalidate",
@@ -636,10 +636,10 @@
       "errors": [],
       "suspension_reason": null
     },
-    "timestamp": "2026-06-12T15:29:11.446661"
+    "timestamp": "2026-06-14T03:57:37.472183"
   },
   {
-    "entry_id": "cc8f06a4",
+    "entry_id": "f9de6bd0",
     "record_id": "MAT-OLD-002",
     "material_name": "碳化硅衬底-B",
     "change_type": "revalidate",
@@ -730,10 +730,10 @@
       "errors": [],
       "suspension_reason": null
     },
-    "timestamp": "2026-06-12T15:29:11.448719"
+    "timestamp": "2026-06-14T03:57:37.473339"
   },
   {
-    "entry_id": "c2283afd",
+    "entry_id": "35338882",
     "record_id": "MAT-OLD-003",
     "material_name": "砷化镓外延-C",
     "change_type": "revalidate",
@@ -815,10 +815,10 @@
       "errors": [],
       "suspension_reason": "低温段 Y轴方差为零，所有Y值相同"
     },
-    "timestamp": "2026-06-12T15:29:11.450574"
+    "timestamp": "2026-06-14T03:57:37.474992"
   },
   {
-    "entry_id": "fe728686",
+    "entry_id": "fd5fa393",
     "record_id": "MAT-NEW-004",
     "material_name": "氮化镓基片A",
     "change_type": "revalidate",
@@ -841,6 +841,383 @@
       ],
       "suspension_reason": null
     },
-    "timestamp": "2026-06-12T15:29:11.451934"
+    "timestamp": "2026-06-14T03:57:37.477728"
+  },
+  {
+    "entry_id": "91ad9c4d",
+    "record_id": "MAT-OLD-001",
+    "material_name": "氮化镓基片-A",
+    "change_type": "revalidate",
+    "previous_status": "pass",
+    "new_status": "pass",
+    "operator": "system",
+    "comment": "分段回归校验",
+    "previous_data": {
+      "segment_metrics": {
+        "低温段": {
+          "slope": 0.242,
+          "intercept": 130.11999999999998,
+          "r_squared": 0.999897558477036,
+          "point_count": 4,
+          "x_min": -40.0,
+          "x_max": 20.0,
+          "y_min": 120.5,
+          "y_max": 135.0
+        },
+        "中温段": {
+          "slope": 0.2692,
+          "intercept": 128.85,
+          "r_squared": 0.9999977921533129,
+          "point_count": 4,
+          "x_min": 50.0,
+          "x_max": 200.0,
+          "y_min": 142.3,
+          "y_max": 182.7
+        },
+        "高温段": {
+          "slope": 0.27339999999999537,
+          "intercept": 128.12000000000154,
+          "r_squared": 0.9999967892031605,
+          "point_count": 4,
+          "x_min": 250.0,
+          "x_max": 400.0,
+          "y_min": 196.5,
+          "y_max": 237.5
+        }
+      },
+      "boundary_checks": {
+        "低温段": true,
+        "中温段": true,
+        "高温段": true
+      },
+      "warnings": [],
+      "errors": []
+    },
+    "new_data": {
+      "segment_metrics": {
+        "低温段": {
+          "slope": 0.242,
+          "intercept": 130.11999999999998,
+          "r_squared": 0.999897558477036,
+          "point_count": 4,
+          "x_min": -40.0,
+          "x_max": 20.0,
+          "y_min": 120.5,
+          "y_max": 135.0
+        },
+        "中温段": {
+          "slope": 0.2692,
+          "intercept": 128.85,
+          "r_squared": 0.9999977921533129,
+          "point_count": 4,
+          "x_min": 50.0,
+          "x_max": 200.0,
+          "y_min": 142.3,
+          "y_max": 182.7
+        },
+        "高温段": {
+          "slope": 0.27339999999999537,
+          "intercept": 128.12000000000154,
+          "r_squared": 0.9999967892031605,
+          "point_count": 4,
+          "x_min": 250.0,
+          "x_max": 400.0,
+          "y_min": 196.5,
+          "y_max": 237.5
+        }
+      },
+      "boundary_checks": {
+        "低温段": true,
+        "中温段": true,
+        "高温段": true
+      },
+      "warnings": [],
+      "errors": [],
+      "suspension_reason": null
+    },
+    "timestamp": "2026-06-14T03:58:17.940035"
+  },
+  {
+    "entry_id": "7529f2ce",
+    "record_id": "MAT-OLD-002",
+    "material_name": "碳化硅衬底-B",
+    "change_type": "revalidate",
+    "previous_status": "pass",
+    "new_status": "pass",
+    "operator": "system",
+    "comment": "分段回归校验",
+    "previous_data": {
+      "segment_metrics": {
+        "低温段": {
+          "slope": 0.3685,
+          "intercept": 112.71000000000001,
+          "r_squared": 0.9999889538362406,
+          "point_count": 4,
+          "x_min": -40.0,
+          "x_max": 20.0,
+          "y_min": 98.0,
+          "y_max": 120.1
+        },
+        "中温段": {
+          "slope": 0.37,
+          "intercept": 112.5,
+          "r_squared": 1.0,
+          "point_count": 4,
+          "x_min": 50.0,
+          "x_max": 200.0,
+          "y_min": 131.0,
+          "y_max": 186.5
+        },
+        "高温段": {
+          "slope": 0.37,
+          "intercept": 112.5,
+          "r_squared": 1.0,
+          "point_count": 4,
+          "x_min": 250.0,
+          "x_max": 400.0,
+          "y_min": 205.0,
+          "y_max": 260.5
+        }
+      },
+      "boundary_checks": {
+        "低温段": true,
+        "中温段": true,
+        "高温段": true
+      },
+      "warnings": [],
+      "errors": []
+    },
+    "new_data": {
+      "segment_metrics": {
+        "低温段": {
+          "slope": 0.3685,
+          "intercept": 112.71000000000001,
+          "r_squared": 0.9999889538362406,
+          "point_count": 4,
+          "x_min": -40.0,
+          "x_max": 20.0,
+          "y_min": 98.0,
+          "y_max": 120.1
+        },
+        "中温段": {
+          "slope": 0.37,
+          "intercept": 112.5,
+          "r_squared": 1.0,
+          "point_count": 4,
+          "x_min": 50.0,
+          "x_max": 200.0,
+          "y_min": 131.0,
+          "y_max": 186.5
+        },
+        "高温段": {
+          "slope": 0.37,
+          "intercept": 112.5,
+          "r_squared": 1.0,
+          "point_count": 4,
+          "x_min": 250.0,
+          "x_max": 400.0,
+          "y_min": 205.0,
+          "y_max": 260.5
+        }
+      },
+      "boundary_checks": {
+        "低温段": true,
+        "中温段": true,
+        "高温段": true
+      },
+      "warnings": [],
+      "errors": [],
+      "suspension_reason": null
+    },
+    "timestamp": "2026-06-14T03:58:17.943450"
+  },
+  {
+    "entry_id": "588f2f00",
+    "record_id": "MAT-OLD-003",
+    "material_name": "砷化镓外延-C",
+    "change_type": "revalidate",
+    "previous_status": "suspended",
+    "new_status": "suspended",
+    "operator": "system",
+    "comment": "分段回归校验",
+    "previous_data": {
+      "segment_metrics": {
+        "低温段": {
+          "point_count": 4
+        },
+        "中温段": {
+          "slope": 0.5112000000000023,
+          "intercept": 289.64999999999964,
+          "r_squared": 0.999999387736984,
+          "point_count": 4,
+          "x_min": 50.0,
+          "x_max": 200.0,
+          "y_min": 315.2,
+          "y_max": 391.9
+        },
+        "高温段": {
+          "slope": 0.5112,
+          "intercept": 289.61,
+          "r_squared": 0.999999387736984,
+          "point_count": 4,
+          "x_min": 250.0,
+          "x_max": 400.0,
+          "y_min": 417.4,
+          "y_max": 494.1
+        }
+      },
+      "boundary_checks": {
+        "低温段": false,
+        "中温段": true,
+        "高温段": true
+      },
+      "warnings": [
+        "低温段: 低温段 Y轴方差为零，所有Y值相同"
+      ],
+      "errors": []
+    },
+    "new_data": {
+      "segment_metrics": {
+        "低温段": {
+          "point_count": 4
+        },
+        "中温段": {
+          "slope": 0.5112000000000023,
+          "intercept": 289.64999999999964,
+          "r_squared": 0.999999387736984,
+          "point_count": 4,
+          "x_min": 50.0,
+          "x_max": 200.0,
+          "y_min": 315.2,
+          "y_max": 391.9
+        },
+        "高温段": {
+          "slope": 0.5112,
+          "intercept": 289.61,
+          "r_squared": 0.999999387736984,
+          "point_count": 4,
+          "x_min": 250.0,
+          "x_max": 400.0,
+          "y_min": 417.4,
+          "y_max": 494.1
+        }
+      },
+      "boundary_checks": {
+        "低温段": false,
+        "中温段": true,
+        "高温段": true
+      },
+      "warnings": [
+        "低温段: 低温段 Y轴方差为零，所有Y值相同"
+      ],
+      "errors": [],
+      "suspension_reason": "低温段 Y轴方差为零，所有Y值相同"
+    },
+    "timestamp": "2026-06-14T03:58:17.946540"
+  },
+  {
+    "entry_id": "063b7946",
+    "record_id": "MAT-NEW-004",
+    "material_name": "氮化镓基片A",
+    "change_type": "revalidate",
+    "previous_status": "fail",
+    "new_status": "fail",
+    "operator": "system",
+    "comment": "分段回归校验",
+    "previous_data": {
+      "segment_metrics": {},
+      "boundary_checks": {},
+      "warnings": [],
+      "errors": [
+        "数据质量问题: 材料名称不匹配: 期望 '氮化镓基片-A', 实际 '氮化镓基片A'。请确认是否为同一材料后手动处理。"
+      ]
+    },
+    "new_data": {
+      "segment_metrics": {},
+      "boundary_checks": {},
+      "warnings": [],
+      "errors": [
+        "数据质量问题: 材料名称不匹配: 期望 '氮化镓基片-A', 实际 '氮化镓基片A'。请确认是否为同一材料后手动处理。"
+      ],
+      "suspension_reason": null
+    },
+    "timestamp": "2026-06-14T03:58:17.948946"
+  },
+  {
+    "entry_id": "a84ee416",
+    "record_id": "MAT-OLD-003",
+    "material_name": "砷化镓外延-C",
+    "change_type": "manual_override",
+    "previous_status": "suspended",
+    "new_status": "warning",
+    "operator": "小孟",
+    "comment": "低温段属已知工艺问题，月底前暂不挂起",
+    "previous_data": {
+      "status": "suspended",
+      "warnings": [
+        "低温段: 低温段 Y轴方差为零，所有Y值相同"
+      ],
+      "errors": [],
+      "segment_metrics": {
+        "低温段": {
+          "point_count": 4
+        },
+        "中温段": {
+          "slope": 0.5112000000000023,
+          "intercept": 289.64999999999964,
+          "r_squared": 0.999999387736984,
+          "point_count": 4,
+          "x_min": 50.0,
+          "x_max": 200.0,
+          "y_min": 315.2,
+          "y_max": 391.9
+        },
+        "高温段": {
+          "slope": 0.5112,
+          "intercept": 289.61,
+          "r_squared": 0.999999387736984,
+          "point_count": 4,
+          "x_min": 250.0,
+          "x_max": 400.0,
+          "y_min": 417.4,
+          "y_max": 494.1
+        }
+      }
+    },
+    "new_data": {
+      "status": "warning",
+      "warnings": [
+        "低温段: 低温段 Y轴方差为零，所有Y值相同",
+        "[人工调整] 操作人: 小孟; 原因: 低温段属已知工艺问题，月底前暂不挂起"
+      ],
+      "errors": [],
+      "segment_metrics": {
+        "低温段": {
+          "point_count": 4
+        },
+        "中温段": {
+          "slope": 0.5112000000000023,
+          "intercept": 289.64999999999964,
+          "r_squared": 0.999999387736984,
+          "point_count": 4,
+          "x_min": 50.0,
+          "x_max": 200.0,
+          "y_min": 315.2,
+          "y_max": 391.9
+        },
+        "高温段": {
+          "slope": 0.5112,
+          "intercept": 289.61,
+          "r_squared": 0.999999387736984,
+          "point_count": 4,
+          "x_min": 250.0,
+          "x_max": 400.0,
+          "y_min": 417.4,
+          "y_max": 494.1
+        }
+      },
+      "manual_note": "人工判断已记录，下一班可查历史"
+    },
+    "timestamp": "2026-06-14T03:58:19.170771"
   }
 ]
