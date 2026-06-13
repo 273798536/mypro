@@ -68,6 +68,14 @@ db.exec(`
     operatorRole TEXT NOT NULL DEFAULT '',
     timestamp TEXT NOT NULL DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS reports (
+    id TEXT PRIMARY KEY,
+    content TEXT NOT NULL,
+    configSnapshot TEXT NOT NULL DEFAULT '{}',
+    recordCount INTEGER NOT NULL DEFAULT 0,
+    generatedAt TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 `)
 
 const PHOTO_URL = 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=museum+display+cabinet+light+inspection+photo&image_size=landscape_4_3'

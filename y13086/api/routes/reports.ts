@@ -4,11 +4,12 @@ import db from '../db.js'
 
 const router = Router()
 
-const reports = new Map<string, { id: string; content: string; createdAt: string }>()
-
 router.post('/generate', (req: Request, res: Response): void => {
   try {
-    const { floor, anomalyType, status, startDate, endDate } = req.body
+    const { floor, anomalyType, status, dateFrom, dateTo, includePhotos, includeHistory } = req.body
+
+    const startDate = dateFrom
+    const endDate = dateTo
 
     const conditions: string[] = []
     const params: Record<string, string> = {}
@@ -62,6 +63,7 @@ router.post('/generate', (req: Request, res: Response): void => {
       pending: '待审核',
       reviewed: '已审核',
       rejudged: '已重审',
+      resolved: '已解决',
     }
 
     let md = `# 博物馆展柜灯光时序回放巡检报告\n\n`
@@ -121,11 +123,23 @@ router.post('/generate', (req: Request, res: Response): void => {
         md += `- **⚠️ 脏数据标记：** ${r.dirtyDataNote}\n`
       }
 
-      const history = db.prepare('SELECT * FROM history_entries WHERE recordId = ? ORDER BY timestamp ASC').all(r.id) as Record<string, unknown>[]
-      if (history.length > 0) {
-        md += `- **重审历史：**\n`
-        for (const h of history) {
-          md += `  - ${(h.action as string) === 'rejudge' ? '重审' : (h.action as string)}：由"${h.oldValue}"改为"${h.newValue}"（操作人：${h.operatorName}，原因：${h.reason}，时间：${h.timestamp}）\n`
+      if (includeHistory) {
+        const history = db.prepare('SELECT * FROM history_entries WHERE recordId = ? ORDER BY timestamp ASC').all(r.id) as Record<string, unknown>[]
+        if (history.length > 0) {
+          md += `- **重审历史：**\n`
+          for (const h of history) {
+            md += `  - ${(h.action as string) === 'rejudge' ? '重审' : (h.action as string)}：由"${h.oldValue}"改为"${h.newValue}"（操作人：${h.operatorName}，原因：${h.reason}，时间：${h.timestamp}）\n`
+          }
+        }
+      }
+
+      if (includePhotos) {
+        const photos = db.prepare('SELECT * FROM photos WHERE recordId = ? ORDER BY uploadedAt ASC').all(r.id) as Record<string, unknown>[]
+        if (photos.length > 0) {
+          md += `- **巡检照片：**\n`
+          for (const p of photos) {
+            md += `  - 原始文件：${p.originalFilename}（设备：${p.deviceInfo}，拍摄时间：${p.captureTime}）\n`
+          }
         }
       }
 
@@ -145,14 +159,38 @@ router.post('/generate', (req: Request, res: Response): void => {
     }
 
     const reportId = uuidv4()
-    const report = {
+    const createdAt = new Date().toISOString().replace('T', ' ').slice(0, 19)
+    const configSnapshot = JSON.stringify({
+      floor,
+      anomalyType,
+      status,
+      dateFrom: startDate,
+      dateTo: endDate,
+      includePhotos: !!includePhotos,
+      includeHistory: !!includeHistory,
+    })
+
+    const insertReport = db.prepare(`
+      INSERT INTO reports (id, content, configSnapshot, recordCount, generatedAt)
+      VALUES (@id, @content, @configSnapshot, @recordCount, @generatedAt)
+    `)
+    insertReport.run({
       id: reportId,
       content: md,
-      createdAt: new Date().toISOString().replace('T', ' ').slice(0, 19),
-    }
-    reports.set(reportId, report)
+      configSnapshot,
+      recordCount: totalRecords,
+      generatedAt: createdAt,
+    })
 
-    res.json({ success: true, data: report })
+    res.json({
+      success: true,
+      data: {
+        id: reportId,
+        content: md,
+        createdAt,
+        recordCount: totalRecords,
+      },
+    })
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to generate report' })
   }
@@ -160,14 +198,32 @@ router.post('/generate', (req: Request, res: Response): void => {
 
 router.get('/:id', (req: Request, res: Response): void => {
   try {
-    const report = reports.get(req.params.id)
+    const report = db.prepare('SELECT * FROM reports WHERE id = ?').get(req.params.id) as Record<string, unknown> | undefined
     if (!report) {
       res.status(404).json({ success: false, error: 'Report not found' })
       return
     }
-    res.json({ success: true, data: report })
+    res.json({
+      success: true,
+      data: {
+        id: report.id,
+        content: report.content,
+        createdAt: report.generatedAt,
+        recordCount: report.recordCount,
+        configSnapshot: report.configSnapshot ? JSON.parse(report.configSnapshot as string) : {},
+      },
+    })
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch report' })
+  }
+})
+
+router.get('/', (_req: Request, res: Response): void => {
+  try {
+    const reports = db.prepare('SELECT id, recordCount, generatedAt FROM reports ORDER BY generatedAt DESC LIMIT 50').all() as Record<string, unknown>[]
+    res.json({ success: true, data: reports })
+  } catch (error) {
+    res.status(500).json({ success: false, error: 'Failed to list reports' })
   }
 })
 
