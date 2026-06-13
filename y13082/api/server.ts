@@ -1,20 +1,20 @@
-/**
- * local server entry file, for local development
- */
 import app from './app.js';
 
-/**
- * start server with port
- */
 const PORT = process.env.PORT || 3001;
 
 const server = app.listen(PORT, () => {
   console.log(`Server ready on port ${PORT}`);
 });
 
-/**
- * close server
- */
+server.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use. Kill the old process or wait a moment and retry.`);
+    process.exit(1);
+  } else {
+    throw error;
+  }
+});
+
 process.on('SIGTERM', () => {
   console.log('SIGTERM signal received');
   server.close(() => {
