@@ -24,12 +24,10 @@ router.get('/summary-json', (_req, res) => {
 router.get('/pdf', (_req, res) => {
   const points = db.getAllPoints();
   const overlaps = OverlapDetectService.detectPairs(points);
-  const buffer = ExportService.buildPdfBuffer(
+  const payload = ExportService.buildPdfData(
     points, db.getAllViews(), db.getAllCabinets(), overlaps,
   );
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `attachment; filename="cold-aisle-report-${Date.now()}.pdf"`);
-  res.send(buffer);
+  res.json(payload);
 });
 
 router.post('/png', (req, res) => {

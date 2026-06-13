@@ -2,7 +2,10 @@ import {
   Filter, Image as ImageIcon, Layers, Save, Share2, AlertTriangle, Download,
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
-import { regionLabel } from '@/utils/helpers';
+import { regionLabel, typeLabel, statusLabel } from '@/utils/helpers';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import type { Point, OverlapPair, UnifiedSummary } from '../../shared/types';
 
 const REGIONS = ['A', 'B'] as const;
 const TYPES = [
@@ -141,10 +144,150 @@ export default function TopToolbar() {
 
 function ExportItem({ label, hint, action }: { label: string; hint: string; action: string }) {
   const toggleExportMenu = useAppStore(s => s.toggleExportMenu);
+
+  const buildPdfHtml = (data: {
+    summary: UnifiedSummary;
+    points: Point[];
+    overlaps: OverlapPair[];
+    generatedAt: string;
+  }) => {
+    const pointRows = data.points.map(p => `
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${p.id}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${p.cabinetId}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${typeLabel[p.type]}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${p.withdrawn ? '已撤回' : statusLabel[p.status].text}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${p.remark || '-'}</td>
+      </tr>
+    `).join('');
+
+    const overlapRows = data.overlaps.map(o => `
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${o.severity === 'high' ? '高风险' : o.severity === 'medium' ? '中风险' : '低风险'}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${o.pointIds[0]} ↔ ${o.pointIds[1]}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${o.distance.toFixed(2)} px</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 8px;font-size:12px;">${o.threshold} px</td>
+      </tr>
+    `).join('');
+
+    const talkingPoints = data.summary.talkingPoints.map(tp => `
+      <li style="margin:6px 0;font-size:13px;line-height:1.7;">${tp}</li>
+    `).join('');
+
+    return `
+      <div style="width:750px;padding:40px;background:#ffffff;font-family:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;color:#0f172a;">
+        <div style="text-align:center;border-bottom:2px solid #0ea5e9;padding-bottom:20px;margin-bottom:30px;">
+          <h1 style="font-size:24px;font-weight:700;margin:0 0 8px 0;color:#0f766e;">数据中心冷通道剖面讲解报告</h1>
+          <p style="font-size:12px;color:#64748b;margin:0;">Data Center Cold Aisle Profile Report</p>
+          <p style="font-size:12px;color:#94a3b8;margin:8px 0 0 0;">生成时间：${new Date(data.generatedAt).toLocaleString('zh-CN')}</p>
+        </div>
+
+        <div style="margin-bottom:30px;">
+          <h2 style="font-size:16px;font-weight:700;margin:0 0 12px 0;color:#0f766e;border-left:4px solid #0ea5e9;padding-left:10px;">执行摘要</h2>
+          <p style="font-size:13px;line-height:1.8;color:#334155;margin:0;background:#f0f9ff;padding:16px;border-radius:6px;border:1px solid #bae6fd;">
+            ${data.summary.reportSummary}
+          </p>
+        </div>
+
+        <div style="margin-bottom:30px;">
+          <h2 style="font-size:16px;font-weight:700;margin:0 0 12px 0;color:#0f766e;border-left:4px solid #0ea5e9;padding-left:10px;">讲解主线</h2>
+          <ol style="margin:0;padding-left:24px;">
+            ${talkingPoints}
+          </ol>
+        </div>
+
+        <div style="margin-bottom:30px;">
+          <h2 style="font-size:16px;font-weight:700;margin:0 0 12px 0;color:#0f766e;border-left:4px solid #0ea5e9;padding-left:10px;">点位清单</h2>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:#f1f5f9;">
+                <th style="border:1px solid #cbd5e1;padding:8px;font-size:12px;text-align:left;">点位ID</th>
+                <th style="border:1px solid #cbd5e1;padding:8px;font-size:12px;text-align:left;">机柜</th>
+                <th style="border:1px solid #cbd5e1;padding:8px;font-size:12px;text-align:left;">类型</th>
+                <th style="border:1px solid #cbd5e1;padding:8px;font-size:12px;text-align:left;">状态</th>
+                <th style="border:1px solid #cbd5e1;padding:8px;font-size:12px;text-align:left;">备注</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pointRows}
+            </tbody>
+          </table>
+        </div>
+
+        ${data.overlaps.length > 0 ? `
+        <div style="margin-bottom:30px;">
+          <h2 style="font-size:16px;font-weight:700;margin:0 0 12px 0;color:#dc2626;border-left:4px solid #f87171;padding-left:10px;">重叠告警（${data.overlaps.length}）</h2>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead>
+              <tr style="background:#fef2f2;">
+                <th style="border:1px solid #fca5a5;padding:8px;font-size:12px;text-align:left;">风险等级</th>
+                <th style="border:1px solid #fca5a5;padding:8px;font-size:12px;text-align:left;">重叠点位</th>
+                <th style="border:1px solid #fca5a5;padding:8px;font-size:12px;text-align:left;">实际距离</th>
+                <th style="border:1px solid #fca5a5;padding:8px;font-size:12px;text-align:left;">阈值</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${overlapRows}
+            </tbody>
+          </table>
+        </div>
+        ` : ''}
+
+        <div style="margin-top:40px;padding-top:20px;border-top:1px dashed #cbd5e1;text-align:center;">
+          <p style="font-size:11px;color:#94a3b8;margin:0;">本报告由冷通道剖面讲解系统自动生成 · 三栏口径统一</p>
+        </div>
+      </div>
+    `;
+  };
+
+  const exportPdf = async () => {
+    const res = await fetch('/api/export/pdf');
+    const data = await res.json();
+
+    const container = document.createElement('div');
+    container.style.position = 'fixed';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.innerHTML = buildPdfHtml(data);
+    document.body.appendChild(container);
+
+    try {
+      const canvas = await html2canvas(container, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = pageWidth - 80;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = 40;
+
+      pdf.addImage(imgData, 'PNG', 40, position, imgWidth, imgHeight);
+      heightLeft -= (pageHeight - 80);
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight + 40;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 40, position, imgWidth, imgHeight);
+        heightLeft -= (pageHeight - 80);
+      }
+
+      pdf.save(`冷通道剖面讲解报告-${Date.now()}.pdf`);
+    } finally {
+      document.body.removeChild(container);
+    }
+  };
+
   const handle = async () => {
     toggleExportMenu();
     if (action === 'pdf') {
-      window.open('/api/export/pdf', '_blank');
+      await exportPdf();
     } else if (action === 'json') {
       const res = await fetch('/api/export/summary-json');
       const data = await res.json();
