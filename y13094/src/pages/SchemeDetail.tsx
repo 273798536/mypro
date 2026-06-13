@@ -15,6 +15,14 @@ const CONCLUSION_COLORS: Record<ConclusionStatus, string> = {
   revised: 'bg-[var(--color-accent)]',
 };
 
+function notify(msg: string) {
+  try {
+    window.alert(msg);
+  } catch {
+    console.log(msg);
+  }
+}
+
 export default function SchemeDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -22,7 +30,9 @@ export default function SchemeDetail() {
   const { currentDetail, detailLoading, fetchDetail, updateNote, openRejudgeModal, exportMarkdown } = useSchemeStore();
   const [noteValue, setNoteValue] = useState('');
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [activeTab, setActiveTab] = useState<'timeline' | 'history'>('timeline');
+  const [noteSavedFlash, setNoteSavedFlash] = useState(false);
 
   useEffect(() => {
     if (id) fetchDetail(id);
@@ -37,32 +47,43 @@ export default function SchemeDetail() {
   const handleSaveNote = async () => {
     if (!id || noteValue === currentDetail?.supplementaryNote) return;
     setSaving(true);
-    await updateNote(id, noteValue, '老何');
-    setSaving(false);
+    try {
+      await updateNote(id, noteValue, '老何');
+      setNoteSavedFlash(true);
+      setTimeout(() => setNoteSavedFlash(false), 1500);
+    } catch {
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleExportSingle = async () => {
     if (!id) return;
-    const result = await exportMarkdown([id]);
-    const blob = new Blob([result.content], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = result.filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const goBackToList = () => {
-    const filterStr = searchParams.get('f');
-    if (filterStr) {
-      navigate(`/?f=${filterStr}`);
-    } else {
-      navigate('/');
+    setExporting(true);
+    try {
+      const result = await exportMarkdown([id]);
+      const blob = new Blob([result.content], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = result.filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+    } finally {
+      setExporting(false);
     }
   };
 
-  const filterSummary = searchParams.get('f');
+  const goBackToList = () => {
+    const params = new URLSearchParams();
+    for (const [k, v] of searchParams.entries()) {
+      if (k !== '_ctx') params.set(k, v);
+    }
+    navigate(`/?${params.toString()}`);
+  };
+
+  const filterSummary = searchParams.get('_ctx');
 
   if (detailLoading || !currentDetail) {
     return (
@@ -94,10 +115,11 @@ export default function SchemeDetail() {
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportSingle}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-[var(--color-border)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-md transition-colors"
+            disabled={exporting}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs border border-[var(--color-border)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={14} />
-            导出
+            <Download size={14} className={exporting ? 'animate-spin' : ''} />
+            {exporting ? '导出中...' : '导出'}
           </button>
           <button
             onClick={() => openRejudgeModal(d.id)}
@@ -165,7 +187,10 @@ export default function SchemeDetail() {
                 placeholder="填写后补备注，与最终结论联动..."
                 className="w-full bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg px-3 py-2 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:border-[var(--color-accent)] transition-colors resize-none"
               />
-              <div className="flex justify-end mt-2">
+              <div className="flex items-center justify-end gap-2 mt-2">
+                {noteSavedFlash && (
+                  <span className="text-xs text-[var(--color-success)]">✓ 已保存</span>
+                )}
                 <button
                   onClick={handleSaveNote}
                   disabled={noteValue === d.supplementaryNote || saving}

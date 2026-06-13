@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Download, HardHat } from 'lucide-react';
 import { useSchemeStore } from '@/hooks/useSchemeStore';
@@ -34,7 +34,10 @@ export default function SchemeList() {
   const { list, loading, fetchList, exportMarkdown, filters, setFilters, resetFilters } = useSchemeStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [exporting, setExporting] = useState(false);
   const initialized = useRef(false);
+  const filtersRestored = useRef(false);
+  const filtersDirty = useRef(false);
 
   useEffect(() => {
     if (!initialized.current) {
@@ -42,16 +45,33 @@ export default function SchemeList() {
       const hasAny = Object.values(fromUrl).some(v => v !== '' && v !== undefined);
       if (hasAny) {
         setFilters(fromUrl);
+        filtersRestored.current = true;
       }
       initialized.current = true;
     }
   }, [searchParams]);
 
   useEffect(() => {
+    if (!initialized.current) return;
+    if (filtersRestored.current) {
+      filtersRestored.current = false;
+      filtersDirty.current = false;
+      fetchList();
+      return;
+    }
+    if (filtersDirty.current) {
+      filtersDirty.current = false;
+    }
+  }, [filters.bridgeTunnelName, filters.schemeType, filters.conclusion, filters.hasGap, filters.dateFrom, filters.dateTo]);
+
+  useEffect(() => {
+    if (!initialized.current) return;
+    if (filtersRestored.current || filtersDirty.current) return;
     fetchList();
   }, []);
 
   useEffect(() => {
+    if (!initialized.current) return;
     const q = filtersToQuery(filters);
     setSearchParams(q, { replace: true });
   }, [filters.bridgeTunnelName, filters.schemeType, filters.conclusion, filters.hasGap, filters.dateFrom, filters.dateTo]);
@@ -66,14 +86,19 @@ export default function SchemeList() {
     if (f.dateFrom) cleanFilters.dateFrom = f.dateFrom;
     if (f.dateTo) cleanFilters.dateTo = f.dateTo;
 
-    const result = await exportMarkdown(undefined, Object.keys(cleanFilters).length > 0 ? cleanFilters as any : undefined);
-    const blob = new Blob([result.content], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = result.filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    setExporting(true);
+    try {
+      const result = await exportMarkdown(undefined, Object.keys(cleanFilters).length > 0 ? cleanFilters as any : undefined);
+      const blob = new Blob([result.content], { type: 'text/markdown;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = result.filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -87,10 +112,11 @@ export default function SchemeList() {
           </div>
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-md transition-colors"
+            disabled={exporting || loading}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-[var(--color-surface)] border border-[var(--color-border)] hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Download size={16} />
-            导出报告
+            <Download size={16} className={exporting ? 'animate-spin' : ''} />
+            {exporting ? '导出中...' : '导出报告'}
           </button>
         </div>
         <FilterSummaryBar />

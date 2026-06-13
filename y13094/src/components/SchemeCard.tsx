@@ -39,9 +39,17 @@ export default function SchemeCard({ item }: SchemeCardProps) {
   const { filters } = useSchemeStore();
 
   const handleClick = () => {
+    const params = new URLSearchParams();
+    if (filters.bridgeTunnelName) params.set('bridgeTunnelName', filters.bridgeTunnelName);
+    if (filters.schemeType) params.set('schemeType', filters.schemeType);
+    if (filters.conclusion) params.set('conclusion', filters.conclusion);
+    if (filters.hasGap) params.set('hasGap', filters.hasGap);
+    if (filters.dateFrom) params.set('dateFrom', filters.dateFrom);
+    if (filters.dateTo) params.set('dateTo', filters.dateTo);
     const summary = buildFilterSummary(filters);
-    const query = summary ? `?f=${encodeURIComponent(summary)}` : '';
-    navigate(`/scheme/${item.id}${query}`);
+    if (summary) params.set('_ctx', summary);
+    const query = params.toString();
+    navigate(`/scheme/${item.id}${query ? `?${query}` : ''}`);
   };
 
   return (

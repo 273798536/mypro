@@ -16,11 +16,20 @@ export default function RejudgeModal() {
   const handleSubmit = async () => {
     if (!reason.trim()) return;
     setSubmitting(true);
-    await rejudge(rejudgeTargetId, newConclusion, reason, operator);
-    await fetchList();
-    setSubmitting(false);
-    setReason('');
-    closeRejudgeModal();
+    try {
+      await rejudge(rejudgeTargetId, newConclusion, reason, operator);
+      await fetchList();
+      setReason('');
+      closeRejudgeModal();
+      try {
+        window.alert('改判已生效');
+      } catch {
+        /* ignore */
+      }
+    } catch {
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleClose = () => {

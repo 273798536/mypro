@@ -12,10 +12,16 @@ const router = Router();
 
 function buildMarkdown(schemes: Record<string, unknown>[], filters: Record<string, string> | null): string {
   const lines: string[] = [];
+  const gapCount = schemes.filter(s => !!s.has_gap).length;
 
   lines.push('# 桥隧检修平台方案比选报告');
   lines.push('');
   lines.push(`生成时间：${new Date().toLocaleString('zh-CN')}`);
+  lines.push('');
+  lines.push(`- 方案总数：**${schemes.length}** 条`);
+  if (gapCount > 0) {
+    lines.push(`- ⚠️ 其中含时间轴缺段：**${gapCount}** 条`);
+  }
   lines.push('');
 
   if (filters && Object.keys(filters).length > 0) {
@@ -32,13 +38,14 @@ function buildMarkdown(schemes: Record<string, unknown>[], filters: Record<strin
     lines.push('');
   }
 
-  lines.push(`## 方案列表（共 ${schemes.length} 条）`);
+  lines.push(`## 方案明细（共 ${schemes.length} 条）`);
   lines.push('');
 
   for (const s of schemes) {
     const conclusion = s.conclusion as string;
     const hasGap = !!s.has_gap;
-    lines.push(`### ${s.scheme_no} — ${s.bridge_tunnel_name}`);
+    const gapTag = hasGap ? ' ⚠️【缺段】' : '';
+    lines.push(`### ${s.scheme_no} — ${s.bridge_tunnel_name}${gapTag}`);
     lines.push('');
     lines.push(`| 字段 | 值 |`);
     lines.push(`|------|-----|`);
@@ -48,6 +55,9 @@ function buildMarkdown(schemes: Record<string, unknown>[], filters: Record<strin
     lines.push(`| 缺段标记 | ${hasGap ? '⚠️ 存在缺段' : '无'} |`);
     if (s.supplementary_note) lines.push(`| 后补备注 | ${s.supplementary_note} |`);
     if (s.final_conclusion) lines.push(`| 最终结论 | ${s.final_conclusion} |`);
+    if (s.supplementary_note && s.final_conclusion) {
+      lines.push(`| 备注→结论联动 | 后补备注"${s.supplementary_note}" → 结论"${s.final_conclusion}" |`);
+    }
     lines.push(`| 创建时间 | ${s.created_at} |`);
     lines.push(`| 更新时间 | ${s.updated_at} |`);
     lines.push('');
@@ -66,11 +76,29 @@ function buildMarkdown(schemes: Record<string, unknown>[], filters: Record<strin
       }
       lines.push('');
     }
+
+    const history = db.prepare('SELECT * FROM history_entries WHERE scheme_id = ? ORDER BY created_at').all(s.id) as Record<string, unknown>[];
+    if (history.length > 0) {
+      lines.push('**历史记录：**');
+      lines.push('');
+      for (const h of history) {
+        const op = h.operator ? `（操作人：${h.operator}）` : '';
+        const reason = h.reason ? ` — 原因：${h.reason}` : '';
+        if (h.action === 'conclusion_change') {
+          lines.push(`- ${h.created_at} 改判：${h.old_value} → ${h.new_value}${op}${reason}`);
+        } else if (h.action === 'note_update') {
+          lines.push(`- ${h.created_at} 更新备注：${h.new_value}${op}${reason}`);
+        } else {
+          lines.push(`- ${h.created_at} ${h.new_value}${op}`);
+        }
+      }
+      lines.push('');
+    }
   }
 
   lines.push('---');
   lines.push('');
-  lines.push('*本报告由桥隧检修平台方案比选工具自动生成*');
+  lines.push('*本报告由桥隧检修平台方案比选工具自动生成，与页面展示状态一致*');
 
   return lines.join('\n');
 }
