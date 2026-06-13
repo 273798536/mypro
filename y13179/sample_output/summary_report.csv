@@ -1,0 +1,5 @@
+row_index,timestamp,device_id,raw_value,raw_unit,normalized_value,normalized_unit,speckle_contrast,speckle_size_um,version,remarks_count,screenshots_count,unit_conversion_note
+1,2026-06-10 09:15:00,SPK-A01,5.2,mW,5.2,mW,0.3820,23.4000,v2,2,2,
+2,2026-06-10 10:02:00,SPK-A02,5200.0,uW,5.2,mW,0.4010,22.8000,v1,1,1,[归一化结果] 5200.0 uW  →  5.2 mW
+3,2026-06-10 11:30:00,SPK-A01,5.1,mW,5.1,mW,0.3780,23.1000,v1,1,1,
+4,2026-06-10 13:05:00,SPK-A03,0.0065,W,6.5,mW,0.4150,24.0000,v1,0,1,[归一化结果] 0.0065 W  →  6.5 mW
