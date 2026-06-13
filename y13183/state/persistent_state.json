@@ -1,0 +1,206 @@
+{
+  "version": "1.0",
+  "last_run_id": "RUN-20260614-021849-4dbb82",
+  "last_run_timestamp": "2026-06-14 02:18:49",
+  "current_status": {
+    "CT-002-LWT": "本次检出7项异常, 均误差-0.29%, 采样缺口1处"
+  },
+  "historical_notes": [
+    {
+      "run_id": "RUN-20260614-021727-389960",
+      "timestamp": "2026-06-14 02:17:27",
+      "content": "[2026-06-10 13:15:00] 老何: 13点低流量确认是冷却塔切换备用水泵，瞬时流量跌破下限15分钟，不是设备故障。; [2026-06-10 16:30:00] 老何: 16点通讯中断是厂区网络切光缆，数据缺口1小时，需用旁通阀人工读数补填。; [2026-06-10 20:05:00] 老何: 19点高流量是车间赶货连开三台塔，流量计读数偏高5%左右，参考阀后压差修正。"
+    },
+    {
+      "run_id": "RUN-20260614-021849-4dbb82",
+      "timestamp": "2026-06-14 02:18:49",
+      "content": "[2026-06-10 13:15:00] 老何: 13点低流量确认是冷却塔切换备用水泵，瞬时流量跌破下限15分钟，不是设备故障。; [2026-06-10 16:30:00] 老何: 16点通讯中断是厂区网络切光缆，数据缺口1小时，需用旁通阀人工读数补填。; [2026-06-10 20:05:00] 老何: 19点高流量是车间赶货连开三台塔，流量计读数偏高5%左右，参考阀后压差修正。"
+    }
+  ],
+  "anomaly_queue": [
+    {
+      "anomaly_id": "ANOM-4dbb82-001",
+      "device_id": "CT-002-LWT",
+      "timestamp": "2026-06-10 08:00:00",
+      "category": "漂移偏差",
+      "description": "漂移偏差",
+      "measured_value": 420.5,
+      "expected_value": 418.2,
+      "error_pct": -2.13,
+      "status": "待处理",
+      "assignee": "老何",
+      "boundary_hint": "正常量程",
+      "action_next": "1. 执行零点校准程序(参考设备手册第4.2节)；2. 对比近30天漂移趋势，若>3%提前送检；3. 校准后运行1小时验证读数。",
+      "history": [
+        {
+          "time": "2026-06-14 02:18:49",
+          "event": "自动检出, 分类=漂移偏差"
+        }
+      ]
+    },
+    {
+      "anomaly_id": "ANOM-4dbb82-002",
+      "device_id": "CT-002-LWT",
+      "timestamp": "2026-06-10 11:00:00",
+      "category": "漂移偏差",
+      "description": "漂移偏差",
+      "measured_value": 688.3,
+      "expected_value": 675.0,
+      "error_pct": 1.6,
+      "status": "待处理",
+      "assignee": "老何",
+      "boundary_hint": "正常量程",
+      "action_next": "1. 执行零点校准程序(参考设备手册第4.2节)；2. 对比近30天漂移趋势，若>3%提前送检；3. 校准后运行1小时验证读数。",
+      "history": [
+        {
+          "time": "2026-06-14 02:18:49",
+          "event": "自动检出, 分类=漂移偏差"
+        }
+      ]
+    },
+    {
+      "anomaly_id": "ANOM-4dbb82-003",
+      "device_id": "CT-002-LWT",
+      "timestamp": "2026-06-10 12:00:00",
+      "category": "漂移偏差",
+      "description": "漂移偏差",
+      "measured_value": 735.7,
+      "expected_value": 720.4,
+      "error_pct": 2.31,
+      "status": "待处理",
+      "assignee": "老何",
+      "boundary_hint": "正常量程",
+      "action_next": "1. 执行零点校准程序(参考设备手册第4.2节)；2. 对比近30天漂移趋势，若>3%提前送检；3. 校准后运行1小时验证读数。",
+      "history": [
+        {
+          "time": "2026-06-14 02:18:49",
+          "event": "自动检出, 分类=漂移偏差"
+        }
+      ]
+    },
+    {
+      "anomaly_id": "ANOM-4dbb82-004",
+      "device_id": "CT-002-LWT",
+      "timestamp": "2026-06-10 13:00:00",
+      "category": "校准偏差",
+      "description": "边界校准偏差",
+      "measured_value": 18.5,
+      "expected_value": 18.5,
+      "error_pct": 0,
+      "status": "待处理",
+      "assignee": "老何",
+      "boundary_hint": "低端边界(0.7%量程)",
+      "action_next": "1. 取出对应边界样本(边界样本.json)；2. 按修正系数重新计算该点误差；3. 若修正后仍超限，联系厂家扩大标定区间。",
+      "history": [
+        {
+          "time": "2026-06-14 02:18:49",
+          "event": "自动检出, 分类=校准偏差"
+        }
+      ]
+    },
+    {
+      "anomaly_id": "ANOM-4dbb82-005",
+      "device_id": "CT-002-LWT",
+      "timestamp": "2026-06-10 16:00:00",
+      "category": "采样缺口",
+      "description": "采样缺口",
+      "measured_value": 0,
+      "expected_value": 0,
+      "error_pct": 0,
+      "status": "待处理",
+      "assignee": "老何",
+      "boundary_hint": "无数据",
+      "action_next": "1. 确认通讯是否恢复，查看网络日志；2. 找到对应时段旁通阀人工记录或压差读数；3. 若无人工记录，用前后1小时数据线性插值补填；4. 在系统备注中标注补填来源。",
+      "history": [
+        {
+          "time": "2026-06-14 02:18:49",
+          "event": "自动检出, 分类=采样缺口"
+        }
+      ]
+    },
+    {
+      "anomaly_id": "ANOM-4dbb82-006",
+      "device_id": "CT-002-LWT",
+      "timestamp": "2026-06-10 18:00:00",
+      "category": "漂移偏差",
+      "description": "漂移偏差",
+      "measured_value": 412.7,
+      "expected_value": 410.5,
+      "error_pct": -1.94,
+      "status": "待处理",
+      "assignee": "老何",
+      "boundary_hint": "正常量程",
+      "action_next": "1. 执行零点校准程序(参考设备手册第4.2节)；2. 对比近30天漂移趋势，若>3%提前送检；3. 校准后运行1小时验证读数。",
+      "history": [
+        {
+          "time": "2026-06-14 02:18:49",
+          "event": "自动检出, 分类=漂移偏差"
+        }
+      ]
+    },
+    {
+      "anomaly_id": "ANOM-4dbb82-007",
+      "device_id": "CT-002-LWT",
+      "timestamp": "2026-06-10 19:00:00",
+      "category": "校准偏差",
+      "description": "边界校准偏差",
+      "measured_value": 1158.0,
+      "expected_value": 1105.0,
+      "error_pct": 0.33,
+      "status": "待处理",
+      "assignee": "老何",
+      "boundary_hint": "高端边界(96.5%量程)",
+      "action_next": "1. 取出对应边界样本(边界样本.json)；2. 按修正系数重新计算该点误差；3. 若修正后仍超限，联系厂家扩大标定区间。",
+      "history": [
+        {
+          "time": "2026-06-14 02:18:49",
+          "event": "自动检出, 分类=校准偏差"
+        }
+      ]
+    }
+  ],
+  "parameter_history": [
+    {
+      "run_id": "RUN-20260614-021727-389960",
+      "timestamp": "2026-06-14 02:17:27",
+      "params": {
+        "error_threshold_pct": 2.0,
+        "drift_threshold_pct": 1.5,
+        "env_temp_correction": 0.08,
+        "env_humidity_correction": 0.03,
+        "boundary_low_correction": 0.94,
+        "boundary_high_correction": 0.95,
+        "sampling_gap_minutes": 45
+      }
+    },
+    {
+      "run_id": "RUN-20260614-021849-4dbb82",
+      "timestamp": "2026-06-14 02:18:49",
+      "params": {
+        "error_threshold_pct": 1.5,
+        "drift_threshold_pct": 1.5,
+        "env_temp_correction": 0.08,
+        "env_humidity_correction": 0.03,
+        "boundary_low_correction": 0.92,
+        "boundary_high_correction": 0.95,
+        "sampling_gap_minutes": 45
+      }
+    }
+  ],
+  "report_history": [
+    {
+      "run_id": "RUN-20260614-021727-389960",
+      "timestamp": "2026-06-14 02:17:27",
+      "report_md": "/Users/mac/pro/solo/workspaces/y13183/reports/RUN-20260614-021727-389960_report.md",
+      "bundle_json": "/Users/mac/pro/solo/workspaces/y13183/output/RUN-20260614-021727-389960_bundle.json",
+      "anomaly_queue": "/Users/mac/pro/solo/workspaces/y13183/output/RUN-20260614-021727-389960_anomaly_queue.txt"
+    },
+    {
+      "run_id": "RUN-20260614-021849-4dbb82",
+      "timestamp": "2026-06-14 02:18:49",
+      "report_md": "/Users/mac/pro/solo/workspaces/y13183/reports/RUN-20260614-021849-4dbb82_report.md",
+      "bundle_json": "/Users/mac/pro/solo/workspaces/y13183/output/RUN-20260614-021849-4dbb82_bundle.json",
+      "anomaly_queue": "/Users/mac/pro/solo/workspaces/y13183/output/RUN-20260614-021849-4dbb82_anomaly_queue.txt"
+    }
+  ]
+}

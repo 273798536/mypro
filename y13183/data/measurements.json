@@ -1,0 +1,14 @@
+[
+  {"timestamp": "2026-06-10 08:00:00", "device_id": "CT-002-LWT", "raw_value": 420.5, "reference_value": 418.2, "temperature_c": 28.5, "humidity_pct": 62, "pressure_kpa": 158.2, "is_boundary": false, "flag": "", "operator": "张工"},
+  {"timestamp": "2026-06-10 09:00:00", "device_id": "CT-002-LWT", "raw_value": 515.0, "reference_value": 510.3, "temperature_c": 29.1, "humidity_pct": 60, "pressure_kpa": 157.8, "is_boundary": false, "flag": "", "operator": "张工"},
+  {"timestamp": "2026-06-10 10:00:00", "device_id": "CT-002-LWT", "raw_value": 602.8, "reference_value": 595.1, "temperature_c": 30.4, "humidity_pct": 58, "pressure_kpa": 156.5, "is_boundary": false, "flag": "", "operator": "张工"},
+  {"timestamp": "2026-06-10 11:00:00", "device_id": "CT-002-LWT", "raw_value": 688.3, "reference_value": 675.0, "temperature_c": 31.8, "humidity_pct": 55, "pressure_kpa": 155.1, "is_boundary": false, "flag": "", "operator": "张工"},
+  {"timestamp": "2026-06-10 12:00:00", "device_id": "CT-002-LWT", "raw_value": 735.7, "reference_value": 720.4, "temperature_c": 32.6, "humidity_pct": 53, "pressure_kpa": 154.2, "is_boundary": false, "flag": "", "operator": "李工"},
+  {"timestamp": "2026-06-10 13:00:00", "device_id": "CT-002-LWT", "raw_value": 18.5, "reference_value": null, "temperature_c": 27.2, "humidity_pct": 65, "pressure_kpa": 160.0, "is_boundary": true, "flag": "LOW_RANGE", "operator": "李工"},
+  {"timestamp": "2026-06-10 14:00:00", "device_id": "CT-002-LWT", "raw_value": 588.0, "reference_value": 579.2, "temperature_c": 31.0, "humidity_pct": 56, "pressure_kpa": 155.8, "is_boundary": false, "flag": "", "operator": "李工"},
+  {"timestamp": "2026-06-10 15:00:00", "device_id": "CT-002-LWT", "raw_value": 575.6, "reference_value": 572.1, "temperature_c": 30.2, "humidity_pct": 57, "pressure_kpa": 156.3, "is_boundary": false, "flag": "", "operator": "李工"},
+  {"timestamp": "2026-06-10 16:00:00", "device_id": "CT-002-LWT", "raw_value": null, "reference_value": null, "temperature_c": null, "humidity_pct": null, "pressure_kpa": null, "is_boundary": false, "flag": "NO_DATA", "operator": ""},
+  {"timestamp": "2026-06-10 17:00:00", "device_id": "CT-002-LWT", "raw_value": 498.3, "reference_value": 495.0, "temperature_c": 29.6, "humidity_pct": 59, "pressure_kpa": 157.0, "is_boundary": false, "flag": "", "operator": "张工"},
+  {"timestamp": "2026-06-10 18:00:00", "device_id": "CT-002-LWT", "raw_value": 412.7, "reference_value": 410.5, "temperature_c": 28.8, "humidity_pct": 61, "pressure_kpa": 158.0, "is_boundary": false, "flag": "", "operator": "张工"},
+  {"timestamp": "2026-06-10 19:00:00", "device_id": "CT-002-LWT", "raw_value": 1158.0, "reference_value": 1105.0, "temperature_c": 33.5, "humidity_pct": 50, "pressure_kpa": 152.3, "is_boundary": true, "flag": "HIGH_RANGE", "operator": "张工"}
+]

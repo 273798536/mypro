@@ -1,0 +1,32 @@
+{
+  "sample_id": "BORDER-CT002-20260610",
+  "device_id": "CT-002-LWT",
+  "description": "2号冷却塔水滴流量计高低端边界样本记录",
+  "samples": [
+    {
+      "timestamp": "2026-06-10 13:00:00",
+      "point": "低端边界",
+      "raw_value": 18.5,
+      "sensor_range_min": 10.0,
+      "sensor_range_max": 1200.0,
+      "pct_of_range": 0.71,
+      "context": "备用水泵切换时瞬时流量，水滴计数器采样率低于1次/秒，误差开始放大。",
+      "correction_factor": 0.94,
+      "correction_note": "按厂家说明书<20m3/h用旁通压差反推，修正系数取0.94。"
+    },
+    {
+      "timestamp": "2026-06-10 19:00:00",
+      "point": "高端边界",
+      "raw_value": 1158.0,
+      "sensor_range_min": 10.0,
+      "sensor_range_max": 1200.0,
+      "pct_of_range": 96.5,
+      "context": "三塔并联满负荷运行，涡轮转速接近机械上限，水滴粘连计数偏高。",
+      "correction_factor": 0.95,
+      "correction_note": "同型号设备比对数据，>1100m3/h段普遍偏高4-6%，取中间修正系数0.95。"
+    }
+  ],
+  "source": "老何6月10日晚班手写记录，6月11日补录系统",
+  "operator": "老何",
+  "verified": false
+}

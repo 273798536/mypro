@@ -1,0 +1,5 @@
+[
+  {"note_id": "N-001", "timestamp": "2026-06-10 13:15:00", "device_id": "CT-002-LWT", "author": "老何", "content": "13点低流量确认是冷却塔切换备用水泵，瞬时流量跌破下限15分钟，不是设备故障。", "linked_alarm_id": "ALM-2026-0610-001"},
+  {"note_id": "N-002", "timestamp": "2026-06-10 16:30:00", "device_id": "CT-002-LWT", "author": "老何", "content": "16点通讯中断是厂区网络切光缆，数据缺口1小时，需用旁通阀人工读数补填。", "linked_alarm_id": "ALM-2026-0610-002"},
+  {"note_id": "N-003", "timestamp": "2026-06-10 20:05:00", "device_id": "CT-002-LWT", "author": "老何", "content": "19点高流量是车间赶货连开三台塔，流量计读数偏高5%左右，参考阀后压差修正。", "linked_alarm_id": "ALM-2026-0610-003"}
+]

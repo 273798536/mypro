@@ -1,0 +1,5 @@
+[
+  {"alarm_id": "ALM-2026-0610-001", "timestamp": "2026-06-10 13:05:22", "device_id": "CT-002-LWT", "alarm_code": "FLOW_LOW", "alarm_desc": "流量低于测量下限，水滴计数器可能漏计", "severity": "警告", "acknowledged": true, "ack_operator": "老何"},
+  {"alarm_id": "ALM-2026-0610-002", "timestamp": "2026-06-10 16:02:08", "device_id": "CT-002-LWT", "alarm_code": "COMMS_LOST", "alarm_desc": "设备通讯中断1小时，数据缺失", "severity": "严重", "acknowledged": true, "ack_operator": "老何"},
+  {"alarm_id": "ALM-2026-0610-003", "timestamp": "2026-06-10 19:11:45", "device_id": "CT-002-LWT", "alarm_code": "FLOW_HIGH", "alarm_desc": "流量接近上限，涡轮转速超过校准区间", "severity": "警告", "acknowledged": false, "ack_operator": ""}
+]
