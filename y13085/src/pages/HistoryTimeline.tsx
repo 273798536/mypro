@@ -31,7 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 export default function HistoryTimeline() {
-  const { timelineEvents, pendingConfirms, lightObjects } = useSceneStore();
+  const { timelineEvents, pendingConfirms, lightObjects, materials } = useSceneStore();
 
   const sorted = [...timelineEvents].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -60,7 +60,11 @@ export default function HistoryTimeline() {
           <div className="w-px h-5 bg-zinc-800/60" />
           <h1 className="text-base font-serif text-zinc-100">历史时间线</h1>
         </div>
-        <ExportButton events={timelineEvents} />
+        <ExportButton
+          events={timelineEvents}
+          materials={materials}
+          pendingConfirms={pendingConfirms}
+        />
       </header>
 
       <div className="max-w-4xl mx-auto px-6 py-8">

@@ -1,7 +1,14 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { FilterState, Viewpoint, PendingConfirm } from "../data/types";
-import { lightObjects, materials, showcases, timelineEvents, pendingConfirms as initialPending } from "../data/mockData";
+import type { Material, TimelineEvent, Showcase, LightObject } from "../data/types";
+import {
+  lightObjects as initialLights,
+  materials as initialMaterials,
+  showcases as initialShowcases,
+  timelineEvents as initialEvents,
+  pendingConfirms as initialPending,
+} from "../data/mockData";
 
 interface SceneStore {
   selectedObjectId: string | null;
@@ -18,18 +25,21 @@ interface SceneStore {
   showPendingModal: boolean;
   currentPendingId: string | null;
   setShowPendingModal: (show: boolean, id?: string | null) => void;
-  lightObjects: typeof lightObjects;
-  materials: typeof materials;
-  showcases: typeof showcases;
-  timelineEvents: typeof timelineEvents;
-  addMaterial: (material: typeof materials[0]) => void;
-  addTimelineEvent: (event: typeof timelineEvents[0]) => void;
-  updateMaterial: (id: string, updates: Partial<typeof materials[0]>) => void;
+  lightObjects: LightObject[];
+  materials: Material[];
+  showcases: Showcase[];
+  timelineEvents: TimelineEvent[];
+  addMaterial: (material: Material) => void;
+  addTimelineEvent: (event: TimelineEvent) => void;
+  updateMaterial: (id: string, updates: Partial<Material>) => void;
+  resetToInitial: () => void;
+  initialized: boolean;
+  setInitialized: (v: boolean) => void;
 }
 
 export const useSceneStore = create<SceneStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       selectedObjectId: null,
       setSelectedObjectId: (id) => set({ selectedObjectId: id }),
 
@@ -41,7 +51,8 @@ export const useSceneStore = create<SceneStore>()(
 
       viewpoints: [],
       addViewpoint: (vp) => set((s) => ({ viewpoints: [...s.viewpoints, vp] })),
-      removeViewpoint: (id) => set((s) => ({ viewpoints: s.viewpoints.filter((v) => v.id !== id) })),
+      removeViewpoint: (id) =>
+        set((s) => ({ viewpoints: s.viewpoints.filter((v) => v.id !== id) })),
 
       pendingConfirms: initialPending,
       resolvePendingConfirm: (id) =>
@@ -56,10 +67,10 @@ export const useSceneStore = create<SceneStore>()(
       setShowPendingModal: (show, id) =>
         set({ showPendingModal: show, currentPendingId: id ?? null }),
 
-      lightObjects,
-      materials,
-      showcases,
-      timelineEvents,
+      lightObjects: initialLights,
+      materials: initialMaterials,
+      showcases: initialShowcases,
+      timelineEvents: initialEvents,
 
       addMaterial: (material) =>
         set((s) => ({ materials: [...s.materials, material] })),
@@ -73,13 +84,32 @@ export const useSceneStore = create<SceneStore>()(
             m.id === id ? { ...m, ...updates } : m
           ),
         })),
+
+      resetToInitial: () =>
+        set({
+          materials: initialMaterials,
+          timelineEvents: initialEvents,
+          pendingConfirms: initialPending,
+          viewpoints: [],
+          selectedObjectId: null,
+        }),
+
+      initialized: false,
+      setInitialized: (v) => set({ initialized: v }),
     }),
     {
       name: "museum-review-store",
       partialize: (state) => ({
         viewpoints: state.viewpoints,
         pendingConfirms: state.pendingConfirms,
+        materials: state.materials,
+        timelineEvents: state.timelineEvents,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setInitialized(true);
+        }
+      },
     }
   )
 );
