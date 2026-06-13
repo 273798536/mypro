@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Construction, HardHat, AlertTriangle } from 'lucide-react';
 import { StatsCards } from '@/components/StatsCards';
 import { FilterBar } from '@/components/FilterBar';
@@ -7,11 +7,12 @@ import { ScreenshotPanel } from '@/components/ScreenshotPanel';
 import { AnomalyPanel } from '@/components/AnomalyPanel';
 import { SnapshotBar } from '@/components/SnapshotBar';
 import { QuickActions } from '@/components/QuickActions';
-import { Scene3D } from '@/components/Scene3D';
+import { Scene3D, type Scene3DHandle } from '@/components/Scene3D';
 import { useReviewStore } from '@/store/reviewStore';
 
 export default function Home() {
   const { loadSample, filteredResult } = useReviewStore();
+  const sceneRef = useRef<Scene3DHandle>(null);
 
   useEffect(() => {
     loadSample();
@@ -71,12 +72,12 @@ export default function Home() {
 
           <FilterBar />
 
-          <SnapshotBar />
+          <SnapshotBar sceneRef={sceneRef} />
 
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-5">
             <div className="xl:col-span-5 flex flex-col gap-5 min-h-[600px]">
               <div className="flex-1 min-h-[340px]">
-                <Scene3D />
+                <Scene3D ref={sceneRef} />
               </div>
               <div data-screenshot-panel className="flex-1 min-h-[260px]">
                 <ScreenshotPanel />

@@ -1,4 +1,4 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { forwardRef, useImperativeHandle, useRef, useMemo, useEffect } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, Grid, Html, PerspectiveCamera } from '@react-three/drei';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
@@ -182,9 +182,100 @@ function CameraController() {
   );
 }
 
-export function Scene3D() {
+function CaptureBridge({ onCanvasReady }: { onCanvasReady: (canvas: HTMLCanvasElement) => void }) {
+  const { gl } = useThree();
+  useEffect(() => {
+    onCanvasReady(gl.domElement as HTMLCanvasElement);
+  }, [gl, onCanvasReady]);
+  return null;
+}
+
+function find3DCanvas(): HTMLCanvasElement | null {
+  const all = document.querySelectorAll('canvas');
+  for (let i = all.length - 1; i >= 0; i -= 1) {
+    const c = all[i] as HTMLCanvasElement;
+    const w = c.width || c.clientWidth;
+    const h = c.height || c.clientHeight;
+    if (w > 200 && h > 100) return c;
+  }
+  return null;
+}
+
+export interface Scene3DHandle {
+  takeScreenshot: () => Promise<string>;
+}
+
+export const Scene3D = forwardRef<Scene3DHandle>(function Scene3D(_props, ref) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const { filteredResult, selectedRecordId, selectRecord, cameraState } = useReviewStore();
   const { records } = filteredResult;
+
+  useImperativeHandle(ref, () => ({
+    takeScreenshot: async () => {
+      let canvas = canvasRef.current;
+      if (!canvas) {
+        canvas = find3DCanvas();
+        if (canvas) canvasRef.current = canvas;
+      }
+      if (!canvas) {
+        const err = new Error('3D 画布未就绪，无法截图（找不到 canvas 元素）');
+        console.error('[takeScreenshot] canvas null', {
+          hasCanvasElement: !!document.querySelector('canvas'),
+          count: document.querySelectorAll('canvas').length,
+          readyState: document.readyState,
+        });
+        throw err;
+      }
+      const timeoutMs = 3000;
+      const started = Date.now();
+      try {
+        const webgl = (
+          canvas.getContext('webgl2', { preserveDrawingBuffer: true })
+          || canvas.getContext('webgl', { preserveDrawingBuffer: true })
+          || canvas.getContext('experimental-webgl')
+        ) as WebGLRenderingContext | WebGL2RenderingContext | null;
+        if (webgl) {
+          try { webgl.flush?.(); } catch { /* noop */ }
+        }
+        let dataUrl = '';
+        let attempt = 0;
+        while (attempt < 3 && Date.now() - started < timeoutMs) {
+          attempt += 1;
+          try {
+            dataUrl = canvas.toDataURL('image/png');
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : '';
+            if (attempt >= 3) {
+              throw new Error(`canvas.toDataURL 抛出异常：${msg}`);
+            }
+            await new Promise<void>((r) => setTimeout(r, 80 * attempt));
+            continue;
+          }
+          if (dataUrl && dataUrl.length > 100) break;
+          await new Promise<void>((r) => setTimeout(r, 80 * attempt));
+        }
+        if (!dataUrl || dataUrl.length < 100) {
+          throw new Error(`截图数据为空（length=${dataUrl?.length ?? 0}），请调整视角后重试`);
+        }
+        console.log('[takeScreenshot] success', {
+          width: canvas.width,
+          height: canvas.height,
+          dataLength: dataUrl.length,
+          prefix: dataUrl.slice(0, 40),
+          attempts: attempt,
+        });
+        return dataUrl;
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : '未知错误';
+        console.error('[takeScreenshot] failed', err);
+        throw new Error(`截图失败：${msg}`);
+      }
+    },
+  }));
+
+  const handleCanvasReady = (canvas: HTMLCanvasElement) => {
+    canvasRef.current = canvas;
+  };
 
   return (
     <div className="bg-steel-800/60 backdrop-blur border border-steel-700 rounded-lg overflow-hidden flex flex-col h-full">
@@ -207,7 +298,7 @@ export function Scene3D() {
       </div>
 
       <div className="flex-1 relative min-h-[300px]">
-        <Canvas shadows dpr={[1, 2]} gl={{ antialias: true }}>
+        <Canvas shadows dpr={[1, 2]} gl={{ antialias: true, preserveDrawingBuffer: true }}>
           <PerspectiveCamera makeDefault position={cameraState.position} fov={cameraState.fov} />
 
           <color attach="background" args={['#0B1220']} />
@@ -249,6 +340,7 @@ export function Scene3D() {
           ))}
 
           <CameraController />
+          <CaptureBridge onCanvasReady={handleCanvasReady} />
         </Canvas>
 
         <div className="absolute top-3 left-3 text-[10px] font-mono text-steel-400 bg-steel-900/70 px-2 py-1 rounded border border-steel-700 backdrop-blur">
@@ -257,4 +349,4 @@ export function Scene3D() {
       </div>
     </div>
   );
-}
+});
