@@ -26,14 +26,14 @@ export const mockLayers: CadLayer[] = [
     id: 'layer-main-2022',
     name: '主体结构-2022旧版',
     version: 'v2022.09',
-    visible: false,
+    visible: true,
     isOldVersion: true,
   },
   {
     id: 'layer-pipe-2022',
     name: '工艺管线-2022旧版',
     version: 'v2022.09',
-    visible: false,
+    visible: true,
     isOldVersion: true,
   },
 ];

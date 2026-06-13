@@ -2,7 +2,6 @@ import type {
   HazardObject,
   CadLayer,
   ManualNote,
-  ViewSnapshot,
   FilterState,
 } from '@/types';
 import { sourceLabels, typeLabels } from './helpers';

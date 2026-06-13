@@ -41,7 +41,7 @@ interface AppState {
 }
 
 const defaultFilter: FilterState = {
-  sources: ['normal', 'verbal'],
+  sources: ['cad_old', 'normal', 'verbal'],
   showAbnormalOnly: false,
   showOverlappingOnly: false,
   types: ['tank', 'pipe', 'valve', 'storage'],
@@ -167,6 +167,35 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'dock-hazard-store',
+      version: 2,
+      migrate: (persistedState: unknown, version: number) => {
+        const state = (persistedState || {}) as Record<string, unknown>;
+
+        if (version < 2) {
+          const filter = (state.filterState || {}) as Record<string, unknown>;
+          const sources = Array.isArray(filter.sources) ? [...filter.sources] : [];
+          if (!sources.includes('cad_old')) sources.push('cad_old');
+          state.filterState = {
+            sources,
+            showAbnormalOnly: Boolean(filter.showAbnormalOnly),
+            showOverlappingOnly: Boolean(filter.showOverlappingOnly),
+            types: Array.isArray(filter.types) && filter.types.length > 0
+              ? filter.types
+              : ['tank', 'pipe', 'valve', 'storage'],
+          };
+
+          const layers = Array.isArray(state.layers) ? (state.layers as CadLayer[]) : [];
+          state.layers = layers.map((l) => (l.isOldVersion ? { ...l, visible: true } : l));
+        }
+
+        if (typeof state.guideVisible !== 'boolean') {
+          state.guideVisible = true;
+        }
+        if (!Array.isArray(state.snapshots)) state.snapshots = [];
+        if (!Array.isArray(state.notes)) state.notes = mockNotes;
+
+        return state as unknown as AppState;
+      },
       partialize: (state) => ({
         filterState: state.filterState,
         notes: state.notes,

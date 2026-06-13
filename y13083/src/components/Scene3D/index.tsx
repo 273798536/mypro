@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html, Grid } from '@react-three/drei';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { useAppStore, getFilteredObjects } from '@/store/useAppStore';
@@ -9,16 +10,14 @@ import { HazardMesh } from './HazardMesh';
 
 function CameraRig() {
   const { camera } = useThree();
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<OrbitControlsImpl>(null);
   const cameraState = useAppStore((s) => s.cameraState);
   const setCameraState = useAppStore((s) => s.setCameraState);
   const targetPos = useRef(new THREE.Vector3());
   const targetLookAt = useRef(new THREE.Vector3());
 
-  useEffect(() => {
-    targetPos.current.set(...cameraState.position);
-    targetLookAt.current.set(...cameraState.target);
-  }, [cameraState]);
+  targetPos.current.set(...cameraState.position);
+  targetLookAt.current.set(...cameraState.target);
 
   useFrame((_, delta) => {
     camera.position.lerp(targetPos.current, delta * 3);
