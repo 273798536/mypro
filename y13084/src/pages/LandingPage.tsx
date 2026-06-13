@@ -114,7 +114,8 @@ export default function LandingPage() {
   const [parseError, setParseError] = useState<string | null>(null);
   const [parsedCount, setParsedCount] = useState<number | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropZoneRef = useRef<HTMLDivElement>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -138,6 +139,14 @@ export default function LandingPage() {
     }
   }, []);
 
+  const handleZoneClick = (e: React.MouseEvent) => {
+    if (fileName) return;
+    e.stopPropagation();
+    if (fileInputRef.current && e.target === dropZoneRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setPendingFile(e.target.files[0]);
@@ -152,7 +161,7 @@ export default function LandingPage() {
     setFileName(null);
     setParseError(null);
     setParsedCount(null);
-    if (inputRef.current) inputRef.current.value = "";
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSubmit = async () => {
@@ -233,7 +242,7 @@ export default function LandingPage() {
                 使用内置演示数据快速体验
               </button>
               <button
-                onClick={() => inputRef.current?.scrollIntoView({ behavior: "smooth" })}
+                onClick={() => dropZoneRef.current?.scrollIntoView({ behavior: "smooth" })}
                 className="eng-btn bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20 px-6 py-3 text-base"
               >
                 <Upload className="w-5 h-5" />
@@ -345,12 +354,12 @@ export default function LandingPage() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           <div className="lg:col-span-3">
             <div
-              ref={inputRef}
+              ref={dropZoneRef}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
-              onClick={() => !fileName && inputRef.current?.click()}
+              onClick={handleZoneClick}
               className={cn(
                 "relative border-2 border-dashed rounded-xl p-10 md:p-14 text-center transition-all duration-200",
                 dragActive
@@ -361,10 +370,11 @@ export default function LandingPage() {
               )}
             >
               <input
-                ref={inputRef}
+                ref={fileInputRef}
                 type="file"
                 accept=".csv,.xlsx,.xls"
                 onChange={handleFileSelect}
+                onClick={(e) => e.stopPropagation()}
                 className="hidden"
               />
               <div

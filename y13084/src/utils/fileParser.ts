@@ -37,56 +37,57 @@ function guessRiskFromValues(temp?: number, gas?: number): RiskLevel {
   return "low";
 }
 
-let rowCounter = 0;
+function createRowMapper() {
+  let rowCounter = 0;
+  return function rowToRecord(row: Record<string, string | number | undefined>): SensorRecord {
+    rowCounter++;
+    const id = String(row["id"] ?? row["编号"] ?? row["传感器编号"] ?? `REC-UPD-${String(rowCounter).padStart(4, "0")}`);
+    const timestamp = String(row["timestamp"] ?? row["时间戳"] ?? row["时间"] ?? new Date().toISOString());
+    const zone = normalizeZone(String(row["zone"] ?? row["区域"] ?? row["库区"] ?? "A"));
+    const description = String(row["description"] ?? row["描述"] ?? row["备注"] ?? "");
+    const recordType = normalizeRecordType(String(row["recordType"] ?? row["记录类型"] ?? row["类型"] ?? "normal"));
+    const riskLevel = VALID_RISKS.includes(String(row["riskLevel"] ?? row["风险等级"] ?? row["风险"]) as RiskLevel)
+      ? (String(row["riskLevel"] ?? row["风险等级"] ?? row["风险"]) as RiskLevel)
+      : normalizeRisk(String(row["riskLevel"] ?? row["风险等级"] ?? row["风险"] ?? ""));
 
-function rowToRecord(row: Record<string, string | number | undefined>): SensorRecord {
-  rowCounter++;
-  const id = String(row["id"] ?? row["编号"] ?? row["传感器编号"] ?? `REC-UPD-${String(rowCounter).padStart(4, "0")}`);
-  const timestamp = String(row["timestamp"] ?? row["时间戳"] ?? row["时间"] ?? new Date().toISOString());
-  const zone = normalizeZone(String(row["zone"] ?? row["区域"] ?? row["库区"] ?? "A"));
-  const description = String(row["description"] ?? row["描述"] ?? row["备注"] ?? "");
-  const recordType = normalizeRecordType(String(row["recordType"] ?? row["记录类型"] ?? row["类型"] ?? "normal"));
-  const riskLevel = VALID_RISKS.includes(String(row["riskLevel"] ?? row["风险等级"] ?? row["风险"]) as RiskLevel)
-    ? (String(row["riskLevel"] ?? row["风险等级"] ?? row["风险"]) as RiskLevel)
-    : normalizeRisk(String(row["riskLevel"] ?? row["风险等级"] ?? row["风险"] ?? ""));
+    const temperature = row["temperature"] ?? row["温度"] ?? row["温"];
+    const humidity = row["humidity"] ?? row["湿度"] ?? row["湿"];
+    const gasConcentration = row["gasConcentration"] ?? row["气体浓度"] ?? row["气"];
+    const replacedBy = row["replacedBy"] ?? row["被替代"] ?? row["替代记录"];
+    const withdrawReason = row["withdrawReason"] ?? row["撤回原因"] ?? row["撤回"];
+    const affectsConclusionsRaw = row["affectsConclusions"] ?? row["影响结论"] ?? row["影响"];
+    const affectsConclusions = String(affectsConclusionsRaw ?? "")
+      .split(/[;；,，]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
 
-  const temperature = row["temperature"] ?? row["温度"] ?? row["温"];
-  const humidity = row["humidity"] ?? row["湿度"] ?? row["湿"];
-  const gasConcentration = row["gasConcentration"] ?? row["气体浓度"] ?? row["气"];
-  const replacedBy = row["replacedBy"] ?? row["被替代"] ?? row["替代记录"];
-  const withdrawReason = row["withdrawReason"] ?? row["撤回原因"] ?? row["撤回"];
-  const affectsConclusionsRaw = row["affectsConclusions"] ?? row["影响结论"] ?? row["影响"];
-  const affectsConclusions = String(affectsConclusionsRaw ?? "")
-    .split(/[;；,，]/)
-    .map((s) => s.trim())
-    .filter(Boolean);
+    const tempNum = temperature !== undefined ? Number(temperature) : undefined;
+    const gasNum = gasConcentration !== undefined ? Number(gasConcentration) : undefined;
+    const finalRisk = riskLevel === "low" && (tempNum !== undefined || gasNum !== undefined)
+      ? guessRiskFromValues(tempNum, gasNum)
+      : riskLevel;
 
-  const tempNum = temperature !== undefined ? Number(temperature) : undefined;
-  const gasNum = gasConcentration !== undefined ? Number(gasConcentration) : undefined;
-  const finalRisk = riskLevel === "low" && (tempNum !== undefined || gasNum !== undefined)
-    ? guessRiskFromValues(tempNum, gasNum)
-    : riskLevel;
-
-  return {
-    id,
-    sourceRow: rowCounter + 1,
-    recordType,
-    timestamp,
-    zone,
-    riskLevel: finalRisk,
-    temperature: tempNum !== undefined && !isNaN(tempNum) ? +tempNum.toFixed(1) : undefined,
-    humidity: humidity !== undefined ? +Number(humidity).toFixed(0) : undefined,
-    gasConcentration: gasNum !== undefined && !isNaN(gasNum) ? +gasNum.toFixed(3) : undefined,
-    description,
-    replacedBy: replacedBy ? String(replacedBy) : undefined,
-    withdrawReason: withdrawReason ? String(withdrawReason) : undefined,
-    affectsConclusions,
+    return {
+      id,
+      sourceRow: rowCounter + 1,
+      recordType,
+      timestamp,
+      zone,
+      riskLevel: finalRisk,
+      temperature: tempNum !== undefined && !isNaN(tempNum) ? +tempNum.toFixed(1) : undefined,
+      humidity: humidity !== undefined ? +Number(humidity).toFixed(0) : undefined,
+      gasConcentration: gasNum !== undefined && !isNaN(gasNum) ? +gasNum.toFixed(3) : undefined,
+      description,
+      replacedBy: replacedBy ? String(replacedBy) : undefined,
+      withdrawReason: withdrawReason ? String(withdrawReason) : undefined,
+      affectsConclusions,
+    };
   };
 }
 
 export function parseCSV(file: File): Promise<SensorRecord[]> {
   return new Promise((resolve, reject) => {
-    rowCounter = 0;
+    const rowToRecord = createRowMapper();
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
@@ -108,7 +109,7 @@ export function parseCSV(file: File): Promise<SensorRecord[]> {
 
 export function parseExcel(file: File): Promise<SensorRecord[]> {
   return new Promise((resolve, reject) => {
-    rowCounter = 0;
+    const rowToRecord = createRowMapper();
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
