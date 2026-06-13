@@ -6,14 +6,17 @@ const TEMP_DELTA_THRESHOLD = 5;
 
 function nowISO() { return new Date().toISOString(); }
 
-function groupByRow(records: SensorRecord[]): Map<number, SensorRecord[]> {
-  const map = new Map<number, SensorRecord[]>();
+function groupByZoneRow(records: SensorRecord[]): Map<string, { zone: string; row: number; items: SensorRecord[] }> {
+  const map = new Map<string, { zone: string; row: number; items: SensorRecord[] }>();
   for (const r of records) {
-    if (!map.has(r.row)) map.set(r.row, []);
-    map.get(r.row)!.push(r);
+    const zone = r.point_id.split('-')[0];
+    const key = `${zone}-${r.row}`;
+    if (!map.has(key)) {
+      map.set(key, { zone, row: r.row, items: [] });
+    }
+    map.get(key)!.items.push(r);
   }
-  // 每一行按 col 排序
-  for (const [, arr] of map) arr.sort((a, b) => a.col - b.col);
+  for (const [, group] of map) group.items.sort((a, b) => a.col - b.col);
   return map;
 }
 
@@ -95,10 +98,10 @@ export const DetectionService = {
       }
     }
 
-    // 3. 同行检测：编号缺口 + 温差过大
-    const byRow = groupByRow(records);
-    for (const [rowNum, arr] of byRow) {
-      const zonePrefix = arr[0].point_id.split('-')[0];
+    // 3. 同区域同行检测：编号缺口 + 温差过大
+    const byZoneRow = groupByZoneRow(records);
+    for (const [, group] of byZoneRow) {
+      const { zone: zonePrefix, row: rowNum, items: arr } = group;
 
       for (let i = 0; i < arr.length - 1; i++) {
         const cur = arr[i];
@@ -110,8 +113,8 @@ export const DetectionService = {
           for (let k = cur.col + 1; k < next.col; k++) missing.push(k);
           const reason: DetectionReason = {
             type: 'gap',
-            description: `第 ${rowNum} 行 ${cur.point_id} 与 ${next.point_id} 间缺列号：${missing.join(',')}`,
-            detail: { missing_cols: missing, cur_col: cur.col, next_col: next.col },
+            description: `${zonePrefix} 区第 ${rowNum} 行 ${cur.point_id} 与 ${next.point_id} 间缺列号：${missing.join(',')}`,
+            detail: { missing_cols: missing, cur_col: cur.col, next_col: next.col, zone: zonePrefix },
           };
           const affected = [cur.point_id, next.point_id, ...missing.map(c => `${zonePrefix}-${String(rowNum).padStart(2, '0')}-${String(c).padStart(2, '0')}`)];
           addAnomaly(found, cur, reason, affected);
