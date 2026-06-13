@@ -14,8 +14,13 @@ import {
   ShieldCheck,
   Rocket,
   ChevronRight,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  X,
 } from "lucide-react";
 import { useRecordsStore } from "@/store";
+import { parseFile, parseVerbalNotes } from "@/utils/fileParser";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
@@ -99,11 +104,16 @@ const ROLES = [
 export default function LandingPage() {
   const navigate = useNavigate();
   const loadMock = useRecordsStore((s) => s.loadMock);
+  const appendRecords = useRecordsStore((s) => s.appendRecords);
   const records = useRecordsStore((s) => s.records);
 
   const [dragActive, setDragActive] = useState(false);
   const [verbalNote, setVerbalNote] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
+  const [parsing, setParsing] = useState(false);
+  const [parseError, setParseError] = useState<string | null>(null);
+  const [parsedCount, setParsedCount] = useState<number | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -121,13 +131,57 @@ export default function LandingPage() {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setPendingFile(e.dataTransfer.files[0]);
       setFileName(e.dataTransfer.files[0].name);
+      setParseError(null);
+      setParsedCount(null);
     }
   }, []);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
+      setPendingFile(e.target.files[0]);
       setFileName(e.target.files[0].name);
+      setParseError(null);
+      setParsedCount(null);
+    }
+  };
+
+  const handleClearFile = () => {
+    setPendingFile(null);
+    setFileName(null);
+    setParseError(null);
+    setParsedCount(null);
+    if (inputRef.current) inputRef.current.value = "";
+  };
+
+  const handleSubmit = async () => {
+    setParsing(true);
+    setParseError(null);
+    try {
+      let totalNew = 0;
+      if (pendingFile) {
+        const fileRecords = await parseFile(pendingFile);
+        if (fileRecords.length > 0) {
+          appendRecords(fileRecords);
+          totalNew += fileRecords.length;
+        }
+      }
+      if (verbalNote.trim()) {
+        const verbalRecords = parseVerbalNotes(verbalNote);
+        if (verbalRecords.length > 0) {
+          appendRecords(verbalRecords);
+          totalNew += verbalRecords.length;
+        }
+      }
+      setParsedCount(totalNew);
+      if (totalNew > 0) {
+        navigate("/workbench");
+      }
+    } catch (err) {
+      setParseError((err as Error).message);
+    } finally {
+      setParsing(false);
     }
   };
 
@@ -135,6 +189,8 @@ export default function LandingPage() {
     loadMock();
     navigate("/workbench");
   };
+
+  const hasInput = !!pendingFile || verbalNote.trim().length > 0;
 
   return (
     <div className="space-y-16 pb-12">
@@ -294,14 +350,14 @@ export default function LandingPage() {
               onDragLeave={handleDrag}
               onDragOver={handleDrag}
               onDrop={handleDrop}
-              onClick={() => inputRef.current?.click()}
+              onClick={() => !fileName && inputRef.current?.click()}
               className={cn(
-                "relative border-2 border-dashed rounded-xl p-10 md:p-14 text-center cursor-pointer transition-all duration-200",
+                "relative border-2 border-dashed rounded-xl p-10 md:p-14 text-center transition-all duration-200",
                 dragActive
                   ? "border-deepsea-500 bg-deepsea-50/80"
                   : fileName
-                    ? "border-passgreen-400 bg-passgreen-50/50"
-                    : "border-deepsea-200 bg-deepsea-50/30 hover:border-deepsea-400 hover:bg-deepsea-50",
+                    ? "border-passgreen-400 bg-passgreen-50/50 cursor-default"
+                    : "border-deepsea-200 bg-deepsea-50/30 hover:border-deepsea-400 hover:bg-deepsea-50 cursor-pointer",
               )}
             >
               <input
@@ -318,31 +374,59 @@ export default function LandingPage() {
                     ? "bg-deepsea-500 text-white"
                     : fileName
                       ? "bg-passgreen-500 text-white"
-                      : "bg-deepsea-100 text-deepsea-500 group-hover:bg-deepsea-200",
+                      : "bg-deepsea-100 text-deepsea-500",
                 )}
               >
-                <Upload className="w-8 h-8" />
+                {parsing ? (
+                  <Loader2 className="w-8 h-8 animate-spin" />
+                ) : fileName ? (
+                  <CheckCircle2 className="w-8 h-8" />
+                ) : (
+                  <Upload className="w-8 h-8" />
+                )}
               </div>
 
-              {fileName ? (
+              {parsing ? (
                 <>
-                  <p className="text-lg font-semibold text-passgreen-700 mb-1">
-                    已选择文件
-                  </p>
-                  <p className="text-deepsea-600 font-medium mb-1">{fileName}</p>
-                  <p className="text-sm text-deepsea-400">点击重新选择或拖拽替换</p>
+                  <p className="text-lg font-semibold text-deepsea-700 mb-1">正在解析文件…</p>
+                  <p className="text-sm text-deepsea-500">请稍候</p>
+                </>
+              ) : fileName ? (
+                <>
+                  <p className="text-lg font-semibold text-passgreen-700 mb-1">已选择文件</p>
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-passgreen-200 mb-2">
+                    <FileSpreadsheet className="w-4 h-4 text-passgreen-600" />
+                    <span className="text-deepsea-700 font-medium text-sm">{fileName}</span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleClearFile(); }}
+                      className="p-0.5 rounded hover:bg-deepsea-100 text-deepsea-400 hover:text-deepsea-600"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                  <p className="text-sm text-deepsea-400">点击 × 移除后可重新选择</p>
                 </>
               ) : (
                 <>
-                  <p className="text-lg font-semibold text-deepsea-800 mb-2">
-                    拖拽文件到此处，或点击选择
-                  </p>
-                  <p className="text-sm text-deepsea-500">
-                    支持 .csv / .xlsx / .xls 格式，单文件建议不超过 10MB
-                  </p>
+                  <p className="text-lg font-semibold text-deepsea-800 mb-2">拖拽文件到此处，或点击选择</p>
+                  <p className="text-sm text-deepsea-500">支持 .csv / .xlsx / .xls 格式，单文件建议不超过 10MB</p>
                 </>
               )}
             </div>
+
+            {parseError && (
+              <div className="mt-4 flex items-start gap-2 px-4 py-3 rounded-xl bg-warnorange-50 border border-warnorange-200 text-sm">
+                <AlertCircle className="w-4 h-4 text-warnorange-500 shrink-0 mt-0.5" />
+                <span className="text-warnorange-700">{parseError}</span>
+              </div>
+            )}
+
+            {parsedCount !== null && !parseError && (
+              <div className="mt-4 flex items-center gap-2 px-4 py-3 rounded-xl bg-passgreen-50 border border-passgreen-200 text-sm">
+                <CheckCircle2 className="w-4 h-4 text-passgreen-500 shrink-0" />
+                <span className="text-passgreen-700">成功解析 <span className="font-bold">{parsedCount}</span> 条记录，已添加到数据集</span>
+              </div>
+            )}
 
             <div className="mt-5 flex flex-wrap gap-3">
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-deepsea-100 text-sm text-deepsea-600">
@@ -369,6 +453,35 @@ export default function LandingPage() {
               placeholder={`例如：\n• 现场老李反映A区夜间常有车辆违停靠近库房\n• 安监站王工口头提醒消防通道需预留4米宽\n• 设计院陈工电话建议防雷接地电阻≤4Ω\n\n每条备注单独一行，系统将自动识别为"口头备注"类型记录`}
               className="w-full h-44 resize-none rounded-xl border border-deepsea-200 bg-white px-4 py-3 text-sm text-deepsea-800 placeholder-deepsea-400 focus:border-deepsea-500 focus:ring-2 focus:ring-deepsea-500/20 focus:outline-none transition-all"
             />
+
+            <button
+              onClick={handleSubmit}
+              disabled={!hasInput || parsing}
+              className={cn(
+                "w-full eng-btn mt-4 py-3",
+                hasInput && !parsing
+                  ? "eng-btn bg-passgreen-500 border-passgreen-500 hover:bg-passgreen-600 hover:border-passgreen-600"
+                  : "opacity-50 cursor-not-allowed",
+              )}
+            >
+              {parsing ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  正在解析…
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4" />
+                  解析并导入数据
+                </>
+              )}
+            </button>
+
+            {verbalNote.trim() && !pendingFile && (
+              <p className="text-xs text-deepsea-400 mt-2">
+                口头备注按行拆分，每行自动生成一条 verbal 类型记录
+              </p>
+            )}
 
             {records.length > 0 && (
               <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-passgreen-50 border border-passgreen-200 text-sm">
