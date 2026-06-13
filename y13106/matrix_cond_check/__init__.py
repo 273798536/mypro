@@ -3,8 +3,9 @@ from .source_tracker import SourceTracker, ProcessingStatus, SourceRecord
 from .validator import BoundaryValidator, ViolationRecord
 from .timeline import TimelineGenerator, TimelineEvent, EventType
 from .utils import load_csv, safe_float
+from .charts import generate_charts
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __all__ = [
     "MatrixConditionChecker",
     "BoundaryConfig",
@@ -18,4 +19,5 @@ __all__ = [
     "EventType",
     "load_csv",
     "safe_float",
+    "generate_charts",
 ]

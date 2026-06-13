@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang='zh-CN'><head><meta charset='UTF-8'>
+<title>矩阵条件数边界校验 · 图表与明细口径一致性验证</title>
+<style>body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;margin:20px;}
+h1{color:#2c3e50;border-bottom:2px solid #3498db;padding-bottom:8px;}
+h2{color:#2980b9;margin-top:30px;}
+.summary{background:#ecf0f1;padding:15px;border-radius:8px;margin:15px 0;}
+.summary span{display:inline-block;margin:5px 15px 5px 0;font-weight:bold;}
+.chart-box{margin:20px 0;padding:10px;border:1px solid #ddd;border-radius:8px;}
+img{max-width:100%;height:auto;border:1px solid #eee;border-radius:4px;}
+.consistency{background:#dff9fb;padding:12px;border-left:4px solid #2ecc71;margin:15px 0;}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:12px;}
+th,td{border:1px solid #ddd;padding:6px;text-align:left;}
+th{background:#f8f9fa;}
+.ok{color:#27ae60;font-weight:bold;}
+.bad{color:#e74c3c;font-weight:bold;}
+</style></head><body>
+<h1>📊 矩阵条件数边界校验 · 图表与明细口径一致性验证</h1>
+<div class='consistency'>✅ <strong>口径一致性声明：</strong>本页所有图表与 <code>check_details.csv</code>、<code>violations.csv</code>、<code>timeline.*</code> 使用同一组 <code>CheckResult</code> 数据源渲染，确保图表和明细同一口径。</div>
+<div class='summary'>
+<h3>📈 校验概览</h3>
+<span>总数: <span class='ok'>10</span></span>
+<span>有效: <span class='ok'>6</span></span>
+<span>越界: <span class='bad'>4</span></span>
+<span>外推: <span class='ok'>4</span></span>
+<span>外推越界: <span class='bad'>2</span></span>
+<span>单位不一致: <span class='bad'>1</span></span>
+</div>
+<div class='chart-box'><h2>图1：各矩阵条件数与边界对比（核心校验图）</h2>
+<img src='chart_condition_numbers.png' alt='图1：各矩阵条件数与边界对比（核心校验图）'>
+<p style='color:#7f8c8d;font-size:12px;'>图片文件：chart_condition_numbers.png</p></div>
+<div class='chart-box'><h2>图2：违规类型分布</h2>
+<img src='chart_violation_distribution.png' alt='图2：违规类型分布'>
+<p style='color:#7f8c8d;font-size:12px;'>图片文件：chart_violation_distribution.png</p></div>
+<div class='chart-box'><h2>图3：处理状态分布</h2>
+<img src='chart_status_distribution.png' alt='图3：处理状态分布'>
+<p style='color:#7f8c8d;font-size:12px;'>图片文件：chart_status_distribution.png</p></div>
+<div class='chart-box'><h2>图4：外推 vs 内插 状态对比</h2>
+<img src='chart_extrap_vs_interp.png' alt='图4：外推 vs 内插 状态对比'>
+<p style='color:#7f8c8d;font-size:12px;'>图片文件：chart_extrap_vs_interp.png</p></div>
+<h2>📋 明细抽样（与 check_details.csv 同源，验证口径）</h2>
+<table><tr><th>矩阵</th><th>来源行</th><th>条件数</th><th>区间</th><th>外推</th><th>是否通过</th><th>处理状态</th></tr>
+<tr><td>Cov_Mat_A</td><td>sample_draft.csv L2</td><td>15.3</td><td>[1.0, 100.0]</td><td>否</td><td class='ok'>✅ 通过</td><td>已处理</td></tr>
+<tr><td>Cov_Mat_B</td><td>sample_draft.csv L3</td><td>105.7</td><td>[1.0, 100.0]</td><td>是</td><td class='bad'>❌ 未通过</td><td>待补材料</td></tr>
+<tr><td>Cov_Mat_C</td><td>sample_draft.csv L4</td><td>0.5</td><td>[1.0, 100.0]</td><td>否</td><td class='bad'>❌ 未通过</td><td>待补材料</td></tr>
+<tr><td>Cov_Mat_D</td><td>sample_draft.csv L5</td><td>88.2</td><td>[1.0, 100.0]</td><td>是</td><td class='ok'>✅ 通过</td><td>待补材料</td></tr>
+<tr><td>Cov_Mat_E</td><td>sample_draft.csv L6</td><td>42.0</td><td>[1.0, 100.0]</td><td>否</td><td class='ok'>✅ 通过</td><td>已处理</td></tr>
+<tr><td>Cov_Mat_F</td><td>sample_draft.csv L7</td><td>999.9</td><td>[1.0, 100.0]</td><td>是</td><td class='bad'>❌ 未通过</td><td>人工改判</td></tr>
+<tr><td>Cov_Mat_G</td><td>sample_draft.csv L8</td><td>None</td><td>[1.0, 100.0]</td><td>否</td><td class='bad'>❌ 未通过</td><td>待补材料</td></tr>
+<tr><td>Cov_Mat_H</td><td>sample_draft.csv L9</td><td>30.5</td><td>[1.0, 100.0]</td><td>否</td><td class='ok'>✅ 通过</td><td>已处理</td></tr>
+<tr><td>Cov_Mat_D</td><td>late_attachment.csv L2</td><td>88.2</td><td>[1.0, 100.0]</td><td>是</td><td class='ok'>✅ 通过</td><td>已处理</td></tr>
+<tr><td>Cov_Mat_I</td><td>late_attachment.csv L3</td><td>55.0</td><td>[1.0, 100.0]</td><td>否</td><td class='ok'>✅ 通过</td><td>已处理</td></tr>
+</table>
+<h2>⚠️ 违规明细（与 violations.csv 同源）</h2>
+<table><tr><th>违规ID</th><th>矩阵</th><th>类型</th><th>严重程度</th><th>来源行</th><th>描述</th></tr>
+<tr><td>V0001_Cov_Mat_B</td><td>Cov_Mat_B</td><td>外推越界</td><td>critical</td><td>sample_draft.csv L3</td><td>外推时越界：高于上界 100.0，差值 5.7（条件数=105.7，区间[1.0, 100.0]）</td></tr>
+<tr><td>V0002_Cov_Mat_C</td><td>Cov_Mat_C</td><td>内插越界</td><td>high</td><td>sample_draft.csv L4</td><td>内插时越界：低于下界 1.0，差值 0.5（条件数=0.5，区间[1.0, 100.0]）</td></tr>
+<tr><td>V0003_Cov_Mat_D</td><td>Cov_Mat_D</td><td>外推临界</td><td>low</td><td>sample_draft.csv L5</td><td>外推临界：在边界内（条件数=88.2，接近边界）</td></tr>
+<tr><td>V0004_Cov_Mat_F</td><td>Cov_Mat_F</td><td>外推越界</td><td>critical</td><td>sample_draft.csv L7</td><td>外推时越界：高于上界 100.0，差值 899.9（条件数=999.9，区间[1.0, 100.0]）</td></tr>
+<tr><td>V0005_Cov_Mat_G</td><td>Cov_Mat_G</td><td>数值无效</td><td>high</td><td>sample_draft.csv L8</td><td>条件数值无效（NaN/Inf/缺失）</td></tr>
+<tr><td>V0006_Cov_Mat_D</td><td>Cov_Mat_D</td><td>外推临界</td><td>low</td><td>late_attachment.csv L2</td><td>外推临界：在边界内（条件数=88.2，接近边界）</td></tr>
+</table>
+<h2>🔍 图表 ↔ 明细 核对清单</h2>
+<ul>
+<li>图1每个柱状图的数值、颜色、上下界参考线 ↔ check_details.csv 每一行的条件数、是否通过、是否外推</li>
+<li>图2饼图各类型计数 ↔ violations.csv 按违规类型 group by 的 count</li>
+<li>图3处理状态分布 ↔ timeline.txt 末尾总计数字</li>
+<li>图4外推/内插对比 ↔ check_details.csv 按『是否外推』+『是否通过』交叉统计</li>
+</ul>
+<p style='color:#7f8c8d;margin-top:30px;'>本页由 matrix_cond_check 自动生成。</p>
+</body></html>

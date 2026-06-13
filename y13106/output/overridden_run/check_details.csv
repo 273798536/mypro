@@ -7,5 +7,3 @@ sample_draft.csv,6,Cov_Mat_E,42.0,1.0,100.0,无量纲,否,通过,在边界内,�
 sample_draft.csv,7,Cov_Mat_F,999.9,1.0,100.0,无量纲,是,未通过,高于上界 100.0，差值 899.9,人工改判
 sample_draft.csv,8,Cov_Mat_G,,1.0,100.0,无量纲,否,未通过,条件数值无效（NaN/Inf/缺失）,待补材料
 sample_draft.csv,9,Cov_Mat_H,30.5,1.0,100.0,无量纲,否,通过,在边界内,已处理
-late_attachment.csv,2,Cov_Mat_D,88.2,1.0,100.0,无量纲,是,通过,在边界内,已处理
-late_attachment.csv,3,Cov_Mat_I,55.0,1.0,100.0,无量纲,否,通过,在边界内,已处理
