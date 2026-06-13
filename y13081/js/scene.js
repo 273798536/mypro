@@ -59,10 +59,18 @@ const Scene3D = (function() {
             resetView: resetView,
             zoomIn: zoomIn,
             zoomOut: zoomOut,
+            applyFilter: applyFilter,
             onContainerClick: function(callback) {
                 onContainerClickCallback = callback;
             },
-            getScreenshot: getScreenshot
+            getScreenshot: getScreenshot,
+            getDebugInfo: function() {
+                let visible = 0, hidden = 0;
+                containerMeshes.forEach(m => {
+                    if (m.visible) visible++; else hidden++;
+                });
+                return { total: containerMeshes.length, visible: visible, hidden: hidden };
+            }
         };
     }
 
@@ -606,6 +614,59 @@ const Scene3D = (function() {
     function getScreenshot() {
         renderer.render(scene, camera);
         return renderer.domElement.toDataURL('image/png');
+    }
+
+    function applyFilter(filters, frameData) {
+        const frame = frameData || currentFrameData;
+        if (!frame) return;
+
+        const matchedIds = new Set();
+
+        frame.records.forEach(record => {
+            const mesh = containerMap[record.containerId];
+            if (!mesh) return;
+
+            const container = mesh.userData.container;
+            let matched = true;
+
+            if (filters.level !== 'all' && container.hazardLevel !== parseInt(filters.level)) {
+                matched = false;
+            }
+            if (filters.status !== 'all' && record.status !== filters.status) {
+                matched = false;
+            }
+            if (filters.area !== 'all' && container.area !== filters.area) {
+                matched = false;
+            }
+
+            if (matched) {
+                matchedIds.add(record.containerId);
+            }
+
+            setContainerVisibility(mesh, matched);
+        });
+
+        return matchedIds;
+    }
+
+    function setContainerVisibility(mesh, visible) {
+        mesh.visible = visible;
+
+        mesh.traverse(child => {
+            if (child.isMesh || child.isSprite) {
+                if (visible) {
+                    if (child.material) {
+                        child.material.transparent = false;
+                        child.material.opacity = 1;
+                    }
+                } else {
+                    if (child.material) {
+                        child.material.transparent = true;
+                        child.material.opacity = 0.08;
+                    }
+                }
+            }
+        });
     }
 
     return {

@@ -5,6 +5,7 @@
     let data;
     let cadLayerEnabled = false;
     let highlightEnabled = false;
+    let currentFilters = null;
 
     function init() {
         data = WarehouseData.init();
@@ -29,12 +30,18 @@
 
         setupToolbarEvents();
         setupWarningEvents();
+
+        currentFilters = { level: 'all', status: 'all', area: 'all' };
+        scene3D.applyFilter(currentFilters, firstFrame);
     }
 
     function setupBindings() {
         timeline.onFrameChange(function(frame) {
             scene3D.updateFrame(frame);
             sidePanel.updateFrame(frame);
+            if (currentFilters) {
+                scene3D.applyFilter(currentFilters, frame);
+            }
         });
 
         scene3D.onContainerClick(function(container) {
@@ -119,6 +126,11 @@
     }
 
     function applyFilterHighlight(filters) {
+        currentFilters = filters;
+        const currentFrame = timeline.getCurrentFrame();
+        if (currentFrame) {
+            scene3D.applyFilter(filters, currentFrame);
+        }
     }
 
     function scrollToContainerInTable(containerId) {
@@ -205,4 +217,11 @@
     } else {
         init();
     }
+
+    window.__debug = {
+        getScene3D: function() { return scene3D; },
+        getTimeline: function() { return timeline; },
+        getSidePanel: function() { return sidePanel; },
+        getData: function() { return data; }
+    };
 })();
