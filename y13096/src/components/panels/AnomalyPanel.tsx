@@ -6,21 +6,38 @@ import { ProcessStatusBadge, AnomalyBadges } from '../common/Badges';
 export const AnomalyPanel: React.FC = () => {
   const all = useReplayStore(s => s.allMaterials);
   const gaps = useReplayStore(s => s.timelineGaps);
+  const filter = useReplayStore(s => s.filter);
   const focusMaterial = useReplayStore(s => s.focusMaterial);
   const setSidebarTab = useReplayStore(s => s.setSidebarTab);
 
-  const abnormalItems = all.filter(m =>
-    m.attachmentMeta?.isLate || m.hasModifiedCaliber || m.fillsGapId
-      || m.processStatus === 'need_evidence' || m.processStatus === 'rejected'
-  ).sort((a, b) => {
-    const score = (x: typeof a) =>
-      (x.processStatus === 'rejected' ? 100 : 0) +
-      (x.processStatus === 'need_evidence' ? 60 : 0) +
-      (x.attachmentMeta?.isLate ? 50 : 0) +
-      (x.fillsGapId ? 40 : 0) +
-      (x.hasModifiedCaliber ? 20 : 0);
-    return score(b) - score(a);
-  });
+  const abnormalItems = React.useMemo(() => {
+    const applyFilter = (m: typeof all[number]) => {
+      const t = m.timestamp;
+      if (t < filter.dateRange.start || t > filter.dateRange.end) return false;
+      if (!filter.materialTypes.includes(m.type)) return false;
+      if (filter.hasModifiedCaliber !== null && m.hasModifiedCaliber !== filter.hasModifiedCaliber) return false;
+      if (!filter.processStatuses.includes(m.processStatus)) return false;
+      const tags: ('normal' | 'gap' | 'late' | 'modified')[] = ['normal'];
+      if (m.attachmentMeta?.isLate) tags.push('late');
+      if (m.hasModifiedCaliber) tags.push('modified');
+      if (m.fillsGapId) tags.push('gap');
+      if (!tags.some(tag => filter.anomalyStatus.includes(tag as any))) return false;
+      return true;
+    };
+    return all.filter(m => {
+      const isAbnormal = m.attachmentMeta?.isLate || m.hasModifiedCaliber || m.fillsGapId
+        || m.processStatus === 'need_evidence' || m.processStatus === 'rejected';
+      return isAbnormal && applyFilter(m);
+    }).sort((a, b) => {
+      const score = (x: typeof a) =>
+        (x.processStatus === 'rejected' ? 100 : 0) +
+        (x.processStatus === 'need_evidence' ? 60 : 0) +
+        (x.attachmentMeta?.isLate ? 50 : 0) +
+        (x.fillsGapId ? 40 : 0) +
+        (x.hasModifiedCaliber ? 20 : 0);
+      return score(b) - score(a);
+    });
+  }, [all, filter]);
 
   return (
     <div className="aero-panel p-3 aero-corner flex flex-col h-full min-h-0">
@@ -31,6 +48,11 @@ export const AnomalyPanel: React.FC = () => {
           <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-aero-danger/15 text-aero-danger border border-aero-danger/35">
             {abnormalItems.length + gaps.length} 项
           </span>
+          {abnormalItems.length === 0 && (
+            <span className="font-mono text-[9px] px-1.5 py-0.5 rounded bg-aero-dim text-aero-muted/70 border border-aero-border/30">
+              筛选下无异常
+            </span>
+          )}
         </div>
         <button onClick={() => setSidebarTab('points')} className="text-[10px] text-aero-muted hover:text-aero-line transition">
           切换至材料列表 →

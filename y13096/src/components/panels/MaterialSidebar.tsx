@@ -95,7 +95,6 @@ export const MaterialSidebar: React.FC = () => {
   const setTab = useReplayStore(s => s.setSidebarTab);
   const all = useReplayStore(s => s.allMaterials);
   const filter = useReplayStore(s => s.filter);
-  const summary = useReplayStore(s => s.anomalySummary);
 
   const filtered = useMemo(() => {
     return all.filter(m => {
@@ -121,11 +120,16 @@ export const MaterialSidebar: React.FC = () => {
       || m.processStatus === 'need_evidence' || m.processStatus === 'rejected';
   }).sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 
+  const anomalyCountInFilter = filtered.filter(m =>
+    m.attachmentMeta?.isLate || m.hasModifiedCaliber || m.fillsGapId
+      || m.processStatus === 'need_evidence' || m.processStatus === 'rejected'
+  ).length;
+
   const tabCounts = {
     points: filtered.filter(m => m.type === 'point').length,
     attachments: filtered.filter(m => m.type === 'attachment').length,
     orals: filtered.filter(m => m.type === 'oral').length,
-    anomalies: summary.timelineGaps + summary.lateAttachments + summary.modifiedCalibers
+    anomalies: anomalyCountInFilter
   };
 
   return (

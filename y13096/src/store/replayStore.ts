@@ -59,9 +59,12 @@ interface ReplayState {
   // ====== Actions: 筛选 ======
   setDateRange: (start: string, end: string) => void;
   toggleAnomalyStatus: (tag: AnomalyTag) => void;
+  setAnomalyStatuses: (tags: AnomalyTag[]) => void;
   toggleMaterialType: (t: MaterialType) => void;
+  setMaterialTypes: (types: MaterialType[]) => void;
   setModifiedCaliberOnly: (v: boolean | null) => void;
   toggleProcessStatus: (s: ProcessStatus) => void;
+  setProcessStatuses: (statuses: ProcessStatus[]) => void;
   resetFilter: () => void;
 
   // ====== Actions: 选中与UI ======
@@ -185,10 +188,18 @@ export const useReplayStore = create<ReplayState>((set, get) => ({
     const f = { ...s.filter, anomalyStatus: next as AnomalyTag[] };
     return { filter: { ...f, rawSqlLike: rebuildRawSql(f) } };
   }),
+  setAnomalyStatuses: (tags) => set(s => {
+    const f = { ...s.filter, anomalyStatus: tags };
+    return { filter: { ...f, rawSqlLike: rebuildRawSql(f) } };
+  }),
   toggleMaterialType: (t) => set(s => {
     const has = s.filter.materialTypes.includes(t);
     const next = has ? s.filter.materialTypes.filter(x => x !== t) : [...s.filter.materialTypes, t];
     const f = { ...s.filter, materialTypes: next as MaterialType[] };
+    return { filter: { ...f, rawSqlLike: rebuildRawSql(f) } };
+  }),
+  setMaterialTypes: (types) => set(s => {
+    const f = { ...s.filter, materialTypes: types };
     return { filter: { ...f, rawSqlLike: rebuildRawSql(f) } };
   }),
   setModifiedCaliberOnly: (v) => set(s => {
@@ -199,6 +210,10 @@ export const useReplayStore = create<ReplayState>((set, get) => ({
     const has = s.filter.processStatuses.includes(st);
     const next = has ? s.filter.processStatuses.filter(x => x !== st) : [...s.filter.processStatuses, st];
     const f = { ...s.filter, processStatuses: next as ProcessStatus[] };
+    return { filter: { ...f, rawSqlLike: rebuildRawSql(f) } };
+  }),
+  setProcessStatuses: (statuses) => set(s => {
+    const f = { ...s.filter, processStatuses: statuses };
     return { filter: { ...f, rawSqlLike: rebuildRawSql(f) } };
   }),
   resetFilter: () => set({

@@ -5,11 +5,12 @@ import type { ProcessStatus } from '../../../shared/types';
 
 export const StatusBoard: React.FC = () => {
   const s = useReplayStore(state => state.anomalySummary);
-  const toggleProcessStatus = useReplayStore(state => state.toggleProcessStatus);
+  const filter = useReplayStore(state => state.filter);
+  const setProcessStatuses = useReplayStore(state => state.setProcessStatuses);
   const setSidebarTab = useReplayStore(state => state.setSidebarTab);
   const total = s.byStatus.processed + s.byStatus.need_evidence + s.byStatus.rejected + s.byStatus.untreated;
 
-  const cards: { key: ProcessStatus | 'all'; label: string; sub: string; count: number; color: string; Icon: any }[] = [
+  const cards: { key: ProcessStatus; label: string; sub: string; count: number; color: string; Icon: any }[] = [
     { key: 'processed',     label: '已处理',   sub: 'PROCESSED',     count: s.byStatus.processed,     color: 'emerald', Icon: ShieldCheck },
     { key: 'need_evidence', label: '待补证据', sub: 'NEED EVIDENCE', count: s.byStatus.need_evidence, color: 'orange',  Icon: AlertTriangle },
     { key: 'rejected',      label: '已驳回',   sub: 'REJECTED',      count: s.byStatus.rejected,      color: 'rose',    Icon: Ban },
@@ -23,16 +24,15 @@ export const StatusBoard: React.FC = () => {
     slate:   { bar: 'bg-slate-400',   text: 'text-slate-300',   border: 'border-slate-500/40',   bg: 'bg-slate-500/8',   glow: '' }
   };
 
-  const onClickCard = (key: ProcessStatus | 'all') => {
-    if (key === 'all') {
-      useReplayStore.setState(state => ({
-        filter: { ...state.filter, processStatuses: ['processed', 'need_evidence', 'rejected', 'untreated'] }
-      }));
+  const ALL_STATUSES: ProcessStatus[] = ['processed', 'need_evidence', 'rejected', 'untreated'];
+  const allStatusesSelected = ALL_STATUSES.every(k => filter.processStatuses.includes(k));
+
+  const onClickCard = (key: ProcessStatus) => {
+    const onlyThis = filter.processStatuses.length === 1 && filter.processStatuses[0] === key;
+    if (onlyThis) {
+      setProcessStatuses([...ALL_STATUSES]);
     } else {
-      useReplayStore.setState({
-        filter: { ...useReplayStore.getState().filter, processStatuses: [key] }
-      });
-      toggleProcessStatus(key);
+      setProcessStatuses([key]);
     }
     setSidebarTab('anomalies');
   };
@@ -50,18 +50,34 @@ export const StatusBoard: React.FC = () => {
         {cards.map(c => {
           const col = colorMap[c.color];
           const pct = total ? Math.round(c.count / total * 100) : 0;
+          const onlySelected = filter.processStatuses.length === 1 && filter.processStatuses[0] === c.key;
+          const notInFilter = !filter.processStatuses.includes(c.key);
           return (
             <button
               key={c.key}
               onClick={() => onClickCard(c.key)}
-              className={`text-left aero-panel-inner p-2.5 border ${col.border} ${col.bg} ${col.glow} hover:scale-[1.02] transition-all relative overflow-hidden group`}
+              className={`text-left aero-panel-inner p-2.5 border transition-all relative overflow-hidden group ${
+                onlySelected
+                  ? `${col.border} ${col.bg} ${col.glow} ring-1 ring-offset-0 ring-offset-transparent scale-[1.02]`
+                  : notInFilter
+                    ? 'border-aero-border/20 bg-aero-dim/20 opacity-50 hover:opacity-80'
+                    : `${col.border} ${col.bg} ${col.glow} hover:scale-[1.02]`
+              }`}
             >
+              {onlySelected && (
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-current to-transparent opacity-80" style={{ color: 'currentColor' }}>
+                  <div className={`h-full ${col.bar}`}></div>
+                </div>
+              )}
               <div className="absolute top-0 right-0 w-12 h-12 opacity-[0.05]">
                 <c.Icon size={48} className={col.text} />
               </div>
               <div className="flex items-center gap-1.5">
                 <c.Icon size={13} className={col.text} />
                 <span className={`text-[10px] font-mono uppercase tracking-wider ${col.text} opacity-70`}>{c.sub}</span>
+                {onlySelected && (
+                  <span className={`ml-auto text-[9px] font-mono px-1 py-0.5 rounded border ${col.border} ${col.text} bg-black/20`}>筛选中</span>
+                )}
               </div>
               <div className="flex items-end gap-2 mt-1.5">
                 <span className={`font-display font-bold text-[26px] leading-none ${col.text} tabular-nums group-hover:scale-105 transition-transform`}>
@@ -71,7 +87,7 @@ export const StatusBoard: React.FC = () => {
               </div>
               <div className="mt-2.5 flex items-center gap-2">
                 <div className="flex-1 h-1 bg-aero-dim rounded-full overflow-hidden">
-                  <div className={`h-full ${col.bar} rounded-full transition-all`} style={{ width: `${pct}%` }}></div>
+                  <div className={`h-full ${col.bar} rounded-full transition-all ${onlySelected ? 'h-1.5 shadow-[0_0_8px_rgba(255,255,255,0.3)]' : ''}`} style={{ width: `${pct}%` }}></div>
                 </div>
                 <span className={`font-mono text-[10px] ${col.text} tabular-nums`}>{pct}%</span>
               </div>
