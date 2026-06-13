@@ -1,0 +1,12 @@
+{
+  "equipment_id": "M-005",
+  "model": "YE3-132M-4",
+  "rated_torque_nm": 100.0,
+  "max_torque_nm": 190.0,
+  "warning_threshold_pct": 80.0,
+  "critical_threshold_pct": 110.0,
+  "manufacturer": "皖南电机",
+  "install_date": "2023-09-02",
+  "rated_speed_rpm": 1470,
+  "notes": "5#水泵,设备刚迁,传感器读数未同步上传"
+}

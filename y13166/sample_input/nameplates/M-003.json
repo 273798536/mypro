@@ -1,0 +1,12 @@
+{
+  "equipment_id": "M-003",
+  "model": "YE3-160L-4",
+  "rated_torque_nm": 100.0,
+  "max_torque_nm": 200.0,
+  "warning_threshold_pct": 80.0,
+  "critical_threshold_pct": 110.0,
+  "manufacturer": "佳木斯电机",
+  "install_date": "2022-11-20",
+  "rated_speed_rpm": 1460,
+  "notes": "3#粉碎机,老唐重点关注,曾出现卡料过载"
+}

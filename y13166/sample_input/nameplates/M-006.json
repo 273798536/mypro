@@ -1,0 +1,12 @@
+{
+  "equipment_id": "M-006",
+  "model": "Y2-160M-4",
+  "rated_torque_nm": 100.0,
+  "max_torque_nm": 200.0,
+  "warning_threshold_pct": 80.0,
+  "critical_threshold_pct": 110.0,
+  "manufacturer": "山东华力",
+  "install_date": "2023-07-18",
+  "rated_speed_rpm": 1465,
+  "notes": "6#搅拌机,工艺调整后实际阈值可放宽"
+}

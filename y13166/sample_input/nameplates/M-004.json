@@ -1,0 +1,12 @@
+{
+  "equipment_id": "M-004",
+  "model": "Y2-132S-4",
+  "rated_torque_nm": 100.0,
+  "max_torque_nm": 180.0,
+  "warning_threshold_pct": 80.0,
+  "critical_threshold_pct": 110.0,
+  "manufacturer": "湘潭电机",
+  "install_date": "2024-01-15",
+  "rated_speed_rpm": 1440,
+  "notes": "4#风机,上周刚更换传感器,可能接线有误"
+}

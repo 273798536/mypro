@@ -1,0 +1,12 @@
+{
+  "equipment_id": "M-002",
+  "model": "Y2-132M-4",
+  "rated_torque_nm": 100.0,
+  "max_torque_nm": 180.0,
+  "warning_threshold_pct": 80.0,
+  "critical_threshold_pct": 110.0,
+  "manufacturer": "上海电机厂",
+  "install_date": "2023-03-08",
+  "rated_speed_rpm": 1470,
+  "notes": "2#球磨机驱动,负载波动较大,注意监测"
+}

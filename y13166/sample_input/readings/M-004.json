@@ -1,0 +1,13 @@
+{
+  "equipment_id": "M-004",
+  "readings": [
+    {"timestamp": "2026-06-12T08:15:03", "value_nm": 52.1, "direction": "CW", "rpm": 1425, "temperature_c": 44.6, "sensor_id": "S-004"},
+    {"timestamp": "2026-06-12T09:15:17", "value_nm": 55.8, "direction": "→", "rpm": 1431, "temperature_c": 45.2, "sensor_id": "S-004"},
+    {"timestamp": "2026-06-12T10:15:29", "value_nm": 61.3, "direction": "CCW", "rpm": 1437, "temperature_c": 46.1, "sensor_id": "S-004"},
+    {"timestamp": "2026-06-12T11:15:44", "value_nm": 64.7, "direction": "←", "rpm": 1440, "temperature_c": 46.8, "sensor_id": "S-004"},
+    {"timestamp": "2026-06-12T12:15:08", "value_nm": 59.2, "direction": "CW", "rpm": 1434, "temperature_c": 45.9, "sensor_id": "S-004"},
+    {"timestamp": "2026-06-12T14:15:36", "value_nm": 58.5, "direction": "反向", "rpm": 1433, "temperature_c": 45.7, "sensor_id": "S-004"},
+    {"timestamp": "2026-06-12T15:15:52", "value_nm": 54.3, "direction": "正向", "rpm": 1429, "temperature_c": 45.0, "sensor_id": "S-004"},
+    {"timestamp": "2026-06-12T16:15:11", "value_nm": 50.7, "direction": "CW", "rpm": 1426, "temperature_c": 44.3, "sensor_id": "S-004"}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "note_id": "NOTE-M006-OVERRIDE",
+  "equipment_id": "M-006",
+  "author": "车间王主任",
+  "created_at": "2026-06-12 17:30:22",
+  "content": "6#搅拌机本月起工艺配方调整,物料粘稠度较前月增加15%,现场评估短期允许预警阈值上提,等7月检修换搅拌桨后恢复。",
+  "overrides_threshold": true,
+  "override_threshold_pct": 95.0
+}

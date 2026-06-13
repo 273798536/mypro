@@ -1,0 +1,12 @@
+{
+  "equipment_id": "M-001",
+  "model": "Y2-132M-4",
+  "rated_torque_nm": 100.0,
+  "max_torque_nm": 180.0,
+  "warning_threshold_pct": 80.0,
+  "critical_threshold_pct": 110.0,
+  "manufacturer": "上海电机厂",
+  "install_date": "2023-05-12",
+  "rated_speed_rpm": 1470,
+  "notes": "1#传送带驱动电机,日常巡检正常"
+}

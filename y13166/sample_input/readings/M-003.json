@@ -1,0 +1,25 @@
+{
+  "equipment_id": "M-003",
+  "readings": [
+    {"timestamp": "2026-06-12T08:10:12", "value_nm": 55.3, "direction": "CW", "rpm": 1438, "temperature_c": 48.0, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T08:30:05", "value_nm": 52.1, "direction": "CW", "rpm": 1434, "temperature_c": 47.5, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T08:50:41", "value_nm": 50.6, "direction": "CW", "rpm": 1432, "temperature_c": 47.2, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T09:10:28", "value_nm": 61.7, "direction": "CW", "rpm": 1445, "temperature_c": 50.2, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T09:30:15", "value_nm": 58.2, "direction": "CW", "rpm": 1440, "temperature_c": 49.6, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T09:50:33", "value_nm": 56.9, "direction": "CW", "rpm": 1439, "temperature_c": 49.3, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T10:10:45", "value_nm": 58.9, "direction": "CW", "rpm": 1441, "temperature_c": 49.7, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T10:30:22", "value_nm": 54.4, "direction": "CW", "rpm": 1436, "temperature_c": 48.8, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T10:37:52", "value_nm": 145.6, "direction": "CW", "rpm": 820, "temperature_c": 72.8, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T10:38:01", "value_nm": 138.2, "direction": "CW", "rpm": 915, "temperature_c": 74.1, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T10:50:17", "value_nm": 53.6, "direction": "CW", "rpm": 1435, "temperature_c": 48.4, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T11:10:19", "value_nm": 64.5, "direction": "CW", "rpm": 1447, "temperature_c": 52.0, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T11:30:44", "value_nm": 59.8, "direction": "CW", "rpm": 1442, "temperature_c": 50.5, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T11:50:29", "value_nm": 57.4, "direction": "CW", "rpm": 1440, "temperature_c": 49.9, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T12:10:37", "value_nm": 57.1, "direction": "CW", "rpm": 1440, "temperature_c": 50.8, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T13:30:08", "value_nm": 51.2, "direction": "CW", "rpm": 1433, "temperature_c": 47.8, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T14:10:08", "value_nm": 60.3, "direction": "CW", "rpm": 1443, "temperature_c": 51.4, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T14:30:35", "value_nm": 55.7, "direction": "CW", "rpm": 1438, "temperature_c": 49.1, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T15:10:24", "value_nm": 53.8, "direction": "CW", "rpm": 1436, "temperature_c": 49.3, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T16:10:51", "value_nm": 49.2, "direction": "CW", "rpm": 1432, "temperature_c": 47.6, "sensor_id": "S-003"}
+  ]
+}

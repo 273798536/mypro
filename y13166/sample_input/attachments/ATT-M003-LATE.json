@@ -1,0 +1,12 @@
+{
+  "attachment_id": "ATT-M003-LATE",
+  "equipment_id": "M-003",
+  "file_name": "M-003_2026-06-12_manual_dump.xlsx",
+  "upload_time": "2026-06-13 02:15:47",
+  "content_summary": "夜班巡检人员补传 10:42-10:45 卡料时段临时导出的高采样数据",
+  "readings": [
+    {"timestamp": "2026-06-12T10:42:13", "value_nm": 128.4, "direction": "CW", "rpm": 1035, "temperature_c": 68.3, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T10:43:28", "value_nm": 135.9, "direction": "CW", "rpm": 952, "temperature_c": 71.5, "sensor_id": "S-003"},
+    {"timestamp": "2026-06-12T10:44:51", "value_nm": 119.6, "direction": "CW", "rpm": 1140, "temperature_c": 67.2, "sensor_id": "S-003"}
+  ]
+}
