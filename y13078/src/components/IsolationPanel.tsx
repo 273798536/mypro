@@ -3,8 +3,6 @@ import { useAppStore } from '@/store/useAppStore';
 import { useState } from 'react';
 import { severityLabel, formatDate, typeLabel } from '@/utils/helpers';
 
-type Section = 'overlaps' | 'withdrawn' | 'supplements';
-
 export default function IsolationPanel() {
   const overlaps = useAppStore(s => s.overlaps);
   const points = useAppStore(s => s.points);
@@ -24,7 +22,6 @@ export default function IsolationPanel() {
 
       <div className="flex-1 overflow-y-auto scrollbar-thin">
         <SectionHeader
-          id="overlaps"
           icon={<MapPin className="w-3 h-3" />}
           title="对象重叠"
           count={overlaps.length}
@@ -58,7 +55,6 @@ export default function IsolationPanel() {
         </SectionHeader>
 
         <SectionHeader
-          id="withdrawn"
           icon={<Undo2 className="w-3 h-3" />}
           title="撤回记录"
           count={withdrawn.length}
@@ -93,7 +89,6 @@ export default function IsolationPanel() {
         </SectionHeader>
 
         <SectionHeader
-          id="supplements"
           icon={<StickyNote className="w-3 h-3" />}
           title="后补说明"
           count={withSupplements.reduce((s, p) => s + p.supplements.length, 0)}
@@ -132,9 +127,8 @@ export default function IsolationPanel() {
 }
 
 function SectionHeader({
-  id, icon, title, count, countClass, children,
+  icon, title, count, countClass, children,
 }: {
-  id: Section;
   icon: React.ReactNode;
   title: string;
   count: number;

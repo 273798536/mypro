@@ -7,13 +7,13 @@
       "cabinetId": "CAB-A-01",
       "type": "sensor",
       "status": "normal",
-      "remark": "排班同事已修改：A-01机柜进风口温度传感器，稳定运行239天，本周温度波动平稳",
+      "remark": "验证链路：冷通道剖面讲解系统质量闭环测试-已通过lint和类型检查",
       "originalRow": 12,
       "isBadData": false,
       "withdrawn": false,
       "supplements": [],
       "createdAt": 1763912478655,
-      "updatedAt": 1781192702831
+      "updatedAt": 1781371051330
     },
     {
       "id": "P-0002",
@@ -353,7 +353,7 @@
     }
   ],
   "meta": {
-    "updatedAt": 1781192702831,
+    "updatedAt": 1781371051330,
     "version": "1.0.0"
   }
 }

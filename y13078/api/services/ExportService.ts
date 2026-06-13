@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import type { Point, ViewPreset, UnifiedSummary, OverlapPair, Cabinet } from '../../shared/types';
+import type { Point, ViewPreset, OverlapPair, Cabinet } from '../../shared/types';
 import { SummaryService } from './SummaryService';
 import { OverlapDetectService } from './OverlapDetectService';
 

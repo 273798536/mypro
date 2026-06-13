@@ -17,7 +17,6 @@ router.get('/json', (_req, res) => {
 
 router.get('/summary-json', (_req, res) => {
   const points = db.getAllPoints();
-  const overlaps = OverlapDetectService.detectPairs(points);
   const payload = ExportService.buildFullJson(points, db.getAllViews(), db.getAllCabinets());
   res.json(payload);
 });

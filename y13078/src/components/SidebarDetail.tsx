@@ -39,7 +39,7 @@ export default function SidebarDetail() {
       return () => clearTimeout(t);
     }
     if (remarkSavingId === p?.id) setSavedFlash(true);
-  }, [remarkSavingId, p?.id, savedFlash]);
+  }, [remarkSavingId, p, savedFlash]);
 
   const debouncedSave = debounce(
     (val: string) => p && updateRemark(p.id, val, '排班同事'),
