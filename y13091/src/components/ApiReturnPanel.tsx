@@ -23,10 +23,10 @@ export default function ApiReturnPanel() {
     records,
     filterState,
     resetAll,
+    apiReturns: allApiReturns,
   } = useAppStore()
   const filteredReturns = useFilteredApiReturns()
-  const showAll = filteredReturns.length === 0 && useAppStore((s) => s.apiReturns).length > 0
-  const allApiReturns = useAppStore((s) => s.apiReturns)
+  const showAll = filteredReturns.length === 0 && allApiReturns.length > 0
   const visibleReturns = showAll ? allApiReturns : filteredReturns
 
   const grouped = {

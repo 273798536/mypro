@@ -3,12 +3,13 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { OrbitControls, Line } from "@react-three/drei"
 import { EffectComposer, Bloom } from "@react-three/postprocessing"
 import * as THREE from "three"
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib"
 import { useAppStore } from "@/store/useAppStore"
 
 function CameraController() {
   const { records, selectedRecordId } = useAppStore()
   const { camera } = useThree()
-  const controlsRef = useRef<any>(null)
+  const controlsRef = useRef<OrbitControlsImpl | null>(null)
   const targetPos = useRef(new THREE.Vector3(12, 8, 12))
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0))
 
