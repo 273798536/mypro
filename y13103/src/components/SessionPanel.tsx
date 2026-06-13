@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRegressionStore, type DataPoint, type RegressionParams } from '@/store/regression'
 import { cn } from '@/lib/utils'
 import { Plus, Trash2, Play, RotateCcw, History, Settings, Database, ChevronRight } from 'lucide-react'
@@ -70,13 +70,19 @@ export default function SessionPanel() {
   const [sensLabel, setSensLabel] = useState('')
   const [showSensitivity, setShowSensitivity] = useState(false)
 
-  const handleAddDataPoint = () => {
+  useEffect(() => {
+    setBreakpointsInput(params.breakpoints?.join(', ') || '')
+    setUnitInput(params.unit || '')
+    setMinSizeInput(String(params.minSegmentSize ?? 3))
+  }, [params.breakpoints, params.unit, params.minSegmentSize])
+
+  const handleAddDataPoint = async () => {
     const xVal = parseFloat(newX)
     const yVal = parseFloat(newY)
     if (isNaN(xVal) || isNaN(yVal)) return
     const point: DataPoint = { x: xVal, y: yVal }
     if (newUnit.trim()) point.unit = newUnit.trim()
-    addDataPoint(point)
+    await addDataPoint(point)
     setNewX('')
     setNewY('')
     setNewUnit('')
@@ -199,13 +205,13 @@ export default function SessionPanel() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.map((d, i) => (
-                      <tr key={i} className={cn('border-b last:border-0', !d.unit && 'bg-red-50')}>
+                    {data.map(d => (
+                      <tr key={d.id} className={cn('border-b last:border-0', !d.unit && 'bg-red-50')}>
                         <td className="py-1.5 pr-2">{d.x}</td>
                         <td className="py-1.5 pr-2">{d.y}</td>
                         <td className="py-1.5 pr-2">{d.unit ?? <span className="text-red-400 italic">缺失</span>}</td>
                         <td className="py-1.5">
-                          <button onClick={() => removeDataPoint(i)} className="text-gray-400 hover:text-red-500">
+                          <button onClick={() => removeDataPoint(d.id)} className="text-gray-400 hover:text-red-500">
                             <Trash2 className="h-3 w-3" />
                           </button>
                         </td>

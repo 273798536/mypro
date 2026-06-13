@@ -6,6 +6,11 @@ export interface DataPoint {
   unit?: string
 }
 
+export interface DataPointWithId extends DataPoint {
+  id: string
+  sort_order: number
+}
+
 export interface SegmentResult {
   slope: number
   intercept: number
@@ -97,7 +102,7 @@ interface RegressionState {
   result: RegressionResult | null
   materialImpact: MaterialImpact[]
   history: HistoryEntry[]
-  data: DataPoint[]
+  data: DataPointWithId[]
   params: RegressionParams
   loading: boolean
   error: string | null
@@ -107,9 +112,9 @@ interface RegressionState {
   selectSession: (id: string) => Promise<void>
   deleteSession: (id: string) => Promise<void>
   updateParams: (params: RegressionParams) => Promise<void>
-  setData: (data: DataPoint[]) => void
-  addDataPoint: (point: DataPoint) => void
-  removeDataPoint: (index: number) => void
+  setData: (data: DataPoint[]) => Promise<void>
+  addDataPoint: (point: DataPoint) => Promise<void>
+  removeDataPoint: (pointId: string) => Promise<void>
   addMaterial: (type: MaterialType, content: Record<string, unknown>) => Promise<void>
   updateMaterial: (materialId: string, updates: { content?: Record<string, unknown>; isActive?: boolean }) => Promise<void>
   deleteMaterial: (materialId: string) => Promise<void>
@@ -167,7 +172,16 @@ export const useRegressionStore = create<RegressionState>((set, get) => ({
         body: JSON.stringify({ name: name || '新建分段回归会话' }),
       })
       localStorage.setItem(LAST_SESSION_KEY, session.id)
-      set(state => ({ sessions: [session, ...state.sessions], currentSession: session, materials: [], result: null, materialImpact: [], history: [], loading: false }))
+      set(state => ({
+        sessions: [session, ...state.sessions],
+        currentSession: session,
+        materials: [],
+        data: [],
+        result: null,
+        materialImpact: [],
+        history: [],
+        loading: false,
+      }))
     } catch (e: unknown) {
       set({ error: (e as Error).message, loading: false })
     }
@@ -179,6 +193,7 @@ export const useRegressionStore = create<RegressionState>((set, get) => ({
       const data = await apiFetch<{
         session: SessionInfo
         materials: Material[]
+        dataPoints: DataPointWithId[]
         result: RegressionResult | null
         recentHistory: HistoryEntry[]
       }>(`/sessions/${id}/state`)
@@ -186,6 +201,7 @@ export const useRegressionStore = create<RegressionState>((set, get) => ({
       set({
         currentSession: data.session,
         materials: data.materials,
+        data: data.dataPoints,
         result: data.result,
         history: data.recentHistory,
         params: data.session.params,
@@ -224,9 +240,44 @@ export const useRegressionStore = create<RegressionState>((set, get) => ({
     }
   },
 
-  setData: (data: DataPoint[]) => set({ data }),
-  addDataPoint: (point: DataPoint) => set(state => ({ data: [...state.data, point] })),
-  removeDataPoint: (index: number) => set(state => ({ data: state.data.filter((_, i) => i !== index) })),
+  setData: async (points: DataPoint[]) => {
+    const { currentSession } = get()
+    if (!currentSession) return
+    try {
+      const data = await apiFetch<DataPointWithId[]>(`/sessions/${currentSession.id}/data-points/batch`, {
+        method: 'PUT',
+        body: JSON.stringify({ points }),
+      })
+      set({ data })
+    } catch (e: unknown) {
+      set({ error: (e as Error).message })
+    }
+  },
+
+  addDataPoint: async (point: DataPoint) => {
+    const { currentSession } = get()
+    if (!currentSession) return
+    try {
+      const created = await apiFetch<DataPointWithId>(`/sessions/${currentSession.id}/data-points`, {
+        method: 'POST',
+        body: JSON.stringify(point),
+      })
+      set(state => ({ data: [...state.data, created] }))
+    } catch (e: unknown) {
+      set({ error: (e as Error).message })
+    }
+  },
+
+  removeDataPoint: async (pointId: string) => {
+    const { currentSession } = get()
+    if (!currentSession) return
+    try {
+      await apiFetch(`/sessions/${currentSession.id}/data-points/${pointId}`, { method: 'DELETE' })
+      set(state => ({ data: state.data.filter(p => p.id !== pointId) }))
+    } catch (e: unknown) {
+      set({ error: (e as Error).message })
+    }
+  },
 
   addMaterial: async (type: MaterialType, content: Record<string, unknown>) => {
     const { currentSession } = get()
@@ -282,18 +333,22 @@ export const useRegressionStore = create<RegressionState>((set, get) => ({
         method: 'POST',
         body: JSON.stringify({ data, params, sensitivityCompare }),
       })
-      set({
-        result: response.result,
-        materialImpact: response.materialImpact,
-        loading: false,
-      })
       const stateData = await apiFetch<{
         session: SessionInfo
         materials: Material[]
+        dataPoints: DataPointWithId[]
         result: RegressionResult | null
         recentHistory: HistoryEntry[]
       }>(`/sessions/${currentSession.id}/state`)
-      set({ history: stateData.recentHistory, currentSession: stateData.session })
+      set({
+        result: response.result,
+        materialImpact: response.materialImpact,
+        history: stateData.recentHistory,
+        currentSession: stateData.session,
+        data: stateData.dataPoints,
+        materials: stateData.materials,
+        loading: false,
+      })
     } catch (e: unknown) {
       set({ error: (e as Error).message, loading: false })
     }
@@ -307,12 +362,14 @@ export const useRegressionStore = create<RegressionState>((set, get) => ({
       const data = await apiFetch<{
         session: SessionInfo
         materials: Material[]
+        dataPoints: DataPointWithId[]
         result: RegressionResult | null
         recentHistory: HistoryEntry[]
       }>(`/sessions/${currentSession.id}/state`)
       set({
         currentSession: data.session,
         materials: data.materials,
+        data: data.dataPoints,
         result: data.result,
         history: data.recentHistory,
         params: data.session.params,

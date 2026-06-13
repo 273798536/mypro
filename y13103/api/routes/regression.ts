@@ -30,6 +30,16 @@ interface HistoryRow {
   created_at: string
 }
 
+interface DataPointRow {
+  id: string
+  session_id: string
+  x: number
+  y: number
+  unit: string | null
+  sort_order: number
+  created_at: string
+}
+
 const router = Router()
 
 function generateId(): string {
@@ -171,6 +181,131 @@ router.delete('/sessions/:id/materials/:materialId', (req: Request, res: Respons
   res.json({ success: true })
 })
 
+router.get('/sessions/:id/data-points', (req: Request, res: Response): void => {
+  const db = getDb()
+  const session = db.prepare('SELECT id FROM sessions WHERE id = ?').get(req.params.id) as SessionRow | undefined
+  if (!session) {
+    res.status(404).json({ success: false, error: '会话不存在' })
+    return
+  }
+  const points = db.prepare(
+    'SELECT id, x, y, unit, sort_order, created_at FROM data_points WHERE session_id = ? ORDER BY sort_order, created_at'
+  ).all(req.params.id) as DataPointRow[]
+  res.json({ success: true, data: points })
+})
+
+router.post('/sessions/:id/data-points', (req: Request, res: Response): void => {
+  const db = getDb()
+  const sessionId = req.params.id
+  const session = db.prepare('SELECT id FROM sessions WHERE id = ?').get(sessionId) as SessionRow | undefined
+  if (!session) {
+    res.status(404).json({ success: false, error: '会话不存在' })
+    return
+  }
+
+  const { x, y, unit } = req.body as { x: number; y: number; unit?: string | null }
+  if (x === undefined || y === undefined) {
+    res.status(400).json({ success: false, error: 'x 和 y 为必填' })
+    return
+  }
+
+  const maxOrder = db.prepare('SELECT COALESCE(MAX(sort_order), -1) as mo FROM data_points WHERE session_id = ?').get(sessionId) as { mo: number }
+  const id = generateId()
+  db.prepare('INSERT INTO data_points (id, session_id, x, y, unit, sort_order) VALUES (?, ?, ?, ?, ?, ?)').run(
+    id, sessionId, Number(x), Number(y), unit || null, maxOrder.mo + 1
+  )
+
+  db.prepare('UPDATE sessions SET updated_at = datetime(\'now\') WHERE id = ?').run(sessionId)
+  db.prepare('INSERT INTO history (id, session_id, action, details) VALUES (?, ?, ?, ?)').run(
+    generateId(), sessionId, 'add_data_point', JSON.stringify({ pointId: id, x, y, unit })
+  )
+
+  const point = db.prepare('SELECT * FROM data_points WHERE id = ?').get(id) as DataPointRow
+  res.json({ success: true, data: point })
+})
+
+router.put('/sessions/:id/data-points/batch', (req: Request, res: Response): void => {
+  const db = getDb()
+  const sessionId = req.params.id
+  const session = db.prepare('SELECT id FROM sessions WHERE id = ?').get(sessionId) as SessionRow | undefined
+  if (!session) {
+    res.status(404).json({ success: false, error: '会话不存在' })
+    return
+  }
+
+  const { points } = req.body as { points: { x: number; y: number; unit?: string | null }[] }
+  if (!points || !Array.isArray(points) || points.length < 2) {
+    res.status(400).json({ success: false, error: '至少需要2个数据点' })
+    return
+  }
+
+  const trx = db.transaction(() => {
+    db.prepare('DELETE FROM data_points WHERE session_id = ?').run(sessionId)
+    const insertStmt = db.prepare('INSERT INTO data_points (id, session_id, x, y, unit, sort_order) VALUES (?, ?, ?, ?, ?, ?)')
+    points.forEach((p, i) => {
+      insertStmt.run(generateId(), sessionId, Number(p.x), Number(p.y), p.unit || null, i)
+    })
+    db.prepare('UPDATE sessions SET updated_at = datetime(\'now\') WHERE id = ?').run(sessionId)
+  })
+  trx()
+
+  db.prepare('INSERT INTO history (id, session_id, action, details) VALUES (?, ?, ?, ?)').run(
+    generateId(), sessionId, 'set_data_points', JSON.stringify({ count: points.length })
+  )
+
+  const allPoints = db.prepare(
+    'SELECT id, x, y, unit, sort_order FROM data_points WHERE session_id = ? ORDER BY sort_order'
+  ).all(sessionId) as DataPointRow[]
+  res.json({ success: true, data: allPoints })
+})
+
+router.put('/sessions/:id/data-points/:pointId', (req: Request, res: Response): void => {
+  const db = getDb()
+  const { x, y, unit } = req.body as { x?: number; y?: number; unit?: string | null }
+  const point = db.prepare('SELECT * FROM data_points WHERE id = ? AND session_id = ?').get(
+    req.params.pointId, req.params.id
+  ) as DataPointRow | undefined
+  if (!point) {
+    res.status(404).json({ success: false, error: '数据点不存在' })
+    return
+  }
+
+  const sets: string[] = []
+  const values: (string | number | null)[] = []
+  if (x !== undefined) { sets.push('x = ?'); values.push(Number(x)) }
+  if (y !== undefined) { sets.push('y = ?'); values.push(Number(y)) }
+  if (unit !== undefined) { sets.push('unit = ?'); values.push(unit || null) }
+
+  if (sets.length > 0) {
+    values.push(req.params.pointId)
+    db.prepare(`UPDATE data_points SET ${sets.join(', ')} WHERE id = ?`).run(...values)
+    db.prepare('UPDATE sessions SET updated_at = datetime(\'now\') WHERE id = ?').run(req.params.id)
+    db.prepare('INSERT INTO history (id, session_id, action, details) VALUES (?, ?, ?, ?)').run(
+      generateId(), req.params.id, 'update_data_point', JSON.stringify({ pointId: req.params.pointId })
+    )
+  }
+
+  const updated = db.prepare('SELECT * FROM data_points WHERE id = ?').get(req.params.pointId) as DataPointRow
+  res.json({ success: true, data: updated })
+})
+
+router.delete('/sessions/:id/data-points/:pointId', (req: Request, res: Response): void => {
+  const db = getDb()
+  const point = db.prepare('SELECT id FROM data_points WHERE id = ? AND session_id = ?').get(
+    req.params.pointId, req.params.id
+  ) as DataPointRow | undefined
+  if (!point) {
+    res.status(404).json({ success: false, error: '数据点不存在' })
+    return
+  }
+  db.prepare('DELETE FROM data_points WHERE id = ?').run(req.params.pointId)
+  db.prepare('UPDATE sessions SET updated_at = datetime(\'now\') WHERE id = ?').run(req.params.id)
+  db.prepare('INSERT INTO history (id, session_id, action, details) VALUES (?, ?, ?, ?)').run(
+    generateId(), req.params.id, 'delete_data_point', JSON.stringify({ pointId: req.params.pointId })
+  )
+  res.json({ success: true })
+})
+
 router.post('/sessions/:id/compute', (req: Request, res: Response): void => {
   const db = getDb()
   const sessionId = req.params.id
@@ -180,14 +315,24 @@ router.post('/sessions/:id/compute', (req: Request, res: Response): void => {
     return
   }
 
-  const { data, params, sensitivityCompare } = req.body as {
-    data: DataPoint[]
+  const { data: reqData, params, sensitivityCompare } = req.body as {
+    data?: DataPoint[]
     params?: RegressionParams
     sensitivityCompare?: { params: RegressionParams; label: string }
   }
 
-  if (!data || !Array.isArray(data) || data.length < 2) {
-    res.status(400).json({ success: false, error: '至少需要2个数据点' })
+  let data: DataPoint[]
+  if (reqData && Array.isArray(reqData) && reqData.length > 0) {
+    data = reqData
+  } else {
+    const storedPoints = db.prepare(
+      'SELECT x, y, unit FROM data_points WHERE session_id = ? ORDER BY sort_order, created_at'
+    ).all(sessionId) as { x: number; y: number; unit: string | null }[]
+    data = storedPoints.map(p => ({ x: Number(p.x), y: Number(p.y), unit: p.unit || undefined }))
+  }
+
+  if (!data || data.length < 2) {
+    res.status(400).json({ success: false, error: '至少需要2个数据点，请先添加数据点' })
     return
   }
 
@@ -272,6 +417,9 @@ router.get('/sessions/:id/state', (req: Request, res: Response): void => {
   }
   const materials = db.prepare('SELECT * FROM materials WHERE session_id = ? ORDER BY created_at').all(req.params.id) as MaterialRow[]
   const history = db.prepare('SELECT * FROM history WHERE session_id = ? ORDER BY created_at DESC LIMIT 20').all(req.params.id) as HistoryRow[]
+  const dataPoints = db.prepare(
+    'SELECT id, x, y, unit, sort_order FROM data_points WHERE session_id = ? ORDER BY sort_order, created_at'
+  ).all(req.params.id) as DataPointRow[]
   const result = session.result ? JSON.parse(session.result) : null
 
   res.json({
@@ -286,6 +434,7 @@ router.get('/sessions/:id/state', (req: Request, res: Response): void => {
         updatedAt: session.updated_at,
       },
       materials,
+      dataPoints,
       result,
       recentHistory: history,
     },

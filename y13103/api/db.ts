@@ -51,8 +51,20 @@ function initSchema(db: Database.Database): void {
       FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
     );
 
+    CREATE TABLE IF NOT EXISTS data_points (
+      id TEXT PRIMARY KEY,
+      session_id TEXT NOT NULL,
+      x REAL NOT NULL,
+      y REAL NOT NULL,
+      unit TEXT,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+    );
+
     CREATE INDEX IF NOT EXISTS idx_materials_session ON materials(session_id);
     CREATE INDEX IF NOT EXISTS idx_history_session ON history(session_id);
+    CREATE INDEX IF NOT EXISTS idx_data_points_session ON data_points(session_id);
   `)
 }
 
