@@ -80,6 +80,17 @@ export interface CollisionResult {
   altitudeConflict: boolean;
   description: string;
   nextSteps: string[];
+  sourceAttachmentId: string | null;
+  sourceAttachmentName: string | null;
+  sourceVersion: number | null;
+  isAffectedByChange: boolean;
+  changeImpactDescription: string | null;
+  changeHistory: {
+    version: number;
+    changeSummary: string;
+    timestamp: string;
+    author: string;
+  }[];
 }
 
 export interface ViewState {

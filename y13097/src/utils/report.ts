@@ -2,7 +2,6 @@ import type {
   PreReviewReport,
   CollisionStatus,
   CollisionResult,
-  Attachment,
 } from '../types';
 
 const STATUS_LABELS: Record<CollisionStatus, string> = {
@@ -77,18 +76,43 @@ export function generateMarkdownReport(report: PreReviewReport): string {
   const safeResults = report.collisionResults.filter((r) => r.status === 'safe');
   const pendingResults = report.collisionResults.filter((r) => r.status === 'pending');
 
-  function renderResultList(results: CollisionResult[], allAttachments: Attachment[], level: string) {
+  function renderResultList(results: CollisionResult[], level: string) {
     if (results.length === 0) return;
 
     lines.push(`### ${level}对象（${results.length}个）`);
     lines.push('');
 
     results.forEach((result, idx) => {
-      lines.push(`#### ${idx + 1}. ${result.objectName}`);
+      const changeTag = result.isAffectedByChange ? ' ⚠️ 受材料变更影响' : '';
+      lines.push(`#### ${idx + 1}. ${result.objectName}${changeTag}`);
       lines.push('');
       lines.push(`- **状态**：${STATUS_LABELS[result.status]}`);
       lines.push(`- **说明**：${result.description}`);
       lines.push('');
+
+      if (result.sourceAttachmentName) {
+        lines.push(`- **来源材料**：${result.sourceAttachmentName}（v${result.sourceVersion}）`);
+        lines.push('');
+      }
+
+      if (result.changeImpactDescription) {
+        lines.push('- **材料变更影响**：');
+        lines.push(`  ${result.changeImpactDescription}`);
+        lines.push('');
+      }
+
+      if (result.changeHistory && result.changeHistory.length > 1) {
+        lines.push('- **版本变更历史**：');
+        lines.push('');
+        lines.push('| 版本 | 时间 | 提交人 | 变更说明 |');
+        lines.push('| --- | --- | --- | --- |');
+        [...result.changeHistory].reverse().forEach((ver) => {
+          lines.push(
+            `| v${ver.version} | ${ver.timestamp} | ${ver.author} | ${ver.changeSummary} |`
+          );
+        });
+        lines.push('');
+      }
 
       if (result.overlapDistance > 0) {
         lines.push('- **碰撞数据**：');
@@ -105,24 +129,13 @@ export function generateMarkdownReport(report: PreReviewReport): string {
         });
         lines.push('');
       }
-
-      const att = allAttachments.find(
-        (a) =>
-          a.versions.some((v) =>
-            v.affectedObjectIds.some((oid) => oid.includes(result.objectId))
-          ) || result.objectId.includes(a.id)
-      );
-      if (att) {
-        lines.push(`- **来源材料**：${att.name}（v${att.currentVersion}）`);
-        lines.push('');
-      }
     });
   }
 
-  renderResultList(dangerResults, report.attachments, '严重冲突');
-  renderResultList(warningResults, report.attachments, '风险关注');
-  renderResultList(safeResults, report.attachments, '安全');
-  renderResultList(pendingResults, report.attachments, '待核实');
+  renderResultList(dangerResults, '严重冲突');
+  renderResultList(warningResults, '风险关注');
+  renderResultList(safeResults, '安全');
+  renderResultList(pendingResults, '待核实');
 
   lines.push('## 四、结论与建议');
   lines.push('');

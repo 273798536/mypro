@@ -179,6 +179,9 @@ export default function AnalysisPanel({
                     {obj?.isAbnormal && (
                       <span className="abnormal-badge">异常</span>
                     )}
+                    {result.isAffectedByChange && (
+                      <span className="change-badge">口径变更</span>
+                    )}
                   </div>
                   <div className="result-status" style={{ color: config.color }}>
                     <Icon size={14} />
@@ -187,6 +190,23 @@ export default function AnalysisPanel({
                 </div>
 
                 <div className="result-desc">{result.description}</div>
+
+                {result.sourceAttachmentName && (
+                  <div className="result-source">
+                    <FileText size={12} />
+                    <span>来源：{result.sourceAttachmentName}（v{result.sourceVersion}）</span>
+                  </div>
+                )}
+
+                {result.changeImpactDescription && (
+                  <div className="change-impact">
+                    <AlertTriangle size={14} />
+                    <div>
+                      <div className="change-impact-title">材料变更影响</div>
+                      <div className="change-impact-desc">{result.changeImpactDescription}</div>
+                    </div>
+                  </div>
+                )}
 
                 {result.overlapDistance > 0 && (
                   <div className="result-metrics">
@@ -241,6 +261,21 @@ export default function AnalysisPanel({
                   <div className="abnormal-reason">
                     <AlertTriangle size={14} />
                     <span>异常原因：{obj.abnormalReason}</span>
+                  </div>
+                )}
+
+                {result.changeHistory && result.changeHistory.length > 1 && (
+                  <div className="change-history">
+                    <div className="change-history-title">版本变更历史</div>
+                    <div className="change-history-list">
+                      {[...result.changeHistory].reverse().map((ver, idx) => (
+                        <div key={idx} className="change-history-item">
+                          <span className="version-tag">v{ver.version}</span>
+                          <span className="version-desc">{ver.changeSummary}</span>
+                          <span className="version-meta">{ver.timestamp} · {ver.author}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

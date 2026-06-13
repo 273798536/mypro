@@ -53,8 +53,8 @@ export default function App() {
 
   const collisionResults = useMemo((): CollisionResult[] => {
     if (!selectedCorridor) return [];
-    return calculateCollisions(selectedCorridor, objects);
-  }, [selectedCorridor, objects]);
+    return calculateCollisions(selectedCorridor, objects, attachments);
+  }, [selectedCorridor, objects, attachments]);
 
   const getObjectStatus = useCallback(
     (objectId: string): string => {
@@ -165,6 +165,8 @@ export default function App() {
     const warningResults = collisionResults.filter((r) => r.status === 'warning');
     const lateAttachments = attachments.filter((a) => a.isLateArrival);
     const abnormalObjects = objects.filter((o) => o.isAbnormal);
+    const changedAttachments = attachments.filter((a) => a.versions.length > 1);
+    const affectedResults = collisionResults.filter((r) => r.isAffectedByChange);
 
     if (collisionResults.length === 0) {
       return '暂无障碍物数据，无法得出结论。请先在「数据录入」中添加航线走廊和障碍物对象。';
@@ -183,6 +185,30 @@ export default function App() {
       );
     }
 
+    if (changedAttachments.length > 0) {
+      parts.push(
+        `预审过程中共收到 ${changedAttachments.length} 份材料的口径变更，影响 ${affectedResults.length} 个障碍物的预审结论：`
+      );
+      changedAttachments.forEach((att) => {
+        const latestVersion = att.versions[att.versions.length - 1];
+        const affectedObjs = latestVersion.affectedObjectIds
+          .map((oid) => {
+            const obj = objects.find((o) => o.id === oid);
+            const result = collisionResults.find((r) => r.objectId === oid);
+            if (!obj || !result) return '';
+            const statusLabel = { danger: '严重冲突', warning: '存在风险', safe: '安全', pending: '待核实' }[result.status];
+            return `${obj.name}（${statusLabel}）`;
+          })
+          .filter(Boolean)
+          .join('、');
+        if (affectedObjs) {
+          parts.push(
+            `- 「${att.name}」v${latestVersion.version}（${latestVersion.timestamp}，${latestVersion.author}）变更：${latestVersion.changeSummary}，影响对象：${affectedObjs}`
+          );
+        }
+      });
+    }
+
     if (abnormalObjects.length > 0) {
       const abnormalNames = abnormalObjects
         .map((o) => `${o.name}（${o.abnormalReason || '异常'}）`)
@@ -192,8 +218,12 @@ export default function App() {
 
     if (dangerResults.length > 0) {
       const firstDanger = dangerResults[0];
+      let impactNote = '';
+      if (firstDanger.sourceAttachmentName && firstDanger.sourceVersion) {
+        impactNote = `（来源：${firstDanger.sourceAttachmentName} v${firstDanger.sourceVersion}）`;
+      }
       parts.push(
-        `最严重冲突为 ${firstDanger.objectName}，侵入走廊 ${firstDanger.overlapDistance.toFixed(1)} 米，建议立即处理。`
+        `最严重冲突为 ${firstDanger.objectName}${impactNote}，侵入走廊 ${firstDanger.overlapDistance.toFixed(1)} 米，建议立即处理。`
       );
     }
 
@@ -201,7 +231,7 @@ export default function App() {
       parts.push('所有障碍物与航线走廊距离安全，可正常通航。');
     }
 
-    parts.push('建议：');
+    parts.push('\n\n建议：');
     if (dangerResults.length > 0) {
       parts.push('1. 对严重冲突对象，立即联系相关单位核实数据，评估调整航线或移除障碍的可行性；');
     }
@@ -211,7 +241,10 @@ export default function App() {
     if (lateAttachments.length > 0 || abnormalObjects.length > 0) {
       parts.push('3. 对晚到附件和异常口径，追溯原始资料，确认数据真实性；');
     }
-    parts.push('4. 所有处理措施记录在案，形成完整审计链条。');
+    if (changedAttachments.length > 0) {
+      parts.push('4. 对所有口径变更，留存版本对比记录，确保每一次变更都可追溯；');
+    }
+    parts.push('5. 所有处理措施记录在案，形成完整审计链条。');
 
     return parts.join('');
   }

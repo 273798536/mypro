@@ -206,25 +206,128 @@ export function getInitialViewStates(): ViewState[] {
   ];
 }
 
+function pointToLineDistance(
+  px: number,
+  py: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+): { distance: number; closestPoint: { x: number; y: number } } {
+  const A = px - x1;
+  const B = py - y1;
+  const C = x2 - x1;
+  const D = y2 - y1;
+
+  const dot = A * C + B * D;
+  const lenSq = C * C + D * D;
+  let param = -1;
+
+  if (lenSq !== 0) {
+    param = dot / lenSq;
+  }
+
+  let xx, yy;
+
+  if (param < 0) {
+    xx = x1;
+    yy = y1;
+  } else if (param > 1) {
+    xx = x2;
+    yy = y2;
+  } else {
+    xx = x1 + param * C;
+    yy = y1 + param * D;
+  }
+
+  const dx = px - xx;
+  const dy = py - yy;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  return {
+    distance,
+    closestPoint: { x: xx, y: yy },
+  };
+}
+
+function distanceToCorridor(
+  objX: number,
+  objY: number,
+  corridor: Corridor
+): { distance: number; closestSegment: number } {
+  let minDistance = Infinity;
+  let closestSegment = 0;
+
+  for (let i = 0; i < corridor.waypoints.length - 1; i++) {
+    const p1 = corridor.waypoints[i];
+    const p2 = corridor.waypoints[i + 1];
+    const result = pointToLineDistance(objX, objY, p1.x, p1.y, p2.x, p2.y);
+    if (result.distance < minDistance) {
+      minDistance = result.distance;
+      closestSegment = i;
+    }
+  }
+
+  return { distance: minDistance, closestSegment };
+}
+
 export function calculateCollisions(
   corridor: Corridor,
-  objects: CollisionObject[]
+  objects: CollisionObject[],
+  attachments: Attachment[]
 ): CollisionResult[] {
   return objects.map((obj) => {
-    const corridorCenterY = 200;
-    const corridorHalfWidth = corridor.width / 2;
+    const objCenterX = obj.position.x + obj.width / 2;
     const objCenterY = obj.position.y + obj.height / 2;
-    const distanceFromCenter = Math.abs(objCenterY - corridorCenterY);
+
+    const { distance: distanceFromCorridor } = distanceToCorridor(
+      objCenterX,
+      objCenterY,
+      corridor
+    );
+
+    const corridorHalfWidth = corridor.width / 2;
+    const objHalfSize = Math.max(obj.width, obj.height) / 2;
 
     let overlapDistance = 0;
-    if (distanceFromCenter < corridorHalfWidth + obj.width / 2) {
-      overlapDistance =
-        corridorHalfWidth + obj.width / 2 - distanceFromCenter;
+    if (distanceFromCorridor < corridorHalfWidth + objHalfSize) {
+      overlapDistance = corridorHalfWidth + objHalfSize - distanceFromCorridor;
     }
 
     const altitudeConflict =
       obj.altitude >= corridor.minAltitude &&
       obj.altitude <= corridor.maxAltitude;
+
+    const sourceAttachment = attachments.find(
+      (a) => a.id === obj.sourceAttachmentId
+    );
+
+    const changeHistory = sourceAttachment
+      ? sourceAttachment.versions.map((v) => ({
+          version: v.version,
+          changeSummary: v.changeSummary,
+          timestamp: v.timestamp,
+          author: v.author,
+        }))
+      : [];
+
+    const affectedByRecentChange =
+      sourceAttachment &&
+      sourceAttachment.versions.length > 1 &&
+      sourceAttachment.versions.some((v) =>
+        v.affectedObjectIds.includes(obj.id)
+      );
+
+    let changeImpactDescription: string | null = null;
+    if (affectedByRecentChange && sourceAttachment) {
+      const affectingVersions = sourceAttachment.versions.filter((v) =>
+        v.affectedObjectIds.includes(obj.id)
+      );
+      if (affectingVersions.length > 0) {
+        const latestChange = affectingVersions[affectingVersions.length - 1];
+        changeImpactDescription = `来源材料「${sourceAttachment.name}」v${latestChange.version}（${latestChange.timestamp}，${latestChange.author}）变更：${latestChange.changeSummary}，导致本对象预审状态需重新评估`;
+      }
+    }
 
     let status: CollisionResult['status'] = 'safe';
     let description = '';
@@ -233,7 +336,7 @@ export function calculateCollisions(
     if (overlapDistance > 0 && altitudeConflict) {
       if (overlapDistance > 20) {
         status = 'danger';
-        description = `严重冲突：${obj.name}侵入航线走廊${overlapDistance.toFixed(1)}米，标高${obj.altitude}m处于飞行高度区间内`;
+        description = `严重冲突：${obj.name}侵入航线走廊${overlapDistance.toFixed(1)}米，标高${obj.altitude}m处于飞行高度区间[${corridor.minAltitude}-${corridor.maxAltitude}]m内`;
         nextSteps.push(
           '立即通知航线规划部门，确认该障碍物是否在禁飞清单内'
         );
@@ -250,18 +353,22 @@ export function calculateCollisions(
       }
     } else if (overlapDistance > 0 && !altitudeConflict) {
       status = 'warning';
-      description = `高度错开：${obj.name}水平位置侵入走廊，但标高${obj.altitude}m不在飞行高度区间内`;
+      description = `高度错开：${obj.name}水平位置侵入走廊${overlapDistance.toFixed(1)}米，但标高${obj.altitude}m不在飞行高度区间[${corridor.minAltitude}-${corridor.maxAltitude}]m内`;
       nextSteps.push('确认飞行高度区间的准确性和适用条件');
       nextSteps.push('评估极端天气下飞行高度调整的可能性');
-    } else if (distanceFromCenter < corridorHalfWidth + obj.width / 2 + 30) {
+    } else if (distanceFromCorridor < corridorHalfWidth + objHalfSize + 30) {
       status = 'warning';
-      description = `接近走廊：${obj.name}距离航线走廊边缘${(distanceFromCenter - corridorHalfWidth - obj.width / 2).toFixed(1)}米`;
+      description = `接近走廊：${obj.name}距离航线走廊边缘${(distanceFromCorridor - corridorHalfWidth - objHalfSize).toFixed(1)}米`;
       nextSteps.push('纳入定期复核清单，每季度重新评估一次');
       nextSteps.push('确认障碍物周边是否有后续建设计划');
     } else {
       status = 'safe';
-      description = `${obj.name}与航线走廊距离安全`;
+      description = `${obj.name}与航线走廊距离安全（垂直距离${distanceFromCorridor.toFixed(1)}米）`;
       nextSteps.push('保持常规监控即可');
+    }
+
+    if (changeImpactDescription) {
+      nextSteps.unshift(`材料变更影响：${changeImpactDescription}`);
     }
 
     if (obj.isAbnormal && obj.abnormalReason) {
@@ -277,6 +384,12 @@ export function calculateCollisions(
       altitudeConflict,
       description,
       nextSteps,
+      sourceAttachmentId: sourceAttachment?.id || null,
+      sourceAttachmentName: sourceAttachment?.name || null,
+      sourceVersion: sourceAttachment?.currentVersion || null,
+      isAffectedByChange: affectedByRecentChange || false,
+      changeImpactDescription,
+      changeHistory,
     };
   });
 }
