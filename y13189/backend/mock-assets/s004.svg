@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <rect width="400" height="200" fill="#fffaf0"/>
+  <text x="200" y="20" text-anchor="middle" font-size="14" fill="#333" font-family="sans-serif">攻角12° - 临界分离（边界）</text>
+  
+  <path d="M 60 118 Q 88 65 170 78 T 340 118" stroke="#4a5568" stroke-width="12" fill="none" stroke-linecap="round" transform="rotate(-12 200 100)"/>
+  <path d="M 60 118 Q 88 65 170 78 T 340 118" stroke="#a0aec0" stroke-width="8" fill="none" stroke-linecap="round" transform="rotate(-12 200 100)"/>
+  
+  <g stroke="#e53e3e" stroke-width="1.5" fill="none" opacity="0.75">
+    <path d="M 50 50 Q 95 55 140 62 Q 175 75 210 92 Q 250 100 290 102" stroke-dasharray="4,2"/>
+    <path d="M 50 68 Q 95 72 140 80 Q 170 95 200 110 Q 240 118 280 120" stroke-dasharray="4,2"/>
+    <path d="M 50 148 Q 100 142 150 138 T 340 122" stroke-dasharray="4,2"/>
+  </g>
+  
+  <path d="M 160 58 L 160 100" stroke="#dd6b20" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="150" y="50" font-size="10" fill="#dd6b20" font-family="sans-serif">临界分离点</text>
+  <text x="180" y="175" font-size="10" fill="#dd6b20" font-family="sans-serif">← 45%弦长，对攻角敏感</text>
+  
+  <rect x="280" y="30" width="100" height="25" rx="4" fill="#dd6b20" opacity="0.9"/>
+  <text x="330" y="47" text-anchor="middle" font-size="11" fill="white" font-family="sans-serif">⚠ 边界样本</text>
+</svg>

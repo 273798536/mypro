@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" width="400" height="200">
+  <rect width="400" height="200" fill="#f0f7ff"/>
+  <text x="200" y="20" text-anchor="middle" font-size="14" fill="#333" font-family="sans-serif">攻角5° - 后缘小分离</text>
+  
+  <path d="M 60 115 Q 90 80 180 90 T 340 115" stroke="#4a5568" stroke-width="12" fill="none" stroke-linecap="round" transform="rotate(-5 200 100)"/>
+  <path d="M 60 115 Q 90 80 180 90 T 340 115" stroke="#a0aec0" stroke-width="8" fill="none" stroke-linecap="round" transform="rotate(-5 200 100)"/>
+  
+  <g stroke="#e53e3e" stroke-width="1.5" fill="none" opacity="0.8">
+    <path d="M 50 55 Q 120 60 180 65 T 260 70 Q 290 75 320 90" stroke-dasharray="4,2"/>
+    <path d="M 50 70 Q 120 73 180 78 T 260 83 Q 285 90 310 110" stroke-dasharray="4,2"/>
+    <path d="M 50 140 Q 120 135 180 130 T 340 120" stroke-dasharray="4,2"/>
+    <path d="M 50 155 Q 120 150 180 145 T 340 135" stroke-dasharray="4,2"/>
+  </g>
+  
+  <path d="M 270 85 Q 300 95 310 115" stroke="#e53e3e" stroke-width="2" fill="none" stroke-dasharray="6,3"/>
+  <text x="280" y="175" font-size="10" fill="#d69e2e" font-family="sans-serif">← 分离点 75%弦长</text>
+  <text x="100" y="185" font-size="11" fill="#666" font-family="sans-serif">来流 →</text>
+</svg>
