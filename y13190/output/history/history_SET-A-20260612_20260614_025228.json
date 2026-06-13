@@ -1,0 +1,536 @@
+{
+  "run_id": "SET-A-20260612_20260614_025228",
+  "run_at": "2026-06-14T02:52:28.862999",
+  "parameter_set": "SET-A-20260612",
+  "parameter_values": {
+    "name": "参数组A（标准工况）",
+    "created_by": "张工",
+    "created_at": "2026-06-12 08:00:00",
+    "description": "常温标准工况下使用，历史沿用版本",
+    "temperature_coefficient_per_c": 0.0085,
+    "ref_temperature_c": 25.0,
+    "current_calibration_factor": 1.0,
+    "voltage_calibration_factor": 1.0,
+    "outlier_iqr_multiplier": 1.5,
+    "outlier_zscore_threshold": 3.0,
+    "smoothing_window_size": 5,
+    "resistance_limit_low_mohm": 15.0,
+    "resistance_limit_high_mohm": 80.0,
+    "allowed_sampling_gap_minutes": 15
+  },
+  "song_xiao_modifications_at_run_time": [
+    {
+      "time": "2026-06-13 09:28",
+      "operator": "小宋（项目助理）",
+      "mod_type": "数据标记修改",
+      "target": "BT-2026-004 / BAT-S101~S110",
+      "before": "有效数据",
+      "after": "参考值（非正式），标记【待补测】",
+      "reason": "WR-001 撤回记录确认，样本量不足+温升未校正",
+      "source_file": "WR-001_撤回记录.txt"
+    },
+    {
+      "time": "2026-06-13 09:25",
+      "operator": "小宋（项目助理）",
+      "mod_type": "数据标记修改",
+      "target": "BT-2026-004 整体结论",
+      "before": "使用打磨后数据作为最终有效值",
+      "after": "标记【待补测】，6/13下午2点补测",
+      "reason": "WR-001 撤回记录生效",
+      "source_file": "WR-001_撤回记录.txt"
+    },
+    {
+      "time": "2026-06-13 09:20",
+      "operator": "小宋（项目助理）",
+      "mod_type": "异常判定策略修改",
+      "target": "BT-2026-004 / BAT-S081~S100（高内阻异常点）",
+      "before": "按旧流程一律平均掉，不单独标注",
+      "after": "明确标记为接触不良，排除原始数据，使用打磨后重测数据",
+      "reason": "RM-001 新版维修备注取代 RM-OLD-001 旧版",
+      "source_file": "RM-001_维修备注_新版.txt"
+    },
+    {
+      "time": "2026-06-13 09:18",
+      "operator": "小宋（项目助理）",
+      "mod_type": "采样缺口状态修改",
+      "target": "12:35~13:30 采样缺口（55分钟）",
+      "before": "待确认原因，未补测",
+      "after": "原因：交接班+午饭+Meter-B校准未记录；已补测（补测数据并入BT-2026-003起始段）",
+      "reason": "RM-001 新版维修备注 + VN-002（VN-001转录提及）",
+      "source_file": "RM-001_维修备注_新版.txt, VN-001_口头备注_转录.txt"
+    },
+    {
+      "time": "2026-06-13 09:15",
+      "operator": "小宋（项目助理）",
+      "mod_type": "材料版本切换",
+      "target": "BT-2026-004 维修备注",
+      "before": "RM-OLD-001（旧版，异常点一律平均掉）",
+      "after": "RM-001（新版，拆分异常原因+明确标记）",
+      "reason": "新版维修备注提供更详细的异常原因（端子氧化）",
+      "source_file": "RM-OLD-001_维修备注_旧版.txt -> RM-001_维修备注_新版.txt"
+    },
+    {
+      "time": "2026-06-13 09:12",
+      "operator": "小宋（项目助理）",
+      "mod_type": "数据可信度标记",
+      "target": "BT-2026-006 / BAT-S141~S150",
+      "before": "正常数据",
+      "after": "参考值（样本量不足，仅10点）",
+      "reason": "VN-001 李工会上口头说明",
+      "source_file": "VN-001_口头备注_转录.txt"
+    },
+    {
+      "time": "2026-06-13 09:10",
+      "operator": "小宋（项目助理）",
+      "mod_type": "采样缺口原因补充",
+      "target": "12:35~13:30 采样缺口（VN-002）",
+      "before": "原因未知",
+      "after": "原因：换班吃饭+Meter-B开机校准5分钟未记；BT-2026-003前10点为补测",
+      "reason": "VN-001 张工电话口述内容转录",
+      "source_file": "VN-001_口头备注_转录.txt (VN-002)"
+    },
+    {
+      "time": "2026-06-13 09:08",
+      "operator": "小宋（项目助理）",
+      "mod_type": "温升来源标记",
+      "target": "BT-2026-005 / BAT-S111~S140",
+      "before": "温升原因不明",
+      "after": "温升标记为外部因素（热风枪焊板），补偿后正常",
+      "reason": "VN-001 张工电话+李工例会说明",
+      "source_file": "VN-001_口头备注_转录.txt"
+    }
+  ],
+  "gap_report": [
+    {
+      "gap_index": 1,
+      "start_time": "2026-06-12 12:35:00",
+      "end_time": "2026-06-12 13:30:00",
+      "duration_minutes": 55.0,
+      "prev_sample": "BAT-S050",
+      "prev_battery": "BT-2026-002",
+      "next_sample": "BAT-S051",
+      "next_battery": "BT-2026-003"
+    }
+  ],
+  "per_battery_stats_snapshot": {
+    "BT-2026-001": {
+      "battery_id": "BT-2026-001",
+      "n_total": 30,
+      "n_valid": 30,
+      "n_outlier": 0,
+      "n_stat_outlier": 0,
+      "n_mat_outlier": 0,
+      "n_flag_external": 0,
+      "outlier_samples": [],
+      "stat_outlier_samples": [],
+      "mat_outlier_samples": [],
+      "ext_flag_samples": [],
+      "operator": "张工",
+      "data_source": "Meter-A",
+      "remark_ids": [],
+      "comp_all_mohm": {
+        "n": 30,
+        "mean": 23.1932,
+        "median": 23.132,
+        "stdev": 0.8227,
+        "min": 21.893,
+        "max": 24.7425
+      },
+      "comp_valid_mohm": {
+        "n": 30,
+        "mean": 23.1932,
+        "median": 23.132,
+        "stdev": 0.8227,
+        "min": 21.893,
+        "max": 24.7425
+      },
+      "raw_all_mohm": {
+        "n": 30,
+        "mean": 23.3167,
+        "median": 23.25,
+        "stdev": 0.9564,
+        "min": 21.8,
+        "max": 25.1
+      },
+      "raw_valid_mohm": {
+        "n": 30,
+        "mean": 23.3167,
+        "median": 23.25,
+        "stdev": 0.9564,
+        "min": 21.8,
+        "max": 25.1
+      },
+      "bounds_check": {
+        "in_range": true,
+        "low_mohm": 15.0,
+        "high_mohm": 80.0
+      }
+    },
+    "BT-2026-002": {
+      "battery_id": "BT-2026-002",
+      "n_total": 20,
+      "n_valid": 20,
+      "n_outlier": 0,
+      "n_stat_outlier": 0,
+      "n_mat_outlier": 0,
+      "n_flag_external": 0,
+      "outlier_samples": [],
+      "stat_outlier_samples": [],
+      "mat_outlier_samples": [],
+      "ext_flag_samples": [],
+      "operator": "李工",
+      "data_source": "Meter-A",
+      "remark_ids": [],
+      "comp_all_mohm": {
+        "n": 20,
+        "mean": 29.0393,
+        "median": 29.0203,
+        "stdev": 0.6487,
+        "min": 27.8969,
+        "max": 30.1566
+      },
+      "comp_valid_mohm": {
+        "n": 20,
+        "mean": 29.0393,
+        "median": 29.0203,
+        "stdev": 0.6487,
+        "min": 27.8969,
+        "max": 30.1566
+      },
+      "raw_all_mohm": {
+        "n": 20,
+        "mean": 29.61,
+        "median": 29.6,
+        "stdev": 0.7409,
+        "min": 28.3,
+        "max": 30.9
+      },
+      "raw_valid_mohm": {
+        "n": 20,
+        "mean": 29.61,
+        "median": 29.6,
+        "stdev": 0.7409,
+        "min": 28.3,
+        "max": 30.9
+      },
+      "bounds_check": {
+        "in_range": true,
+        "low_mohm": 15.0,
+        "high_mohm": 80.0
+      }
+    },
+    "BT-2026-003": {
+      "battery_id": "BT-2026-003",
+      "n_total": 30,
+      "n_valid": 30,
+      "n_outlier": 0,
+      "n_stat_outlier": 0,
+      "n_mat_outlier": 0,
+      "n_flag_external": 0,
+      "outlier_samples": [],
+      "stat_outlier_samples": [],
+      "mat_outlier_samples": [],
+      "ext_flag_samples": [],
+      "operator": "王工",
+      "data_source": "Meter-B",
+      "remark_ids": [],
+      "comp_all_mohm": {
+        "n": 30,
+        "mean": 19.4035,
+        "median": 19.4016,
+        "stdev": 0.7904,
+        "min": 18.0846,
+        "max": 20.7994
+      },
+      "comp_valid_mohm": {
+        "n": 30,
+        "mean": 19.4035,
+        "median": 19.4016,
+        "stdev": 0.7904,
+        "min": 18.0846,
+        "max": 20.7994
+      },
+      "raw_all_mohm": {
+        "n": 30,
+        "mean": 19.5533,
+        "median": 19.55,
+        "stdev": 0.8713,
+        "min": 18.1,
+        "max": 21.1
+      },
+      "raw_valid_mohm": {
+        "n": 30,
+        "mean": 19.5533,
+        "median": 19.55,
+        "stdev": 0.8713,
+        "min": 18.1,
+        "max": 21.1
+      },
+      "bounds_check": {
+        "in_range": true,
+        "low_mohm": 15.0,
+        "high_mohm": 80.0
+      }
+    },
+    "BT-2026-004": {
+      "battery_id": "BT-2026-004",
+      "n_total": 30,
+      "n_valid": 0,
+      "n_outlier": 30,
+      "n_stat_outlier": 0,
+      "n_mat_outlier": 30,
+      "n_flag_external": 0,
+      "outlier_samples": [
+        "BAT-S081",
+        "BAT-S082",
+        "BAT-S083",
+        "BAT-S084",
+        "BAT-S085",
+        "BAT-S086",
+        "BAT-S087",
+        "BAT-S088",
+        "BAT-S089",
+        "BAT-S090",
+        "BAT-S091",
+        "BAT-S092",
+        "BAT-S093",
+        "BAT-S094",
+        "BAT-S095",
+        "BAT-S096",
+        "BAT-S097",
+        "BAT-S098",
+        "BAT-S099",
+        "BAT-S100",
+        "BAT-S101",
+        "BAT-S102",
+        "BAT-S103",
+        "BAT-S104",
+        "BAT-S105",
+        "BAT-S106",
+        "BAT-S107",
+        "BAT-S108",
+        "BAT-S109",
+        "BAT-S110"
+      ],
+      "stat_outlier_samples": [],
+      "mat_outlier_samples": [
+        "BAT-S081",
+        "BAT-S082",
+        "BAT-S083",
+        "BAT-S084",
+        "BAT-S085",
+        "BAT-S086",
+        "BAT-S087",
+        "BAT-S088",
+        "BAT-S089",
+        "BAT-S090",
+        "BAT-S091",
+        "BAT-S092",
+        "BAT-S093",
+        "BAT-S094",
+        "BAT-S095",
+        "BAT-S096",
+        "BAT-S097",
+        "BAT-S098",
+        "BAT-S099",
+        "BAT-S100",
+        "BAT-S101",
+        "BAT-S102",
+        "BAT-S103",
+        "BAT-S104",
+        "BAT-S105",
+        "BAT-S106",
+        "BAT-S107",
+        "BAT-S108",
+        "BAT-S109",
+        "BAT-S110"
+      ],
+      "ext_flag_samples": [],
+      "operator": "王工",
+      "data_source": "Meter-B",
+      "remark_ids": [
+        "RM-OLD-001",
+        "WR-001"
+      ],
+      "comp_all_mohm": {
+        "n": 30,
+        "mean": 82.585,
+        "median": 94.4712,
+        "stdev": 19.8722,
+        "min": 52.7212,
+        "max": 101.3464
+      },
+      "comp_valid_mohm": {
+        "n": 0,
+        "mean": 0,
+        "median": 0,
+        "stdev": 0,
+        "min": 0,
+        "max": 0,
+        "note": "NO_VALID_DATA (all excluded by material rules)"
+      },
+      "raw_all_mohm": {
+        "n": 30,
+        "mean": 84.4367,
+        "median": 96.6,
+        "stdev": 20.1177,
+        "min": 54.2,
+        "max": 103.5
+      },
+      "raw_valid_mohm": {
+        "n": 0,
+        "mean": 0,
+        "median": 0,
+        "stdev": 0,
+        "min": 0,
+        "max": 0,
+        "note": "NO_VALID_DATA (all excluded by material rules)"
+      },
+      "bounds_check": {
+        "in_range": true,
+        "low_mohm": 15.0,
+        "high_mohm": 80.0
+      }
+    },
+    "BT-2026-005": {
+      "battery_id": "BT-2026-005",
+      "n_total": 30,
+      "n_valid": 30,
+      "n_outlier": 0,
+      "n_stat_outlier": 0,
+      "n_mat_outlier": 0,
+      "n_flag_external": 30,
+      "outlier_samples": [],
+      "stat_outlier_samples": [],
+      "mat_outlier_samples": [],
+      "ext_flag_samples": [
+        "BAT-S111",
+        "BAT-S112",
+        "BAT-S113",
+        "BAT-S114",
+        "BAT-S115",
+        "BAT-S116",
+        "BAT-S117",
+        "BAT-S118",
+        "BAT-S119",
+        "BAT-S120",
+        "BAT-S121",
+        "BAT-S122",
+        "BAT-S123",
+        "BAT-S124",
+        "BAT-S125",
+        "BAT-S126",
+        "BAT-S127",
+        "BAT-S128",
+        "BAT-S129",
+        "BAT-S130",
+        "BAT-S131",
+        "BAT-S132",
+        "BAT-S133",
+        "BAT-S134",
+        "BAT-S135",
+        "BAT-S136",
+        "BAT-S137",
+        "BAT-S138",
+        "BAT-S139",
+        "BAT-S140"
+      ],
+      "operator": "张工",
+      "data_source": "Meter-A",
+      "remark_ids": [
+        "VN-001"
+      ],
+      "comp_all_mohm": {
+        "n": 30,
+        "mean": 25.9805,
+        "median": 25.9784,
+        "stdev": 0.7463,
+        "min": 24.6255,
+        "max": 27.2936
+      },
+      "comp_valid_mohm": {
+        "n": 30,
+        "mean": 25.9805,
+        "median": 25.9784,
+        "stdev": 0.7463,
+        "min": 24.6255,
+        "max": 27.2936
+      },
+      "raw_all_mohm": {
+        "n": 30,
+        "mean": 26.95,
+        "median": 26.95,
+        "stdev": 0.877,
+        "min": 25.4,
+        "max": 28.5
+      },
+      "raw_valid_mohm": {
+        "n": 30,
+        "mean": 26.95,
+        "median": 26.95,
+        "stdev": 0.877,
+        "min": 25.4,
+        "max": 28.5
+      },
+      "bounds_check": {
+        "in_range": true,
+        "low_mohm": 15.0,
+        "high_mohm": 80.0
+      }
+    },
+    "BT-2026-006": {
+      "battery_id": "BT-2026-006",
+      "n_total": 10,
+      "n_valid": 10,
+      "n_outlier": 0,
+      "n_stat_outlier": 0,
+      "n_mat_outlier": 0,
+      "n_flag_external": 0,
+      "outlier_samples": [],
+      "stat_outlier_samples": [],
+      "mat_outlier_samples": [],
+      "ext_flag_samples": [],
+      "operator": "赵工",
+      "data_source": "Meter-C",
+      "remark_ids": [],
+      "comp_all_mohm": {
+        "n": 10,
+        "mean": 19.8536,
+        "median": 19.8077,
+        "stdev": 0.2353,
+        "min": 19.5524,
+        "max": 20.3322
+      },
+      "comp_valid_mohm": {
+        "n": 10,
+        "mean": 19.8536,
+        "median": 19.8077,
+        "stdev": 0.2353,
+        "min": 19.5524,
+        "max": 20.3322
+      },
+      "raw_all_mohm": {
+        "n": 10,
+        "mean": 20.75,
+        "median": 20.7,
+        "stdev": 0.2693,
+        "min": 20.4,
+        "max": 21.3
+      },
+      "raw_valid_mohm": {
+        "n": 10,
+        "mean": 20.75,
+        "median": 20.7,
+        "stdev": 0.2693,
+        "min": 20.4,
+        "max": 21.3
+      },
+      "bounds_check": {
+        "in_range": true,
+        "low_mohm": 15.0,
+        "high_mohm": 80.0
+      }
+    }
+  },
+  "overall_mean_comp_valid_mohm": 23.494
+}

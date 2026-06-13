@@ -1,0 +1,180 @@
+==============================================================================
+  文本图表: 各电池内阻分布 (参数组 SET-B-20260612)
+==============================================================================
+
+  数值范围: 18.08 ~ 101.17 mOhm, 每格 ≈ 1.04 mOhm
+  参考线: 下限 18.0 mOhm / 上限 65.0 mOhm
+
+  ┌─ BT-2026-001 (mean=23.18, n=30/30, 异常=0) ─┐
+    BAT-S001 |L  ●                                         H                                    |   21.90 mOhm  T=24.5°C  
+    BAT-S002 |L  ●                                         H                                    |   22.18 mOhm  T=24.6°C  
+    BAT-S003 |L  ●                                         H                                    |   21.96 mOhm  T=24.7°C  
+    BAT-S004 |L  ●                                         H                                    |   22.10 mOhm  T=24.5°C  
+    BAT-S005 |L   ●                                        H                                    |   22.34 mOhm  T=24.8°C  
+    BAT-S006 |L  ●                                         H                                    |   22.22 mOhm  T=24.9°C  
+    BAT-S007 |L   ●                                        H                                    |   22.48 mOhm  T=25.1°C  
+    BAT-S008 |L   ●                                        H                                    |   22.40 mOhm  T=25.0°C  
+    BAT-S009 |L   ●                                        H                                    |   22.56 mOhm  T=25.2°C  
+    BAT-S010 |L   ●                                        H                                    |   22.74 mOhm  T=25.3°C  
+    BAT-S011 |L   ●                                        H                                    |   22.68 mOhm  T=25.1°C  
+    BAT-S012 |L   ●                                        H                                    |   22.82 mOhm  T=25.4°C  
+    BAT-S013 |L   ●                                        H                                    |   22.99 mOhm  T=25.5°C  
+    BAT-S014 |L   ●                                        H                                    |   22.94 mOhm  T=25.3°C  
+    BAT-S015 |L   ●                                        H                                    |   23.07 mOhm  T=25.6°C  
+    BAT-S016 |L   ●                                        H                                    |   23.25 mOhm  T=25.7°C  
+    BAT-S017 |L    ●                                       H                                    |   23.33 mOhm  T=25.8°C  
+    BAT-S018 |L   ●                                        H                                    |   23.17 mOhm  T=25.6°C  
+    BAT-S019 |L    ●                                       H                                    |   23.41 mOhm  T=25.9°C  
+    BAT-S020 |L    ●                                       H                                    |   23.48 mOhm  T=26.0°C  
+    BAT-S021 |L    ●                                       H                                    |   23.66 mOhm  T=26.1°C  
+    BAT-S022 |L    ●                                       H                                    |   23.84 mOhm  T=26.2°C  
+    BAT-S023 |L    ●                                       H                                    |   24.01 mOhm  T=26.3°C  
+    BAT-S024 |L    ●                                       H                                    |   23.76 mOhm  T=26.1°C  
+    BAT-S025 |L    ●                                       H                                    |   24.19 mOhm  T=26.4°C  
+    BAT-S026 |L    ●                                       H                                    |   23.94 mOhm  T=26.2°C  
+    BAT-S027 |L     ●                                      H                                    |   24.36 mOhm  T=26.5°C  
+    BAT-S028 |L     ●                                      H                                    |   24.54 mOhm  T=26.6°C  
+    BAT-S029 |L     ●                                      H                                    |   24.71 mOhm  T=26.7°C  
+    BAT-S030 |L     ●                                      H                                    |   24.46 mOhm  T=26.5°C  
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ BT-2026-002 (mean=28.99, n=20/20, 异常=0) ─┐
+    BAT-S031 |L        ●                                   H                                    |   28.04 mOhm  T=26.8°C  
+    BAT-S032 |L        ●                                   H                                    |   28.21 mOhm  T=26.9°C  
+    BAT-S033 |L        ●                                   H                                    |   27.86 mOhm  T=26.7°C  
+    BAT-S034 |L        ●                                   H                                    |   28.38 mOhm  T=27.0°C  
+    BAT-S035 |L         ●                                  H                                    |   28.55 mOhm  T=27.1°C  
+    BAT-S036 |L         ●                                  H                                    |   28.72 mOhm  T=27.2°C  
+    BAT-S037 |L        ●                                   H                                    |   28.28 mOhm  T=27.0°C  
+    BAT-S038 |L         ●                                  H                                    |   28.89 mOhm  T=27.3°C  
+    BAT-S039 |L         ●                                  H                                    |   28.65 mOhm  T=27.1°C  
+    BAT-S040 |L         ●                                  H                                    |   29.06 mOhm  T=27.4°C  
+    BAT-S041 |L         ●                                  H                                    |   28.82 mOhm  T=27.2°C  
+    BAT-S042 |L         ●                                  H                                    |   29.23 mOhm  T=27.5°C  
+    BAT-S043 |L         ●                                  H                                    |   29.40 mOhm  T=27.6°C  
+    BAT-S044 |L          ●                                 H                                    |   29.62 mOhm  T=27.5°C  
+    BAT-S045 |L         ●                                  H                                    |   29.18 mOhm  T=27.3°C  
+    BAT-S046 |L          ●                                 H                                    |   29.76 mOhm  T=27.7°C  
+    BAT-S047 |L          ●                                 H                                    |   29.52 mOhm  T=27.5°C  
+    BAT-S048 |L          ●                                 H                                    |   29.93 mOhm  T=27.8°C  
+    BAT-S049 |L          ●                                 H                                    |   29.69 mOhm  T=27.6°C  
+    BAT-S050 |L          ●                                 H                                    |   30.10 mOhm  T=27.9°C  
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ BT-2026-003 (mean=19.39, n=30/30, 异常=0) ─┐
+    BAT-S051 |●                                            H                                    |   18.17 mOhm  T=25.2°C  
+    BAT-S052 |●                                            H                                    |   18.35 mOhm  T=25.3°C  
+    BAT-S053 |●                                            H                                    |   18.08 mOhm  T=25.1°C  
+    BAT-S054 |●                                            H                                    |   18.53 mOhm  T=25.4°C  
+    BAT-S055 |●                                            H                                    |   18.27 mOhm  T=25.2°C  
+    BAT-S056 |●                                            H                                    |   18.61 mOhm  T=25.5°C  
+    BAT-S057 |●                                            H                                    |   18.45 mOhm  T=25.3°C  
+    BAT-S058 |●                                            H                                    |   18.80 mOhm  T=25.6°C  
+    BAT-S059 |●                                            H                                    |   18.73 mOhm  T=25.4°C  
+    BAT-S060 |●                                            H                                    |   18.98 mOhm  T=25.7°C  
+    BAT-S061 |L●                                           H                                    |   19.16 mOhm  T=25.8°C  
+    BAT-S062 |●                                            H                                    |   18.90 mOhm  T=25.6°C  
+    BAT-S063 |L●                                           H                                    |   19.34 mOhm  T=25.9°C  
+    BAT-S064 |●                                            H                                    |   19.08 mOhm  T=25.7°C  
+    BAT-S065 |L●                                           H                                    |   19.52 mOhm  T=26.0°C  
+    BAT-S066 |L●                                           H                                    |   19.26 mOhm  T=25.8°C  
+    BAT-S067 |L●                                           H                                    |   19.70 mOhm  T=26.1°C  
+    BAT-S068 |L●                                           H                                    |   19.44 mOhm  T=25.9°C  
+    BAT-S069 |L●                                           H                                    |   19.88 mOhm  T=26.2°C  
+    BAT-S070 |L●                                           H                                    |   19.62 mOhm  T=26.0°C  
+    BAT-S071 |L●                                           H                                    |   20.06 mOhm  T=26.3°C  
+    BAT-S072 |L●                                           H                                    |   19.80 mOhm  T=26.1°C  
+    BAT-S073 |L ●                                          H                                    |   20.24 mOhm  T=26.4°C  
+    BAT-S074 |L●                                           H                                    |   19.98 mOhm  T=26.2°C  
+    BAT-S075 |L ●                                          H                                    |   20.42 mOhm  T=26.5°C  
+    BAT-S076 |L●                                           H                                    |   20.16 mOhm  T=26.3°C  
+    BAT-S077 |L ●                                          H                                    |   20.60 mOhm  T=26.6°C  
+    BAT-S078 |L ●                                          H                                    |   20.34 mOhm  T=26.4°C  
+    BAT-S079 |L ●                                          H                                    |   20.78 mOhm  T=26.7°C  
+    BAT-S080 |L ●                                          H                                    |   20.52 mOhm  T=26.5°C  
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ BT-2026-004 (mean=0.00, n=0/30, 异常=30) ─┐
+  ⚠ BAT-S081 |L                                            H                           ⚑        |   94.04 mOhm  T=26.8°C  RM-OLD-001
+  ⚠ BAT-S082 |L                                            H                             ⚑      |   96.61 mOhm  T=26.9°C  RM-OLD-001
+  ⚠ BAT-S083 |L                                            H                                 ⚑  |  100.26 mOhm  T=27.0°C  RM-OLD-001
+  ⚠ BAT-S084 |L                                            H                            ⚑       |   95.95 mOhm  T=27.1°C  RM-OLD-001
+  ⚠ BAT-S085 |L                                            H                              ⚑     |   97.53 mOhm  T=27.2°C  RM-OLD-001
+  ⚠ BAT-S086 |L                                            H                                ⚑   |   99.10 mOhm  T=27.3°C  RM-OLD-001
+  ⚠ BAT-S087 |L                                            H                            ⚑       |   94.98 mOhm  T=27.2°C  RM-OLD-001
+  ⚠ BAT-S088 |L                                            H                             ⚑      |   96.57 mOhm  T=27.4°C  RM-OLD-001
+  ⚠ BAT-S089 |L                                            H                                  ⚑ |  101.17 mOhm  T=27.5°C  RM-OLD-001
+  ⚠ BAT-S090 |L                                            H                          ⚑         |   93.14 mOhm  T=27.4°C  RM-OLD-001
+  ⚠ BAT-S091 |L                                            H                            ⚑       |   95.32 mOhm  T=27.6°C  RM-OLD-001
+  ⚠ BAT-S092 |L                                            H                             ⚑      |   96.87 mOhm  T=27.5°C  RM-OLD-001
+  ⚠ BAT-S093 |L                                            H                               ⚑    |   98.36 mOhm  T=27.7°C  RM-OLD-001
+  ⚠ BAT-S094 |L                                            H                         ⚑          |   92.29 mOhm  T=27.6°C  RM-OLD-001
+  ⚠ BAT-S095 |L                                            H                          ⚑         |   93.88 mOhm  T=27.8°C  RM-OLD-001
+  ⚠ BAT-S096 |L                                            H                             ⚑      |   96.50 mOhm  T=27.7°C  RM-OLD-001
+  ⚠ BAT-S097 |L                                            H                                ⚑   |  100.03 mOhm  T=27.9°C  RM-OLD-001
+  ⚠ BAT-S098 |L                                            H                          ⚑         |   93.39 mOhm  T=27.8°C  RM-OLD-001
+  ⚠ BAT-S099 |L                                            H                           ⚑        |   94.59 mOhm  T=28.0°C  RM-OLD-001
+  ⚠ BAT-S100 |L                                            H                              ⚑     |   97.30 mOhm  T=27.9°C  RM-OLD-001
+  ⚠ BAT-S101 |L                                  ⚑         H                                    |   54.64 mOhm  T=28.1°C  WR-001
+  ⚠ BAT-S102 |L                                 ⚑          H                                    |   54.30 mOhm  T=28.0°C  WR-001
+  ⚠ BAT-S103 |L                                  ⚑         H                                    |   55.47 mOhm  T=28.2°C  WR-001
+  ⚠ BAT-S104 |L                                ⚑           H                                    |   53.38 mOhm  T=28.1°C  WR-001
+  ⚠ BAT-S105 |L                                    ⚑       H                                    |   56.58 mOhm  T=28.3°C  WR-001
+  ⚠ BAT-S106 |L                                 ⚑          H                                    |   53.91 mOhm  T=28.2°C  WR-001
+  ⚠ BAT-S107 |L                                  ⚑         H                                    |   55.08 mOhm  T=28.4°C  WR-001
+  ⚠ BAT-S108 |L                                ⚑           H                                    |   52.60 mOhm  T=28.3°C  WR-001
+  ⚠ BAT-S109 |L                                   ⚑        H                                    |   55.80 mOhm  T=28.5°C  WR-001
+  ⚠ BAT-S110 |L                                 ⚑          H                                    |   53.43 mOhm  T=28.4°C  WR-001
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ BT-2026-005 (mean=25.90, n=30/30, 异常=0) ─┐
+  🏁 BAT-S111 |L     🏁                                      H                                    |   24.78 mOhm  T=28.6°C  VN-001
+  🏁 BAT-S112 |L     🏁                                      H                                    |   25.00 mOhm  T=28.5°C  VN-001
+  🏁 BAT-S113 |L     🏁                                      H                                    |   24.56 mOhm  T=28.7°C  VN-001
+  🏁 BAT-S114 |L     🏁                                      H                                    |   25.22 mOhm  T=28.8°C  VN-001
+  🏁 BAT-S115 |L     🏁                                      H                                    |   25.05 mOhm  T=28.7°C  VN-001
+  🏁 BAT-S116 |L     🏁                                      H                                    |   24.81 mOhm  T=28.9°C  VN-001
+  🏁 BAT-S117 |L      🏁                                     H                                    |   25.37 mOhm  T=29.0°C  VN-001
+  🏁 BAT-S118 |L     🏁                                      H                                    |   25.10 mOhm  T=28.9°C  VN-001
+  🏁 BAT-S119 |L      🏁                                     H                                    |   25.54 mOhm  T=29.1°C  VN-001
+  🏁 BAT-S120 |L     🏁                                      H                                    |   25.27 mOhm  T=29.0°C  VN-001
+  🏁 BAT-S121 |L      🏁                                     H                                    |   25.42 mOhm  T=29.2°C  VN-001
+  🏁 BAT-S122 |L      🏁                                     H                                    |   25.68 mOhm  T=29.3°C  VN-001
+  🏁 BAT-S123 |L      🏁                                     H                                    |   25.61 mOhm  T=29.2°C  VN-001
+  🏁 BAT-S124 |L      🏁                                     H                                    |   25.85 mOhm  T=29.4°C  VN-001
+  🏁 BAT-S125 |L      🏁                                     H                                    |   25.78 mOhm  T=29.3°C  VN-001
+  🏁 BAT-S126 |L      🏁                                     H                                    |   26.02 mOhm  T=29.5°C  VN-001
+  🏁 BAT-S127 |L      🏁                                     H                                    |   25.95 mOhm  T=29.4°C  VN-001
+  🏁 BAT-S128 |L      🏁                                     H                                    |   26.19 mOhm  T=29.6°C  VN-001
+  🏁 BAT-S129 |L      🏁                                     H                                    |   26.12 mOhm  T=29.5°C  VN-001
+  🏁 BAT-S130 |L      🏁                                     H                                    |   26.36 mOhm  T=29.7°C  VN-001
+  🏁 BAT-S131 |L      🏁                                     H                                    |   26.29 mOhm  T=29.6°C  VN-001
+  🏁 BAT-S132 |L       🏁                                    H                                    |   26.53 mOhm  T=29.8°C  VN-001
+  🏁 BAT-S133 |L       🏁                                    H                                    |   26.46 mOhm  T=29.7°C  VN-001
+  🏁 BAT-S134 |L       🏁                                    H                                    |   26.70 mOhm  T=29.9°C  VN-001
+  🏁 BAT-S135 |L       🏁                                    H                                    |   26.62 mOhm  T=29.8°C  VN-001
+  🏁 BAT-S136 |L       🏁                                    H                                    |   26.86 mOhm  T=30.0°C  VN-001
+  🏁 BAT-S137 |L       🏁                                    H                                    |   26.79 mOhm  T=29.9°C  VN-001
+  🏁 BAT-S138 |L       🏁                                    H                                    |   27.03 mOhm  T=30.1°C  VN-001
+  🏁 BAT-S139 |L       🏁                                    H                                    |   26.96 mOhm  T=30.0°C  VN-001
+  🏁 BAT-S140 |L       🏁                                    H                                    |   27.20 mOhm  T=30.2°C  VN-001
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌─ BT-2026-006 (mean=19.78, n=10/10, 异常=0) ─┐
+    BAT-S141 |L●                                           H                                    |   19.58 mOhm  T=30.1°C  
+    BAT-S142 |L●                                           H                                    |   19.75 mOhm  T=30.2°C  
+    BAT-S143 |L●                                           H                                    |   19.49 mOhm  T=30.1°C  
+    BAT-S144 |L●                                           H                                    |   19.93 mOhm  T=30.3°C  
+    BAT-S145 |L●                                           H                                    |   19.66 mOhm  T=30.2°C  
+    BAT-S146 |L●                                           H                                    |   19.82 mOhm  T=30.4°C  
+    BAT-S147 |L●                                           H                                    |   19.55 mOhm  T=30.3°C  
+    BAT-S148 |L●                                           H                                    |   20.08 mOhm  T=30.5°C  
+    BAT-S149 |L●                                           H                                    |   19.72 mOhm  T=30.4°C  
+    BAT-S150 |L ●                                          H                                    |   20.26 mOhm  T=30.6°C  
+  └──────────────────────────────────────────────────────────────────────────┘
+
+
+  图例: ●正常点  ⚑异常点(STAT统计命中 / MAT材料强制排除)  🏁外部因素标记  L下限参考线  H上限参考线
+  说明: 异常点可在 trace_*.csv 中按 sample_id 查找对应 remark_id, 
+       然后在 data/materials/ 找到同名材料文件回溯现场原因。
+  异常区分: STAT(仅统计命中) MAT(材料强制排除) FLAG_EXT(外部因素, 不排除)

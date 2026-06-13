@@ -1,0 +1,54 @@
+{
+  "parameter_sets": {
+    "SET-A-20260612": {
+      "name": "参数组A（标准工况）",
+      "created_by": "张工",
+      "created_at": "2026-06-12 08:00:00",
+      "description": "常温标准工况下使用，历史沿用版本",
+      "temperature_coefficient_per_c": 0.0085,
+      "ref_temperature_c": 25.0,
+      "current_calibration_factor": 1.0000,
+      "voltage_calibration_factor": 1.0000,
+      "outlier_iqr_multiplier": 1.5,
+      "outlier_zscore_threshold": 3.0,
+      "smoothing_window_size": 5,
+      "resistance_limit_low_mohm": 15.0,
+      "resistance_limit_high_mohm": 80.0,
+      "allowed_sampling_gap_minutes": 15
+    },
+    "SET-B-20260612": {
+      "name": "参数组B（严苛工况）",
+      "created_by": "复核组",
+      "created_at": "2026-06-13 10:00:00",
+      "description": "复核组建议使用，收紧异常判定阈值，温度补偿系数调整",
+      "temperature_coefficient_per_c": 0.0092,
+      "ref_temperature_c": 25.0,
+      "current_calibration_factor": 0.9985,
+      "voltage_calibration_factor": 1.0012,
+      "outlier_iqr_multiplier": 1.2,
+      "outlier_zscore_threshold": 2.5,
+      "smoothing_window_size": 3,
+      "resistance_limit_low_mohm": 18.0,
+      "resistance_limit_high_mohm": 65.0,
+      "allowed_sampling_gap_minutes": 10
+    }
+  },
+  "active_parameter_set": "SET-A-20260612",
+  "unit_conversions": {
+    "voltage": {
+      "from": "mV",
+      "to": "V",
+      "factor": 0.001
+    },
+    "current": {
+      "from": "mA",
+      "to": "A",
+      "factor": 0.001
+    },
+    "resistance": {
+      "from": "mOhm",
+      "to": "Ohm",
+      "factor": 0.001
+    }
+  }
+}
