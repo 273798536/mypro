@@ -70,7 +70,7 @@ __decorate([
 ], Collision.prototype, "sourceType", void 0);
 __decorate([
     (0, typeorm_1.ManyToOne)(() => Review_1.Review, (review) => review.collisions, { onDelete: "CASCADE" }),
-    (0, typeorm_1.JoinColumn)(),
+    (0, typeorm_1.JoinColumn)({ name: "reviewId" }),
     __metadata("design:type", Review_1.Review)
 ], Collision.prototype, "review", void 0);
 __decorate([

@@ -10,6 +10,7 @@ const Remark_1 = require("../entity/Remark");
 const ViewConfig_1 = require("../entity/ViewConfig");
 const CollisionDetectionService_1 = require("./CollisionDetectionService");
 const HistoryService_1 = require("./HistoryService");
+const uuid_1 = require("uuid");
 class ReviewService {
     reviewRepository;
     layerRepository;
@@ -139,19 +140,39 @@ class ReviewService {
         if (!review) {
             throw new Error("预审记录不存在");
         }
-        await this.collisionRepository.delete({ reviewId });
+        await data_source_1.AppDataSource.query(`DELETE FROM collision WHERE reviewId = '${reviewId}'`);
         const detections = this.collisionDetectionService.detectAll(review.cadLayers, review.materials, review.remarks);
         for (const detection of detections) {
-            const collision = this.collisionRepository.create({
-                ...detection,
-                reviewId
-            });
-            await this.collisionRepository.save(collision);
+            const id = (0, uuid_1.v4)();
+            const sql = `
+        INSERT INTO collision (
+          id, type, severity, description, location, impactOnConclusion,
+          sourceId, sourceType, isConfirmed, reviewId
+        ) VALUES (
+          '${id}',
+          '${detection.type}',
+          '${detection.severity}',
+          '${detection.description.replace(/'/g, "''")}',
+          ${detection.location ? `'${detection.location.replace(/'/g, "''")}'` : 'NULL'},
+          ${detection.impactOnConclusion ? `'${detection.impactOnConclusion.replace(/'/g, "''")}'` : 'NULL'},
+          ${detection.sourceId ? `'${detection.sourceId}'` : 'NULL'},
+          ${detection.sourceType ? `'${detection.sourceType}'` : 'NULL'},
+          0,
+          '${reviewId}'
+        )
+      `;
+            await data_source_1.AppDataSource.query(sql);
         }
         const { overallConclusion, highCount, mediumCount, lowCount } = this.collisionDetectionService.generateConclusion(detections);
-        review.status = "processing";
-        review.conclusion = overallConclusion;
-        await this.reviewRepository.save(review);
+        await this.reviewRepository
+            .createQueryBuilder()
+            .update(Review_1.Review)
+            .set({
+            status: "processing",
+            conclusion: overallConclusion
+        })
+            .where("id = :id", { id: reviewId })
+            .execute();
         await this.historyService.addHistory(reviewId, "update", {
             operator: "系统",
             description: `完成碰撞检测，发现${highCount}个高风险、${mediumCount}个中风险、${lowCount}个低风险异常`

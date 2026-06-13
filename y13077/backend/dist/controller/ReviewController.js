@@ -170,7 +170,12 @@ class ReviewController {
     exportReview = async (req, res) => {
         try {
             const { reviewId } = req.params;
-            const options = req.body;
+            const format = req.query.format || (req.body?.format) || "excel";
+            const options = {
+                format,
+                includeCollisions: req.body?.includeCollisions ?? true,
+                includeHistory: req.body?.includeHistory ?? true
+            };
             const result = await this.exportService.exportReview(reviewId, options);
             res.download(result.filePath, result.fileName, (err) => {
                 if (err) {
