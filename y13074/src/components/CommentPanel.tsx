@@ -22,7 +22,8 @@ import {
 } from '../types';
 
 export default function CommentPanel() {
-  const comments = useAppStore((s) => s.filteredComments);
+  const getFilteredComments = useAppStore((s) => s.getFilteredComments);
+  const comments = getFilteredComments();
   const allComments = useAppStore((s) => s.comments);
   const options = useAppStore((s) => s.stationOptions);
   const segments = useAppStore((s) => s.timelineSegments);

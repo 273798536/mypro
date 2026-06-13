@@ -92,6 +92,7 @@ function SceneContent({
             (c) =>
               c.optionId === opt.id && c.timelineSegmentId === selectedTimelineId
           );
+        const isDimmed = selectedTimelineId ? !inTimeline : false;
         return (
           <group key={opt.id}>
             <StationModel
@@ -100,6 +101,7 @@ function SceneContent({
               isHighlighted={
                 highlightedOptionId === opt.id || selectedOptionId === opt.id
               }
+              isDimmed={isDimmed}
               onClick={() =>
                 setSelectedOption(selectedOptionId === opt.id ? null : opt.id)
               }
@@ -107,10 +109,10 @@ function SceneContent({
             <Text
               position={[opt.position[0], opt.position[1] + 7, opt.position[2]]}
               fontSize={0.8}
-              color={opt.color}
+              color={isDimmed ? '#cbd5e1' : opt.color}
               anchorX="center"
               anchorY="middle"
-              outlineWidth={0.04}
+              outlineWidth={isDimmed ? 0 : 0.04}
               outlineColor="#ffffff"
             >
               {opt.code}方案

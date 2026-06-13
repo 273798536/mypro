@@ -68,7 +68,7 @@ interface AppState {
 
   confirmFloorCheck: (commentId: string, accept: boolean, overrideValue?: string) => void;
 
-  filteredComments: ReviewComment[];
+  getFilteredComments: () => ReviewComment[];
   getCommentsByOption: (optionId: string) => ReviewComment[];
   getCommentsByTimeline: (timelineId: string) => ReviewComment[];
   getStatusStats: () => Record<ProcessingStatus, number>;
@@ -323,7 +323,7 @@ export const useAppStore = create<AppState>()(
         });
       },
 
-      get filteredComments() {
+      getFilteredComments: () => {
         const {
           comments,
           statusFilter,
