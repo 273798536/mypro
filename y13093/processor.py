@@ -34,24 +34,30 @@ class MaterialProcessor:
         ]
         if material.anomaly_refs:
             for oid in material.anomaly_refs:
-                self._register_anomaly_ref(oid, material.material_id)
+                self._register_anomaly_ref(oid, material.material_id, material.status)
         return material
 
-    def _register_anomaly_ref(self, object_id: str, material_id: str):
+    def _register_anomaly_ref(self, object_id: str, material_id: str, status: MaterialStatus):
         for item in self.anomaly_queue:
             if item.object_id == object_id:
                 if material_id not in item.related_material_ids:
                     item.related_material_ids.append(material_id)
                     item.last_seen = datetime.now()
+                if status == MaterialStatus.ANOMALY:
+                    if material_id not in item.anomaly_material_ids:
+                        item.anomaly_material_ids.append(material_id)
+                        item.last_seen = datetime.now()
                 return
-        self.anomaly_queue.append(AnomalyQueueItem(
+        new_item = AnomalyQueueItem(
             object_id=object_id,
             object_name=f"异常对象-{object_id}",
             level=3,
             first_seen=datetime.now(),
             last_seen=datetime.now(),
             related_material_ids=[material_id],
-        ))
+            anomaly_material_ids=[material_id] if status == MaterialStatus.ANOMALY else [],
+        )
+        self.anomaly_queue.append(new_item)
 
     def create_from_sensor(self,
                            sensor_record_id: str,
@@ -195,4 +201,11 @@ class MaterialProcessor:
         return orphans
 
     def anomaly_queue_sorted(self) -> List[AnomalyQueueItem]:
-        return sorted(self.anomaly_queue, key=lambda x: (-x.level, x.last_seen))
+        return sorted(
+            self.anomaly_queue,
+            key=lambda x: (
+                -len(x.anomaly_material_ids),
+                -x.level,
+                x.last_seen,
+            ),
+        )

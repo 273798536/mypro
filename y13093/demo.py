@@ -143,7 +143,7 @@ def demo():
     build_sample_materials(p)
     print(f"\n[材料清单] 共加载 {len(p.materials)} 份材料")
     for m in p.materials:
-        print(f"  {m.material_id} | {m.status.value:10s} | {m.sensor_record_id:20s} | {m.detail_marker()}")
+        print(f"  {m.material_id} | {m.status.value:10s} | anomaly_refs={str(m.anomaly_refs):22s} | {m.detail_marker()}")
 
     orphans = p.scan_orphan_screenshots()
     print(f"\n[坏材料扫描] 截图条件丢失/三套话不一致：{len(orphans)} 条")
@@ -156,12 +156,33 @@ def demo():
 
     hw = HandoverWorkflow(p)
     anomalies = hw.step1_anomaly_first()
-    print(f"\nSTEP 1 — 先找异常对象：共 {len(anomalies)} 条")
+    valid_entries = [a for a in anomalies if a["queue_entry_valid"]]
+    invalid_entries = [a for a in anomalies if not a["queue_entry_valid"]]
+    print(f"\nSTEP 1 — 先找异常对象：共 {len(anomalies)} 条，有效接手入口 {len(valid_entries)} 条")
     for a in anomalies:
-        print(f"  ● {a['object_id']} L{a['level']} | 关联{a['anomaly_material_count']}份异常材料 | 入口={a['quick_entry_material_id']}")
+        flag = "★有效接手入口" if a["queue_entry_valid"] else "○仅参考引用(无真异常材料)"
+        extra = f"(引用{a['reference_material_count']}份非异常材料)" if a["reference_material_count"] > 0 else ""
+        print(
+            f"  {flag} | {a['object_id']} L{a['level']} | "
+            f"关联{a['anomaly_material_count']}份异常材料 {extra} | "
+            f"入口={a['quick_entry_material_id']}"
+        )
+    if invalid_entries:
+        print(
+            "  注：仅参考引用的对象（如 " + ",".join(a["object_id"] for a in invalid_entries) +
+            "）不会被接手流程选中"
+        )
 
-    target = anomalies[0]
-    print(f"\nSTEP 2 — 换视角截图，入口材料={target['quick_entry_material_id']}，高亮={target['object_id']}")
+    target = valid_entries[0]
+    target_material_status = "unknown"
+    for m in p.materials:
+        if m.material_id == target["quick_entry_material_id"]:
+            target_material_status = m.status.value
+            break
+    print(
+        f"\nSTEP 2 — 换视角截图，入口材料={target['quick_entry_material_id']}"
+        f"(status={target_material_status})，高亮={target['object_id']}"
+    )
     s2 = hw.step2_switch_view(
         target["quick_entry_material_id"],
         angle=ViewAngle.CLOSE_UP,
@@ -172,8 +193,9 @@ def demo():
     for k, v in s2.items():
         print(f"    {k}: {v}")
 
-    print(f"\nSTEP 3 — 三件事验证：放样例 / 重跑 / 看异常队列")
+    print(f"\nSTEP 3 — 三件事验证：放样例 / 重跑 / 看异常队列（都必须是 anomaly 材料上跑过才通过）")
     s3 = hw.step3_verify_export(target["quick_entry_material_id"])
+    print(f"  被验证材料 status: {s3['material_status']}")
     print(f"  三套话一致性: {s3['triplet_consistent']}")
     print(f"  整体验证通过: {s3['verify']['全部通过']}")
     for k, v in s3["verify"].items():
@@ -191,6 +213,20 @@ def demo():
     print(f"\n[最终坏材料扫描] 共 {len(orphans2)} 条")
     for o in orphans2:
         print(f"  ⚠  {o}")
+
+    print("\n" + "-" * 70)
+    print("[核心检查点汇总]")
+    print("-" * 70)
+    checkpoint_1 = len(valid_entries) == 2 and valid_entries[0]["object_id"] in ("AO-211", "AO-305")
+    print(f"  ✓ 检查点1 异常队列有效入口排最前: {'通过' if checkpoint_1 else 'FAIL'} (top={valid_entries[0]['object_id'] if valid_entries else 'none'})")
+    checkpoint_2 = target["queue_entry_valid"] and target_material_status == "anomaly"
+    print(f"  ✓ 检查点2 接手流程入口材料是 anomaly: {'通过' if checkpoint_2 else 'FAIL'} (status={target_material_status})")
+    checkpoint_3 = s3["material_status"] == "anomaly" and s3["verify"]["全部通过"]
+    print(f"  ✓ 检查点3 三件事验证在 anomaly 材料上跑且全通过: {'通过' if checkpoint_3 else 'FAIL'}")
+    checkpoint_4 = len(orphans2) == 0
+    print(f"  ✓ 检查点4 全程无坏材料（截图无筛选绑定/三套话不一致）: {'通过' if checkpoint_4 else 'FAIL'}")
+    all_pass = checkpoint_1 and checkpoint_2 and checkpoint_3 and checkpoint_4
+    print(f"\n  ★ 综合结果: {'全部通过，接手流程关键路径可走通' if all_pass else '存在未通过检查，请排查'}")
 
     print("\n" + "=" * 70)
     print("接手流程步骤日志：")

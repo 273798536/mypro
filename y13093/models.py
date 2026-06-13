@@ -59,6 +59,7 @@ class AnomalyQueueItem:
     level: int
     first_seen: datetime
     last_seen: datetime
+    anomaly_material_ids: List[str] = field(default_factory=list)
     related_material_ids: List[str] = field(default_factory=list)
 
 

@@ -26,9 +26,9 @@ python3 demo.py
 
 | 步骤 | 方法 | 看什么 |
 |------|------|--------|
-| ① 找异常对象 | `step1_anomaly_first()` | 按优先级排好的异常队列，取 quick_entry_material_id |
-| ② 换视角截图 | `step2_switch_view(mid, ...)` | 返回 `bound_ok`=True 说明视图已把筛选条件绑上 |
-| ③ 三件事验证 | `step3_verify_export(mid)` | 放样例 ✓ / 重跑 ✓ / 看异常队列 ✓，三绿就通过 |
+| ① 找异常对象 | `step1_anomaly_first()` | **只认 `queue_entry_valid=True` 的条目**，取 `quick_entry_material_id`；`queue_entry_valid=False` 的对象（如 AO-208 这种只被 normal 材料引用过的）只是参考，不能走接手流程 |
+| ② 换视角截图 | `step2_switch_view(mid, ...)` | 返回 `bound_ok=True` 且 `material_status=anomaly`；若入口不是 anomaly 材料直接 `ValueError` 阻断，不会假跑 |
+| ③ 三件事验证 | `step3_verify_export(mid)` | 放样例 ✓ / 重跑 ✓ / 看异常队列 ✓（必须 `material_status=anomaly` 且 `anomaly_refs` 非空），三绿才算过 |
 
 ---
 
@@ -53,6 +53,19 @@ p.scan_orphan_screenshots()
 - 缺 `[筛选]` 章 → filter_condition 没有 fingerprint，调用 `create_from_sensor` 重录
 - 缺 `[导出]` 章 → 截图没走 switch_view，重新执行 `step2_switch_view()`
 - 三章齐全但 marker 前缀对不上 → 直接调 `_resync_triplet_after_view_change()`
+
+## 异常队列语义说明（接手同事必读）
+
+异常队列里每个对象都带两个 ID 列表，不要混：
+
+| 字段 | 含义 | 能当接手入口吗 |
+|------|------|--------------|
+| `anomaly_material_ids` | status=anomaly 的材料里引用过这个对象 | ✅ 可以，这是真正的异常 |
+| `related_material_ids` | 所有状态材料（含 normal / supplement / boundary）都算 | ⚠  只作参考，不能单独当入口 |
+
+`queue_entry_valid = (len(anomaly_material_ids) > 0)`。例如演示里：
+- **AO-211**：`anomaly_material_ids=[MAT1001]`，`queue_entry_valid=True` → 接手入口走 MAT1001
+- **AO-208**：只被 MAT1002（normal）引用过，`anomaly_material_ids=[]`，`queue_entry_valid=False` → 不会被接手流程选中；如果 AO-208 真的是异常，需要先补一份 status=anomaly 的材料再走流程
 
 ## 文件结构
 
