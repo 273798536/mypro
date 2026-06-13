@@ -1,0 +1,55 @@
+{
+  "id": "rec005",
+  "source": "二号风洞B2传感器",
+  "record_time": "2026-06-14T01:57:18.038990",
+  "raw_fields": {
+    "烟浓度": "18",
+    "烟浓度单位": "mg/m3",
+    "风速": "10",
+    "风向": "135"
+  },
+  "smoke_density": 18.0,
+  "smoke_density_unit": "mg/m^3",
+  "wind_speed": 10.0,
+  "wind_speed_unit": null,
+  "wind_direction": 135.0,
+  "wind_direction_sign_correct": true,
+  "formula": "smoke_density",
+  "formula_result": 18.0,
+  "threshold_high": 80.0,
+  "threshold_low": 3.0,
+  "threshold_unit": null,
+  "status": "normal",
+  "block_reason": null,
+  "block_detail": null,
+  "attachments": [],
+  "manual_notes": [],
+  "history": [
+    {
+      "id": "c1e17a92",
+      "field_name": "threshold_high",
+      "old_value": null,
+      "new_value": 80.0,
+      "operator": "阿岑",
+      "reason": "现场确认放宽阈值",
+      "timestamp": "2026-06-14T02:12:18.298159",
+      "is_temporary": true
+    },
+    {
+      "id": "7ad5a623",
+      "field_name": "threshold_low",
+      "old_value": null,
+      "new_value": 3.0,
+      "operator": "阿岑",
+      "reason": "现场确认放宽阈值",
+      "timestamp": "2026-06-14T02:12:18.298224",
+      "is_temporary": true
+    }
+  ],
+  "jump_detected": false,
+  "jump_cause": "unit_changed",
+  "jump_detail": "单位发生变更(wind_speed_unit: m/s -> None)，可能导致 30.0 -> 18.0 的数值跳变。建议：核对本次是否真的更换了测量单位，或验证换算系数是否正确。",
+  "previous_result": 18.0,
+  "next_step": null,
+  "final_judgment": "正常：计算值在阈值范围内"
+}

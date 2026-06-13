@@ -1,0 +1,102 @@
+{
+  "id": "rec002",
+  "source": "一号风洞A1传感器",
+  "record_time": "2026-06-14T00:42:18.038990",
+  "raw_fields": {
+    "smoke_concentration": "68.5",
+    "smoke_density_unit": "mg/m^3",
+    "wind_speed": "8.5",
+    "wind_speed_unit": "km/h",
+    "wind_direction": "270",
+    "threshold_high": "50",
+    "threshold_low": "5",
+    "threshold_unit": "mg/m^3",
+    "formula": "smoke_density",
+    "阈值上限": "20",
+    "阈值下限": "2",
+    "阈值单位": "mg/m^3",
+    "计算公式": "smoke_density * 1.2"
+  },
+  "smoke_density": 68.5,
+  "smoke_density_unit": "mg/m^3",
+  "wind_speed": 2.361111111111111,
+  "wind_speed_unit": "m/s",
+  "wind_direction": 270.0,
+  "wind_direction_sign_correct": true,
+  "formula": "smoke_density * 1.2",
+  "formula_result": 82.2,
+  "threshold_high": 20.0,
+  "threshold_low": 2.0,
+  "threshold_unit": "mg/m^3",
+  "status": "alert",
+  "block_reason": null,
+  "block_detail": null,
+  "attachments": [
+    {
+      "id": "att_late_001",
+      "name": "B2传感器延迟数据包",
+      "content": {
+        "阈值上限": "20",
+        "阈值下限": "2",
+        "阈值单位": "mg/m^3",
+        "计算公式": "smoke_density * 1.2"
+      },
+      "arrived_at": "2026-06-14T02:12:18.296562",
+      "is_late": true,
+      "fields_affected": [
+        "threshold_high",
+        "threshold_low",
+        "formula"
+      ]
+    }
+  ],
+  "manual_notes": [
+    {
+      "id": "6b8cdeae",
+      "author": "阿岑",
+      "content": "现场目视烟雾明显，传感器读数偏高",
+      "judgment": "报警",
+      "timestamp": "2026-06-14T00:50:18.038990",
+      "aligns_with_alert": true,
+      "misalignment_reason": null
+    }
+  ],
+  "history": [
+    {
+      "id": "c0ece2b0",
+      "field_name": "threshold_high",
+      "old_value": null,
+      "new_value": 65.0,
+      "operator": "阿岑",
+      "reason": "现场确认短时烟雾是因为实验启动阶段，临时上调阈值",
+      "timestamp": "2026-06-14T02:12:18.039577",
+      "is_temporary": true
+    },
+    {
+      "id": "e476f255",
+      "field_name": "threshold_high",
+      "old_value": 65.0,
+      "new_value": 80.0,
+      "operator": "阿岑",
+      "reason": "现场确认放宽阈值",
+      "timestamp": "2026-06-14T02:12:18.296628",
+      "is_temporary": true
+    },
+    {
+      "id": "d479d0d1",
+      "field_name": "threshold_low",
+      "old_value": 5.0,
+      "new_value": 3.0,
+      "operator": "阿岑",
+      "reason": "现场确认放宽阈值",
+      "timestamp": "2026-06-14T02:12:18.296665",
+      "is_temporary": true
+    }
+  ],
+  "jump_detected": true,
+  "jump_cause": "late_attachment_arrived",
+  "jump_detail": "晚到附件 ['B2传感器延迟数据包'] 到达，影响字段 ['threshold_low', 'formula', 'threshold_high']，计算结果由 68.5 跳变至 82.2。建议：将附件到达时间与时间窗口对齐，避免后续记录出现同类跳变。",
+  "previous_result": 68.5,
+  "next_step": "检测到结果跳变(68.5 -> 82.2)。原因：late_attachment_arrived，晚到附件 ['B2传感器延迟数据包'] 到达，影响字段 ['threshold_low', 'formula', 'threshold_high']，计算结果由 68.5 跳变至 82.2。建议：将附件到达时间与时间窗口对齐，避免后续记录出现同类跳变。",
+  "final_judgment": "触发预警：计算值 82.2 超过高阈值 20.0"
+}

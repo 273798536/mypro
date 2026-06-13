@@ -1,0 +1,60 @@
+{
+  "id": "rec002",
+  "source": "一号风洞A1传感器",
+  "record_time": "2026-06-14T00:42:18.038990",
+  "raw_fields": {
+    "smoke_concentration": "68.5",
+    "smoke_density_unit": "mg/m^3",
+    "wind_speed": "8.5",
+    "wind_speed_unit": "km/h",
+    "wind_direction": "270",
+    "threshold_high": "50",
+    "threshold_low": "5",
+    "threshold_unit": "mg/m^3",
+    "formula": "smoke_density"
+  },
+  "smoke_density": 68.5,
+  "smoke_density_unit": "mg/m^3",
+  "wind_speed": 2.361111111111111,
+  "wind_speed_unit": "m/s",
+  "wind_direction": 270.0,
+  "wind_direction_sign_correct": true,
+  "formula": "smoke_density",
+  "formula_result": 68.5,
+  "threshold_high": 65.0,
+  "threshold_low": 5.0,
+  "threshold_unit": "mg/m^3",
+  "status": "alert",
+  "block_reason": null,
+  "block_detail": null,
+  "attachments": [],
+  "manual_notes": [
+    {
+      "id": "6b8cdeae",
+      "author": "阿岑",
+      "content": "现场目视烟雾明显，传感器读数偏高",
+      "judgment": "报警",
+      "timestamp": "2026-06-14T00:50:18.038990",
+      "aligns_with_alert": true,
+      "misalignment_reason": null
+    }
+  ],
+  "history": [
+    {
+      "id": "c0ece2b0",
+      "field_name": "threshold_high",
+      "old_value": null,
+      "new_value": 65.0,
+      "operator": "阿岑",
+      "reason": "现场确认短时烟雾是因为实验启动阶段，临时上调阈值",
+      "timestamp": "2026-06-14T02:12:18.039577",
+      "is_temporary": true
+    }
+  ],
+  "jump_detected": true,
+  "jump_cause": "threshold_changed",
+  "jump_detail": "字段 'threshold_high' 由 None 改为 65.0(操作人: 阿岑，原因: 现场确认短时烟雾是因为实验启动阶段，临时上调阈值)。建议：若为临时调整，需在交接班记录中注明恢复时间。",
+  "previous_result": null,
+  "next_step": "检测到结果跳变(25.0 -> 68.5)。原因：threshold_changed，字段 'threshold_high' 由 None 改为 65.0(操作人: 阿岑，原因: 现场确认短时烟雾是因为实验启动阶段，临时上调阈值)。建议：若为临时调整，需在交接班记录中注明恢复时间。",
+  "final_judgment": "触发预警：计算值 68.5 超过高阈值 65.0"
+}
