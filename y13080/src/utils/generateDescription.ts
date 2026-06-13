@@ -56,7 +56,6 @@ function generateSideDetail(
   const sortedCmts = [...comments].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )
-  const latestComment = sortedCmts[0]
   const timelineToday = timeline.filter(t => t.date === '2026-06-10')
   const hasGaps = timelineToday.some(t => t.hasGap)
   const totalGapHours = timelineToday.reduce((sum, t) => sum + t.gapDuration, 0)

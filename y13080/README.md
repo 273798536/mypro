@@ -13,7 +13,7 @@ npm install
 npm run dev
 ```
 
-浏览器打开 `http://localhost:5173` 进入复核主界面。
+浏览器打开终端输出的地址（默认 `http://localhost:5173`，如端口被占用会自动顺延）进入复核主界面。
 
 ### 第 2 步：日常复核
 

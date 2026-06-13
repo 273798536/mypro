@@ -23,6 +23,96 @@ interface GroupItem {
   tint?: string
 }
 
+const groupedByArea = (locs: WarehouseLocation[]): GroupItem[] => {
+  const groups: Record<string, WarehouseLocation[]> = {}
+  locs.forEach(loc => {
+    if (!groups[loc.area]) groups[loc.area] = []
+    groups[loc.area].push(loc)
+  })
+  return Object.entries(groups)
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([area, items]) => ({
+      title: area,
+      locations: items.sort((a, b) => a.code.localeCompare(b.code)),
+      summary: `共 ${items.length} 个库位`,
+    }))
+}
+
+const groupedByHazard = (locs: WarehouseLocation[]): GroupItem[] => {
+  const groups: Record<string, WarehouseLocation[]> = {}
+  locs.forEach(loc => {
+    const key = loc.hazardClass || '未分类'
+    if (!groups[key]) groups[key] = []
+    groups[key].push(loc)
+  })
+  const order = ['1类','2类','3类','4类','5类','6类','7类','8类','9类','未分类']
+  return order
+    .filter(k => groups[k])
+    .map(hc => {
+      const items = groups[hc].sort((a, b) => a.code.localeCompare(b.code))
+      const warnCount = items.filter(l => l.status !== 'normal').length
+      return {
+        title: hc,
+        locations: items,
+        summary: `${items.length} 库位${warnCount ? '，异常 ' + warnCount : ''}`,
+        tint: hc === '1类' || hc === '2类' || hc === '7类' ? 'danger' : undefined,
+      }
+    })
+}
+
+const groupedByTimeline = (locs: WarehouseLocation[], timelineRecords: TimelineRecord[]): GroupItem[] => {
+  const withGap: WarehouseLocation[] = []
+  const withoutGap: WarehouseLocation[] = []
+  const noRecords: WarehouseLocation[] = []
+
+  locs.forEach(loc => {
+    const tl = timelineRecords.filter(t => t.locationId === loc.id)
+    if (tl.length === 0) {
+      noRecords.push(loc)
+    } else if (tl.some(t => t.hasGap)) {
+      withGap.push(loc)
+    } else {
+      withoutGap.push(loc)
+    }
+  })
+
+  const byGapDuration = (a: WarehouseLocation, b: WarehouseLocation) => {
+    const gapA = timelineRecords
+      .filter(t => t.locationId === a.id)
+      .reduce((s, t) => s + t.gapDuration, 0)
+    const gapB = timelineRecords
+      .filter(t => t.locationId === b.id)
+      .reduce((s, t) => s + t.gapDuration, 0)
+    return gapB - gapA
+  }
+
+  const result: GroupItem[] = []
+  if (withGap.length > 0) {
+    result.push({
+      title: '⚠️ 时间轴缺段',
+      locations: withGap.sort(byGapDuration),
+      summary: `${withGap.length} 个库位存在缺段`,
+      tint: 'danger',
+    })
+  }
+  if (withoutGap.length > 0) {
+    result.push({
+      title: '✅ 记录完整',
+      locations: withoutGap.sort((a, b) => a.code.localeCompare(b.code)),
+      summary: `${withoutGap.length} 个库位记录连续`,
+    })
+  }
+  if (noRecords.length > 0) {
+    result.push({
+      title: '❓ 无时间记录',
+      locations: noRecords.sort((a, b) => a.code.localeCompare(b.code)),
+      summary: `${noRecords.length} 个库位暂无记录`,
+      tint: 'danger',
+    })
+  }
+  return result
+}
+
 export function WarehouseScene() {
   const {
     filteredLocations,
@@ -51,100 +141,10 @@ export function WarehouseScene() {
       .sort((a, b) => a.startTime.localeCompare(b.startTime))
   }
 
-  const groupedByArea = (locs: WarehouseLocation[]): GroupItem[] => {
-    const groups: Record<string, WarehouseLocation[]> = {}
-    locs.forEach(loc => {
-      if (!groups[loc.area]) groups[loc.area] = []
-      groups[loc.area].push(loc)
-    })
-    return Object.entries(groups)
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([area, items]) => ({
-        title: area,
-        locations: items.sort((a, b) => a.code.localeCompare(b.code)),
-        summary: `共 ${items.length} 个库位`,
-      }))
-  }
-
-  const groupedByHazard = (locs: WarehouseLocation[]): GroupItem[] => {
-    const groups: Record<string, WarehouseLocation[]> = {}
-    locs.forEach(loc => {
-      const key = loc.hazardClass || '未分类'
-      if (!groups[key]) groups[key] = []
-      groups[key].push(loc)
-    })
-    const order = ['1类','2类','3类','4类','5类','6类','7类','8类','9类','未分类']
-    return order
-      .filter(k => groups[k])
-      .map(hc => {
-        const items = groups[hc].sort((a, b) => a.code.localeCompare(b.code))
-        const warnCount = items.filter(l => l.status !== 'normal').length
-        return {
-          title: hc,
-          locations: items,
-          summary: `${items.length} 库位${warnCount ? '，异常 ' + warnCount : ''}`,
-          tint: hc === '1类' || hc === '2类' || hc === '7类' ? 'danger' : undefined,
-        }
-      })
-  }
-
-  const groupedByTimeline = (locs: WarehouseLocation[]): GroupItem[] => {
-    const withGap: WarehouseLocation[] = []
-    const withoutGap: WarehouseLocation[] = []
-    const noRecords: WarehouseLocation[] = []
-
-    locs.forEach(loc => {
-      const tl = timelineRecords.filter(t => t.locationId === loc.id)
-      if (tl.length === 0) {
-        noRecords.push(loc)
-      } else if (tl.some(t => t.hasGap)) {
-        withGap.push(loc)
-      } else {
-        withoutGap.push(loc)
-      }
-    })
-
-    const byGapDuration = (a: WarehouseLocation, b: WarehouseLocation) => {
-      const gapA = timelineRecords
-        .filter(t => t.locationId === a.id)
-        .reduce((s, t) => s + t.gapDuration, 0)
-      const gapB = timelineRecords
-        .filter(t => t.locationId === b.id)
-        .reduce((s, t) => s + t.gapDuration, 0)
-      return gapB - gapA
-    }
-
-    const result: GroupItem[] = []
-    if (withGap.length > 0) {
-      result.push({
-        title: '⚠️ 时间轴缺段',
-        locations: withGap.sort(byGapDuration),
-        summary: `${withGap.length} 个库位存在缺段`,
-        tint: 'danger',
-      })
-    }
-    if (withoutGap.length > 0) {
-      result.push({
-        title: '✅ 记录完整',
-        locations: withoutGap.sort((a, b) => a.code.localeCompare(b.code)),
-        summary: `${withoutGap.length} 个库位记录连续`,
-      })
-    }
-    if (noRecords.length > 0) {
-      result.push({
-        title: '❓ 无时间记录',
-        locations: noRecords.sort((a, b) => a.code.localeCompare(b.code)),
-        summary: `${noRecords.length} 个库位暂无记录`,
-        tint: 'danger',
-      })
-    }
-    return result
-  }
-
   const groups: GroupItem[] = useMemo(() => {
     const locs = filteredLocations
     if (currentView === 'byHazard') return groupedByHazard(locs)
-    if (currentView === 'byTimeline') return groupedByTimeline(locs)
+    if (currentView === 'byTimeline') return groupedByTimeline(locs, timelineRecords)
     return groupedByArea(locs)
   }, [filteredLocations, currentView, timelineRecords])
 
