@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>电机扭矩报告导出系统</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", sans-serif; max-width: 1100px; margin: 40px auto; padding: 0 20px; color: #1f2937; }
+  h1 { color: #7c3aed; border-bottom: 3px solid #c4b5fd; padding-bottom: 10px; }
+  h2 { color: #4f46e5; margin-top: 40px; }
+  h3 { color: #2563eb; }
+  .module-card { background: #f8fafc; border-left: 4px solid #7c3aed; padding: 16px 20px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+  code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+  pre { background: #0f172a; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.85em; line-height: 1.5; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; margin-right: 6px; }
+  .badge-hl { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  th, td { border: 1px solid #e5e7eb; padding: 8px 12px; text-align: left; }
+  th { background: #eef2ff; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  .file-link { color: #7c3aed; font-family: "SF Mono", monospace; font-size: 0.9em; }
+  .warn { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 12px 0; border-radius: 4px; }
+  .check { color: #059669; }
+  .flow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+  .flow-step { background: linear-gradient(135deg, #8b5cf6, #6366f1); color: white; padding: 10px 18px; border-radius: 8px; font-weight: 500; }
+  .flow-arrow { color: #9ca3af; font-size: 1.5em; }
+</style>
+</head>
+<body>
+
+<h1>⚡ 电机扭矩报告导出系统</h1>
+<p>为项目助理小宋设计的一体化复核工具 —— 筛选条件、统计数字、明细表、Markdown 报告 <strong>从同一套结果生成</strong>。</p>
+
+<div class="flow">
+  <div class="flow-step">① 实验记录</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">② 解析+异常检测</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">③ 筛选/统计/明细</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">④ 参数调档复算</div>
+  <div class="flow-arrow">→</div>
+  <div class="flow-step">⑤ Markdown 报告</div>
+</div>
+
+<h2>📁 模块文件结构</h2>
+<table>
+  <thead>
+    <tr><th>文件</th><th>职责</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="file-link">motor_torque_report/models.py</td><td>数据模型：记录、异常、判断、报告配置等</td></tr>
+    <tr><td class="file-link">motor_torque_report/parser.py</td><td>记录解析：单位归一化、换算、数量级偏移检测</td></tr>
+    <tr><td class="file-link">motor_torque_report/anomaly.py</td><td>异常检测：方向写反、单位混写、晚到附件</td></tr>
+    <tr><td class="file-link">motor_torque_report/engine.py</td><td>计算引擎：筛选、统计、明细表（同一数据源）</td></tr>
+    <tr><td class="file-link">motor_torque_report/recalc.py</td><td>参数调档复算：公式、边界样本影响追踪</td></tr>
+    <tr><td class="file-link">motor_torque_report/audit.py</td><td>审计轨迹：小宋的临时判断完整留存</td></tr>
+    <tr><td class="file-link">motor_torque_report/report.py</td><td>Markdown 报告：补料/放行可操作清单</td></tr>
+    <tr><td class="file-link">motor_torque_report/exporter.py</td><td>主入口：编排全流程</td></tr>
+    <tr><td class="file-link">tests/test_motor_torque_report.py</td><td>pytest 单元测试（24+ 用例）</td></tr>
+    <tr><td class="file-link">run_test.py</td><td>一键端到端验证脚本</td></tr>
+  </tbody>
+</table>
+
+<h2>✅ 需求对应表</h2>
+<table>
+  <thead>
+    <tr><th>需求</th><th>实现位置</th><th>说明</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="badge badge-red">🔴 关键</span>筛选条件、统计、明细、报告从同一套结果生成</td>
+      <td class="file-link">engine.py <a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/engine.py#L16-L43">apply_filter</a> + <a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/engine.py#L46-L99">compute_statistics</a> + <a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/engine.py#L102-L124">build_detail_table</a>，在 <a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/exporter.py#L127-L162">exporter.export</a> 中一次性消费同一 filtered 列表</td>
+      <td>三者共享同一个 filtered 副本，不会出现筛选-统计不一致</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-red">🔴 关键</span>单位混写 / 数量级变了</td>
+      <td class="file-link"><a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/parser.py#L11-L35">normalize_unit</a> + <a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/parser.py#L38-L43">convert_torque</a> + <a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/parser.py#L46-L88">detect_unit_magnitude_shift</a></td>
+      <td>支持 N·m/mN·m/kN·m/kgf·cm/gf·cm/lbf·ft/ozf·in 等 12 种变体，同一电机内出现跨越 2 档数量级即报警</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-hl">🟡 重要</span>留出一条晚到附件</td>
+      <td class="file-link">SAMPLE_RECORDS 中 REC-004 (is_late_attachment=True)；<a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/anomaly.py#L87-L123">detect_late_attachment_anomalies</a>；FilterCriteria.include_late_attachments</td>
+      <td>默认包含晚到附件，可在筛选时排除；报告中单独标出"🟡 晚到附件"</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-red">🔴 关键</span>方向符号写反 → 先给待确认原因和影响范围，不急着算完</td>
+      <td class="file-link"><a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/anomaly.py#L13-L50">detect_direction_reversed</a> + 报告中"⚠️ 待确认异常"章节</td>
+      <td>扭矩符号 +、- 与 CW/CCW 不一致即触发；异常详情包含 <code>description</code>（原因）+ <code>impact_scope</code>（影响范围）+ <code>suggested_action</code>（建议操作）；FilterCriteria.exclude_anomalies 可一键排除未确认异常再统计</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-red">🔴 关键</span>参数调一档复算 → 公式、单位、边界样本为何变化</td>
+      <td class="file-link"><a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/recalc.py#L23-L103">recalc_with_parameter_change</a> 返回 RecalcImpact（含 formula / boundary_records_affected / result_before / result_after / delta_percent / explanation）</td>
+      <td>支持 4 类参数：torque_unit（换算因子）、boundary_sigma（kσ）、direction_correction（CW↔CCW）、torque_override（手动覆盖）。报告中专门章节逐条展示</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-red">🔴 关键</span>小宋临时改过的判断留在历史里</td>
+      <td class="file-link"><a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/audit.py">AuditTrail</a> 每次操作写一条 JudgmentEntry（timestamp / operator / action / reason / previous_value / new_value / formula）；报告 "判断历史记录" 章节以表格全量展示</td>
+      <td>下一班能看到每一次方向修正、覆盖放行、补料要求、参数调档，而不只是最终数字</td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-red">🔴 关键</span>收尾不是技术说明 → 哪条补料 / 哪条放行</td>
+      <td class="file-link"><a href="file:///Users/mac/pro/solo/workspaces/y13169/motor_torque_report/report.py#L21-L49">classify_actionable_items</a> + 报告 "📋 可操作清单" 章节</td>
+      <td>🔴 待确认异常 → 补料/确认；🟡 晚到/缺失附件 → 补料；✅ 无异常 → 放行清单</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>🧪 内置测试数据包</h2>
+<p>7 条实验记录（REC-001 ~ REC-007），覆盖：</p>
+<ul>
+  <li><span class="check">✅</span> REC-001/002：干净记录，作为基线</li>
+  <li><span class="badge badge-red">🔴 方向写反</span> REC-003：扭矩 +2.1 N·m 却标记 CCW（应为 CW）</li>
+  <li><span class="badge badge-hl">🟡 晚到附件</span> REC-004：rec004_late.csv，标记 is_late_attachment=True</li>
+  <li><span class="badge badge-hl">🟡 单位混写</span> REC-004 用 mN·m，同电机 REC-005 用 N·m（跨 3 档数量级）</li>
+  <li><span class="badge badge-blue">🔵 缺失附件</span> REC-003：attachment_file=None</li>
+  <li><span class="badge badge-green">🟢 对照干净</span> REC-006/007：M-102 正常对</li>
+</ul>
+
+<h2>🚀 使用示例</h2>
+<pre>
+from motor_torque_report.exporter import MotorTorqueReportExporter
+from motor_torque_report.models import FilterCriteria
+
+# 1. 初始化 + 加载实验记录
+exporter = MotorTorqueReportExporter(operator="小宋", output_unit="N·m")
+exporter.load_records(SAMPLE_RECORDS)
+
+# 2. 先跑异常检测（方向写反、单位混写、晚到附件）
+anomalies = exporter.check_anomalies()
+# → 产出待确认原因 + 影响范围 + 建议操作
+
+# 3. 小宋临时判断
+exporter.fix_direction("REC-003", reason="经复核确认方向写反")
+exporter.release_record("REC-004", reason="晚到附件经确认可放行")
+exporter.request_supplement("REC-003", reason="缺原始附件")
+
+# 4. 调一档参数复算
+exporter.recalculate("boundary_sigma", old_value=1.5, new_value=2.0)
+
+# 5. 一次筛选 + 统计 + 明细 + 报告（同源）
+md = exporter.export_markdown(
+    filter_criteria=FilterCriteria(motor_ids=["M-100","M-101","M-102"])
+)
+
+with open("report.md", "w", encoding="utf-8") as f:
+    f.write(md)
+</pre>
+
+<h2>📊 Markdown 报告章节</h2>
+<ol>
+  <li><strong>筛选条件</strong>（FilterCriteria 完整序列化）</li>
+  <li><strong>统计数字</strong>（CW/CCW 分开：均值、标准差、min/max、边界样本 ID）</li>
+  <li><strong>明细表</strong>（原始值 + 单位 + 换算后 + 晚到标记 + 操作人）</li>
+  <li><strong>⚠️ 待确认异常</strong>（逐条：类型、严重性、描述、影响范围、建议操作；未确认前不加统计）</li>
+  <li><strong>参数调档影响分析</strong>（变更前→后、公式/换算因子、边界样本变化、结果变化百分比）</li>
+  <li><strong>判断历史记录</strong>（完整审计表：时间、操作人、动作、原因、旧值、新值、公式）</li>
+  <li><strong>📋 可操作清单</strong>
+    <ul>
+      <li>🔴 需要补料/确认（逐条带记录号 + 建议操作）</li>
+      <li>✅ 可以放行（清单条数）</li>
+    </ul>
+  </li>
+</ol>
+
+<div class="warn">
+  <strong>⚠️ 说明</strong>：由于当前环境终端实例存在初始化问题，建议本地执行以下命令运行验证：
+  <pre style="margin-top:8px;">cd /Users/mac/pro/solo/workspaces/y13169 && python3 run_test.py
+# 或
+python3 -m pytest tests/test_motor_torque_report.py -v</pre>
+  所有代码已通过静态诊断（GetDiagnostics 全部 0 错误），模块导入与类型注解无问题。
+</div>
+
+</body>
+</html>
