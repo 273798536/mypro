@@ -255,6 +255,130 @@
       ],
       "created_at": "2026-06-11T14:20:45.183Z",
       "updated_at": "2026-06-11T14:20:45.183Z"
+    },
+    {
+      "id": "anm_mqcmm28d_nw9l",
+      "sensor_record_id": "rec_0005",
+      "point_id": "A-01-05",
+      "status": "pending",
+      "detection_reason": {
+        "type": "missing_value",
+        "description": "温度字段缺失（原始值为 N/A）",
+        "detail": {
+          "temperature": null,
+          "humidity": 47,
+          "reason": "温度字段缺失（原始值为 N/A）"
+        }
+      },
+      "affected_points": [
+        "A-01-05"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-13T17:25:25.837Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "相邻检测：missing_value"
+        }
+      ],
+      "created_at": "2026-06-13T17:25:25.837Z",
+      "updated_at": "2026-06-13T17:25:25.837Z"
+    },
+    {
+      "id": "anm_mqcmm28d_9wnp",
+      "sensor_record_id": "rec_0054",
+      "point_id": "B-02-08",
+      "status": "pending",
+      "detection_reason": {
+        "type": "missing_value",
+        "description": "湿度格式异常（非数字）",
+        "detail": {
+          "temperature": 25.2,
+          "humidity": null,
+          "reason": "湿度格式异常（非数字）"
+        }
+      },
+      "affected_points": [
+        "B-02-08"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-13T17:25:25.837Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "相邻检测：missing_value"
+        }
+      ],
+      "created_at": "2026-06-13T17:25:25.837Z",
+      "updated_at": "2026-06-13T17:25:25.837Z"
+    },
+    {
+      "id": "anm_mqcmm28d_3fbk",
+      "sensor_record_id": "rec_0015",
+      "point_id": "A-02-03",
+      "status": "pending",
+      "detection_reason": {
+        "type": "duplicate",
+        "description": "点位编号 A-02-03 出现 2 条记录（来源：dc_sensors_2026Q2.csv、dc_sensors_extra.csv）",
+        "detail": {
+          "count": 2,
+          "files": [
+            "dc_sensors_2026Q2.csv",
+            "dc_sensors_extra.csv"
+          ]
+        }
+      },
+      "affected_points": [
+        "A-02-02",
+        "A-02-03",
+        "A-02-04"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-13T17:25:25.837Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "相邻检测：duplicate"
+        }
+      ],
+      "created_at": "2026-06-13T17:25:25.837Z",
+      "updated_at": "2026-06-13T17:25:25.837Z"
+    },
+    {
+      "id": "anm_mqcmm28e_c3z2",
+      "sensor_record_id": "rec_0008",
+      "point_id": "A-01-08",
+      "status": "pending",
+      "detection_reason": {
+        "type": "temp_delta",
+        "description": "相邻点 B-01-07(25.2℃) 与 A-01-08(32.1℃) 温差 6.9℃，阈值 5℃",
+        "detail": {
+          "delta": 6.900000000000002,
+          "threshold": 5,
+          "hot_point": "A-01-08",
+          "cold_point": "B-01-07"
+        }
+      },
+      "affected_points": [
+        "A-01-06",
+        "A-01-07",
+        "A-01-08",
+        "A-01-09"
+      ],
+      "remark": "",
+      "operation_logs": [
+        {
+          "time": "2026-06-13T17:25:25.838Z",
+          "action": "create",
+          "operator": "system",
+          "detail": "相邻检测：temp_delta"
+        }
+      ],
+      "created_at": "2026-06-13T17:25:25.838Z",
+      "updated_at": "2026-06-13T17:25:25.838Z"
     }
   ]
 }

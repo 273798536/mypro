@@ -64,10 +64,10 @@ export default function Overview() {
 
       {/* 操作栏 */}
       <div className="flex flex-wrap items-center gap-2">
-        <button className="btn-primary" onClick={() => runDetection()}>
-          <Play className="w-4 h-4" /> 执行相邻点位检测
+        <button className="btn-primary" onClick={() => runDetection()} disabled={loading}>
+          <Play className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> 执行相邻点位检测
         </button>
-        <button className="btn-secondary" onClick={() => reloadAll()}>
+        <button className="btn-secondary" onClick={() => reloadAll()} disabled={loading}>
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> 刷新数据
         </button>
         <div className="ml-auto text-xs text-brand-500">

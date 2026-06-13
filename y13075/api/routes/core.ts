@@ -6,7 +6,7 @@ import type { StatsSummary } from '../../shared/types.js';
 
 const router = Router();
 
-router.post('/seed', (_req: Request, res: Response) => {
+router.post('/records/seed', (_req: Request, res: Response) => {
   try {
     const s1 = RecordService.seedIfEmpty();
     const s2 = AnomalyService.seedIfEmpty();

@@ -38,6 +38,7 @@ export default function ReportExport() {
   const [count, setCount] = useState(0);
   const [busy, setBusy] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [reportError, setReportError] = useState<string>('');
 
   useEffect(() => {
     initIfNeeded();
@@ -54,6 +55,7 @@ export default function ReportExport() {
     let cancelled = false;
     (async () => {
       setBusy(true);
+      setReportError('');
       try {
         const r = await api.generateReport(opts);
         if (cancelled) return;
@@ -61,7 +63,9 @@ export default function ReportExport() {
         setFilename(r.filename);
         setCount(r.anomaly_count);
       } catch (e: any) {
+        if (cancelled) return;
         console.error(e);
+        setReportError(e?.message ?? '报告生成失败，请检查后端服务是否正常。');
       } finally {
         if (!cancelled) setBusy(false);
       }
@@ -79,15 +83,21 @@ export default function ReportExport() {
 
   async function manualRefresh() {
     setBusy(true);
+    setReportError('');
     try {
       const r = await api.generateReport(opts);
       setPreview(r.markdown);
       setFilename(r.filename);
       setCount(r.anomaly_count);
+    } catch (e: any) {
+      console.error(e);
+      setReportError(e?.message ?? '报告生成失败，请检查后端服务是否正常。');
     } finally {
       setBusy(false);
     }
   }
+
+  const halfFilledRange = (startId && !endId) || (!startId && endId);
 
   return (
     <div className="space-y-4">
@@ -114,11 +124,27 @@ export default function ReportExport() {
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
             刷新预览
           </button>
-          <button className="btn-primary" onClick={() => api.downloadReport(opts)}>
+          <button className="btn-primary" onClick={() => api.downloadReport(opts)} disabled={busy}>
             <FileDown className="w-4 h-4" /> 下载 .md
           </button>
         </div>
       </div>
+
+      {reportError ? (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-2.5 flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 text-status-anomaly shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <div className="text-xs font-medium text-status-anomaly">报告生成失败</div>
+            <div className="text-[11.5px] text-red-700/90 break-all mt-0.5">{reportError}</div>
+          </div>
+          <button
+            className="text-[11px] text-red-600 hover:text-red-800 underline shrink-0"
+            onClick={() => setReportError('')}
+          >
+            关闭
+          </button>
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-1 xl:grid-cols-[320px_minmax(0,1fr)] gap-4">
         {/* 左侧筛选 */}
@@ -180,6 +206,14 @@ export default function ReportExport() {
                   />
                 </div>
               </div>
+              {halfFilledRange ? (
+                <div className="mt-2 rounded border border-amber-300 bg-amber-50 px-2.5 py-1.5 flex items-start gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5" />
+                  <div className="text-[11px] text-amber-800 leading-snug">
+                    请同时填写起止点位，当前范围筛选<b>未生效</b>。
+                  </div>
+                </div>
+              ) : null}
               {(startId || endId) ? (
                 <button
                   className="text-[11px] text-brand-500 hover:text-brand-700 underline"
