@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "operator": "前一班工程师",
+    "source": "交班材料_20240610夜班"
+  },
+  "layers": [
+    {
+      "id": "layer-appendix-01",
+      "name": "夜班补充-临时脚手架位置",
+      "color": "#e67e22",
+      "coordinateSystem": "local",
+      "visible": true,
+      "opacity": 0.75,
+      "source": "夜班交接-临时脚手架v2.dwg",
+      "importedAt": "2024-06-10 18:20:00",
+      "elements": [
+        {
+          "id": "el-app-01",
+          "type": "rect",
+          "category": "platform",
+          "label": "夜班脚手架-1号",
+          "points": [
+            { "x": 460, "y": 220 },
+            { "x": 540, "y": 220 },
+            { "x": 540, "y": 300 },
+            { "x": 460, "y": 300 }
+          ]
+        }
+      ]
+    }
+  ],
+  "collisions": [
+    {
+      "id": "col-appendix-01",
+      "layerA": "layer-001",
+      "layerB": "layer-appendix-01",
+      "x": 500,
+      "y": 260,
+      "type": "soft",
+      "severity": "warning",
+      "status": "pending",
+      "description": "夜班补充脚手架与主线桥梁北段支撑干涉",
+      "calcBasis": "局部坐标系未校准，与桥梁BJ54叠加后边界重合",
+      "calcBasisDetail": {
+        "coordinateSystems": ["bj54", "local"],
+        "transformMethod": "夜班交班无转换参数，直接叠加",
+        "clearanceValue": 0.05,
+        "clearanceStandard": 0.3,
+        "checkTime": "2024-06-10 18:25:00",
+        "checkedBy": "前一班工程师",
+        "notes": "需阿宁白班确认坐标系后复核"
+      },
+      "relatedSegments": ["seg-002"],
+      "isRevoked": false,
+      "createdAt": "2024-06-10 18:25:00",
+      "createdBy": "前一班工程师"
+    },
+    {
+      "id": "col-appendix-02",
+      "layerA": "layer-003",
+      "layerB": "layer-appendix-01",
+      "x": 520,
+      "y": 290,
+      "type": "clearance",
+      "severity": "info",
+      "status": "pending",
+      "description": "夜班脚手架与检修平台A净空复核",
+      "calcBasis": "净空估算3.8m，与规范3.5m接近，需现场量测",
+      "calcBasisDetail": {
+        "coordinateSystems": ["local", "local"],
+        "transformMethod": "同一坐标系，无需转换",
+        "clearanceValue": 3.8,
+        "clearanceStandard": 3.5,
+        "checkTime": "2024-06-10 18:30:00",
+        "checkedBy": "前一班工程师",
+        "notes": "数据来源于夜班人员手持设备"
+      },
+      "relatedSegments": ["seg-002"],
+      "isRevoked": false,
+      "createdAt": "2024-06-10 18:30:00",
+      "createdBy": "前一班工程师"
+    }
+  ],
+  "timeSegments": [
+    {
+      "id": "seg-appendix-01",
+      "startTime": "06-10 18:00",
+      "endTime": "06-10 20:00",
+      "status": "completed",
+      "description": "夜班补测-脚手架区域",
+      "responsible": "前一班工程师"
+    }
+  ]
+}

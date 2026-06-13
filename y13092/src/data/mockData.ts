@@ -4,7 +4,20 @@ import type {
   OperationRecord,
   TimeSegment,
   ViewSnapshot,
+  DetectionSession,
 } from '@/types';
+
+export const SESSION_ID = 'SESSION-20240610-001';
+export const DEFAULT_OPERATOR = '阿宁';
+
+export const defaultSession: DetectionSession = {
+  id: SESSION_ID,
+  name: '云顶山隧道段-6月10日预审',
+  status: 'active',
+  createdAt: '2024-06-10 09:00:00',
+  updatedAt: '2024-06-10 15:32:18',
+  operator: DEFAULT_OPERATOR,
+};
 
 export const mockLayers: CadLayer[] = [
   {
@@ -16,6 +29,8 @@ export const mockLayers: CadLayer[] = [
     opacity: 1,
     source: '设计院-2024-03-15版.dwg',
     importedAt: '2024-06-10 09:23:45',
+    importedBy: '阿宁',
+    importSessionId: SESSION_ID,
     elements: [
       {
         id: 'el-001',
@@ -52,6 +67,8 @@ export const mockLayers: CadLayer[] = [
     opacity: 1,
     source: '设计院-2024-03-15版.dwg',
     importedAt: '2024-06-10 09:25:10',
+    importedBy: '阿宁',
+    importSessionId: SESSION_ID,
     elements: [
       {
         id: 'el-003',
@@ -88,6 +105,8 @@ export const mockLayers: CadLayer[] = [
     opacity: 0.85,
     source: '施工队-现场实测-20240608.dwg',
     importedAt: '2024-06-10 10:15:30',
+    importedBy: '阿宁',
+    importSessionId: SESSION_ID,
     elements: [
       {
         id: 'el-005',
@@ -124,6 +143,8 @@ export const mockLayers: CadLayer[] = [
     opacity: 0.7,
     source: '机电班-管线图v1.dwg',
     importedAt: '2024-06-09 16:40:00',
+    importedBy: '系统导入',
+    importSessionId: SESSION_ID,
     elements: [
       {
         id: 'el-007',
@@ -147,6 +168,8 @@ export const mockLayers: CadLayer[] = [
     opacity: 0.6,
     source: '地质院-勘察报告附图.dwg',
     importedAt: '2024-06-08 14:20:15',
+    importedBy: '系统导入',
+    importSessionId: SESSION_ID,
     elements: [
       {
         id: 'el-008',
@@ -171,7 +194,19 @@ export const mockCollisions: CollisionPoint[] = [
     status: 'confirmed',
     description: '临时检修平台A与桥梁下部结构净空不足，侵入限界',
     calcBasis: '基于BJ54坐标系转换，净空余量仅2.3m，规范要求3.5m',
+    calcBasisDetail: {
+      coordinateSystems: ['bj54', 'local'],
+      transformMethod: '四参数转换-现场控制点校准',
+      clearanceValue: 2.3,
+      clearanceStandard: 3.5,
+      checkTime: '2024-06-10 11:05:22',
+      checkedBy: '王工',
+      notes: '净空余量低于规范值1.2m',
+    },
     relatedSegments: ['seg-002'],
+    isRevoked: false,
+    createdAt: '2024-06-10 11:05:22',
+    createdBy: '系统',
   },
   {
     id: 'col-002',
@@ -184,7 +219,19 @@ export const mockCollisions: CollisionPoint[] = [
     status: 'pending',
     description: '3号检修平台与临时支撑存在轻微干涉',
     calcBasis: '局部坐标系差异，建议现场复核',
+    calcBasisDetail: {
+      coordinateSystems: ['bj54', 'local'],
+      transformMethod: '近似映射，未精校',
+      clearanceValue: 0.15,
+      clearanceStandard: 0.3,
+      checkTime: '2024-06-10 11:12:40',
+      checkedBy: '阿宁',
+      notes: '边界接触，需人工现场确认',
+    },
     relatedSegments: ['seg-001'],
+    isRevoked: false,
+    createdAt: '2024-06-10 11:12:40',
+    createdBy: '系统',
   },
   {
     id: 'col-003',
@@ -197,8 +244,19 @@ export const mockCollisions: CollisionPoint[] = [
     status: 'pending',
     description: '隧道入口处通风管道与检修通道净空检查',
     calcBasis: 'WGS84与BJ54坐标转换后余量4.2m，需现场复测',
+    calcBasisDetail: {
+      coordinateSystems: ['bj54', 'wgs84'],
+      transformMethod: '七参数转换-标准EPSG',
+      clearanceValue: 4.2,
+      clearanceStandard: 3.5,
+      checkTime: '2024-06-10 11:20:05',
+      checkedBy: '阿宁',
+      notes: '净空满足，但坐标系差异较大需复测',
+    },
     relatedSegments: ['seg-003'],
     isRevoked: false,
+    createdAt: '2024-06-10 11:20:05',
+    createdBy: '系统',
   },
   {
     id: 'col-004',
@@ -211,8 +269,36 @@ export const mockCollisions: CollisionPoint[] = [
     status: 'revoked',
     description: '临时检修平台B与地质钻探区域重叠（已撤回）',
     calcBasis: '原判断依据不足，坐标系不一致，阿宁撤回',
+    calcBasisDetail: {
+      coordinateSystems: ['local', 'unknown'],
+      transformMethod: '未做转换，直接叠加',
+      clearanceValue: 0,
+      clearanceStandard: 0.5,
+      checkTime: '2024-06-10 10:45:20',
+      checkedBy: '阿宁',
+      notes: '地质图层坐标系未知，判断无效',
+    },
     relatedSegments: ['seg-003'],
     isRevoked: true,
+    createdAt: '2024-06-10 10:45:20',
+    createdBy: '阿宁',
+    snapshotBeforeRevoke: {
+      status: 'pending',
+      description: '临时检修平台B与地质钻探区域重叠',
+      calcBasis: '边界重合判断',
+      calcBasisDetail: {
+        coordinateSystems: ['local', 'unknown'],
+        transformMethod: '未做转换，直接叠加',
+        clearanceValue: 0,
+        clearanceStandard: 0.5,
+        checkTime: '2024-06-10 10:45:20',
+        checkedBy: '阿宁',
+        notes: '初判',
+      },
+      isRevoked: false,
+      snapshottedAt: '2024-06-10 11:20:10',
+      snapshottedBy: '阿宁',
+    },
   },
 ];
 
@@ -225,6 +311,7 @@ export const mockHistory: OperationRecord[] = [
     description: '导入地质钻孔数据图层',
     isRevoked: false,
     details: { source: '地质院-勘察报告附图.dwg', layers: 1 },
+    sessionId: SESSION_ID,
   },
   {
     id: 'hist-002',
@@ -234,15 +321,17 @@ export const mockHistory: OperationRecord[] = [
     description: '导入隧道内管线初版图纸',
     isRevoked: false,
     details: { source: '机电班-管线图v1.dwg', layers: 1 },
+    sessionId: SESSION_ID,
   },
   {
     id: 'hist-003',
     type: 'import',
     operator: '阿宁',
     timestamp: '2024-06-10 09:23:45',
-    description: '导入主线桥梁北段图层',
+    description: '导入主线桥梁北段+中段图层',
     isRevoked: false,
     details: { source: '设计院-2024-03-15版.dwg', layers: 2 },
+    sessionId: SESSION_ID,
   },
   {
     id: 'hist-004',
@@ -251,7 +340,12 @@ export const mockHistory: OperationRecord[] = [
     timestamp: '2024-06-10 10:15:30',
     description: '导入检修平台布置图',
     isRevoked: false,
-    details: { source: '施工队-现场实测-20240608.dwg', layers: 1, note: '现场实测坐标系为局部坐标，需转换' },
+    details: {
+      source: '施工队-现场实测-20240608.dwg',
+      layers: 1,
+      note: '现场实测坐标系为局部坐标，需转换',
+    },
+    sessionId: SESSION_ID,
   },
   {
     id: 'hist-005',
@@ -261,6 +355,7 @@ export const mockHistory: OperationRecord[] = [
     description: '标记col-004为碰撞警告',
     isRevoked: true,
     details: { collisionId: 'col-004', reason: '初步判断平台B与地质区重叠' },
+    sessionId: SESSION_ID,
   },
   {
     id: 'hist-006',
@@ -273,7 +368,9 @@ export const mockHistory: OperationRecord[] = [
       collisionId: 'col-004',
       reason: '坐标系不一致，地质图层为unknown，不能直接叠加判断',
       revokedRecordId: 'hist-005',
+      snapshotSaved: true,
     },
+    sessionId: SESSION_ID,
   },
   {
     id: 'hist-007',
@@ -283,6 +380,7 @@ export const mockHistory: OperationRecord[] = [
     description: '确认col-001为严重碰撞',
     isRevoked: false,
     details: { collisionId: 'col-001', note: '现场实测确认，需整改' },
+    sessionId: SESSION_ID,
   },
   {
     id: 'hist-008',
@@ -292,6 +390,7 @@ export const mockHistory: OperationRecord[] = [
     description: '时间轴seg-004段检测挂起',
     isRevoked: false,
     details: { segmentId: 'seg-004', reason: '缺段数据缺失，等待补充' },
+    sessionId: SESSION_ID,
   },
 ];
 
@@ -339,6 +438,7 @@ export const mockSnapshots: ViewSnapshot[] = [
     centerY: 320,
     visibleLayers: ['layer-001', 'layer-002', 'layer-003'],
     createdAt: '2024-06-10 09:30:00',
+    createdBy: '阿宁',
   },
   {
     id: 'snap-002',
@@ -348,5 +448,6 @@ export const mockSnapshots: ViewSnapshot[] = [
     centerY: 380,
     visibleLayers: ['layer-002', 'layer-003'],
     createdAt: '2024-06-10 11:00:00',
+    createdBy: '阿宁',
   },
 ];

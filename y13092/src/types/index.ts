@@ -25,11 +25,23 @@ export interface CadLayer {
   elements: CadElement[];
   source: string;
   importedAt: string;
+  importedBy?: string;
+  importSessionId?: string;
 }
 
 export type CollisionType = 'hard' | 'soft' | 'clearance';
 export type CollisionSeverity = 'critical' | 'warning' | 'info';
 export type CollisionStatus = 'pending' | 'confirmed' | 'resolved' | 'revoked';
+
+export interface CalcBasisDetail {
+  coordinateSystems: string[];
+  transformMethod?: string;
+  clearanceValue?: number;
+  clearanceStandard?: number;
+  checkTime: string;
+  checkedBy: string;
+  notes?: string;
+}
 
 export interface CollisionPoint {
   id: string;
@@ -42,11 +54,32 @@ export interface CollisionPoint {
   status: CollisionStatus;
   description: string;
   calcBasis: string;
+  calcBasisDetail: CalcBasisDetail;
   relatedSegments: string[];
   isRevoked?: boolean;
+  createdAt: string;
+  createdBy: string;
+  snapshotBeforeRevoke?: CollisionSnapshot;
 }
 
-export type OperationType = 'import' | 'adjust' | 'revoke' | 'confirm' | 'suspend' | 'report';
+export interface CollisionSnapshot {
+  status: CollisionStatus;
+  description: string;
+  calcBasis: string;
+  calcBasisDetail: CalcBasisDetail;
+  isRevoked: boolean;
+  snapshottedAt: string;
+  snapshottedBy: string;
+}
+
+export type OperationType =
+  | 'import'
+  | 'adjust'
+  | 'revoke'
+  | 'confirm'
+  | 'suspend'
+  | 'report'
+  | 'reset';
 
 export interface OperationRecord {
   id: string;
@@ -56,6 +89,7 @@ export interface OperationRecord {
   description: string;
   isRevoked: boolean;
   details: Record<string, unknown>;
+  sessionId: string;
 }
 
 export interface ViewSnapshot {
@@ -66,6 +100,7 @@ export interface ViewSnapshot {
   centerY: number;
   visibleLayers: string[];
   createdAt: string;
+  createdBy: string;
 }
 
 export type SegmentStatus = 'completed' | 'in_progress' | 'suspended' | 'missing';
@@ -85,10 +120,43 @@ export interface DetectionSession {
   status: 'active' | 'suspended' | 'completed';
   createdAt: string;
   updatedAt: string;
+  operator: string;
 }
 
 export interface ViewState {
   scale: number;
   centerX: number;
   centerY: number;
+}
+
+export interface ImportedMaterialPackage {
+  sessionId: string;
+  importedAt: string;
+  importedBy: string;
+  fileName: string;
+  layersCount: number;
+  collisionsCount: number;
+  historyCount: number;
+  hash: string;
+}
+
+export interface PersistableState {
+  layers: CadLayer[];
+  collisions: CollisionPoint[];
+  history: OperationRecord[];
+  timeSegments: TimeSegment[];
+  snapshots: ViewSnapshot[];
+  session: DetectionSession;
+  importPackages: ImportedMaterialPackage[];
+  lastPersistedAt: string;
+}
+
+export interface MaterialImportPayload {
+  layers?: CadLayer[];
+  collisions?: CollisionPoint[];
+  timeSegments?: TimeSegment[];
+  meta?: {
+    fileName: string;
+    operator: string;
+  };
 }
