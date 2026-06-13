@@ -11,6 +11,7 @@ interface DataState {
   anomalies: AnomalyPoint[];
   timelineGaps: TimelineGap[];
   fieldMappings: FieldMapping[];
+  detectedCadFields: string[];
   selectedRecordId: string | null;
   selectedAnomalyId: string | null;
   csvContent: string;
@@ -51,6 +52,7 @@ export const useDataStore = create<DataState>((set, get) => ({
   anomalies: [],
   timelineGaps: [],
   fieldMappings: loadFieldMappingsFromStorage(),
+  detectedCadFields: [],
   selectedRecordId: null,
   selectedAnomalyId: null,
   csvContent: '',
@@ -65,6 +67,9 @@ export const useDataStore = create<DataState>((set, get) => ({
       anomalies,
       timelineGaps: gaps,
       csvContent: demoCsvContent,
+      detectedCadFields: demoCadRecords.length > 0
+        ? Object.keys(demoCadRecords[0].originalFields)
+        : [],
       isLoading: false,
       warnings: [],
     });
@@ -73,7 +78,7 @@ export const useDataStore = create<DataState>((set, get) => ({
   loadCsvData: (csvContent: string) => {
     set({ isLoading: true, warnings: [] });
     const { fieldMappings } = get();
-    const { records, warnings } = parseCsvToRecords(csvContent, fieldMappings);
+    const { records, warnings, detectedHeaders } = parseCsvToRecords(csvContent, fieldMappings);
     const { anomalies, gaps } = detectAllAnomalies(records);
     
     set({
@@ -81,6 +86,7 @@ export const useDataStore = create<DataState>((set, get) => ({
       anomalies,
       timelineGaps: gaps,
       csvContent,
+      detectedCadFields: detectedHeaders,
       isLoading: false,
       warnings,
     });
@@ -147,6 +153,7 @@ export const useDataStore = create<DataState>((set, get) => ({
       records: [],
       anomalies: [],
       timelineGaps: [],
+      detectedCadFields: [],
       selectedRecordId: null,
       selectedAnomalyId: null,
       csvContent: '',

@@ -19,7 +19,7 @@ const findStandardField = (cadFieldName: string, mappings: FieldMapping[]): stri
 export const parseCsvToRecords = (
   csvContent: string,
   fieldMappings: FieldMapping[]
-): { records: CadRecord[]; warnings: string[] } => {
+): { records: CadRecord[]; warnings: string[]; detectedHeaders: string[] } => {
   const warnings: string[] = [];
   const result = Papa.parse<Record<string, string>>(csvContent, {
     header: true,
@@ -43,7 +43,11 @@ export const parseCsvToRecords = (
   const requiredFields = ['source', 'processStatus'];
   const missingRequired = requiredFields.filter(f => !Object.values(fieldMap).includes(f));
   if (missingRequired.length > 0) {
-    warnings.push(`警告: 缺少强制字段映射: ${missingRequired.join(', ')}`);
+    const labelMap: Record<string, string> = { source: '来源', processStatus: '处理状态' };
+    warnings.push(
+      `警告: 缺少强制字段映射: ${missingRequired.map(f => labelMap[f] || f).join('、')}。` +
+      `请在字段映射配置中指定对应CAD字段。`
+    );
   }
   
   const records: CadRecord[] = result.data.map((row, index) => {
@@ -76,27 +80,51 @@ export const parseCsvToRecords = (
     };
   });
   
-  return { records, warnings };
+  return { records, warnings, detectedHeaders: headers };
 };
 
 export const recordsToCsv = (records: CadRecord[]): string => {
-  const rows = records.map(record => ({
-    '行号': record.rowNumber,
-    '记录ID': record.id,
-    '来源': record.source,
-    '处理状态': record.processStatus,
-    'X坐标(m)': record.x,
-    'Y坐标(高程m)': isNaN(record.y) ? '' : record.y,
-    '时间戳': record.timestamp,
-    '图层': record.layer,
-    ...Object.fromEntries(
-      Object.entries(record.originalFields).map(([k, v]) => [k, String(v)])
-    ),
-  }));
+  if (records.length === 0) {
+    const emptyHeaders = [
+      '行号', '记录ID', '来源', '处理状态', 'X坐标(m)', 'Y坐标(高程m)', '时间戳', '图层',
+    ];
+    return Papa.unparse({ fields: emptyHeaders, data: [] }, { header: true });
+  }
+
+  const allOriginalKeys = new Set<string>();
+  records.forEach(r => {
+    Object.keys(r.originalFields).forEach(k => allOriginalKeys.add(k));
+  });
+  const standardCadKeys = new Set(['数据源', '处理状态', 'X坐标', 'Y坐标', '高程', '时间戳', '采集时间', '图层', '图层名']);
+  const extraOriginalKeys = Array.from(allOriginalKeys).filter(k => !standardCadKeys.has(k));
+
+  const rows = records.map(record => {
+    const base: Record<string, string | number> = {
+      '行号': record.rowNumber,
+      '记录ID': record.id,
+      '来源': record.source,
+      '处理状态': record.processStatus,
+      'X坐标(m)': isNaN(record.x) ? '' : record.x,
+      'Y坐标(高程m)': isNaN(record.y) ? '' : record.y,
+      '时间戳': record.timestamp,
+      '图层': record.layer,
+    };
+    extraOriginalKeys.forEach(k => {
+      const v = record.originalFields[k];
+      base[`[CAD]${k}`] = v === undefined || v === null ? '' : String(v);
+    });
+    return base;
+  });
+
+  const orderedFields = [
+    '行号', '记录ID', '来源', '处理状态', 'X坐标(m)', 'Y坐标(高程m)', '时间戳', '图层',
+    ...extraOriginalKeys.map(k => `[CAD]${k}`),
+  ];
 
   return Papa.unparse(rows, {
     header: true,
     skipEmptyLines: true,
+    columns: orderedFields,
   });
 };
 
