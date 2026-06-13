@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import type {
-  SensorRecord,
   Anomaly,
   ViewSnapshot,
   FilterConditions,
@@ -20,6 +19,7 @@ interface ReviewStore {
   snapshots: ViewSnapshot[];
   selectedRecordId: string | null;
   cameraState: CameraState;
+  cameraRestoredAt: number;
   isScreenshotMode: boolean;
   screenshotNote: string;
   activeAnomalyTab: 'name_mismatch' | 'floor_unit_mixed';
@@ -61,6 +61,7 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
   snapshots: MOCK_SNAPSHOTS,
   selectedRecordId: null,
   cameraState: defaultCamera,
+  cameraRestoredAt: 0,
   isScreenshotMode: false,
   screenshotNote: '',
   activeAnomalyTab: 'name_mismatch',
@@ -112,6 +113,7 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
     set({
       filters: snap.filterConditions,
       cameraState: snap.cameraState,
+      cameraRestoredAt: Date.now(),
       filteredResult: filtered,
       selectedRecordId: null,
     });

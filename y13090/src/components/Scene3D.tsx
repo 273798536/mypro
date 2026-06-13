@@ -1,6 +1,7 @@
 import { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import { OrbitControls, Grid, Html, PerspectiveCamera } from '@react-three/drei';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import * as THREE from 'three';
 import { useReviewStore } from '@/store/reviewStore';
 import type { SensorRecord } from '@/types';
@@ -120,33 +121,58 @@ function SensorMarker({ record, isSelected, onClick }: {
 
 function CameraController() {
   const { camera } = useThree();
-  const { cameraState, setCameraState } = useReviewStore();
-  const controlsRef = useRef<any>(null);
-  const initialized = useRef(false);
+  const { cameraState, cameraRestoredAt, setCameraState } = useReviewStore();
+  const controlsRef = useRef<OrbitControlsImpl>(null);
+  const isRestoringRef = useRef(false);
+  const lastRestoredAt = useRef(0);
 
   useEffect(() => {
-    if (!initialized.current && camera) {
-      camera.position.set(...cameraState.position);
-      initialized.current = true;
+    if (!controlsRef.current || !camera) return;
+    if (cameraRestoredAt === 0 || cameraRestoredAt === lastRestoredAt.current) return;
+
+    isRestoringRef.current = true;
+    lastRestoredAt.current = cameraRestoredAt;
+
+    const controls = controlsRef.current;
+
+    camera.position.set(
+      cameraState.position[0],
+      cameraState.position[1],
+      cameraState.position[2],
+    );
+
+    controls.target.set(
+      cameraState.target[0],
+      cameraState.target[1],
+      cameraState.target[2],
+    );
+
+    if (camera instanceof THREE.PerspectiveCamera) {
+      camera.fov = cameraState.fov;
+      camera.updateProjectionMatrix();
     }
-  }, [camera, cameraState.position]);
+
+    controls.update();
+
+    requestAnimationFrame(() => {
+      isRestoringRef.current = false;
+    });
+  }, [cameraRestoredAt, cameraState, camera]);
 
   useFrame(() => {
-    if (controlsRef.current) {
-      const target = controlsRef.current.target;
-      setCameraState({
-        position: [camera.position.x, camera.position.y, camera.position.z],
-        target: [target.x, target.y, target.z],
-        fov: (camera as THREE.PerspectiveCamera).fov,
-      });
-    }
+    if (!controlsRef.current || isRestoringRef.current) return;
+    const controls = controlsRef.current;
+    setCameraState({
+      position: [camera.position.x, camera.position.y, camera.position.z],
+      target: [controls.target.x, controls.target.y, controls.target.z],
+      fov: camera instanceof THREE.PerspectiveCamera ? camera.fov : 50,
+    });
   });
 
   return (
     <OrbitControls
       ref={controlsRef}
       makeDefault
-      target={cameraState.target}
       enableDamping
       dampingFactor={0.08}
       minDistance={5}
