@@ -34,7 +34,6 @@ interface ReviewStore {
   selectedGoods: DangerousGoods[]
   selectedComments: ReviewComment[]
   selectedTimeline: TimelineRecord[]
-  descriptions: DescriptionTexts
   hasBadData: boolean
   badDataCount: number
 
@@ -43,6 +42,7 @@ interface ReviewStore {
   setFilter: (key: keyof Filters, value: string | undefined) => void
   resetFilters: () => void
   getLocationBadData: (locationId: string) => BadDataRecord[]
+  getDescriptions: () => DescriptionTexts
 }
 
 export const useReviewStore = create<ReviewStore>((set, get) => ({
@@ -99,7 +99,7 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
     return result.sort((a, b) => a.startTime.localeCompare(b.startTime))
   },
 
-  get descriptions() {
+  getDescriptions: () => {
     const { selectedLocation, selectedComments, selectedTimeline, currentView } = get()
     return generateDescriptions(selectedLocation, selectedComments, selectedTimeline, currentView)
   },

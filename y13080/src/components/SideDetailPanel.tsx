@@ -1,5 +1,7 @@
 import { useReviewStore } from '@/store/useReviewStore'
 import { Package, FileText, Clock, AlertTriangle, Database } from 'lucide-react'
+import { useMemo } from 'react'
+import { generateDescriptions } from '@/utils/generateDescription'
 
 export function SideDetailPanel() {
   const {
@@ -7,10 +9,15 @@ export function SideDetailPanel() {
     selectedGoods,
     selectedComments,
     selectedTimeline,
-    descriptions,
     hasBadData,
     getLocationBadData,
+    currentView,
   } = useReviewStore()
+
+  const descriptions = useMemo(
+    () => generateDescriptions(selectedLocation, selectedComments, selectedTimeline, currentView),
+    [selectedLocation, selectedComments, selectedTimeline, currentView]
+  )
 
   if (!selectedLocation) {
     return (
@@ -204,9 +211,35 @@ export function SideDetailPanel() {
           </div>
         </div>
 
-        <div className="border-t border-dashed border-steel-700/50 pt-4">
-          <div className="text-xs text-steel-500 font-mono">
-            场景标注：{descriptions.annotation.split('｜').slice(0, 2).join('｜')}...
+        <div className="border-t border-steel-700/50 pt-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-[11px] text-green-400">
+              <Database size={12} />
+              三套话同源展示
+            </div>
+            <span className="text-[10px] text-steel-500 font-mono">
+              数据一致，仅详略不同
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            <div
+              className="text-[11px] text-wharf-200 bg-wharf-900/50 border border-wharf-700/50 p-2"
+              title="与库区场景图顶部标注文字一致"
+            >
+              <div className="text-[10px] text-steel-500 mb-1">① 场景标注（与场景图同源）</div>
+              <div className="font-mono leading-relaxed">{descriptions.annotation}</div>
+            </div>
+
+            <div
+              className="text-[11px] text-steel-200 bg-black/30 border border-steel-700/50 p-2 max-h-32 overflow-auto"
+              title="侧边明细纯文本版本，可直接复制"
+            >
+              <div className="text-[10px] text-steel-500 mb-1">② 侧边明细（纯文本，同源）</div>
+              <pre className="font-mono whitespace-pre-wrap leading-relaxed text-[11px] m-0">
+                {descriptions.sideDetail}
+              </pre>
+            </div>
           </div>
         </div>
       </div>

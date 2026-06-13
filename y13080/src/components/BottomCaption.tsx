@@ -1,8 +1,15 @@
 import { useReviewStore } from '@/store/useReviewStore'
 import { ImageIcon, Link } from 'lucide-react'
+import { useMemo } from 'react'
+import { generateDescriptions } from '@/utils/generateDescription'
 
 export function BottomCaption() {
-  const { descriptions, selectedLocation, currentView } = useReviewStore()
+  const { selectedLocation, selectedComments, selectedTimeline, currentView } = useReviewStore()
+
+  const descriptions = useMemo(
+    () => generateDescriptions(selectedLocation, selectedComments, selectedTimeline, currentView),
+    [selectedLocation, selectedComments, selectedTimeline, currentView]
+  )
 
   const viewLabel = {
     byArea: '按库区视角',
