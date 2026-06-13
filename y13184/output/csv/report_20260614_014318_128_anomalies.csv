@@ -1,0 +1,4 @@
+anomaly_id,record_id,timestamp,anomaly_type,value,threshold_value,threshold_name,nameplate_version,nameplate_snapshot_hash
+anom_000001,wd_000015,2024-06-14 09:15:00,flow_high,105.0,100.0,water_drop_flow_high,1,21e1c67f08a9f100
+anom_000002,wd_000025,2024-06-14 10:05:00,temp_high,36.2,35.0,water_drop_temp_high,1,21e1c67f08a9f100
+anom_000003,wd_000080,2024-06-14 14:40:00,flow_low,8.5,10.0,water_drop_flow_low,1,21e1c67f08a9f100

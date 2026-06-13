@@ -1,0 +1,4 @@
+anomaly_id,record_id,timestamp,anomaly_type,value,threshold_value,threshold_name,unit,description,nameplate_version,nameplate_snapshot_hash,nameplate_change_reason,active_notes,active_note_impacts,retracted_notes,retract_reasons,source_file,tower_id
+anom_000001,wd_000015,2024-06-14 09:15:00,flow_high,105.0,100.0,water_drop_flow_high,L/min,流量 105.0L/min 超过上限 100.0L/min,1,21e1c67f08a9f100,初始铭牌——出厂默认配置,,,,,water_drops.csv,CT-001
+anom_000002,wd_000025,2024-06-14 10:05:00,temp_high,36.2,35.0,water_drop_temp_high,L/min,温度 36.2℃ 超过上限 35.0℃,1,21e1c67f08a9f100,初始铭牌——出厂默认配置,,,,,water_drops.csv,CT-001
+anom_000003,wd_000080,2024-06-14 14:40:00,flow_low,8.5,10.0,water_drop_flow_low,L/min,流量 8.5L/min 低于下限 10.0L/min,1,21e1c67f08a9f100,初始铭牌——出厂默认配置,,,,,water_drops.csv,CT-001
