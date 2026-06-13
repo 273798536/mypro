@@ -49,10 +49,7 @@ router.get('/', async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
         if (!startDate || !endDate) {
-            return res.status(400).json({
-                success: false,
-                error: 'startDate and endDate are required'
-            });
+            return res.status(400).json({ success: false, error: 'startDate and endDate are required' });
         }
         const history = await historyService.getHistoryByDateRange(startDate, endDate);
         res.json({ success: true, data: history });

@@ -1,10 +1,9 @@
 import { Router, Request, Response } from 'express';
 import * as corridorService from '../services/corridorService';
-import type { ApiResponse } from '@shared/types';
 
 const router = Router();
 
-router.get('/', async (_req: Request, res: Response<ApiResponse<any>>) => {
+router.get('/', async (_req: Request, res: Response) => {
   try {
     const corridors = await corridorService.getAllCorridors();
     res.json({ success: true, data: corridors });
@@ -13,7 +12,7 @@ router.get('/', async (_req: Request, res: Response<ApiResponse<any>>) => {
   }
 });
 
-router.get('/:id', async (req: Request, res: Response<ApiResponse<any>>) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const corridor = await corridorService.getCorridorById(req.params.id);
     if (!corridor) {
@@ -25,7 +24,7 @@ router.get('/:id', async (req: Request, res: Response<ApiResponse<any>>) => {
   }
 });
 
-router.post('/', async (req: Request, res: Response<ApiResponse<any>>) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const corridor = await corridorService.createCorridor(req.body);
     res.status(201).json({ success: true, data: corridor });
@@ -34,7 +33,7 @@ router.post('/', async (req: Request, res: Response<ApiResponse<any>>) => {
   }
 });
 
-router.put('/:id', async (req: Request, res: Response<ApiResponse<any>>) => {
+router.put('/:id', async (req: Request, res: Response) => {
   try {
     const corridor = await corridorService.updateCorridor(req.params.id, req.body);
     if (!corridor) {
@@ -46,7 +45,7 @@ router.put('/:id', async (req: Request, res: Response<ApiResponse<any>>) => {
   }
 });
 
-router.delete('/:id', async (req: Request, res: Response<ApiResponse<any>>) => {
+router.delete('/:id', async (req: Request, res: Response) => {
   try {
     const deleted = await corridorService.deleteCorridor(req.params.id);
     if (!deleted) {

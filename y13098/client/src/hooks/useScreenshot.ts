@@ -32,7 +32,8 @@ export function useScreenshot() {
         filterCriteria,
         imageUrl,
         annotation,
-        remark
+        remark,
+        createdBy: '小赵'
       });
 
       return imageUrl;

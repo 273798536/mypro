@@ -31,7 +31,7 @@ const ReviewPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await historyApi.getWeeklyReview();
-      if (response.data.success) {
+      if (response.data.success && response.data.data) {
         setWeeklyData(response.data.data);
       }
     } catch (error: any) {
@@ -48,7 +48,7 @@ const ReviewPage: React.FC = () => {
         dates[0].format('YYYY-MM-DD'),
         dates[1].format('YYYY-MM-DD')
       );
-      if (response.data.success) {
+      if (response.data.success && response.data.data) {
         setCustomRecords(response.data.data);
       }
     } catch (error: any) {
@@ -230,37 +230,36 @@ const ReviewPage: React.FC = () => {
             本周暂无变更记录
           </div>
         ) : (
-          <Timeline>
-            {weeklyData?.records.map((item) => (
-              <Timeline.Item key={item.id}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <Tag color={getChangeTypeColor(item.changeType)} style={{ marginBottom: 4 }}>
-                      {CHANGE_TYPE_LABELS[item.changeType]}
-                    </Tag>
-                    <div style={{ fontSize: 13, marginTop: 4 }}>
-                      {item.remark || `${item.fieldName} 字段变更`}
-                    </div>
-                    {item.oldValue && item.newValue && (
-                      <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
-                        <span style={{ textDecoration: 'line-through', color: '#999' }}>
-                          {item.oldValue}
-                        </span>
-                        {' → '}
-                        <span style={{ color: '#52c41a' }}>{item.newValue}</span>
-                      </div>
-                    )}
-                    <div style={{ fontSize: 12, color: '#999', marginTop: 8 }}>
-                      操作人：{item.changedBy}
-                    </div>
+          <Timeline items={(weeklyData?.records || []).map((item) => ({
+            key: item.id,
+            children: (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <Tag color={getChangeTypeColor(item.changeType)} style={{ marginBottom: 4 }}>
+                    {CHANGE_TYPE_LABELS[item.changeType]}
+                  </Tag>
+                  <div style={{ fontSize: 13, marginTop: 4 }}>
+                    {item.remark || `${item.fieldName} 字段变更`}
                   </div>
-                  <div style={{ fontSize: 12, color: '#999', flexShrink: 0, marginLeft: 16 }}>
-                    {formatDate(item.changedAt, 'MM-DD HH:mm')}
+                  {item.oldValue && item.newValue && (
+                    <div style={{ fontSize: 12, color: '#666', marginTop: 4 }}>
+                      <span style={{ textDecoration: 'line-through', color: '#999' }}>
+                        {item.oldValue}
+                      </span>
+                      {' → '}
+                      <span style={{ color: '#52c41a' }}>{item.newValue}</span>
+                    </div>
+                  )}
+                  <div style={{ fontSize: 12, color: '#999', marginTop: 8 }}>
+                    操作人：{item.changedBy}
                   </div>
                 </div>
-              </Timeline.Item>
-            ))}
-          </Timeline>
+                <div style={{ fontSize: 12, color: '#999', flexShrink: 0, marginLeft: 16 }}>
+                  {formatDate(item.changedAt, 'MM-DD HH:mm')}
+                </div>
+              </div>
+            )
+          }))} />
         )}
       </Card>
 

@@ -1,10 +1,9 @@
 import { Router, Request, Response } from 'express';
 import * as userService from '../services/userService';
-import type { ApiResponse } from '@shared/types';
 
 const router = Router();
 
-router.get('/', async (_req: Request, res: Response<ApiResponse<any>>) => {
+router.get('/', async (_req: Request, res: Response) => {
   try {
     const users = await userService.getAllUsers();
     res.json({ success: true, data: users });
@@ -13,7 +12,7 @@ router.get('/', async (_req: Request, res: Response<ApiResponse<any>>) => {
   }
 });
 
-router.get('/current', async (_req: Request, res: Response<ApiResponse<any>>) => {
+router.get('/current', async (_req: Request, res: Response) => {
   try {
     const user = await userService.getCurrentUser();
     res.json({ success: true, data: user });
@@ -22,7 +21,7 @@ router.get('/current', async (_req: Request, res: Response<ApiResponse<any>>) =>
   }
 });
 
-router.get('/:id', async (req: Request, res: Response<ApiResponse<any>>) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const user = await userService.getUserById(req.params.id);
     if (!user) {
@@ -34,7 +33,7 @@ router.get('/:id', async (req: Request, res: Response<ApiResponse<any>>) => {
   }
 });
 
-router.post('/', async (req: Request, res: Response<ApiResponse<any>>) => {
+router.post('/', async (req: Request, res: Response) => {
   try {
     const { name, role } = req.body;
     const user = await userService.getOrCreateUser(name, role);
@@ -44,7 +43,7 @@ router.post('/', async (req: Request, res: Response<ApiResponse<any>>) => {
   }
 });
 
-router.put('/:id', async (req: Request, res: Response<ApiResponse<any>>) => {
+router.put('/:id', async (req: Request, res: Response) => {
   try {
     const user = await userService.updateUser(req.params.id, req.body);
     if (!user) {

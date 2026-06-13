@@ -22,7 +22,7 @@ const App: React.FC = () => {
   const handleImportExcel = async (file: File) => {
     try {
       const response = await exportApi.importExcel(file);
-      if (response.data.success) {
+      if (response.data.success && response.data.data) {
         const result = response.data.data;
         message.success(`导入成功：${result.success}条，失败：${result.failed}条`);
         if (result.errors.length > 0) {

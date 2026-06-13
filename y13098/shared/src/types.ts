@@ -98,9 +98,6 @@ export interface PaginatedResponse<T> {
   pageSize: number;
 }
 
-export interface ApiResponse<T = void> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
+export type ApiResponse<T = void> =
+  | { success: true; data: T; message?: string }
+  | { success: false; error: string; message?: string };

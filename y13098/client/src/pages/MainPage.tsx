@@ -10,7 +10,6 @@ import { useScreenshot } from '../hooks/useScreenshot';
 import type { RouteCorridor, InspectionRecord, FilterCriteria } from '@shared/types';
 import { DEFAULT_PAGE_SIZE } from '@shared/constants';
 
-const { TabPane } = Tabs;
 const { TextArea } = Input;
 
 const MainPage: React.FC = () => {
@@ -38,7 +37,7 @@ const MainPage: React.FC = () => {
   const loadCorridors = useCallback(async () => {
     try {
       const response = await corridorApi.getAll();
-      if (response.data.success) {
+      if (response.data.success && response.data.data) {
         setCorridors(response.data.data);
       }
     } catch (error: any) {
@@ -50,7 +49,7 @@ const MainPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await recordApi.getList(currentFilter, currentPage, DEFAULT_PAGE_SIZE);
-      if (response.data.success) {
+      if (response.data.success && response.data.data) {
         setRecords(response.data.data.data);
         setTotal(response.data.data.total);
       }
@@ -64,7 +63,7 @@ const MainPage: React.FC = () => {
   const loadOverlappingRecords = useCallback(async (currentPage: number, currentFilter: FilterCriteria) => {
     try {
       const response = await recordApi.getOverlapping(currentFilter, currentPage, DEFAULT_PAGE_SIZE);
-      if (response.data.success) {
+      if (response.data.success && response.data.data) {
         setOverlappingRecords(response.data.data.data);
         setOverlappingTotal(response.data.data.total);
       }
@@ -166,34 +165,27 @@ const MainPage: React.FC = () => {
             activeKey={activeTab} 
             onChange={setActiveTab}
             size="small"
-          >
-            <TabPane 
-              tab={
-                <span>
-                  全部记录
-                  <Badge 
-                    count={total} 
-                    style={{ marginLeft: 8, backgroundColor: '#1890ff' }}
-                    size="small"
-                  />
-                </span>
-              } 
-              key="all" 
-            />
-            <TabPane 
-              tab={
-                <span>
-                  <WarningOutlined style={{ color: '#ff4d4f' }} /> 对象重叠
-                  <Badge 
-                    count={overlappingTotal} 
-                    style={{ marginLeft: 8, backgroundColor: '#ff4d4f' }}
-                    size="small"
-                  />
-                </span>
-              } 
-              key="overlapping" 
-            />
-          </Tabs>
+            items={[
+              {
+                key: 'all',
+                label: (
+                  <span>
+                    全部记录
+                    <Badge count={total} style={{ marginLeft: 8, backgroundColor: '#1890ff' }} size="small" />
+                  </span>
+                )
+              },
+              {
+                key: 'overlapping',
+                label: (
+                  <span>
+                    <WarningOutlined style={{ color: '#ff4d4f' }} /> 对象重叠
+                    <Badge count={overlappingTotal} style={{ marginLeft: 8, backgroundColor: '#ff4d4f' }} size="small" />
+                  </span>
+                )
+              }
+            ]}
+          />
           
           <Space>
             <Button 
