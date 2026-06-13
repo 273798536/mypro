@@ -23,7 +23,7 @@ export interface LightPoint {
   name: string
   position: Position
   groupId: string
-  status: LightPointStatus
+  stageStatuses: Record<ReviewStage, LightPointStatus>
   displayCaseId: string
   intensity: number
   beamAngle: number

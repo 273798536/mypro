@@ -11,6 +11,7 @@ function SceneContent() {
   const lightPoints = useReviewStore((s) => s.lightPoints)
   const selectedLightPointId = useReviewStore((s) => s.selectedLightPointId)
   const getFilteredLightPoints = useReviewStore((s) => s.getFilteredLightPoints)
+  const currentStage = useReviewStore((s) => s.currentStage)
   const filterStatus = useReviewStore((s) => s.filterStatus)
   const filterGroup = useReviewStore((s) => s.filterGroup)
   const searchQuery = useReviewStore((s) => s.searchQuery)
@@ -18,7 +19,7 @@ function SceneContent() {
   const filteredIds = useMemo(() => {
     const filtered = getFilteredLightPoints()
     return new Set(filtered.map((lp) => lp.id))
-  }, [filterStatus, filterGroup, searchQuery, getFilteredLightPoints])
+  }, [currentStage, filterStatus, filterGroup, searchQuery, getFilteredLightPoints])
 
   return (
     <>

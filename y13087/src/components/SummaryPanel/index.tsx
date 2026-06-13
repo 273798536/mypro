@@ -56,10 +56,11 @@ function StatCard({ status, count, isActive, onClick }: StatCardProps) {
 
 export function SummaryPanel() {
   const getStatusCounts = useReviewStore((s) => s.getStatusCounts)
+  const currentStage = useReviewStore((s) => s.currentStage)
   const filterStatus = useReviewStore((s) => s.filterStatus)
   const setFilterStatus = useReviewStore((s) => s.setFilterStatus)
 
-  const counts = getStatusCounts()
+  const counts = getStatusCounts(currentStage)
 
   const handleCardClick = (status: LightPointStatus) => {
     if (filterStatus === status) {

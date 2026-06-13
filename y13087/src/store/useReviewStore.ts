@@ -9,6 +9,10 @@ import type {
 } from '@/types'
 import { lightPoints, displayCases, reviewComments, adjacentPairs } from '@/data/sceneData'
 
+interface LightPointWithStage extends LightPoint {
+  currentStatus: LightPointStatus
+}
+
 interface ReviewState {
   lightPoints: LightPoint[]
   displayCases: DisplayCase[]
@@ -31,10 +35,11 @@ interface ReviewState {
   addComment: (lightPointId: string, content: string, reviewer: string) => void
   resolveAdjacentPair: (id: string) => void
 
+  getPointStatus: (pointId: string, stage?: ReviewStage) => LightPointStatus
   getFilteredLightPoints: () => LightPoint[]
   getCommentsByLightPoint: (lightPointId: string) => ReviewComment[]
-  getStatusCounts: () => Record<LightPointStatus, number>
-  getSelectedLightPoint: () => LightPoint | null
+  getStatusCounts: (stage?: ReviewStage) => Record<LightPointStatus, number>
+  getSelectedLightPoint: () => LightPointWithStage | null
   getAdjacentPairsByPoint: (pointId: string) => AdjacentPair[]
 }
 
@@ -62,15 +67,33 @@ export const useReviewStore = create<ReviewState>((set, get) => ({
 
   setHoveredAdjacentPairId: (id) => set({ hoveredAdjacentPairId: id }),
 
-  updateLightPointStatus: (id, status) =>
+  getPointStatus: (pointId, stage) => {
+    const targetStage = stage ?? get().currentStage
+    const point = get().lightPoints.find((lp) => lp.id === pointId)
+    if (!point) return 'normal'
+    return point.stageStatuses[targetStage]
+  },
+
+  updateLightPointStatus: (id, status) => {
+    const { currentStage } = get()
     set((state) => ({
       lightPoints: state.lightPoints.map((lp) =>
-        lp.id === id ? { ...lp, status } : lp
+        lp.id === id
+          ? {
+              ...lp,
+              stageStatuses: {
+                ...lp.stageStatuses,
+                [currentStage]: status,
+              },
+            }
+          : lp
       ),
-    })),
+    }))
+  },
 
   addComment: (lightPointId, content, reviewer) => {
-    const { currentStage } = get()
+    const { currentStage, getPointStatus } = get()
+    const statusAfter = getPointStatus(lightPointId, currentStage)
     const newComment: ReviewComment = {
       id: `c-${Date.now()}`,
       lightPointId,
@@ -78,8 +101,7 @@ export const useReviewStore = create<ReviewState>((set, get) => ({
       content,
       reviewer,
       createdAt: new Date().toLocaleString('zh-CN'),
-      statusAfter: get().lightPoints.find((lp) => lp.id === lightPointId)
-        ?.status as LightPointStatus,
+      statusAfter,
     }
     set((state) => ({
       comments: [...state.comments, newComment],
@@ -94,9 +116,10 @@ export const useReviewStore = create<ReviewState>((set, get) => ({
     })),
 
   getFilteredLightPoints: () => {
-    const { lightPoints, filterStatus, filterGroup, searchQuery } = get()
+    const { lightPoints, filterStatus, filterGroup, searchQuery, getPointStatus } = get()
     return lightPoints.filter((lp) => {
-      if (filterStatus !== 'all' && lp.status !== filterStatus) return false
+      const currentStatus = getPointStatus(lp.id)
+      if (filterStatus !== 'all' && currentStatus !== filterStatus) return false
       if (filterGroup !== 'all' && lp.groupId !== filterGroup) return false
       if (searchQuery && !lp.name.toLowerCase().includes(searchQuery.toLowerCase()))
         return false
@@ -111,11 +134,12 @@ export const useReviewStore = create<ReviewState>((set, get) => ({
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   },
 
-  getStatusCounts: () => {
-    const { lightPoints } = get()
+  getStatusCounts: (stage) => {
+    const { lightPoints, getPointStatus } = get()
     return lightPoints.reduce(
       (acc, lp) => {
-        acc[lp.status]++
+        const status = getPointStatus(lp.id, stage)
+        acc[status]++
         return acc
       },
       { normal: 0, pending_material: 0, manual_review: 0 }
@@ -123,8 +147,13 @@ export const useReviewStore = create<ReviewState>((set, get) => ({
   },
 
   getSelectedLightPoint: () => {
-    const { lightPoints, selectedLightPointId } = get()
-    return lightPoints.find((lp) => lp.id === selectedLightPointId) || null
+    const { lightPoints, selectedLightPointId, getPointStatus } = get()
+    const point = lightPoints.find((lp) => lp.id === selectedLightPointId) || null
+    if (!point) return null
+    return {
+      ...point,
+      currentStatus: getPointStatus(point.id),
+    }
   },
 
   getAdjacentPairsByPoint: (pointId) => {

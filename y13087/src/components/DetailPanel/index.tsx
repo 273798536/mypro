@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 
 export function DetailPanel() {
   const selectedLightPoint = useReviewStore((s) => s.getSelectedLightPoint())
+  const currentStage = useReviewStore((s) => s.currentStage)
   const selectLightPoint = useReviewStore((s) => s.selectLightPoint)
   const getCommentsByLightPoint = useReviewStore((s) => s.getCommentsByLightPoint)
   const updateLightPointStatus = useReviewStore((s) => s.updateLightPointStatus)
@@ -27,7 +28,7 @@ export function DetailPanel() {
 
   const comments = getCommentsByLightPoint(selectedLightPoint.id)
   const adjacentPairs = getAdjacentPairsByPoint(selectedLightPoint.id)
-  const statusColor = STATUS_COLORS[selectedLightPoint.status]
+  const statusColor = STATUS_COLORS[selectedLightPoint.currentStatus]
 
   const handleStatusChange = (status: LightPointStatus) => {
     updateLightPointStatus(selectedLightPoint.id, status)
@@ -72,7 +73,7 @@ export function DetailPanel() {
             <div className="bg-white/5 rounded-lg p-3">
               <div className="text-xs text-slate-500 mb-1">状态</div>
               <div className="text-sm font-medium" style={{ color: statusColor }}>
-                {STATUS_LABELS[selectedLightPoint.status]}
+                {STATUS_LABELS[selectedLightPoint.currentStatus]}
               </div>
             </div>
             <div className="bg-white/5 rounded-lg p-3">
@@ -149,13 +150,13 @@ export function DetailPanel() {
                     onClick={() => handleStatusChange(status)}
                     className={cn(
                       'flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all',
-                      selectedLightPoint.status === status
+                      selectedLightPoint.currentStatus === status
                         ? 'text-white'
                         : 'bg-white/5 text-slate-400 hover:bg-white/10'
                     )}
                     style={{
                       backgroundColor:
-                        selectedLightPoint.status === status
+                        selectedLightPoint.currentStatus === status
                           ? STATUS_COLORS[status]
                           : undefined,
                     }}

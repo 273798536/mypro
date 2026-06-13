@@ -31,6 +31,10 @@ export function LightPointMesh({
     [lightPoint.id, getAdjacentPairsByPoint]
   )
 
+  const getPointStatus = useReviewStore((s) => s.getPointStatus)
+  const currentStage = useReviewStore((s) => s.currentStage)
+  const currentStatus = getPointStatus(lightPoint.id, currentStage)
+
   const hasAdjacentIssue = adjacentPairs.length > 0
 
   const isAdjacentHovered = useMemo(() => {
@@ -38,7 +42,7 @@ export function LightPointMesh({
     return adjacentPairs.some((ap) => ap.id === hoveredAdjacentPairId)
   }, [hoveredAdjacentPairId, adjacentPairs])
 
-  const baseColor = STATUS_COLORS[lightPoint.status]
+  const baseColor = STATUS_COLORS[currentStatus]
   const displayColor = isSelected ? '#FBBF24' : isAdjacentHovered ? '#EF4444' : baseColor
 
   const scale = isSelected || isHovered || hovered ? 1.3 : 1
