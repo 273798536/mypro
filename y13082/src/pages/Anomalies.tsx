@@ -22,6 +22,7 @@ import type {
   AnomalyType,
   CollisionStatus,
   CameraAngle,
+  Point,
 } from '../../shared/types';
 import { ANOMALY_TYPE_LABELS, COLLISION_STATUS_LABELS, CAMERA_ANGLE_LABELS } from '../../shared/types';
 import { AnomalyTypeBadge, CollisionStatusBadge } from '@/components/StatusBadges';
@@ -58,6 +59,8 @@ export default function AnomaliesPage() {
   const [showTypeFilter, setShowTypeFilter] = useState(false);
   const [showStatusFilter, setShowStatusFilter] = useState(false);
   const [previewCollision, setPreviewCollision] = useState<Collision | null>(null);
+  const [previewPoints, setPreviewPoints] = useState<Point[]>([]);
+  const [previewPointsLoading, setPreviewPointsLoading] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -89,6 +92,18 @@ export default function AnomaliesPage() {
     window.addEventListener('camera-change', handler as EventListener);
     return () => window.removeEventListener('camera-change', handler as EventListener);
   }, [setCameraAngle]);
+
+  useEffect(() => {
+    if (!previewCollision) {
+      setPreviewPoints([]);
+      return;
+    }
+    setPreviewPointsLoading(true);
+    api
+      .getBatchPoints(previewCollision.batchId)
+      .then(setPreviewPoints)
+      .finally(() => setPreviewPointsLoading(false));
+  }, [previewCollision?.id, previewCollision?.batchId]);
 
   const toggleType = (t: AnomalyType) => {
     if (anomalyTypes.includes(t)) {
@@ -151,7 +166,17 @@ export default function AnomaliesPage() {
     ? collisions.filter((c) => c.batchId === previewCollision.batchId)
     : [];
 
-  const previewBatchPoints = previewCollision ? [] : [];
+  const previewHighlight = previewCollision ? [previewCollision.id] : [];
+  const previewSelectedPointId = (() => {
+    if (!previewCollision) return null;
+    if (previewCollision.pointId) return previewCollision.pointId;
+    // overlap 类型有两个对象，选第一个
+    const pt = previewPoints.find(
+      (p) =>
+        previewCollision.objectA && p.objectName === previewCollision.objectA,
+    );
+    return pt?.id ?? null;
+  })();
 
   return (
     <div className="h-full flex flex-col">
@@ -401,12 +426,18 @@ export default function AnomaliesPage() {
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <div className="h-[280px] shrink-0 p-3">
+            <div className="h-[280px] shrink-0 p-3 relative">
+              {previewPointsLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-industrial-bg/80 z-10">
+                  <RefreshCw className="w-5 h-5 animate-spin text-industrial-muted" />
+                </div>
+              )}
               <PointVisualizer
-                points={previewBatchPoints}
+                points={previewPoints}
                 collisions={previewBatchCollisions}
                 cameraAngle={cameraAngle}
-                highlightCollisionIds={[previewCollision.id]}
+                selectedPointId={previewSelectedPointId}
+                highlightCollisionIds={previewHighlight}
               />
             </div>
             <div className="flex-1 overflow-auto p-3 space-y-3 text-sm">
