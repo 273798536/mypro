@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# 风洞烟线参数回放 · 启动脚本（项目经理日常脚本用这个即可，不用管 PYTHONPATH）
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+export PYTHONPATH="${ROOT}/src:${PYTHONPATH:-}"
+exec python3 -m wind_tunnel_replay.cli "$@"

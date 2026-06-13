@@ -1,0 +1,101 @@
+{
+  "run_id": "smoke-smoke-20260614021803",
+  "generated_at": "2026-06-14T02:18:03.868529",
+  "conclusion": "失败（1 项错误）；有效参数 9 条，排除 7 条",
+  "input": "data/sample/smoke_line_mixed.log",
+  "report": "/Users/mac/pro/solo/workspaces/y13187/wind_tunnel_replay/outputs/replay_smoke-smoke-20260614021803.html",
+  "meta": {
+    "total_lines": 16,
+    "effective_lines": 9,
+    "excluded_lines": 7,
+    "withdrawn_lines": [
+      7
+    ],
+    "stable_names": [
+      "SMOKE_LINE_VELOCITY",
+      "SMOKE_LINE_DENSITY",
+      "WIND_TUNNEL_PRESSURE",
+      "WIND_TUNNEL_TEMPERATURE",
+      "SAFETY_THRESHOLD_VELOCITY",
+      "SAFETY_THRESHOLD_PRESSURE"
+    ]
+  },
+  "anomalies": [
+    {
+      "level": "warning",
+      "category": "version_mix",
+      "param_name": null,
+      "message": "数据中同时存在旧版(V1)与新版(V2)日志，以最后出现的新版为准，旧版仅作参考",
+      "evidence": {
+        "old": 2,
+        "new": 8,
+        "unmarked": 0
+      },
+      "source_line": null,
+      "impact": "若新旧版参数含义不同，可能导致参数基线计算偏差"
+    },
+    {
+      "level": "error",
+      "category": "safety_threshold_tamper",
+      "param_name": "SAFETY_THRESHOLD_VELOCITY",
+      "message": "SAFETY_THRESHOLD_VELOCITY 与配置基线 120.0 不一致，当前为 90.0（偏离 25.00%），疑似被篡改",
+      "evidence": {
+        "expected": 120.0,
+        "actual": 90.0,
+        "delta_pct": 25.0
+      },
+      "source_line": 14,
+      "impact": "安全阈值被修改会直接影响结论判定，必须由权限人确认"
+    },
+    {
+      "level": "warning",
+      "category": "param_outlier",
+      "param_name": "SMOKE_LINE_VELOCITY",
+      "message": "SMOKE_LINE_VELOCITY=165.0 为离群点（IQR 箱线法 偏高，正常区间 [104.75, 116.35]，Q1=109.1, Q3=112.0），需确认是否为坏数据",
+      "evidence": {
+        "value": 165.0,
+        "q1": 109.1,
+        "q3": 112.0,
+        "iqr": 2.9,
+        "lower": 104.75,
+        "upper": 116.35,
+        "version": "new",
+        "method": "iqr"
+      },
+      "source_line": 12,
+      "impact": "若为坏数据，会拉偏参数基线，建议使用撤回记录排除该行"
+    }
+  ],
+  "final_params": {
+    "SMOKE_LINE_VELOCITY": {
+      "final_value": 112.4,
+      "baseline_value": 110.5714,
+      "samples": 9
+    },
+    "SMOKE_LINE_DENSITY": {
+      "final_value": 1.2,
+      "baseline_value": 1.2167,
+      "samples": 8
+    },
+    "WIND_TUNNEL_PRESSURE": {
+      "final_value": 308.0,
+      "baseline_value": 304.8571,
+      "samples": 9
+    },
+    "WIND_TUNNEL_TEMPERATURE": {
+      "final_value": 24.0,
+      "baseline_value": 23.5833,
+      "samples": 8
+    },
+    "SAFETY_THRESHOLD_VELOCITY": {
+      "final_value": 120.0,
+      "baseline_value": 112.5,
+      "samples": 4
+    },
+    "SAFETY_THRESHOLD_PRESSURE": {
+      "final_value": 350.0,
+      "baseline_value": 350.0,
+      "samples": 4
+    }
+  }
+}

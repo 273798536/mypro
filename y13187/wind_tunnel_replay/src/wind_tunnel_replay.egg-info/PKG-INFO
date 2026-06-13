@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: wind-tunnel-replay
+Version: 1.0.0
+Summary: 风洞烟线参数回放：传感器日志解析、参数复核、异常溯源与单页报告
+Requires-Python: >=3.10
+Requires-Dist: click>=8.1
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: pandas>=2.0
+Requires-Dist: numpy>=1.24
+Requires-Dist: matplotlib>=3.7
+Requires-Dist: jinja2>=3.1

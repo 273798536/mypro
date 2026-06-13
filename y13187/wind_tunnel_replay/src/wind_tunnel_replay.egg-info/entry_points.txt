@@ -1,0 +1,2 @@
+[console_scripts]
+wind-tunnel-replay = wind_tunnel_replay.cli:main

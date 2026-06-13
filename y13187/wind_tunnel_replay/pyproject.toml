@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wind-tunnel-replay"
+version = "1.0.0"
+description = "风洞烟线参数回放：传感器日志解析、参数复核、异常溯源与单页报告"
+requires-python = ">=3.9"
+dependencies = [
+  "click>=8.1",
+  "pyyaml>=6.0",
+  "pandas>=2.0",
+  "numpy>=1.24",
+  "matplotlib>=3.7",
+  "jinja2>=3.1",
+]
+
+[project.scripts]
+wind-tunnel-replay = "wind_tunnel_replay.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"wind_tunnel_replay" = ["templates/*.html"]
