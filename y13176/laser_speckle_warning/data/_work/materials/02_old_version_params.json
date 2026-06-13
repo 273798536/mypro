@@ -1,0 +1,8 @@
+{
+  "name": "激光散斑阈值参数表（旧版v0.8存档）",
+  "version": "v0.8",
+  "source": "document",
+  "threshold": 140.0,
+  "note": "2023年遗留的旧版参数，已被新版覆盖但未清理",
+  "archive_tag": "legacy_2023"
+}

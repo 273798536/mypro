@@ -1,0 +1,7 @@
+{
+  "name": "激光散斑阈值参数表",
+  "version": "v1.0",
+  "source": "document",
+  "threshold": 150.0,
+  "note": "社区公示前使用的基准参数表"
+}

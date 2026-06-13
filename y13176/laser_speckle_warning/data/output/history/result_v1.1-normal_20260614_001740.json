@@ -1,0 +1,148 @@
+{
+  "params": {
+    "version_tag": "v1.1-normal",
+    "description": "常规档：中等阈值系数，用于日常复核",
+    "threshold_coefficient": 1.1,
+    "min_sample_count": 5,
+    "max_gap_ratio": 0.2,
+    "intensity_unit": "灰度值",
+    "created_at": "2026-06-14T00:17:40.153624",
+    "parent_version": null
+  },
+  "result": {
+    "result_id": "WR-cf9f1f67",
+    "param_version_tag": "v1.1-normal",
+    "warning_level": "预警",
+    "threshold_value": 159.39,
+    "average_intensity": 144.9,
+    "max_intensity": 162.8,
+    "formula_used": "预警阈值 = 平均散斑强度 × 1.1 (样本数≥5, 缺口占比≤20%)",
+    "intensity_unit": "灰度值",
+    "boundary_samples": [
+      {
+        "photo_id": "PHO-0003",
+        "position_label": "位置4",
+        "speckle_intensity": 155.2,
+        "distance_to_threshold": -4.190000000000026,
+        "is_crossing": true,
+        "note": "样本低于阈值 4.19灰度值，处于预警临界线下方"
+      },
+      {
+        "photo_id": "PHO-0004",
+        "position_label": "位置5",
+        "speckle_intensity": 162.8,
+        "distance_to_threshold": 3.4099999999999966,
+        "is_crossing": true,
+        "note": "样本超出阈值 3.41灰度值，处于预警临界线上方"
+      },
+      {
+        "photo_id": "PHO-0000",
+        "position_label": "位置1",
+        "speckle_intensity": 128.5,
+        "distance_to_threshold": -30.890000000000015,
+        "is_crossing": false,
+        "note": ""
+      },
+      {
+        "photo_id": "PHO-0002",
+        "position_label": "位置3",
+        "speckle_intensity": 135.7,
+        "distance_to_threshold": -23.690000000000026,
+        "is_crossing": false,
+        "note": ""
+      },
+      {
+        "photo_id": "PHO-0001",
+        "position_label": "位置2",
+        "speckle_intensity": 142.3,
+        "distance_to_threshold": -17.090000000000003,
+        "is_crossing": false,
+        "note": ""
+      }
+    ],
+    "contributing_materials": [
+      {
+        "material_id": "MAT-0001",
+        "name": "激光散斑阈值参数表（旧版v0.8存档）",
+        "source": "书面材料",
+        "status": "旧版材料",
+        "version": "v0.8",
+        "issue": "检测到旧版标识或归档后缀，该材料参数可能已被新版覆盖，需确认是否仍适用于本次预警",
+        "影响分类": "影响结论"
+      },
+      {
+        "material_id": "MAT-0002",
+        "name": "现场检测记录单-散斑采样",
+        "source": "书面材料",
+        "status": "名称不一致",
+        "version": "v1.0",
+        "issue": "材料名称「现场检测记录单-散斑采样」不在标准清单中，需确认命名差异是否影响参数取值",
+        "影响分类": "影响结论"
+      },
+      {
+        "material_id": "MAT-0003",
+        "name": "现场口头说明：A区靠近热源可能偏高",
+        "source": "口头备注",
+        "status": "口头备注待确认",
+        "version": "v1.0",
+        "issue": "口头备注未经过标准化录入，需人工确认其对结论的影响权重",
+        "影响分类": "待确认"
+      },
+      {
+        "material_id": "MAT-0000",
+        "name": "激光散斑阈值参数表",
+        "source": "书面材料",
+        "status": "正常",
+        "version": "v1.0",
+        "issue": null,
+        "影响分类": "正常"
+      },
+      {
+        "material_id": "MAT-0000",
+        "name": "激光散斑采样照片A区",
+        "source": "现场照片",
+        "status": "正常",
+        "version": "v1.0",
+        "issue": null,
+        "影响分类": "正常"
+      },
+      {
+        "material_id": "MAT-0001",
+        "name": "激光散斑采样照片B区",
+        "source": "现场照片",
+        "status": "正常",
+        "version": "v1.0",
+        "issue": null,
+        "影响分类": "正常"
+      },
+      {
+        "material_id": "MAT-0002",
+        "name": "激光散斑采样照片C区",
+        "source": "现场照片",
+        "status": "正常",
+        "version": "v1.0",
+        "issue": null,
+        "影响分类": "正常"
+      },
+      {
+        "material_id": "MAT-0003",
+        "name": "激光散斑采样照片D区",
+        "source": "现场照片",
+        "status": "正常",
+        "version": "v1.0",
+        "issue": null,
+        "影响分类": "正常"
+      },
+      {
+        "material_id": "MAT-0004",
+        "name": "激光散斑采样照片A区",
+        "source": "现场照片",
+        "status": "正常",
+        "version": "v1.0",
+        "issue": null,
+        "影响分类": "正常"
+      }
+    ],
+    "computed_at": "2026-06-14T00:17:40.209731"
+  }
+}

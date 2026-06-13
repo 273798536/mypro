@@ -1,0 +1,8 @@
+{
+  "name": "现场检测记录单-散斑采样",
+  "version": "v1.0",
+  "source": "document",
+  "detector": "LSM-200",
+  "operator": "张工",
+  "note": "现场记录，名称与标准清单存在差异"
+}

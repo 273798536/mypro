@@ -1,0 +1,10 @@
+{
+  "name": "激光散斑采样照片A区",
+  "kind": "photo",
+  "sample_index": 4,
+  "position_label": "位置5",
+  "speckle_intensity": 162.8,
+  "has_sampling_gap": true,
+  "gap_info": "拍摄时现场抖动导致采样窗口不完整",
+  "captured_at": "2026-06-10T09:20:00"
+}
