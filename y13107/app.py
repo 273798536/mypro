@@ -146,6 +146,14 @@ def severity_tag(severity):
         return '<span class="info-tag">提示</span>'
 
 
+def clear_calculation_results():
+    st.session_state.results = None
+    st.session_state.anomalies = None
+    st.session_state.comparisons = None
+    st.session_state.selected_matrix_id = None
+    st.session_state.needs_recalc = True
+
+
 def main():
     st.title("📊 矩阵条件数参数试算")
 
@@ -161,6 +169,16 @@ def main():
         st.session_state.comparisons = None
     if "selected_matrix_id" not in st.session_state:
         st.session_state.selected_matrix_id = None
+    if "needs_recalc" not in st.session_state:
+        st.session_state.needs_recalc = True
+    if "prev_near_threshold" not in st.session_state:
+        st.session_state.prev_near_threshold = None
+    if "prev_tolerance" not in st.session_state:
+        st.session_state.prev_tolerance = None
+    if "last_input_upload_id" not in st.session_state:
+        st.session_state.last_input_upload_id = None
+    if "last_history_upload_id" not in st.session_state:
+        st.session_state.last_history_upload_id = None
 
     with st.sidebar:
         st.header("⚙️ 操作")
@@ -172,10 +190,12 @@ def main():
                 df_in, df_hist = load_example_data()
                 st.session_state.df_input = df_in
                 st.session_state.df_history = df_hist
+                clear_calculation_results()
                 st.rerun()
         with col2:
             if st.button("🔄 重跑", use_container_width=True):
                 if st.session_state.df_input is not None:
+                    clear_calculation_results()
                     st.rerun()
                 else:
                     st.warning("请先上传数据或放样例")
@@ -185,15 +205,25 @@ def main():
         st.subheader("上传数据")
         uploaded_input = st.file_uploader("输入数据 (CSV/Excel)", type=["csv", "xlsx", "xls"], key="input_upload")
         if uploaded_input is not None:
-            df = read_uploaded_file(uploaded_input)
-            if df is not None:
-                st.session_state.df_input = df
+            upload_id = f"{uploaded_input.name}_{uploaded_input.size}_{uploaded_input.last_modified}"
+            if upload_id != st.session_state.last_input_upload_id:
+                st.session_state.last_input_upload_id = upload_id
+                df = read_uploaded_file(uploaded_input)
+                if df is not None:
+                    st.session_state.df_input = df
+                    clear_calculation_results()
+                    st.rerun()
 
         uploaded_history = st.file_uploader("历史答案 (可选)", type=["csv", "xlsx", "xls"], key="hist_upload")
         if uploaded_history is not None:
-            df = read_uploaded_file(uploaded_history)
-            if df is not None:
-                st.session_state.df_history = df
+            upload_id = f"{uploaded_history.name}_{uploaded_history.size}_{uploaded_history.last_modified}"
+            if upload_id != st.session_state.last_history_upload_id:
+                st.session_state.last_history_upload_id = upload_id
+                df = read_uploaded_file(uploaded_history)
+                if df is not None:
+                    st.session_state.df_history = df
+                    clear_calculation_results()
+                    st.rerun()
 
         st.caption("📂 默认材料放在 data/input 和 data/history 目录")
 
@@ -214,6 +244,16 @@ def main():
             format="%.1e",
             help="与历史答案的相对误差超过此值标记为异常"
         )
+
+        if (st.session_state.prev_near_threshold is not None and
+            near_threshold != st.session_state.prev_near_threshold):
+            clear_calculation_results()
+        if (st.session_state.prev_tolerance is not None and
+            tolerance != st.session_state.prev_tolerance):
+            clear_calculation_results()
+
+        st.session_state.prev_near_threshold = near_threshold
+        st.session_state.prev_tolerance = tolerance
 
         st.divider()
 
@@ -283,7 +323,7 @@ def main():
     df_input = st.session_state.df_input
     df_history = st.session_state.df_history
 
-    if st.session_state.results is None:
+    if st.session_state.needs_recalc or st.session_state.results is None:
         with st.spinner("正在计算..."):
             results, anomalies, comparisons = run_calculation(
                 df_input, df_history, near_threshold, tolerance
@@ -291,6 +331,7 @@ def main():
             st.session_state.results = results
             st.session_state.anomalies = anomalies
             st.session_state.comparisons = comparisons
+            st.session_state.needs_recalc = False
 
     results = st.session_state.results
     anomalies = st.session_state.anomalies
