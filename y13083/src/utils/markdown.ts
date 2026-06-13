@@ -117,8 +117,11 @@ export function downloadTextFile(filename: string, content: string, mime = 'text
   const a = document.createElement('a');
   a.href = url;
   a.download = filename;
+  a.style.display = 'none';
   document.body.appendChild(a);
   a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  setTimeout(() => {
+    if (a.parentNode) a.parentNode.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 100);
 }

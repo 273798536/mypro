@@ -7,18 +7,18 @@ import { cn } from '@/lib/utils';
 export default function Toolbar() {
   const { objects, layers, notes, filterState, resetAll, focusObject } = useAppStore();
   const visibleObjects = getFilteredObjects(objects, layers, filterState);
+  const visibleObjectIds = new Set(visibleObjects.map((o) => o.id));
+  const visibleNotes = notes.filter((n) => visibleObjectIds.has(n.objectId));
 
   const abnormalCount = visibleObjects.filter((o) => o.isAbnormal).length;
   const overlapCount = visibleObjects.filter((o) => o.isOverlapping).length;
-  const noteCount = notes.filter((n) =>
-    visibleObjects.some((o) => o.id === n.objectId),
-  ).length;
+  const noteCount = visibleNotes.length;
 
   const handleExport = () => {
     const content = generateMarkdownReport({
       objects: visibleObjects,
       layers,
-      notes,
+      notes: visibleNotes,
       filter: filterState,
       generatedAt: formatNow(),
     });
