@@ -64,6 +64,15 @@ export interface PlaybackState {
   currentTime: string;
 }
 
+export interface ExportRecord {
+  id: string;
+  format: 'csv' | 'json';
+  recordCount: number;
+  filterCriteria: FilterCriteria;
+  exportedAt: string;
+  fileName: string;
+}
+
 export const ANOMALY_TYPE_LABELS: Record<AnomalyType, string> = {
   adjacent_merge_error: '异常-相邻点位合错',
   value_out_of_range: '异常-数值超限',

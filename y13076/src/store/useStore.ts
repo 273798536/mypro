@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { SensorRecord, FilterCriteria, AnomalyRecord, HistoricalNote, AttachedMaterial, PlaybackState, AnomalyStatus } from '@/types';
+import type { SensorRecord, FilterCriteria, AnomalyRecord, HistoricalNote, AttachedMaterial, PlaybackState, AnomalyStatus, ExportRecord } from '@/types';
 import { mockSensorData, mockAnomalyRecords, mockHistoricalNotes } from '@/data/mockData';
 
 interface AppStore {
@@ -31,6 +31,9 @@ interface AppStore {
 
   activeAnomalyId: string | null;
   setActiveAnomaly: (id: string | null) => void;
+
+  exportRecords: ExportRecord[];
+  addExportRecord: (record: ExportRecord) => void;
 }
 
 const defaultFilter: FilterCriteria = {
@@ -110,6 +113,10 @@ export const useStore = create<AppStore>((set, get) => ({
 
   activeAnomalyId: null,
   setActiveAnomaly: (id) => set({ activeAnomalyId: id }),
+
+  exportRecords: [],
+  addExportRecord: (record) =>
+    set((state) => ({ exportRecords: [...state.exportRecords, record] })),
 }));
 
 if (typeof window !== 'undefined') {

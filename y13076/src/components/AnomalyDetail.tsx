@@ -1,9 +1,53 @@
 import { useNavigate } from 'react-router-dom';
-import { X, ExternalLink, Image as ImageIcon } from 'lucide-react';
+import { X, ExternalLink, Image as ImageIcon, Download } from 'lucide-react';
 import { useStore } from '@/store/useStore';
 import { ANOMALY_TYPE_LABELS, ANOMALY_STATUS_LABELS, SENSOR_TYPES, CHANNELS } from '@/types';
-import type { AnomalyStatus } from '@/types';
+import type { AnomalyStatus, ExportRecord, SensorRecord, FilterCriteria } from '@/types';
 import MaterialDropZone from '@/components/MaterialDropZone';
+
+function serializeCsv(data: SensorRecord[], criteria: FilterCriteria): string {
+  const BOM = '\uFEFF';
+  const tags: string[] = [`${criteria.timeRangeStart.slice(0, 16)}~${criteria.timeRangeEnd.slice(0, 16)}`];
+  if (criteria.channel) tags.push(`通道:${criteria.channel}`);
+  if (criteria.cabinet) tags.push(`机柜:${criteria.cabinet}`);
+  if (criteria.sensorType) tags.push(`传感器:${SENSOR_TYPES.find((t) => t.value === criteria.sensorType)?.label ?? criteria.sensorType}`);
+  const meta = [`# 数据中心冷通道时序回放 导出数据`, `# 导出时间: ${new Date().toLocaleString('zh-CN')}`, `# 筛选口径: ${tags.join(' | ')}`, `# 记录数: ${data.length}`, ''];
+  const header = '时间戳,通道,机柜,传感器名称,传感器类型,数值,单位';
+  const tl = (t: string) => SENSOR_TYPES.find((s) => s.value === t)?.label ?? t;
+  const rows = data.map((d) => `${d.timestamp},${d.channel},${d.cabinet},${d.sensorName},${tl(d.type)},${d.value},${d.unit}`);
+  return BOM + meta.join('\n') + header + '\n' + rows.join('\n');
+}
+
+function serializeJson(data: SensorRecord[], criteria: FilterCriteria): string {
+  const tl = (t: string) => SENSOR_TYPES.find((s) => s.value === t)?.label ?? t;
+  return JSON.stringify({
+    meta: {
+      title: '数据中心冷通道时序回放 导出数据',
+      exportedAt: new Date().toISOString(),
+      recordCount: data.length,
+      filterCriteria: {
+        timeRangeStart: criteria.timeRangeStart,
+        timeRangeEnd: criteria.timeRangeEnd,
+        channel: criteria.channel ?? null,
+        cabinet: criteria.cabinet ?? null,
+        sensorType: criteria.sensorType ? { value: criteria.sensorType, label: tl(criteria.sensorType) } : null,
+      },
+    },
+    data: data.map((d) => ({ timestamp: d.timestamp, channel: d.channel, cabinet: d.cabinet, sensorName: d.sensorName, sensorType: d.type, sensorTypeLabel: tl(d.type), value: d.value, unit: d.unit })),
+  }, null, 2);
+}
+
+function downloadFile(content: string, fileName: string, mime: string) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
 
 export default function AnomalyDetail() {
   const activeAnomalyId = useStore((s) => s.activeAnomalyId);
@@ -12,6 +56,8 @@ export default function AnomalyDetail() {
   const updateAnomalyStatus = useStore((s) => s.updateAnomalyStatus);
   const setFilterCriteria = useStore((s) => s.setFilterCriteria);
   const applyFilters = useStore((s) => s.applyFilters);
+  const sensorData = useStore((s) => s.sensorData);
+  const addExportRecord = useStore((s) => s.addExportRecord);
 
   const navigate = useNavigate();
 
@@ -34,6 +80,31 @@ export default function AnomalyDetail() {
       applyFilters();
     }
     navigate('/');
+  };
+
+  const handleReExport = (format: 'csv' | 'json') => {
+    const criteria = anomaly.filterSnapshot ?? { id: 'f-reexport', timeRangeStart: '2026-06-10T00:00:00', timeRangeEnd: '2026-06-10T23:59:59' };
+    const data = sensorData.filter((d) => {
+      if (d.timestamp < criteria.timeRangeStart || d.timestamp > criteria.timeRangeEnd) return false;
+      if (criteria.channel && d.channel !== criteria.channel) return false;
+      if (criteria.cabinet && d.cabinet !== criteria.cabinet) return false;
+      if (criteria.sensorType && d.type !== criteria.sensorType) return false;
+      return true;
+    });
+    if (data.length === 0) return;
+    const ts = new Date().toISOString().slice(0, 19).replace(/[T:]/g, '-');
+    const fileName = `冷通道时序回放_异常${anomaly.id}_${ts}.${format}`;
+    const content = format === 'csv' ? serializeCsv(data, criteria) : serializeJson(data, criteria);
+    const mime = format === 'csv' ? 'text/csv;charset=utf-8' : 'application/json;charset=utf-8';
+    downloadFile(content, fileName, mime);
+    addExportRecord({
+      id: `exp-${Date.now()}`,
+      format,
+      recordCount: data.length,
+      filterCriteria: { ...criteria },
+      exportedAt: new Date().toISOString(),
+      fileName,
+    });
   };
 
   const filterItems: Array<{ label: string; field: string; value: string; display: string }> = [];
@@ -117,6 +188,24 @@ export default function AnomalyDetail() {
               </button>
             ))}
           </div>
+          {anomaly.filterSnapshot && (
+            <div className="mt-2 flex gap-2">
+              <button
+                onClick={() => handleReExport('csv')}
+                className="flex items-center gap-1 text-[10px] px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded transition-colors"
+              >
+                <Download size={10} />
+                重新导出 CSV
+              </button>
+              <button
+                onClick={() => handleReExport('json')}
+                className="flex items-center gap-1 text-[10px] px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded transition-colors"
+              >
+                <Download size={10} />
+                重新导出 JSON
+              </button>
+            </div>
+          )}
         </section>
 
         {anomaly.screenshotUrl && (
