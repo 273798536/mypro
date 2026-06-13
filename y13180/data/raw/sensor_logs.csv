@@ -1,0 +1,26 @@
+record_id,device_id,timestamp,water_flow,flow_unit,droplet_diameter,diameter_unit,water_temperature,temp_unit,air_velocity,velocity_unit,source_file
+R001,CT-001,2026-06-10 08:00:00,120.5,m3/h,2.5,mm,32.5,degC,3.2,m/s,sensor_a.csv
+R002,CT-002,2026-06-10 08:05:00,2000,L/min,3.1,mm,31.8,degC,2.8,m/s,sensor_b.csv
+R003,CT-001,2026-06-10 08:10:00,125.0,m3/h,2.7,mm,33.1,celsius,3.5,m/s,sensor_a.csv
+R004,CT-003,2026-06-10 08:15:00,1.8,m^3/h,,mm,30.2,degC,3.0,m/s,sensor_c.csv
+R005,CT-002,2026-06-10 08:20:00,115.2,m3/h,2.9,mm,32.0,degC,,m/s,sensor_b.csv
+R006,CT-004,2026-06-10 08:25:00,13000,L/h,3.0,mm,31.5,℃,2.9,m/s,sensor_d.csv
+R007,CT-001,2026-06-10 08:30:00,122.3,m3/h,2.6,mm,32.8,degC,3.3,m/s,sensor_a.csv
+R008,CT-005,2026-06-10 08:35:00,118.7,m3/h,2.8,mm,32.2,degC,3.1,m/s,sensor_e.csv
+R009,CT-002,2026-06-10 08:40:00,2.1,m3/s,2.4,mm,31.0,degC,2.7,m/s,sensor_b.csv
+R010,CT-003,2026-06-10 08:45:00,121.0,m3/h,2.55,mm,32.3,degC,3.0,m/s,sensor_c.csv
+R011,CT-006,2026-06-10 08:50:00,127.4,m3/h,2.75,mm,33.0,degC,3.4,m/s,sensor_f.csv
+R012,CT-001,2026-06-10 08:55:00,119.6,m3/h,2.65,mm,31.9,degC,2.9,m/s,sensor_a.csv
+R013,CT-004,2026-06-10 09:00:00,9999,m3/h,25,mm,100,degC,10,m/s,sensor_d.csv
+R014,CT-007,2026-06-10 09:05:00,123.1,m3/h,2.85,mm,32.7,degC,3.2,m/s,sensor_g.csv
+R015,CT-002,2026-06-10 09:10:00,126.2,m3/h,2.7,mm,32.1,degC,3.0,m/s,sensor_b.csv
+R016,CT-008,2026-06-10 09:15:00,117.8,m3/h,2.5,mm,31.7,degC,2.8,m/s,sensor_h.csv
+R017,CT-003,2026-06-10 09:20:00,,,mm,32.4,degC,3.1,m/s,sensor_c.csv
+R018,CT-005,2026-06-10 09:25:00,124.5,m3/h,2.6,mm,degC,3.3,m/s,sensor_e.csv
+R019,CT-009,2026-06-10 09:30:00,120.0,m3/h,2.7,mm,32.6,degC,3.2,m/s,sensor_i.csv
+R020,CT-001,2026-06-10 09:35:00,122.7,m3/h,2.55,mm,32.0,degC,3.0,m/s,sensor_a.csv
+R021,CT-010,2026-06-10 09:40:00,128.3,m3/h,2.9,mm,33.2,degC,3.5,m/s,sensor_j.csv
+R022,CT-006,2026-06-10 09:45:00,125.1,m3/h,2.75,mm,32.8,degC,3.4,m/s,sensor_f.csv
+R023,CT-002,2026-06-10 09:50:00,121.5,m3/h,2.65,mm,31.6,degC,2.7,m/s,sensor_b.csv
+R024,CT-011,2026-06-10 09:55:00,123.0,m3/h,2.8,mm,32.5,degC,3.2,m/s,sensor_k.csv
+R025,CT-007,2026-06-10 10:00:00,119.2,m3/h,2.5,mm,31.8,degC,2.9,m/s,sensor_g.csv

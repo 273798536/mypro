@@ -1,0 +1,26 @@
+record_id,device_id,timestamp,source_file,water_flow_m3h,droplet_diameter_mm,water_temperature_degC,k_value,heat_dissipation_kW,calculation_success,processing_status,failure_reasons
+R001,CT-001,2026-06-10 08:00:00,sensor_a.csv,120.5,2.5,32.5,4.2,6579.3,True,calculated,
+R002,CT-002,2026-06-10 08:05:00,sensor_b.csv,120.0,3.1,31.8,4.2,5170.0645,True,calculated,
+R003,CT-001,2026-06-10 08:10:00,sensor_a.csv,125.0,2.7,33.1,4.2,6436.1111,True,calculated,
+R004,CT-003,2026-06-10 08:15:00,sensor_c.csv,1.8,,30.2,4.2,,False,unit_or_threshold_issue,"水流量超出阈值:1.80m³/h超出[50.0,200.0] | 必要字段缺失:水滴直径数值缺失 | 公式参数缺失:缺少参数droplet_diameter"
+R005,CT-002,2026-06-10 08:20:00,sensor_b.csv,115.2,2.9,32.0,4.2,5338.9241,True,unit_or_threshold_issue,必要字段缺失:风速数值缺失
+R006,CT-004,2026-06-10 08:25:00,sensor_d.csv,13.0,3.0,31.5,4.2,573.3,True,unit_or_threshold_issue,"水流量超出阈值:13.00m³/h超出[50.0,200.0]"
+R007,CT-001,2026-06-10 08:30:00,sensor_a.csv,122.3,2.6,32.8,4.2,6480.0185,True,calculated,
+R008,CT-005,2026-06-10 08:35:00,sensor_e.csv,118.7,2.8,32.2,4.2,5733.21,True,calculated,
+R009,CT-002,2026-06-10 08:40:00,sensor_b.csv,7560.0,2.4,31.0,4.2,410130.0,True,unit_or_threshold_issue,"水流量超出阈值:7560.00m³/h超出[50.0,200.0] | 计算结果超出阈值:散热功率410130.00kW超出[100.0,7000.0]"
+R010,CT-003,2026-06-10 08:45:00,sensor_c.csv,121.0,2.55,32.3,4.2,6437.2,True,calculated,
+R011,CT-006,2026-06-10 08:50:00,sensor_f.csv,127.4,2.75,33.0,4.2,6420.96,True,calculated,
+R012,CT-001,2026-06-10 08:55:00,sensor_a.csv,119.6,2.65,31.9,4.2,6046.7955,True,calculated,
+R013,CT-004,2026-06-10 09:00:00,sensor_d.csv,9999.0,25.0,100.0,4.2,167983.2,True,unit_or_threshold_issue,"水流量超出阈值:9999.00m³/h超出[50.0,200.0] | 水滴直径超出阈值:25.00mm超出[1.0,5.0] | 水温超出阈值:100.00℃超出[10.0,50.0] | 风速超出阈值:10.00m/s超出[0.5,8.0] | 计算结果超出阈值:散热功率167983.20kW超出[100.0,7000.0]"
+R014,CT-007,2026-06-10 09:05:00,sensor_g.csv,123.1,2.85,32.7,4.2,5932.1242,True,calculated,
+R015,CT-002,2026-06-10 09:10:00,sensor_b.csv,126.2,2.7,32.1,4.2,6301.5867,True,calculated,
+R016,CT-008,2026-06-10 09:15:00,sensor_h.csv,117.8,2.5,31.7,4.2,6273.5568,True,calculated,
+R017,CT-003,2026-06-10 09:20:00,,,,,4.2,,False,unit_or_threshold_issue,"必要字段缺失:水流量数值缺失 | 必要字段缺失:水滴直径数值缺失 | 必要字段缺失:水温数值缺失 | 必要字段缺失:风速数值缺失 | 公式参数缺失:缺少参数water_flow,water_temperature,droplet_diameter"
+R018,CT-005,2026-06-10 09:25:00,,124.5,2.6,,4.2,,False,unit_or_threshold_issue,必要字段缺失:水温数值缺失 | 必要字段缺失:风速数值缺失 | 公式参数缺失:缺少参数water_temperature
+R019,CT-009,2026-06-10 09:30:00,sensor_i.csv,120.0,2.7,32.6,4.2,6085.3333,True,calculated,
+R020,CT-001,2026-06-10 09:35:00,sensor_a.csv,122.7,2.55,32.0,4.2,6467.0118,True,calculated,
+R021,CT-010,2026-06-10 09:40:00,sensor_j.csv,128.3,2.9,33.2,4.2,6169.0179,True,calculated,
+R022,CT-006,2026-06-10 09:45:00,sensor_f.csv,125.1,2.75,32.8,4.2,6266.8276,True,calculated,
+R023,CT-002,2026-06-10 09:50:00,sensor_b.csv,121.5,2.65,31.6,4.2,6085.0868,True,calculated,
+R024,CT-011,2026-06-10 09:55:00,sensor_k.csv,123.0,2.8,32.5,4.2,5996.25,True,calculated,
+R025,CT-007,2026-06-10 10:00:00,sensor_g.csv,119.2,2.5,31.8,4.2,6368.1408,True,calculated,
