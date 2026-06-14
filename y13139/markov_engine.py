@@ -153,28 +153,41 @@ def process_record(rec: StudentRecord, params: Dict[str, Any], label: str, steps
         note=f"期望转移矩阵维度 {len(params.get('expected_transitions', {}))}",
     ))
     seq = rec.cleaned_payload["sequence"] if rec.cleaned_payload else []
+    min_obs = params.get("min_observations", 0)
+    short = len(seq) < min_obs
     steps.append(CalcStep(
         name="输入序列", value_before=None, value_after=seq,
-        note=f"长度 {len(seq)}，最小要求 {params.get('min_observations', 0)}",
+        note=f"长度 {len(seq)}，最小要求 {min_obs}" + (" ⚠ 不足" if short else ""),
     ))
-    if len(seq) < params.get("min_observations", 0):
+    if short:
         steps.append(CalcStep(
             name="证据不足判定",
-            value_before=len(seq), value_after=params.get("min_observations"),
+            value_before=len(seq), value_after=min_obs,
             unit_before="条", unit_after="条",
-            note="序列长度低于最小观测数，需补证据",
+            note=f"序列长度 {len(seq)} < 最小观测数 {min_obs}，仍继续计算以便回看",
         ))
-        return {"passed": False, "need_evidence": True, "reason": "序列过短",
-                "probs": {}, "deviations": [f"长度{len(seq)}<{params.get('min_observations')}"]}
+    if len(seq) < 2:
+        steps.append(CalcStep(
+            name="转移计数", value_before=None, value_after={},
+            unit_before=None, unit_after="次",
+            note="序列不足2项，无转移对可计算",
+        ))
+        return {"passed": False, "need_evidence": True,
+                "reason": "序列不足2项无法形成转移对",
+                "probs": {}, "deviations": []}
     counts = _count_transitions(seq)
     steps.append(CalcStep(
         name="转移计数", value_before=None, value_after=counts,
         unit_before=None, unit_after="次",
+        note=f"共 {sum(counts.values())} 次转移，{len(counts)} 种类型",
     ))
     probs = _normalize(counts, steps, params.get("unit", "概率"))
     ok, devs = _compare(probs, params.get("expected_transitions", {}),
                         params.get("tolerance", 0.1), steps, params.get("unit", "概率"))
-    return {"passed": ok, "need_evidence": False, "probs": probs, "deviations": devs}
+    if short:
+        devs.insert(0, f"长度{len(seq)}<{min_obs}")
+    return {"passed": False if short else ok, "need_evidence": short,
+            "probs": probs, "deviations": devs}
 
 
 def run_batch(batch: BatchState) -> BatchState:
@@ -185,8 +198,9 @@ def run_batch(batch: BatchState) -> BatchState:
         if rec.status == RECORD_STATUS_SORT_UNSTABLE:
             continue
         if rec.status in (RECORD_STATUS_EVIDENCE_NEEDED, RECORD_STATUS_RAW):
-            evidence += 1
-            continue
+            if not rec.cleaned_payload:
+                evidence += 1
+                continue
         steps_a: List[CalcStep] = []
         steps_b: List[CalcStep] = []
         res_a = process_record(rec, param_a, "A", steps_a)
