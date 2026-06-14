@@ -3,6 +3,7 @@ import argparse
 import json
 import sys
 import time
+from typing import List, Dict, Any
 
 from convex_hull import compute_convex_hull
 from sort_instability import detect_sort_instability
@@ -54,6 +55,10 @@ def cmd_start(args):
     if args.draft_note:
         judgments = args.judgments_changed.split(",") if args.judgments_changed else []
         tracker.add_draft_note(session_id, args.draft_note, judgments)
+
+    rec.unstable_records = [r.__dict__ for r in unstable]
+    rec.stable_records = [r.__dict__ for r in stable]
+    tracker.save(session_id)
 
     report_content = generate_report(
         tracker,
@@ -118,6 +123,10 @@ def cmd_rerun(args):
         judgments = args.judgments_changed.split(",") if args.judgments_changed else []
         tracker.add_draft_note(session_id, args.draft_note, judgments)
 
+    rec.unstable_records = [r.__dict__ for r in unstable]
+    rec.stable_records = [r.__dict__ for r in stable]
+    tracker.save(session_id)
+
     report_content = generate_report(
         tracker,
         hull_result=hull,
@@ -169,35 +178,67 @@ def cmd_view_report(args):
             print(f"  {s['session_id']}  状态={s['status']}  面积={s['area']}")
 
 
+def _rebuild_instability_records(records_data: List[Dict[str, Any]]):
+    from sort_instability import InstabilityRecord
+    result = []
+    for d in records_data:
+        r = InstabilityRecord()
+        for k, v in d.items():
+            if hasattr(r, k):
+                setattr(r, k, v)
+        result.append(r)
+    return result
+
+
 def cmd_add_draft(args):
     tracker = DraftTracker()
     judgments = args.judgments_changed.split(",") if args.judgments_changed else []
-    entry = tracker.add_draft_note(args.session_id, args.note, judgments)
+    try:
+        entry = tracker.add_draft_note(args.session_id, args.note, judgments)
+    except ValueError as e:
+        print(f"错误: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    rec = tracker.sessions.get(args.session_id)
+    hull = rec.hull_result if rec else None
+    unstable = _rebuild_instability_records(rec.unstable_records) if rec else []
+    stable = _rebuild_instability_records(rec.stable_records) if rec else []
+
+    report_dir = args.report_dir or "."
+    report_content = generate_report(
+        tracker,
+        hull_result=hull,
+        unstable_records=unstable,
+        stable_records=stable,
+        session_id=args.session_id,
+    )
+    report_path = f"{report_dir}/report_{args.session_id}.md"
+    save_report(report_content, report_path)
+
     print(json.dumps({
         "session_id": args.session_id,
         "note": entry.note,
         "judgments_changed": entry.judgments_changed,
         "timestamp": entry.timestamp,
+        "report_path": report_path,
     }, ensure_ascii=False, indent=2))
 
 
 def cmd_override(args):
     tracker = DraftTracker()
-    tracker.mark_manual_override(args.session_id, args.reason)
+    try:
+        tracker.mark_manual_override(args.session_id, args.reason)
+    except ValueError as e:
+        print(f"错误: {e}", file=sys.stderr)
+        sys.exit(1)
 
     sessions = tracker.sessions
     sid = args.session_id
     rec = sessions.get(sid)
     hull = rec.hull_result if rec else None
 
-    unstable, stable = [], []
-    if hull:
-        unstable, stable = detect_sort_instability(
-            [],
-            hull.sort_order,
-            hull.collinear_groups,
-            hull.intermediate_steps,
-        )
+    unstable = _rebuild_instability_records(rec.unstable_records) if rec else []
+    stable = _rebuild_instability_records(rec.stable_records) if rec else []
 
     report_content = generate_report(
         tracker,
@@ -257,6 +298,7 @@ def main():
     p_draft.add_argument("--session-id", required=True, help="会话ID")
     p_draft.add_argument("--note", required=True, help="备注内容")
     p_draft.add_argument("--judgments-changed", help="备注影响的判断，逗号分隔")
+    p_draft.add_argument("--report-dir", default=".", help="报告目录")
 
     p_override = sub.add_parser("override", help="标记人工改判")
     p_override.add_argument("--session-id", required=True, help="会话ID")

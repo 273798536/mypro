@@ -1,0 +1,237 @@
+{
+  "session_id": "test02",
+  "created_at": 1781407851.648684,
+  "parameters": {
+    "input_unit": "px",
+    "output_unit": "px",
+    "collinear_threshold": 1e-09,
+    "point_count": 4
+  },
+  "status": "manual_override",
+  "area": 12.0,
+  "area_unit": "px",
+  "hull_vertices": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      4.0,
+      0.0
+    ],
+    [
+      4.0,
+      3.0
+    ],
+    [
+      0.0,
+      3.0
+    ]
+  ],
+  "sort_order": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "collinear_groups": [
+    [
+      0,
+      1
+    ]
+  ],
+  "intermediate_steps": [
+    {
+      "step": "collinear_detection",
+      "group_index": 0,
+      "point_indices": [
+        0,
+        1
+      ],
+      "angle": 0.0,
+      "count": 2
+    },
+    {
+      "step": "cross_product",
+      "check_points": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          4.0,
+          0.0
+        ],
+        [
+          4.0,
+          3.0
+        ]
+      ],
+      "check_indices": [
+        0,
+        1,
+        2
+      ],
+      "cross_value": 12.0,
+      "decision": "keep"
+    },
+    {
+      "step": "cross_product",
+      "check_points": [
+        [
+          4.0,
+          0.0
+        ],
+        [
+          4.0,
+          3.0
+        ],
+        [
+          0.0,
+          3.0
+        ]
+      ],
+      "check_indices": [
+        1,
+        2,
+        3
+      ],
+      "cross_value": 12.0,
+      "decision": "keep"
+    },
+    {
+      "step": "area_computation",
+      "formula": "Shoelace",
+      "terms": [
+        {
+          "i": 0,
+          "j": 1,
+          "xi": 0.0,
+          "yi": 0.0,
+          "xj": 4.0,
+          "yj": 0.0,
+          "term": 0.0,
+          "running_sum": 0.0
+        },
+        {
+          "i": 1,
+          "j": 2,
+          "xi": 4.0,
+          "yi": 0.0,
+          "xj": 4.0,
+          "yj": 3.0,
+          "term": 12.0,
+          "running_sum": 12.0
+        },
+        {
+          "i": 2,
+          "j": 3,
+          "xi": 4.0,
+          "yi": 3.0,
+          "xj": 0.0,
+          "yj": 3.0,
+          "term": 12.0,
+          "running_sum": 24.0
+        },
+        {
+          "i": 3,
+          "j": 0,
+          "xi": 0.0,
+          "yi": 3.0,
+          "xj": 0.0,
+          "yj": 0.0,
+          "term": 0.0,
+          "running_sum": 24.0
+        }
+      ],
+      "raw_abs_sum": 24.0,
+      "final_area": 12.0,
+      "unit": "px"
+    }
+  ],
+  "failures": [],
+  "manual_override": "项目经理确认矩形凸包无异议，内点不影响结论",
+  "draft_notes": [
+    {
+      "note": "去掉内点验证，确认面积不变",
+      "timestamp": 1781407851.649309,
+      "judgments_changed": [
+        "vertex_check"
+      ]
+    }
+  ],
+  "unstable_records": [
+    {
+      "category": "collinear_on_hull_edge",
+      "point_indices": [
+        0,
+        1
+      ],
+      "points": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          4.0,
+          0.0
+        ]
+      ],
+      "detail": "共线点组 #0: 2个点极角差在阈值1e-06内，排序顺序取决于距离二级排序，可能因浮点误差翻转",
+      "metric": 1e-06,
+      "metric_name": "angle_threshold"
+    }
+  ],
+  "stable_records": [
+    {
+      "category": "stable_cross_product",
+      "point_indices": [
+        0,
+        1,
+        2
+      ],
+      "points": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          4.0,
+          0.0
+        ],
+        [
+          4.0,
+          3.0
+        ]
+      ],
+      "detail": "叉积值1.20e+01，判定稳定",
+      "metric": 12.0,
+      "metric_name": "abs_cross_product"
+    },
+    {
+      "category": "stable_cross_product",
+      "point_indices": [
+        1,
+        2,
+        3
+      ],
+      "points": [
+        [
+          4.0,
+          0.0
+        ],
+        [
+          4.0,
+          3.0
+        ],
+        [
+          0.0,
+          3.0
+        ]
+      ],
+      "detail": "叉积值1.20e+01，判定稳定",
+      "metric": 12.0,
+      "metric_name": "abs_cross_product"
+    }
+  ]
+}

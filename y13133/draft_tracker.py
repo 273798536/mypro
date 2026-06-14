@@ -37,6 +37,8 @@ class SessionRecord:
         self.draft_notes: List[DraftEntry] = []
         self.status: str = "processed"
         self.manual_override: Optional[str] = None
+        self.unstable_records: List[Dict[str, Any]] = []
+        self.stable_records: List[Dict[str, Any]] = []
 
     def to_dict(self) -> Dict[str, Any]:
         d: Dict[str, Any] = {
@@ -67,6 +69,8 @@ class SessionRecord:
             }
             for dn in self.draft_notes
         ]
+        d["unstable_records"] = self.unstable_records
+        d["stable_records"] = self.stable_records
         return d
 
     @staticmethod
@@ -121,6 +125,8 @@ class DraftTracker:
                     )
                 if "area" in data:
                     rec.hull_result = _LazyHullResult(data)
+                rec.unstable_records = data.get("unstable_records", [])
+                rec.stable_records = data.get("stable_records", [])
                 self.sessions[sid] = rec
             except (json.JSONDecodeError, KeyError):
                 continue

@@ -65,6 +65,22 @@ def generate_report(
                 lines.append(f"- **{f['reason']}**: {f['detail']}")
             lines.append("")
 
+    if session_id:
+        current = tracker.sessions.get(session_id)
+        if current and current.draft_notes:
+            lines.append("## 📝 计算草稿备注")
+            lines.append("")
+            lines.append("> 以下备注来自教研编辑阿宁的计算草稿，说明了判断依据的变化。")
+            lines.append("")
+            for i, dn in enumerate(current.draft_notes):
+                lines.append(f"### 备注 #{i + 1}")
+                lines.append(f"- **时间**: {_fmt_time(dn.timestamp)}")
+                lines.append(f"- **内容**: {dn.note}")
+                if dn.judgments_changed:
+                    lines.append(f"- **改变的判断**: {', '.join(dn.judgments_changed)}")
+                lines.append("")
+
+    if hull_result:
         lines.append("## 中间计算过程")
         lines.append("")
         for step in hull_result.intermediate_steps:
@@ -171,12 +187,22 @@ def generate_report(
     lines.append("## 已处理")
     lines.append("")
     if processed:
-        lines.append("| 会话ID | 创建时间 | 面积 | 单位 |")
-        lines.append("|--------|----------|------|------|")
+        lines.append("| 会话ID | 创建时间 | 面积 | 单位 | 备注数 |")
+        lines.append("|--------|----------|------|------|--------|")
         for rec in processed:
             area_str = _fmt_float(rec.hull_result.area) if rec.hull_result else "N/A"
             unit_str = rec.hull_result.area_unit if rec.hull_result else ""
-            lines.append(f"| {rec.session_id} | {_fmt_time(rec.created_at)} | {area_str} | {unit_str} |")
+            lines.append(f"| {rec.session_id} | {_fmt_time(rec.created_at)} | {area_str} | {unit_str} | {len(rec.draft_notes)} |")
+        lines.append("")
+        for rec in processed:
+            if rec.draft_notes:
+                lines.append(f"### 会话 {rec.session_id} 草稿备注")
+                lines.append("")
+                for dn in rec.draft_notes:
+                    lines.append(f"- [{_fmt_time(dn.timestamp)}] {dn.note}")
+                    if dn.judgments_changed:
+                        lines.append(f"  - 影响判断: {', '.join(dn.judgments_changed)}")
+                lines.append("")
     else:
         lines.append("无")
     lines.append("")
