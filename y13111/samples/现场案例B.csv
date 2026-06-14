@@ -1,0 +1,5 @@
+id,name,expected_name,quantity,unit,answer_id,expected_window_count
+M101,语文答题卡,语文答题卡,300,张,现场案例B,2
+M102,数学答题卡,数学答题卡,300,张,现场案例B,2
+M103,英语答题卡,英语答题卡,280,张,现场案例B,2
+M104,草稿纸,草稿纸,500,张,现场案例B,2

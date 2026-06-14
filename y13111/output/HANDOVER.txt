@@ -1,19 +1,33 @@
 教研编辑阿宁 - 排队窗口边界校验 交接卡
 ------------------------------------
 
-[样例在哪]
-  - 现场案例A: samples/现场案例A.csv
-  - 现场案例B（并列数量）: samples/现场案例B.csv
-  - 现场案例C（空集合）: samples/现场案例C.csv
-  - 现场案例D（边界样本）: samples/现场案例D.csv
-  - 报告输出目录: /Users/mac/pro/solo/workspaces/y13111/output
+[样例在哪（真实路径，可直接打开）]
+  - 样例CSV目录: /Users/mac/pro/solo/workspaces/y13111/samples
+      * /Users/mac/pro/solo/workspaces/y13111/samples/现场案例A.csv
+      * /Users/mac/pro/solo/workspaces/y13111/samples/现场案例B.csv
+      * /Users/mac/pro/solo/workspaces/y13111/samples/现场案例C.csv
+      * /Users/mac/pro/solo/workspaces/y13111/samples/现场案例D.csv
+
+[参数配置在哪]
+  - 配置目录: /Users/mac/pro/solo/workspaces/y13111/config
+      * /Users/mac/pro/solo/workspaces/y13111/config/default_window_config.json
+      * /Users/mac/pro/solo/workspaces/y13111/config/tuned_window_config.json
+
+[已导入的历史答案]
+  - 验证答案A: /Users/mac/pro/solo/workspaces/y13111/samples/现场案例A.csv
 
 [异常在哪]
-  - 报告异常列表 sheet / JSON anomalies 字段
-  - 异常含源行号 & 原始引用，可回溯历史答案原始行
-  - 空集合、排序不稳定会触发【挂起】，需人工确认
+  - 报告「异常列表」sheet / JSON anomalies 字段
+  - 每条异常含 source_line（源行号）& raw_reference（原始行内容）
+  - 空集合、排序不稳定会触发【挂起】状态，需人工确认
 
 [结果怎么导出]
-  - TXT:  check_report.txt   (给复核人看的简明报告)
-  - Excel: check_report.xlsx (含 概览/材料/步骤追踪/异常/边界样本/调参差异)
-  - JSON:  check_report.json (结构化，对接系统)
+  - TXT:   *_check_report.txt   （给复核人看的简明报告，含步骤变化标记）
+  - Excel: *_check_report.xlsx  （含 概览/材料清单/步骤追踪/异常列表/边界样本/参数调档差异）
+  - JSON:  *_check_report.json  （结构化，可对接系统）
+
+[复核人换参数再跑（命令行）]
+  例1 基础:  python3 main.py --input samples/现场案例A.csv --config config/default_window_config.json
+  例2 调参:  python3 main.py --input samples/现场案例A.csv --config config/tuned_window_config.json --prefix 调参后
+  例3 对比:  python3 main.py --input samples/现场案例A.csv --config config/default_window_config.json --tune config/tuned_window_config.json
+  例4 自定目录: python3 main.py --input samples/现场案例A.csv --config config/default_window_config.json --output my_output

@@ -1,7 +1,7 @@
 {
   "historical_answer": {
     "answer_id": "现场案例A",
-    "source_file": "samples/现场案例A.csv",
+    "source_file": "/Users/mac/pro/solo/workspaces/y13111/samples/现场案例A.csv",
     "materials": [
       {
         "material_id": "M001",
@@ -51,8 +51,8 @@
     ]
   },
   "result": {
-    "status": "不通过",
-    "computed_value": 6.666666666666667,
+    "status": "通过",
+    "computed_value": 13.333333333333334,
     "computed_unit": "个",
     "formula_applied": "avg_throughput = total_count / window_size",
     "sort_stable": true,
@@ -62,14 +62,7 @@
         "message": "材料名称不一致：期望「高中英语同步字帖」，实际「高中英语字帖」",
         "material_id": "M003",
         "source_line": 4,
-        "raw_reference": "{'id': 'M003', 'name': '高中英语字帖', 'expected': '高中英语同步字帖', 'qty': 45, 'unit': '本'}"
-      },
-      {
-        "type": "越界",
-        "message": "计算值 6.6667 个 低于下限 10.0",
-        "material_id": null,
-        "source_line": null,
-        "raw_reference": "computed=6.666666666666667, lower=10.0, upper=8.0"
+        "raw_reference": "{'id': 'M003', 'name': '高中英语字帖', 'expected_name': '高中英语同步字帖', 'quantity': '45', 'unit': '个', 'answer_id': '现场案例A', 'expected_window_count': '3'}"
       }
     ],
     "boundary_samples": [
@@ -92,21 +85,21 @@
         "value": 10.0,
         "bound_type": "lower",
         "unit": "个",
-        "within_bound": false
+        "within_bound": true
       },
       {
         "label": "窗口上限",
-        "value": 8.0,
+        "value": 15.0,
         "bound_type": "upper",
         "unit": "个",
         "within_bound": true
       },
       {
         "label": "实际计算值",
-        "value": 6.666666666666667,
+        "value": 13.333333333333334,
         "bound_type": "computed",
         "unit": "个",
-        "within_bound": false
+        "within_bound": true
       }
     ],
     "steps": [
@@ -161,8 +154,8 @@
         "description": "将窗口大小换算为分钟（基准单位），公式: 原值 * 换算系数",
         "changed": true,
         "before": "None",
-        "after": "60.0",
-        "detail": "60.0 分钟 = 60.0 分钟"
+        "after": "30.0",
+        "detail": "30.0 分钟 = 30.0 分钟"
       },
       {
         "step_id": "s07",
@@ -170,70 +163,19 @@
         "description": "应用公式: avg_throughput = total_count / window_size",
         "changed": true,
         "before": "None",
-        "after": "6.666666666666667",
-        "detail": "计算结果: 6.666666666666667 个/分钟"
+        "after": "13.333333333333334",
+        "detail": "计算结果: 13.333333333333334 个/分钟"
       },
       {
         "step_id": "s08",
         "step_name": "边界判定",
         "description": "判断计算值是否落在 [下限, 上限] 区间（考虑容差）",
-        "changed": true,
+        "changed": false,
         "before": "True",
-        "after": "False",
-        "detail": "容差=0.0; 结果=越界"
+        "after": "True",
+        "detail": "容差=0.0; 结果=通过"
       }
     ]
   },
-  "param_diffs": [
-    {
-      "config_before": {
-        "window_size": 30.0,
-        "window_unit": "分钟",
-        "lower_bound": 10.0,
-        "upper_bound": 15.0,
-        "value_unit": "个",
-        "formula": "avg_throughput = total_count / window_size",
-        "tolerance": 0.0
-      },
-      "config_after": {
-        "window_size": 60.0,
-        "window_unit": "分钟",
-        "lower_bound": 10.0,
-        "upper_bound": 8.0,
-        "value_unit": "个",
-        "formula": "avg_throughput = total_count / window_size",
-        "tolerance": 0.0
-      },
-      "fields_changed": [
-        {
-          "field": "window_size",
-          "old_value": 30.0,
-          "new_value": 60.0,
-          "impact": "窗口大小从 30.0 变为 60.0，将直接改变分母，从而改变平均吞吐量计算结果"
-        },
-        {
-          "field": "upper_bound",
-          "old_value": 15.0,
-          "new_value": 8.0,
-          "impact": "窗口上限从 15.0 变为 8.0，边界判定的通过区间将收窄"
-        }
-      ],
-      "result_diff": {
-        "computed_value": {
-          "before": 13.333333333333334,
-          "after": 6.666666666666667
-        },
-        "status": {
-          "before": "通过",
-          "after": "不通过"
-        },
-        "anomaly_types": {
-          "added": [
-            "越界"
-          ],
-          "removed": []
-        }
-      }
-    }
-  ]
+  "param_diffs": []
 }

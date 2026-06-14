@@ -1,0 +1,4 @@
+id,name,expected_name,quantity,unit,answer_id,expected_window_count
+M201,小学口算题卡,小学口算题卡,55,本,现场案例D,2
+M202,初中奥数教程,初中奥数教程,40,本,现场案例D,2
+M203,高中复习指南,高中复习指南,25,本,现场案例D,2
