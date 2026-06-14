@@ -2,6 +2,7 @@ from typing import List, Optional
 from datetime import datetime
 
 from app.models.matrix import BatchJob, MatrixRecord, MatrixStatus, ChangeSource, JumpReason
+from app.services.matrix_service import is_manually_overridden, get_last_manual_override
 
 
 def _format_condition(cond: Optional[float]) -> str:
@@ -37,6 +38,8 @@ def generate_markdown_report(batch: BatchJob) -> str:
     lines = []
     s = batch.summary
 
+    overridden_count = sum(1 for r in batch.records if is_manually_overridden(r))
+
     lines.append(f"# 矩阵条件数批量验算报告")
     lines.append("")
     lines.append(f"**批次名称**：{batch.name}")
@@ -58,8 +61,8 @@ def generate_markdown_report(batch: BatchJob) -> str:
         lines.append(f"- ⚠️ 奇异矩阵：**{s.singular}** 个（不可逆，无法计算条件数）")
     if s.out_of_bound > 0:
         lines.append(f"- 🔴 越界：**{s.out_of_bound}** 个（条件数超过阈值，已单独列出）")
-    if s.overridden > 0:
-        lines.append(f"- ✏️ 人工改判：**{s.overridden}** 个")
+    if overridden_count > 0:
+        lines.append(f"- ✏️ 人工改判：**{overridden_count}** 个（按历史改判记录统计，包含当前状态为正常或越界的）")
     if s.error > 0:
         lines.append(f"- ❌ 错误：**{s.error}** 个")
     lines.append("")
@@ -117,19 +120,19 @@ def generate_markdown_report(batch: BatchJob) -> str:
             lines.append(f"| {i} | {r.name} | {r.source_file or '-'} |")
         lines.append("")
 
-    overridden_records = [r for r in batch.records if r.status == MatrixStatus.OVERRIDDEN]
+    overridden_records = [r for r in batch.records if is_manually_overridden(r)]
     if overridden_records:
         lines.append("## 七、人工改判记录")
         lines.append("")
-        lines.append("> ✏️ 以下记录经过人工改判，点击可查看改判历史。")
+        lines.append("> ✏️ 以下记录经过人工改判（按状态变更历史中的来源判断，与当前状态无关）。")
         lines.append("")
         lines.append("| 序号 | 矩阵名称 | 原状态 | 当前状态 | 改判人 | 原因 |")
         lines.append("|------|----------|--------|----------|--------|------|")
         for i, r in enumerate(overridden_records, 1):
-            last_change = r.status_history[-1] if r.status_history else None
-            from_status = _status_text(last_change.from_status) if last_change else "-"
-            operator = last_change.operator if last_change else "-"
-            reason = last_change.reason if last_change else "-"
+            last_override = get_last_manual_override(r)
+            from_status = _status_text(last_override.from_status) if last_override else "-"
+            operator = last_override.operator if last_override else "-"
+            reason = last_override.reason if last_override else "-"
             lines.append(f"| {i} | {r.name} | {from_status} | {_status_text(r.status)} | {operator} | {reason} |")
         lines.append("")
 

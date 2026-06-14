@@ -54,7 +54,8 @@ export default function BatchDetailPage() {
       })
       setBatch(res.data)
     } catch (e) {
-      alert('处理失败: ' + e.message)
+      const msg = e.response?.data?.detail || e.message || '未知错误'
+      alert('处理失败：\n' + msg)
     } finally {
       setProcessing(false)
     }
@@ -75,19 +76,24 @@ export default function BatchDetailPage() {
     loadBatch()
   }
 
+  const isManuallyOverridden = (record) => {
+    if (!record.status_history || record.status_history.length === 0) return false
+    return record.status_history.some(ch => ch.source === 'manual_override')
+  }
+
   const getFilteredRecords = () => {
     if (!batch) return []
     switch (activeTab) {
       case 'normal':
-        return batch.records.filter(r => r.status === 'normal')
+        return batch.records.filter(r => r.status === 'normal' && !isManuallyOverridden(r))
       case 'out_of_bound':
-        return batch.records.filter(r => r.status === 'out_of_bound')
+        return batch.records.filter(r => r.status === 'out_of_bound' && !isManuallyOverridden(r))
       case 'empty':
         return batch.records.filter(r => r.status === 'empty')
       case 'singular':
         return batch.records.filter(r => r.status === 'singular')
       case 'overridden':
-        return batch.records.filter(r => r.status === 'overridden')
+        return batch.records.filter(r => isManuallyOverridden(r))
       case 'jump':
         return batch.records.filter(r => r.jump_analysis?.has_jump)
       default:

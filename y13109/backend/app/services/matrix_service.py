@@ -41,7 +41,7 @@ def update_record_status(
     reason: Optional[str] = None,
     detail: Optional[Dict[str, Any]] = None
 ) -> MatrixRecord:
-    if record.status == new_status:
+    if record.status == new_status and source != ChangeSource.MANUAL_OVERRIDE:
         return record
 
     change = create_status_change(
@@ -58,6 +58,20 @@ def update_record_status(
     record.updated_at = datetime.now()
 
     return record
+
+
+def is_manually_overridden(record: MatrixRecord) -> bool:
+    return any(
+        ch.source == ChangeSource.MANUAL_OVERRIDE
+        for ch in record.status_history
+    )
+
+
+def get_last_manual_override(record: MatrixRecord) -> Optional[StatusChange]:
+    for ch in reversed(record.status_history):
+        if ch.source == ChangeSource.MANUAL_OVERRIDE:
+            return ch
+    return None
 
 
 def process_matrix_record(
@@ -166,7 +180,9 @@ def calculate_batch_summary(records: List[MatrixRecord]) -> BatchSummary:
     summary.total = len(records)
 
     for r in records:
-        if r.status == MatrixStatus.NORMAL:
+        if is_manually_overridden(r):
+            summary.overridden += 1
+        elif r.status == MatrixStatus.NORMAL:
             summary.normal += 1
         elif r.status == MatrixStatus.EMPTY:
             summary.empty += 1
@@ -174,8 +190,6 @@ def calculate_batch_summary(records: List[MatrixRecord]) -> BatchSummary:
             summary.singular += 1
         elif r.status == MatrixStatus.OUT_OF_BOUND:
             summary.out_of_bound += 1
-        elif r.status == MatrixStatus.OVERRIDDEN:
-            summary.overridden += 1
         elif r.status == MatrixStatus.ERROR:
             summary.error += 1
 

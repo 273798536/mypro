@@ -51,7 +51,8 @@ export default function FileUpload({ batchId, onClose, onComplete }) {
       await batchAPI.upload(batchId, files)
       onComplete()
     } catch (e) {
-      alert('上传失败: ' + e.message)
+      const msg = e.response?.data?.detail || e.message || '未知错误'
+      alert('上传失败：\n' + msg)
     } finally {
       setUploading(false)
     }

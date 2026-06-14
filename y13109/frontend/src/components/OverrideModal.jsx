@@ -29,7 +29,8 @@ export default function OverrideModal({ batchId, record, onClose, onComplete }) 
       await batchAPI.override(batchId, record.id, newStatus, operator.trim(), reason.trim())
       onComplete()
     } catch (e) {
-      alert('改判失败: ' + e.message)
+      const msg = e.response?.data?.detail || e.message || '未知错误'
+      alert('改判失败：\n' + msg)
     } finally {
       setSubmitting(false)
     }

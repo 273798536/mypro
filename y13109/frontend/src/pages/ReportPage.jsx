@@ -24,7 +24,8 @@ export default function ReportPage() {
       setReport(reportRes.data)
       setBatch(batchRes.data)
     } catch (e) {
-      console.error('加载报告失败:', e)
+      const msg = e.response?.data?.detail || e.message || '未知错误'
+      alert('加载报告失败：\n' + msg)
     } finally {
       setLoading(false)
     }
