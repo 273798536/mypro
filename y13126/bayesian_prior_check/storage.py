@@ -22,7 +22,9 @@ class RunStorage:
             storage_dir = os.path.join(os.getcwd(), ".bayes_check_history")
         self.storage_dir = Path(storage_dir)
         self._records_dir = self.storage_dir / "runs"
+        self._upload_dir = self.storage_dir / "uploads"
         self._records_dir.mkdir(parents=True, exist_ok=True)
+        self._upload_dir.mkdir(parents=True, exist_ok=True)
         self._index_path = self.storage_dir / "index.json"
         self._ensure_index()
 
@@ -45,18 +47,27 @@ class RunStorage:
         source_file: str,
         config_file: Optional[str] = None,
         note: Optional[str] = None,
+        stored_file_path: Optional[str] = None,
     ) -> RunRecord:
         run_id = datetime.now().strftime("%Y%m%d_%H%M%S_") + uuid.uuid4().hex[:8]
         record = RunRecord(
             run_id=run_id,
             status=RunStatus.PENDING,
             source_file=source_file,
+            stored_file_path=stored_file_path,
             config_file=config_file,
             note=note,
         )
         self._save_run(record)
         self._add_to_index(record)
         return record
+
+    def save_uploaded_file(self, run_id: str, filename: str, content: bytes) -> str:
+        safe_name = Path(filename).name
+        target = self._upload_dir / f"{run_id}_{safe_name}"
+        with open(target, "wb") as f:
+            f.write(content)
+        return str(target.resolve())
 
     def _run_path(self, run_id: str) -> Path:
         return self._records_dir / f"{run_id}.json"

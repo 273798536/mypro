@@ -17,9 +17,15 @@ from .models import (
 
 
 class DataParser:
-    def __init__(self, source_file: str, sheet_name: Optional[str] = None):
+    def __init__(
+        self,
+        source_file: str,
+        sheet_name: Optional[str] = None,
+        original_source: Optional[str] = None,
+    ):
         self.source_file = source_file
         self.sheet_name = sheet_name
+        self.original_source = original_source or source_file
         self._raw_lines: list[str] = []
         self._headers: list[str] = []
         self._total_rows = 0
@@ -157,7 +163,7 @@ class DataParser:
 
             raw_record = RawRecord(
                 row_number=row_number,
-                source_file=self.source_file,
+                source_file=self.original_source,
                 raw_line=raw_line,
                 raw_values=raw_values,
             )

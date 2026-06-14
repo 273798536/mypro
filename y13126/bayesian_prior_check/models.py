@@ -96,7 +96,14 @@ class RunRecord(BaseModel):
     status: RunStatus = Field(..., description="当前运行状态")
     started_at: datetime = Field(default_factory=datetime.now)
     finished_at: Optional[datetime] = Field(None)
-    source_file: str = Field(..., description="校验的数据文件路径")
+    source_file: str = Field(
+        ...,
+        description="原始来源展示名（用户上传文件名/CLI输入路径），用于对用户展示、报告、接口返回",
+    )
+    stored_file_path: Optional[str] = Field(
+        None,
+        description="服务端实际可读取的文件路径（内部使用，API可选择是否暴露）",
+    )
     config_file: Optional[str] = Field(None, description="使用的边界配置文件路径")
     note: Optional[str] = Field(None, description="用户备注，评审会说明用")
     summary: RunSummary = Field(default_factory=RunSummary)

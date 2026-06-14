@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import os
-import tempfile
 from typing import Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -35,28 +34,35 @@ async def api_check(
     sheet: Optional[str] = Form(None, description="Excel时指定sheet名"),
 ):
     storage = _get_storage()
+    original_filename = file.filename or "uploaded.csv"
 
-    suffix = os.path.splitext(file.filename or "data.csv")[1] or ".csv"
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-        content = await file.read()
-        tmp.write(content)
-        tmp_path = tmp.name
+    run = storage.create_run(
+        source_file=original_filename,
+        config_file=config_file,
+        note=note,
+    )
+    run.status = RunStatus.RUNNING
+
+    content = await file.read()
+    stored_path = storage.save_uploaded_file(run.run_id, original_filename, content)
+    run.stored_file_path = stored_path
+    storage.update_run(run)
 
     try:
         boundaries = load_boundaries(config_file)
     except Exception as e:
-        os.unlink(tmp_path)
+        run = storage.finalize_run(run, run.summary, error_message=f"加载边界配置失败: {e}")
         raise HTTPException(status_code=400, detail=f"加载边界配置失败: {e}")
-
-    run = storage.create_run(tmp_path, config_file, note)
-    run.status = RunStatus.RUNNING
-    storage.update_run(run)
 
     validator = BayesianPriorValidator(boundaries)
     error_msg = None
 
     try:
-        parser = DataParser(tmp_path, sheet_name=sheet)
+        parser = DataParser(
+            stored_path,
+            sheet_name=sheet,
+            original_source=original_filename,
+        )
         for parsed in parser.iter_records():
             validated = validator.validate_record(parsed)
             storage.append_record_details(run.run_id, validated)
@@ -71,7 +77,7 @@ async def api_check(
             "status": run.status.value,
             "started_at": run.started_at.isoformat(),
             "finished_at": run.finished_at.isoformat() if run.finished_at else None,
-            "source_file": file.filename,
+            "source_file": run.source_file,
             "note": run.note,
             "summary": run.summary.model_dump(mode="json"),
             "error_message": run.error_message,
@@ -104,8 +110,10 @@ async def api_get_run(run_id: str):
     if not run:
         raise HTTPException(status_code=404, detail=f"未找到运行ID: {run_id}")
     details = storage.get_run_details(run_id)
+    run_dict = run.model_dump(mode="json")
+    run_dict.pop("stored_file_path", None)
     return {
-        "run": run.model_dump(mode="json"),
+        "run": run_dict,
         "details": details,
     }
 
@@ -116,7 +124,9 @@ async def api_get_run_summary(run_id: str):
     run = storage.get_run(run_id)
     if not run:
         raise HTTPException(status_code=404, detail=f"未找到运行ID: {run_id}")
-    return run.model_dump(mode="json")
+    run_dict = run.model_dump(mode="json")
+    run_dict.pop("stored_file_path", None)
+    return run_dict
 
 
 @app.patch("/api/v1/runs/{run_id}/note", summary="更新运行备注")
