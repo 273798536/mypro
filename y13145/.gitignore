@@ -1,0 +1,18 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+
+# 运行时数据文件
+mc_review_data.json
+handoff_demo_data.json
+!sample_data.json
+
+# 导出产物目录
+handoff_output/
+export/
+exports/

@@ -1,0 +1,396 @@
+{
+  "wrong_answers": {
+    "1658554996d6": {
+      "id": "1658554996d6",
+      "question_id": "MC-001",
+      "student_answer": 120.5,
+      "correct_answer": 100.0,
+      "error_type": "蒙特卡洛采样不足",
+      "unit": "kPa",
+      "raw_source": {
+        "student_id": "S2023101",
+        "original_statement": "跑了一万次采样，均值120.5kPa",
+        "submitted_at": "2026-06-14T13:54:20.554352+00:00",
+        "raw_data": {
+          "iterations": 10000,
+          "burn_in": null,
+          "submitted_via": "word文档扫描件"
+        },
+        "is_dirty": true,
+        "dirt_description": "学生只写了一万次，未说明是否含burn-in"
+      },
+      "created_at": "2026-06-14T13:54:20.554991+00:00",
+      "tags": [
+        "采样",
+        "压力"
+      ]
+    },
+    "07c10bc89003": {
+      "id": "07c10bc89003",
+      "question_id": "MC-002",
+      "student_answer": 0.95,
+      "correct_answer": 0.9,
+      "error_type": "置信区间误解",
+      "unit": "无量纲",
+      "raw_source": {
+        "student_id": "S2023102",
+        "original_statement": "95%置信区间就是0.95",
+        "submitted_at": "2026-06-14T13:54:20.555040+00:00",
+        "raw_data": {},
+        "is_dirty": false,
+        "dirt_description": ""
+      },
+      "created_at": "2026-06-14T13:54:20.555060+00:00",
+      "tags": [
+        "置信区间",
+        "概念错误"
+      ]
+    },
+    "7b3ae3d8dc41": {
+      "id": "7b3ae3d8dc41",
+      "question_id": "MC-003",
+      "student_answer": "大概2.5米每秒",
+      "correct_answer": 3.2,
+      "error_type": "有效数字缺失",
+      "unit": "m/s",
+      "raw_source": {
+        "student_id": "S2023103",
+        "original_statement": "我估算速度大概2.5m/s吧",
+        "submitted_at": "2026-06-14T13:54:20.555087+00:00",
+        "raw_data": {
+          "raw_text": "大概2.5米每秒"
+        },
+        "is_dirty": true,
+        "dirt_description": "学生答案含文字，无法直接数值比较"
+      },
+      "created_at": "2026-06-14T13:54:20.555101+00:00",
+      "tags": [
+        "脏数据",
+        "速度"
+      ]
+    },
+    "b2fa07698dba": {
+      "id": "b2fa07698dba",
+      "question_id": "MC-004",
+      "student_answer": 42,
+      "correct_answer": 7,
+      "error_type": "随机数种子误用",
+      "unit": "无量纲",
+      "raw_source": {
+        "student_id": "S2023104",
+        "original_statement": "我用了默认seed=42，结果就是42",
+        "submitted_at": "2026-06-14T13:54:20.555122+00:00",
+        "raw_data": {},
+        "is_dirty": false,
+        "dirt_description": ""
+      },
+      "created_at": "2026-06-14T13:54:20.555135+00:00",
+      "tags": [
+        "随机数",
+        "常见错误"
+      ]
+    }
+  },
+  "weight_changes": {
+    "788bf5532d52": {
+      "id": "788bf5532d52",
+      "wrong_answer_id": "1658554996d6",
+      "param_name": "采样次数权重",
+      "old_value": 0.3,
+      "new_value": 0.5,
+      "unit": "无量纲",
+      "reason": "标定调整",
+      "reason_detail": "经三组对照实验确认采样不足时权重应提高",
+      "changed_by": "小岑",
+      "changed_at": "2026-06-14T13:54:20.555172+00:00"
+    },
+    "918506d0931f": {
+      "id": "918506d0931f",
+      "wrong_answer_id": "1658554996d6",
+      "param_name": "收敛阈值",
+      "old_value": 0.001,
+      "new_value": 0.0005,
+      "unit": "无量纲",
+      "reason": "人工改判",
+      "reason_detail": "根据班级整体情况收紧",
+      "changed_by": "小岑",
+      "changed_at": "2026-06-14T13:54:20.555206+00:00"
+    },
+    "aa4e8c7d2c60": {
+      "id": "aa4e8c7d2c60",
+      "wrong_answer_id": "b2fa07698dba",
+      "param_name": "随机数种子权重",
+      "old_value": 0.1,
+      "new_value": 0.2,
+      "unit": "无量纲",
+      "reason": "标定调整",
+      "reason_detail": "种子误用是高频错误，权重翻倍",
+      "changed_by": "小岑",
+      "changed_at": "2026-06-14T13:54:20.555236+00:00"
+    }
+  },
+  "breaches": {
+    "b7a74f860a2d": {
+      "id": "b7a74f860a2d",
+      "wrong_answer_id": "07c10bc89003",
+      "param_name": "置信水平",
+      "extrapolated_value": 0.95,
+      "boundary_low": 0.8,
+      "boundary_high": 0.9,
+      "unit": "无量纲",
+      "original_statement": "95%置信区间就是0.95",
+      "detected_at": "2026-06-14T13:54:20.555270+00:00",
+      "resolution": "学生混淆了置信水平与置信区间宽度，已纠正并补做练习"
+    },
+    "3f031aa0df9b": {
+      "id": "3f031aa0df9b",
+      "wrong_answer_id": "7b3ae3d8dc41",
+      "param_name": "速度",
+      "extrapolated_value": 25.0,
+      "boundary_low": 0,
+      "boundary_high": 10.0,
+      "unit": "m/s",
+      "original_statement": "我估算速度大概2.5m/s吧",
+      "detected_at": "2026-06-14T13:54:20.555321+00:00",
+      "resolution": ""
+    }
+  },
+  "calculation_steps": [
+    {
+      "step_index": 0,
+      "description": "蒙特卡洛标准误计算（MC-001）",
+      "formula": "σ_MC = s / √N",
+      "input_values": {
+        "s": 15.2,
+        "N": 10000
+      },
+      "output_value": 0.152,
+      "unit_before": "kPa",
+      "unit_after": "kPa",
+      "conversion_factor": null,
+      "boundary_low": 0,
+      "boundary_high": 1.0,
+      "note": "按题目要求取10000次采样"
+    },
+    {
+      "step_index": 1,
+      "description": "单位换算：kPa → Pa",
+      "formula": "x_Pa = x_kPa × 1000",
+      "input_values": {
+        "x_kPa": 0.152
+      },
+      "output_value": 152.0,
+      "unit_before": "kPa",
+      "unit_after": "Pa",
+      "conversion_factor": 1000,
+      "boundary_low": null,
+      "boundary_high": null,
+      "note": ""
+    },
+    {
+      "step_index": 2,
+      "description": "误差传播计算",
+      "formula": "σ_total = √(σ_a² + σ_b²)",
+      "input_values": {
+        "σ_a": 0.1,
+        "σ_b": 0.05
+      },
+      "output_value": 0.1118,
+      "unit_before": "kPa",
+      "unit_after": "kPa",
+      "conversion_factor": null,
+      "boundary_low": 0,
+      "boundary_high": 0.5,
+      "note": "两个独立不确定度的合成"
+    },
+    {
+      "step_index": 3,
+      "description": "参数对照：旧权重 vs 新权重",
+      "formula": "Δw = w_new - w_old",
+      "input_values": {
+        "w_old": 0.3,
+        "w_new": 0.5
+      },
+      "output_value": 0.2,
+      "unit_before": "无量纲",
+      "unit_after": "无量纲",
+      "conversion_factor": null,
+      "boundary_low": null,
+      "boundary_high": null,
+      "note": "项目经理对照两组参数用"
+    }
+  ],
+  "timeline": [
+    {
+      "id": "1fc0ea62f1aa",
+      "timestamp": "2026-06-14T13:54:20.555031+00:00",
+      "event_type": "录入错题",
+      "description": "录入错题 MC-001，学生答案=120.5，正确答案=100.0",
+      "status": "已处理",
+      "related_wrong_answer_id": "1658554996d6",
+      "related_weight_change_id": "",
+      "related_breach_id": "",
+      "operator": "",
+      "detail": {}
+    },
+    {
+      "id": "c9bef25ee0f4",
+      "timestamp": "2026-06-14T13:54:20.555081+00:00",
+      "event_type": "录入错题",
+      "description": "录入错题 MC-002，学生答案=0.95，正确答案=0.9",
+      "status": "已处理",
+      "related_wrong_answer_id": "07c10bc89003",
+      "related_weight_change_id": "",
+      "related_breach_id": "",
+      "operator": "",
+      "detail": {}
+    },
+    {
+      "id": "ad3dfc4bc42e",
+      "timestamp": "2026-06-14T13:54:20.555117+00:00",
+      "event_type": "录入错题",
+      "description": "录入错题 MC-003，学生答案=大概2.5米每秒，正确答案=3.2",
+      "status": "已处理",
+      "related_wrong_answer_id": "7b3ae3d8dc41",
+      "related_weight_change_id": "",
+      "related_breach_id": "",
+      "operator": "",
+      "detail": {}
+    },
+    {
+      "id": "c822d9bba76d",
+      "timestamp": "2026-06-14T13:54:20.555149+00:00",
+      "event_type": "录入错题",
+      "description": "录入错题 MC-004，学生答案=42，正确答案=7",
+      "status": "已处理",
+      "related_wrong_answer_id": "b2fa07698dba",
+      "related_weight_change_id": "",
+      "related_breach_id": "",
+      "operator": "",
+      "detail": {}
+    },
+    {
+      "id": "54f57c67bf0e",
+      "timestamp": "2026-06-14T13:54:20.555190+00:00",
+      "event_type": "权重修改",
+      "description": "参数 采样次数权重 从 0.3 改为 0.5（无量纲），原因：标定调整",
+      "status": "已处理",
+      "related_wrong_answer_id": "1658554996d6",
+      "related_weight_change_id": "788bf5532d52",
+      "related_breach_id": "",
+      "operator": "小岑",
+      "detail": {}
+    },
+    {
+      "id": "ea830a60bdcf",
+      "timestamp": "2026-06-14T13:54:20.555222+00:00",
+      "event_type": "权重修改",
+      "description": "参数 收敛阈值 从 0.001 改为 0.0005（无量纲），原因：人工改判",
+      "status": "人工改判",
+      "related_wrong_answer_id": "1658554996d6",
+      "related_weight_change_id": "918506d0931f",
+      "related_breach_id": "",
+      "operator": "小岑",
+      "detail": {}
+    },
+    {
+      "id": "b5034962bf24",
+      "timestamp": "2026-06-14T13:54:20.555251+00:00",
+      "event_type": "权重修改",
+      "description": "参数 随机数种子权重 从 0.1 改为 0.2（无量纲），原因：标定调整",
+      "status": "已处理",
+      "related_wrong_answer_id": "b2fa07698dba",
+      "related_weight_change_id": "aa4e8c7d2c60",
+      "related_breach_id": "",
+      "operator": "小岑",
+      "detail": {}
+    },
+    {
+      "id": "a3e524f154f0",
+      "timestamp": "2026-06-14T13:54:20.555286+00:00",
+      "event_type": "外推越界",
+      "description": "参数 置信水平 外推值 0.95无量纲 越界 [0.8, 0.9]，原始说法：95%置信区间就是0.95",
+      "status": "已处理",
+      "related_wrong_answer_id": "07c10bc89003",
+      "related_weight_change_id": "",
+      "related_breach_id": "b7a74f860a2d",
+      "operator": "",
+      "detail": {
+        "resolution": "学生混淆了置信水平与置信区间宽度，已纠正并补做练习",
+        "resolved_by": "小岑"
+      }
+    },
+    {
+      "id": "5ee8bdcd6208",
+      "timestamp": "2026-06-14T13:54:20.555306+00:00",
+      "event_type": "越界处理",
+      "description": "越界 置信水平 已处理：学生混淆了置信水平与置信区间宽度，已纠正并补做练习",
+      "status": "已处理",
+      "related_wrong_answer_id": "07c10bc89003",
+      "related_weight_change_id": "",
+      "related_breach_id": "b7a74f860a2d",
+      "operator": "小岑",
+      "detail": {}
+    },
+    {
+      "id": "d2efbdd989d6",
+      "timestamp": "2026-06-14T13:54:20.555336+00:00",
+      "event_type": "外推越界",
+      "description": "参数 速度 外推值 25.0m/s 越界 [0, 10.0]，原始说法：我估算速度大概2.5m/s吧",
+      "status": "待补材料",
+      "related_wrong_answer_id": "7b3ae3d8dc41",
+      "related_weight_change_id": "",
+      "related_breach_id": "3f031aa0df9b",
+      "operator": "",
+      "detail": {}
+    },
+    {
+      "id": "f8bb96861c62",
+      "timestamp": "2026-06-14T13:54:20.555358+00:00",
+      "event_type": "计算步骤",
+      "description": "步骤 0: 蒙特卡洛标准误计算（MC-001）",
+      "status": "已处理",
+      "related_wrong_answer_id": "",
+      "related_weight_change_id": "",
+      "related_breach_id": "",
+      "operator": "",
+      "detail": {}
+    },
+    {
+      "id": "c559756d5347",
+      "timestamp": "2026-06-14T13:54:20.555379+00:00",
+      "event_type": "计算步骤",
+      "description": "步骤 1: 单位换算：kPa → Pa",
+      "status": "已处理",
+      "related_wrong_answer_id": "",
+      "related_weight_change_id": "",
+      "related_breach_id": "",
+      "operator": "",
+      "detail": {}
+    },
+    {
+      "id": "ab1f01e8e401",
+      "timestamp": "2026-06-14T13:54:20.555396+00:00",
+      "event_type": "计算步骤",
+      "description": "步骤 2: 误差传播计算",
+      "status": "已处理",
+      "related_wrong_answer_id": "",
+      "related_weight_change_id": "",
+      "related_breach_id": "",
+      "operator": "",
+      "detail": {}
+    },
+    {
+      "id": "06170feaba77",
+      "timestamp": "2026-06-14T13:54:20.555413+00:00",
+      "event_type": "计算步骤",
+      "description": "步骤 3: 参数对照：旧权重 vs 新权重",
+      "status": "已处理",
+      "related_wrong_answer_id": "",
+      "related_weight_change_id": "",
+      "related_breach_id": "",
+      "operator": "",
+      "detail": {}
+    }
+  ]
+}
