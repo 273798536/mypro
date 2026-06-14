@@ -10,8 +10,23 @@ from .source_tracker import SourceTracker
 try:
     import matplotlib
     matplotlib.use("Agg")
+    import warnings
+    warnings.filterwarnings("ignore", category=UserWarning, message="Glyph .* missing from current font")
     import matplotlib.pyplot as plt
     import matplotlib.patches as mpatches
+    from matplotlib import font_manager
+
+    _cjk_candidates = [
+        "PingFang SC", "Heiti SC", "STHeiti", "Hiragino Sans GB",
+        "Microsoft YaHei", "SimHei", "WenQuanYi Micro Hei",
+        "Noto Sans CJK SC", "Source Han Sans SC", "Arial Unicode MS",
+    ]
+    _available = {f.name for f in font_manager.fontManager.ttflist}
+    for _name in _cjk_candidates:
+        if _name in _available:
+            plt.rcParams["font.sans-serif"] = [_name] + plt.rcParams.get("font.sans-serif", [])
+            break
+    plt.rcParams["axes.unicode_minus"] = False
     MATPLOTLIB_AVAILABLE = True
 except ImportError:
     MATPLOTLIB_AVAILABLE = False
@@ -273,13 +288,17 @@ def _generate_html_summary(
     def rel_path(p):
         return os.path.basename(p) if p else ""
 
+    from .source_tracker import ProcessingStatus
     check_summary = {
         "总数": len(results),
         "有效": sum(1 for r in results if r.is_valid),
         "越界": sum(1 for r in results if not r.is_valid),
         "外推": sum(1 for r in results if r.is_extrapolated),
         "外推越界": sum(1 for r in results if r.is_extrapolated and not r.is_valid),
-        "单位不一致": sum(1 for rec in tracker.records.values() if not rec.unit_consistent),
+        "单位不一致": sum(
+            1 for rec in tracker.records.values()
+            if not rec.unit_consistent and rec.status != ProcessingStatus.SUPERSEDED
+        ),
     }
 
     html_parts = [

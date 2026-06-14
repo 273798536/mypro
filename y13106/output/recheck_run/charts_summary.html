@@ -19,12 +19,12 @@ th{background:#f8f9fa;}
 <div class='consistency'>✅ <strong>口径一致性声明：</strong>本页所有图表与 <code>check_details.csv</code>、<code>violations.csv</code>、<code>timeline.*</code> 使用同一组 <code>CheckResult</code> 数据源渲染，确保图表和明细同一口径。</div>
 <div class='summary'>
 <h3>📈 校验概览</h3>
-<span>总数: <span class='ok'>10</span></span>
-<span>有效: <span class='ok'>6</span></span>
+<span>总数: <span class='ok'>9</span></span>
+<span>有效: <span class='ok'>5</span></span>
 <span>越界: <span class='bad'>4</span></span>
-<span>外推: <span class='ok'>4</span></span>
+<span>外推: <span class='ok'>3</span></span>
 <span>外推越界: <span class='bad'>2</span></span>
-<span>单位不一致: <span class='bad'>1</span></span>
+<span>单位不一致: <span class='ok'>0</span></span>
 </div>
 <div class='chart-box'><h2>图1：各矩阵条件数与边界对比（核心校验图）</h2>
 <img src='chart_condition_numbers.png' alt='图1：各矩阵条件数与边界对比（核心校验图）'>
@@ -43,7 +43,6 @@ th{background:#f8f9fa;}
 <tr><td>Cov_Mat_A</td><td>sample_draft.csv L2</td><td>15.3</td><td>[1.0, 100.0]</td><td>否</td><td class='ok'>✅ 通过</td><td>已处理</td></tr>
 <tr><td>Cov_Mat_B</td><td>sample_draft.csv L3</td><td>105.7</td><td>[1.0, 100.0]</td><td>是</td><td class='bad'>❌ 未通过</td><td>待补材料</td></tr>
 <tr><td>Cov_Mat_C</td><td>sample_draft.csv L4</td><td>0.5</td><td>[1.0, 100.0]</td><td>否</td><td class='bad'>❌ 未通过</td><td>待补材料</td></tr>
-<tr><td>Cov_Mat_D</td><td>sample_draft.csv L5</td><td>88.2</td><td>[1.0, 100.0]</td><td>是</td><td class='ok'>✅ 通过</td><td>待补材料</td></tr>
 <tr><td>Cov_Mat_E</td><td>sample_draft.csv L6</td><td>42.0</td><td>[1.0, 100.0]</td><td>否</td><td class='ok'>✅ 通过</td><td>已处理</td></tr>
 <tr><td>Cov_Mat_F</td><td>sample_draft.csv L7</td><td>999.9</td><td>[1.0, 100.0]</td><td>是</td><td class='bad'>❌ 未通过</td><td>人工改判</td></tr>
 <tr><td>Cov_Mat_G</td><td>sample_draft.csv L8</td><td>None</td><td>[1.0, 100.0]</td><td>否</td><td class='bad'>❌ 未通过</td><td>待补材料</td></tr>
@@ -55,10 +54,9 @@ th{background:#f8f9fa;}
 <table><tr><th>违规ID</th><th>矩阵</th><th>类型</th><th>严重程度</th><th>来源行</th><th>描述</th></tr>
 <tr><td>V0001_Cov_Mat_B</td><td>Cov_Mat_B</td><td>外推越界</td><td>critical</td><td>sample_draft.csv L3</td><td>外推时越界：高于上界 100.0，差值 5.7（条件数=105.7，区间[1.0, 100.0]）</td></tr>
 <tr><td>V0002_Cov_Mat_C</td><td>Cov_Mat_C</td><td>内插越界</td><td>high</td><td>sample_draft.csv L4</td><td>内插时越界：低于下界 1.0，差值 0.5（条件数=0.5，区间[1.0, 100.0]）</td></tr>
-<tr><td>V0003_Cov_Mat_D</td><td>Cov_Mat_D</td><td>外推临界</td><td>low</td><td>sample_draft.csv L5</td><td>外推临界：在边界内（条件数=88.2，接近边界）</td></tr>
-<tr><td>V0004_Cov_Mat_F</td><td>Cov_Mat_F</td><td>外推越界</td><td>critical</td><td>sample_draft.csv L7</td><td>外推时越界：高于上界 100.0，差值 899.9（条件数=999.9，区间[1.0, 100.0]）</td></tr>
-<tr><td>V0005_Cov_Mat_G</td><td>Cov_Mat_G</td><td>数值无效</td><td>high</td><td>sample_draft.csv L8</td><td>条件数值无效（NaN/Inf/缺失）</td></tr>
-<tr><td>V0006_Cov_Mat_D</td><td>Cov_Mat_D</td><td>外推临界</td><td>low</td><td>late_attachment.csv L2</td><td>外推临界：在边界内（条件数=88.2，接近边界）</td></tr>
+<tr><td>V0003_Cov_Mat_F</td><td>Cov_Mat_F</td><td>外推越界</td><td>critical</td><td>sample_draft.csv L7</td><td>外推时越界：高于上界 100.0，差值 899.9（条件数=999.9，区间[1.0, 100.0]）</td></tr>
+<tr><td>V0004_Cov_Mat_G</td><td>Cov_Mat_G</td><td>数值无效</td><td>high</td><td>sample_draft.csv L8</td><td>条件数值无效（NaN/Inf/缺失）</td></tr>
+<tr><td>V0005_Cov_Mat_D</td><td>Cov_Mat_D</td><td>外推临界</td><td>low</td><td>late_attachment.csv L2</td><td>外推临界：在边界内（条件数=88.2，接近边界）</td></tr>
 </table>
 <h2>🔍 图表 ↔ 明细 核对清单</h2>
 <ul>

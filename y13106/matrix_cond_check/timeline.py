@@ -15,6 +15,7 @@ class EventType(str, Enum):
     VIOLATION = "校验违规"
     UNIT_WARNING = "单位提示"
     RECHECK = "复算结果"
+    SUPERSEDED = "已被晚到附件取代"
 
 
 @dataclass
@@ -63,7 +64,7 @@ class TimelineGenerator:
             ))
 
         for record in source_tracker.list_all():
-            if not record.unit_consistent:
+            if not record.unit_consistent and record.status != ProcessingStatus.SUPERSEDED:
                 self._add_event(TimelineEvent(
                     timestamp=record.status_changed_at or datetime.now(),
                     event_type=EventType.UNIT_WARNING,
@@ -132,6 +133,23 @@ class TimelineGenerator:
                     operator=record.operator,
                     metadata={"run_label": run_label},
                 ))
+            elif record.status == ProcessingStatus.SUPERSEDED:
+                new_info = ""
+                if record.superseded_by and record.superseded_by in source_tracker.records:
+                    new_rec = source_tracker.records[record.superseded_by]
+                    new_info = f"新数据来自 {new_rec.source_file} L{new_rec.source_line}"
+                self._add_event(TimelineEvent(
+                    timestamp=record.status_changed_at or datetime.now(),
+                    event_type=EventType.SUPERSEDED,
+                    title=f"[已被晚到附件取代] {record.matrix_name}",
+                    description=f"来源 {record.source_file} 第 {record.source_line} 行：草稿数据已被晚到附件覆盖，不再参与后续校验。{new_info}。{self._format_notes(record)}",
+                    matrix_name=record.matrix_name,
+                    source_file=record.source_file,
+                    source_line=record.source_line,
+                    status=record.status.value,
+                    operator=record.operator,
+                    metadata={"run_label": run_label, "superseded_by": record.superseded_by},
+                ))
 
         self.events.sort(key=lambda e: e.timestamp)
         return self.events
@@ -189,6 +207,7 @@ class TimelineGenerator:
             EventType.PROCESS_OK,
             EventType.NEEDS_MATERIAL,
             EventType.MANUAL_OVERRIDE,
+            EventType.SUPERSEDED,
             EventType.VIOLATION,
             EventType.UNIT_WARNING,
             EventType.INGESTION,
@@ -211,10 +230,11 @@ class TimelineGenerator:
             lines.append("")
 
         lines.append("=" * 80)
-        lines.append("总计: 已处理 {} | 待补材料 {} | 人工改判 {} | 校验违规 {} | 单位提示 {} | 复算 {} | 数据摄入 {}".format(
+        lines.append("总计: 已处理 {} | 待补材料 {} | 人工改判 {} | 已被晚到附件取代 {} | 校验违规 {} | 单位提示 {} | 复算 {} | 数据摄入 {}".format(
             len(buckets.get(EventType.PROCESS_OK, [])),
             len(buckets.get(EventType.NEEDS_MATERIAL, [])),
             len(buckets.get(EventType.MANUAL_OVERRIDE, [])),
+            len(buckets.get(EventType.SUPERSEDED, [])),
             len(buckets.get(EventType.VIOLATION, [])),
             len(buckets.get(EventType.UNIT_WARNING, [])),
             len(buckets.get(EventType.RECHECK, [])),

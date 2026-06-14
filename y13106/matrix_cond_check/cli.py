@@ -141,14 +141,56 @@ def apply_structured_overrides(
     return applied
 
 
+def resolve_duplicate_matrices(
+    all_results: List[CheckResult],
+    tracker: SourceTracker,
+    input_files: List[str],
+) -> List[CheckResult]:
+    file_priority = {os.path.basename(fp): i for i, fp in enumerate(input_files)}
+    matrix_to_results: Dict[str, List[CheckResult]] = {}
+    for r in all_results:
+        matrix_to_results.setdefault(r.matrix_name, []).append(r)
+
+    superseded_count = 0
+    for matrix_name, rs in matrix_to_results.items():
+        if len(rs) < 2:
+            continue
+        rs_with_prio = [
+            (r, file_priority.get(r.source_file, 0))
+            for r in rs
+        ]
+        rs_with_prio.sort(key=lambda x: x[1], reverse=True)
+        winner = rs_with_prio[0][0]
+        for cand, _ in rs_with_prio[1:]:
+            old_rid = tracker._make_id(cand.source_file, cand.source_line, cand.matrix_name)
+            new_rid = tracker._make_id(winner.source_file, winner.source_line, winner.matrix_name)
+            if tracker.mark_superseded(old_rid, new_rid):
+                superseded_count += 1
+    if superseded_count > 0:
+        print(f"\n🔄 同名矩阵合并：已标记 {superseded_count} 条草稿记录为『已被晚到附件取代』，以最新文件数据为准。")
+    return all_results
+
+
+def get_active_results(all_results: List[CheckResult], tracker: SourceTracker) -> List[CheckResult]:
+    active_ids = {r.record_id for r in tracker.get_active_records()}
+    return [
+        r for r in all_results
+        if tracker._make_id(r.source_file, r.source_line, r.matrix_name) in active_ids
+    ]
+
+
 def print_exit_summary(
     validator: BoundaryValidator,
     checker: MatrixConditionChecker,
     tracker: SourceTracker,
     applied_override_count: int = 0,
+    active_results: Optional[List[CheckResult]] = None,
 ) -> int:
     extrap_violations = validator.extrapolation_violations()
-    invalid_results = checker.get_invalid_results()
+    if active_results is not None:
+        invalid_results = [r for r in active_results if not r.is_valid]
+    else:
+        invalid_results = checker.get_invalid_results()
 
     print("\n" + "=" * 70)
     print("矩阵条件数边界校验 · 退出提示")
@@ -156,6 +198,11 @@ def print_exit_summary(
 
     if applied_override_count > 0:
         print(f"✅ 本次已应用 {applied_override_count} 条人工改判，已反映在时间线『人工改判』块。")
+
+    status_summary = tracker.status_summary()
+    superseded_n = status_summary.get(ProcessingStatus.SUPERSEDED.value, 0)
+    if superseded_n > 0:
+        print(f"🔄 本次合并 {superseded_n} 条重复记录：草稿同名矩阵已被晚到附件覆盖（详见时间线『已被晚到附件取代』块）。")
 
     if not extrap_violations and not invalid_results:
         print("✅ 全部通过：无外推越界，无数值异常。")
@@ -210,6 +257,7 @@ def run_pipeline(
     override_file: Optional[str] = None,
     generate_charts_flag: bool = True,
     run_label: Optional[str] = None,
+    merge_duplicates: bool = True,
 ) -> int:
     os.makedirs(output_dir, exist_ok=True)
 
@@ -239,7 +287,12 @@ def run_pipeline(
         print("❌ 没有任何有效数据可以处理，请检查输入文件。")
         return 3
 
-    violations = validator.analyze(all_results)
+    if merge_duplicates:
+        resolve_duplicate_matrices(all_results, tracker, input_files)
+
+    active_results = get_active_results(all_results, tracker)
+
+    violations = validator.analyze(active_results)
 
     applied_override_ids = []
     if override_file:
@@ -255,10 +308,9 @@ def run_pipeline(
     events = timeline.build_from_pipeline(tracker, validator, all_results, actual_label)
 
     if recheck and previous_results:
-        for r in all_results:
-            key = f"{r.source_file}::L{r.source_line}::{r.matrix_name}"
-            if key in previous_results:
-                prev_valid = previous_results[key]
+        for r in active_results:
+            if r.matrix_name in previous_results:
+                prev_valid = previous_results[r.matrix_name]
                 timeline.add_recheck_event(
                     matrix_name=r.matrix_name,
                     source_file=r.source_file,
@@ -280,16 +332,27 @@ def run_pipeline(
         writer.writerow([
             "来源文件", "来源行号", "矩阵名称", "条件数", "下界", "上界", "单位",
             "是否外推", "是否通过", "边界说明", "处理状态",
+            "是否被晚到附件取代", "取代关系",
         ])
         for r in all_results:
             rec = tracker.get_record(r.source_file, r.source_line, r.matrix_name)
             status_val = rec.status.value if rec else ""
+            is_superseded = "是" if rec and rec.status == ProcessingStatus.SUPERSEDED else "否"
+            relation = ""
+            if rec:
+                if rec.superseded_by and rec.superseded_by in tracker.records:
+                    nr = tracker.records[rec.superseded_by]
+                    relation = f"被 {nr.source_file} L{nr.source_line} 取代"
+                elif rec.supersedes and rec.supersedes in tracker.records:
+                    orr = tracker.records[rec.supersedes]
+                    relation = f"取代 {orr.source_file} L{orr.source_line}"
             writer.writerow([
                 r.source_file, r.source_line, r.matrix_name, r.condition_number,
                 r.lower_bound, r.upper_bound, r.unit,
                 "是" if r.is_extrapolated else "否",
                 "通过" if r.is_valid else "未通过",
                 r.boundary_msg, status_val,
+                is_superseded, relation,
             ])
 
     violation_path = os.path.join(output_dir, "violations.csv")
@@ -313,7 +376,7 @@ def run_pipeline(
     chart_paths: Dict[str, str] = {}
     if generate_charts_flag:
         try:
-            chart_paths = generate_charts(all_results, validator, tracker, output_dir)
+            chart_paths = generate_charts(active_results, validator, tracker, output_dir)
         except Exception as e:
             print(f"⚠️  图表生成失败：{e}（不影响文本/CSV产物）")
 
@@ -337,7 +400,11 @@ def run_pipeline(
                 title = title_map.get(key, key)
                 print(f"     - {title}: {path}")
 
-    return print_exit_summary(validator, checker, tracker, applied_override_count=len(applied_override_ids))
+    return print_exit_summary(
+        validator, checker, tracker,
+        applied_override_count=len(applied_override_ids),
+        active_results=active_results,
+    )
 
 
 def main():
@@ -375,6 +442,11 @@ def main():
         "--no-charts",
         action="store_true",
         help="跳过图表生成，仅输出文本/CSV",
+    )
+    parser.add_argument(
+        "--no-merge",
+        action="store_true",
+        help="关闭同名矩阵合并：即使多文件出现同一矩阵名称，也各自保留不互相覆盖",
     )
     parser.add_argument(
         "--sample",
@@ -427,8 +499,9 @@ def main():
             import csv
             with open(detail_csv, "r", encoding="utf-8-sig") as f:
                 for row in csv.DictReader(f):
-                    key = f"{row['来源文件']}::L{row['来源行号']}::{row['矩阵名称']}"
-                    previous_results[key] = (row["是否通过"] == "通过")
+                    if row.get("是否被晚到附件取代") == "是":
+                        continue
+                    previous_results[row["矩阵名称"]] = (row["是否通过"] == "通过")
 
         output_recheck = os.path.join(base_dir, "output", "recheck_run")
         code3 = run_pipeline(
@@ -452,6 +525,7 @@ def main():
         recheck=args.recheck,
         override_file=args.override_file,
         generate_charts_flag=not args.no_charts,
+        merge_duplicates=not args.no_merge,
     )
     sys.exit(exit_code)
 

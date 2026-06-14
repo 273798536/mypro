@@ -11,6 +11,7 @@ class ProcessingStatus(str, Enum):
     MANUAL_OVERRIDDEN = "人工改判"
     SKIPPED = "已跳过"
     ERROR = "处理异常"
+    SUPERSEDED = "已被晚到附件取代"
 
 
 @dataclass
@@ -28,6 +29,9 @@ class SourceRecord:
     original_unit: str = ""
     detected_unit: str = ""
     unit_consistent: bool = True
+    superseded_by: Optional[str] = None
+    supersedes: Optional[str] = None
+    file_priority: int = 0
 
     def change_status(self, new_status: ProcessingStatus, note: str = "", operator: str = "系统"):
         old_status = self.status
@@ -91,6 +95,32 @@ class SourceTracker:
 
     def get_record(self, source_file: str, source_line: int, matrix_name: str) -> Optional[SourceRecord]:
         return self.records.get(self._make_id(source_file, source_line, matrix_name))
+
+    def find_by_matrix_name(self, matrix_name: str) -> List[SourceRecord]:
+        return [r for r in self.records.values() if r.matrix_name == matrix_name]
+
+    def mark_superseded(
+        self,
+        old_record_id: str,
+        new_record_id: str,
+        operator: str = "系统",
+    ) -> bool:
+        if old_record_id not in self.records or new_record_id not in self.records:
+            return False
+        old_rec = self.records[old_record_id]
+        new_rec = self.records[new_record_id]
+        old_rec.change_status(
+            ProcessingStatus.SUPERSEDED,
+            f"已被晚到附件取代：新来源 {new_rec.source_file} L{new_rec.source_line}，以新数据为准",
+            operator,
+        )
+        old_rec.superseded_by = new_record_id
+        new_rec.supersedes = old_record_id
+        new_rec.add_note(f"取代草稿数据：旧来源 {old_rec.source_file} L{old_rec.source_line}", operator)
+        return True
+
+    def get_active_records(self) -> List[SourceRecord]:
+        return [r for r in self.records.values() if r.status != ProcessingStatus.SUPERSEDED]
 
     def get_by_status(self, status: ProcessingStatus) -> List[SourceRecord]:
         return [r for r in self.records.values() if r.status == status]
