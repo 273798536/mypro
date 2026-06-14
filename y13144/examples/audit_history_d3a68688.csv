@@ -1,0 +1,10 @@
+﻿操作时间,操作人,操作类型,修改字段,原值,新值,修改原因,影响记录,操作ID
+2026-06-14 21:51:40,小岑,调整容差,tolerance,0.01,0.02,早会讨论后放宽容差，现场数据精度有限,,d65546af2cd2
+2026-06-14 21:51:40,小岑,修改计算规则,rule_F001,,"{'formula_id': 'F001', 'description': '合价 = 工程量 × 单价 × 1.01（含1%现场管理费）', 'version': 2}",早会临时决定增加1%现场管理费,,5d83fb770a70
+2026-06-14 21:51:40,小岑,修改字段映射,mapping_单位元,unit_price,unit_price_cny,系统导出数据单位已明确，需单独映射,,f1744573fa8a
+2026-06-14 21:51:40,系统,加载并映射数据,source_复核人A草稿,,"{'records': 12, 'mapped_fields': 7, 'unmapped_fields': 1}",加载文件: draft_reviewer_A.csv,,532a9783c76e
+2026-06-14 21:51:40,系统,加载并映射数据,source_复核人B草稿,,"{'records': 10, 'mapped_fields': 7, 'unmapped_fields': 1}",加载文件: draft_reviewer_B.csv,,7647fd93ee06
+2026-06-14 21:51:40,系统,加载并映射数据,source_建模助教手动录入,,"{'records': 9, 'mapped_fields': 7, 'unmapped_fields': 1}",加载文件: draft_manual_entry.csv,,1e4c16ff02df
+2026-06-14 21:51:40,系统,加载并映射数据,source_系统导出,,"{'records': 6, 'mapped_fields': 8, 'unmapped_fields': 1}",加载文件: system_export.csv,,d0cdee22c04e
+2026-06-14 21:51:40,系统,加载并映射数据,source_建模助教手动录入,,"{'records': 13, 'mapped_fields': 7, 'unmapped_fields': 1}",加载文件: boundary_cases.csv,,67d6e714079b
+2026-06-14 21:51:40,小岑,人工复核调整,verification_status,失败,警告,边界测试记录，已知异常，转为警告,dafcbce492,b41885066164

@@ -1,0 +1,140 @@
+{
+  "entries": [
+    {
+      "entry_id": "d65546af2cd2",
+      "timestamp": "2026-06-14T21:51:40.843944",
+      "operator": "小岑",
+      "action": "调整容差",
+      "field_changed": "tolerance",
+      "old_value": 0.01,
+      "new_value": 0.02,
+      "reason": "早会讨论后放宽容差，现场数据精度有限",
+      "affected_record_ids": []
+    },
+    {
+      "entry_id": "5d83fb770a70",
+      "timestamp": "2026-06-14T21:51:40.843970",
+      "operator": "小岑",
+      "action": "修改计算规则",
+      "field_changed": "rule_F001",
+      "old_value": null,
+      "new_value": {
+        "formula_id": "F001",
+        "description": "合价 = 工程量 × 单价 × 1.01（含1%现场管理费）",
+        "version": 2
+      },
+      "reason": "早会临时决定增加1%现场管理费",
+      "affected_record_ids": []
+    },
+    {
+      "entry_id": "f1744573fa8a",
+      "timestamp": "2026-06-14T21:51:40.843990",
+      "operator": "小岑",
+      "action": "修改字段映射",
+      "field_changed": "mapping_单位元",
+      "old_value": "unit_price",
+      "new_value": "unit_price_cny",
+      "reason": "系统导出数据单位已明确，需单独映射",
+      "affected_record_ids": []
+    },
+    {
+      "entry_id": "532a9783c76e",
+      "timestamp": "2026-06-14T21:51:40.852809",
+      "operator": "系统",
+      "action": "加载并映射数据",
+      "field_changed": "source_复核人A草稿",
+      "old_value": null,
+      "new_value": {
+        "records": 12,
+        "mapped_fields": 7,
+        "unmapped_fields": 1
+      },
+      "reason": "加载文件: draft_reviewer_A.csv",
+      "affected_record_ids": []
+    },
+    {
+      "entry_id": "7647fd93ee06",
+      "timestamp": "2026-06-14T21:51:40.859148",
+      "operator": "系统",
+      "action": "加载并映射数据",
+      "field_changed": "source_复核人B草稿",
+      "old_value": null,
+      "new_value": {
+        "records": 10,
+        "mapped_fields": 7,
+        "unmapped_fields": 1
+      },
+      "reason": "加载文件: draft_reviewer_B.csv",
+      "affected_record_ids": []
+    },
+    {
+      "entry_id": "1e4c16ff02df",
+      "timestamp": "2026-06-14T21:51:40.864128",
+      "operator": "系统",
+      "action": "加载并映射数据",
+      "field_changed": "source_建模助教手动录入",
+      "old_value": null,
+      "new_value": {
+        "records": 9,
+        "mapped_fields": 7,
+        "unmapped_fields": 1
+      },
+      "reason": "加载文件: draft_manual_entry.csv",
+      "affected_record_ids": []
+    },
+    {
+      "entry_id": "d0cdee22c04e",
+      "timestamp": "2026-06-14T21:51:40.869363",
+      "operator": "系统",
+      "action": "加载并映射数据",
+      "field_changed": "source_系统导出",
+      "old_value": null,
+      "new_value": {
+        "records": 6,
+        "mapped_fields": 8,
+        "unmapped_fields": 1
+      },
+      "reason": "加载文件: system_export.csv",
+      "affected_record_ids": []
+    },
+    {
+      "entry_id": "67d6e714079b",
+      "timestamp": "2026-06-14T21:51:40.873103",
+      "operator": "系统",
+      "action": "加载并映射数据",
+      "field_changed": "source_建模助教手动录入",
+      "old_value": null,
+      "new_value": {
+        "records": 13,
+        "mapped_fields": 7,
+        "unmapped_fields": 1
+      },
+      "reason": "加载文件: boundary_cases.csv",
+      "affected_record_ids": []
+    },
+    {
+      "entry_id": "b41885066164",
+      "timestamp": "2026-06-14T21:51:40.918929",
+      "operator": "小岑",
+      "action": "人工复核调整",
+      "field_changed": "verification_status",
+      "old_value": "失败",
+      "new_value": "警告",
+      "reason": "边界测试记录，已知异常，转为警告",
+      "affected_record_ids": [
+        "dafcbce492"
+      ]
+    }
+  ],
+  "tolerance_adjustments": [
+    {
+      "timestamp": "2026-06-14T21:51:40.843910",
+      "operator": "小岑",
+      "old_tolerance": 0.01,
+      "new_tolerance": 0.02,
+      "reason": "早会讨论后放宽容差，现场数据精度有限",
+      "affected_formula": "F001"
+    }
+  ],
+  "export_time": "2026-06-14T21:51:40.970320"
+}

@@ -1,0 +1,587 @@
+======================================================================
+整数规划批量验算系统 - 完整异常复核链路演示
+======================================================================
+
+[Step 1/5] 运行完整验算流水线 (pipeline.run_full_demo)
+----------------------------------------------------------------------
+============================================================
+整数规划批量验算系统 - 现场演示
+============================================================
+
+【步骤1】创建计算上下文
+上下文ID: 0bb5f0f6
+
+【步骤2】模拟小岑早会临时修改判断
+已记录小岑的3项调整：
+  - 调整容差：1% → 2%
+  - 修改公式F001：增加1%现场管理费
+  - 调整字段映射：系统导出单位元单独映射
+
+【步骤3】加载各来源数据并映射字段
+  加载 draft_reviewer_A.csv (复核人A草稿)...
+    记录数: 12
+  加载 draft_reviewer_B.csv (复核人B草稿)...
+    记录数: 10
+  加载 draft_manual_entry.csv (建模助教手动录入)...
+    记录数: 9
+  加载 system_export.csv (系统导出)...
+    记录数: 6
+  加载 boundary_cases.csv (建模助教手动录入)...
+    记录数: 12
+
+合并后总记录数: 49
+
+【步骤4】执行批量验算
+  公式: F001(合价), F002(税额), F004(单位成本)
+  正在验算...
+  验算完成，结果数: 139
+
+【步骤5】模拟人工复核调整
+  小岑人工调整了记录 e5291be877 的状态
+
+【步骤6】生成报告和图表
+  生成文件:
+    - e5291be877_trace.txt
+    - 7f62e07832_trace.txt
+    - 9966fe918c_trace.txt
+    - a3dc0b66b4_trace.txt
+    - f59b15b396_trace.txt
+    - b391d8fc47_trace.txt
+    - dc1cb0e4da_trace.txt
+    - c4433e1adc_trace.txt
+    - 837b979d22_trace.txt
+    - 8a2ca3ca4f_trace.txt
+    - c9c344e5c3_trace.txt
+    - 33843140b4_trace.txt
+    - 7d2fd95fd3_trace.txt
+    - 3f603b6d09_trace.txt
+    - 0f4ebdba65_trace.txt
+    - 5d5df539a8_trace.txt
+    - aabf52594d_trace.txt
+    - e045ecdee0_trace.txt
+    - f33c144e2f_trace.txt
+    - 6a51d07da2_trace.txt
+    - cf0cb76c10_trace.txt
+    - accd05bba5_trace.txt
+    - 868e7cc681_trace.txt
+    - 8fee5a3c8f_trace.txt
+    - 045e05c308_trace.txt
+    - 737d73ce10_trace.txt
+    - 516e556d89_trace.txt
+    - 2d6e48bcdb_trace.txt
+    - c861ac0fcf_trace.txt
+    - 0bbd0a346a_trace.txt
+    - 6328d03b68_trace.txt
+    - 068100dd20_trace.txt
+    - 2a678b5812_trace.txt
+    - 376c15c590_trace.txt
+    - 6801245dfe_trace.txt
+    - f5db32dcbb_trace.txt
+    - b0a4ef9f25_trace.txt
+    - bdbd1a51b2_trace.txt
+    - 6a1bf47300_trace.txt
+    - 553c5b4837_trace.txt
+    - 9e22d2394e_trace.txt
+    - 4b95026549_trace.txt
+    - 73432696e7_trace.txt
+    - f03cb74b8e_trace.txt
+    - 6efc0ab929_trace.txt
+    - 18fe5978d3_trace.txt
+    - 7eed4ecd77_trace.txt
+    - ef9dc2c820_trace.txt
+    - 25232c381f_trace.txt
+    - c3bfda54e9_trace.txt
+    - c4b17abc64_trace.txt
+    - 3e4e64bbc7_trace.txt
+    - 30ebc28fa0_trace.txt
+    - 8458620399_trace.txt
+    - 5d2259ebfb_trace.txt
+    - 663c6db344_trace.txt
+    - cc0d1f3f0a_trace.txt
+    - de2d6f6bba_trace.txt
+    - a67028d6b1_trace.txt
+    - 5295afa78e_trace.txt
+    - 507a9ba4a4_trace.txt
+    - d3a432c113_trace.txt
+    - e22432237a_trace.txt
+    - f7e7659387_trace.txt
+    - c57afb3b32_trace.txt
+    - 939a9b8818_trace.txt
+    - 12282e75b1_trace.txt
+    - a172c15bce_trace.txt
+    - 96a684b0f9_trace.txt
+    - df45cd3ef5_trace.txt
+    - a3ae1e9b72_trace.txt
+    - c4bf31e0af_trace.txt
+    - 953c2ef0a8_trace.txt
+    - 34345f08c2_trace.txt
+    - 2b4a592373_trace.txt
+    - 9553fe61b0_trace.txt
+    - 2d80a53a00_trace.txt
+    - 27a19abf97_trace.txt
+    - 2eb0dc8cf7_trace.txt
+    - 81691ce508_trace.txt
+    - 08c5df6428_trace.txt
+    - 0d62fb7e01_trace.txt
+    - 9bf91d0976_trace.txt
+    - 0fe631e74e_trace.txt
+    - 38926762c9_trace.txt
+    - 4d2068b2ef_trace.txt
+    - 8076c4447b_trace.txt
+    - 2094a1518c_trace.txt
+    - 3d78d33394_trace.txt
+    - 33cab092af_trace.txt
+    - 4cf993e314_trace.txt
+    - 6c11be7774_trace.txt
+    - 0333ad713c_trace.txt
+    - 0fb1486f5e_trace.txt
+    - 9c545010ca_trace.txt
+    - f404d47521_trace.txt
+    - 47ed7dde2c_trace.txt
+    - executive_summary_0bb5f0f6.txt
+    - matplotlib 未安装，跳过图表生成
+    - audit_trail_0bb5f0f6.txt
+    - audit_history_0bb5f0f6.csv
+    - verification_results_0bb5f0f6.csv
+    - verification_results.json
+    - anomaly_index.json
+
+【步骤7】保存审计日志
+  审计日志已保存到 data/audit_log.json
+
+============================================================
+验算完成！查看 examples 目录下的报告和图表
+============================================================
+
+【结果汇总】
+  通过: 44
+  失败: 95
+
+【发现 97 条异常记录】
+  1. [数值偏差] 失败 - e5291be877
+  2. [数值偏差] 失败 - 7f62e07832
+  3. [数值偏差] 失败 - 9966fe918c
+  ... 还有 94 条异常，详情见报告
+
+
+[Step 2/5] 查看生成的文件清单
+----------------------------------------------------------------------
+  anomaly_traces: e5291be877_trace.txt (2110 bytes)
+  anomaly_traces: 7f62e07832_trace.txt (1997 bytes)
+  anomaly_traces: 9966fe918c_trace.txt (2119 bytes)
+  anomaly_traces: a3dc0b66b4_trace.txt (2004 bytes)
+  anomaly_traces: f59b15b396_trace.txt (2110 bytes)
+  anomaly_traces: b391d8fc47_trace.txt (1994 bytes)
+  anomaly_traces: dc1cb0e4da_trace.txt (2110 bytes)
+  anomaly_traces: c4433e1adc_trace.txt (1997 bytes)
+  anomaly_traces: 837b979d22_trace.txt (2108 bytes)
+  anomaly_traces: 8a2ca3ca4f_trace.txt (1995 bytes)
+  anomaly_traces: c9c344e5c3_trace.txt (2108 bytes)
+  anomaly_traces: 33843140b4_trace.txt (1994 bytes)
+  anomaly_traces: 7d2fd95fd3_trace.txt (2110 bytes)
+  anomaly_traces: 3f603b6d09_trace.txt (1997 bytes)
+  anomaly_traces: 0f4ebdba65_trace.txt (2110 bytes)
+  anomaly_traces: 5d5df539a8_trace.txt (1994 bytes)
+  anomaly_traces: aabf52594d_trace.txt (2110 bytes)
+  anomaly_traces: e045ecdee0_trace.txt (1995 bytes)
+  anomaly_traces: f33c144e2f_trace.txt (2104 bytes)
+  anomaly_traces: 6a51d07da2_trace.txt (1988 bytes)
+  anomaly_traces: cf0cb76c10_trace.txt (2110 bytes)
+  anomaly_traces: accd05bba5_trace.txt (1994 bytes)
+  anomaly_traces: 868e7cc681_trace.txt (2110 bytes)
+  anomaly_traces: 8fee5a3c8f_trace.txt (1995 bytes)
+  anomaly_traces: 045e05c308_trace.txt (1999 bytes)
+  anomaly_traces: 737d73ce10_trace.txt (1997 bytes)
+  anomaly_traces: 516e556d89_trace.txt (2008 bytes)
+  anomaly_traces: 2d6e48bcdb_trace.txt (2004 bytes)
+  anomaly_traces: c861ac0fcf_trace.txt (1999 bytes)
+  anomaly_traces: 0bbd0a346a_trace.txt (1994 bytes)
+  anomaly_traces: 6328d03b68_trace.txt (1999 bytes)
+  anomaly_traces: 068100dd20_trace.txt (1997 bytes)
+  anomaly_traces: 2a678b5812_trace.txt (1999 bytes)
+  anomaly_traces: 376c15c590_trace.txt (1995 bytes)
+  anomaly_traces: 6801245dfe_trace.txt (1999 bytes)
+  anomaly_traces: f5db32dcbb_trace.txt (1994 bytes)
+  anomaly_traces: b0a4ef9f25_trace.txt (1999 bytes)
+  anomaly_traces: bdbd1a51b2_trace.txt (1995 bytes)
+  anomaly_traces: 6a1bf47300_trace.txt (1997 bytes)
+  anomaly_traces: 553c5b4837_trace.txt (1994 bytes)
+  anomaly_traces: 9e22d2394e_trace.txt (1999 bytes)
+  anomaly_traces: 4b95026549_trace.txt (1998 bytes)
+  anomaly_traces: 73432696e7_trace.txt (1999 bytes)
+  anomaly_traces: f03cb74b8e_trace.txt (1995 bytes)
+  anomaly_traces: 6efc0ab929_trace.txt (2106 bytes)
+  anomaly_traces: 18fe5978d3_trace.txt (1997 bytes)
+  anomaly_traces: 7eed4ecd77_trace.txt (2115 bytes)
+  anomaly_traces: ef9dc2c820_trace.txt (2004 bytes)
+  anomaly_traces: 25232c381f_trace.txt (2106 bytes)
+  anomaly_traces: c3bfda54e9_trace.txt (1994 bytes)
+  anomaly_traces: c4b17abc64_trace.txt (2106 bytes)
+  anomaly_traces: 3e4e64bbc7_trace.txt (1997 bytes)
+  anomaly_traces: 30ebc28fa0_trace.txt (2104 bytes)
+  anomaly_traces: 8458620399_trace.txt (1995 bytes)
+  anomaly_traces: 5d2259ebfb_trace.txt (2104 bytes)
+  anomaly_traces: 663c6db344_trace.txt (1994 bytes)
+  anomaly_traces: cc0d1f3f0a_trace.txt (2115 bytes)
+  anomaly_traces: de2d6f6bba_trace.txt (2109 bytes)
+  anomaly_traces: a67028d6b1_trace.txt (2115 bytes)
+  anomaly_traces: 5295afa78e_trace.txt (2048 bytes)
+  anomaly_traces: 507a9ba4a4_trace.txt (2110 bytes)
+  anomaly_traces: d3a432c113_trace.txt (1997 bytes)
+  anomaly_traces: e22432237a_trace.txt (2051 bytes)
+  anomaly_traces: f7e7659387_trace.txt (2119 bytes)
+  anomaly_traces: c57afb3b32_trace.txt (2004 bytes)
+  anomaly_traces: 939a9b8818_trace.txt (2050 bytes)
+  anomaly_traces: 12282e75b1_trace.txt (2110 bytes)
+  anomaly_traces: a172c15bce_trace.txt (1994 bytes)
+  anomaly_traces: 96a684b0f9_trace.txt (2035 bytes)
+  anomaly_traces: df45cd3ef5_trace.txt (2110 bytes)
+  anomaly_traces: a3ae1e9b72_trace.txt (1997 bytes)
+  anomaly_traces: c4bf31e0af_trace.txt (2046 bytes)
+  anomaly_traces: 953c2ef0a8_trace.txt (2108 bytes)
+  anomaly_traces: 34345f08c2_trace.txt (1995 bytes)
+  anomaly_traces: 2b4a592373_trace.txt (2038 bytes)
+  anomaly_traces: 9553fe61b0_trace.txt (2108 bytes)
+  anomaly_traces: 2d80a53a00_trace.txt (1994 bytes)
+  anomaly_traces: 27a19abf97_trace.txt (2041 bytes)
+  anomaly_traces: 2eb0dc8cf7_trace.txt (2078 bytes)
+  anomaly_traces: 81691ce508_trace.txt (2014 bytes)
+  anomaly_traces: 08c5df6428_trace.txt (2164 bytes)
+  anomaly_traces: 0d62fb7e01_trace.txt (2236 bytes)
+  anomaly_traces: 9bf91d0976_trace.txt (2252 bytes)
+  anomaly_traces: 0fe631e74e_trace.txt (2166 bytes)
+  anomaly_traces: 38926762c9_trace.txt (2236 bytes)
+  anomaly_traces: 4d2068b2ef_trace.txt (2124 bytes)
+  anomaly_traces: 8076c4447b_trace.txt (2099 bytes)
+  anomaly_traces: 2094a1518c_trace.txt (1987 bytes)
+  anomaly_traces: 3d78d33394_trace.txt (2102 bytes)
+  anomaly_traces: 33cab092af_trace.txt (1987 bytes)
+  anomaly_traces: 4cf993e314_trace.txt (2097 bytes)
+  anomaly_traces: 6c11be7774_trace.txt (1981 bytes)
+  anomaly_traces: 0333ad713c_trace.txt (2031 bytes)
+  anomaly_traces: 0fb1486f5e_trace.txt (2095 bytes)
+  anomaly_traces: 9c545010ca_trace.txt (1980 bytes)
+  anomaly_traces: f404d47521_trace.txt (2149 bytes)
+  anomaly_traces: 47ed7dde2c_trace.txt (2032 bytes)
+  summary: executive_summary_0bb5f0f6.txt (1583 bytes)
+  status_chart: matplotlib 未安装，跳过图表生成 (0 bytes)
+  audit_report: audit_trail_0bb5f0f6.txt (1916 bytes)
+  audit_csv: audit_history_0bb5f0f6.csv (1694 bytes)
+  results_csv: verification_results_0bb5f0f6.csv (14361 bytes)
+  results_json: verification_results.json (196384 bytes)
+  anomaly_index: anomaly_index.json (17074 bytes)
+  details/_trace.txt: 共 278 条追溯文件
+
+[Step 3/5] 列出所有异常记录（模拟用户点到异常的入口）
+----------------------------------------------------------------------
+共发现 97 条异常/失败记录:
+
+⚠️  [1] 记录ID: e5291be877
+    状态: 【失败】  异常类型: 数值偏差
+    原始输入: total_price=35000.0 | tax_rate=13%
+    👉 追溯命令: python cli.py trace e5291be877
+
+⚠️  [2] 记录ID: 7f62e07832
+    状态: 【失败】  异常类型: 数值偏差
+    原始输入: total_price=35000.0 | quantity=100.0
+    👉 追溯命令: python cli.py trace 7f62e07832
+
+⚠️  [3] 记录ID: 9966fe918c
+    状态: 【失败】  异常类型: 数值偏差
+    原始输入: total_price=290000.0 | tax_rate=13%
+    👉 追溯命令: python cli.py trace 9966fe918c
+
+⚠️  [4] 记录ID: a3dc0b66b4
+    状态: 【失败】  异常类型: 数值偏差
+    原始输入: total_price=290000.0 | quantity=50.0
+    👉 追溯命令: python cli.py trace a3dc0b66b4
+
+⚠️  [5] 记录ID: f59b15b396
+    状态: 【失败】  异常类型: 数值偏差
+    原始输入: total_price=17000.0 | tax_rate=13%
+    👉 追溯命令: python cli.py trace f59b15b396
+
+⚠️  [6] 记录ID: b391d8fc47
+    状态: 【失败】  异常类型: 数值偏差
+    原始输入: total_price=17000.0 | quantity=200.0
+    👉 追溯命令: python cli.py trace b391d8fc47
+
+⚠️  [7] 记录ID: dc1cb0e4da
+    状态: 【失败】  异常类型: 数值偏差
+    原始输入: total_price=18000.0 | tax_rate=13%
+    👉 追溯命令: python cli.py trace dc1cb0e4da
+
+⚠️  [8] 记录ID: c4433e1adc
+    状态: 【失败】  异常类型: 数值偏差
+    原始输入: total_price=18000.0 | quantity=150.0
+    👉 追溯命令: python cli.py trace c4433e1adc
+
+
+[Step 4/5] 选择 3 条代表性异常，展示计算草稿追溯内容
+----------------------------------------------------------------------
+
+【异常追溯样本 1】 e5291be877
+======================================================================
+======================================================================
+计算草稿追溯单
+======================================================================
+记录ID: e5291be877
+验算状态: 【失败】
+⚠️  异常类型: 数值偏差
+----------------------------------------------------------------------
+【本次计算口径】
+  计算时间: 2026-06-14T21:19:51.377228
+  复核人: 建模助教小岑
+  说明: 整数规划批量验算
+  假设条件: {'税率默认': '13%，如遇9%税率按实际计算', '单位默认': '元', '容差设置': '1%以内判定通过'}
+  来源文档: draft_reviewer_A.csv, draft_reviewer_B.csv, draft_manual_entry.csv, system_export.csv, boundary_cases.csv
+
+【应用的计算规则】
+  - F001 (v2): 合价 = 工程量 × 单价 × 1.01（含1%现场管理费）
+    制定人: 小岑
+  - F002 (v1): 税额 = 合价 × 税率
+    制定人: 系统默认
+  - F003 (v1): 含税金额 = 合价 + 税额
+    制定人: 系统默认
+  - F004 (v1): 单位成本 = 合价 / 工程量（处理除零边界）
+    制定人: 系统默认
+
+【原始输入】
+  total_price = 35000.0
+  tax_rate = 13%
+
+【计算步骤追溯】
+  步骤1: 读取原始输入
+         详情: 来源: nan
+         状态: 原始数据
+
+  步骤3: 执行计算公式
+         详情: tax_amount = total_price * tax_rate
+         状态: 公式已计算
+
+  步骤4: 税率格式化
+         详情: 税率 '13%' 转换为小数 0.13
+         状态: 预处理完成
+
+  步骤5: 执行公式 F002
+         详情: 35000.0 × 0.13 = 4550.0000
+         状态: 计算完成
+
+  步骤5: 结果比对
+         详情: 计算值: 4550.0000, 期望值: 35000.0000, 绝对差: 30450.0000, 相对差: 87.0000%
+         状态: 已验算
+
+  步骤6 ⚠️: 验算判定
+         详情: 偏差超过容差 2%，判定不通过
+         状态: 失败
+
+【验算结果】
+  计算值: 4550.0
+... (共 61 行，已截断显示前55行)
+
+
+【异常追溯样本 2】 7f62e07832
+======================================================================
+======================================================================
+计算草稿追溯单
+======================================================================
+记录ID: 7f62e07832
+验算状态: 【失败】
+⚠️  异常类型: 数值偏差
+----------------------------------------------------------------------
+【本次计算口径】
+  计算时间: 2026-06-14T21:19:51.377228
+  复核人: 建模助教小岑
+  说明: 整数规划批量验算
+  假设条件: {'税率默认': '13%，如遇9%税率按实际计算', '单位默认': '元', '容差设置': '1%以内判定通过'}
+  来源文档: draft_reviewer_A.csv, draft_reviewer_B.csv, draft_manual_entry.csv, system_export.csv, boundary_cases.csv
+
+【应用的计算规则】
+  - F001 (v2): 合价 = 工程量 × 单价 × 1.01（含1%现场管理费）
+    制定人: 小岑
+  - F002 (v1): 税额 = 合价 × 税率
+    制定人: 系统默认
+  - F003 (v1): 含税金额 = 合价 + 税额
+    制定人: 系统默认
+  - F004 (v1): 单位成本 = 合价 / 工程量（处理除零边界）
+    制定人: 系统默认
+
+【原始输入】
+  total_price = 35000.0
+  quantity = 100.0
+
+【计算步骤追溯】
+  步骤1: 读取原始输入
+         详情: 来源: nan
+         状态: 原始数据
+
+  步骤3: 执行计算公式
+         详情: unit_cost = total_price / quantity
+         状态: 公式已计算
+
+  步骤4: 执行公式 F004
+         详情: 35000.0 ÷ 100.0 = 350.0000
+         状态: 计算完成
+
+  步骤5: 结果比对
+         详情: 计算值: 350.0000, 期望值: 35000.0000, 绝对差: 34650.0000, 相对差: 99.0000%
+         状态: 已验算
+
+  步骤6 ⚠️: 验算判定
+         详情: 偏差超过容差 2%，判定不通过
+         状态: 失败
+
+【验算结果】
+  计算值: 350.0
+  期望值: 35000.0
+  绝对偏差: 34650.000000
+  相对偏差: 99.0000%
+  容差设置: 2%
+... (共 57 行，已截断显示前55行)
+
+
+【异常追溯样本 3】 9966fe918c
+======================================================================
+======================================================================
+计算草稿追溯单
+======================================================================
+记录ID: 9966fe918c
+验算状态: 【失败】
+⚠️  异常类型: 数值偏差
+----------------------------------------------------------------------
+【本次计算口径】
+  计算时间: 2026-06-14T21:19:51.377228
+  复核人: 建模助教小岑
+  说明: 整数规划批量验算
+  假设条件: {'税率默认': '13%，如遇9%税率按实际计算', '单位默认': '元', '容差设置': '1%以内判定通过'}
+  来源文档: draft_reviewer_A.csv, draft_reviewer_B.csv, draft_manual_entry.csv, system_export.csv, boundary_cases.csv
+
+【应用的计算规则】
+  - F001 (v2): 合价 = 工程量 × 单价 × 1.01（含1%现场管理费）
+    制定人: 小岑
+  - F002 (v1): 税额 = 合价 × 税率
+    制定人: 系统默认
+  - F003 (v1): 含税金额 = 合价 + 税额
+    制定人: 系统默认
+  - F004 (v1): 单位成本 = 合价 / 工程量（处理除零边界）
+    制定人: 系统默认
+
+【原始输入】
+  total_price = 290000.0
+  tax_rate = 13%
+
+【计算步骤追溯】
+  步骤1: 读取原始输入
+         详情: 来源: nan
+         状态: 原始数据
+
+  步骤3: 执行计算公式
+         详情: tax_amount = total_price * tax_rate
+         状态: 公式已计算
+
+  步骤4: 税率格式化
+         详情: 税率 '13%' 转换为小数 0.13
+         状态: 预处理完成
+
+  步骤5: 执行公式 F002
+         详情: 290000.0 × 0.13 = 37700.0000
+         状态: 计算完成
+
+  步骤5: 结果比对
+         详情: 计算值: 37700.0000, 期望值: 290000.0000, 绝对差: 252300.0000, 相对差: 87.0000%
+         状态: 已验算
+
+  步骤6 ⚠️: 验算判定
+         详情: 偏差超过容差 2%，判定不通过
+         状态: 失败
+
+【验算结果】
+  计算值: 37700.0
+... (共 61 行，已截断显示前55行)
+
+[Step 5/5] 查看小岑的操作历史（审计日志）
+----------------------------------------------------------------------
+============================================================
+审计历史变更报告
+============================================================
+生成时间: 2026-06-14 21:19:51
+总操作次数: 9
+操作人统计: {'小岑': 4, '系统': 5}
+
+
+--- 小岑 的操作 ---
+[2026-06-14 21:19:51] 调整容差
+    字段: tolerance
+    变更: 0.01 → 0.02
+    原因: 早会讨论后放宽容差，现场数据精度有限
+    操作ID: 17c82d7955d2
+
+[2026-06-14 21:19:51] 修改计算规则
+    字段: rule_F001
+    原因: 早会临时决定增加1%现场管理费
+    操作ID: 198cc4654741
+
+[2026-06-14 21:19:51] 修改字段映射
+    字段: mapping_单位元
+    变更: unit_price → unit_price_cny
+    原因: 系统导出数据单位已明确，需单独映射
+    操作ID: 057beccb63f1
+
+
+--- 系统 的操作 ---
+[2026-06-14 21:19:51] 加载并映射数据
+    字段: source_复核人A草稿
+    原因: 加载文件: draft_reviewer_A.csv
+    操作ID: 94238c01f3a6
+
+[2026-06-14 21:19:51] 加载并映射数据
+    字段: source_复核人B草稿
+    原因: 加载文件: draft_reviewer_B.csv
+    操作ID: 81b7201bbc2c
+
+[2026-06-14 21:19:51] 加载并映射数据
+    字段: source_建模助教手动录入
+    原因: 加载文件: draft_manual_entry.csv
+    操作ID: 41011ee41b21
+
+[2026-06-14 21:19:51] 加载并映射数据
+    字段: source_系统导出
+    原因: 加载文件: system_export.csv
+    操作ID: d85ab2a476a7
+
+[2026-06-14 21:19:51] 加载并映射数据
+    字段: source_建模助教手动录入
+    原因: 加载文件: boundary_cases.csv
+    操作ID: 5e59241785e8
+
+
+--- 小岑 的操作 ---
+[2026-06-14 21:19:51] 人工复核调整
+    字段: verification_status
+    变更: 失败 → 警告
+    原因: 边界测试记录，已知异常，转为警告
+    影响记录: e5291be877
+... (共 63 行，已截断显示前60行)
+
+======================================================================
+✅ 完整异常复核链路演示完成！
+======================================================================
+
+你可以继续手动执行以下命令进行体验:
+
+  # 1. 查看所有异常记录列表
+  python cli.py anomalies
+
+  # 2. 查看任意异常记录的完整计算草稿（选择上面的 record_id）
+  python cli.py trace e5291be877
+  python cli.py trace 7f62e07832
+  python cli.py trace 9966fe918c
+
+  # 3. 查看完整审计历史（小岑改过的所有判断）
+  python cli.py audit
+
+  # 4. 重新运行完整演示
+  python cli.py demo
+
+关键链路：异常列表(cli anomalies) → 选record_id → 计算草稿追溯(cli trace)
+         同时可查看审计历史(cli audit)了解小岑临时修改的判断

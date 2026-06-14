@@ -1,129 +1,142 @@
-"""快速演示脚本 - 直接运行，不依赖CLI"""
+"""快速演示脚本 - 完整走通异常复核链路"""
 import sys
 import os
 from pathlib import Path
-from io import StringIO
 
 workspace = Path("/Users/mac/pro/solo/workspaces/y13144")
 sys.path.insert(0, str(workspace))
 os.chdir(str(workspace))
 
-output_lines = []
+print("=" * 70)
+print("整数规划批量验算系统 - 完整异常复核链路演示")
+print("=" * 70)
+print()
 
-def log(msg=""):
-    print(msg)
-    output_lines.append(str(msg))
-
-deps = ['pandas', 'numpy', 'matplotlib', 'seaborn', 'openpyxl', 'click', 'pydantic']
-need_install = []
-
-log("=" * 60)
-log("检查依赖")
-log("=" * 60)
-log()
-
-for dep in deps:
-    try:
-        mod = __import__(dep)
-        version = getattr(mod, '__version__', 'N/A')
-        log(f"✓ {dep} 已安装 (版本: {version})")
-    except ImportError:
-        log(f"✗ {dep} 未安装")
-        need_install.append(dep)
-
-log()
-
-if need_install:
-    log("正在安装缺失的依赖...")
-    log()
-    import subprocess
-    try:
-        proc = subprocess.run(
-            [sys.executable, '-m', 'pip', 'install', '-r', str(workspace / 'requirements.txt')],
-            capture_output=True,
-            text=True,
-            cwd=str(workspace)
-        )
-        log("pip install 输出:")
-        log(proc.stdout)
-        if proc.stderr:
-            log("错误输出:")
-            log(proc.stderr)
-        log(f"返回码: {proc.returncode}")
-    except Exception as e:
-        log(f"安装失败: {e}")
-else:
-    log("所有依赖已安装，无需安装！")
-
-log()
-log("=" * 60)
-log("运行 quick_demo.py - 整数规划批量验算演示")
-log("=" * 60)
-log()
-
+print("[Step 1/5] 运行完整验算流水线 (pipeline.run_full_demo)")
+print("-" * 70)
 from src.ip_checker.pipeline import VerificationPipeline
 
 examples_dir = workspace / 'examples'
 examples_dir.mkdir(exist_ok=True)
 
 pipeline = VerificationPipeline(output_dir=str(examples_dir))
+result_df, report_files = pipeline.run_full_demo()
 
-demo_out = StringIO()
-old_stdout = sys.stdout
-sys.stdout = demo_out
-try:
-    result_df, report_files = pipeline.run_full_demo()
-finally:
-    sys.stdout = old_stdout
-
-demo_output = demo_out.getvalue()
-print(demo_output)
-output_lines.extend(demo_output.split('\n'))
-
-log()
-log("=" * 60)
-log("生成文件清单")
-log("=" * 60)
+print()
+print("[Step 2/5] 查看生成的文件清单")
+print("-" * 70)
 for key, value in report_files.items():
     if isinstance(value, list):
         for v in value:
-            log(f"  {key}: {Path(v).name}")
+            p = Path(v)
+            size = p.stat().st_size if p.exists() else 0
+            print(f"  {key}: {p.name} ({size} bytes)")
     else:
-        log(f"  {key}: {Path(value).name}")
+        p = Path(value)
+        size = p.stat().st_size if p.exists() else 0
+        print(f"  {key}: {p.name} ({size} bytes)")
 
-log()
-log("details 目录下的异常追溯文件:")
 details_dir = examples_dir / 'details'
-if details_dir.exists():
-    traces = sorted(details_dir.glob('*_trace.txt'))
-    log(f"  共 {len(traces)} 条追溯记录")
+trace_files = sorted(details_dir.glob('*_trace.txt')) if details_dir.exists() else []
+print(f"  details/_trace.txt: 共 {len(trace_files)} 条追溯文件")
+print()
 
-log()
-log("=" * 60)
-log("examples 目录下所有生成的文件")
-log("=" * 60)
-log()
+print("[Step 3/5] 列出所有异常记录（模拟用户点到异常的入口）")
+print("-" * 70)
+import json
+results_json = examples_dir / 'verification_results.json'
+anomalies_list = []
+if results_json.exists():
+    with open(results_json, 'r', encoding='utf-8') as f:
+        saved = json.load(f)
+    for r_data in saved.get('results', []):
+        if r_data.get('anomaly_type') or r_data.get('result_status') in ('异常', '失败'):
+            anomalies_list.append(r_data)
 
-if examples_dir.exists():
-    all_files = list(examples_dir.rglob('*'))
-    all_files = [f for f in all_files if f.is_file()]
-    all_files.sort()
-    
-    log(f"examples 目录下共有 {len(all_files)} 个文件:")
-    log()
-    for f in all_files:
-        rel_path = f.relative_to(workspace)
-        size = f.stat().st_size
-        log(f"  {rel_path} ({size} 字节)")
-else:
-    log("examples 目录不存在")
+print(f"共发现 {len(anomalies_list)} 条异常/失败记录:")
+print()
+selected_anomalies = []
+for i, a in enumerate(anomalies_list[:8], 1):
+    rid = a.get('record_id')
+    status = a.get('result_status')
+    atype = a.get('anomaly_type') or status
+    err = a.get('error_message', '')
+    marker = "🔴" if status == '异常' else "⚠️"
+    raw = a.get('raw_inputs', {})
+    brief = []
+    for k, v in raw.items():
+        if not str(k).endswith('_converted') and v is not None and str(v).strip():
+            brief.append(f"{k}={v}")
+    brief_str = ' | '.join(brief[:4])
 
-log()
-log("=" * 60)
-log("演示完成！输出已保存到 output.txt")
-log("=" * 60)
+    print(f"{marker}  [{i}] 记录ID: {rid}")
+    print(f"    状态: 【{status}】  异常类型: {atype}")
+    if err:
+        print(f"    错误: {err}")
+    if brief_str:
+        print(f"    原始输入: {brief_str}")
+    print(f"    👉 追溯命令: python cli.py trace {rid}")
+    print()
+    selected_anomalies.append(rid)
 
-final_output = "\n".join(output_lines)
+print()
+print("[Step 4/5] 选择 3 条代表性异常，展示计算草稿追溯内容")
+print("-" * 70)
 
-with open(workspace / 'output.txt', 'w', encoding='utf-8') as f:
-    f.write(final_output)
+sample_ids = selected_anomalies[:3] if selected_anomalies else []
+
+for idx, rid in enumerate(sample_ids, 1):
+    trace_file = details_dir / f"{rid}_trace.txt"
+    print(f"\n【异常追溯样本 {idx}】 {rid}")
+    print("=" * 70)
+    if trace_file.exists():
+        with open(trace_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        lines = content.split('\n')
+        for line in lines[:55]:
+            print(line)
+        if len(lines) > 55:
+            print(f"... (共 {len(lines)} 行，已截断显示前55行)")
+    else:
+        print(f"⚠️ 追溯文件不存在: {trace_file}")
+    print()
+
+print("[Step 5/5] 查看小岑的操作历史（审计日志）")
+print("-" * 70)
+audit_report = None
+for k, v in report_files.items():
+    if k == 'audit_report':
+        audit_report = Path(v)
+        break
+
+if audit_report and audit_report.exists():
+    with open(audit_report, 'r', encoding='utf-8') as f:
+        audit_lines = f.read().split('\n')
+    for line in audit_lines[:60]:
+        print(line)
+    if len(audit_lines) > 60:
+        print(f"... (共 {len(audit_lines)} 行，已截断显示前60行)")
+
+print()
+print("=" * 70)
+print("✅ 完整异常复核链路演示完成！")
+print("=" * 70)
+print()
+print("你可以继续手动执行以下命令进行体验:")
+print()
+print("  # 1. 查看所有异常记录列表")
+print("  python cli.py anomalies")
+print()
+print("  # 2. 查看任意异常记录的完整计算草稿（选择上面的 record_id）")
+if sample_ids:
+    for rid in sample_ids:
+        print(f"  python cli.py trace {rid}")
+print()
+print("  # 3. 查看完整审计历史（小岑改过的所有判断）")
+print("  python cli.py audit")
+print()
+print("  # 4. 重新运行完整演示")
+print("  python cli.py demo")
+print()
+print("关键链路：异常列表(cli anomalies) → 选record_id → 计算草稿追溯(cli trace)")
+print("         同时可查看审计历史(cli audit)了解小岑临时修改的判断")

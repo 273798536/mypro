@@ -1,0 +1,7214 @@
+{
+  "context_id": "d3a68688",
+  "context_trace": {
+    "context_id": "d3a68688",
+    "calculation_date": "2026-06-14T21:51:40.843898",
+    "reviewer": "建模助教小岑",
+    "description": "整数规划批量验算",
+    "source_documents": [
+      "draft_reviewer_A.csv",
+      "draft_reviewer_B.csv",
+      "draft_manual_entry.csv",
+      "system_export.csv",
+      "boundary_cases.csv"
+    ],
+    "assumptions": {
+      "税率默认": "13%，如遇9%税率按实际计算",
+      "单位默认": "元",
+      "容差设置": "1%以内判定通过"
+    },
+    "applied_rules": [
+      {
+        "formula_id": "F001",
+        "description": "合价 = 工程量 × 单价 × 1.01（含1%现场管理费）",
+        "version": 2,
+        "created_by": "小岑"
+      },
+      {
+        "formula_id": "F002",
+        "description": "税额 = 合价 × 税率",
+        "version": 1,
+        "created_by": "系统默认"
+      },
+      {
+        "formula_id": "F003",
+        "description": "含税金额 = 合价 + 税额",
+        "version": 1,
+        "created_by": "系统默认"
+      },
+      {
+        "formula_id": "F004",
+        "description": "单位成本 = 合价 / 工程量（处理除零边界）",
+        "version": 1,
+        "created_by": "系统默认"
+      }
+    ]
+  },
+  "generated_at": "2026-06-14T21:51:40.955607",
+  "summary": {
+    "通过": 44,
+    "失败": 96,
+    "异常": 10
+  },
+  "anomaly_count": 108,
+  "results": [
+    {
+      "record_id": "cc7d30a052",
+      "result_status": "通过",
+      "calculated_value": 35350.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 100,
+        "unit_price": 350.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "100.0 × 350.0 × (1 + 1%管理费) = 35000.00 × 1.01 = 35350.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 35350.0000, 期望值: 35000.0000, 绝对差: 350.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.876871"
+    },
+    {
+      "record_id": "dafcbce492",
+      "result_status": "失败",
+      "calculated_value": 4550.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 35000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "35000.0 × 0.13 = 4550.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 4550.0000, 期望值: 35000.0000, 绝对差: 30450.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.876940"
+    },
+    {
+      "record_id": "f6e75b1fe6",
+      "result_status": "失败",
+      "calculated_value": 350.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 35000.0,
+        "quantity": 100
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "35000.0 ÷ 100.0 = 350.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 350.0000, 期望值: 35000.0000, 绝对差: 34650.0000, 相对差: 99.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.876993"
+    },
+    {
+      "record_id": "343f241b92",
+      "result_status": "通过",
+      "calculated_value": 292900.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 50,
+        "unit_price": 5800.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "50.0 × 5800.0 × (1 + 1%管理费) = 290000.00 × 1.01 = 292900.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 292900.0000, 期望值: 290000.0000, 绝对差: 2900.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.877085"
+    },
+    {
+      "record_id": "239381dc55",
+      "result_status": "失败",
+      "calculated_value": 37700.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 290000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "290000.0 × 0.13 = 37700.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 37700.0000, 期望值: 290000.0000, 绝对差: 252300.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877138"
+    },
+    {
+      "record_id": "687da206b3",
+      "result_status": "失败",
+      "calculated_value": 5800.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 290000.0,
+        "quantity": 50
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "290000.0 ÷ 50.0 = 5800.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 5800.0000, 期望值: 290000.0000, 绝对差: 284200.0000, 相对差: 98.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877183"
+    },
+    {
+      "record_id": "23a95e134c",
+      "result_status": "通过",
+      "calculated_value": 17170.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 200,
+        "unit_price": 85.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "200.0 × 85.0 × (1 + 1%管理费) = 17000.00 × 1.01 = 17170.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 17170.0000, 期望值: 17000.0000, 绝对差: 170.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.877266"
+    },
+    {
+      "record_id": "00613cb2f8",
+      "result_status": "失败",
+      "calculated_value": 2210.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 17000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "17000.0 × 0.13 = 2210.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2210.0000, 期望值: 17000.0000, 绝对差: 14790.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877316"
+    },
+    {
+      "record_id": "98f29578d3",
+      "result_status": "失败",
+      "calculated_value": 85.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 17000.0,
+        "quantity": 200
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "17000.0 ÷ 200.0 = 85.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 85.0000, 期望值: 17000.0000, 绝对差: 16915.0000, 相对差: 99.5000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877360"
+    },
+    {
+      "record_id": "3a97fdeff9",
+      "result_status": "通过",
+      "calculated_value": 18180.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 150,
+        "unit_price": 120.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "150.0 × 120.0 × (1 + 1%管理费) = 18000.00 × 1.01 = 18180.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 18180.0000, 期望值: 18000.0000, 绝对差: 180.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.877441"
+    },
+    {
+      "record_id": "8d0625f76b",
+      "result_status": "失败",
+      "calculated_value": 2340.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 18000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "18000.0 × 0.13 = 2340.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2340.0000, 期望值: 18000.0000, 绝对差: 15660.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877489"
+    },
+    {
+      "record_id": "0a7bad7d3b",
+      "result_status": "失败",
+      "calculated_value": 120.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 18000.0,
+        "quantity": 150
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "18000.0 ÷ 150.0 = 120.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 120.0000, 期望值: 18000.0000, 绝对差: 17880.0000, 相对差: 99.3333%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877534"
+    },
+    {
+      "record_id": "edb3f54296",
+      "result_status": "通过",
+      "calculated_value": 22624.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 80,
+        "unit_price": 280.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "80.0 × 280.0 × (1 + 1%管理费) = 22400.00 × 1.01 = 22624.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 22624.0000, 期望值: 22400.0000, 绝对差: 224.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.877611"
+    },
+    {
+      "record_id": "e282689193",
+      "result_status": "失败",
+      "calculated_value": 2016.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22400.0,
+        "tax_rate": "9%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '9%' 转换为小数 0.09",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "22400.0 × 0.09 = 2016.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2016.0000, 期望值: 22400.0000, 绝对差: 20384.0000, 相对差: 91.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877660"
+    },
+    {
+      "record_id": "f9f15be86a",
+      "result_status": "失败",
+      "calculated_value": 280.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22400.0,
+        "quantity": 80
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "22400.0 ÷ 80.0 = 280.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 280.0000, 期望值: 22400.0000, 绝对差: 22120.0000, 相对差: 98.7500%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877704"
+    },
+    {
+      "record_id": "2fcc7aaaad",
+      "result_status": "通过",
+      "calculated_value": 22725.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 500,
+        "unit_price": 45.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "500.0 × 45.0 × (1 + 1%管理费) = 22500.00 × 1.01 = 22725.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 22725.0000, 期望值: 22500.0000, 绝对差: 225.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.877780"
+    },
+    {
+      "record_id": "b52008d1b3",
+      "result_status": "失败",
+      "calculated_value": 2025.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22500.0,
+        "tax_rate": "9%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '9%' 转换为小数 0.09",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "22500.0 × 0.09 = 2025.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2025.0000, 期望值: 22500.0000, 绝对差: 20475.0000, 相对差: 91.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877827"
+    },
+    {
+      "record_id": "da066f02c3",
+      "result_status": "失败",
+      "calculated_value": 45.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22500.0,
+        "quantity": 500
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "22500.0 ÷ 500.0 = 45.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 45.0000, 期望值: 22500.0000, 绝对差: 22455.0000, 相对差: 99.8000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.877877"
+    },
+    {
+      "record_id": "449c68904e",
+      "result_status": "通过",
+      "calculated_value": 36360.0,
+      "expected_value": 36000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 200,
+        "unit_price": 180.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "200.0 × 180.0 × (1 + 1%管理费) = 36000.00 × 1.01 = 36360.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 36360.0000, 期望值: 36000.0000, 绝对差: 360.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.877955"
+    },
+    {
+      "record_id": "852fdb3e2b",
+      "result_status": "失败",
+      "calculated_value": 4680.0,
+      "expected_value": 36000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 36000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "36000.0 × 0.13 = 4680.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 4680.0000, 期望值: 36000.0000, 绝对差: 31320.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.878004"
+    },
+    {
+      "record_id": "7a69e681b0",
+      "result_status": "失败",
+      "calculated_value": 180.0,
+      "expected_value": 36000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 36000.0,
+        "quantity": 200
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "36000.0 ÷ 200.0 = 180.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 180.0000, 期望值: 36000.0000, 绝对差: 35820.0000, 相对差: 99.5000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.878047"
+    },
+    {
+      "record_id": "cb50eb6907",
+      "result_status": "通过",
+      "calculated_value": 28785.0,
+      "expected_value": 28500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 300,
+        "unit_price": 95.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "300.0 × 95.0 × (1 + 1%管理费) = 28500.00 × 1.01 = 28785.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 28785.0000, 期望值: 28500.0000, 绝对差: 285.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.878122"
+    },
+    {
+      "record_id": "321501235b",
+      "result_status": "失败",
+      "calculated_value": 3705.0,
+      "expected_value": 28500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 28500.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "28500.0 × 0.13 = 3705.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 3705.0000, 期望值: 28500.0000, 绝对差: 24795.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.878169"
+    },
+    {
+      "record_id": "51380e82cc",
+      "result_status": "失败",
+      "calculated_value": 95.0,
+      "expected_value": 28500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 28500.0,
+        "quantity": 300
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "28500.0 ÷ 300.0 = 95.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 95.0000, 期望值: 28500.0000, 绝对差: 28405.0000, 相对差: 99.6667%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.878211"
+    },
+    {
+      "record_id": "821ad45049",
+      "result_status": "通过",
+      "calculated_value": 12726.0,
+      "expected_value": 12600.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 30,
+        "unit_price": 420.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "30.0 × 420.0 × (1 + 1%管理费) = 12600.00 × 1.01 = 12726.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 12726.0000, 期望值: 12600.0000, 绝对差: 126.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.878289"
+    },
+    {
+      "record_id": "4fade782ad",
+      "result_status": "失败",
+      "calculated_value": 1638.0,
+      "expected_value": 12600.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 12600.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "12600.0 × 0.13 = 1638.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1638.0000, 期望值: 12600.0000, 绝对差: 10962.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.878336"
+    },
+    {
+      "record_id": "53df368617",
+      "result_status": "失败",
+      "calculated_value": 420.0,
+      "expected_value": 12600.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 12600.0,
+        "quantity": 30
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "12600.0 ÷ 30.0 = 420.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 420.0000, 期望值: 12600.0000, 绝对差: 12180.0000, 相对差: 96.6667%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.878378"
+    },
+    {
+      "record_id": "fc58be4bf5",
+      "result_status": "通过",
+      "calculated_value": 7878.0,
+      "expected_value": 7800.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 120,
+        "unit_price": 65.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "120.0 × 65.0 × (1 + 1%管理费) = 7800.00 × 1.01 = 7878.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 7878.0000, 期望值: 7800.0000, 绝对差: 78.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.878452"
+    },
+    {
+      "record_id": "7f7e4e49b2",
+      "result_status": "失败",
+      "calculated_value": 1014.0,
+      "expected_value": 7800.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 7800.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "7800.0 × 0.13 = 1014.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1014.0000, 期望值: 7800.0000, 绝对差: 6786.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.878666"
+    },
+    {
+      "record_id": "14f5d833a8",
+      "result_status": "失败",
+      "calculated_value": 65.0,
+      "expected_value": 7800.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 7800.0,
+        "quantity": 120
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "7800.0 ÷ 120.0 = 65.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 65.0000, 期望值: 7800.0000, 绝对差: 7735.0000, 相对差: 99.1667%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.878802"
+    },
+    {
+      "record_id": "973984a39f",
+      "result_status": "通过",
+      "calculated_value": 13635.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 180,
+        "unit_price": 75.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "180.0 × 75.0 × (1 + 1%管理费) = 13500.00 × 1.01 = 13635.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 13635.0000, 期望值: 13500.0000, 绝对差: 135.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.879015"
+    },
+    {
+      "record_id": "38aa67081d",
+      "result_status": "失败",
+      "calculated_value": 1755.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 13500.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "13500.0 × 0.13 = 1755.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1755.0000, 期望值: 13500.0000, 绝对差: 11745.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.879090"
+    },
+    {
+      "record_id": "b6ac361513",
+      "result_status": "失败",
+      "calculated_value": 75.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 13500.0,
+        "quantity": 180
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "13500.0 ÷ 180.0 = 75.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 75.0000, 期望值: 13500.0000, 绝对差: 13425.0000, 相对差: 99.4444%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.879150"
+    },
+    {
+      "record_id": "b5012dbed5",
+      "result_status": "通过",
+      "calculated_value": 13635.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 90,
+        "unit_price": 150.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "90.0 × 150.0 × (1 + 1%管理费) = 13500.00 × 1.01 = 13635.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 13635.0000, 期望值: 13500.0000, 绝对差: 135.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.879430"
+    },
+    {
+      "record_id": "b0c6e32adb",
+      "result_status": "失败",
+      "calculated_value": 1755.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 13500.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "13500.0 × 0.13 = 1755.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1755.0000, 期望值: 13500.0000, 绝对差: 11745.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.879514"
+    },
+    {
+      "record_id": "023862fd24",
+      "result_status": "失败",
+      "calculated_value": 150.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 13500.0,
+        "quantity": 90
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "13500.0 ÷ 90.0 = 150.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 150.0000, 期望值: 13500.0000, 绝对差: 13350.0000, 相对差: 98.8889%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.880114"
+    },
+    {
+      "record_id": "5a85d0083a",
+      "result_status": "通过",
+      "calculated_value": 35350.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 100,
+        "unit_price": 350.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "100.0 × 350.0 × (1 + 1%管理费) = 35000.00 × 1.01 = 35350.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 35350.0000, 期望值: 35000.0000, 绝对差: 350.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.880875"
+    },
+    {
+      "record_id": "014d03be48",
+      "result_status": "失败",
+      "calculated_value": 4550.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 35000.0,
+        "tax_rate": 0.13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "35000.0 × 0.13 = 4550.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 4550.0000, 期望值: 35000.0000, 绝对差: 30450.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.880983"
+    },
+    {
+      "record_id": "dde8cdb45b",
+      "result_status": "失败",
+      "calculated_value": 350.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 35000.0,
+        "quantity": 100
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "35000.0 ÷ 100.0 = 350.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 350.0000, 期望值: 35000.0000, 绝对差: 34650.0000, 相对差: 99.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.881127"
+    },
+    {
+      "record_id": "5d8b61ffbd",
+      "result_status": "通过",
+      "calculated_value": 292900.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 50,
+        "unit_price": 5800.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "50.0 × 5800.0 × (1 + 1%管理费) = 290000.00 × 1.01 = 292900.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 292900.0000, 期望值: 290000.0000, 绝对差: 2900.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.881535"
+    },
+    {
+      "record_id": "b72cbae5cb",
+      "result_status": "失败",
+      "calculated_value": 37700.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 290000.0,
+        "tax_rate": 0.13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "290000.0 × 0.13 = 37700.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 37700.0000, 期望值: 290000.0000, 绝对差: 252300.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.881671"
+    },
+    {
+      "record_id": "f9020e8063",
+      "result_status": "失败",
+      "calculated_value": 5800.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 290000.0,
+        "quantity": 50
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "290000.0 ÷ 50.0 = 5800.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 5800.0000, 期望值: 290000.0000, 绝对差: 284200.0000, 相对差: 98.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.881791"
+    },
+    {
+      "record_id": "d54294a05f",
+      "result_status": "通过",
+      "calculated_value": 17170.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 200,
+        "unit_price": 85.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "200.0 × 85.0 × (1 + 1%管理费) = 17000.00 × 1.01 = 17170.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 17170.0000, 期望值: 17000.0000, 绝对差: 170.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.881992"
+    },
+    {
+      "record_id": "038650e01c",
+      "result_status": "失败",
+      "calculated_value": 2210.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 17000.0,
+        "tax_rate": 0.13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "17000.0 × 0.13 = 2210.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2210.0000, 期望值: 17000.0000, 绝对差: 14790.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882043"
+    },
+    {
+      "record_id": "2d2cb48095",
+      "result_status": "失败",
+      "calculated_value": 85.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 17000.0,
+        "quantity": 200
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "17000.0 ÷ 200.0 = 85.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 85.0000, 期望值: 17000.0000, 绝对差: 16915.0000, 相对差: 99.5000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882090"
+    },
+    {
+      "record_id": "c4e250d51b",
+      "result_status": "通过",
+      "calculated_value": 18180.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 150,
+        "unit_price": 120.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "150.0 × 120.0 × (1 + 1%管理费) = 18000.00 × 1.01 = 18180.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 18180.0000, 期望值: 18000.0000, 绝对差: 180.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.882193"
+    },
+    {
+      "record_id": "96163a435c",
+      "result_status": "失败",
+      "calculated_value": 2340.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 18000.0,
+        "tax_rate": 0.13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "18000.0 × 0.13 = 2340.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2340.0000, 期望值: 18000.0000, 绝对差: 15660.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882238"
+    },
+    {
+      "record_id": "3447f74444",
+      "result_status": "失败",
+      "calculated_value": 120.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 18000.0,
+        "quantity": 150
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "18000.0 ÷ 150.0 = 120.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 120.0000, 期望值: 18000.0000, 绝对差: 17880.0000, 相对差: 99.3333%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882283"
+    },
+    {
+      "record_id": "163c0e1628",
+      "result_status": "通过",
+      "calculated_value": 22624.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 80,
+        "unit_price": 280.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "80.0 × 280.0 × (1 + 1%管理费) = 22400.00 × 1.01 = 22624.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 22624.0000, 期望值: 22400.0000, 绝对差: 224.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.882368"
+    },
+    {
+      "record_id": "2bd84937f1",
+      "result_status": "失败",
+      "calculated_value": 2016.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22400.0,
+        "tax_rate": 0.09
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "22400.0 × 0.09 = 2016.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2016.0000, 期望值: 22400.0000, 绝对差: 20384.0000, 相对差: 91.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882413"
+    },
+    {
+      "record_id": "48927921dd",
+      "result_status": "失败",
+      "calculated_value": 280.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22400.0,
+        "quantity": 80
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "22400.0 ÷ 80.0 = 280.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 280.0000, 期望值: 22400.0000, 绝对差: 22120.0000, 相对差: 98.7500%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882456"
+    },
+    {
+      "record_id": "a688b8a072",
+      "result_status": "通过",
+      "calculated_value": 22725.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 500,
+        "unit_price": 45.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "500.0 × 45.0 × (1 + 1%管理费) = 22500.00 × 1.01 = 22725.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 22725.0000, 期望值: 22500.0000, 绝对差: 225.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.882536"
+    },
+    {
+      "record_id": "33e843ffa8",
+      "result_status": "失败",
+      "calculated_value": 2025.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22500.0,
+        "tax_rate": 0.09
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "22500.0 × 0.09 = 2025.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2025.0000, 期望值: 22500.0000, 绝对差: 20475.0000, 相对差: 91.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882578"
+    },
+    {
+      "record_id": "febd20cfd1",
+      "result_status": "失败",
+      "calculated_value": 45.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22500.0,
+        "quantity": 500
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "22500.0 ÷ 500.0 = 45.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 45.0000, 期望值: 22500.0000, 绝对差: 22455.0000, 相对差: 99.8000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882629"
+    },
+    {
+      "record_id": "64e6825aa9",
+      "result_status": "通过",
+      "calculated_value": 42925.0,
+      "expected_value": 42500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 50,
+        "unit_price": 850.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "50.0 × 850.0 × (1 + 1%管理费) = 42500.00 × 1.01 = 42925.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 42925.0000, 期望值: 42500.0000, 绝对差: 425.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.882707"
+    },
+    {
+      "record_id": "52a5f42641",
+      "result_status": "失败",
+      "calculated_value": 5525.0,
+      "expected_value": 42500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 42500.0,
+        "tax_rate": 0.13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "42500.0 × 0.13 = 5525.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 5525.0000, 期望值: 42500.0000, 绝对差: 36975.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882750"
+    },
+    {
+      "record_id": "f32065ca63",
+      "result_status": "失败",
+      "calculated_value": 850.0,
+      "expected_value": 42500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 42500.0,
+        "quantity": 50
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "42500.0 ÷ 50.0 = 850.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 850.0000, 期望值: 42500.0000, 绝对差: 41650.0000, 相对差: 98.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.882793"
+    },
+    {
+      "record_id": "47ab4923fc",
+      "result_status": "通过",
+      "calculated_value": 11110.0,
+      "expected_value": 11000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 200,
+        "unit_price": 55.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "200.0 × 55.0 × (1 + 1%管理费) = 11000.00 × 1.01 = 11110.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 11110.0000, 期望值: 11000.0000, 绝对差: 110.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.882868"
+    },
+    {
+      "record_id": "9037ed6cdc",
+      "result_status": "失败",
+      "calculated_value": 1430.0,
+      "expected_value": 11000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 11000.0,
+        "tax_rate": 0.13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "11000.0 × 0.13 = 1430.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1430.0000, 期望值: 11000.0000, 绝对差: 9570.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883010"
+    },
+    {
+      "record_id": "92a768a626",
+      "result_status": "失败",
+      "calculated_value": 55.0,
+      "expected_value": 11000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 11000.0,
+        "quantity": 200
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "11000.0 ÷ 200.0 = 55.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 55.0000, 期望值: 11000.0000, 绝对差: 10945.0000, 相对差: 99.5000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883069"
+    },
+    {
+      "record_id": "b157fe61a1",
+      "result_status": "通过",
+      "calculated_value": 24240.0,
+      "expected_value": 24000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 20,
+        "unit_price": 1200.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "20.0 × 1200.0 × (1 + 1%管理费) = 24000.00 × 1.01 = 24240.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 24240.0000, 期望值: 24000.0000, 绝对差: 240.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.883171"
+    },
+    {
+      "record_id": "960f8b024b",
+      "result_status": "失败",
+      "calculated_value": 3120.0,
+      "expected_value": 24000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 24000.0,
+        "tax_rate": 0.13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "24000.0 × 0.13 = 3120.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 3120.0000, 期望值: 24000.0000, 绝对差: 20880.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883217"
+    },
+    {
+      "record_id": "5218f5ff32",
+      "result_status": "失败",
+      "calculated_value": 1200.0,
+      "expected_value": 24000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 24000.0,
+        "quantity": 20
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "24000.0 ÷ 20.0 = 1200.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1200.0000, 期望值: 24000.0000, 绝对差: 22800.0000, 相对差: 95.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883261"
+    },
+    {
+      "record_id": "259f966cfb",
+      "result_status": "通过",
+      "calculated_value": 13635.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 30,
+        "unit_price": 450.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "30.0 × 450.0 × (1 + 1%管理费) = 13500.00 × 1.01 = 13635.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 13635.0000, 期望值: 13500.0000, 绝对差: 135.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.883361"
+    },
+    {
+      "record_id": "d3a9783b84",
+      "result_status": "失败",
+      "calculated_value": 1755.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 13500.0,
+        "tax_rate": 0.13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F002",
+          "detail": "13500.0 × 0.13 = 1755.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1755.0000, 期望值: 13500.0000, 绝对差: 11745.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883406"
+    },
+    {
+      "record_id": "a5d443cb0c",
+      "result_status": "失败",
+      "calculated_value": 450.0,
+      "expected_value": 13500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 13500.0,
+        "quantity": 30
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "13500.0 ÷ 30.0 = 450.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 450.0000, 期望值: 13500.0000, 绝对差: 13050.0000, 相对差: 96.6667%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883456"
+    },
+    {
+      "record_id": "b1ebe6295f",
+      "result_status": "通过",
+      "calculated_value": 35350.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 100,
+        "unit_price": 350.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "100.0 × 350.0 × (1 + 1%管理费) = 35000.00 × 1.01 = 35350.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 35350.0000, 期望值: 35000.0000, 绝对差: 350.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.883539"
+    },
+    {
+      "record_id": "3f34e2101b",
+      "result_status": "失败",
+      "calculated_value": 4550.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 35000.0,
+        "tax_rate": 13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 13 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "35000.0 × 0.13 = 4550.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 4550.0000, 期望值: 35000.0000, 绝对差: 30450.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883584"
+    },
+    {
+      "record_id": "96080d01a6",
+      "result_status": "失败",
+      "calculated_value": 350.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 35000.0,
+        "quantity": 100
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "35000.0 ÷ 100.0 = 350.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 350.0000, 期望值: 35000.0000, 绝对差: 34650.0000, 相对差: 99.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883628"
+    },
+    {
+      "record_id": "303f273aea",
+      "result_status": "通过",
+      "calculated_value": 292900.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 50,
+        "unit_price": 5800.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "50.0 × 5800.0 × (1 + 1%管理费) = 290000.00 × 1.01 = 292900.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 292900.0000, 期望值: 290000.0000, 绝对差: 2900.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.883708"
+    },
+    {
+      "record_id": "23b90e3f26",
+      "result_status": "失败",
+      "calculated_value": 37700.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 290000.0,
+        "tax_rate": 13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 13 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "290000.0 × 0.13 = 37700.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 37700.0000, 期望值: 290000.0000, 绝对差: 252300.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883756"
+    },
+    {
+      "record_id": "b893e3f8d6",
+      "result_status": "失败",
+      "calculated_value": 5800.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 290000.0,
+        "quantity": 50
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "290000.0 ÷ 50.0 = 5800.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 5800.0000, 期望值: 290000.0000, 绝对差: 284200.0000, 相对差: 98.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.883799"
+    },
+    {
+      "record_id": "dd4966bb69",
+      "result_status": "通过",
+      "calculated_value": 17170.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 200,
+        "unit_price": 85.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "200.0 × 85.0 × (1 + 1%管理费) = 17000.00 × 1.01 = 17170.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 17170.0000, 期望值: 17000.0000, 绝对差: 170.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.884528"
+    },
+    {
+      "record_id": "2cc50a32aa",
+      "result_status": "失败",
+      "calculated_value": 2210.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 17000.0,
+        "tax_rate": 13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 13 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "17000.0 × 0.13 = 2210.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2210.0000, 期望值: 17000.0000, 绝对差: 14790.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.884576"
+    },
+    {
+      "record_id": "c34f8de1e0",
+      "result_status": "失败",
+      "calculated_value": 85.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 17000.0,
+        "quantity": 200
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "17000.0 ÷ 200.0 = 85.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 85.0000, 期望值: 17000.0000, 绝对差: 16915.0000, 相对差: 99.5000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.884624"
+    },
+    {
+      "record_id": "2eaed87bae",
+      "result_status": "通过",
+      "calculated_value": 18180.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 150,
+        "unit_price": 120.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "150.0 × 120.0 × (1 + 1%管理费) = 18000.00 × 1.01 = 18180.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 18180.0000, 期望值: 18000.0000, 绝对差: 180.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.884708"
+    },
+    {
+      "record_id": "8fc547f698",
+      "result_status": "失败",
+      "calculated_value": 2340.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 18000.0,
+        "tax_rate": 13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 13 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "18000.0 × 0.13 = 2340.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2340.0000, 期望值: 18000.0000, 绝对差: 15660.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.884752"
+    },
+    {
+      "record_id": "285c7db7a0",
+      "result_status": "失败",
+      "calculated_value": 120.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 18000.0,
+        "quantity": 150
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "18000.0 ÷ 150.0 = 120.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 120.0000, 期望值: 18000.0000, 绝对差: 17880.0000, 相对差: 99.3333%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.884795"
+    },
+    {
+      "record_id": "2555789cea",
+      "result_status": "通过",
+      "calculated_value": 22624.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 80,
+        "unit_price": 280.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "80.0 × 280.0 × (1 + 1%管理费) = 22400.00 × 1.01 = 22624.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 22624.0000, 期望值: 22400.0000, 绝对差: 224.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.884876"
+    },
+    {
+      "record_id": "513538cbbd",
+      "result_status": "失败",
+      "calculated_value": 2016.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22400.0,
+        "tax_rate": 9
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 9 转换为小数 0.09",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "22400.0 × 0.09 = 2016.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2016.0000, 期望值: 22400.0000, 绝对差: 20384.0000, 相对差: 91.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.884920"
+    },
+    {
+      "record_id": "8ec1f3f540",
+      "result_status": "失败",
+      "calculated_value": 280.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22400.0,
+        "quantity": 80
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "22400.0 ÷ 80.0 = 280.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 280.0000, 期望值: 22400.0000, 绝对差: 22120.0000, 相对差: 98.7500%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.884963"
+    },
+    {
+      "record_id": "26e90d8118",
+      "result_status": "通过",
+      "calculated_value": 22725.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 500,
+        "unit_price": 45.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "500.0 × 45.0 × (1 + 1%管理费) = 22500.00 × 1.01 = 22725.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 22725.0000, 期望值: 22500.0000, 绝对差: 225.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.885042"
+    },
+    {
+      "record_id": "0449862693",
+      "result_status": "失败",
+      "calculated_value": 2025.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22500.0,
+        "tax_rate": 9
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 9 转换为小数 0.09",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "22500.0 × 0.09 = 2025.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2025.0000, 期望值: 22500.0000, 绝对差: 20475.0000, 相对差: 91.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885086"
+    },
+    {
+      "record_id": "8d67531496",
+      "result_status": "失败",
+      "calculated_value": 45.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22500.0,
+        "quantity": 500
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "22500.0 ÷ 500.0 = 45.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 45.0000, 期望值: 22500.0000, 绝对差: 22455.0000, 相对差: 99.8000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885128"
+    },
+    {
+      "record_id": "3e0d163ffc",
+      "result_status": "通过",
+      "calculated_value": 151500.0,
+      "expected_value": 150000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 1,
+        "unit_price": 150000.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "1.0 × 150000.0 × (1 + 1%管理费) = 150000.00 × 1.01 = 151500.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 151500.0000, 期望值: 150000.0000, 绝对差: 1500.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.885205"
+    },
+    {
+      "record_id": "89f4bdf6f7",
+      "result_status": "失败",
+      "calculated_value": 19500.0,
+      "expected_value": 150000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 150000.0,
+        "tax_rate": 13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 13 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "150000.0 × 0.13 = 19500.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 19500.0000, 期望值: 150000.0000, 绝对差: 130500.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885252"
+    },
+    {
+      "record_id": "38b9581a09",
+      "result_status": "通过",
+      "calculated_value": 150000.0,
+      "expected_value": 150000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 150000.0,
+        "quantity": 1
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "150000.0 ÷ 1.0 = 150000.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 150000.0000, 期望值: 150000.0000, 绝对差: 0.0000, 相对差: 0.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.885295"
+    },
+    {
+      "record_id": "91eda7d4e9",
+      "result_status": "通过",
+      "calculated_value": 85850.0,
+      "expected_value": 85000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 1,
+        "unit_price": 85000.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "1.0 × 85000.0 × (1 + 1%管理费) = 85000.00 × 1.01 = 85850.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 85850.0000, 期望值: 85000.0000, 绝对差: 850.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.885369"
+    },
+    {
+      "record_id": "cf32084ee5",
+      "result_status": "失败",
+      "calculated_value": 11050.0,
+      "expected_value": 85000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 85000.0,
+        "tax_rate": 13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 13 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "85000.0 × 0.13 = 11050.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 11050.0000, 期望值: 85000.0000, 绝对差: 73950.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885413"
+    },
+    {
+      "record_id": "e5471a6990",
+      "result_status": "通过",
+      "calculated_value": 85000.0,
+      "expected_value": 85000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 85000.0,
+        "quantity": 1
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "85000.0 ÷ 1.0 = 85000.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 85000.0000, 期望值: 85000.0000, 绝对差: 0.0000, 相对差: 0.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.885455"
+    },
+    {
+      "record_id": "e1f128d302",
+      "result_status": "通过",
+      "calculated_value": 121200.0,
+      "expected_value": 120000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 1,
+        "unit_price": 120000.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "1.0 × 120000.0 × (1 + 1%管理费) = 120000.00 × 1.01 = 121200.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 121200.0000, 期望值: 120000.0000, 绝对差: 1200.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.885532"
+    },
+    {
+      "record_id": "783419a107",
+      "result_status": "失败",
+      "calculated_value": 15600.0,
+      "expected_value": 120000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 120000.0,
+        "tax_rate": 13
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 13 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "120000.0 × 0.13 = 15600.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 15600.0000, 期望值: 120000.0000, 绝对差: 104400.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885576"
+    },
+    {
+      "record_id": "71892f1c38",
+      "result_status": "通过",
+      "calculated_value": 120000.0,
+      "expected_value": 120000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 120000.0,
+        "quantity": 1
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "120000.0 ÷ 1.0 = 120000.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 120000.0000, 期望值: 120000.0000, 绝对差: 0.0000, 相对差: 0.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.885626"
+    },
+    {
+      "record_id": "5392bf2597",
+      "result_status": "失败",
+      "calculated_value": 3.5350000000000006,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 100,
+        "unit_price": 0.035
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "100.0 × 0.035 × (1 + 1%管理费) = 3.50 × 1.01 = 3.54",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 3.5350, 期望值: 35000.0000, 绝对差: 34996.4650, 相对差: 99.9899%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885702"
+    },
+    {
+      "record_id": "eda9f690f5",
+      "result_status": "失败",
+      "calculated_value": 4550.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 35000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "35000.0 × 0.13 = 4550.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 4550.0000, 期望值: 35000.0000, 绝对差: 30450.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885754"
+    },
+    {
+      "record_id": "35d036d455",
+      "result_status": "失败",
+      "calculated_value": 350.0,
+      "expected_value": 35000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 35000.0,
+        "quantity": 100
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "35000.0 ÷ 100.0 = 350.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 350.0000, 期望值: 35000.0000, 绝对差: 34650.0000, 相对差: 99.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885801"
+    },
+    {
+      "record_id": "f309e8f8f0",
+      "result_status": "失败",
+      "calculated_value": 29.289999999999996,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 50,
+        "unit_price": 0.58
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "50.0 × 0.58 × (1 + 1%管理费) = 29.00 × 1.01 = 29.29",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 29.2900, 期望值: 290000.0000, 绝对差: 289970.7100, 相对差: 99.9899%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885882"
+    },
+    {
+      "record_id": "43119aefc3",
+      "result_status": "失败",
+      "calculated_value": 37700.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 290000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "290000.0 × 0.13 = 37700.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 37700.0000, 期望值: 290000.0000, 绝对差: 252300.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885929"
+    },
+    {
+      "record_id": "bfa905a30b",
+      "result_status": "失败",
+      "calculated_value": 5800.0,
+      "expected_value": 290000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 290000.0,
+        "quantity": 50
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "290000.0 ÷ 50.0 = 5800.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 5800.0000, 期望值: 290000.0000, 绝对差: 284200.0000, 相对差: 98.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.885973"
+    },
+    {
+      "record_id": "767aec6733",
+      "result_status": "失败",
+      "calculated_value": 1.7170000000000003,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 200,
+        "unit_price": 0.0085
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "200.0 × 0.0085 × (1 + 1%管理费) = 1.70 × 1.01 = 1.72",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1.7170, 期望值: 17000.0000, 绝对差: 16998.2830, 相对差: 99.9899%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886052"
+    },
+    {
+      "record_id": "eb90be87f1",
+      "result_status": "失败",
+      "calculated_value": 2210.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 17000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "17000.0 × 0.13 = 2210.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2210.0000, 期望值: 17000.0000, 绝对差: 14790.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886099"
+    },
+    {
+      "record_id": "154b3b57a9",
+      "result_status": "失败",
+      "calculated_value": 85.0,
+      "expected_value": 17000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 17000.0,
+        "quantity": 200
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "17000.0 ÷ 200.0 = 85.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 85.0000, 期望值: 17000.0000, 绝对差: 16915.0000, 相对差: 99.5000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886141"
+    },
+    {
+      "record_id": "57285950aa",
+      "result_status": "失败",
+      "calculated_value": 1.818,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 150,
+        "unit_price": 0.012
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "150.0 × 0.012 × (1 + 1%管理费) = 1.80 × 1.01 = 1.82",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1.8180, 期望值: 18000.0000, 绝对差: 17998.1820, 相对差: 99.9899%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886216"
+    },
+    {
+      "record_id": "7b9028b2de",
+      "result_status": "失败",
+      "calculated_value": 2340.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 18000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "18000.0 × 0.13 = 2340.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2340.0000, 期望值: 18000.0000, 绝对差: 15660.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886263"
+    },
+    {
+      "record_id": "7c62d95f18",
+      "result_status": "失败",
+      "calculated_value": 120.0,
+      "expected_value": 18000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 18000.0,
+        "quantity": 150
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "18000.0 ÷ 150.0 = 120.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 120.0000, 期望值: 18000.0000, 绝对差: 17880.0000, 相对差: 99.3333%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886305"
+    },
+    {
+      "record_id": "135fb6053f",
+      "result_status": "失败",
+      "calculated_value": 2.2624000000000004,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 80,
+        "unit_price": 0.028
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "80.0 × 0.028 × (1 + 1%管理费) = 2.24 × 1.01 = 2.26",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2.2624, 期望值: 22400.0000, 绝对差: 22397.7376, 相对差: 99.9899%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886386"
+    },
+    {
+      "record_id": "959cac4853",
+      "result_status": "失败",
+      "calculated_value": 2016.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22400.0,
+        "tax_rate": "9%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '9%' 转换为小数 0.09",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "22400.0 × 0.09 = 2016.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2016.0000, 期望值: 22400.0000, 绝对差: 20384.0000, 相对差: 91.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886446"
+    },
+    {
+      "record_id": "02dcea5209",
+      "result_status": "失败",
+      "calculated_value": 280.0,
+      "expected_value": 22400.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22400.0,
+        "quantity": 80
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "22400.0 ÷ 80.0 = 280.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 280.0000, 期望值: 22400.0000, 绝对差: 22120.0000, 相对差: 98.7500%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886489"
+    },
+    {
+      "record_id": "135018520f",
+      "result_status": "失败",
+      "calculated_value": 2.2725,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": 500,
+        "unit_price": 0.0045
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "500.0 × 0.0045 × (1 + 1%管理费) = 2.25 × 1.01 = 2.27",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2.2725, 期望值: 22500.0000, 绝对差: 22497.7275, 相对差: 99.9899%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886564"
+    },
+    {
+      "record_id": "573da3ac56",
+      "result_status": "失败",
+      "calculated_value": 2025.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22500.0,
+        "tax_rate": "9%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '9%' 转换为小数 0.09",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "22500.0 × 0.09 = 2025.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 2025.0000, 期望值: 22500.0000, 绝对差: 20475.0000, 相对差: 91.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886619"
+    },
+    {
+      "record_id": "cc751bd345",
+      "result_status": "失败",
+      "calculated_value": 45.0,
+      "expected_value": 22500.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 22500.0,
+        "quantity": 500
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "22500.0 ÷ 500.0 = 45.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 45.0000, 期望值: 22500.0000, 绝对差: 22455.0000, 相对差: 99.8000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886668"
+    },
+    {
+      "record_id": "f90e0fba43",
+      "result_status": "通过",
+      "calculated_value": 0.0,
+      "expected_value": 0.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "0",
+        "unit_price": 100.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "0.0 × 100.0 × (1 + 1%管理费) = 0.00 × 1.01 = 0.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 0.0000, 期望值: 0.0000, 绝对差: 0.0000, 相对差: 0.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.886743"
+    },
+    {
+      "record_id": "e001e8cb5e",
+      "result_status": "通过",
+      "calculated_value": 0.0,
+      "expected_value": 0.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 0.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "0.0 × 0.13 = 0.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 0.0000, 期望值: 0.0000, 绝对差: 0.0000, 相对差: 0.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.886789"
+    },
+    {
+      "record_id": "05a79d2cfe",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": 0.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 0.0,
+        "quantity": "0"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "除零边界检查",
+          "detail": "除零异常：分母为0",
+          "status": "异常"
+        },
+        {
+          "step": 4,
+          "action": "公式计算",
+          "detail": "计算失败: 除零异常：分母为0",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "除零异常：分母为0",
+      "anomaly_type": "除零异常",
+      "timestamp": "2026-06-14T21:51:40.886841"
+    },
+    {
+      "record_id": "536c04fcb4",
+      "result_status": "失败",
+      "calculated_value": 0.10099999999999999,
+      "expected_value": 1.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "0.0000001",
+        "unit_price": 1000000.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "1e-07 × 1000000.0 × (1 + 1%管理费) = 0.10 × 1.01 = 0.10",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 0.1010, 期望值: 1.0000, 绝对差: 0.8990, 相对差: 89.9000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.886985"
+    },
+    {
+      "record_id": "484b1ed368",
+      "result_status": "失败",
+      "calculated_value": 0.13,
+      "expected_value": 1.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 1.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "1.0 × 0.13 = 0.1300",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 0.1300, 期望值: 1.0000, 绝对差: 0.8700, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.887061"
+    },
+    {
+      "record_id": "0463087934",
+      "result_status": "失败",
+      "calculated_value": 10000000.0,
+      "expected_value": 1.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 1.0,
+        "quantity": "0.0000001"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "1.0 ÷ 1e-07 = 10000000.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 10000000.0000, 期望值: 1.0000, 绝对差: 9999999.0000, 相对差: 999999900.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.887111"
+    },
+    {
+      "record_id": "8b85cad33d",
+      "result_status": "通过",
+      "calculated_value": -1010.0,
+      "expected_value": -1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "-10",
+        "unit_price": 100.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 quantity(工程量)",
+          "detail": "值为负异常：quantity = -10",
+          "status": "警告"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "-10.0 × 100.0 × (1 + 1%管理费) = -1000.00 × 1.01 = -1010.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: -1010.0000, 期望值: -1000.0000, 绝对差: 10.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "负值异常",
+      "timestamp": "2026-06-14T21:51:40.887243"
+    },
+    {
+      "record_id": "2a9fb6450e",
+      "result_status": "失败",
+      "calculated_value": -130.0,
+      "expected_value": -1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": -1000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 total_price(合价)",
+          "detail": "值为负异常：total_price = -1000.0",
+          "status": "警告"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "-1000.0 × 0.13 = -130.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: -130.0000, 期望值: -1000.0000, 绝对差: 870.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.887298"
+    },
+    {
+      "record_id": "3ddd39f9f8",
+      "result_status": "失败",
+      "calculated_value": 100.0,
+      "expected_value": -1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": -1000.0,
+        "quantity": "-10"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 total_price(合价)",
+          "detail": "值为负异常：total_price = -1000.0",
+          "status": "警告"
+        },
+        {
+          "step": 2,
+          "action": "检查字段 quantity(工程量)",
+          "detail": "值为负异常：quantity = -10",
+          "status": "警告"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "-1000.0 ÷ -10.0 = 100.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 100.0000, 期望值: -1000.0000, 绝对差: 1100.0000, 相对差: 110.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.887343"
+    },
+    {
+      "record_id": "7b0aaae9a4",
+      "result_status": "通过",
+      "calculated_value": -1010.0,
+      "expected_value": -1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "10",
+        "unit_price": -100.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 2,
+          "action": "检查字段 unit_price(单价)",
+          "detail": "值为负异常：unit_price = -100.0",
+          "status": "警告"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "10.0 × -100.0 × (1 + 1%管理费) = -1000.00 × 1.01 = -1010.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: -1010.0000, 期望值: -1000.0000, 绝对差: 10.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "负值异常",
+      "timestamp": "2026-06-14T21:51:40.887475"
+    },
+    {
+      "record_id": "c7d646c24e",
+      "result_status": "失败",
+      "calculated_value": -130.0,
+      "expected_value": -1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": -1000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 total_price(合价)",
+          "detail": "值为负异常：total_price = -1000.0",
+          "status": "警告"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "-1000.0 × 0.13 = -130.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: -130.0000, 期望值: -1000.0000, 绝对差: 870.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.887527"
+    },
+    {
+      "record_id": "8feb004641",
+      "result_status": "失败",
+      "calculated_value": -100.0,
+      "expected_value": -1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": -1000.0,
+        "quantity": "10"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 total_price(合价)",
+          "detail": "值为负异常：total_price = -1000.0",
+          "status": "警告"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "-1000.0 ÷ 10.0 = -100.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: -100.0000, 期望值: -1000.0000, 绝对差: 900.0000, 相对差: 90.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.887572"
+    },
+    {
+      "record_id": "3a448eaa73",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": null,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": null
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 quantity(工程量)",
+          "detail": "空值异常：quantity 为空",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "空值异常：quantity 为空",
+      "anomaly_type": "空值异常",
+      "timestamp": "2026-06-14T21:51:40.887647"
+    },
+    {
+      "record_id": "b2dae46e33",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": null,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": null
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 total_price(合价)",
+          "detail": "空值异常：total_price 为空",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "空值异常：total_price 为空",
+      "anomaly_type": "空值异常",
+      "timestamp": "2026-06-14T21:51:40.887669"
+    },
+    {
+      "record_id": "e8b5831bf1",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": null,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": null
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 total_price(合价)",
+          "detail": "空值异常：total_price 为空",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "空值异常：total_price 为空",
+      "anomaly_type": "空值异常",
+      "timestamp": "2026-06-14T21:51:40.887690"
+    },
+    {
+      "record_id": "10b9722f01",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": null,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "10",
+        "unit_price": null
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 2,
+          "action": "检查字段 unit_price(单价)",
+          "detail": "空值异常：unit_price 为空",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "空值异常：unit_price 为空",
+      "anomaly_type": "空值异常",
+      "timestamp": "2026-06-14T21:51:40.887756"
+    },
+    {
+      "record_id": "5d7b510149",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": null,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": null
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 total_price(合价)",
+          "detail": "空值异常：total_price 为空",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "空值异常：total_price 为空",
+      "anomaly_type": "空值异常",
+      "timestamp": "2026-06-14T21:51:40.887777"
+    },
+    {
+      "record_id": "b7911bd3c2",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": null,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": null
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 total_price(合价)",
+          "detail": "空值异常：total_price 为空",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "空值异常：total_price 为空",
+      "anomaly_type": "空值异常",
+      "timestamp": "2026-06-14T21:51:40.887800"
+    },
+    {
+      "record_id": "319ab487cd",
+      "result_status": "通过",
+      "calculated_value": 1010.0,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "10",
+        "unit_price": 100.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "10.0 × 100.0 × (1 + 1%管理费) = 1000.00 × 1.01 = 1010.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1010.0000, 期望值: 1000.0000, 绝对差: 10.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.887881"
+    },
+    {
+      "record_id": "09f6ab3d96",
+      "result_status": "失败",
+      "calculated_value": 130.0,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 1000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "1000.0 × 0.13 = 130.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 130.0000, 期望值: 1000.0000, 绝对差: 870.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.887932"
+    },
+    {
+      "record_id": "a7b49246b8",
+      "result_status": "失败",
+      "calculated_value": 100.0,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 1000.0,
+        "quantity": "10"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "1000.0 ÷ 10.0 = 100.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 100.0000, 期望值: 1000.0000, 绝对差: 900.0000, 相对差: 90.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.887975"
+    },
+    {
+      "record_id": "b545c4c728",
+      "result_status": "通过",
+      "calculated_value": 1010.0,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "10",
+        "unit_price": 100.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "10.0 × 100.0 × (1 + 1%管理费) = 1000.00 × 1.01 = 1010.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1010.0000, 期望值: 1000.0000, 绝对差: 10.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.888054"
+    },
+    {
+      "record_id": "419163bfa5",
+      "result_status": "失败",
+      "calculated_value": 1130.0,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 1000.0,
+        "tax_rate": "113"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 113.0 转换为小数 1.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "1000.0 × 1.13 = 1130.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1130.0000, 期望值: 1000.0000, 绝对差: 130.0000, 相对差: 13.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.888100"
+    },
+    {
+      "record_id": "1fce0bfc71",
+      "result_status": "失败",
+      "calculated_value": 100.0,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 1000.0,
+        "quantity": "10"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "1000.0 ÷ 10.0 = 100.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 100.0000, 期望值: 1000.0000, 绝对差: 900.0000, 相对差: 90.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.888146"
+    },
+    {
+      "record_id": "415d45803a",
+      "result_status": "通过",
+      "calculated_value": 1009.899,
+      "expected_value": 999.9,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "10",
+        "unit_price": 99.99
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "10.0 × 99.99 × (1 + 1%管理费) = 999.90 × 1.01 = 1009.90",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1009.8990, 期望值: 999.9000, 绝对差: 9.9990, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.888257"
+    },
+    {
+      "record_id": "e02d5640cf",
+      "result_status": "失败",
+      "calculated_value": 129.987,
+      "expected_value": 999.9,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 999.9,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "999.9 × 0.13 = 129.9870",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 129.9870, 期望值: 999.9000, 绝对差: 869.9130, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.888313"
+    },
+    {
+      "record_id": "e0ed637b50",
+      "result_status": "失败",
+      "calculated_value": 99.99,
+      "expected_value": 999.9,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 999.9,
+        "quantity": "10"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "999.9 ÷ 10.0 = 99.9900",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 99.9900, 期望值: 999.9000, 绝对差: 899.9100, 相对差: 90.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.888358"
+    },
+    {
+      "record_id": "f3b8a50a2f",
+      "result_status": "失败",
+      "calculated_value": 1010.0,
+      "expected_value": 950.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "10",
+        "unit_price": 100.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "10.0 × 100.0 × (1 + 1%管理费) = 1000.00 × 1.01 = 1010.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1010.0000, 期望值: 950.0000, 绝对差: 60.0000, 相对差: 6.3158%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.916829"
+    },
+    {
+      "record_id": "c35f752c02",
+      "result_status": "失败",
+      "calculated_value": 123.5,
+      "expected_value": 950.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 950.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "950.0 × 0.13 = 123.5000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 123.5000, 期望值: 950.0000, 绝对差: 826.5000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.916922"
+    },
+    {
+      "record_id": "435d938937",
+      "result_status": "失败",
+      "calculated_value": 95.0,
+      "expected_value": 950.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 950.0,
+        "quantity": "10"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "950.0 ÷ 10.0 = 95.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 95.0000, 期望值: 950.0000, 绝对差: 855.0000, 相对差: 90.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.916975"
+    },
+    {
+      "record_id": "5e6f802a06",
+      "result_status": "通过",
+      "calculated_value": 0.0,
+      "expected_value": 0.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "0",
+        "unit_price": 0.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "0.0 × 0.0 × (1 + 1%管理费) = 0.00 × 1.01 = 0.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 0.0000, 期望值: 0.0000, 绝对差: 0.0000, 相对差: 0.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.917135"
+    },
+    {
+      "record_id": "8ce0dd6387",
+      "result_status": "通过",
+      "calculated_value": 0.0,
+      "expected_value": 0.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 0.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "0.0 × 0.13 = 0.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 0.0000, 期望值: 0.0000, 绝对差: 0.0000, 相对差: 0.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.917232"
+    },
+    {
+      "record_id": "55ff9a5665",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": 0.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 0.0,
+        "quantity": "0"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "除零边界检查",
+          "detail": "除零异常：分母为0",
+          "status": "异常"
+        },
+        {
+          "step": 4,
+          "action": "公式计算",
+          "detail": "计算失败: 除零异常：分母为0",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "除零异常：分母为0",
+      "anomaly_type": "除零异常",
+      "timestamp": "2026-06-14T21:51:40.917293"
+    },
+    {
+      "record_id": "52e0daa718",
+      "result_status": "通过",
+      "calculated_value": 1009998990.0,
+      "expected_value": 999999000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "1000",
+        "unit_price": 999999.0
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "total_price = quantity * unit_price * 1.01",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F001 (v2)",
+          "detail": "1000.0 × 999999.0 × (1 + 1%管理费) = 999999000.00 × 1.01 = 1009998990.00",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 1009998990.0000, 期望值: 999999000.0000, 绝对差: 9999990.0000, 相对差: 1.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差在容差 2% 以内，判定通过",
+          "status": "通过"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": null,
+      "timestamp": "2026-06-14T21:51:40.917417"
+    },
+    {
+      "record_id": "93a6edb2e4",
+      "result_status": "失败",
+      "calculated_value": 129999870.0,
+      "expected_value": 999999000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 999999000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "999999000.0 × 0.13 = 129999870.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 129999870.0000, 期望值: 999999000.0000, 绝对差: 869999130.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.917467"
+    },
+    {
+      "record_id": "2e35e0e6a8",
+      "result_status": "失败",
+      "calculated_value": 999999.0,
+      "expected_value": 999999000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 999999000.0,
+        "quantity": "1000"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "unit_cost = total_price / quantity",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "执行公式 F004",
+          "detail": "999999000.0 ÷ 1000.0 = 999999.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 999999.0000, 期望值: 999999000.0000, 绝对差: 998999001.0000, 相对差: 99.9000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.917511"
+    },
+    {
+      "record_id": "af5480dbcb",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "quantity": "INVALID"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 1,
+          "action": "检查字段 quantity(工程量)",
+          "detail": "公式计算异常：quantity = INVALID 格式无效，无法转换为数字",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "公式计算异常：quantity = INVALID 格式无效，无法转换为数字",
+      "anomaly_type": "公式计算异常",
+      "timestamp": "2026-06-14T21:51:40.917578"
+    },
+    {
+      "record_id": "18f564f541",
+      "result_status": "失败",
+      "calculated_value": 130.0,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 1000.0,
+        "tax_rate": "13%"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 3,
+          "action": "执行计算公式",
+          "detail": "tax_amount = total_price * tax_rate",
+          "status": "公式已计算"
+        },
+        {
+          "step": 4,
+          "action": "税率格式化",
+          "detail": "税率 '13%' 转换为小数 0.13",
+          "status": "预处理完成"
+        },
+        {
+          "step": 5,
+          "action": "执行公式 F002",
+          "detail": "1000.0 × 0.13 = 130.0000",
+          "status": "计算完成"
+        },
+        {
+          "step": 5,
+          "action": "结果比对",
+          "detail": "计算值: 130.0000, 期望值: 1000.0000, 绝对差: 870.0000, 相对差: 87.0000%",
+          "status": "已验算"
+        },
+        {
+          "step": 6,
+          "action": "验算判定",
+          "detail": "偏差超过容差 2%，判定不通过",
+          "status": "失败"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": null,
+      "anomaly_type": "数值偏差",
+      "timestamp": "2026-06-14T21:51:40.917635"
+    },
+    {
+      "record_id": "0589903062",
+      "result_status": "异常",
+      "calculated_value": null,
+      "expected_value": 1000.0,
+      "tolerance": 0.02,
+      "raw_inputs": {
+        "total_price": 1000.0,
+        "quantity": "INVALID"
+      },
+      "processing_steps": [
+        {
+          "step": 1,
+          "action": "读取原始输入",
+          "detail": "来源: nan",
+          "status": "原始数据"
+        },
+        {
+          "step": 2,
+          "action": "检查字段 quantity(工程量)",
+          "detail": "公式计算异常：quantity = INVALID 格式无效，无法转换为数字",
+          "status": "异常"
+        }
+      ],
+      "unit_conversions": [],
+      "error_message": "公式计算异常：quantity = INVALID 格式无效，无法转换为数字",
+      "anomaly_type": "公式计算异常",
+      "timestamp": "2026-06-14T21:51:40.917674"
+    }
+  ]
+}

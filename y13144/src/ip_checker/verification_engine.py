@@ -16,6 +16,12 @@ from .unit_system import UnitSystem, UnitConversionError
 from .calculation_spec import CalculationSpecManager
 
 
+class FormulaCalculationError(Exception):
+    def __init__(self, message: str, anomaly_type: str = "公式计算异常"):
+        super().__init__(message)
+        self.anomaly_type = anomaly_type
+
+
 class BoundaryCaseHandler:
     @staticmethod
     def check_division_by_zero(numerator: float, denominator: float) -> Tuple[bool, Optional[str]]:
@@ -26,8 +32,12 @@ class BoundaryCaseHandler:
         return False, None
 
     @staticmethod
-    def check_negative_value(value: float, field_name: str) -> Tuple[bool, Optional[str]]:
-        if value < 0 and field_name in ["quantity", "unit_price", "total_price"]:
+    def check_negative_value(value: Any, field_name: str) -> Tuple[bool, Optional[str]]:
+        try:
+            num_value = float(value)
+        except (ValueError, TypeError):
+            return False, None
+        if num_value < 0 and field_name in ["quantity", "unit_price", "total_price"]:
             return True, f"值为负异常：{field_name} = {value}"
         return False, None
 
@@ -35,7 +45,17 @@ class BoundaryCaseHandler:
     def check_null_value(value: Any, field_name: str) -> Tuple[bool, Optional[str]]:
         if pd.isna(value) or value is None:
             return True, f"空值异常：{field_name} 为空"
+        if isinstance(value, str) and str(value).strip() == "":
+            return True, f"空值异常：{field_name} 为空字符串"
         return False, None
+
+    @staticmethod
+    def check_numeric_format(value: Any, field_name: str) -> Tuple[bool, Optional[str]]:
+        try:
+            _ = float(value)
+            return False, None
+        except (ValueError, TypeError):
+            return True, f"公式计算异常：{field_name} = {value} 格式无效，无法转换为数字"
 
     @staticmethod
     def check_unit_mismatch(from_unit: str, to_unit: str, expected_dimension: str) -> Tuple[bool, Optional[str]]:
@@ -94,7 +114,7 @@ class VerificationEngine:
                     "detail": null_msg,
                     "status": VerificationStatus.EXCEPTION.value,
                 })
-                return VerificationResult(
+                result = VerificationResult(
                     record_id=record_id,
                     result_status=VerificationStatus.EXCEPTION,
                     calculated_value=None,
@@ -106,6 +126,32 @@ class VerificationEngine:
                     error_message=null_msg,
                     anomaly_type="空值异常",
                 )
+                self.results.append(result)
+                return result
+
+            if field != "tax_rate":
+                is_bad_format, fmt_msg = self.boundary_handler.check_numeric_format(value, field)
+                if is_bad_format:
+                    processing_steps.append({
+                        "step": step_num,
+                        "action": f"检查字段 {field}({src_field})",
+                        "detail": fmt_msg,
+                        "status": VerificationStatus.EXCEPTION.value,
+                    })
+                    result = VerificationResult(
+                        record_id=record_id,
+                        result_status=VerificationStatus.EXCEPTION,
+                        calculated_value=None,
+                        expected_value=expected_value,
+                        tolerance=self.tolerance,
+                        raw_inputs=raw_inputs,
+                        processing_steps=processing_steps,
+                        unit_conversions=unit_conversions,
+                        error_message=fmt_msg,
+                        anomaly_type="公式计算异常",
+                    )
+                    self.results.append(result)
+                    return result
 
             is_negative, neg_msg = self.boundary_handler.check_negative_value(value, field)
             if is_negative:
@@ -150,7 +196,7 @@ class VerificationEngine:
                     "detail": f"转换失败: {str(e)}",
                     "status": VerificationStatus.EXCEPTION.value,
                 })
-                return VerificationResult(
+                result = VerificationResult(
                     record_id=record_id,
                     result_status=VerificationStatus.EXCEPTION,
                     calculated_value=None,
@@ -162,6 +208,8 @@ class VerificationEngine:
                     error_message=str(e),
                     anomaly_type="单位转换异常",
                 )
+                self.results.append(result)
+                return result
 
         processing_steps.append({
             "step": step_num,
@@ -174,6 +222,27 @@ class VerificationEngine:
         try:
             calculated_value = self._execute_formula(rule, raw_inputs, processing_steps, step_num)
             step_num += 1
+        except FormulaCalculationError as e:
+            processing_steps.append({
+                "step": step_num,
+                "action": "公式计算",
+                "detail": f"计算失败: {str(e)}",
+                "status": VerificationStatus.EXCEPTION.value,
+            })
+            result = VerificationResult(
+                record_id=record_id,
+                result_status=VerificationStatus.EXCEPTION,
+                calculated_value=None,
+                expected_value=expected_value,
+                tolerance=self.tolerance,
+                raw_inputs=raw_inputs,
+                processing_steps=processing_steps,
+                unit_conversions=unit_conversions,
+                error_message=str(e),
+                anomaly_type=e.anomaly_type,
+            )
+            self.results.append(result)
+            return result
         except Exception as e:
             processing_steps.append({
                 "step": step_num,
@@ -181,7 +250,7 @@ class VerificationEngine:
                 "detail": f"计算失败: {str(e)}",
                 "status": VerificationStatus.EXCEPTION.value,
             })
-            return VerificationResult(
+            result = VerificationResult(
                 record_id=record_id,
                 result_status=VerificationStatus.EXCEPTION,
                 calculated_value=None,
@@ -193,6 +262,8 @@ class VerificationEngine:
                 error_message=str(e),
                 anomaly_type="公式计算异常",
             )
+            self.results.append(result)
+            return result
 
         result_status = VerificationStatus.PASS
         if expected_value is not None and not pd.isna(expected_value):
@@ -364,7 +435,7 @@ class VerificationEngine:
                     "detail": div_msg,
                     "status": VerificationStatus.EXCEPTION.value,
                 })
-                raise ZeroDivisionError(div_msg)
+                raise FormulaCalculationError(div_msg, anomaly_type="除零异常")
 
             result = total / qty
             processing_steps.append({
@@ -377,6 +448,13 @@ class VerificationEngine:
 
         else:
             raise ValueError(f"未知公式: {rule.formula_id}")
+
+    EXPECTED_FIELD_MAP = {
+        "F001": "total_price",
+        "F002": None,
+        "F003": None,
+        "F004": "unit_price",
+    }
 
     def batch_verify(
         self,
@@ -391,7 +469,8 @@ class VerificationEngine:
         for idx, row in df.iterrows():
             record_results = {"_record_index": idx}
             for rule in rules:
-                expected = row[expected_field] if expected_field and expected_field in row else None
+                ef = expected_field if expected_field else self.EXPECTED_FIELD_MAP.get(rule.formula_id)
+                expected = row[ef] if ef and ef in row.index and not pd.isna(row.get(ef)) else None
                 result = self.verify_record(row, rule, context_id, expected)
                 record_results[f"{rule.output_field}_status"] = result.result_status.value
                 record_results[f"{rule.output_field}_calculated"] = result.calculated_value

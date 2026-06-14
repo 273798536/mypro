@@ -1,6 +1,7 @@
 """报告生成器 - 生成图表、计算草稿追溯，供非技术人员理解"""
 
 import os
+import math
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 from pathlib import Path
@@ -389,5 +390,50 @@ class ReportGenerator:
         results_csv = self.output_dir / f"verification_results_{context_id}.csv"
         results_df.to_csv(results_csv, index=False, encoding="utf-8-sig")
         output["results_csv"] = str(results_csv)
+
+        import json as _json
+        results_json = self.output_dir / "verification_results.json"
+        serialized = {
+            "context_id": context_id,
+            "context_trace": context_trace,
+            "generated_at": datetime.now().isoformat(),
+            "summary": engine.get_summary(),
+            "anomaly_count": len(engine.get_anomalies()),
+            "results": [
+                {
+                    "record_id": r.record_id,
+                    "result_status": r.result_status.value,
+                    "calculated_value": r.calculated_value,
+                    "expected_value": r.expected_value,
+                    "tolerance": r.tolerance,
+                    "raw_inputs": {k: (v if not isinstance(v, float) or not math.isnan(v) else None)
+                                   for k, v in r.raw_inputs.items()},
+                    "processing_steps": r.processing_steps,
+                    "unit_conversions": r.unit_conversions,
+                    "error_message": r.error_message,
+                    "anomaly_type": r.anomaly_type,
+                    "timestamp": r.timestamp.isoformat() if r.timestamp else None,
+                }
+                for r in engine.results
+            ],
+        }
+        with open(results_json, "w", encoding="utf-8") as f:
+            _json.dump(serialized, f, ensure_ascii=False, indent=2, default=str)
+        output["results_json"] = str(results_json)
+
+        anomaly_index = []
+        for r in engine.results:
+            if r.anomaly_type or r.result_status.value in ("异常", "失败"):
+                anomaly_index.append({
+                    "record_id": r.record_id,
+                    "anomaly_type": r.anomaly_type,
+                    "status": r.result_status.value,
+                    "error_message": r.error_message,
+                    "trace_file": f"details/{r.record_id}_trace.txt",
+                })
+        anomaly_index_path = self.output_dir / "anomaly_index.json"
+        with open(anomaly_index_path, "w", encoding="utf-8") as f:
+            _json.dump(anomaly_index, f, ensure_ascii=False, indent=2)
+        output["anomaly_index"] = str(anomaly_index_path)
 
         return output

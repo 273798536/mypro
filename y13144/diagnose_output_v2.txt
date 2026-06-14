@@ -1,0 +1,330 @@
+============================================================
+1. 检查 boundary_cases.csv 原始数据
+============================================================
+     项目编码   项目名称        工程量          单价           合价               备注
+0   BN001   除零测试          0      100.00          0.0     工程量为0，测试除零边界
+1   BN002   极小分母  0.0000001  1000000.00          1.0       分母接近0，测试边界
+2   BN003  负值工程量        -10      100.00      -1000.0            工程量为负
+3   BN004   负值单价         10     -100.00      -1000.0             单价为负
+4   BN005   空值字段        NaN      100.00          NaN            工程量为空
+5   BN006   空值单价         10         NaN          NaN             单价为空
+6   BN007  单位不匹配         10      100.00       1000.0       单位是吨，预期是千克
+7   BN008   税率异常         10      100.00       1000.0            税率大于1
+8   BN009   精度问题         10       99.99        999.9           四舍五入偏差
+9   BN010  期望值偏差         10      100.00        950.0      期望值与计算值偏差5%
+10  BN011    零合价          0        0.00          0.0             全零记录
+11  BN012   大额数值       1000   999999.00  999999000.0           大额数值测试
+12  BN013   格式错误    INVALID      100.00       1000.0  工程量非数字，测试公式计算异常
+
+数据类型:
+工程量     object
+单价     float64
+合价     float64
+dtype: object
+
+空值检查:
+  工程量: isna=1, empty_str=0
+  单价: isna=1, empty_str=0
+  合价: isna=2, empty_str=0
+
+BN005(工程量空值)和BN006(单价空值)专项检查:
+  BN005: 项目名称=空值字段
+    工程量=nan (空值=True), 单价=100.0 (空值=False), 合价=nan
+    ✅ BN005工程量空值识别正确
+  BN006: 项目名称=空值单价
+    工程量=10 (空值=False), 单价=nan (空值=True), 合价=nan
+    ✅ BN006单价空值识别正确
+
+============================================================
+2. 单条测试边界处理器
+============================================================
+  ✅触发 - 除零检测-分母为0: 除零异常：分母为0
+  ✅触发 - 除零检测-分母为0.0: 除零异常：分母为0
+     通过 - 除零检测-正常: None
+  ✅触发 - 空值检测-NaN: 空值异常：qty 为空
+  ✅触发 - 空值检测-None: 空值异常：qty 为空
+  ✅触发 - 空值检测-空字符串: 空值异常：qty 为空字符串
+  ✅触发 - 空值检测-空格: 空值异常：qty 为空字符串
+     通过 - 空值检测-数字0: None
+     通过 - 空值检测-数字: None
+  ✅触发 - 负值检测-负数: 值为负异常：quantity = -10
+     通过 - 负值检测-0: None
+     通过 - 负值检测-正数: None
+  ✅触发 - 格式检测-非数字INVALID: 公式计算异常：quantity = INVALID 格式无效，无法转换为数字
+  ✅触发 - 格式检测-非数字N/A: 公式计算异常：quantity = N/A 格式无效，无法转换为数字
+     通过 - 格式检测-数字字符串: None
+     通过 - 格式检测-正常数字: None
+
+============================================================
+3. 运行完整流水线并收集异常记录
+============================================================
+============================================================
+整数规划批量验算系统 - 现场演示
+============================================================
+
+【步骤1】创建计算上下文
+上下文ID: 896ffd70
+
+【步骤2】模拟小岑早会临时修改判断
+已记录小岑的3项调整：
+  - 调整容差：1% → 2%
+  - 修改公式F001：增加1%现场管理费
+  - 调整字段映射：系统导出单位元单独映射
+
+【步骤3】加载各来源数据并映射字段
+  加载 draft_reviewer_A.csv (复核人A草稿)...
+    记录数: 12
+  加载 draft_reviewer_B.csv (复核人B草稿)...
+    记录数: 10
+  加载 draft_manual_entry.csv (建模助教手动录入)...
+    记录数: 9
+  加载 system_export.csv (系统导出)...
+    记录数: 6
+  加载 boundary_cases.csv (建模助教手动录入)...
+    记录数: 13
+
+合并后总记录数: 50
+
+【步骤4】执行批量验算
+  公式: F001(合价), F002(税额), F004(单位成本)
+  正在验算...
+  验算完成，结果数: 150
+
+【步骤5】模拟人工复核调整
+  小岑人工调整了记录 2f9d766f87 的状态
+
+【步骤6】生成报告和图表
+  生成文件:
+    - 2f9d766f87_trace.txt
+    - 3481aca5fe_trace.txt
+    - bd799a357b_trace.txt
+    - 7b6c0241da_trace.txt
+    - 2c41ea8132_trace.txt
+    - 57384e1eb4_trace.txt
+    - a2bda37fde_trace.txt
+    - aa21715556_trace.txt
+    - f2d6ead301_trace.txt
+    - ce5c01f3bd_trace.txt
+    - 27ff76a8db_trace.txt
+    - 96c0f54bae_trace.txt
+    - 8366dd8874_trace.txt
+    - 9ed3fc5f9e_trace.txt
+    - 9193a09e73_trace.txt
+    - 642a4c0bc7_trace.txt
+    - 8af753c6ed_trace.txt
+    - 88f14ac4bb_trace.txt
+    - cfa4ffc38e_trace.txt
+    - 1ccfbb6312_trace.txt
+    - 7d06881d20_trace.txt
+    - 4292846bb1_trace.txt
+    - 576a9b1802_trace.txt
+    - af23de2b60_trace.txt
+    - 3e25b00a29_trace.txt
+    - 0552a6e68a_trace.txt
+    - 45809a1410_trace.txt
+    - fb30315ee3_trace.txt
+    - 101b64f61c_trace.txt
+    - dce0db0df9_trace.txt
+    - 81f14e919a_trace.txt
+    - e322d7b913_trace.txt
+    - 92dfb91700_trace.txt
+    - 8245897a76_trace.txt
+    - 23ed71a7f3_trace.txt
+    - a088f1c2b4_trace.txt
+    - 3b82a2bc15_trace.txt
+    - 1f1e3bf21b_trace.txt
+    - 4e8c9c2a58_trace.txt
+    - 86903da10a_trace.txt
+    - 8b3913e6e7_trace.txt
+    - dc4d07cc74_trace.txt
+    - 060b75821e_trace.txt
+    - d94c97af40_trace.txt
+    - 7d6ffe17fb_trace.txt
+    - 64f73e6520_trace.txt
+    - 2cec210046_trace.txt
+    - 938a4bcaaa_trace.txt
+    - ca6a86c314_trace.txt
+    - 0bc014b498_trace.txt
+    - 96c9a9007d_trace.txt
+    - 5a584d850a_trace.txt
+    - a88808feff_trace.txt
+    - 68ae38c6bf_trace.txt
+    - a68cdfb4b5_trace.txt
+    - 78bd6a318d_trace.txt
+    - f33bfb2831_trace.txt
+    - 9157f2c5cb_trace.txt
+    - 12cc1e7749_trace.txt
+    - 32d18f1df8_trace.txt
+    - 87f877a0bf_trace.txt
+    - c33b691b86_trace.txt
+    - 268d9eddbd_trace.txt
+    - 2e185cd7bf_trace.txt
+    - c06e42aac0_trace.txt
+    - 07b6db1634_trace.txt
+    - 88f8b0f1d7_trace.txt
+    - e8c62a82ad_trace.txt
+    - 26f91a0997_trace.txt
+    - 5011b8e871_trace.txt
+    - 4b9d47015b_trace.txt
+    - 484cd4ac72_trace.txt
+    - e107c41804_trace.txt
+    - b604029448_trace.txt
+    - 364f74cf9c_trace.txt
+    - 550a3776a4_trace.txt
+    - 0f72bea07e_trace.txt
+    - 2e970c0f2f_trace.txt
+    - 1b36525703_trace.txt
+    - 5d2d245465_trace.txt
+    - 793901cd5b_trace.txt
+    - e356bbc650_trace.txt
+    - 44d234dd01_trace.txt
+    - 993f31bcb7_trace.txt
+    - 70b3ba9cb0_trace.txt
+    - ff37ae4158_trace.txt
+    - 6ad39abd43_trace.txt
+    - 275640f616_trace.txt
+    - 3a073dd20b_trace.txt
+    - 93247d6316_trace.txt
+    - 858cf9f4ff_trace.txt
+    - 497991e79b_trace.txt
+    - f4be7176d2_trace.txt
+    - 62d65eaa71_trace.txt
+    - 414ee61c65_trace.txt
+    - d4eaf5d90c_trace.txt
+    - deaa653cb9_trace.txt
+    - cced608427_trace.txt
+    - 18adb67985_trace.txt
+    - 029649ca3f_trace.txt
+    - de0a89d325_trace.txt
+    - 4a4303163f_trace.txt
+    - 72bbaf571b_trace.txt
+    - dbf270cd29_trace.txt
+    - 859cda718a_trace.txt
+    - d618032bc6_trace.txt
+    - 62ab42938b_trace.txt
+    - 977ae336db_trace.txt
+    - executive_summary_896ffd70.txt
+    - matplotlib 未安装，跳过图表生成
+    - audit_trail_896ffd70.txt
+    - audit_history_896ffd70.csv
+    - verification_results_896ffd70.csv
+    - verification_results.json
+    - anomaly_index.json
+
+【步骤7】保存审计日志
+  审计日志已保存到 data/audit_log.json
+
+============================================================
+验算完成！查看 examples 目录下的报告和图表
+============================================================
+
+【结果汇总】
+  通过: 44
+  失败: 96
+  异常: 10
+
+【发现 108 条异常记录】
+  1. [数值偏差] 失败 - 2f9d766f87
+  2. [数值偏差] 失败 - 3481aca5fe
+  3. [数值偏差] 失败 - bd799a357b
+  ... 还有 105 条异常，详情见报告
+
+
+============================================================
+4. anomaly_type 分布统计（来自 JSON）
+============================================================
+状态分布:
+  失败: 96
+  异常: 10
+  通过: 44
+
+异常类型分布:
+  (无): 42
+  公式计算异常: 2 ✅目标类型
+  数值偏差: 96 ✅目标类型
+  空值异常: 6 ✅目标类型
+  负值异常: 2 ✅目标类型
+  除零异常: 2 ✅目标类型
+  ✅ 所有5种目标异常类型均已覆盖！
+
+============================================================
+5. 检查 boundary_cases 对应的记录
+============================================================
+找到目标异常记录: 108 条
+各目标异常类型统计:
+  除零异常: 2 条 ✅出现
+  空值异常: 6 条 ✅出现
+  负值异常: 2 条 ✅出现
+  数值偏差: 96 条 ✅出现
+  公式计算异常: 2 条 ✅出现
+
+目标异常记录样例 (前10条):
+  2f9d766f87: 失败 | 数值偏差 | raw={'total_price': 35000.0, 'tax_rate': '13%'}
+  3481aca5fe: 失败 | 数值偏差 | raw={'total_price': 35000.0, 'quantity': 100}
+  bd799a357b: 失败 | 数值偏差 | raw={'total_price': 290000.0, 'tax_rate': '13%'}
+  7b6c0241da: 失败 | 数值偏差 | raw={'total_price': 290000.0, 'quantity': 50}
+  2c41ea8132: 失败 | 数值偏差 | raw={'total_price': 17000.0, 'tax_rate': '13%'}
+  57384e1eb4: 失败 | 数值偏差 | raw={'total_price': 17000.0, 'quantity': 200}
+  a2bda37fde: 失败 | 数值偏差 | raw={'total_price': 18000.0, 'tax_rate': '13%'}
+  aa21715556: 失败 | 数值偏差 | raw={'total_price': 18000.0, 'quantity': 150}
+  f2d6ead301: 失败 | 数值偏差 | raw={'total_price': 22400.0, 'tax_rate': '9%'}
+  ce5c01f3bd: 失败 | 数值偏差 | raw={'total_price': 22400.0, 'quantity': 80}
+
+============================================================
+6. 特殊查找：F004(单位成本)记录及除零异常情况
+============================================================
+  [1] 3481aca5fe
+       qty=100, total=35000.0
+       status=失败, anomaly=数值偏差
+       err=(无)
+       step: {'step': 4, 'action': '执行公式 F004', 'detail': '35000.0 ÷ 100.0 = 350.0000', 'status': '计算完成'}
+
+  [2] 7b6c0241da
+       qty=50, total=290000.0
+       status=失败, anomaly=数值偏差
+       err=(无)
+       step: {'step': 4, 'action': '执行公式 F004', 'detail': '290000.0 ÷ 50.0 = 5800.0000', 'status': '计算完成'}
+
+  [3] 57384e1eb4
+       qty=200, total=17000.0
+       status=失败, anomaly=数值偏差
+       err=(无)
+       step: {'step': 4, 'action': '执行公式 F004', 'detail': '17000.0 ÷ 200.0 = 85.0000', 'status': '计算完成'}
+
+  [4] aa21715556
+       qty=150, total=18000.0
+       status=失败, anomaly=数值偏差
+       err=(无)
+       step: {'step': 4, 'action': '执行公式 F004', 'detail': '18000.0 ÷ 150.0 = 120.0000', 'status': '计算完成'}
+
+  [5] ce5c01f3bd
+       qty=80, total=22400.0
+       status=失败, anomaly=数值偏差
+       err=(无)
+       step: {'step': 4, 'action': '执行公式 F004', 'detail': '22400.0 ÷ 80.0 = 280.0000', 'status': '计算完成'}
+
+  [38] 2e970c0f2f ⚠️ qty=0
+       qty=0, total=0.0
+       status=异常, anomaly=除零异常
+       err=除零异常：分母为0
+       step: {'step': 4, 'action': '除零边界检查', 'detail': '除零异常：分母为0', 'status': '异常'}
+       step: {'step': 4, 'action': '公式计算', 'detail': '计算失败: 除零异常：分母为0', 'status': '异常'}
+
+  [46] 72bbaf571b ⚠️ qty=0
+       qty=0, total=0.0
+       status=异常, anomaly=除零异常
+       err=除零异常：分母为0
+       step: {'step': 4, 'action': '除零边界检查', 'detail': '除零异常：分母为0', 'status': '异常'}
+       step: {'step': 4, 'action': '公式计算', 'detail': '计算失败: 除零异常：分母为0', 'status': '异常'}
+
+共找到 47 条 F004 记录，其中 qty=0 的除零异常记录: 2 条
+
+============================================================
+7. 额外验证：BN005(工程量空值)和BN006(单价空值)识别
+============================================================
+类似BN005(工程量空值)的记录: 1 条
+  275640f616: {'quantity': None}
+类似BN006(单价空值)的记录: 1 条
+  858cf9f4ff: {'quantity': '10', 'unit_price': None}
+
+完成诊断！

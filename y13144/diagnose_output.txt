@@ -1,0 +1,232 @@
+============================================================
+1. 检查 boundary_cases.csv 原始数据
+============================================================
+     项目编码   项目名称           工程量          单价           合价            备注
+0   BN001   除零测试  0.000000e+00      100.00          0.0  工程量为0，测试除零边界
+1   BN002   极小分母  1.000000e-07  1000000.00          1.0    分母接近0，测试边界
+2   BN003  负值工程量 -1.000000e+01      100.00      -1000.0         工程量为负
+3   BN004   负值单价  1.000000e+01     -100.00      -1000.0          单价为负
+4   BN005   空值字段           NaN      100.00          NaN         工程量为空
+5   BN006   空值单价  1.000000e+01         NaN          NaN          单价为空
+6   BN007  单位不匹配  1.000000e+01      100.00       1000.0    单位是吨，预期是千克
+7   BN008   税率异常  1.000000e+01      100.00       1000.0         税率大于1
+8   BN009   精度问题  1.000000e+01       99.99        999.9        四舍五入偏差
+9   BN010  期望值偏差  1.000000e+01      100.00        950.0   期望值与计算值偏差5%
+10  BN011    零合价  0.000000e+00        0.00          0.0          全零记录
+11  BN012   大额数值  1.000000e+03   999999.00  999999000.0        大额数值测试
+
+数据类型:
+工程量    float64
+单价     float64
+合价     float64
+dtype: object
+
+空值检查:
+  工程量: isna=1, empty_str=0
+  单价: isna=1, empty_str=0
+  合价: isna=2, empty_str=0
+
+============================================================
+2. 单条测试边界处理器
+============================================================
+  ✅触发 - 除零检测-分母为0: 除零异常：分母为0
+  ✅触发 - 除零检测-分母为0.0: 除零异常：分母为0
+     通过 - 除零检测-正常: None
+  ✅触发 - 空值检测-NaN: 空值异常：qty 为空
+  ✅触发 - 空值检测-None: 空值异常：qty 为空
+  ✅触发 - 空值检测-空字符串: 空值异常：qty 为空字符串
+  ✅触发 - 空值检测-空格: 空值异常：qty 为空字符串
+     通过 - 空值检测-数字0: None
+     通过 - 空值检测-数字: None
+  ✅触发 - 负值检测-负数: 值为负异常：quantity = -10
+     通过 - 负值检测-0: None
+     通过 - 负值检测-正数: None
+
+============================================================
+3. 运行完整流水线并收集异常记录
+============================================================
+============================================================
+整数规划批量验算系统 - 现场演示
+============================================================
+
+【步骤1】创建计算上下文
+上下文ID: 6dbaeb7c
+
+【步骤2】模拟小岑早会临时修改判断
+已记录小岑的3项调整：
+  - 调整容差：1% → 2%
+  - 修改公式F001：增加1%现场管理费
+  - 调整字段映射：系统导出单位元单独映射
+
+【步骤3】加载各来源数据并映射字段
+  加载 draft_reviewer_A.csv (复核人A草稿)...
+    记录数: 12
+  加载 draft_reviewer_B.csv (复核人B草稿)...
+    记录数: 10
+  加载 draft_manual_entry.csv (建模助教手动录入)...
+    记录数: 9
+  加载 system_export.csv (系统导出)...
+    记录数: 6
+  加载 boundary_cases.csv (建模助教手动录入)...
+    记录数: 12
+
+合并后总记录数: 49
+
+【步骤4】执行批量验算
+  公式: F001(合价), F002(税额), F004(单位成本)
+  正在验算...
+  验算完成，结果数: 139
+
+【步骤5】模拟人工复核调整
+  小岑人工调整了记录 39d176f376 的状态
+
+【步骤6】生成报告和图表
+  生成文件:
+    - 39d176f376_trace.txt
+    - 1122a89a54_trace.txt
+    - 2f3bc792dc_trace.txt
+    - 98c7e753b2_trace.txt
+    - fcd93614ef_trace.txt
+    - 91b5a5b8f6_trace.txt
+    - 5d5b7dc141_trace.txt
+    - 66f847a011_trace.txt
+    - 5745b523fa_trace.txt
+    - b4a66afd03_trace.txt
+    - d419cf0427_trace.txt
+    - 48dca2ce30_trace.txt
+    - cb738d6d61_trace.txt
+    - 958ade2245_trace.txt
+    - 667a344501_trace.txt
+    - c742a4a3ec_trace.txt
+    - e917fd8689_trace.txt
+    - ce9a7b2e9c_trace.txt
+    - 59842ac288_trace.txt
+    - a151095498_trace.txt
+    - 4c08c547e9_trace.txt
+    - 878761b39c_trace.txt
+    - 9101d9ba99_trace.txt
+    - 2fd1348511_trace.txt
+    - 0e501b8111_trace.txt
+    - 374bb0091a_trace.txt
+    - 24ee93d98d_trace.txt
+    - 08438fd6c9_trace.txt
+    - 670bbabe89_trace.txt
+    - 763ca72bc3_trace.txt
+    - 4179d790e9_trace.txt
+    - 29c00ac381_trace.txt
+    - 89d1a60c7c_trace.txt
+    - 2948f61a12_trace.txt
+    - 7ae6508bb7_trace.txt
+    - 688a60845a_trace.txt
+    - cf4a75d445_trace.txt
+    - 09adc8bf9e_trace.txt
+    - 4872a0807c_trace.txt
+    - cb7db1eec4_trace.txt
+    - 6151ae106b_trace.txt
+    - 5db81d8ccc_trace.txt
+    - a1faaed4ed_trace.txt
+    - 34b34d6756_trace.txt
+    - 3a2c0dd72f_trace.txt
+    - 27c269e75f_trace.txt
+    - 9b44ff1d0a_trace.txt
+    - a241abeab1_trace.txt
+    - 79be4af919_trace.txt
+    - d7ece1ede2_trace.txt
+    - 7a7ed2797e_trace.txt
+    - 525a490000_trace.txt
+    - 358e6ad472_trace.txt
+    - 30d7f4483a_trace.txt
+    - eb3c9e0d19_trace.txt
+    - ec11dfd48f_trace.txt
+    - f82e981e42_trace.txt
+    - b34268108f_trace.txt
+    - 3131d2353b_trace.txt
+    - 06cbe0042c_trace.txt
+    - 6cf6d26cb9_trace.txt
+    - 7bcdc2d8e2_trace.txt
+    - fb6741d248_trace.txt
+    - 90aff47631_trace.txt
+    - 03edc36142_trace.txt
+    - 381a9e848d_trace.txt
+    - 92aaa52158_trace.txt
+    - 56d076336c_trace.txt
+    - a7eeda938c_trace.txt
+    - 0966bc5bf0_trace.txt
+    - b7b368b0aa_trace.txt
+    - bccaf23e5c_trace.txt
+    - 7c38485eb1_trace.txt
+    - a211cd64d9_trace.txt
+    - bcd855ea22_trace.txt
+    - 5a035e6483_trace.txt
+    - 1928f23dfa_trace.txt
+    - b141783a64_trace.txt
+    - 222c24933c_trace.txt
+    - 1c9f9b6f37_trace.txt
+    - 9bf4ff970f_trace.txt
+    - d6c97383f7_trace.txt
+    - cda3772364_trace.txt
+    - cf4d5516f9_trace.txt
+    - 07fa9b2959_trace.txt
+    - 2f2c32fdbb_trace.txt
+    - 7158dafe5f_trace.txt
+    - e444ea0f58_trace.txt
+    - 3ee5761f03_trace.txt
+    - 61d02a8bb0_trace.txt
+    - e2a4979413_trace.txt
+    - 507ec760fa_trace.txt
+    - 10e8c7c975_trace.txt
+    - 852f4e77a0_trace.txt
+    - 314666eb19_trace.txt
+    - 5ec872caf4_trace.txt
+    - bdb1fdc35d_trace.txt
+    - executive_summary_6dbaeb7c.txt
+    - matplotlib 未安装，跳过图表生成
+    - audit_trail_6dbaeb7c.txt
+    - audit_history_6dbaeb7c.csv
+    - verification_results_6dbaeb7c.csv
+    - verification_results.json
+    - anomaly_index.json
+
+【步骤7】保存审计日志
+  审计日志已保存到 data/audit_log.json
+
+============================================================
+验算完成！查看 examples 目录下的报告和图表
+============================================================
+
+【结果汇总】
+  通过: 44
+  失败: 95
+
+【发现 97 条异常记录】
+  1. [数值偏差] 失败 - 39d176f376
+  2. [数值偏差] 失败 - 1122a89a54
+  3. [数值偏差] 失败 - 2f3bc792dc
+  ... 还有 94 条异常，详情见报告
+
+
+============================================================
+4. anomaly_type 分布统计（来自 JSON）
+============================================================
+状态分布:
+  失败: 95
+  通过: 44
+
+异常类型分布:
+  (无): 42
+  数值偏差: 95
+  负值异常: 2 ✅目标类型
+
+============================================================
+5. 检查 boundary_cases 对应的记录
+============================================================
+找到目标异常记录: 2 条
+  9bf4ff970f: 通过 | 负值异常 | raw={'quantity': -10.0, 'unit_price': 100.0}
+  cf4d5516f9: 通过 | 负值异常 | raw={'quantity': 10.0, 'unit_price': -100.0}
+
+============================================================
+6. 特殊查找：quantity=0 且公式为 F004(单位成本)
+============================================================
+共找到 0 条 F004 记录
+
+完成诊断！
