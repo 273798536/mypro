@@ -52,10 +52,10 @@ python3 markov_trial.py add-note ANS-2026-003
 
 进入交互模式，逐行输入备注内容，空行结束。可署名，默认用原作者。
 
-也可以一行搞定：
+也可以一行搞定（署名用 `--author`）：
 
 ```bash
-python3 markov_trial.py add-note ANS-2026-003 "周一早会备注：S3吸收态需要教研组讨论是否保留"
+python3 markov_trial.py add-note ANS-2026-003 "周一早会备注：S3吸收态需要教研组讨论是否保留" --author 阿宁
 ```
 
 备注会留在历史记录中，下一班通过 `history` 可见。

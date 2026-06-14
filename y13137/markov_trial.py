@@ -20,41 +20,41 @@ SAMPLE_ANSWER_HISTORY = [
     {
         "id": "ANS-2026-001",
         "date": "2026-06-10",
-        "author": "系统初版",
-        "original_claim": "学生从'未掌握'到'初步掌握'的转移概率约为0.3，从'初步掌握'到'基本掌握'约为0.25。",
+        "author": "教研组",
+        "original_claim": "基于上周320份作业数据估算：未掌握到初步掌握转移概率约0.28，初步掌握到基本掌握约0.24，基本掌握到熟练掌握约0.18。",
         "transition_matrix": [
-            [0.6, 0.3, 0.1, 0.0],
-            [0.2, 0.55, 0.25, 0.0],
-            [0.0, 0.3, 0.5, 0.2],
-            [0.0, 0.0, 0.4, 0.6],
+            [0.65, 0.28, 0.07, 0.00],
+            [0.18, 0.55, 0.24, 0.03],
+            [0.05, 0.22, 0.55, 0.18],
+            [0.02, 0.08, 0.25, 0.65],
         ],
-        "notes": "初版参数，基于200份作业数据估算。",
+        "notes": "初版参数，320份作业，4个掌握等级。S0→S3、S3→S0 等跨级转移概率较低属正常现象。",
     },
     {
         "id": "ANS-2026-002",
         "date": "2026-06-11",
         "author": "阿宁",
-        "original_claim": "修正'S2->S3'转移概率从0.2上调至0.35，因为近期测验显示进阶率高于预期。",
+        "original_claim": "修正S2→S3转移概率从0.18上调至0.31，因上周测验显示进阶率高于预期；同时S3→S2回流从0.25调至0.18。",
         "transition_matrix": [
-            [0.6, 0.3, 0.1, 0.0],
-            [0.2, 0.55, 0.25, 0.0],
-            [0.0, 0.15, 0.5, 0.35],
-            [0.0, 0.0, 0.4, 0.6],
+            [0.65, 0.28, 0.07, 0.00],
+            [0.18, 0.55, 0.24, 0.03],
+            [0.05, 0.22, 0.47, 0.26],
+            [0.02, 0.08, 0.18, 0.72],
         ],
-        "notes": "教研编辑阿宁临时改判：提高进阶率。",
+        "notes": "教研编辑阿宁临时改判：提高熟练掌握进阶率。调整后S3稳态占比从18%升至约24%。",
     },
     {
         "id": "ANS-2026-003",
         "date": "2026-06-12",
-        "author": "系统",
-        "original_claim": "S0列出现零边界问题：S3->S0转移概率为0，反向回流通道关闭。",
+        "author": "系统自动修正",
+        "original_claim": "S3列数据缺失，临时将S3→S3设为1.0作为吸收态处理，导致稳态计算除零边界。",
         "transition_matrix": [
-            [0.6, 0.3, 0.1, 0.0],
-            [0.2, 0.55, 0.25, 0.0],
-            [0.0, 0.15, 0.5, 0.35],
-            [0.0, 0.0, 0.0, 1.0],
+            [0.65, 0.28, 0.07, 0.00],
+            [0.18, 0.55, 0.24, 0.03],
+            [0.05, 0.22, 0.47, 0.26],
+            [0.00, 0.00, 0.00, 1.00],
         ],
-        "notes": "自动修正S3稳态时发现除零风险，S3变成吸收态。",
+        "notes": "数据修复中的临时版本。S3变成吸收态后所有学生最终都会流入S3，稳态分布退化。",
     },
 ]
 
@@ -248,6 +248,16 @@ def list_history():
     print()
 
 
+def build_anomaly_queue(matrix: List[List[float]], steady_errors: List[str]) -> List[Dict]:
+    issues = find_zero_boundary_issues(matrix)
+    critical_issues = [
+        iss for iss in issues
+        if iss["type"] in ("absorbing_state", "zero_inflow")
+    ]
+    steady_issues = [{"type": "steady_error", "description": e} for e in steady_errors]
+    return critical_issues + steady_issues
+
+
 def run_trial(history_id: Optional[str] = None, show_details: bool = True):
     history = load_history()
     if history_id:
@@ -290,9 +300,7 @@ def run_trial(history_id: Optional[str] = None, show_details: bool = True):
     if show_details:
         display_chart_and_details(steady, trajectory, matrix)
 
-    anomaly_queue = [
-        iss for iss in issues if iss["type"] in ("absorbing_state", "zero_inflow")
-    ] + [{"type": "steady_error", "description": e} for e in steady_errors]
+    anomaly_queue = build_anomaly_queue(matrix, steady_errors)
 
     if anomaly_queue:
         print(f"\n【异常队列】共 {len(anomaly_queue)} 项")
@@ -434,9 +442,8 @@ def show_anomaly_queue():
     total_anomalies = 0
     for rec in history:
         matrix = rec["transition_matrix"]
-        issues = find_zero_boundary_issues(matrix)
-        steady, errs = compute_steady_state(matrix)
-        all_issues = issues + [{"type": "steady_error", "description": e} for e in errs]
+        _, steady_errors = compute_steady_state(matrix)
+        all_issues = build_anomaly_queue(matrix, steady_errors)
         if all_issues:
             print(f"\n  {rec['id']} ({rec['author']}): {len(all_issues)} 个异常")
             for iss in all_issues:
@@ -460,8 +467,9 @@ def print_help():
     python3 markov_trial.py show <ID>          查看指定答案的图表+明细
 
   补备注:
-    python3 markov_trial.py add-note <ID>      交互式追加备注到指定历史答案
-    python3 markov_trial.py add-note <ID> <备注内容>   直接追加备注
+    python3 markov_trial.py add-note <ID>                     交互式追加备注到指定历史答案
+    python3 markov_trial.py add-note <ID> <备注内容> [--author <署名>]  直接追加备注
+    示例: python3 markov_trial.py add-note ANS-2026-003 "周一早会备注" --author 阿宁
 
   人工改判:
     python3 markov_trial.py override <ID>      交互式录入新矩阵+原因+操作人，改判后自动复算
@@ -481,14 +489,26 @@ def print_help():
 
 def _cmd_add_note(args: List[str]):
     if not args:
-        print("用法: python3 markov_trial.py add-note <ID> [备注内容]")
+        print("用法: python3 markov_trial.py add-note <ID> [备注内容] [--author <署名>]")
         print("  不写备注内容则进入交互模式逐行输入。")
+        print("  示例: python3 markov_trial.py add-note ANS-2026-003 \"周一早会备注\" --author 阿宁")
         return 1
 
     history_id = args[0]
-    if len(args) > 1:
-        note = " ".join(args[1:])
-        author = ""
+
+    note_parts = []
+    author = ""
+    i = 1
+    while i < len(args):
+        if args[i] == "--author" and i + 1 < len(args):
+            author = args[i + 1]
+            i += 2
+        else:
+            note_parts.append(args[i])
+            i += 1
+
+    if note_parts:
+        note = " ".join(note_parts)
     else:
         history = load_history()
         record = next((r for r in history if r["id"] == history_id), None)
@@ -509,7 +529,8 @@ def _cmd_add_note(args: List[str]):
             print("未输入内容，放弃。")
             return 1
         note = " ".join(lines)
-        author = input("  署名（直接回车用原作者）: ").strip()
+        if not author:
+            author = input("  署名（直接回车用原作者）: ").strip()
 
     return add_note_to_history(history_id, note, author)
 
