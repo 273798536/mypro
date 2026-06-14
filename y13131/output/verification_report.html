@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>凸包面积边界校验报告</title>
+<style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; padding: 20px; background: #f5f7fa; color: #303133; }
+    h1 { color: #303133; border-bottom: 3px solid #409eff; padding-bottom: 10px; }
+    h2 { color: #409eff; margin-top: 30px; }
+    h3 { color: #606266; margin-top: 25px; border-left: 4px solid #409eff; padding-left: 10px; }
+    h4 { color: #909399; margin: 20px 0 10px 0; }
+    h5 { color: #909399; margin: 15px 0 8px 0; }
+    .meta-box { background: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; gap: 30px; flex-wrap: wrap; }
+    .meta-item span { font-weight: bold; color: #409eff; }
+    .status-cards { display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap; }
+    .status-card { flex: 1; min-width: 140px; padding: 20px; border-radius: 8px; text-align: center; }
+    .status-card.confirmed { background: #f0f9eb; border: 1px solid #e1f3d8; }
+    .status-card.pending { background: #fdf6ec; border: 1px solid #faecd8; }
+    .status-card.unit-missing { background: #fef0f0; border: 1px solid #fde2e2; }
+    .status-card .num { font-size: 32px; font-weight: bold; }
+    .status-card.confirmed .num { color: #67c23a; }
+    .status-card.pending .num { color: #e6a23c; }
+    .status-card.unit-missing .num { color: #f56c6c; }
+    .status-card .label { color: #909399; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1); }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ebeef5; }
+    th { background: #fafafa; color: #909399; font-weight: 600; }
+    tr:hover { background: #f5f7fa; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; margin-right: 4px; color: white; }
+    .badge-blue { background: #409eff; }
+    .badge-red { background: #f56c6c; }
+    .badge-purple { background: #9c27b0; }
+    .badge-orange { background: #ff9800; }
+    .badge-teal { background: #009688; }
+    .badge-gray { background: #909399; }
+    .detail-section { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1); }
+    .steps-container { display: flex; flex-direction: column; gap: 12px; }
+    .step-card { border: 1px solid #ebeef5; border-radius: 6px; overflow: hidden; }
+    .step-header { background: #fafafa; padding: 10px 15px; display: flex; align-items: center; gap: 12px; }
+    .step-index { background: #409eff; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+    .step-name { font-weight: 600; }
+    .step-body { display: flex; padding: 15px; gap: 15px; align-items: stretch; }
+    .step-snapshot { flex: 1; background: #f5f7fa; padding: 10px; border-radius: 4px; }
+    .snapshot-label { font-size: 12px; color: #909399; margin-bottom: 5px; }
+    .snapshot-content { margin: 0; background: white; padding: 10px; border-radius: 4px; font-size: 12px; max-height: 200px; overflow: auto; }
+    .step-arrow { align-self: center; font-size: 20px; color: #909399; }
+    .step-delta { padding: 8px 15px; background: #fff3cd; color: #856404; font-weight: bold; border-top: 1px solid #ffeeba; }
+    .comparison-block { background: #ecf5ff; border: 1px solid #d9ecff; border-radius: 6px; padding: 15px; margin-bottom: 20px; }
+    .comparison-metrics { display: flex; gap: 20px; margin: 15px 0; }
+    .metric { flex: 1; text-align: center; padding: 10px; background: white; border-radius: 4px; }
+    .metric.highlight { background: #fff3cd; }
+    .metric-label { font-size: 12px; color: #909399; }
+    .metric-value { font-size: 20px; font-weight: bold; margin-top: 5px; }
+    .comparison-diffs ul { margin: 5px 0; padding-left: 20px; }
+    .comparison-diffs li { margin: 3px 0; }
+    .notes-block { margin-top: 15px; padding: 10px; background: #fffbe6; border: 1px solid #faecd8; border-radius: 4px; }
+    .toc { background: white; padding: 15px 20px; border-radius: 8px; margin: 20px 0; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1); }
+    .toc ul { list-style: none; padding: 0; margin: 0; columns: 2; }
+    .toc li { padding: 4px 0; }
+    .toc a { color: #409eff; text-decoration: none; }
+    .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+    <h1>凸包面积边界校验报告</h1>
+
+    <div class="meta-box">
+        <div class="meta-item">运行ID: <span>20260614_113333</span></div>
+        <div class="meta-item">时间: <span>20260614_113333</span></div>
+        <div class="meta-item">标签: <span>坐标修改+新增改判</span></div>
+        <div class="meta-item">基准运行: <span>原始参数</span></div>
+        <div class="meta-item">阈值: <span>0.05</span></div>
+        <div class="meta-item">跳过单位检测: <span>True</span></div>
+    </div>
+
+    <h2>状态总览</h2>
+    <div class="status-cards">
+        <div class="status-card confirmed">
+            <div class="num">0</div>
+            <div class="label">已处理</div>
+        </div>
+        <div class="status-card pending">
+            <div class="num">4</div>
+            <div class="label">待补证据</div>
+        </div>
+        <div class="status-card unit-missing">
+            <div class="num">2</div>
+            <div class="label">单位缺失-待确认</div>
+        </div>
+    </div>
+
+    <h2>结果一览</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>题目ID</th>
+                <th>状态</th>
+                <th>基准面积</th>
+                <th>本次面积</th>
+                <th>相对变化</th>
+                <th>跳变归因</th>
+                <th>步骤数</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><strong>Q001</strong></td>
+            <td style="background:#fff3cd;color:#856404;">待补证据</td>
+            <td>15.0000</td>
+            <td><strong>15.0000</strong></td>
+            <td>0.00%</td>
+            <td><span class="badge badge-purple">人工改判</span></td>
+            <td>4</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Q002</strong></td>
+            <td style="background:#fff3cd;color:#856404;">待补证据</td>
+            <td>12.0000</td>
+            <td><strong>12.0000</strong></td>
+            <td>0.00%</td>
+            <td><span class="badge badge-purple">人工改判</span></td>
+            <td>4</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Q003</strong></td>
+            <td style="background:#f8d7da;color:#721c24;">单位缺失-待确认</td>
+            <td>0.0000</td>
+            <td><strong>0.0000</strong></td>
+            <td>0.00%</td>
+            <td>-</td>
+            <td>2</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Q004</strong></td>
+            <td style="background:#fff3cd;color:#856404;">待补证据</td>
+            <td>30.0000</td>
+            <td><strong>35.0000</strong></td>
+            <td>16.67%</td>
+            <td><span class="badge badge-orange">坐标数据变化</span></td>
+            <td>4</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Q005</strong></td>
+            <td style="background:#fff3cd;color:#856404;">待补证据</td>
+            <td>9.0000</td>
+            <td><strong>9.0000</strong></td>
+            <td>0.00%</td>
+            <td><span class="badge badge-purple">人工改判</span></td>
+            <td>4</td>
+        </tr>
+        
+        <tr>
+            <td><strong>Q006</strong></td>
+            <td style="background:#f8d7da;color:#721c24;">单位缺失-待确认</td>
+            <td>0.0000</td>
+            <td><strong>0.0000</strong></td>
+            <td>0.00%</td>
+            <td>-</td>
+            <td>2</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2>明细追溯</h2>
+    <div class="toc">
+        <h4 style="margin-top:0;">目录</h4>
+        <ul>
+            <li><a href="#detail-Q001">Q001 — 待补证据</a></li><li><a href="#detail-Q002">Q002 — 待补证据</a></li><li><a href="#detail-Q003">Q003 — 单位缺失-待确认</a></li><li><a href="#detail-Q004">Q004 — 待补证据</a></li><li><a href="#detail-Q005">Q005 — 待补证据</a></li><li><a href="#detail-Q006">Q006 — 单位缺失-待确认</a></li>
+        </ul>
+    </div>
+    
+        <div class="detail-section" id="detail-Q001">
+            <h3>Q001: 待补证据 <span style="font-weight:normal;font-size:14px;">面积=15.0000</span></h3>
+            
+            <h4>步骤追溯</h4>
+            <div class="steps-container">
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 1</span>
+                    <span class="step-name">加载原始数据</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q001",
+  "value": 13.0,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q001",
+  "value": 13.0,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 2</span>
+                    <span class="step-name">应用人工改判</span>
+                    <span class="badge badge-purple">人工改判</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "value": 13.0
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "value": 13.0,
+  "applied_overrides": [
+    {
+      "override_id": "OV003",
+      "revised": 13.0,
+      "reason": "现场老师复核后调高标准值"
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 3</span>
+                    <span class="step-name">凸包面积计算</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "coordinates_count": 4,
+  "coordinates": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      5.0,
+      0.0
+    ],
+    [
+      5.0,
+      3.0
+    ],
+    [
+      0.0,
+      3.0
+    ]
+  ]
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "hull_vertices": 4,
+  "area": 15.0,
+  "boundary": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      5.0,
+      0.0
+    ],
+    [
+      5.0,
+      3.0
+    ],
+    [
+      0.0,
+      3.0
+    ]
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 4</span>
+                    <span class="step-name">单次运行跳变检测</span>
+                    <span class="badge badge-purple">人工改判</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "value": 13.0,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "causes": [
+    "人工改判"
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            </div>
+            <div class="notes-block"><strong>备注:</strong> 人工改判: 13.0 -> 13.0, 原因: 现场老师复核后调高标准值</div>
+        </div>
+        
+        <div class="detail-section" id="detail-Q002">
+            <h3>Q002: 待补证据 <span style="font-weight:normal;font-size:14px;">面积=12.0000</span></h3>
+            
+            <h4>步骤追溯</h4>
+            <div class="steps-container">
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 1</span>
+                    <span class="step-name">加载原始数据</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q002",
+  "value": 9.1,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q002",
+  "value": 9.1,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 2</span>
+                    <span class="step-name">应用人工改判</span>
+                    <span class="badge badge-purple">人工改判</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "value": 9.1
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "value": 9.1,
+  "applied_overrides": [
+    {
+      "override_id": "OV001",
+      "revised": 9.1,
+      "reason": "原题数据录入遗漏一个顶点"
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 3</span>
+                    <span class="step-name">凸包面积计算</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "coordinates_count": 5,
+  "coordinates": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      4.0,
+      0.0
+    ],
+    [
+      4.0,
+      2.0
+    ],
+    [
+      2.0,
+      4.0
+    ],
+    [
+      0.0,
+      2.0
+    ]
+  ]
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "hull_vertices": 5,
+  "area": 12.0,
+  "boundary": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      4.0,
+      0.0
+    ],
+    [
+      4.0,
+      2.0
+    ],
+    [
+      2.0,
+      4.0
+    ],
+    [
+      0.0,
+      2.0
+    ]
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 4</span>
+                    <span class="step-name">单次运行跳变检测</span>
+                    <span class="badge badge-purple">人工改判</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "value": 9.1,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "causes": [
+    "人工改判"
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            </div>
+            <div class="notes-block"><strong>备注:</strong> [后补说明-SN001] 补录顶点(2 (4)经教研组确认纳入凸包计算)</div>
+        </div>
+        
+        <div class="detail-section" id="detail-Q003">
+            <h3>Q003: 单位缺失-待确认 <span style="font-weight:normal;font-size:14px;">面积=0.0000</span></h3>
+            
+            <h4>步骤追溯</h4>
+            <div class="steps-container">
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 1</span>
+                    <span class="step-name">加载原始数据</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q003",
+  "value": 6.0,
+  "unit": null
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q003",
+  "value": 6.0,
+  "unit": null
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 2</span>
+                    <span class="step-name">单位缺失检测</span>
+                    <span class="badge badge-red">单位不一致</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "unit": null
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "status": "暂停",
+  "reason": "单位缺失"
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            </div>
+            <div class="notes-block"><strong>备注:</strong> 单位缺失，暂停计算，待确认</div>
+        </div>
+        
+        <div class="detail-section" id="detail-Q004">
+            <h3>Q004: 待补证据 <span style="font-weight:normal;font-size:14px;">面积=35.0000</span></h3>
+            
+            <div class="comparison-block">
+                <h4>跨运行对比（vs 基准 原始参数）</h4>
+                <div class="comparison-metrics">
+                    <div class="metric">
+                        <div class="metric-label">基准面积</div>
+                        <div class="metric-value">30.0000</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">本次面积</div>
+                        <div class="metric-value">35.0000</div>
+                    </div>
+                    <div class="metric highlight">
+                        <div class="metric-label">相对变化</div>
+                        <div class="metric-value">16.67%</div>
+                    </div>
+                </div>
+                <div class="comparison-diffs">
+                    <h5>检测到的差异</h5>
+                    <ul><li>题目清单文件内容已变化</li><li>人工改判文件内容已变化</li><li>坐标点数据已变化</li></ul>
+                </div>
+                <div class="comparison-causes">
+                    <h5>最终归因</h5>
+                    <div><span class="badge badge-orange">坐标数据变化</span></div>
+                </div>
+            </div>
+            
+            <h4>步骤追溯</h4>
+            <div class="steps-container">
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 1</span>
+                    <span class="step-name">加载原始数据</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q004",
+  "value": 15.7,
+  "unit": "mm²"
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q004",
+  "value": 15.7,
+  "unit": "mm²"
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 2</span>
+                    <span class="step-name">应用人工改判</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "value": 15.7
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "value": 15.7,
+  "applied_overrides": []
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 3</span>
+                    <span class="step-name">凸包面积计算</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "coordinates_count": 5,
+  "coordinates": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      7.0,
+      0.0
+    ],
+    [
+      7.0,
+      4.0
+    ],
+    [
+      3.0,
+      6.0
+    ],
+    [
+      0.0,
+      4.0
+    ]
+  ]
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "hull_vertices": 5,
+  "area": 35.0,
+  "boundary": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      7.0,
+      0.0
+    ],
+    [
+      7.0,
+      4.0
+    ],
+    [
+      3.0,
+      6.0
+    ],
+    [
+      0.0,
+      4.0
+    ]
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 4</span>
+                    <span class="step-name">跨运行跳变检测</span>
+                    <span class="badge badge-orange">坐标数据变化</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "baseline_area": 30.0,
+  "current_area": 35.0,
+  "parameter_diffs": [
+    "题目清单文件内容已变化",
+    "人工改判文件内容已变化"
+  ],
+  "override_diffs": [],
+  "data_diffs": [
+    "坐标点数据已变化"
+  ]
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "relative_delta": 0.16666666666666666,
+  "threshold": 0.1,
+  "final_causes": [
+    "坐标数据变化"
+  ]
+}</pre>
+                    </div>
+                </div>
+                <div class="step-delta">变化量: 0.1667</div>
+            </div>
+            </div>
+            
+        </div>
+        
+        <div class="detail-section" id="detail-Q005">
+            <h3>Q005: 待补证据 <span style="font-weight:normal;font-size:14px;">面积=9.0000</span></h3>
+            
+            <h4>步骤追溯</h4>
+            <div class="steps-container">
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 1</span>
+                    <span class="step-name">加载原始数据</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q005",
+  "value": 8.6,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q005",
+  "value": 8.6,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 2</span>
+                    <span class="step-name">应用人工改判</span>
+                    <span class="badge badge-purple">人工改判</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "value": 8.6
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "value": 8.6,
+  "applied_overrides": [
+    {
+      "override_id": "OV002",
+      "revised": 8.6,
+      "reason": "学生答卷反馈边界理解有歧义"
+    }
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 3</span>
+                    <span class="step-name">凸包面积计算</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "coordinates_count": 4,
+  "coordinates": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      4.0,
+      0.0
+    ],
+    [
+      3.0,
+      3.0
+    ],
+    [
+      1.0,
+      3.0
+    ]
+  ]
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "hull_vertices": 4,
+  "area": 9.0,
+  "boundary": [
+    [
+      0.0,
+      0.0
+    ],
+    [
+      4.0,
+      0.0
+    ],
+    [
+      3.0,
+      3.0
+    ],
+    [
+      1.0,
+      3.0
+    ]
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 4</span>
+                    <span class="step-name">单次运行跳变检测</span>
+                    <span class="badge badge-purple">人工改判</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "value": 8.6,
+  "unit": "cm²"
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "causes": [
+    "人工改判"
+  ]
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            </div>
+            <div class="notes-block"><strong>备注:</strong> [后补说明-SN002] 梯形上底与下底理解歧义已反馈命题组待统一口径 (李老师)</div>
+        </div>
+        
+        <div class="detail-section" id="detail-Q006">
+            <h3>Q006: 单位缺失-待确认 <span style="font-weight:normal;font-size:14px;">面积=0.0000</span></h3>
+            
+            <h4>步骤追溯</h4>
+            <div class="steps-container">
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 1</span>
+                    <span class="step-name">加载原始数据</span>
+                    
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q006",
+  "value": 22.1,
+  "unit": null
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "item_id": "Q006",
+  "value": 22.1,
+  "unit": null
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="step-card">
+                <div class="step-header">
+                    <span class="step-index">步骤 2</span>
+                    <span class="step-name">单位缺失检测</span>
+                    <span class="badge badge-red">单位不一致</span>
+                </div>
+                <div class="step-body">
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输入</div>
+                        <pre class="snapshot-content">{
+  "unit": null
+}</pre>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-snapshot">
+                        <div class="snapshot-label">输出</div>
+                        <pre class="snapshot-content">{
+  "status": "暂停",
+  "reason": "单位缺失"
+}</pre>
+                    </div>
+                </div>
+                
+            </div>
+            </div>
+            <div class="notes-block"><strong>备注:</strong> 单位缺失，暂停计算，待确认</div>
+        </div>
+        
+</body>
+</html>
+    
