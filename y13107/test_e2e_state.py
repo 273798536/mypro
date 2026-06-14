@@ -41,31 +41,31 @@ test_scenarios = [
         "name": "首次计算 (阈值=1e10, 容差=1e-6)",
         "near_threshold": 1e10,
         "tolerance": 1e-6,
-        "expected_anomalies": 8,
+        "expected_anomalies": 9,
     },
     {
         "name": "修改阈值为1 (状态应变化)",
         "near_threshold": 1,
         "tolerance": 1e-6,
-        "expected_anomalies": 16,
+        "expected_anomalies": 17,
     },
     {
         "name": "再改回1e10 (状态应还原)",
         "near_threshold": 1e10,
         "tolerance": 1e-6,
-        "expected_anomalies": 8,
+        "expected_anomalies": 9,
     },
     {
         "name": "修改容差为0.5 (减少历史不符异常)",
         "near_threshold": 1e10,
         "tolerance": 0.5,
-        "expected_anomalies": 6,
+        "expected_anomalies": 7,
     },
     {
         "name": "阈值=1, 容差=0.5 (双重修改)",
         "near_threshold": 1,
         "tolerance": 0.5,
-        "expected_anomalies": 14,
+        "expected_anomalies": 15,
     },
 ]
 
@@ -113,16 +113,22 @@ print(f"   接近奇异异常: {near_singular_1e10} → {near_singular_1} (增�
 print(f"   历史答案不符: {hist_mismatch_1e10} → {hist_mismatch_1} (不变)")
 print(f"   其他异常类型数量保持不变，说明参数变化只影响相关检测")
 
-empty_anom = [a for a in anom_1 if a.anomaly_type.value == "空矩阵/空集合"][0]
+empty_anom_list = [a for a in anom_1 if a.anomaly_type.value == "空矩阵/空集合"]
+assert len(empty_anom_list) > 0, "未找到空矩阵/空集合异常"
+empty_anom = empty_anom_list[0]
 print(f"\n2. 空集合异常保留原始来源行:")
 print(f"   矩阵 {empty_anom.matrix_id}: 来源行={empty_anom.source_row}, 影响范围='{empty_anom.impact_scope}'")
 
-dirty_anom = [a for a in anom_1 if a.anomaly_type.value == "脏数据(非数值)"][0]
+dirty_anom_list = [a for a in anom_1 if a.anomaly_type.value == "脏数据(非数值)"]
+assert len(dirty_anom_list) > 0, "未找到脏数据异常"
+dirty_anom = dirty_anom_list[0]
 print(f"\n3. 脏数据保留原始痕迹:")
 print(f"   矩阵 {dirty_anom.matrix_id}: 原始值='{dirty_anom.raw_value}'")
 print(f"   保留 {len(dirty_anom.affected_columns)} 个脏数据列，不自动修复")
 
-singular_anom = [a for a in anom_1 if a.anomaly_type.value == "奇异矩阵(除零边界)"][0]
+singular_anom_list = [a for a in anom_1 if a.anomaly_type.value == "奇异矩阵(除零边界)"]
+assert len(singular_anom_list) > 0, "未找到奇异矩阵(除零边界)异常"
+singular_anom = singular_anom_list[0]
 print(f"\n4. 除零边界异常包含影响范围:")
 print(f"   矩阵 {singular_anom.matrix_id}: {singular_anom.impact_scope}")
 print(f"   计算上下文: {singular_anom.calculation_context}")

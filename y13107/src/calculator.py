@@ -37,16 +37,16 @@ def compute_2_condition_number(matrix: np.ndarray) -> Tuple[float, bool, Optiona
     s_min = svals[-1]
     s_max = svals[0]
 
-    if s_min == 0:
-        return float('inf'), True, svals, "最小奇异值为零，矩阵奇异"
+    if s_min == 0 or s_min < 1e-30:
+        return float('inf'), True, svals, "最小奇异值趋近于零，矩阵严格奇异"
 
     if not np.isfinite(s_max) or not np.isfinite(s_min):
         return float('inf'), True, svals, "奇异值含非数值"
 
     cond = s_max / s_min
 
-    if not np.isfinite(cond):
-        return float('inf'), True, svals, "条件数溢出"
+    if not np.isfinite(cond) or cond > 1e30:
+        return float('inf'), True, svals, "条件数趋近于无穷大，矩阵严格奇异"
 
     return float(cond), False, svals, None
 

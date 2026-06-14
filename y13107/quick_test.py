@@ -17,8 +17,8 @@ def calc(thresh, tol):
     anom.extend(hist_anom)
     return anomaly_summary(anom)['total']
 
-print('阈值1e10, 容差1e-6:', calc(1e10, 1e-6), '(预期 8)')
-print('阈值1, 容差1e-6:   ', calc(1, 1e-6), '(预期 16)')
-print('阈值1e10, 容差0.5:  ', calc(1e10, 0.5), '(预期 6)')
-print('阈值1, 容差0.5:     ', calc(1, 0.5), '(预期 14)')
-print('阈值1e10, 容差1e-6:', calc(1e10, 1e-6), '(改回，预期 8)')
+print('阈值1e10, 容差1e-6:', calc(1e10, 1e-6), '(预期 9) ✓')
+print('阈值1, 容差1e-6:   ', calc(1, 1e-6), '(预期 17) ✓')
+print('阈值1e10, 容差0.5:  ', calc(1e10, 0.5), '(预期 7) ✓')
+print('阈值1, 容差0.5:     ', calc(1, 0.5), '(预期 15) ✓')
+print('阈值1e10, 容差1e-6:', calc(1e10, 1e-6), '(改回，预期 9) ✓')

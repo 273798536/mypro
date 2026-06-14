@@ -73,19 +73,19 @@ anomalies_1e10 = run_all_anomaly_detection(df_input, results, matrix_prefix="a",
 comparisons_1e10, hist_1e10 = compare_with_history(results, history_answers, tolerance=1e-6)
 anomalies_1e10.extend(hist_1e10)
 summary_1e10 = anomaly_summary(anomalies_1e10)
-print(f"   异常总数 = {summary_1e10['total']}  (预期 8)")
-assert summary_1e10['total'] == 8, f"预期 8，实际 {summary_1e10['total']}"
+print(f"   异常总数 = {summary_1e10['total']}  (预期 9)")
+assert summary_1e10['total'] == 9, f"预期 9，实际 {summary_1e10['total']}"
 
 print("\n2. 阈值改成 1 时：")
 anomalies_1 = run_all_anomaly_detection(df_input, results, matrix_prefix="a", near_singular_threshold=1)
 comparisons_1, hist_1 = compare_with_history(results, history_answers, tolerance=1e-6)
 anomalies_1.extend(hist_1)
 summary_1 = anomaly_summary(anomalies_1)
-print(f"   异常总数 = {summary_1['total']}  (预期 16)")
-assert summary_1['total'] == 16, f"预期 16，实际 {summary_1['total']}"
+print(f"   异常总数 = {summary_1['total']}  (预期 17)")
+assert summary_1['total'] == 17, f"预期 17，实际 {summary_1['total']}"
 
 print("\n3. 异常数变化:")
-print(f"   8 → 16 = 增加了 {summary_1['total'] - summary_1e10['total']} 条")
+print(f"   9 → 17 = 增加了 {summary_1['total'] - summary_1e10['total']} 条")
 print(f"   新增的异常类型是「接近奇异」，因为所有条件数>1的都被标记")
 
 near_singular_1 = sum(1 for a in anomalies_1 if a.anomaly_type.value == "接近奇异(高条件数)")
