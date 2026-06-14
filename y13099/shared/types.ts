@@ -17,6 +17,7 @@ export interface Plan {
   conclusionSummary: string;
   createdAt: string;
   updatedAt: string;
+  primarySensorRecordId?: string;
 }
 
 export interface TimelineNode {

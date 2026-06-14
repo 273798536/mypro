@@ -14,6 +14,8 @@ import {
   CheckCircle2,
   Info,
   Search,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -28,7 +30,11 @@ export default function Exceptions() {
     loading,
     exportExceptions,
     fetchSensorDetail,
+    sensorDetailError,
+    clearSensorDetailError,
   } = useStore();
+
+  const [pendingTraceId, setPendingTraceId] = useState<string | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [corridorSearch, setCorridorSearch] = useState("");
@@ -305,19 +311,49 @@ export default function Exceptions() {
                       <p className="text-xs text-text-secondary line-clamp-2 max-w-xs">
                         {plan.sensorSourceSummary}
                       </p>
-                      <button
-                        className="text-[11px] text-primary hover:text-primary-hover inline-flex items-center gap-1 mt-1"
-                        onClick={() => {
-                          const sensorId = plan.id;
-                          fetchSensorDetail(
-                            exceptions.find((p) => p.id === plan.id)?.id ||
-                              sensorId
-                          );
-                        }}
-                      >
-                        <Link2 className="w-3 h-3" />
-                        溯源传感器
-                      </button>
+                      <div className="mt-1.5 space-y-1">
+                        {plan.primarySensorRecordId ? (
+                          <button
+                            className={
+                              "text-[11px] text-primary hover:text-primary-hover inline-flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                            }
+                            disabled={loading.sensorDetail && pendingTraceId === plan.id}
+                            onClick={async () => {
+                              setPendingTraceId(plan.id);
+                              clearSensorDetailError();
+                              try {
+                                await fetchSensorDetail(
+                                  plan.primarySensorRecordId as string
+                                );
+                              } finally {
+                                setPendingTraceId((cur) =>
+                                  cur === plan.id ? null : cur
+                                );
+                              }
+                            }}
+                          >
+                            {loading.sensorDetail && pendingTraceId === plan.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <Link2 className="w-3 h-3" />
+                            )}
+                            {loading.sensorDetail && pendingTraceId === plan.id
+                              ? "加载中..."
+                              : "溯源传感器"}
+                          </button>
+                        ) : (
+                          <span className="text-[11px] text-muted inline-flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            暂未关联传感器记录
+                          </span>
+                        )}
+                        {sensorDetailError && pendingTraceId === plan.id && (
+                          <div className="text-[11px] text-danger inline-flex items-center gap-1 bg-danger/10 px-2 py-0.5 rounded">
+                            <AlertCircle className="w-3 h-3" />
+                            {sensorDetailError}
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-4">
                       <p className="text-xs text-text-secondary line-clamp-2 max-w-sm">

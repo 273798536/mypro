@@ -18,6 +18,7 @@ interface AppState {
   currentTimelineNode: TimelineNode | null;
   loading: Record<string, boolean>;
   sensorDetail: SensorRecord | null;
+  sensorDetailError?: string | null;
   showSensorModal: boolean;
   showRejudgeModal: boolean;
   rejudgePlanId: string | null;
@@ -47,6 +48,7 @@ interface AppState {
     corridorCode?: string;
   }) => Promise<string>;
   clearPlanDetail: () => void;
+  clearSensorDetailError: () => void;
 }
 
 async function apiGet<T>(url: string): Promise<T> {
@@ -135,17 +137,27 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   fetchSensorDetail: async (id) => {
-    set({ loading: { ...get().loading, sensorDetail: true } });
+    set({
+      loading: { ...get().loading, sensorDetail: true },
+      sensorDetailError: null,
+    });
     try {
       const data = await apiGet<{ record: SensorRecord }>(`/api/sensors/${id}`);
       set({
         sensorDetail: data.record,
         showSensorModal: true,
+        sensorDetailError: null,
         loading: { ...get().loading, sensorDetail: false },
       });
     } catch (e) {
       console.error(e);
-      set({ loading: { ...get().loading, sensorDetail: false } });
+      const msg =
+        e instanceof Error ? e.message : "传感器记录查询失败";
+      set({
+        sensorDetailError: msg,
+        showSensorModal: false,
+        loading: { ...get().loading, sensorDetail: false },
+      });
     }
   },
 
@@ -183,4 +195,5 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   clearPlanDetail: () => set({ planDetail: null, currentTimelineNode: null }),
+  clearSensorDetailError: () => set({ sensorDetailError: null }),
 }));

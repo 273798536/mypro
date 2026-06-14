@@ -53,8 +53,23 @@ router.get("/", (req: Request, res: Response) => {
     .prepare(`SELECT * FROM plan WHERE ${where} ORDER BY updated_at DESC LIMIT 50`)
     .all(...params) as Record<string, unknown>[];
 
+  const stmtPrimarySensor = db.prepare(
+    `SELECT sensor_record_id FROM timeline_node
+     WHERE plan_id = ? AND sensor_record_id IS NOT NULL
+     ORDER BY timestamp DESC LIMIT 1`
+  );
+
   res.json({
-    exceptions: plans.map(buildPlanFromRow),
+    exceptions: plans.map((row) => {
+      const plan = buildPlanFromRow(row);
+      const sensorRow = stmtPrimarySensor.get(plan.id) as
+        | { sensor_record_id: string }
+        | undefined;
+      if (sensorRow) {
+        plan.primarySensorRecordId = sensorRow.sensor_record_id;
+      }
+      return plan;
+    }),
     filterSnapshot: getFilterSnapshot(req.query),
   });
 });
