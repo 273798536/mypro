@@ -240,7 +240,11 @@ def list_history():
         print(f"    原始说法: {rec['original_claim']}")
         print(f"    备注: {rec.get('notes', '无')}")
         if rec.get("manual_override"):
-            print(f"    ★ 包含人工改判: {rec['manual_override']['reason']}")
+            print(f"    ★ 人工改判: {rec['manual_override']['reason']} (操作人: {rec['manual_override']['operator']}, 源自: {rec['manual_override']['from_id']})")
+        if rec.get("remarks"):
+            print(f"    追加备注:")
+            for rm in rec["remarks"]:
+                print(f"      [{rm['date']}] {rm['author']}: {rm['note']}")
     print()
 
 
@@ -300,11 +304,42 @@ def run_trial(history_id: Optional[str] = None, show_details: bool = True):
     return 0 if steady else 2
 
 
+def add_note_to_history(history_id: str, note: str, author: str = ""):
+    history = load_history()
+    record = next((r for r in history if r["id"] == history_id), None)
+    if not record:
+        print(f"未找到历史答案: {history_id}")
+        print("可用ID：")
+        for r in history:
+            print(f"  {r['id']} ({r['author']})")
+        return 1
+
+    if "remarks" not in record:
+        record["remarks"] = []
+
+    entry = {
+        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "author": author or record.get("author", "未知"),
+        "note": note,
+    }
+    record["remarks"].append(entry)
+    save_history(history)
+    print(f"\n✓ 备注已追加到 {history_id}")
+    print(f"  时间: {entry['date']}")
+    print(f"  作者: {entry['author']}")
+    print(f"  内容: {note}")
+    print(f"  下一班通过 'history' 可见此备注。")
+    return 0
+
+
 def add_manual_override(history_id: str, new_matrix: List[List[float]], reason: str, operator: str = "人工"):
     history = load_history()
     record = next((r for r in history if r["id"] == history_id), None)
     if not record:
         print(f"未找到历史答案: {history_id}")
+        print("可用ID：")
+        for r in history:
+            print(f"  {r['id']} ({r['author']})")
         return 1
 
     new_id = f"ANS-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
@@ -329,7 +364,68 @@ def add_manual_override(history_id: str, new_matrix: List[List[float]], reason: 
     print(f"  操作人: {operator}")
     print(f"  改判原因: {reason}")
     print(f"  改判记录已留在历史中，下一班可通过 'history' 命令查看完整链路。")
-    return 0
+    return new_id
+
+
+def _interactive_read_matrix(base_matrix: List[List[float]]) -> Optional[List[List[float]]]:
+    n = len(base_matrix)
+    states = list(STATE_NAMES.keys())[:n]
+    print(f"\n当前矩阵 ({n}x{n})：")
+    _print_matrix(base_matrix)
+    print(f"\n请逐行输入新矩阵值（直接回车保留原值，输入 q 放弃）：")
+    print(f"  格式：用空格分隔 {n} 个数字，每行概率之和须为1")
+    print(f"  示例：0.5 0.3 0.1 0.1")
+
+    new_matrix = [row[:] for row in base_matrix]
+    for i in range(n):
+        label = f"  第{i}行 S{i}({STATE_NAMES.get(f'S{i}', f'S{i}')}) [{' '.join(f'{v:.2f}' for v in base_matrix[i])}]: "
+        raw = input(label).strip()
+        if raw.lower() == "q":
+            print("已放弃。")
+            return None
+        if raw == "":
+            continue
+        try:
+            vals = [float(x) for x in raw.split()]
+            if len(vals) != n:
+                print(f"  ✗ 需要 {n} 个值，实际输入 {len(vals)} 个，本行保留原值。")
+                continue
+            row_sum = sum(vals)
+            if abs(row_sum - 1.0) > 1e-4:
+                print(f"  ✗ 行和为 {row_sum:.4f}，不为1，本行保留原值。")
+                continue
+            if any(v < 0 or v > 1 for v in vals):
+                print(f"  ✗ 存在越界值(须0~1)，本行保留原值。")
+                continue
+            new_matrix[i] = vals
+        except ValueError:
+            print(f"  ✗ 格式错误，本行保留原值。")
+
+    valid, errs = is_valid_transition_matrix(new_matrix)
+    if not valid:
+        print("\n校验失败：")
+        for e in errs:
+            print(f"  - {e}")
+        print("矩阵未保存，请重新 override。")
+        return None
+
+    if new_matrix == base_matrix:
+        print("\n矩阵无变化，无需改判。")
+        return None
+
+    return new_matrix
+
+
+def _print_matrix(matrix: List[List[float]]):
+    n = len(matrix)
+    states = list(STATE_NAMES.keys())[:n]
+    header = " " * 10 + "".join(f"{s:>10}" for s in states)
+    print(header)
+    for i in range(n):
+        s = states[i]
+        row = f"{s}({STATE_NAMES[s]:<4})"
+        row += "".join(f"{matrix[i][j]:>10.4f}" for j in range(n))
+        print(row)
 
 
 def show_anomaly_queue():
@@ -356,19 +452,24 @@ def print_help():
 马尔可夫链参数试算工具 - 命令清单
 
   启动与运行:
-    python markov_trial.py              一条命令跑完最新样例
-    python markov_trial.py run <ID>     复算指定历史答案
+    python3 markov_trial.py                    一条命令跑完最新样例
+    python3 markov_trial.py run <ID>           复算指定历史答案
 
   查看历史:
-    python markov_trial.py history      列出所有历史答案（含改判链路）
-    python markov_trial.py show <ID>    查看指定答案的图表+明细
+    python3 markov_trial.py history            列出所有历史答案（含改判链路+追加备注）
+    python3 markov_trial.py show <ID>          查看指定答案的图表+明细
+
+  补备注:
+    python3 markov_trial.py add-note <ID>      交互式追加备注到指定历史答案
+    python3 markov_trial.py add-note <ID> <备注内容>   直接追加备注
 
   人工改判:
-    python markov_trial.py demo-override   演示：阿宁改判ANS-2026-003后复算
-    （代码中调用 add_manual_override 可编程式改判）
+    python3 markov_trial.py override <ID>      交互式录入新矩阵+原因+操作人，改判后自动复算
+    python3 markov_trial.py override <ID> --matrix <JSON文件> --reason <原因> [--operator <操作人>]
+                                              从JSON文件读矩阵，非交互式改判
 
   异常队列:
-    python markov_trial.py anomalies    查看所有历史版本的异常队列
+    python3 markov_trial.py anomalies          查看所有历史版本的异常队列
 
 零边界说明:
   - 退出码 0: 正常
@@ -376,6 +477,117 @@ def print_help():
   - 所有除零边界均会追溯到历史答案的原始说法，不含糊
   - 退出提示会明确说明零边界卡在哪一步
 """)
+
+
+def _cmd_add_note(args: List[str]):
+    if not args:
+        print("用法: python3 markov_trial.py add-note <ID> [备注内容]")
+        print("  不写备注内容则进入交互模式逐行输入。")
+        return 1
+
+    history_id = args[0]
+    if len(args) > 1:
+        note = " ".join(args[1:])
+        author = ""
+    else:
+        history = load_history()
+        record = next((r for r in history if r["id"] == history_id), None)
+        if not record:
+            print(f"未找到历史答案: {history_id}")
+            print("可用ID：")
+            for r in history:
+                print(f"  {r['id']} ({r['author']})")
+            return 1
+        print(f"为 {history_id} ({record['author']}) 追加备注（输入空行结束）：")
+        lines = []
+        while True:
+            line = input("  > ").strip()
+            if line == "":
+                break
+            lines.append(line)
+        if not lines:
+            print("未输入内容，放弃。")
+            return 1
+        note = " ".join(lines)
+        author = input("  署名（直接回车用原作者）: ").strip()
+
+    return add_note_to_history(history_id, note, author)
+
+
+def _cmd_override(args: List[str]):
+    if not args:
+        print("用法: python3 markov_trial.py override <ID> [--matrix <JSON文件>] [--reason <原因>] [--operator <操作人>]")
+        return 1
+
+    history_id = args[0]
+    history = load_history()
+    record = next((r for r in history if r["id"] == history_id), None)
+    if not record:
+        print(f"未找到历史答案: {history_id}")
+        print("可用ID：")
+        for r in history:
+            print(f"  {r['id']} ({r['author']})")
+        return 1
+
+    base_matrix = record["transition_matrix"]
+
+    matrix_file = None
+    reason = ""
+    operator = ""
+    i = 1
+    while i < len(args):
+        if args[i] == "--matrix" and i + 1 < len(args):
+            matrix_file = args[i + 1]
+            i += 2
+        elif args[i] == "--reason" and i + 1 < len(args):
+            reason = args[i + 1]
+            i += 2
+        elif args[i] == "--operator" and i + 1 < len(args):
+            operator = args[i + 1]
+            i += 2
+        else:
+            i += 1
+
+    if matrix_file:
+        try:
+            with open(matrix_file, "r", encoding="utf-8") as f:
+                new_matrix = json.load(f)
+            if not isinstance(new_matrix, list) or not all(isinstance(row, list) for row in new_matrix):
+                print(f"JSON文件格式错误：须为二维数组")
+                return 1
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"读取矩阵文件失败: {e}")
+            return 1
+        valid, errs = is_valid_transition_matrix(new_matrix)
+        if not valid:
+            print("矩阵校验失败：")
+            for e in errs:
+                print(f"  - {e}")
+            return 1
+    else:
+        new_matrix = _interactive_read_matrix(base_matrix)
+        if new_matrix is None:
+            return 1
+
+    if not reason:
+        reason = input("  改判原因: ").strip()
+        if not reason:
+            print("必须填写改判原因，放弃。")
+            return 1
+
+    if not operator:
+        operator = input("  操作人（直接回车默认'人工'）: ").strip() or "人工"
+
+    result = add_manual_override(history_id, new_matrix, reason, operator)
+    if result == 1:
+        return 1
+
+    new_id = result
+    print(f"\n>>> 改判后自动复算 {new_id}:")
+    rc = run_trial(new_id)
+    if rc == 2:
+        print("\n>>> 退出提示：零边界卡在「吸收态判定/稳态方程组奇异」处，已追溯到历史答案原始说法。")
+    return rc
 
 
 def main():
@@ -391,24 +603,19 @@ def main():
         list_history()
     elif args[0] == "show":
         if len(args) < 2:
-            print("请指定历史答案ID，例如: python markov_trial.py show ANS-2026-002")
+            print("请指定历史答案ID，例如: python3 markov_trial.py show ANS-2026-002")
             sys.exit(1)
         run_trial(args[1], show_details=True)
+    elif args[0] == "add-note":
+        rc = _cmd_add_note(args[1:])
+        sys.exit(rc if rc else 0)
+    elif args[0] == "override":
+        rc = _cmd_override(args[1:])
+        sys.exit(rc if rc else 0)
     elif args[0] == "anomalies":
         show_anomaly_queue()
     elif args[0] == "help" or args[0] == "--help" or args[0] == "-h":
         print_help()
-    elif args[0] == "demo-override":
-        matrix = [
-            [0.6, 0.3, 0.1, 0.0],
-            [0.2, 0.5, 0.3, 0.0],
-            [0.0, 0.2, 0.5, 0.3],
-            [0.1, 0.0, 0.3, 0.6],
-        ]
-        add_manual_override("ANS-2026-003", matrix, "打通S3回流S0，修复除零边界", "阿宁")
-        print("\n>>> 改判后复算:")
-        history = load_history()
-        run_trial(history[-1]["id"])
     else:
         print(f"未知命令: {args[0]}")
         print_help()

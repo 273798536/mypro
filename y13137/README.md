@@ -1,11 +1,13 @@
 # 马尔可夫链参数试算工具 - 使用说明
 
+> 零依赖纯 Python 实现，单文件，好交接。教研编辑拿到手就能跑。
+
 ## 一、启动
 
 一条命令跑完最新样例：
 
 ```bash
-python markov_trial.py
+python3 markov_trial.py
 ```
 
 首次运行会自动加载内置的 3 条历史答案样例，默认跑最新版本（ANS-2026-003）。
@@ -16,6 +18,7 @@ python markov_trial.py
 - 稳态分布图表 + 明细（同一口径）
 - 前 5 步演化轨迹图表
 - 异常队列
+- 除零边界退出提示（退出码 2 时明确说明卡在哪）
 
 ---
 
@@ -24,30 +27,67 @@ python markov_trial.py
 ### 重跑指定历史答案
 
 ```bash
-python markov_trial.py run ANS-2026-002
+python3 markov_trial.py run ANS-2026-002
 ```
 
 或：
 
 ```bash
-python markov_trial.py show ANS-2026-002
+python3 markov_trial.py show ANS-2026-002
 ```
 
-### 查看所有历史答案（含改判链路）
+### 查看所有历史答案（含改判链路 + 追加备注）
 
 ```bash
-python markov_trial.py history
+python3 markov_trial.py history
 ```
 
-每条历史记录都保留了：ID、日期、作者、原始说法、备注。如果是人工改判的版本，会带 ★ 标记和改判原因，下一班不会只看到最终结果。
+每条历史记录都保留了：ID、日期、作者、原始说法、备注。如果是人工改判的版本，会带 ★ 标记和改判原因、源版本。如果有追加备注，也会逐条显示。
 
-### 人工改判演示（改判后自动复算）
+### 临时补一条历史答案备注
 
 ```bash
-python markov_trial.py demo-override
+python3 markov_trial.py add-note ANS-2026-003
 ```
 
-会基于 ANS-2026-003 加一条阿宁的改判记录，打通 S3→S0 回流，然后自动复算。改判记录会追加到 history.json，保留完整链路。
+进入交互模式，逐行输入备注内容，空行结束。可署名，默认用原作者。
+
+也可以一行搞定：
+
+```bash
+python3 markov_trial.py add-note ANS-2026-003 "周一早会备注：S3吸收态需要教研组讨论是否保留"
+```
+
+备注会留在历史记录中，下一班通过 `history` 可见。
+
+### 人工改判并自动复算
+
+交互式录入：
+
+```bash
+python3 markov_trial.py override ANS-2026-003
+```
+
+会先展示当前矩阵，然后逐行输入新值（直接回车保留原值，输入 q 放弃），再填改判原因和操作人，改判后自动复算。
+
+从 JSON 文件批量录入（非交互）：
+
+```bash
+python3 markov_trial.py override ANS-2026-003 --matrix new_matrix.json --reason "打通S3回流S0" --operator 阿宁
+```
+
+JSON 文件格式示例（4x4 矩阵）：
+
+```json
+[
+  [0.6, 0.3, 0.1, 0.0],
+  [0.2, 0.5, 0.3, 0.0],
+  [0.0, 0.2, 0.5, 0.3],
+  [0.1, 0.0, 0.3, 0.6]
+]
+```
+
+改判记录会追加到 history.json，保留完整链路：改判原因、操作人、基准矩阵、时间戳。
 
 ---
 
@@ -56,7 +96,7 @@ python markov_trial.py demo-override
 ### 查看所有历史版本的异常
 
 ```bash
-python markov_trial.py anomalies
+python3 markov_trial.py anomalies
 ```
 
 ### 单次运行末尾的异常队列
@@ -80,5 +120,5 @@ python markov_trial.py anomalies
 | 文件 | 说明 |
 |------|------|
 | `markov_trial.py` | 主程序，全部逻辑都在这，好交接 |
-| `history.json` | 历史答案记录，运行后自动生成 |
+| `history.json` | 历史答案记录，运行后自动生成（含备注、改判链路） |
 | `README.md` | 本文件 |
