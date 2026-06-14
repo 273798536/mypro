@@ -240,6 +240,90 @@ tr:hover { background: #f9fafb; }
 }
 .comparison-table .correct { background: #dcfce7; }
 .comparison-table .buggy { background: #fee2e2; }
+
+.download-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+.download-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.2s;
+    background: #fafafa;
+}
+.download-item:hover {
+    border-color: #667eea;
+    background: #f0f4ff;
+    transform: translateY(-1px);
+}
+.download-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+.download-info {
+    flex: 1;
+    min-width: 0;
+}
+.download-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+.download-desc {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 8px;
+}
+.download-meta {
+    font-size: 11px;
+    color: #9ca3af;
+    display: flex;
+    gap: 12px;
+}
+.download-btn {
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.download-btn:hover:not(:disabled) {
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+.download-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: #9ca3af;
+}
+.download-all-btn {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    padding: 12px 24px;
+    font-size: 15px;
+}
+.download-all-btn:hover {
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+}
+.batch-tip {
+    margin-top: 16px;
+    padding: 12px;
+    background: #eff6ff;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #1e40af;
+    border-left: 3px solid #3b82f6;
+}
 </style>
 </head>
 <body>
@@ -268,6 +352,29 @@ tr:hover { background: #f9fafb; }
     <div style="margin-top: 16px;">
         <span>当前状态: </span>
         <span class="status-badge status-pending" id="statusBadge">待运行</span>
+    </div>
+</div>
+
+<div class="card">
+    <h2>文件下载交接区</h2>
+    <div class="btn-group" style="margin-bottom: 12px;">
+        <button class="btn btn-primary download-all-btn" onclick="downloadAllFiles()">
+            <span class="icon">📦</span>
+            一键打包下载全部（9个文件）
+        </button>
+        <button class="btn btn-secondary" onclick="refreshDownloadList()">
+            <span class="icon">🔄</span>
+            刷新文件列表
+        </button>
+    </div>
+    <div class="batch-tip">
+        💡 交接闭环：教研编辑阿宁点击"一键打包下载"，可将所有材料一次性发给复核人；
+        复核人解压后只需运行 <code>python3 integer_program_checker.py</code> 或 <code>python3 server.py</code> 即可复现全部流程。
+    </div>
+    <div class="download-grid" id="downloadGrid">
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #9ca3af;">
+            加载文件列表中...
+        </div>
     </div>
 </div>
 
@@ -581,6 +688,115 @@ function toggleReport() {
     }
     card.style.display = card.style.display === 'none' ? 'block' : 'none';
 }
+
+const FILE_ICONS = {
+    '.md': '📝', '.csv': '📊', '.txt': '📄',
+    '.py': '🐍', '.html': '🌐', default: '📁'
+};
+
+function getFileIcon(filename) {
+    const ext = filename.substring(filename.lastIndexOf('.')).toLowerCase();
+    return FILE_ICONS[ext] || FILE_ICONS.default;
+}
+
+function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+}
+
+let downloadableFiles = [];
+
+async function refreshDownloadList() {
+    const grid = document.getElementById('downloadGrid');
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #9ca3af;">加载中...</div>';
+    try {
+        const res = await fetch('/api/download-list');
+        const data = await res.json();
+        downloadableFiles = data.files;
+        renderDownloadGrid(data.files);
+    } catch (e) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #dc2626;">加载失败: ${e.message}</div>`;
+    }
+}
+
+function renderDownloadGrid(files) {
+    const grid = document.getElementById('downloadGrid');
+    if (!files || files.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #9ca3af;">暂无可下载文件</div>';
+        return;
+    }
+    let html = '';
+    files.forEach(f => {
+        html += `
+        <div class="download-item">
+            <div class="download-icon">${getFileIcon(f.filename)}</div>
+            <div class="download-info">
+                <div class="download-name">${f.label}</div>
+                <div class="download-desc">${f.desc || ''}</div>
+                <div class="download-meta">
+                    <span>📄 ${f.filename}</span>
+                    ${f.exists ? `<span>💾 ${formatSize(f.size)}</span>` : '<span style="color:#dc2626;">❌ 文件不存在</span>'}
+                </div>
+            </div>
+            <button class="download-btn" onclick="downloadFile('${f.key}')" ${f.exists ? '' : 'disabled'}>
+                ⬇ 下载
+            </button>
+        </div>`;
+    });
+    grid.innerHTML = html;
+}
+
+function downloadFile(fileKey) {
+    const file = downloadableFiles.find(f => f.key === fileKey);
+    if (!file) {
+        alert('未知文件');
+        return;
+    }
+    if (!file.exists) {
+        alert('文件不存在，请先运行校验生成报告');
+        return;
+    }
+    const link = document.createElement('a');
+    link.href = `/api/download?key=${encodeURIComponent(fileKey)}`;
+    link.download = file.filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    console.log(`已触发下载: ${file.filename}`);
+}
+
+let downloadingIndex = 0;
+
+function downloadAllFiles() {
+    const existFiles = downloadableFiles.filter(f => f.exists);
+    if (existFiles.length === 0) {
+        alert('暂无可下载文件，请先运行校验');
+        return;
+    }
+    downloadingIndex = 0;
+    downloadNext(existFiles);
+}
+
+function downloadNext(files) {
+    if (downloadingIndex >= files.length) {
+        alert(`已全部下载完成（${files.length} 个文件）`);
+        return;
+    }
+    const f = files[downloadingIndex];
+    downloadingIndex++;
+    const link = document.createElement('a');
+    link.href = `/api/download?key=${encodeURIComponent(f.key)}`;
+    link.download = f.filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => downloadNext(files), 500);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    refreshDownloadList();
+});
 </script>
 
 </body>

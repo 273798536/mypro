@@ -8,13 +8,27 @@
 import http.server
 import socketserver
 import json
+import urllib.parse
 import subprocess
 import sys
+import mimetypes
 from pathlib import Path
 from io import StringIO
 
 SCRIPT_DIR = Path(__file__).parent
 PORT = 8000
+
+DOWNLOADABLE_FILES = [
+    {"key": "report", "filename": "整数规划边界校验_分析报告.md", "label": "Markdown分析报告", "desc": "参数版本+异常点+解释同页"},
+    {"key": "samples", "filename": "批量样本数据_整数规划校验.csv", "label": "批量样本数据", "desc": "8条样本含吨/kg混用"},
+    {"key": "single_record", "filename": "正常记录_REC-2026-0613-0042.txt", "label": "单条正常记录说明", "desc": "REC-0042为什么影响结论"},
+    {"key": "questions", "filename": "题目清单_整数规划边界校验.csv", "label": "题目清单", "desc": "7道主线题含页码"},
+    {"key": "suspend_rule", "filename": "后补说明_重复样本挂起流程.md", "label": "重复样本挂起规则", "desc": "IP-007挂起操作步骤"},
+    {"key": "checker_script", "filename": "integer_program_checker.py", "label": "校验脚本", "desc": "可执行Python脚本"},
+    {"key": "server_script", "filename": "server.py", "label": "Web服务脚本", "desc": "本地Web服务源码"},
+    {"key": "ui_html", "filename": "checker_ui.html", "label": "交互页面源码", "desc": "HTML前端页面"},
+    {"key": "operation_guide", "filename": "操作说明_整数规划边界校验.md", "label": "操作说明", "desc": "放样例/重跑/查看报告"},
+]
 
 
 class CheckerHandler(http.server.SimpleHTTPRequestHandler):
@@ -22,11 +36,26 @@ class CheckerHandler(http.server.SimpleHTTPRequestHandler):
         super().__init__(*args, directory=str(SCRIPT_DIR), **kwargs)
 
     def do_GET(self):
-        if self.path == "/api/health":
-            self.send_json({"status": "ok", "message": "服务正常"})
-        elif self.path == "/api/check":
+        parsed = http.server.urllib.parse.urlparse(self.path)
+        query = http.server.urllib.parse.parse_qs(parsed.query)
+        path = parsed.path
+
+        if path == "/api/health":
+            self.send_json({"status": "ok", "message": "服务正常", "downloadable_files": DOWNLOADABLE_FILES})
+        elif path == "/api/check":
             self.handle_check()
-        elif self.path == "/" or self.path == "/index.html":
+        elif path == "/api/download-list":
+            self.send_json({
+                "files": [
+                    {**f, "exists": (SCRIPT_DIR / f["filename"]).exists(),
+                     "size": (SCRIPT_DIR / f["filename"]).stat().st_size if (SCRIPT_DIR / f["filename"]).exists() else 0}
+                    for f in DOWNLOADABLE_FILES
+                ]
+            })
+        elif path == "/api/download":
+            file_key = query.get("key", [None])[0]
+            self.handle_download(file_key)
+        elif path == "/" or path == "/index.html":
             self.path = "/checker_ui.html"
             super().do_GET()
         else:
@@ -109,6 +138,30 @@ class CheckerHandler(http.server.SimpleHTTPRequestHandler):
             ],
             "report": report_content[:3000] + ("..." if len(report_content) > 3000 else ""),
         }
+
+    def handle_download(self, file_key):
+        file_info = next((f for f in DOWNLOADABLE_FILES if f["key"] == file_key), None)
+        if not file_info:
+            self.send_json({"error": f"未知文件key: {file_key}"}, status=400)
+            return
+        file_path = SCRIPT_DIR / file_info["filename"]
+        if not file_path.exists():
+            self.send_json({"error": f"文件不存在: {file_info['filename']}"}, status=404)
+            return
+        mime_type, _ = mimetypes.guess_type(file_info["filename"])
+        if mime_type is None:
+            mime_type = "application/octet-stream"
+        encoded_filename = urllib.parse.quote(file_info["filename"])
+        self.send_response(200)
+        self.send_header("Content-Type", f"{mime_type}; charset=utf-8")
+        self.send_header("Content-Length", str(file_path.stat().st_size))
+        self.send_header("Content-Disposition",
+                         f"attachment; filename*=UTF-8''{encoded_filename}")
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+        with open(file_path, "rb") as f:
+            self.wfile.write(f.read())
+        print(f"[HTTP] 下载文件: {file_info['filename']} ({file_path.stat().st_size} bytes)")
 
     def send_json(self, data, status=200):
         self.send_response(status)
