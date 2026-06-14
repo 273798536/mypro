@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, Save, Database, CheckCircle2, AlertTriangle, XCircle, AlertCircle } from 'lucide-react';
+import { Download, Save, Database, CheckCircle2, AlertTriangle, XCircle, AlertCircle, FileWarning, Calculator } from 'lucide-react';
 import { useVerificationStore } from '@/store/useVerificationStore';
 import UploadZone from '@/components/UploadZone';
 import FilterPanel from '@/components/FilterPanel';
@@ -100,7 +100,7 @@ export default function Workbench() {
 
         {rawRecords.length > 0 && (
           <>
-            <div className="grid grid-cols-5 gap-3">
+            <div className="grid grid-cols-7 gap-3">
               <StatCard
                 label="总记录数"
                 value={statistics.total}
@@ -140,6 +140,22 @@ export default function Workbench() {
                 colorClass="text-orange-400"
                 bgClass="bg-slate-800/40"
                 icon={<AlertCircle className="w-4 h-4" strokeWidth={1.8} />}
+              />
+              <StatCard
+                label="解析错误"
+                value={statistics.parseErrorCount}
+                total={statistics.total}
+                colorClass="text-rose-300"
+                bgClass="bg-rose-500/10"
+                icon={<FileWarning className="w-4 h-4" strokeWidth={1.8} />}
+              />
+              <StatCard
+                label="计算错误"
+                value={statistics.computeErrorCount}
+                total={statistics.total}
+                colorClass="text-orange-300"
+                bgClass="bg-orange-500/10"
+                icon={<Calculator className="w-4 h-4" strokeWidth={1.8} />}
               />
             </div>
 

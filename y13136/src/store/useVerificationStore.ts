@@ -13,6 +13,35 @@ import { verifyRecords, applyFilter, calculateStatistics } from '@/utils/markov'
 import { loadVersions, saveVersions, loadCurrentVersionId, saveCurrentVersionId } from '@/utils/storage';
 import { createMockRawRecords, createMockSecondVersion } from '@/utils/mockData';
 
+function migrateRecord(r: any): VerificationRecord {
+  return {
+    ...r,
+    zeroDivisionSources: r.zeroDivisionSources || [],
+    unitConversions: r.unitConversions || [],
+    parseError: r.parseError,
+    computeError: r.computeError,
+    calculationSteps: (r.calculationSteps || []).map((s: any) => ({
+      ...s,
+      inputs: s.inputs || {},
+    })),
+  };
+}
+
+function migrateVersion(v: any): HistoryVersion {
+  return {
+    ...v,
+    rawRecords: v.rawRecords || [],
+    verificationResults: (v.verificationResults || []).map(migrateRecord),
+    filterCriteria: v.filterCriteria || {
+      boundaryStatus: [],
+      isZeroDivision: null,
+      weightRange: null,
+      searchKeyword: '',
+    },
+    changes: v.changes || [],
+  };
+}
+
 interface VerificationState {
   rawRecords: RawParameterRecord[];
   verificationResults: VerificationRecord[];
@@ -49,6 +78,8 @@ const defaultStats: Statistics = {
   boundaryCount: 0,
   anomalyCount: 0,
   zeroDivisionCount: 0,
+  parseErrorCount: 0,
+  computeErrorCount: 0,
   filteredTotal: 0,
 };
 
@@ -133,15 +164,16 @@ export const useVerificationStore = create<VerificationState>((set, get) => ({
   loadVersion: (versionId) => {
     const version = get().versions.find((v) => v.id === versionId);
     if (!version) return;
-    const filtered = applyFilter(version.verificationResults, version.filterCriteria);
-    const stats = calculateStatistics(version.verificationResults, filtered);
+    const migrated = migrateVersion(version);
+    const filtered = applyFilter(migrated.verificationResults, migrated.filterCriteria);
+    const stats = calculateStatistics(migrated.verificationResults, filtered);
     set({
-      rawRecords: version.rawRecords,
-      verificationResults: version.verificationResults,
-      filterCriteria: version.filterCriteria,
+      rawRecords: migrated.rawRecords,
+      verificationResults: migrated.verificationResults,
+      filterCriteria: migrated.filterCriteria,
       filteredResults: filtered,
       statistics: stats,
-      sourceFileName: version.rawRecords.length > 0 ? version.rawRecords[0].sourceFile : '',
+      sourceFileName: migrated.rawRecords.length > 0 ? migrated.rawRecords[0].sourceFile : '',
       currentVersionId: versionId,
     });
     saveCurrentVersionId(versionId);
@@ -244,7 +276,8 @@ export const useVerificationStore = create<VerificationState>((set, get) => ({
 }));
 
 export function initializeStore() {
-  const versions = loadVersions();
+  const rawVersions = loadVersions();
+  const versions = rawVersions.map(migrateVersion);
   const currentId = loadCurrentVersionId();
   if (versions.length > 0) {
     useVerificationStore.setState({ versions });

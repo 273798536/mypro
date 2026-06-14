@@ -201,7 +201,7 @@ export default function Delivery() {
                   <div className="text-xs text-slate-400">
                     共 <span className="font-mono text-slate-300">{selectedVersion.verificationResults.length}</span> 条校验结果
                     <span className="mx-2 text-slate-700">|</span>
-                    含除零边界标记、边界状态、计算过程索引
+                    含除零来源标记、单位换算、解析/计算错误
                   </div>
                   <button
                     onClick={handleExportCSV}
@@ -216,19 +216,36 @@ export default function Delivery() {
                     <thead>
                       <tr className="bg-slate-800 text-slate-400">
                         <th className="px-3 py-2 text-left font-medium">状态</th>
-                        <th className="px-3 py-2 text-right font-medium">权重</th>
-                        <th className="px-3 py-2 text-right font-medium">转移概率</th>
-                        <th className="px-3 py-2 text-right font-medium">行和</th>
-                        <th className="px-3 py-2 text-center font-medium">边界状态</th>
-                        <th className="px-3 py-2 text-center font-medium">除零标记</th>
+                        <th className="px-3 py-2 text-center font-medium w-16">单位</th>
+                        <th className="px-3 py-2 text-right font-medium w-20">权重</th>
+                        <th className="px-3 py-2 text-right font-medium w-20">转移概率</th>
+                        <th className="px-3 py-2 text-right font-medium w-20">行和</th>
+                        <th className="px-3 py-2 text-center font-medium w-28">除零来源</th>
+                        <th className="px-3 py-2 text-center font-medium w-16">边界</th>
+                        <th className="px-3 py-2 text-center font-medium w-16">错误</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-700/30">
                       {selectedVersion.verificationResults.map((r) => {
                         const rowSum = r.weight + r.transitionProbability;
+                        const unitConvs = r.unitConversions || [];
+                        const zeroSrcs = r.zeroDivisionSources || [];
+                        const hasErr = !!r.parseError || !!r.computeError;
                         return (
-                          <tr key={r.id} className={`${r.isZeroDivision ? 'bg-amber-500/5' : 'hover:bg-slate-800/30'}`}>
+                          <tr key={r.id} className={`${r.isZeroDivision ? 'bg-amber-500/5' : hasErr ? 'bg-rose-500/5' : 'hover:bg-slate-800/30'}`}>
                             <td className="px-3 py-1.5 text-slate-300">{r.stateName}</td>
+                            <td className="px-3 py-1.5 text-center">
+                              {unitConvs.length > 0 ? (
+                                <div
+                                  className="inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-violet-500/10 text-violet-300 border border-violet-500/30"
+                                  title={unitConvs.map((u) => `${u.appliedField === 'weight' ? '权重' : '概率'}: ${u.valueBefore}${u.fromUnit}→${formatNumber(u.valueAfter)} (×${u.factor})`).join('\n')}
+                                >
+                                  {unitConvs.length}×
+                                </div>
+                              ) : (
+                                <span className="text-slate-600 text-[10px]">—</span>
+                              )}
+                            </td>
                             <td className="px-3 py-1.5 text-right font-mono text-slate-300">
                               {isNaN(r.weight) ? 'N/A' : formatNumber(r.weight, 4)}
                             </td>
@@ -242,6 +259,35 @@ export default function Delivery() {
                               {isNaN(rowSum) ? 'N/A' : formatNumber(rowSum, 4)}
                             </td>
                             <td className="px-3 py-1.5 text-center">
+                              {zeroSrcs.length > 0 ? (
+                                <div
+                                  className="inline-flex flex-wrap gap-0.5 justify-center"
+                                  title={zeroSrcs.map((s) => s).join('\n')}
+                                >
+                                  {zeroSrcs.slice(0, 2).map((s, i) => {
+                                    const label = s === 'weight_raw_zero' ? 'W=0'
+                                      : s === 'probability_raw_zero' ? 'P=0'
+                                      : s === 'transition_count_sum' ? 'ΣCnt'
+                                      : s === 'steady_state_denominator' ? '1-W'
+                                      : s === 'weight_normalize_sum' ? 'ΣW' : s;
+                                    return (
+                                      <span
+                                        key={i}
+                                        className="px-1 py-0.5 rounded text-[9px] font-mono bg-amber-500/10 text-amber-300 border border-amber-500/30"
+                                      >
+                                        {label}
+                                      </span>
+                                    );
+                                  })}
+                                  {zeroSrcs.length > 2 && (
+                                    <span className="text-[9px] text-amber-400">+{zeroSrcs.length - 2}</span>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className="text-slate-600 text-[10px]">—</span>
+                              )}
+                            </td>
+                            <td className="px-3 py-1.5 text-center">
                               <span className={`text-[10px] ${
                                 r.boundaryStatus === 'normal' ? 'text-emerald-400' :
                                 r.boundaryStatus === 'boundary' ? 'text-amber-400' : 'text-rose-400'
@@ -250,10 +296,16 @@ export default function Delivery() {
                               </span>
                             </td>
                             <td className="px-3 py-1.5 text-center">
-                              {r.isZeroDivision ? (
-                                <span className="text-amber-400 text-[10px]">是</span>
+                              {hasErr ? (
+                                <div
+                                  className="text-[10px]"
+                                  title={[r.parseError && `解析: ${r.parseError}`, r.computeError && `计算: ${r.computeError}`].filter(Boolean).join('\n')}
+                                >
+                                  {r.parseError && <span className="text-rose-400 mr-0.5" title={r.parseError}>解</span>}
+                                  {r.computeError && <span className="text-orange-400" title={r.computeError}>算</span>}
+                                </div>
                               ) : (
-                                <span className="text-slate-600 text-[10px]">否</span>
+                                <span className="text-slate-600 text-[10px]">—</span>
                               )}
                             </td>
                           </tr>

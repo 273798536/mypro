@@ -35,10 +35,16 @@ export function exportToCSV(records: VerificationRecord[], filename: string): vo
     row_sum: r.weight + r.transitionProbability,
     boundary_status: r.boundaryStatus,
     is_zero_division: r.isZeroDivision ? '是' : '否',
+    zero_division_sources: r.zeroDivisionSources.join('|'),
     zero_division_reason: r.zeroDivisionReason || '',
+    unit_conversion_count: r.unitConversions.length,
+    unit_conversions: r.unitConversions.map((u) => `${u.appliedField}:${u.fromUnit}->${u.toUnit}(x${u.factor})`).join('|'),
+    parse_error: r.parseError || '',
+    compute_error: r.computeError || '',
     temp_judgment: r.tempJudgment || '',
     judge_name: r.judgeName || '',
     judged_at: r.judgedAt ? new Date(r.judgedAt).toISOString() : '',
+    calculation_steps_count: r.calculationSteps.length,
   }));
 
   const csv = Papa.unparse(rows);
@@ -73,6 +79,8 @@ export function exportDeliveryPackage(
       boundary: version.verificationResults.filter((r) => r.boundaryStatus === 'boundary').length,
       anomaly: version.verificationResults.filter((r) => r.boundaryStatus === 'anomaly').length,
       zeroDivision: version.verificationResults.filter((r) => r.isZeroDivision).length,
+      parseError: version.verificationResults.filter((r) => r.parseError).length,
+      computeError: version.verificationResults.filter((r) => r.computeError).length,
     },
     rawRecords: version.rawRecords.map((r) => r.rawData),
     verificationResults: version.verificationResults.map((r) => ({
@@ -83,7 +91,11 @@ export function exportDeliveryPackage(
       transition_probability: r.transitionProbability,
       boundary_status: r.boundaryStatus,
       is_zero_division: r.isZeroDivision,
+      zero_division_sources: r.zeroDivisionSources,
       zero_division_reason: r.zeroDivisionReason,
+      unit_conversions: r.unitConversions,
+      parse_error: r.parseError,
+      compute_error: r.computeError,
       temp_judgment: r.tempJudgment,
       calculation_steps_count: r.calculationSteps.length,
     })),

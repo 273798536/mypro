@@ -6,20 +6,34 @@ export interface RawParameterRecord {
   uploadedAt: number;
 }
 
+export type ZeroDivisionSource =
+  | 'transition_count_sum'        // 转移计数求和=0，归一化时触发
+  | 'steady_state_denominator'    // 稳态求解分母=0
+  | 'weight_normalize_sum'        // 权重归一化分母=0
+  | 'probability_raw_zero'        // 原始输入概率就是 0 或接近 0
+  | 'weight_raw_zero';            // 原始输入权重就是 0 或接近 0
+
 export interface CalculationStep {
   stepName: string;
   formula: string;
-  inputs: Record<string, number>;
+  inputs: Record<string, number | string>;
   output: number;
   description: string;
+  isZeroDivision?: boolean;
+  zeroDivisionSource?: ZeroDivisionSource;
+  zeroDivisionDetail?: string;
+  unitConversionId?: string;      // 引用本次换算
 }
 
 export interface UnitConversion {
+  id: string;
   fromUnit: string;
   toUnit: string;
   factor: number;
   valueBefore: number;
   valueAfter: number;
+  appliedField: 'weight' | 'probability' | 'both';
+  note?: string;
 }
 
 export type BoundaryStatus = 'normal' | 'boundary' | 'anomaly';
@@ -35,11 +49,14 @@ export interface VerificationRecord {
   boundaryStatus: BoundaryStatus;
   isZeroDivision: boolean;
   zeroDivisionReason?: string;
+  zeroDivisionSources: ZeroDivisionSource[];  // 所有触发除零的来源
   calculationSteps: CalculationStep[];
-  unitConversion?: UnitConversion;
+  unitConversions: UnitConversion[];
   tempJudgment?: string;
   judgedAt?: number;
   judgeName?: string;
+  parseError?: string;               // 解析失败时的错误提示
+  computeError?: string;             // 计算失败时的错误提示
 }
 
 export interface FilterCriteria {
@@ -55,6 +72,8 @@ export interface Statistics {
   boundaryCount: number;
   anomalyCount: number;
   zeroDivisionCount: number;
+  parseErrorCount: number;
+  computeErrorCount: number;
   filteredTotal: number;
 }
 
