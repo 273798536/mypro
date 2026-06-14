@@ -3,6 +3,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import List, Optional
 import io
+import urllib.parse
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -157,13 +158,18 @@ def list_evidence_needed(batch_id: int, db: Session = Depends(get_db)):
 @app.get("/api/batch/{batch_id}/export", tags=["CSV导出"])
 def export_csv(batch_id: int, db: Session = Depends(get_db)):
     try:
-        csv_content = export_batch_csv(db, batch_id)
-        buffer = io.BytesIO(csv_content.encode("utf-8-sig"))
+        csv_bytes = export_batch_csv(db, batch_id)
+        buffer = io.BytesIO(csv_bytes)
         buffer.seek(0)
+        filename = f"path_verify_batch_{batch_id}.csv"
+        encoded_filename = urllib.parse.quote(filename)
         return StreamingResponse(
             buffer,
             media_type="text/csv; charset=utf-8",
-            headers={"Content-Disposition": f"attachment; filename=path_verify_batch_{batch_id}.csv"}
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}; filename*=UTF-8''{encoded_filename}",
+                "Content-Length": str(len(csv_bytes))
+            }
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

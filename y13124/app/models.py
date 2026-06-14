@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, ForeignKey, Text, JSON
+from sqlalchemy import (
+    Column, Integer, String, Float, DateTime, Text, Boolean, ForeignKey, JSON
+)
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
@@ -13,6 +15,7 @@ class VerificationBatch(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     status = Column(String(50), default="processing")
     description = Column(Text, nullable=True)
+    graph_snapshot = Column(JSON, nullable=True)
 
     records = relationship("PathRecord", back_populates="batch", cascade="all, delete-orphan")
     notes = relationship("StudentNote", back_populates="batch", cascade="all, delete-orphan")
@@ -116,6 +119,7 @@ class StudentNote(Base):
     added_at = Column(DateTime, default=datetime.utcnow)
     is_applied = Column(Boolean, default=False)
     applied_at = Column(DateTime, nullable=True)
+    apply_summary = Column(Text, nullable=True)
 
     batch = relationship("VerificationBatch", back_populates="notes")
     impacts = relationship("NoteImpact", back_populates="note", cascade="all, delete-orphan")
@@ -144,6 +148,7 @@ class ExtrapolationWarning(Base):
     __tablename__ = "extrapolation_warnings"
 
     id = Column(Integer, primary_key=True, index=True)
+    batch_id = Column(Integer, ForeignKey("verification_batches.id"), nullable=True)
     record_id = Column(Integer, ForeignKey("path_records.id"), nullable=True)
     warning_type = Column(String(50), nullable=False)
     warning_detail = Column(Text, nullable=False)
@@ -155,6 +160,7 @@ class ExtrapolationWarning(Base):
     handling_note = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    batch = relationship("VerificationBatch")
     record = relationship("PathRecord", back_populates="extrapolation_warnings")
 
 

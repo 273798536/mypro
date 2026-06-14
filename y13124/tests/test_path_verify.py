@@ -4,6 +4,8 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 import sys
 import warnings
+import io
+import csv
 
 warnings.filterwarnings("ignore")
 
@@ -160,6 +162,27 @@ class TestChangeTraceability:
         assert record.current_judgment == "verified_revised"
         assert record.processing_status == "revised"
 
+    def test_each_record_has_initial_verification_history(self, db):
+        request = build_sample_request()
+        result = create_batch_with_records(db, request)
+        records = result["records"]
+        assert len(records) >= 3
+
+        for record in records:
+            changes = get_record_changes(db, record.id)
+            init_changes = [c for c in changes if c.change_type == "initial_verification"]
+            assert len(init_changes) == 1, (
+                f"Record {record.record_code} 缺少 initial_verification 变更历史"
+            )
+            ic = init_changes[0]
+            assert ic.source_type == "algorithm"
+            assert ic.source_id == "dijkstra_verify"
+            assert ic.new_judgment == record.original_judgment
+            assert ic.changed_by is not None
+            assert ic.current_status_after is not None
+            assert ic.source_detail and "路径:" in ic.source_detail
+            assert ic.reason and record.record_code in ic.reason
+
 
 class TestStudentNoteImpact:
     def test_add_note_and_apply_shows_impacts(self, db):
@@ -210,6 +233,58 @@ class TestStudentNoteImpact:
         note_added = [c for c in changes if c.change_type == "note_added"]
         assert len(note_added) >= 1
 
+    def test_apply_note_with_edge_override_triggers_path_recalc(self, db):
+        request = build_sample_request()
+        result = create_batch_with_records(db, request)
+        batch_id = result["batch"].id
+
+        a_to_d_records = [
+            r for r in result["records"]
+            if r.source_node == "A" and r.target_node == "D"
+        ]
+        assert len(a_to_d_records) == 1
+        rec = a_to_d_records[0]
+        path_before = list(rec.current_path or [])
+        dist_before = rec.current_distance
+        judgment_before = rec.current_judgment
+
+        note_req = schemas.StudentNoteCreate(
+            batch_id=batch_id,
+            note_code="STU-ERR-003",
+            content="批改发现：C->D 应该是 1.2 千米，学生少看了一位小数",
+            student_id="S2024003",
+            note_type="error_remark",
+            added_by="阿宁"
+        )
+        note = create_student_note(db, note_req)
+
+        apply_req = schemas.NoteApplyRequest(note_id=note.id)
+        apply_result = apply_student_note(db, apply_req, "阿宁")
+
+        assert "graph_rebuilt" in apply_result
+        assert apply_result["graph_rebuilt"] is True
+        assert len(apply_result["edge_overrides"]) >= 1
+        ov = apply_result["edge_overrides"][0]
+        assert ov["source"] == "C"
+        assert ov["target"] == "D"
+        assert abs(ov["weight"] - 1.2) < 1e-9
+        assert ov["unit"] == "kilometer"
+
+        db.refresh(rec)
+        impacts = get_note_impacts(db, note.id)
+        a_to_d_impacts = [i for i in impacts if i.record_id == rec.id]
+        assert len(a_to_d_impacts) >= 1
+        imp = a_to_d_impacts[0]
+
+        assert imp.path_changed is True or (
+            rec.current_distance != dist_before
+            or rec.current_judgment != judgment_before
+            or rec.current_path != path_before
+        )
+        assert imp.distance_before == dist_before
+        assert imp.impact_detail is not None
+        assert "距离重算" in imp.impact_detail or "路径变更" in imp.impact_detail
+
 
 class TestOutOfBoundsHandling:
     def test_out_of_bounds_distance_flagged(self, db):
@@ -232,6 +307,40 @@ class TestOutOfBoundsHandling:
                 .all()
             )
             assert len(warnings_data) >= 1
+
+    def test_all_extrapolation_warnings_have_batch_id(self, db):
+        request = build_sample_request()
+        result = create_batch_with_records(db, request)
+        batch_id = result["batch"].id
+
+        all_warns = (
+            db.query(models.ExtrapolationWarning)
+            .filter(models.ExtrapolationWarning.batch_id == batch_id)
+            .all()
+        )
+        assert len(all_warns) >= 2, f"至少应有记录级越界+边级越界，实际只有 {len(all_warns)} 条"
+
+        edge_warns = [w for w in all_warns if w.record_id is None]
+        assert len(edge_warns) >= 1, "应该存在边级越界（A->E=999999m 或 E->F=500km）"
+
+        for w in all_warns:
+            assert w.batch_id is not None, f"Warning id={w.id} type={w.warning_type} 缺少 batch_id"
+            assert w.batch_id == batch_id
+
+    def test_edge_warnings_queryable_by_batch(self, db):
+        request = build_sample_request()
+        result = create_batch_with_records(db, request)
+        batch_id = result["batch"].id
+
+        batch_warns = (
+            db.query(models.ExtrapolationWarning)
+            .filter(models.ExtrapolationWarning.batch_id == batch_id)
+            .all()
+        )
+        edge_by_batch = [w for w in batch_warns if w.record_id is None]
+        rec_by_batch = [w for w in batch_warns if w.record_id is not None]
+        assert len(edge_by_batch) >= 1
+        assert len(rec_by_batch) >= 1
 
 
 class TestRecalcConsistency:
@@ -297,23 +406,34 @@ class TestCSVExport:
         result = create_batch_with_records(db, request)
         batch_id = result["batch"].id
 
-        csv_content = export_batch_csv(db, batch_id)
-        assert csv_content is not None
-        assert len(csv_content) > 0
+        csv_bytes = export_batch_csv(db, batch_id)
+        assert csv_bytes is not None
+        assert isinstance(csv_bytes, (bytes, bytearray))
+        assert len(csv_bytes) > 3
 
-        lines = csv_content.strip().split("\n")
-        assert len(lines) >= 2
+        assert csv_bytes[:3] == b"\xef\xbb\xbf", "CSV 必须带 UTF-8 BOM 才能被 Excel 正常识别中文"
+
+        csv_text = csv_bytes.decode("utf-8-sig")
+        lines = csv_text.strip().split("\r\n")
+        assert len(lines) >= 2, "CSV 至少包含表头+一行数据"
 
         header = lines[0]
         expected_columns = [
-            "记录编号", "起点", "终点",
+            "批次编号", "批次名称", "批次边级越界警告",
+            "记录编号", "起点", "终点", "当前路径(节点序列)",
             "原始距离", "原始单位", "原始判定",
             "当前距离", "当前单位", "当前判定",
-            "是否越界", "单位换算说明",
-            "处理状态", "证据状态", "变更来源"
+            "是否越界", "越界说明",
+            "单位换算说明",
+            "处理状态", "证据状态", "缺失证据项",
+            "最近变更来源", "最近变更操作人", "最近变更原因", "最近变更时间",
+            "变更次数",
+            "关联备注编码", "备注影响明细",
+            "创建时间", "更新时间"
         ]
+        header_cols = next(csv.reader([header]))
         for col in expected_columns:
-            assert col in header
+            assert col in header_cols, f"CSV 表头缺少列: {col}"
 
     def test_csv_contains_actual_record_data(self, db):
         request = build_sample_request()
@@ -321,11 +441,31 @@ class TestCSVExport:
         batch_id = result["batch"].id
         records = result["records"]
 
-        csv_content = export_batch_csv(db, batch_id)
-        lines = csv_content.strip().split("\n")
+        csv_bytes = export_batch_csv(db, batch_id)
+        csv_text = csv_bytes.decode("utf-8-sig")
+        reader = csv.reader(io.StringIO(csv_text))
+        rows = list(reader)
+        header = rows[0]
+        data_rows = rows[1:]
 
-        assert len(lines) == len(records) + 1
+        assert len(data_rows) == len(records)
 
+        rec_code_idx = header.index("记录编号")
+        src_idx = header.index("起点")
+        dst_idx = header.index("终点")
+        cur_judge_idx = header.index("当前判定")
+        change_count_idx = header.index("变更次数")
+        batch_edge_warn_idx = header.index("批次边级越界警告")
+
+        record_codes_in_csv = {r[rec_code_idx] for r in data_rows}
         for record in records:
-            found = any(record.record_code in line for line in lines)
-            assert found
+            assert record.record_code in record_codes_in_csv
+
+        first = data_rows[0]
+        assert len(first[src_idx]) > 0
+        assert len(first[dst_idx]) > 0
+        assert len(first[cur_judge_idx]) > 0
+        assert int(first[change_count_idx]) >= 1, "每条记录至少有 initial_verification 一次变更"
+
+        any_edge_warn = any(r[batch_edge_warn_idx].strip() for r in data_rows)
+        assert any_edge_warn, "由于样本包含超长边，批次边级越界警告列应非空"

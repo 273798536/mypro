@@ -91,6 +91,8 @@ def create_batch_with_records(
         for e in request.edges
     ]
 
+    batch.graph_snapshot = {"nodes": nodes_data, "edges": edges_data}
+
     outlier_warnings = detect_outlier_edges(edges_data)
 
     G, graph_info = build_graph(nodes_data, edges_data, target_unit)
@@ -203,6 +205,7 @@ def create_batch_with_records(
 
         if is_oob:
             ew = models.ExtrapolationWarning(
+                batch_id=batch.id,
                 record_id=record.id,
                 warning_type="distance_out_of_bounds",
                 warning_detail=bounds_detail or "距离值超出合理范围",
@@ -217,6 +220,7 @@ def create_batch_with_records(
 
         if not path_result["found"]:
             ew = models.ExtrapolationWarning(
+                batch_id=batch.id,
                 record_id=record.id,
                 warning_type="no_path_found",
                 warning_detail=path_result.get("error", "未找到路径"),
@@ -228,33 +232,40 @@ def create_batch_with_records(
 
         created_records.append(record)
 
+        if original_judgment != "pending":
+            record_change(
+                db=db,
+                batch_id=batch.id,
+                record_id=record.id,
+                change_type="initial_verification",
+                field_changed="current_judgment",
+                old_value="pending",
+                new_value=original_judgment,
+                old_judgment="pending",
+                new_judgment=original_judgment,
+                source_type="algorithm",
+                source_id="dijkstra_verify",
+                source_detail=(
+                    f"路径: {query.source}->{query.target}，"
+                    f"算法: Dijkstra，"
+                    f"原始距离: {original_distance} {target_unit}，"
+                    f"换算单位: {pref_unit}，"
+                    f"判定依据: {'未找到路径' if not path_result['found'] else ('超出合理范围' if original_judgment == 'out_of_bounds' else '路径有效且在合理范围内')}"
+                ),
+                changed_by=request.created_by,
+                reason=f"初始路径验算结果 - {record_code}"
+            )
+
     for ow in outlier_warnings:
         ew = models.ExtrapolationWarning(
             record_id=None,
+            batch_id=batch.id,
             warning_type=ow["warning_type"],
             warning_detail=ow["warning"],
             affected_field="edge_weight",
             raw_value=str(ow.get("weight"))
         )
         db.add(ew)
-
-    if original_judgment and original_judgment != "pending":
-        record_change(
-            db=db,
-            batch_id=batch.id,
-            record_id=created_records[-1].id if created_records else None,
-            change_type="initial_verification",
-            field_changed="current_judgment",
-            old_value="pending",
-            new_value=original_judgment,
-            old_judgment="pending",
-            new_judgment=original_judgment,
-            source_type="algorithm",
-            source_id="dijkstra_verify",
-            source_detail="批量验算初始判定",
-            changed_by=request.created_by,
-            reason="初始路径验算结果"
-        )
 
     batch.status = "completed"
     db.commit()
