@@ -48,7 +48,6 @@ export default function SessionPanel() {
     params,
     history,
     loading,
-    fetchSessions,
     createSession,
     selectSession,
     deleteSession,

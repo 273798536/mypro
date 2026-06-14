@@ -2,6 +2,7 @@
  * This is a user authentication API route demo.
  * Handle user registration, login, token management, etc.
  */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Router, type Request, type Response } from 'express'
 
 const router = Router()

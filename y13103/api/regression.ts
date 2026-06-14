@@ -58,13 +58,12 @@ function linearRegression(points: DataPoint[]): { slope: number; intercept: numb
   const n = points.length
   if (n < 2) return { slope: 0, intercept: 0, r2: 0 }
 
-  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0
+  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0
   for (const p of points) {
     sumX += p.x
     sumY += p.y
     sumXY += p.x * p.y
     sumX2 += p.x * p.x
-    sumY2 += p.y * p.y
   }
 
   const denom = n * sumX2 - sumX * sumX
@@ -156,7 +155,7 @@ export function computeSegmentedRegression(
 
     const units = segmentPoints.map(p => p.unit).filter(Boolean) as string[]
     const uniqueUnits = [...new Set(units)]
-    let segmentUnit: string | null = params.unit || (uniqueUnits.length === 1 ? uniqueUnits[0] : null)
+    const segmentUnit: string | null = params.unit || (uniqueUnits.length === 1 ? uniqueUnits[0] : null)
     const unitMissing = !segmentUnit && units.length < segmentPoints.length
 
     if (unitMissing) {
@@ -242,8 +241,7 @@ export function computeSegmentedRegression(
 export function computeSensitivity(
   data: DataPoint[],
   baseParams: RegressionParams,
-  adjustedParams: RegressionParams,
-  adjustedLabel: string
+  adjustedParams: RegressionParams
 ): SensitivityEntry[] {
   const baseResult = computeSegmentedRegression(data, baseParams)
   const adjResult = computeSegmentedRegression(data, adjustedParams)

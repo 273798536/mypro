@@ -344,7 +344,7 @@ router.post('/sessions/:id/compute', (req: Request, res: Response): void => {
   const result = computeSegmentedRegression(data, mergedParams)
 
   if (sensitivityCompare) {
-    result.parameterSensitivity = computeSensitivity(data, mergedParams, sensitivityCompare.params, sensitivityCompare.label)
+    result.parameterSensitivity = computeSensitivity(data, mergedParams, sensitivityCompare.params)
   }
 
   const materials = db.prepare('SELECT * FROM materials WHERE session_id = ? AND is_active = 1').all(sessionId) as MaterialRow[]
