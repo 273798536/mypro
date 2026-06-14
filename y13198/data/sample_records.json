@@ -1,0 +1,99 @@
+{
+  "batch_id": "HLZ-2026-0614-A",
+  "site_name": "三号井主井提升系统",
+  "inspector": "阿岑",
+  "inspection_date": "2026-06-14",
+  "description": "滑轮组张力现场抽检记录 - 材料从现场照片整理，单位写法不统一",
+  "records": [
+    {
+      "id": "HLZ-001",
+      "line": 1,
+      "pulley_name": "1号导向轮",
+      "tension": "12500 N",
+      "direction": "上行侧",
+      "notes": "现场照片清晰，读数正常",
+      "photo_ref": "IMG_20260614_091523.jpg"
+    },
+    {
+      "id": "HLZ-002",
+      "line": 2,
+      "pulley_name": "2号导向轮",
+      "tension": "11.8 kN",
+      "direction": "上行侧",
+      "notes": "照片边角单位标kN，手写记录写N",
+      "photo_ref": "IMG_20260614_091711.jpg"
+    },
+    {
+      "id": "HLZ-003",
+      "line": 3,
+      "pulley_name": "3号张力轮",
+      "tension": "-12200 N",
+      "direction": "下行侧",
+      "notes": "数值为负，方向标注下行",
+      "photo_ref": "IMG_20260614_091905.jpg"
+    },
+    {
+      "id": "HLZ-004",
+      "line": 4,
+      "pulley_name": "4号张力轮",
+      "tension": "1.25吨",
+      "direction": "上行侧",
+      "notes": "阿岑现场记录写了'吨力'，需换算",
+      "photo_ref": "IMG_20260614_092133.jpg"
+    },
+    {
+      "id": "HLZ-005",
+      "line": 5,
+      "pulley_name": "5号改向轮",
+      "tension": "1150公斤",
+      "direction": "下行侧",
+      "notes": "记录本上写公斤，仪表实际单位N",
+      "photo_ref": "IMG_20260614_092418.jpg"
+    },
+    {
+      "id": "HLZ-006",
+      "line": 6,
+      "pulley_name": "6号改向轮",
+      "tension": "-12.1 kN",
+      "direction": "上行侧",
+      "notes": "方向标上行但数值为负，疑似方向符号写反",
+      "photo_ref": "IMG_20260614_092702.jpg"
+    },
+    {
+      "id": "HLZ-007",
+      "line": 7,
+      "pulley_name": "7号平衡轮",
+      "tension": "12350N",
+      "direction": "上行侧",
+      "notes": "正常记录，数值在合理范围内",
+      "photo_ref": "IMG_20260614_093045.jpg"
+    },
+    {
+      "id": "HLZ-008",
+      "line": 8,
+      "pulley_name": "8号平衡轮",
+      "tension": "待确认",
+      "direction": "下行侧",
+      "notes": "照片模糊，数值待补拍确认",
+      "photo_ref": "IMG_20260614_093312.jpg"
+    },
+    {
+      "id": "HLZ-009",
+      "line": 9,
+      "pulley_name": "9号托轮",
+      "tension": "12800 N",
+      "direction": "上行侧",
+      "notes": "数值偏高，怀疑单位问题或边界样本",
+      "photo_ref": "IMG_20260614_093556.jpg"
+    },
+    {
+      "id": "HLZ-010",
+      "line": 10,
+      "pulley_name": "10号托轮",
+      "tension": "5200 N",
+      "direction": "下行侧",
+      "notes": "数值明显偏低，可能单位是kN写错了？待人工改判",
+      "photo_ref": "IMG_20260614_093821.jpg"
+    }
+  ]
+}

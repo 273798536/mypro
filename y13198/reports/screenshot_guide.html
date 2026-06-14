@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>滑轮组张力误差归因 · 截图说明</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f0f2f5;
+    color: #1f2937;
+    padding: 24px;
+    line-height: 1.7;
+  }
+  .guide-container {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .guide-header {
+    background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+    color: white;
+    padding: 32px 36px;
+    border-radius: 12px 12px 0 0;
+  }
+  .guide-header h1 {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .guide-header .subtitle {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+  .guide-body {
+    background: white;
+    padding: 28px 36px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  }
+  .intro-box {
+    background: #f0fdfa;
+    border-left: 4px solid #14b8a6;
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: #0f766e;
+  }
+  .intro-box .intro-title {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+  .section {
+    margin-bottom: 32px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0f766e;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title .icon {
+    font-size: 22px;
+  }
+  .three-cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .status-card {
+    border-radius: 10px;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+  }
+  .status-card.processed {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+  }
+  .status-card.pending {
+    background: #fffbeb;
+    border-color: #fde68a;
+  }
+  .status-card.manual {
+    background: #fef2f2;
+    border-color: #fecaca;
+  }
+  .status-card .status-icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .status-card .status-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .status-card.processed .status-name { color: #166534; }
+  .status-card.pending .status-name { color: #92400e; }
+  .status-card.manual .status-name { color: #991b1b; }
+  .status-card .status-desc {
+    font-size: 12px;
+    color: #4b5563;
+    line-height: 1.6;
+  }
+  .status-card .status-example {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(0,0,0,0.1);
+    font-size: 11px;
+    color: #6b7280;
+  }
+  .issue-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .issue-card {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .issue-card.direction {
+    background: #fff7ed;
+    border-color: #fdba74;
+  }
+  .issue-card .issue-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .issue-card .issue-desc {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.6;
+  }
+  .issue-card .issue-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    background: #fef3c7;
+    color: #92400e;
+    margin-right: 4px;
+  }
+  .issue-card.direction .issue-tag {
+    background: #ffedd5;
+    color: #9a3412;
+  }
+  .formula-section {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+  .formula-section .formula-name {
+    font-weight: 600;
+    color: #1e40af;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .formula-section .formula-expr {
+    font-family: "SF Mono", Monaco, monospace;
+    font-size: 14px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    color: #1e3a5f;
+    border: 1px solid #dbeafe;
+  }
+  .formula-section .formula-note {
+    font-size: 12px;
+    color: #4b5563;
+  }
+  .boundary-box {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 8px;
+    padding: 18px;
+  }
+  .boundary-box .boundary-title {
+    font-weight: 600;
+    color: #047857;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .boundary-box .boundary-text {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.7;
+  }
+  .tip-box {
+    background: #faf5ff;
+    border: 1px solid #e9d5ff;
+    border-radius: 8px;
+    padding: 16px;
+    margin-top: 20px;
+  }
+  .tip-box .tip-title {
+    font-weight: 600;
+    color: #6b21a8;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  .tip-box ul {
+    padding-left: 20px;
+    font-size: 13px;
+    color: #4b5563;
+  }
+  .tip-box li {
+    margin-bottom: 4px;
+  }
+  .footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 12px;
+    color: #9ca3af;
+    margin-top: 8px;
+  }
+  .param-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .param-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .param-item .pname { color: #6b7280; }
+  .param-item .pval {
+    font-weight: 500;
+    font-family: "SF Mono", monospace;
+    color: #1f2937;
+  }
+  .divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 24px 0;
+  }
+  .how-to-use {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-top: 16px;
+  }
+  .how-to-use h3 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 10px;
+  }
+  .how-to-use ol {
+    padding-left: 20px;
+    font-size: 13px;
+    color: #4b5563;
+  }
+  .how-to-use li {
+    margin-bottom: 6px;
+  }
+  .highlight {
+    background: linear-gradient(transparent 60%, #fef08a 60%);
+    padding: 0 2px;
+  }
+</style>
+</head>
+<body>
+<div class="guide-container">
+  <div class="guide-header">
+    <h1>📸 滑轮组张力误差归因 · 截图说明</h1>
+    <div class="subtitle">给接手同事看的快速上手指南 · 直接截图即可用于沟通</div>
+  </div>
+
+  <div class="guide-body">
+    <div class="intro-box">
+      <div class="intro-title">💡 一句话说明</div>
+      <div>本工具自动整理现场照片中的滑轮组张力记录，识别<span class="highlight">单位混写</span>和<span class="highlight">方向符号写反</span>两类常见问题，输出可直接引用的归因报告。</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="icon">📂</span> 三类记录状态</div>
+      <div class="three-cols">
+        <div class="status-card processed">
+          <div class="status-icon">✅</div>
+          <div class="status-name">已处理</div>
+          <div class="status-desc">
+            已完成单位换算或方向修正，数值可直接引用。系统自动归因，无需人工干预。
+          </div>
+          <div class="status-example">
+            例：原始值"11.8 kN" → 换算为 11800 N
+          </div>
+        </div>
+        <div class="status-card pending">
+          <div class="status-icon">⏳</div>
+          <div class="status-name">待补材料</div>
+          <div class="status-desc">
+            照片模糊或数据缺失，无法自动分析。需补拍照片或补充原始数据后重新跑。
+          </div>
+          <div class="status-example">
+            例：数值写"待确认"、照片不清晰
+          </div>
+        </div>
+        <div class="status-card manual">
+          <div class="status-icon">✋</div>
+          <div class="status-name">人工改判</div>
+          <div class="status-desc">
+            数值偏离较大或存在多重问题，建议结合现场情况人工复核判断。
+          </div>
+          <div class="status-example">
+            例：边界样本、同时存在单位+方向问题
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="icon">🔍</span> 两类常见问题归因</div>
+      <div class="issue-row">
+        <div class="issue-card">
+          <div class="issue-title">
+            🏷️ <span>单位混写问题</span>
+          </div>
+          <div class="issue-desc">
+            现场记录单位不统一（N / kN / 公斤 / 吨），导致数量级差异。
+            系统自动识别原单位并换算为标准单位，标注置信度。
+          </div>
+          <div style="margin-top: 10px;">
+            <span class="issue-tag">来源行</span>
+            <span class="issue-tag">换算系数</span>
+            <span class="issue-tag">置信度</span>
+          </div>
+        </div>
+        <div class="issue-card direction">
+          <div class="issue-title">
+            ↔️ <span>方向符号写反</span>
+          </div>
+          <div class="issue-desc">
+            标注方向与张力值符号不一致（如上行侧出现负值）。
+            系统标记疑似写反的记录，并给出影响范围评估。
+          </div>
+          <div style="margin-top: 10px;">
+            <span class="issue-tag">来源行</span>
+            <span class="issue-tag">影响范围</span>
+            <span class="issue-tag">复核建议</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="icon">📊</span> 边界样本与参数调档</div>
+      <div class="boundary-box">
+        <div class="boundary-title">什么是边界样本？</div>
+        <div class="boundary-text">
+          偏离均值超过 <code>boundary_sigma</code> 倍标准差的记录，会被标记为边界样本，
+          归入"人工改判"区待复核。
+        </div>
+        <div class="formula-expr" style="background: white; padding: 6px 10px; border-radius: 4px; margin-top: 10px; font-family: monospace;">
+          |F<sub>i</sub> - μ| &gt; σ × boundary_sigma
+        </div>
+        <div style="margin-top: 12px; font-size: 12px; color: #6b7280;">
+          <strong>参数调档效果：</strong>
+          <ul style="padding-left: 18px; margin-top: 4px;">
+            <li>sigma = 2.0 时：边界样本 0 个（较宽松）</li>
+            <li>sigma = 1.5 时：边界样本 2 个（较严格）</li>
+            <li>调小 sigma → 更多记录进入人工改判</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="icon">📐</span> 核心计算公式</div>
+      <div class="formula-section">
+        <div class="formula-name">单位换算公式</div>
+        <div class="formula-expr">F<sub>std</sub> = F<sub>raw</sub> × K<sub>unit</sub></div>
+        <div class="formula-note">
+          将不同单位的张力值统一换算为标准单位（默认 N）。
+          支持 N、kN、kgf、吨力 等多种单位。
+        </div>
+      </div>
+      <div class="formula-section">
+        <div class="formula-name">方向符号判定</div>
+        <div class="formula-expr">sign(F) 与 sign(方向约定) 一致性校验</div>
+        <div class="formula-note">
+          上行/拉应力约定为正，下行/压应力约定为负。
+          符号不一致时判定为方向写反疑似项。
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="icon">⚙️</span> 可调参数一览</div>
+      <div class="param-grid">
+        <div class="param-item">
+          <span class="pname">standard_unit</span>
+          <span class="pval">N</span>
+        </div>
+        <div class="param-item">
+          <span class="pname">boundary_sigma</span>
+          <span class="pval">2.0</span>
+        </div>
+        <div class="param-item">
+          <span class="pname">unit_confidence_threshold</span>
+          <span class="pval">0.4</span>
+        </div>
+        <div class="param-item">
+          <span class="pname">direction_confidence_threshold</span>
+          <span class="pval">0.5</span>
+        </div>
+        <div class="param-item">
+          <span class="pname">tension_tolerance</span>
+          <span class="pval">0.15</span>
+        </div>
+      </div>
+      <div style="font-size: 12px; color: #6b7280; margin-top: 8px;">
+        所有参数均可通过命令行调整，调档后重新运行即可生成新版报告。
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="tip-box">
+      <div class="tip-title">📌 日常使用流程</div>
+      <ul>
+        <li><strong>第一步：</strong>将现场照片整理的JSON数据放入 data/ 目录</li>
+        <li><strong>第二步：</strong>运行 <code>python run_attribution.py --input xxx.json --html reports/xxx.html</code></li>
+        <li><strong>第三步：</strong>打开报告，查看"已处理"可直接引用，"待补材料"安排补拍，"人工改判"组织复核</li>
+        <li><strong>第四步：</strong>如需调整灵敏度，修改 <code>--boundary-sigma</code> 等参数后重跑即可</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      滑轮组张力误差归因系统 · 自动化分析 · 截图即沟通
+    </div>
+  </div>
+</div>
+</body>
+</html>

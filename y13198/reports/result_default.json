@@ -1,0 +1,279 @@
+{
+  "total_records": 10,
+  "normal_count": 4,
+  "unit_issues": [
+    {
+      "record_id": "HLZ-002",
+      "source_line": 2,
+      "raw_value": "11.8 kN",
+      "detected_unit": "kN",
+      "standard_unit": "N",
+      "converted_value": 11800.0,
+      "raw_numeric": 11.8,
+      "magnitude_factor": 1000.0,
+      "confidence": 0.5,
+      "description": "原值 11.8 kN 检测为kN单位, 换算为N后为 11800.0 (数量级差异 1.0倍)"
+    },
+    {
+      "record_id": "HLZ-004",
+      "source_line": 4,
+      "raw_value": "1.25吨",
+      "detected_unit": "吨",
+      "standard_unit": "N",
+      "converted_value": 12258.3125,
+      "raw_numeric": 1.25,
+      "magnitude_factor": 9806.65,
+      "confidence": 0.512,
+      "description": "原值 1.25吨 检测为吨单位, 换算为N后为 12258.31 (数量级差异 1.04倍)"
+    },
+    {
+      "record_id": "HLZ-005",
+      "source_line": 5,
+      "raw_value": "1150公斤",
+      "detected_unit": "公斤",
+      "standard_unit": "N",
+      "converted_value": 11277.6475,
+      "raw_numeric": 1150.0,
+      "magnitude_factor": 9.80665,
+      "confidence": 0.513,
+      "description": "原值 1150公斤 检测为公斤单位, 换算为N后为 11277.65 (数量级差异 0.96倍)"
+    },
+    {
+      "record_id": "HLZ-006",
+      "source_line": 6,
+      "raw_value": "-12.1 kN",
+      "detected_unit": "kN",
+      "standard_unit": "N",
+      "converted_value": -12100.0,
+      "raw_numeric": -12.1,
+      "magnitude_factor": 1000.0,
+      "confidence": 0.508,
+      "description": "原值 -12.1 kN 检测为kN单位, 换算为N后为 -12100.0 (数量级差异 1.03倍)"
+    }
+  ],
+  "direction_issues": [
+    {
+      "record_id": "HLZ-005",
+      "source_line": 5,
+      "declared_direction": "down",
+      "implied_direction": "up",
+      "tension_value": 11277.6475,
+      "expected_sign": -1,
+      "actual_sign": 1,
+      "impact_scope": [
+        "同方向记录数: 4/10",
+        "影响范围: 较大(超过30%的记录)",
+        "建议: 复核该方向全部记录的符号一致性"
+      ],
+      "description": "记录HLZ-005标注方向为down(应为负), 但张力值为正(11277.6475), 可能方向符号写反为up"
+    },
+    {
+      "record_id": "HLZ-006",
+      "source_line": 6,
+      "declared_direction": "up",
+      "implied_direction": "down",
+      "tension_value": -12100.0,
+      "expected_sign": 1,
+      "actual_sign": -1,
+      "impact_scope": [
+        "同方向记录数: 6/10",
+        "影响范围: 较大(超过30%的记录)",
+        "建议: 复核该方向全部记录的符号一致性"
+      ],
+      "description": "记录HLZ-006标注方向为up(应为正), 但张力值为负(-12100.0), 可能方向符号写反为down"
+    },
+    {
+      "record_id": "HLZ-010",
+      "source_line": 10,
+      "declared_direction": "down",
+      "implied_direction": "up",
+      "tension_value": 5200.0,
+      "expected_sign": -1,
+      "actual_sign": 1,
+      "impact_scope": [
+        "同方向记录数: 4/10",
+        "影响范围: 较大(超过30%的记录)",
+        "建议: 复核该方向全部记录的符号一致性"
+      ],
+      "description": "记录HLZ-010标注方向为down(应为负), 但张力值为正(5200.0), 可能方向符号写反为up"
+    }
+  ],
+  "boundary_samples": [],
+  "processed_records": [
+    {
+      "id": "HLZ-001",
+      "line": 1,
+      "pulley_name": "1号导向轮",
+      "tension": "12500 N",
+      "direction": "上行侧",
+      "notes": "现场照片清晰，读数正常",
+      "photo_ref": "IMG_20260614_091523.jpg",
+      "tension_std": 12500.0,
+      "unit_original": "N",
+      "status": "正常"
+    },
+    {
+      "id": "HLZ-002",
+      "line": 2,
+      "pulley_name": "2号导向轮",
+      "tension": "11.8 kN",
+      "direction": "上行侧",
+      "notes": "照片边角单位标kN，手写记录写N",
+      "photo_ref": "IMG_20260614_091711.jpg",
+      "tension_std": 11800.0,
+      "unit_original": "kN",
+      "status": "已处理"
+    },
+    {
+      "id": "HLZ-003",
+      "line": 3,
+      "pulley_name": "3号张力轮",
+      "tension": "-12200 N",
+      "direction": "下行侧",
+      "notes": "数值为负，方向标注下行",
+      "photo_ref": "IMG_20260614_091905.jpg",
+      "tension_std": -12200.0,
+      "unit_original": "N",
+      "status": "正常"
+    },
+    {
+      "id": "HLZ-004",
+      "line": 4,
+      "pulley_name": "4号张力轮",
+      "tension": "1.25吨",
+      "direction": "上行侧",
+      "notes": "阿岑现场记录写了'吨力'，需换算",
+      "photo_ref": "IMG_20260614_092133.jpg",
+      "tension_std": 12258.3125,
+      "unit_original": "吨",
+      "status": "已处理"
+    },
+    {
+      "id": "HLZ-005",
+      "line": 5,
+      "pulley_name": "5号改向轮",
+      "tension": "1150公斤",
+      "direction": "下行侧",
+      "notes": "记录本上写公斤，仪表实际单位N",
+      "photo_ref": "IMG_20260614_092418.jpg",
+      "tension_std": 11277.6475,
+      "unit_original": "公斤",
+      "status": "已处理"
+    },
+    {
+      "id": "HLZ-006",
+      "line": 6,
+      "pulley_name": "6号改向轮",
+      "tension": "-12.1 kN",
+      "direction": "上行侧",
+      "notes": "方向标上行但数值为负，疑似方向符号写反",
+      "photo_ref": "IMG_20260614_092702.jpg",
+      "tension_std": -12100.0,
+      "unit_original": "kN",
+      "status": "已处理"
+    },
+    {
+      "id": "HLZ-007",
+      "line": 7,
+      "pulley_name": "7号平衡轮",
+      "tension": "12350N",
+      "direction": "上行侧",
+      "notes": "正常记录，数值在合理范围内",
+      "photo_ref": "IMG_20260614_093045.jpg",
+      "tension_std": 12350.0,
+      "unit_original": "N",
+      "status": "正常"
+    },
+    {
+      "id": "HLZ-009",
+      "line": 9,
+      "pulley_name": "9号托轮",
+      "tension": "12800 N",
+      "direction": "上行侧",
+      "notes": "数值偏高，怀疑单位问题或边界样本",
+      "photo_ref": "IMG_20260614_093556.jpg",
+      "tension_std": 12800.0,
+      "unit_original": "N",
+      "status": "正常"
+    }
+  ],
+  "pending_records": [
+    {
+      "id": "HLZ-008",
+      "line": 8,
+      "pulley_name": "8号平衡轮",
+      "tension": "待确认",
+      "direction": "下行侧",
+      "notes": "照片模糊，数值待补拍确认",
+      "photo_ref": "IMG_20260614_093312.jpg",
+      "tension_std": null,
+      "unit_original": null,
+      "status": "待补材料"
+    }
+  ],
+  "manual_records": [
+    {
+      "id": "HLZ-010",
+      "line": 10,
+      "pulley_name": "10号托轮",
+      "tension": "5200 N",
+      "direction": "下行侧",
+      "notes": "数值明显偏低，可能单位是kN写错了？待人工改判",
+      "photo_ref": "IMG_20260614_093821.jpg",
+      "tension_std": 5200.0,
+      "unit_original": "N",
+      "status": "人工改判"
+    }
+  ],
+  "formulas": [
+    {
+      "name": "单位换算公式",
+      "formula": "F_std = F_raw × K_unit",
+      "description": "将原始张力值转换为标准单位(N), 其中K_unit为单位换算系数",
+      "example": "例如: 5 kN × 1000 = 5000 N",
+      "parameters": [
+        "standard_unit",
+        "unit_confidence_threshold"
+      ]
+    },
+    {
+      "name": "方向符号判定公式",
+      "formula": "sign(F) 与 sign(方向约定) 一致性校验",
+      "description": "根据标注方向检查张力值符号是否符合约定",
+      "example": "标注'上行'约定为正,若张力值为负则判定为方向写反",
+      "parameters": [
+        "direction_confidence_threshold"
+      ]
+    },
+    {
+      "name": "边界样本判定公式",
+      "formula": "|F_i - μ| > σ × boundary_sigma",
+      "description": "当前均值μ=5987.33 N, 标准差σ=9938.48 N",
+      "example": "|F_i - 5987.33| > 9938.48 × 2.0",
+      "parameters": [
+        "boundary_sigma",
+        "tension_tolerance"
+      ]
+    }
+  ],
+  "parameters": {
+    "standard_unit": "N",
+    "tension_tolerance": 0.15,
+    "direction_confidence_threshold": 0.5,
+    "unit_confidence_threshold": 0.4,
+    "boundary_sigma": 2.0
+  },
+  "summary": {
+    "total_records": 10,
+    "normal_count": 4,
+    "unit_issue_count": 4,
+    "direction_issue_count": 3,
+    "boundary_sample_count": 0,
+    "processed_count": 8,
+    "pending_count": 1,
+    "manual_count": 1,
+    "mean_tension": 5987.3289,
+    "std_tension": 9938.4835,
+    "standard_unit": "N"
+  }
+}
