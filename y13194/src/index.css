@@ -1,0 +1,94 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  tabular-nums: true;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: #050a14;
+  color: #d1e2f5;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 170, 0.18);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 212, 170, 0.35);
+}
+
+@layer components {
+  .panel {
+    @apply rounded-xl border border-deepspace-600/50 bg-deepspace-800/60 shadow-inner-deep backdrop-blur-sm;
+  }
+  .panel-hover {
+    @apply transition-all duration-200 hover:border-cyber-500/40 hover:shadow-glow-cyber;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-cyber-500 px-4 py-2 text-sm font-semibold text-deepspace-950 transition-all duration-150 hover:bg-cyber-400 hover:shadow-glow-cyber active:translate-y-[1px];
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-deepspace-600/50 bg-deepspace-800/40 px-3 py-2 text-sm font-medium text-slate-200 transition-all duration-150 hover:border-cyber-500/40 hover:text-cyber-400;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-md bg-alert-500 px-4 py-2 text-sm font-semibold text-white transition-all duration-150 hover:bg-alert-400 hover:shadow-glow-alert;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-deepspace-600/60 bg-deepspace-700/50 px-2.5 py-0.5 text-xs font-medium;
+  }
+  .chip-cyber {
+    @apply chip border-cyber-500/40 text-cyber-400;
+  }
+  .chip-alert {
+    @apply chip border-alert-500/40 text-alert-400;
+  }
+  .chip-amber {
+    @apply chip border-amberx-500/40 text-amberx-400;
+  }
+  .chip-aurora {
+    @apply chip border-aurora-500/40 text-aurora-400;
+  }
+  .divider-line {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-deepspace-600/60 to-transparent;
+  }
+  .section-title {
+    @apply font-mono text-xs font-semibold uppercase tracking-[0.14em] text-cyber-400/80;
+  }
+  .data-value {
+    @apply font-mono tabular-nums;
+  }
+  .card-hover-lift {
+    @apply transition-all duration-300 hover:-translate-y-0.5 hover:border-cyber-500/30 hover:shadow-glow-cyber;
+  }
+  .input-deep {
+    @apply w-full rounded-md border border-deepspace-600/50 bg-deepspace-900/60 px-3 py-2 text-sm text-slate-200 placeholder:text-slate-500 focus:border-cyber-500/60 focus:outline-none focus:ring-2 focus:ring-cyber-500/20;
+  }
+}
