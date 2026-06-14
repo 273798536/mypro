@@ -1,6 +1,15 @@
 import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react'
-import type { MistakeRecord, FilterOptions, SortField, SortOrder, ProcessStatus } from '../types'
-import { mockData } from '../data/mockData'
+import type { MistakeRecord, FilterOptions, SortField, SortOrder, Attachment, FieldMapping } from '../types'
+import { ProcessStatus } from '../types'
+import { loadMistakes, saveMistakes, resetToSeed } from '../utils/storage'
+import { normalizeRawRecord, type RawImportRecord } from '../utils/fieldMapping'
+import { checkUnits } from '../utils/unitEngine'
+
+interface ImportResult {
+  imported: number
+  mapped: FieldMapping[]
+  warnings: string[]
+}
 
 interface MistakeContextType {
   mistakes: MistakeRecord[]
@@ -14,6 +23,9 @@ interface MistakeContextType {
   getMistakeById: (id: string) => MistakeRecord | undefined
   updateMistake: (id: string, updates: Partial<MistakeRecord>) => void
   updateMistakeStatus: (id: string, status: ProcessStatus) => void
+  addAttachment: (mistakeId: string, attachment: Attachment) => void
+  importRecords: (rawRecords: RawImportRecord[], source: MistakeRecord['dataSource']) => ImportResult
+  resetData: () => void
   stats: {
     total: number
     pending: number
@@ -27,10 +39,15 @@ interface MistakeContextType {
 const MistakeContext = createContext<MistakeContextType | undefined>(undefined)
 
 export function MistakeProvider({ children }: { children: ReactNode }) {
-  const [mistakes, setMistakes] = useState<MistakeRecord[]>(mockData)
+  const [mistakes, setMistakes] = useState<MistakeRecord[]>(() => loadMistakes())
   const [filters, setFilters] = useState<FilterOptions>({})
   const [sortField, setSortField] = useState<SortField>('queueNumber')
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc')
+
+  const persistAndSet = useCallback((next: MistakeRecord[]) => {
+    saveMistakes(next)
+    setMistakes(next)
+  }, [])
 
   const filteredMistakes = useMemo(() => {
     let result = [...mistakes]
@@ -94,16 +111,112 @@ export function MistakeProvider({ children }: { children: ReactNode }) {
   }, [mistakes])
 
   const updateMistake = useCallback((id: string, updates: Partial<MistakeRecord>) => {
-    setMistakes(prev => prev.map(m => 
-      m.id === id ? { ...m, ...updates, updatedAt: new Date().toISOString() } : m
-    ))
+    setMistakes(prev => {
+      const next = prev.map(m => 
+        m.id === id ? { ...m, ...updates, updatedAt: new Date().toISOString() } : m
+      )
+      saveMistakes(next)
+      return next
+    })
   }, [])
 
   const updateMistakeStatus = useCallback((id: string, status: ProcessStatus) => {
-    setMistakes(prev => prev.map(m =>
-      m.id === id ? { ...m, status, updatedAt: new Date().toISOString() } : m
-    ))
+    setMistakes(prev => {
+      const next = prev.map(m =>
+        m.id === id ? { ...m, status, updatedAt: new Date().toISOString() } : m
+      )
+      saveMistakes(next)
+      return next
+    })
   }, [])
+
+  const addAttachment = useCallback((mistakeId: string, attachment: Attachment) => {
+    setMistakes(prev => {
+      const next = prev.map(m =>
+        m.id === mistakeId
+          ? { ...m, attachments: [...m.attachments, attachment], updatedAt: new Date().toISOString() }
+          : m
+      )
+      saveMistakes(next)
+      return next
+    })
+  }, [])
+
+  const importRecords = useCallback((
+    rawRecords: RawImportRecord[],
+    source: MistakeRecord['dataSource']
+  ): ImportResult => {
+    const allMappings: FieldMapping[] = []
+    const allWarnings: string[] = []
+    const maxQueue = mistakes.reduce((max, m) => Math.max(max, m.queueNumber), 0)
+    const now = new Date().toISOString()
+
+    const newRecords: MistakeRecord[] = rawRecords.map((raw, idx) => {
+      const normalized = normalizeRawRecord(raw)
+      allMappings.push(...normalized.mappings)
+      allWarnings.push(...normalized.warnings.map(w => `记录#${idx + 1}: ${w}`))
+
+      const queueNumber = maxQueue + idx + 1
+      const id = `imp_${Date.now()}_${idx}`
+      const record: MistakeRecord = {
+        id,
+        queueNumber,
+        title: normalized.data.title || `导入题${queueNumber}`,
+        subject: normalized.data.subject || '未指定',
+        chapter: normalized.data.chapter || '未指定',
+        difficulty: normalized.data.difficulty || 'medium',
+        status: ProcessStatus.PENDING,
+        dataSource: source,
+        questionContent: normalized.data.questionContent || '',
+        formula: normalized.data.formula || '',
+        formulaUnit: normalized.data.formulaUnit,
+        studentAnswer: normalized.data.studentAnswer,
+        correctAnswer: normalized.data.correctAnswer,
+        unitCheck: checkUnits(
+          normalized.data.formulaUnit,
+          normalized.data.correctAnswer?.unit,
+          normalized.data.studentAnswer?.rawText
+        ),
+        attachments: (normalized.data.attachments as Attachment[]) || [],
+        createdAt: now,
+        updatedAt: now,
+        submittedBy: normalized.data.submittedBy,
+        fieldMappingNotes: normalized.mappings.length > 0 ? normalized.mappings : undefined,
+        tags: normalized.data.tags || ['导入'],
+      }
+
+      if (!record.unitCheck.passed) {
+        record.status = ProcessStatus.UNIT_CHECKING
+        if (record.unitCheck.missingUnits.length > 0) {
+          record.manualConfirm = {
+            reason: `单位缺失：${record.unitCheck.missingUnits.join('、')}。导入数据中未提供完整单位信息。`,
+            nextStep: '请补全缺失单位后重新校验，或人工确认答案是否正确。',
+            requiredAction: '补全单位信息'
+          }
+          record.status = ProcessStatus.NEEDS_MANUAL_CONFIRM
+        }
+      }
+
+      return record
+    })
+
+    setMistakes(prev => {
+      const next = [...prev, ...newRecords]
+      saveMistakes(next)
+      return next
+    })
+
+    return {
+      imported: newRecords.length,
+      mapped: allMappings,
+      warnings: allWarnings
+    }
+  }, [mistakes])
+
+  const resetData = useCallback(() => {
+    const seed = resetToSeed()
+    persistAndSet(seed)
+  }, [persistAndSet])
 
   const stats = useMemo(() => {
     return {
@@ -129,6 +242,9 @@ export function MistakeProvider({ children }: { children: ReactNode }) {
       getMistakeById,
       updateMistake,
       updateMistakeStatus,
+      addAttachment,
+      importRecords,
+      resetData,
       stats
     }}>
       {children}

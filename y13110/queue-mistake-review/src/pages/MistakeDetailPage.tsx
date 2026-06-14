@@ -6,6 +6,7 @@ import StatusBadge from '../components/StatusBadge'
 import UnitCheckPanel from '../components/UnitCheckPanel'
 import JumpAnalysisPanel from '../components/JumpAnalysisPanel'
 import AttachmentList from '../components/AttachmentList'
+import AddAttachmentForm from '../components/AddAttachmentForm'
 import ManualConfirmPanel from '../components/ManualConfirmPanel'
 import SourceInfoPanel from '../components/SourceInfoPanel'
 import ExportButton from '../components/ExportButton'
@@ -25,7 +26,7 @@ const difficultyColor = {
 export default function MistakeDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { getMistakeById, updateMistakeStatus } = useMistakeData()
+  const { getMistakeById, updateMistakeStatus, addAttachment } = useMistakeData()
   const exportRef = useRef<HTMLDivElement>(null)
 
   const mistake = getMistakeById(id || '')
@@ -190,6 +191,7 @@ export default function MistakeDetailPage() {
                 attachments={mistake.attachments}
                 lateAttachmentImpact={mistake.lateAttachmentImpact}
               />
+              <AddAttachmentForm mistakeId={mistake.id} onAdd={addAttachment} />
             </div>
           </div>
 

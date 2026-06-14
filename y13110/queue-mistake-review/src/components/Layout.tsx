@@ -36,6 +36,16 @@ export default function Layout({ children }: LayoutProps) {
               >
                 错题排队
               </Link>
+              <Link
+                to="/import"
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  location.pathname === '/import'
+                    ? 'bg-primary-50 text-primary-700'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                导入数据
+              </Link>
             </nav>
           </div>
         </div>
