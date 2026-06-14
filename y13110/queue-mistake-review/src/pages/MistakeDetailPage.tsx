@@ -65,7 +65,7 @@ export default function MistakeDetailPage() {
         </Link>
         
         <div className="flex items-center gap-2">
-          <ExportButton targetRef={exportRef} filename={`错题${mistake.queueNumber}_${mistake.title}`} />
+          <ExportButton targetRef={exportRef} mistake={mistake} />
         </div>
       </div>
 

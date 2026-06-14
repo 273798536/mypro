@@ -158,6 +158,23 @@ export function MistakeProvider({ children }: { children: ReactNode }) {
 
       const queueNumber = maxQueue + idx + 1
       const id = `imp_${Date.now()}_${idx}`
+      const rawStatus = normalized.data.originalStatus
+      const rawSource = normalized.data.originalDataSource
+      const finalSource = rawSource || source
+      const isFinalState = rawStatus === ProcessStatus.COMPLETED || rawStatus === ProcessStatus.REVIEWED || rawStatus === ProcessStatus.ARCHIVED
+      const unitCheckResult = checkUnits(
+        normalized.data.formulaUnit,
+        normalized.data.correctAnswer?.unit,
+        normalized.data.studentAnswer?.rawText
+      )
+      let finalStatus = rawStatus || ProcessStatus.PENDING
+      const statusBeforeUnitCheck = finalStatus
+      if (!isFinalState && !unitCheckResult.passed) {
+        finalStatus = ProcessStatus.UNIT_CHECKING
+        if (unitCheckResult.missingUnits.length > 0) {
+          finalStatus = ProcessStatus.NEEDS_MANUAL_CONFIRM
+        }
+      }
       const record: MistakeRecord = {
         id,
         queueNumber,
@@ -165,18 +182,14 @@ export function MistakeProvider({ children }: { children: ReactNode }) {
         subject: normalized.data.subject || '未指定',
         chapter: normalized.data.chapter || '未指定',
         difficulty: normalized.data.difficulty || 'medium',
-        status: ProcessStatus.PENDING,
-        dataSource: source,
+        status: finalStatus,
+        dataSource: finalSource,
         questionContent: normalized.data.questionContent || '',
         formula: normalized.data.formula || '',
         formulaUnit: normalized.data.formulaUnit,
         studentAnswer: normalized.data.studentAnswer,
         correctAnswer: normalized.data.correctAnswer,
-        unitCheck: checkUnits(
-          normalized.data.formulaUnit,
-          normalized.data.correctAnswer?.unit,
-          normalized.data.studentAnswer?.rawText
-        ),
+        unitCheck: unitCheckResult,
         attachments: (normalized.data.attachments as Attachment[]) || [],
         createdAt: now,
         updatedAt: now,
@@ -184,17 +197,23 @@ export function MistakeProvider({ children }: { children: ReactNode }) {
         fieldMappingNotes: normalized.mappings.length > 0 ? normalized.mappings : undefined,
         tags: normalized.data.tags || ['导入'],
       }
-
-      if (!record.unitCheck.passed) {
-        record.status = ProcessStatus.UNIT_CHECKING
-        if (record.unitCheck.missingUnits.length > 0) {
+      if (!isFinalState && !unitCheckResult.passed) {
+        if (unitCheckResult.missingUnits.length > 0) {
           record.manualConfirm = {
-            reason: `单位缺失：${record.unitCheck.missingUnits.join('、')}。导入数据中未提供完整单位信息。`,
+            reason: `单位缺失：${unitCheckResult.missingUnits.join('、')}。导入数据中未提供完整单位信息。`,
             nextStep: '请补全缺失单位后重新校验，或人工确认答案是否正确。',
             requiredAction: '补全单位信息'
           }
-          record.status = ProcessStatus.NEEDS_MANUAL_CONFIRM
         }
+      }
+      if (statusBeforeUnitCheck !== finalStatus) {
+        allWarnings.push(`记录#${idx + 1}: 原始状态"${statusBeforeUnitCheck}"因单位校验结果调整为"${finalStatus}"`)
+      }
+      if (rawSource && rawSource !== source) {
+        allWarnings.push(`记录#${idx + 1}: 来源采用原始记录中的"${rawSource}"，而非导入时选择的"${source}"`)
+      }
+      if (rawStatus && isFinalState && !unitCheckResult.passed) {
+        allWarnings.push(`记录#${idx + 1}: 原始为终态"${rawStatus}"，跳过单位校验自动打回逻辑，状态保留`)
       }
 
       return record
