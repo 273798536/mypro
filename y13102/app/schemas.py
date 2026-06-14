@@ -137,6 +137,8 @@ class CalculationResultResponse(BaseModel):
     jump_description: Optional[str]
     segments: Optional[List[SegmentResult]]
     coefficients: Optional[Dict[str, Any]]
+    idempotency_key: Optional[str] = None
+    is_duplicate: bool = False
     created_at: datetime
 
     class Config:

@@ -90,13 +90,29 @@ def get_parameter(parameter_id: int, db: Session = Depends(get_db)):
     return result_data
 
 
-@app.put("/api/parameters/{parameter_id}", response_model=ParameterResponse)
+@app.put("/api/parameters/{parameter_id}")
 def update_parameter(parameter_id: int, data: ParameterUpdate, db: Session = Depends(get_db)):
     service = ParameterService(db)
     parameter = service.update_parameter(parameter_id, data)
     if not parameter:
         raise HTTPException(status_code=404, detail="参数不存在")
-    return parameter
+
+    history = service.get_parameter_history(parameter_id)
+    remarks = service.get_remarks(parameter_id)
+    screenshots = service.get_screenshots(parameter_id)
+    latest_result = service.get_latest_result(parameter_id)
+    latest_result_formatted = format_calc_result(latest_result) if latest_result else None
+
+    param_dict = {k: v for k, v in parameter.__dict__.items() if k != '_sa_instance_state'}
+
+    result_data = {
+        **param_dict,
+        "history": history,
+        "remarks": remarks,
+        "screenshots": screenshots,
+        "latest_result": latest_result_formatted
+    }
+    return result_data
 
 
 @app.get("/api/parameters/{parameter_id}/history", response_model=List[ParameterHistoryResponse])
@@ -172,10 +188,8 @@ def calculate(data: CalculationRequestCreate, db: Session = Depends(get_db)):
 
     calc_result = result["result"]
     response = format_calc_result(calc_result)
-    return {
-        **response.model_dump(),
-        "is_duplicate": result.get("is_duplicate", False)
-    }
+    response.is_duplicate = result.get("is_duplicate", False)
+    return response
 
 
 @app.post("/api/calculate/check-idempotency", response_model=IdempotencyCheckResponse)

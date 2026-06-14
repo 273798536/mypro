@@ -378,22 +378,21 @@ class SegmentedRegressionService:
         coefficients_json = None
         r_squared = None
 
-        if result_status == ResultStatus.NORMAL:
-            regression_result = self.perform_segmented_regression(
-                request_data.sample_data,
-                parameter.segment_count,
-                parameter.threshold_low,
-                parameter.threshold_high
-            )
+        regression_result = self.perform_segmented_regression(
+            request_data.sample_data,
+            parameter.segment_count,
+            parameter.threshold_low,
+            parameter.threshold_high
+        )
 
-            if not regression_result.get("success"):
-                result_status = ResultStatus.ABNORMAL
-                suspend_reason = regression_result.get("error", "计算失败")
-            else:
-                result_value = regression_result["result_value"]
-                segments_json = json.dumps(regression_result["segments"], ensure_ascii=False)
-                coefficients_json = json.dumps(regression_result["coefficients"], ensure_ascii=False)
-                r_squared = regression_result["overall_r_squared"]
+        if regression_result.get("success"):
+            result_value = regression_result["result_value"]
+            segments_json = json.dumps(regression_result["segments"], ensure_ascii=False)
+            coefficients_json = json.dumps(regression_result["coefficients"], ensure_ascii=False)
+            r_squared = regression_result["overall_r_squared"]
+        elif result_status == ResultStatus.NORMAL:
+            result_status = ResultStatus.ABNORMAL
+            suspend_reason = regression_result.get("error", "计算失败")
 
         calculation_result = CalculationResult(
             parameter_id=request_data.parameter_id,
@@ -410,35 +409,19 @@ class SegmentedRegressionService:
         self.db.add(calculation_result)
         self.db.flush()
 
-        if result_status == ResultStatus.NORMAL and regression_result:
-            is_jump, jump_cause, jump_description, change_traces = self.detect_jump(
-                calculation_result,
-                parameter,
-                request_data.sample_data
-            )
+        is_jump, jump_cause, jump_description, change_traces = self.detect_jump(
+            calculation_result,
+            parameter,
+            request_data.sample_data
+        )
 
-            if is_jump:
-                calculation_result.is_jump = True
-                calculation_result.jump_cause = jump_cause
-                calculation_result.jump_description = jump_description
+        if is_jump:
+            calculation_result.is_jump = True
+            calculation_result.jump_cause = jump_cause
+            calculation_result.jump_description = jump_description
 
-                for trace in change_traces:
-                    self.db.add(trace)
-
-        if result_status != ResultStatus.NORMAL:
-            is_jump, jump_cause, jump_description, change_traces = self.detect_jump(
-                calculation_result,
-                parameter,
-                request_data.sample_data
-            )
-
-            if is_jump:
-                calculation_result.is_jump = True
-                calculation_result.jump_cause = jump_cause
-                calculation_result.jump_description = jump_description
-
-                for trace in change_traces:
-                    self.db.add(trace)
+            for trace in change_traces:
+                self.db.add(trace)
 
         self.db.commit()
         self.db.refresh(calculation_result)

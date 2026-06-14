@@ -299,7 +299,12 @@ async function loadResults(paramId) {
             }
             let suspendHtml = '';
             if (r.suspend_reason) {
-                suspendHtml = `<div style="color: #856404; margin-top: 8px;">挂起原因: ${r.suspend_reason}</div>`;
+                suspendHtml = `
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; border-radius: 4px; margin-top: 8px;">
+                        <strong style="color: #856404;">⏸️ 挂起原因:</strong>
+                        <span style="color: #856404;">${r.suspend_reason}</span>
+                    </div>
+                `;
             }
             let segmentsHtml = '';
             if (r.segments && r.segments.length > 0) {
