@@ -139,12 +139,21 @@ interface WithdrawBody {
 app.post('/api/judgments/:id/withdraw', (req: Request, res: Response) => {
   const body = req.body as WithdrawBody;
   if (!body.operator) return fail('缺少 operator 参数', res);
+
+  const target = store.judgments.find((j) => j.id === req.params.id);
+  if (!target) return fail(`判题记录 ${req.params.id} 不存在`, res, 404);
+  if (target.status === 'withdrawn') return fail(`判题记录 ${req.params.id} 已经是撤回状态，不可重复撤回`, res);
+  if (target.supersededBy) return fail(`判题记录 ${req.params.id} 已被撤回记录 ${target.supersededBy} 取代，不可重复撤回`, res);
+
   const withdrawn = withdrawJudgment(req.params.id, body.operator);
-  if (!withdrawn) return fail('判题记录不存在', res, 404);
-  ok(withdrawn, res);
+  if (!withdrawn) return fail('撤回失败：内部状态异常', res, 500);
+  ok({ judgment: withdrawn, supersededOriginal: req.params.id }, res);
 });
 
 app.post('/api/judgments/:id/recalculate', (req: Request, res: Response) => {
+  const target = store.judgments.find((j) => j.id === req.params.id);
+  if (!target) return fail(`判题记录 ${req.params.id} 不存在，无法复算`, res, 404);
+  if (target.status !== 'withdrawn') return fail(`判题记录 ${req.params.id} 不是撤回状态，复算应针对撤回记录执行`, res);
   const result = recalculateWithWithdrawal(req.params.id);
   ok(result, res);
 });
@@ -178,7 +187,7 @@ app.get('/api/stats', (_req: Request, res: Response) => {
       totalJudgments: store.judgments.length,
       totalNotes: store.notes.length,
       totalAlerts: store.extrapolationAlerts.filter((a) => !a.resolved).length,
-      temporaryDecisions: store.judgments.filter((j) => j.isTemporary && j.status !== 'withdrawn')
+      temporaryDecisions: store.judgments.filter((j) => j.isTemporary && j.status !== 'withdrawn' && !j.supersededBy)
         .length,
     },
     res,

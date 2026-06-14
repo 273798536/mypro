@@ -16,7 +16,7 @@ const store_1 = require("./store");
 function getLatestJudgment(wrongQuestionId) {
     const indexed = store_1.store.judgments
         .map((j, idx) => ({ j, idx }))
-        .filter(({ j }) => j.wrongQuestionId === wrongQuestionId && j.status !== 'withdrawn')
+        .filter(({ j }) => j.wrongQuestionId === wrongQuestionId && j.status !== 'withdrawn' && !j.supersededBy)
         .sort((a, b) => {
         const td = new Date(b.j.operatedAt).getTime() - new Date(a.j.operatedAt).getTime();
         return td !== 0 ? td : b.idx - a.idx;
@@ -139,16 +139,19 @@ function withdrawJudgment(judgmentId, operator) {
     const j = store_1.store.judgments.find((x) => x.id === judgmentId);
     if (!j)
         return null;
+    if (j.status === 'withdrawn')
+        return null;
+    if (j.supersededBy)
+        return null;
     const withdrawn = {
-        ...j,
         id: (0, store_1.genId)('J'),
-        previousStatus: j.status,
+        wrongQuestionId: j.wrongQuestionId,
         status: 'withdrawn',
+        previousStatus: j.status,
+        score: 0,
         previousScore: j.score,
         operator,
         operatedAt: (0, store_1.now)(),
-        isTemporary: false,
-        comment: `撤回原判断 ${judgmentId}，由 ${operator} 执行`,
         sources: [
             ...j.sources,
             {
@@ -157,9 +160,13 @@ function withdrawJudgment(judgmentId, operator) {
                 description: `人工撤回操作，原判断ID ${judgmentId}`,
             },
         ],
+        noteIds: [...j.noteIds],
+        isTemporary: false,
+        comment: `撤回原判断 ${judgmentId}，由 ${operator} 执行`,
     };
+    j.supersededBy = withdrawn.id;
     store_1.store.judgments.push(withdrawn);
-    addAudit('withdraw', operator, j.wrongQuestionId, withdrawn.id, { status: j.status, score: j.score }, { status: 'withdrawn', score: 0 }, `撤回判断 ${judgmentId}`);
+    addAudit('withdraw', operator, j.wrongQuestionId, withdrawn.id, { status: j.status, score: j.score }, { status: 'withdrawn', score: 0, supersededOriginal: judgmentId }, `撤回判断 ${judgmentId}，原判断标记为 supersededBy=${withdrawn.id}`);
     return withdrawn;
 }
 function computeTotals(scope) {
@@ -190,7 +197,6 @@ function computeTotals(scope) {
     return totals;
 }
 function recalculateWithWithdrawal(withdrawnJudgmentId) {
-    const withdrawn = store_1.store.judgments.find((j) => j.id === withdrawnJudgmentId);
     const discrepancies = [];
     const chartTotals = {
         correct: 0,
@@ -205,7 +211,7 @@ function recalculateWithWithdrawal(withdrawnJudgmentId) {
     for (const wq of store_1.store.wrongQuestions) {
         const history = getJudgmentHistory(wq.id);
         const effective = history
-            .filter((j) => j.id !== withdrawnJudgmentId && j.status !== 'withdrawn')
+            .filter((j) => j.status !== 'withdrawn' && !j.supersededBy)
             .slice(-1)[0];
         if (!effective) {
             chartTotals.pending++;
@@ -249,8 +255,9 @@ function recalculateWithWithdrawal(withdrawnJudgmentId) {
         recalculatedAt: (0, store_1.now)(),
     };
     store_1.store.recalculationResults.push(result);
-    if (withdrawn) {
-        addAudit('recalculate', 'system', withdrawn.wrongQuestionId, result.recalculationId, undefined, {
+    const target = store_1.store.judgments.find((j) => j.id === withdrawnJudgmentId);
+    if (target) {
+        addAudit('recalculate', 'system', target.wrongQuestionId, result.recalculationId, undefined, {
             chartTotals,
             detailTotals,
             chartConsistent,
@@ -308,9 +315,9 @@ function listWrongQuestions() {
         const history = getJudgmentHistory(wq.id);
         return {
             wrongQuestion: wq,
-            latestJudgment: history[history.length - 1],
+            latestJudgment: getLatestJudgment(wq.id),
             judgmentCount: history.length,
-            hasTemporaryDecision: history.some((j) => j.isTemporary && j.status !== 'withdrawn'),
+            hasTemporaryDecision: history.some((j) => j.isTemporary && j.status !== 'withdrawn' && !j.supersededBy),
             notes: store_1.store.notes.filter((n) => n.wrongQuestionId === wq.id),
             extrapolationAlerts: store_1.store.extrapolationAlerts.filter((a) => a.wrongQuestionId === wq.id),
         };

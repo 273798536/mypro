@@ -34,6 +34,7 @@ export interface JudgmentRecord {
     noteIds: string[];
     isTemporary: boolean;
     comment?: string;
+    supersededBy?: string;
 }
 export interface Note {
     id: string;
