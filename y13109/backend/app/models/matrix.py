@@ -62,6 +62,8 @@ class MatrixRecord(BaseModel):
     name: str
     matrix: MatrixData
     condition_number: Optional[float] = None
+    previous_condition_number: Optional[float] = None
+    previous_status: Optional[MatrixStatus] = None
     status: MatrixStatus = MatrixStatus.PENDING
     status_history: List[StatusChange] = Field(default_factory=list)
     jump_analysis: Optional[JumpAnalysis] = None

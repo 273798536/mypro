@@ -83,6 +83,10 @@ def process_matrix_record(
 
     cond, is_empty, has_error = compute_condition_number(values)
 
+    if record.condition_number is not None:
+        record.previous_condition_number = record.condition_number
+    record.previous_status = record.status
+
     record.condition_number = cond
 
     if is_empty:
@@ -125,28 +129,51 @@ def analyze_jump(
     unit_changed: bool = False,
     has_late_attachment: bool = False
 ) -> JumpAnalysis:
-    if previous_record is None or previous_record.condition_number is None:
-        return JumpAnalysis(
-            has_jump=False,
-            reason=JumpReason.UNKNOWN,
-            description="无历史数据，无法对比跳变",
-            current_condition=current_record.condition_number or 0.0
-        )
+    prev_cond = None
+    prev_status = None
 
-    prev_cond = previous_record.condition_number
+    if previous_record is not None:
+        prev_cond = previous_record.condition_number
+        prev_status = previous_record.status
+    elif current_record.previous_condition_number is not None:
+        prev_cond = current_record.previous_condition_number
+        prev_status = current_record.previous_status
+
     curr_cond = current_record.condition_number
+    curr_status = current_record.status
 
-    if curr_cond is None or prev_cond == 0:
+    if prev_cond is None and prev_status is None:
         return JumpAnalysis(
             has_jump=False,
             reason=JumpReason.UNKNOWN,
-            description="历史或当前条件数无效",
-            previous_condition=prev_cond,
+            description="无历史数据，首次计算无法对比跳变",
             current_condition=curr_cond or 0.0
         )
 
-    change_ratio = abs(curr_cond - prev_cond) / prev_cond
-    has_jump = change_ratio > 0.5
+    has_numeric_jump = False
+    change_ratio = None
+    if prev_cond is not None and curr_cond is not None and prev_cond != 0:
+        change_ratio = abs(curr_cond - prev_cond) / prev_cond
+        has_numeric_jump = change_ratio > 0.5
+
+    has_status_jump = False
+    if prev_status is not None and prev_status != curr_status:
+        stable_statuses = {MatrixStatus.NORMAL, MatrixStatus.OUT_OF_BOUND}
+        if prev_status in stable_statuses and curr_status in stable_statuses:
+            has_status_jump = True
+        elif prev_status == MatrixStatus.PENDING and curr_status in stable_statuses:
+            has_status_jump = False
+        else:
+            has_status_jump = prev_status != curr_status
+
+    has_explicit_reason = threshold_changed or unit_changed or has_late_attachment
+    has_jump = (has_numeric_jump or has_status_jump) and has_explicit_reason
+
+    if not has_jump and has_explicit_reason and (prev_cond is not None or prev_status is not None):
+        if has_status_jump:
+            has_jump = True
+        elif has_numeric_jump:
+            has_jump = True
 
     reason = JumpReason.UNKNOWN
     description = ""
@@ -154,25 +181,60 @@ def analyze_jump(
     if has_jump:
         if has_late_attachment:
             reason = JumpReason.LATE_ATTACHMENT
-            description = "晚到附件导致结果跳变"
+            if has_status_jump and has_numeric_jump:
+                description = f"晚到附件导致状态从{_status_text(prev_status)}变为{_status_text(curr_status)}，且数值变化{change_ratio*100:.1f}%"
+            elif has_status_jump:
+                description = f"晚到附件导致状态从{_status_text(prev_status)}变为{_status_text(curr_status)}"
+            else:
+                description = f"晚到附件导致数值跳变{change_ratio*100:.1f}%"
         elif threshold_changed:
             reason = JumpReason.THRESHOLD
-            description = "阈值调整导致结果分类跳变"
+            if has_status_jump and has_numeric_jump:
+                description = f"阈值调整导致状态从{_status_text(prev_status)}变为{_status_text(curr_status)}，且数值变化{change_ratio*100:.1f}%"
+            elif has_status_jump:
+                description = f"阈值调整导致分类跳变：从{_status_text(prev_status)}变为{_status_text(curr_status)}"
+            else:
+                description = f"阈值调整，数值变化{change_ratio*100:.1f}%"
         elif unit_changed:
             reason = JumpReason.UNIT
-            description = "单位变更导致条件数数值跳变"
+            if has_numeric_jump:
+                description = f"单位变更导致数值跳变{change_ratio*100:.1f}%"
+            else:
+                description = "单位变更，数值无显著变化"
         else:
             reason = JumpReason.UNKNOWN
-            description = f"条件数变化 {change_ratio*100:.1f}%，原因待查"
+            description = f"条件数变化{change_ratio*100:.1f}%，原因待查"
+    else:
+        if not has_explicit_reason:
+            description = "未勾选跳变原因（阈值/单位/晚到附件），不进行跳变分析"
+        elif prev_cond is None and prev_status is not None:
+            description = f"状态从{_status_text(prev_status)}变为{_status_text(curr_status)}，但无历史条件数，无法进行数值对比"
+        else:
+            description = "数值和分类均无显著跳变"
 
     return JumpAnalysis(
         has_jump=has_jump,
         reason=reason,
         description=description,
         previous_condition=prev_cond,
-        current_condition=curr_cond,
+        current_condition=curr_cond or 0.0,
         change_ratio=change_ratio
     )
+
+
+def _status_text(status: Optional[MatrixStatus]) -> str:
+    if status is None:
+        return "未知"
+    mapping = {
+        MatrixStatus.PENDING: "待计算",
+        MatrixStatus.NORMAL: "正常",
+        MatrixStatus.EMPTY: "空集合",
+        MatrixStatus.SINGULAR: "奇异矩阵",
+        MatrixStatus.OUT_OF_BOUND: "越界",
+        MatrixStatus.OVERRIDDEN: "人工改判",
+        MatrixStatus.ERROR: "错误",
+    }
+    return mapping.get(status, str(status))
 
 
 def calculate_batch_summary(records: List[MatrixRecord]) -> BatchSummary:
@@ -231,14 +293,13 @@ def reprocess_batch(
         prev_record = prev_map.get(record.id)
         process_matrix_record(record, threshold=threshold, source=source)
 
-        if prev_record:
-            jump = analyze_jump(
-                record, prev_record,
-                threshold_changed=threshold_changed,
-                unit_changed=unit_changed,
-                has_late_attachment=has_late_attachment
-            )
-            record.jump_analysis = jump
+        jump = analyze_jump(
+            record, prev_record,
+            threshold_changed=threshold_changed,
+            unit_changed=unit_changed,
+            has_late_attachment=has_late_attachment
+        )
+        record.jump_analysis = jump
 
     batch.summary = calculate_batch_summary(batch.records)
     batch.updated_at = datetime.now()

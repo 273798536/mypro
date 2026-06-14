@@ -8,7 +8,7 @@ from app.services.matrix_service import (
     manual_override_record, is_manually_overridden, calculate_batch_summary
 )
 from app.services.report_service import generate_markdown_report
-from app.models.matrix import MatrixStatus
+from app.models.matrix import MatrixStatus, MatrixRecord, MatrixData
 
 passed = 0
 failed = 0
@@ -143,7 +143,79 @@ check(f"报告人工改判章节有说明：与当前状态无关",
       "按状态变更历史中的来源判断，与当前状态无关" in report)
 
 # =====================================================================
-print("\n=== 测试6: 报告中其他章节完整 ===")
+print("\n=== 测试6: 跳变分析（修复真实API调用下jump_analysis为None的问题） ===")
+print("  第一次计算（阈值20）：")
+batch2 = create_batch_job("跳变分析测试批次", threshold=20)
+for r in records:
+    r_clone = MatrixRecord(
+        id=r.id,
+        name=r.name,
+        matrix=MatrixData(rows=r.matrix.rows, cols=r.matrix.cols, values=r.matrix.values)
+    )
+    add_record_to_batch(batch2, r_clone)
+
+reprocess_batch(batch2, threshold=20)
+rec1 = batch2.records[0]
+check(f"第1次计算后 jump_analysis 不为 None", rec1.jump_analysis is not None)
+if rec1.jump_analysis:
+    check(f"第1次计算 has_jump=False（无历史数据）", 
+          rec1.jump_analysis.has_jump == False,
+          f"实际: {rec1.jump_analysis.has_jump}")
+    check(f"第1次计算描述正确", 
+          "首次计算" in rec1.jump_analysis.description or 
+          "无历史数据" in rec1.jump_analysis.description)
+
+print("\n  第二次计算（阈值改成5，勾选'阈值调整'）：")
+prev_cond = rec1.condition_number
+reprocess_batch(batch2, threshold=5, threshold_changed=True)
+rec1 = batch2.records[0]
+check(f"第2次计算后 jump_analysis 不为 None", rec1.jump_analysis is not None)
+if rec1.jump_analysis:
+    check(f"第2次计算 has_jump=True（有历史数据+勾选阈值调整）", 
+          rec1.jump_analysis.has_jump == True,
+          f"实际: {rec1.jump_analysis.has_jump}")
+    check(f"跳变原因是 threshold", 
+          rec1.jump_analysis.reason.value == 'threshold',
+          f"实际: {rec1.jump_analysis.reason}")
+    check(f"previous_condition 正确（保存了上次的数值）", 
+          rec1.jump_analysis.previous_condition == prev_cond,
+          f"prev={rec1.jump_analysis.previous_condition}, 应={prev_cond}")
+    check(f"描述包含'阈值调整'", 
+          "阈值调整" in rec1.jump_analysis.description)
+
+print("\n  第三次计算（阈值改成10，勾选'单位变更'）：")
+reprocess_batch(batch2, threshold=10, unit_changed=True)
+rec1 = batch2.records[0]
+if rec1.jump_analysis:
+    check(f"勾选单位变更时 reason=unit", 
+          rec1.jump_analysis.reason.value == 'unit',
+          f"实际: {rec1.jump_analysis.reason}")
+
+print("\n  第四次计算（阈值改成10，勾选'晚到附件'）：")
+reprocess_batch(batch2, threshold=10, has_late_attachment=True)
+rec1 = batch2.records[0]
+if rec1.jump_analysis:
+    check(f"勾选晚到附件时 reason=late_attachment", 
+          rec1.jump_analysis.reason.value == 'late_attachment',
+          f"实际: {rec1.jump_analysis.reason}")
+
+print("\n  第五次计算（不勾选任何选项）：")
+reprocess_batch(batch2, threshold=10)
+rec1 = batch2.records[0]
+if rec1.jump_analysis:
+    check(f"不勾选任何选项时 has_jump=False", 
+          rec1.jump_analysis.has_jump == False,
+          f"实际: {rec1.jump_analysis.has_jump}")
+    check(f"描述说明未勾选原因", 
+          "未勾选跳变原因" in rec1.jump_analysis.description)
+
+print("\n  生成报告，检查跳变章节：")
+report2 = generate_markdown_report(batch2)
+check(f"报告包含 '## 八、结果跳变分析' 章节",
+      "## 八、结果跳变分析" in report2)
+
+# =====================================================================
+print("\n=== 测试7: 报告中其他章节完整 ===")
 check(f"报告包含 '## 一、整体结论'", "## 一、整体结论" in report)
 check(f"报告包含 '## 三、正常结果'", "## 三、正常结果" in report)
 check(f"报告包含 '## 四、外推越界记录'", "## 四、外推越界记录" in report)
