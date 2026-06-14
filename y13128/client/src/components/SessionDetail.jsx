@@ -37,7 +37,7 @@ export default function SessionDetail({ sessionId }) {
       await importMaterial(sessionId, materialData);
       await refresh();
     } catch (e) {
-      alert("导入失败: " + e.message);
+      throw e;
     } finally {
       setImporting(false);
     }
@@ -102,7 +102,15 @@ export default function SessionDetail({ sessionId }) {
 
       <JudgmentSummary judgment={judgment} summary={summary} batchCount={batches.length} />
 
-      <MaterialImporter onImport={handleImport} importing={importing} />
+      <MaterialImporter
+        onImport={handleImport}
+        importing={importing}
+        currentPosterior={
+          judgment && judgment.status !== "suspended"
+            ? judgment.posterior_value
+            : undefined
+        }
+      />
 
       {reports.length > 0 && <JumpReports reports={reports} />}
 

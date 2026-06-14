@@ -23,6 +23,9 @@ export default function JudgmentSummary({ judgment, summary, batchCount }) {
 
   const statusInfo = STATUS_MAP[judgment.status] || STATUS_MAP.active;
   const unitInfo = UNIT_MAP[judgment.unit_status] || UNIT_MAP.ok;
+  const isSuspended = judgment.status === "suspended";
+  const hasConfidence = !isSuspended && judgment.confidence != null;
+  const hasPosterior = !isSuspended && judgment.posterior_value != null;
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
@@ -31,7 +34,11 @@ export default function JudgmentSummary({ judgment, summary, batchCount }) {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="text-xs text-gray-400 mb-1">结论</p>
-          <p className="text-sm font-mono text-gray-800">{judgment.conclusion}</p>
+          {isSuspended ? (
+            <p className="text-sm font-medium text-amber-600">（单位问题挂起，无有效结论）</p>
+          ) : (
+            <p className="text-sm font-mono text-gray-800">{judgment.conclusion}</p>
+          )}
         </div>
         <div>
           <p className="text-xs text-gray-400 mb-1">判断状态</p>
@@ -41,15 +48,19 @@ export default function JudgmentSummary({ judgment, summary, batchCount }) {
         </div>
         <div>
           <p className="text-xs text-gray-400 mb-1">置信度</p>
-          <div className="flex items-center gap-2">
-            <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
-              <div
-                className="h-full bg-bayesian-500 rounded-full transition-all"
-                style={{ width: `${(judgment.confidence * 100).toFixed(1)}%` }}
-              />
+          {hasConfidence ? (
+            <div className="flex items-center gap-2">
+              <div className="flex-1 bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-full bg-bayesian-500 rounded-full transition-all"
+                  style={{ width: `${(judgment.confidence * 100).toFixed(1)}%` }}
+                />
+              </div>
+              <span className="text-xs text-gray-600 font-mono">{(judgment.confidence * 100).toFixed(1)}%</span>
             </div>
-            <span className="text-xs text-gray-600 font-mono">{(judgment.confidence * 100).toFixed(1)}%</span>
-          </div>
+          ) : (
+            <p className="text-sm text-gray-400">—</p>
+          )}
         </div>
         <div>
           <p className="text-xs text-gray-400 mb-1">单位状态</p>
@@ -57,7 +68,11 @@ export default function JudgmentSummary({ judgment, summary, batchCount }) {
         </div>
         <div>
           <p className="text-xs text-gray-400 mb-1">后验概率</p>
-          <p className="text-lg font-bold text-bayesian-700 font-mono">{judgment.posterior_value.toFixed(4)}</p>
+          {hasPosterior ? (
+            <p className="text-lg font-bold text-bayesian-700 font-mono">{judgment.posterior_value.toFixed(4)}</p>
+          ) : (
+            <p className="text-sm text-amber-500">— 单位挂起中 —</p>
+          )}
         </div>
         <div>
           <p className="text-xs text-gray-400 mb-1">材料批次</p>
@@ -96,7 +111,7 @@ export default function JudgmentSummary({ judgment, summary, batchCount }) {
         </div>
       )}
 
-      {summary && summary.latest_jump && (
+      {summary && summary.latest_jump && !isSuspended && (
         <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200">
           <div className="flex items-start gap-2">
             <svg className="w-5 h-5 text-red-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

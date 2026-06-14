@@ -6,8 +6,13 @@ async function request(url, options = {}) {
     ...options,
   });
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || "请求失败");
+    const body = await res.json().catch(() => ({}));
+    const parts = [];
+    if (body.error) parts.push(body.error);
+    if (Array.isArray(body.details)) parts.push(...body.details);
+    else if (body.details) parts.push(body.details);
+    if (body.hint) parts.push(`提示：${body.hint}`);
+    throw new Error(parts.length > 0 ? parts.join("\n") : (res.statusText || "请求失败"));
   }
   return res.json();
 }
