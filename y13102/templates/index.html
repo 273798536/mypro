@@ -187,6 +187,69 @@
         </div>
     </div>
 
+    <div id="edit-parameter-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>编辑参数（复核人补录）</h3>
+            <div class="form-group">
+                <label>参数名称</label>
+                <input type="text" id="edit-param-name">
+            </div>
+            <div class="form-group">
+                <label>当前值</label>
+                <input type="number" id="edit-param-value" step="0.01">
+            </div>
+            <div class="form-group" style="border-left: 3px solid #ffc107; padding-left: 12px;">
+                <label><span style="color: #856404;">⚠️ 补录单位（缺失将导致试算挂起）</span></label>
+                <input type="text" id="edit-param-unit" placeholder="例如: mmHg、mmol/L、次/分">
+            </div>
+            <div class="form-group">
+                <label>低阈值</label>
+                <input type="number" id="edit-param-threshold-low" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>高阈值</label>
+                <input type="number" id="edit-param-threshold-high" step="0.01">
+            </div>
+            <div class="form-group">
+                <label>分段数</label>
+                <input type="number" id="edit-param-segment" min="2">
+            </div>
+            <div class="form-group">
+                <label>变更原因</label>
+                <input type="text" id="edit-param-reason" placeholder="例如: 复核人补录单位">
+            </div>
+            <div class="form-group">
+                <label>操作人</label>
+                <input type="text" id="edit-param-operator" placeholder="复核人姓名">
+            </div>
+            <div class="button-group">
+                <button class="btn primary" onclick="submitEditParameter()">保存修改</button>
+                <button class="btn" onclick="hideEditParameterModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="recalc-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>重新分段回归试算</h3>
+            <div class="form-group">
+                <label>参数</label>
+                <input type="text" id="recalc-param-name" readonly style="background: #f5f5f5;">
+            </div>
+            <div class="form-group">
+                <label>样本数据 (JSON格式，[{"x": 1, "y": 2}, ...])</label>
+                <textarea id="recalc-sample-data" rows="8" placeholder='[{"x": 1, "y": 2.1}, {"x": 2, "y": 3.8}, {"x": 5, "y": 15.2}]'></textarea>
+            </div>
+            <div style="background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; border-radius: 6px; margin-bottom: 16px; font-size: 13px; color: #856404;">
+                <strong>复核人须知：</strong>若单位已补齐且边界样本充足（高/低边界各至少2个），状态将从"挂起"变为"正常"。
+            </div>
+            <div class="button-group">
+                <button class="btn primary" onclick="submitRecalc()">执行重新试算</button>
+                <button class="btn" onclick="hideRecalcModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
     <div id="toast" class="toast hidden"></div>
 
     <script src="/static/js/app.js"></script>

@@ -25,6 +25,29 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
+def format_calc_result(result: CalculationResult) -> CalculationResultResponse:
+    segments = []
+    if result.segments:
+        try:
+            segments_data = json.loads(result.segments)
+            segments = [SegmentResult(**s) for s in segments_data]
+        except (json.JSONDecodeError, TypeError):
+            segments = []
+
+    coefficients = None
+    if result.coefficients:
+        try:
+            coefficients = json.loads(result.coefficients)
+        except (json.JSONDecodeError, TypeError):
+            coefficients = None
+
+    result_dict = {k: v for k, v in result.__dict__.items()
+                   if k not in ('segments', 'coefficients', '_sa_instance_state')}
+    result_dict['segments'] = segments
+    result_dict['coefficients'] = coefficients
+    return CalculationResultResponse(**result_dict)
+
+
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "app_name": settings.APP_NAME})
@@ -53,13 +76,16 @@ def get_parameter(parameter_id: int, db: Session = Depends(get_db)):
     remarks = service.get_remarks(parameter_id)
     screenshots = service.get_screenshots(parameter_id)
     latest_result = service.get_latest_result(parameter_id)
+    latest_result_formatted = format_calc_result(latest_result) if latest_result else None
+
+    param_dict = {k: v for k, v in parameter.__dict__.items() if k != '_sa_instance_state'}
 
     result_data = {
-        **parameter.__dict__,
+        **param_dict,
         "history": history,
         "remarks": remarks,
         "screenshots": screenshots,
-        "latest_result": latest_result
+        "latest_result": latest_result_formatted
     }
     return result_data
 
@@ -145,26 +171,10 @@ def calculate(data: CalculationRequestCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=result.get("error", "计算失败"))
 
     calc_result = result["result"]
-
-    segments = []
-    if calc_result.segments:
-        try:
-            segments_data = json.loads(calc_result.segments)
-            segments = [SegmentResult(**s) for s in segments_data]
-        except (json.JSONDecodeError, TypeError):
-            segments = []
-
-    coefficients = None
-    if calc_result.coefficients:
-        try:
-            coefficients = json.loads(calc_result.coefficients)
-        except (json.JSONDecodeError, TypeError):
-            coefficients = None
-
+    response = format_calc_result(calc_result)
     return {
-        **calc_result.__dict__,
-        "segments": segments,
-        "coefficients": coefficients
+        **response.model_dump(),
+        "is_duplicate": result.get("is_duplicate", False)
     }
 
 
@@ -185,26 +195,7 @@ def check_idempotency(data: CalculationRequestCreate, db: Session = Depends(get_
 
     result_response = None
     if existing_result:
-        segments = []
-        if existing_result.segments:
-            try:
-                segments_data = json.loads(existing_result.segments)
-                segments = [SegmentResult(**s) for s in segments_data]
-            except (json.JSONDecodeError, TypeError):
-                segments = []
-
-        coefficients = None
-        if existing_result.coefficients:
-            try:
-                coefficients = json.loads(existing_result.coefficients)
-            except (json.JSONDecodeError, TypeError):
-                coefficients = None
-
-        result_response = CalculationResultResponse(
-            **existing_result.__dict__,
-            segments=segments,
-            coefficients=coefficients
-        )
+        result_response = format_calc_result(existing_result)
 
     return {
         "is_duplicate": is_duplicate,
@@ -226,38 +217,14 @@ def get_jump_analysis(result_id: int, db: Session = Depends(get_db)):
         CalculationResult.id < current_result.id
     ).order_by(CalculationResult.id.desc()).first()
 
-    def format_result(result: Optional[CalculationResult]) -> Optional[CalculationResultResponse]:
-        if not result:
-            return None
-        segments = []
-        if result.segments:
-            try:
-                segments_data = json.loads(result.segments)
-                segments = [SegmentResult(**s) for s in segments_data]
-            except (json.JSONDecodeError, TypeError):
-                segments = []
-
-        coefficients = None
-        if result.coefficients:
-            try:
-                coefficients = json.loads(result.coefficients)
-            except (json.JSONDecodeError, TypeError):
-                coefficients = None
-
-        return CalculationResultResponse(
-            **result.__dict__,
-            segments=segments,
-            coefficients=coefficients
-        )
-
     return {
         "result_id": result_id,
         "is_jump": current_result.is_jump,
         "jump_cause": current_result.jump_cause,
         "jump_description": current_result.jump_description,
         "change_traces": change_traces,
-        "previous_result": format_result(previous_result),
-        "current_result": format_result(current_result)
+        "previous_result": format_calc_result(previous_result) if previous_result else None,
+        "current_result": format_calc_result(current_result)
     }
 
 
@@ -269,31 +236,7 @@ def get_parameter_results(parameter_id: int, skip: int = 0, limit: int = 20, db:
         raise HTTPException(status_code=404, detail="参数不存在")
 
     results = service.get_all_results(parameter_id, skip, limit)
-
-    response_list = []
-    for result in results:
-        segments = []
-        if result.segments:
-            try:
-                segments_data = json.loads(result.segments)
-                segments = [SegmentResult(**s) for s in segments_data]
-            except (json.JSONDecodeError, TypeError):
-                segments = []
-
-        coefficients = None
-        if result.coefficients:
-            try:
-                coefficients = json.loads(result.coefficients)
-            except (json.JSONDecodeError, TypeError):
-                coefficients = None
-
-        response_list.append(CalculationResultResponse(
-            **result.__dict__,
-            segments=segments,
-            coefficients=coefficients
-        ))
-
-    return response_list
+    return [format_calc_result(r) for r in results]
 
 
 if __name__ == "__main__":

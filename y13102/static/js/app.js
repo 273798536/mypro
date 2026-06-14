@@ -126,10 +126,22 @@ async function showParameterDetail(id) {
             </div>
 
             <div class="button-group">
-                <button class="btn primary" onclick="showEditParameterModal(${param.id})">编辑参数</button>
+                <button class="btn ${!param.unit ? 'success' : 'primary'}" onclick="showEditParameterModal()">
+                    ${!param.unit ? '📝 编辑参数（⚠️请先补录单位）' : '📝 编辑参数（补录单位/阈值）'}
+                </button>
+                <button class="btn ${param.latest_result && param.latest_result.result_status === '挂起' ? 'success' : ''}" onclick="showRecalcModal()">
+                    ${param.latest_result && param.latest_result.result_status === '挂起' ? '🔄 重新试算（补完单位后点我）' : '🔄 重新试算'}
+                </button>
                 <button class="btn" onclick="showAddRemarkModal(${param.id})">添加后补备注</button>
                 <button class="btn" onclick="showAddScreenshotModal(${param.id})">添加截图</button>
             </div>
+            ${param.latest_result && param.latest_result.result_status === '挂起' ? `
+            <div style="margin-top: 16px; background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 6px;">
+                <strong style="color: #856404;">⏸️ 当前状态为「挂起」</strong><br>
+                <span style="color: #856404; font-size: 14px;">原因: ${param.latest_result.suspend_reason || '未知'}</span><br>
+                <span style="color: #666; font-size: 13px;">请先点击「编辑参数」补录单位和调整阈值，再点击「重新试算」。</span>
+            </div>
+            ` : ''}
         `;
 
         content += `
@@ -422,8 +434,105 @@ async function createParameter() {
     }
 }
 
-function showEditParameterModal(id) {
-    showToast('请使用API或直接修改数据库进行编辑', 'warning');
+async function showEditParameterModal() {
+    if (!currentParameterId) {
+        showToast('请先选择参数', 'warning');
+        return;
+    }
+    try {
+        const param = await apiCall(`/api/parameters/${currentParameterId}`);
+        document.getElementById('edit-param-name').value = param.param_name || '';
+        document.getElementById('edit-param-value').value = param.current_value !== null ? param.current_value : '';
+        document.getElementById('edit-param-unit').value = param.unit || '';
+        document.getElementById('edit-param-threshold-low').value = param.threshold_low !== null ? param.threshold_low : '';
+        document.getElementById('edit-param-threshold-high').value = param.threshold_high !== null ? param.threshold_high : '';
+        document.getElementById('edit-param-segment').value = param.segment_count || 2;
+        document.getElementById('edit-param-reason').value = '';
+        document.getElementById('edit-param-operator').value = '';
+        document.getElementById('edit-parameter-modal').classList.remove('hidden');
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
+}
+
+function hideEditParameterModal() {
+    document.getElementById('edit-parameter-modal').classList.add('hidden');
+}
+
+async function submitEditParameter() {
+    const unit = document.getElementById('edit-param-unit').value.trim();
+    const updateData = {
+        param_name: document.getElementById('edit-param-name').value || null,
+        current_value: document.getElementById('edit-param-value').value ? parseFloat(document.getElementById('edit-param-value').value) : null,
+        unit: unit || null,
+        threshold_low: document.getElementById('edit-param-threshold-low').value ? parseFloat(document.getElementById('edit-param-threshold-low').value) : null,
+        threshold_high: document.getElementById('edit-param-threshold-high').value ? parseFloat(document.getElementById('edit-param-threshold-high').value) : null,
+        segment_count: document.getElementById('edit-param-segment').value ? parseInt(document.getElementById('edit-param-segment').value) : null,
+        change_reason: document.getElementById('edit-param-reason').value || (unit ? '复核人补录单位' : '参数复核更新'),
+        changed_by: document.getElementById('edit-param-operator').value || '复核人'
+    };
+
+    try {
+        await apiCall(`/api/parameters/${currentParameterId}`, 'PUT', updateData);
+        showToast(unit ? '参数已更新，单位已补录' : '参数已更新', 'success');
+        hideEditParameterModal();
+        showParameterDetail(currentParameterId);
+    } catch (error) {
+        showToast(error.message, 'error');
+    }
+}
+
+function showRecalcModal() {
+    if (!currentParameterId) {
+        showToast('请先选择参数', 'warning');
+        return;
+    }
+    apiCall(`/api/parameters/${currentParameterId}`).then(param => {
+        document.getElementById('recalc-param-name').value = param.param_name + ' (' + (param.unit || '单位未设置') + ')';
+        const defaultSamples = param.param_key === 'blood_pressure_systolic'
+            ? '[{"x": 50, "y": 118}, {"x": 80, "y": 122}, {"x": 90, "y": 128}, {"x": 95, "y": 132}, {"x": 140, "y": 150}, {"x": 160, "y": 162}]'
+            : '[{"x": 1, "y": 2.1}, {"x": 2, "y": 3.8}, {"x": 5, "y": 15.2}, {"x": 10, "y": 50.1}, {"x": 15, "y": 80.5}, {"x": 20, "y": 110.2}]';
+        document.getElementById('recalc-sample-data').value = defaultSamples;
+        document.getElementById('recalc-modal').classList.remove('hidden');
+    }).catch(err => showToast(err.message, 'error'));
+}
+
+function hideRecalcModal() {
+    document.getElementById('recalc-modal').classList.add('hidden');
+}
+
+async function submitRecalc() {
+    try {
+        const sampleData = JSON.parse(document.getElementById('recalc-sample-data').value);
+        const result = await apiCall('/api/calculate/', 'POST', {
+            parameter_id: currentParameterId,
+            sample_data: sampleData
+        });
+
+        hideRecalcModal();
+
+        let msg = `重新试算完成：状态=${result.result_status}`;
+        let type = 'success';
+        if (result.result_status === '挂起') {
+            msg += `，原因=${result.suspend_reason}`;
+            type = 'warning';
+        } else if (result.result_status === '异常') {
+            msg += `，原因=${result.suspend_reason}`;
+            type = 'error';
+        }
+        if (result.is_duplicate) {
+            msg += '（重复请求，返回已有结果）';
+        }
+        if (result.is_jump) {
+            msg += `，⚠️检测到跳变：${result.jump_cause}`;
+            type = 'warning';
+        }
+        showToast(msg, type);
+
+        showParameterDetail(currentParameterId);
+    } catch (err) {
+        showToast('样本数据格式错误或计算失败: ' + err.message, 'error');
+    }
 }
 
 function showAddRemarkModal(paramId) {
@@ -734,7 +843,38 @@ async function runSupplementDemo(container) {
     });
     container.innerHTML += '<p>✅ 已添加2张截图（1张待补材料，1张已处理）</p>';
 
-    container.innerHTML += `<p style="color: #856404; margin-top: 12px;"><strong>补录记录完成！系统挂起等待复核人确认单位和补充边界样本。后补备注和历史截图已保留。</strong></p>`;
+    container.innerHTML += '<p style="margin-top: 16px;">🔧 <strong>复核人开始补录操作</strong></p>';
+
+    container.innerHTML += '<p>1️⃣ 补录单位：mmHg，调整低阈值为80（原90太高），补充边界样本</p>';
+    await apiCall(`/api/parameters/${bpParam.id}`, 'PUT', {
+        unit: 'mmHg',
+        threshold_low: 80,
+        threshold_high: 140,
+        change_reason: '复核人补录单位并调整低阈值',
+        changed_by: '复核人-小孟'
+    });
+
+    const sufficientSamples = [
+        {"x": 50, "y": 118}, {"x": 75, "y": 122}, {"x": 80, "y": 128},
+        {"x": 95, "y": 132}, {"x": 140, "y": 150}, {"x": 160, "y": 162}
+    ];
+    container.innerHTML += `<p>2️⃣ 补充边界样本：共6个点（低边界≤80有2个，高边界≥140有2个）</p>`;
+
+    const result2 = await apiCall('/api/calculate/', 'POST', {
+        parameter_id: bpParam.id,
+        sample_data: sufficientSamples
+    });
+
+    let statusClass = result2.result_status === '正常' ? 'normal' :
+                      result2.result_status === '挂起' ? 'suspended' : 'abnormal';
+    container.innerHTML += `<p>3️⃣ 重新试算结果: <span class="status-tag ${statusClass}">${result2.result_status}</span></p>`;
+
+    if (result2.result_status === '正常') {
+        container.innerHTML += `<p>✅ 结果值: ${result2.result_value.toFixed(4)} | 整体R²: ${result2.r_squared.toFixed(4)} | 分段数: ${result2.segments.length}</p>`;
+        container.innerHTML += `<p style="color: #28a745; margin-top: 12px;"><strong>补录记录完成！复核人补录单位和边界样本后，状态从「挂起」变为「正常」。</strong></p>`;
+    } else if (result2.result_status === '挂起') {
+        container.innerHTML += `<p style="color: #856404;">仍挂起: ${result2.suspend_reason}</p>`;
+    }
 }
 
 async function runAbnormalDemo(container) {
