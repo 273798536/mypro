@@ -47,6 +47,7 @@ class BadDataRecord:
 class BatchRecord:
     batch_id: str
     points: List[Point]
+    group_key: str = ""
     submitted_at: str = ""
     note: str = ""
 
@@ -58,6 +59,7 @@ class VerificationResult:
     expected_area: Optional[float]
     tolerance: float
     hull_points: List[Point]
+    all_clean_points: List[Point]
     is_pass: bool
     bad_data: List[BadDataRecord]
     sort_unstable: bool
@@ -112,44 +114,69 @@ def polygon_area(vertices: List[Point]) -> float:
 
 
 # ============================================================
-# 坏数据检测（迭代式：先移除最严重的离群点，再重新计算均值/标准差）
+# 坏数据检测
+#  迭代式离群点移除：用MAD(中位数绝对偏差)替代z-score，
+#  避免极端值自己把标准差撑大而逃逸检测。
 # ============================================================
 
-def _z_score_outliers(points: List[Point], threshold: float = 4.0) -> List[BadDataRecord]:
+def _mad_outliers_iterative(points: List[Point], mad_threshold: float = 5.0) -> List[BadDataRecord]:
+    """
+    迭代MAD离群点检测：
+      1. 计算中位数(对极端值不敏感)
+      2. 计算MAD=median(|x-median_x|)
+      3. 修正MAD→sigma: sigma_hat = 1.4826 * MAD
+      4. 用类似z-score的修正分数筛离群点
+      5. 剔除后重新计算中位数/MAD，再跑一轮
+    """
     records: List[BadDataRecord] = []
-    clean = list(points)
-    changed = True
-    while changed:
-        changed = False
-        if len(clean) < 3:
+    active_ids = {p.identity_key() for p in points}
+
+    def _median(values: List[float]) -> float:
+        s = sorted(values)
+        n = len(s)
+        if n == 0:
+            return 0.0
+        if n % 2 == 1:
+            return s[n // 2]
+        return (s[n // 2 - 1] + s[n // 2]) / 2.0
+
+    while True:
+        clean_pts = [p for p in points if p.identity_key() in active_ids]
+        if len(clean_pts) < 3:
             break
-        xs = [p.x for p in clean]
-        ys = [p.y for p in clean]
-        mean_x = sum(xs) / len(xs)
-        mean_y = sum(ys) / len(ys)
-        std_x = (sum((v - mean_x) ** 2 for v in xs) / len(xs)) ** 0.5 or 1.0
-        std_y = (sum((v - mean_y) ** 2 for v in ys) / len(ys)) ** 0.5 or 1.0
+        xs = [p.x for p in clean_pts]
+        ys = [p.y for p in clean_pts]
+
+        med_x = _median(xs)
+        med_y = _median(ys)
+        mad_x = _median([abs(v - med_x) for v in xs])
+        mad_y = _median([abs(v - med_y) for v in ys])
+        sigma_x = 1.4826 * mad_x if mad_x > 0 else 1.0
+        sigma_y = 1.4826 * mad_y if mad_y > 0 else 1.0
+
         worst: Optional[Point] = None
         worst_score = 0.0
         worst_reason = ""
-        for p in clean:
+        for p in clean_pts:
             if math.isnan(p.x) or math.isnan(p.y) or math.isinf(p.x) or math.isinf(p.y):
                 records.append(BadDataRecord(p, "坐标含 NaN/Inf"))
-                clean.remove(p)
-                changed = True
+                active_ids.discard(p.identity_key())
+                worst = None
                 break
-            z_x = abs(p.x - mean_x) / std_x
-            z_y = abs(p.y - mean_y) / std_y
-            score = max(z_x, z_y)
-            if score > threshold and score > worst_score:
+            s_x = abs(p.x - med_x) / sigma_x
+            s_y = abs(p.y - med_y) / sigma_y
+            score = max(s_x, s_y)
+            if score > mad_threshold and score > worst_score:
                 worst = p
                 worst_score = score
-                worst_reason = f"离群点(z_x={z_x:.1f}, z_y={z_y:.1f})"
+                worst_reason = f"离群点(MAD修正分数 s_x={s_x:.1f}, s_y={s_y:.1f}, 阈值={mad_threshold})"
         else:
             if worst is not None:
                 records.append(BadDataRecord(worst, worst_reason))
-                clean.remove(worst)
-                changed = True
+                active_ids.discard(worst.identity_key())
+                continue
+        break
+
     return records
 
 
@@ -174,14 +201,29 @@ def _duplicate_coord_outliers(points: List[Point], bad_ids: set) -> List[BadData
 
 
 def detect_bad_points(points: List[Point]) -> List[BadDataRecord]:
+    if len(points) == 0:
+        return []
     records: List[BadDataRecord] = []
+
+    nan_inf: List[BadDataRecord] = []
     for p in points:
         if math.isnan(p.x) or math.isnan(p.y) or math.isinf(p.x) or math.isinf(p.y):
-            records.append(BadDataRecord(p, "坐标含 NaN/Inf"))
+            nan_inf.append(BadDataRecord(p, "坐标含 NaN/Inf"))
+    records.extend(nan_inf)
+    nan_ids = {r.point.identity_key() for r in nan_inf}
 
-    non_nan = [p for p in points if not (math.isnan(p.x) or math.isnan(p.y) or math.isinf(p.x) or math.isinf(p.y))]
-    z_records = _z_score_outliers(non_nan)
-    records.extend(z_records)
+    non_nan = [p for p in points if p.identity_key() not in nan_ids]
+    if len(non_nan) >= 6:
+        mad_records = _mad_outliers_iterative(non_nan)
+        records.extend(mad_records)
+    elif len(non_nan) >= 1:
+        for p in non_nan:
+            if abs(p.x) > 1e4 or abs(p.y) > 1e4:
+                records.append(BadDataRecord(
+                    p,
+                    f"绝对值极大值(|x|={abs(p.x):.1f}, |y|={abs(p.y):.1f})，"
+                    f"样本数<6无法跑MAD，按启发式排除"
+                ))
 
     bad_ids = set(r.point.identity_key() for r in records)
     dup_records = _duplicate_coord_outliers(points, bad_ids)
@@ -216,35 +258,63 @@ def check_sort_stability(points: List[Point]) -> Tuple[bool, str]:
     has_hull_diff = normal_ids != flipped_ids
     has_area_diff = abs(area_normal - area_flipped) > 1e-9
 
-    if not has_same_x and not has_hull_diff and not has_area_diff:
+    hull_identity_keys = set(p.identity_key() for p in hull_normal)
+    samex_many_on_border = False
+    for pts in ambiguous_groups.values():
+        on_hull = sum(1 for p in pts if p.identity_key() in hull_identity_keys)
+        if len(pts) >= 3 and on_hull >= 1:
+            samex_many_on_border = True
+            break
+
+    if not has_same_x:
+        return False, ""
+    if not (has_hull_diff or has_area_diff or samex_many_on_border):
         return False, ""
 
     parts = ["检测到排序不稳定："]
 
     if has_area_diff:
         parts.append(
-            f"  同x坐标下y排序不同导致面积不一致"
-            f"(y升序={area_normal:.6f}, y降序={area_flipped:.6f}, "
-            f"差异={abs(area_normal - area_flipped):.6f})"
+            f"  ⚠ 面积真有差异(会影响结论)："
+            f"y升序={area_normal:.6f}, y降序={area_flipped:.6f}, "
+            f"差异={abs(area_normal - area_flipped):.6f}"
         )
-    if has_hull_diff and not has_area_diff:
+    elif has_hull_diff:
         only_normal = normal_ids - flipped_ids
         only_flipped = flipped_ids - normal_ids
-        parts.append(f"  面积一致({area_normal:.6f})，但凸包顶点集合不同：")
+        parts.append(f"  ⚠ 凸包顶点不同但面积一致({area_normal:.6f})：")
         for key in only_normal:
             pt = next(p for p in hull_normal if p.identity_key() == key)
             parts.append(f"    y升序独有: ({pt.x}, {pt.y}) row={pt.source_row} id={pt.source_id}")
         for key in only_flipped:
             pt = next(p for p in hull_flipped if p.identity_key() == key)
             parts.append(f"    y降序独有: ({pt.x}, {pt.y}) row={pt.source_row} id={pt.source_id}")
+    else:
+        parts.append(
+            f"  · 当前排序下面积一致({area_normal:.6f})，但同x坐标点在凸包边界上，"
+            f"若剔除其中某个点可能影响结果"
+        )
 
     if ambiguous_groups:
-        parts.append(f"  同x坐标点共{len(ambiguous_groups)}组：")
-        for k, pts in ambiguous_groups.items():
-            rows = ", ".join(f"y={p.y}(row={p.source_row})" for p in pts)
-            parts.append(f"    x={k}: {rows}")
+        flagged_groups = {k: pts for k, pts in ambiguous_groups.items() if len(pts) >= 3}
+        if flagged_groups:
+            parts.append(f"  需关注的同x坐标点共{len(flagged_groups)}组(同x超过2个，y排序可能影响中间点取舍)：")
+            for k, pts in flagged_groups.items():
+                pts_on_hull = [(p, '*') for p in pts if p.identity_key() in hull_identity_keys]
+                pts_not_on_hull = [(p, ' ') for p in pts if p.identity_key() not in hull_identity_keys]
+                ordered = pts_on_hull + pts_not_on_hull
+                rows = ", ".join(
+                    f"{marker}y={p.y}(row={p.source_row})"
+                    for p, marker in ordered
+                )
+                parts.append(f"    x={k}: {rows}  (标*的在凸包上)")
 
-    parts.append("  → 需人工确认：检查同x坐标点是否为重复录入或测量误差，决定保留哪个")
+    if has_area_diff or has_hull_diff:
+        parts.append("  → 必须人工确认：同x坐标点的y排序会改变凸包结果，请逐行核对原始记录，"
+                     "决定保留/合并哪些点")
+    else:
+        parts.append("  → 建议人工确认：检查同x坐标点是否为重复录入或测量误差，"
+                     "保留在凸包上的那一个通常更可靠")
     return True, "\n".join(parts)
 
 
@@ -413,22 +483,41 @@ class ConvexHullBatchVerifier:
 
     def __init__(self, tolerance: float = 0.05):
         self.tolerance = tolerance
-        self.batches: List[BatchRecord] = []
+        self._batches_by_group: Dict[str, List[BatchRecord]] = {}
         self.results: List[VerificationResult] = []
         self.group_history: Dict[str, List[VerificationResult]] = {}
 
-    def add_batch(self, batch: BatchRecord) -> None:
+    @property
+    def batches(self) -> List[BatchRecord]:
+        flat: List[BatchRecord] = []
+        for grp in self._batches_by_group.values():
+            flat.extend(grp)
+        return flat
+
+    def add_batch(self, batch: BatchRecord, group_key: Optional[str] = None) -> None:
+        if group_key is not None:
+            batch.group_key = group_key
+        if not batch.group_key:
+            raise ValueError(
+                "add_batch 时必须指定 group_key（通过参数或 BatchRecord.group_key），"
+                "否则批次无法归属到哪个学生/分组"
+            )
         batch_hash = hashlib.md5(
             json.dumps([(p.x, p.y, p.source_row, p.source_id) for p in batch.points]).encode()
         ).hexdigest()[:8]
-        existing_ids = {b.batch_id for b in self.batches}
+        existing_ids = {
+            b.batch_id
+            for lst in self._batches_by_group.values()
+            for b in lst
+        }
         if batch.batch_id in existing_ids:
             batch.batch_id = f"{batch.batch_id}_dup_{batch_hash}"
-        self.batches.append(batch)
+        self._batches_by_group.setdefault(batch.group_key, []).append(batch)
 
     def verify_group(self, group_key: str, expected_area: Optional[float] = None) -> VerificationResult:
+        group_batches = self._batches_by_group.get(group_key, [])
         all_points: List[Point] = []
-        for b in self.batches:
+        for b in group_batches:
             all_points.extend(b.points)
 
         bad_records = detect_bad_points(all_points)
@@ -456,17 +545,9 @@ class ConvexHullBatchVerifier:
         jump_info = None
         if prev_results:
             prev = prev_results[-1]
-            prev_bad_ids = set(b.point.identity_key() for b in prev.bad_data)
-            prev_clean_ids = set(p.identity_key() for p in prev.hull_points)
-            non_hull_prev = [
-                p for p in all_points
-                if p.identity_key() not in prev_bad_ids
-                and p.identity_key() not in prev_clean_ids
-            ]
-            prev_clean_pts = list(prev.hull_points) + non_hull_prev
             jump_info = attribute_jump(
                 prev.area, area, self.tolerance,
-                prev_clean_pts, clean_points,
+                prev.all_clean_points, clean_points,
                 prev.bad_data, bad_records,
             )
 
@@ -476,6 +557,7 @@ class ConvexHullBatchVerifier:
             expected_area=expected_area,
             tolerance=self.tolerance,
             hull_points=hull_pts,
+            all_clean_points=clean_points,
             is_pass=is_pass,
             bad_data=bad_records,
             sort_unstable=sort_unstable,
@@ -589,7 +671,7 @@ def create_demo_data() -> List[BatchRecord]:
         ),
         points=[
             Point(4, 0, source_row=6, source_id="A6", tag="正常-与A2同坐标"),
-            Point(4, 1.2, source_row=7, source_id="A7", tag="正常-同x歧义"),
+            Point(4, 3.5, source_row=7, source_id="A7", tag="正常-同x歧义-超过原凸包顶点高度"),
             Point(4, 2.5, source_row=8, source_id="A8", tag="正常-同x歧义"),
             Point(-1, 0.1, source_row=9, source_id="A9", tag="正常-关键边界点"),
             Point(999, 999, source_row=10, source_id="A10", tag="坏数据-录入错误"),
@@ -623,17 +705,17 @@ def main():
     verifier = ConvexHullBatchVerifier(tolerance=0.05)
 
     print("━━ 第1批：学生A第1次提交 ━━\n")
-    verifier.add_batch(demo_batches[0])
+    verifier.add_batch(demo_batches[0], group_key="学生A")
     result1 = verifier.verify_group("学生A", expected_area=12.0)
     print(verifier.generate_report(result1))
 
     print("\n━━ 第2批：学生A第2次补交（追加，不覆盖） ━━\n")
-    verifier.add_batch(demo_batches[1])
+    verifier.add_batch(demo_batches[1], group_key="学生A")
     result2 = verifier.verify_group("学生A", expected_area=12.0)
     print(verifier.generate_report(result2))
 
-    print("\n━━ 学生B：期望面积与单位不匹配场景 ━━\n")
-    verifier.add_batch(demo_batches[2])
+    print("\n━━ 学生B：期望面积与单位不匹配场景（独立分组，不混入学生A数据） ━━\n")
+    verifier.add_batch(demo_batches[2], group_key="学生B")
     result3 = verifier.verify_group("学生B", expected_area=0.5)
     print(verifier.generate_report(result3))
 
@@ -651,7 +733,7 @@ def main():
     print("\n交接说明：")
     print("  1. 数据模型：Point(x, y, source_row, source_id, tag)")
     print("  2. 核心入口：ConvexHullBatchVerifier.add_batch() → verify_group()")
-    print("  3. 坏数据检测：detect_bad_points()，迭代z-score + 重复坐标检测")
+    print("  3. 坏数据检测：detect_bad_points()，迭代MAD离群点(≥6样本)+重复坐标检测(样本<6用启发式)")
     print("  4. 排序稳定性：check_sort_stability()，同x坐标反转y排序对比")
     print("  5. 正常记录影响：analyze_normal_record_impact()，逐条说明对结论的影响")
     print("  6. 跳变归因：attribute_jump()，区分阈值/单位/新增点/坏数据变化")
