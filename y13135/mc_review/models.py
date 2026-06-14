@@ -97,14 +97,18 @@ class SortTrace:
     qid: str
     original_row: int
     current_index: int
-    content_hash: str
-    stable: bool
+    history_row: int = -1
+    history_source: str = ""
+    content_hash: str = ""
+    stable: bool = True
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "qid": self.qid,
             "original_row": self.original_row,
             "current_index": self.current_index,
+            "history_row": self.history_row,
+            "history_source": self.history_source,
             "content_hash": self.content_hash,
             "stable": self.stable,
         }

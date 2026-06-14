@@ -66,7 +66,13 @@ def _question_card(q: QuestionItem, bundle: ReviewBundle) -> str:
         f"- **原始行号**: {q.original_row}  |  **当前索引**: {q.current_index}",
     ]
     if sort_trace:
-        stability = "✅ 顺序稳定" if sort_trace.stable else f"⚠️ 排序跳变（原始行 {sort_trace.original_row} → 当前 {sort_trace.current_index}）"
+        if sort_trace.history_row >= 0:
+            stability = "✅ 顺序稳定" if sort_trace.stable else (
+                f"⚠️ 排序跳变（历史行 {sort_trace.history_row} → 当前行 {sort_trace.original_row}，"
+                f"来源 `{sort_trace.history_source}`）"
+            )
+        else:
+            stability = "ℹ️ 无历史版本对照"
         meta.append(f"- **排序**: {stability}  内容哈希 `{sort_trace.content_hash}`")
     parts.extend(meta)
     parts.append("")
@@ -174,12 +180,12 @@ def render_report(bundle: ReviewBundle) -> str:
     parts.append("")
 
     if bundle.unstable_sorts:
-        parts.append(_h("排序不稳定明细（按原始行号追溯）", 3))
+        parts.append(_h("排序不稳定明细（追溯历史版本原始行号）", 3))
         parts.append("")
-        parts.append("| 题号 | 原始行号 | 当前索引 | 内容哈希 |")
-        parts.append("|---|---|---|---|")
+        parts.append("| 题号 | 历史行号 | 当前行号 | 历史来源 | 内容哈希 |")
+        parts.append("|---|---|---|---|---|")
         for s in sorted(bundle.unstable_sorts, key=lambda x: x.original_row):
-            parts.append(_table_row([s.qid, str(s.original_row), str(s.current_index), s.content_hash]))
+            parts.append(_table_row([s.qid, str(s.history_row), str(s.original_row), s.history_source, s.content_hash]))
         parts.append("")
 
     parts.append(_section(ReviewStatus.PROCESSED, bundle.processed, bundle))

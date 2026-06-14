@@ -43,11 +43,12 @@ def render_summary(bundle: ReviewBundle) -> str:
     lines.append("")
 
     if bundle.unstable_sorts:
-        lines.append("-- 排序不稳定（追溯原始行号）--")
+        lines.append("-- 排序不稳定（追溯历史版本行号）--")
         for s in bundle.unstable_sorts:
             lines.append(
-                f"  {s.qid:<8} 原始行 {s.original_row:>3} → 当前索引 {s.current_index:>3}"
-                f"  内容哈希 {s.content_hash}"
+                f"  {s.qid:<8} 历史行 {s.history_row:>3} → 当前行 {s.original_row:>3}"
+                f"  来源 {s.history_source}"
+                f"  哈希 {s.content_hash}"
             )
     else:
         lines.append("-- 排序稳定性 --")

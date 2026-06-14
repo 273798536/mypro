@@ -9,7 +9,7 @@
 在项目根目录执行：
 
 ```bash
-python -m mc_review --input sample_input --output output
+python3 -m mc_review --input sample_input --output output
 ```
 
 参数说明：

@@ -5,6 +5,8 @@
 - 解析多版本备注（history_note 字段按换行切分，前缀 [时间]作者: 内容）
 - 识别截图文件（与 qid 匹配）
 - 保留原始行号用于排序溯源
+- 从 history/ 目录的旧版本 CSV 读取历史顺序，用于排序稳定性比对
+- 从历史 CSV 文件名（*_YYYY-MM-DD.csv）提取真实旧版本日期
 """
 
 from __future__ import annotations
@@ -14,13 +16,17 @@ import os
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import List, Tuple
+from typing import Dict, List, Optional, Tuple
 
-from .models import HistoryEntry, QuestionItem, ReviewStatus, SortTrace, ChangeEvent, ReviewBundle, ChangeType
+from .models import ChangeEvent, ChangeType, HistoryEntry, QuestionItem, ReviewBundle, ReviewStatus, SortTrace
 
 
 HISTORY_LINE_RE = re.compile(
     r"^\[(?P<ts>[^\]]+)\]\s*(?P<author>[^:：]+)[:：]\s*(?P<content>.*)$"
+)
+
+FILENAME_DATE_RE = re.compile(
+    r"_(\d{4}-\d{2}-\d{2})\.csv$", re.IGNORECASE
 )
 
 
@@ -86,6 +92,21 @@ def _find_screenshots(screenshots_dir: Path, qid: str) -> List[str]:
     return results
 
 
+def _extract_version_date(filepath: Path) -> Optional[datetime]:
+    """从文件名提取旧版本日期。
+
+    约定文件名格式：*_YYYY-MM-DD.csv
+    例：questions_v1_2025-11-15.csv → 2025-11-15
+    """
+    m = FILENAME_DATE_RE.search(filepath.name)
+    if m:
+        try:
+            return datetime.strptime(m.group(1), "%Y-%m-%d")
+        except ValueError:
+            pass
+    return None
+
+
 def parse_question_list(csv_path: Path, screenshots_dir: Path) -> List[QuestionItem]:
     """解析题目清单 CSV。"""
     questions: List[QuestionItem] = []
@@ -128,23 +149,65 @@ def parse_question_list(csv_path: Path, screenshots_dir: Path) -> List[QuestionI
     return questions
 
 
-def build_sort_traces(questions: List[QuestionItem]) -> List[SortTrace]:
-    """基于原始行号和当前索引构建排序追踪。
+def build_sort_traces(
+    questions: List[QuestionItem],
+    history_qid_orders: List[Tuple[str, List[str]]],
+) -> List[SortTrace]:
+    """基于历史版本 CSV 的 qid 行序与当前清单行序对比，构建排序追踪。
 
-    稳定判定：qid 在原始清单和当前列表中的相对顺序是否一致。
+    参数:
+        questions: 当前题目列表
+        history_qid_orders: 列表元素为 (history_source, [qid, qid, ...])
+            每个 history_source 对应一份历史 CSV 的 qid 出现顺序
+
+    稳定判定：
+        对于同时出现在当前清单和最近一份历史 CSV 中的 qid，
+        检查它们在两份清单中的相对顺序是否一致。
+        不一致的标记为 unstable，并在 history_row 中记录旧版本行号。
     """
-    traces: List[SortTrace] = []
-    by_row = sorted(questions, key=lambda q: q.original_row)
-    by_current = sorted(questions, key=lambda q: q.current_index)
-    row_order = [q.qid for q in by_row]
-    current_order = [q.qid for q in by_current]
+    current_order = [q.qid for q in questions]
+    current_pos = {qid: i for i, qid in enumerate(current_order)}
 
+    latest_history: Optional[Tuple[str, List[str]]] = None
+    for source, order in history_qid_orders:
+        latest_history = (source, order)
+
+    if latest_history is None:
+        return [
+            SortTrace(
+                qid=q.qid,
+                original_row=q.original_row,
+                current_index=q.current_index,
+                history_row=-1,
+                history_source="",
+                content_hash=q.content_hash(),
+                stable=True,
+            )
+            for q in questions
+        ]
+
+    hist_source, hist_order = latest_history
+    hist_pos = {qid: i for i, qid in enumerate(hist_order)}
+
+    shared_qids = [qid for qid in current_order if qid in hist_pos]
+    shared_current_rank = {qid: rank for rank, qid in enumerate(shared_qids)}
+    shared_qids_by_hist = sorted(shared_qids, key=lambda x: hist_pos[x])
+    shared_hist_rank = {qid: rank for rank, qid in enumerate(shared_qids_by_hist)}
+
+    traces: List[SortTrace] = []
     for q in questions:
-        stable = row_order.index(q.qid) == current_order.index(q.qid)
+        if q.qid in hist_pos:
+            h_row = hist_pos[q.qid] + 1
+            stable = shared_current_rank.get(q.qid) == shared_hist_rank.get(q.qid)
+        else:
+            h_row = -1
+            stable = True
         traces.append(SortTrace(
             qid=q.qid,
             original_row=q.original_row,
             current_index=q.current_index,
+            history_row=h_row,
+            history_source=hist_source if q.qid in hist_pos else "",
             content_hash=q.content_hash(),
             stable=stable,
         ))
@@ -191,6 +254,69 @@ def detect_changes(questions: List[QuestionItem]) -> List[ChangeEvent]:
     return events
 
 
+def _merge_history_csv(
+    questions: List[QuestionItem],
+    hist_csv: Path,
+) -> List[str]:
+    """把历史版本 CSV 合并进当前题目的 history，返回该历史 CSV 的 qid 行序。
+
+    时间戳提取优先级：
+    1. 文件名中 _YYYY-MM-DD.csv → 该日期 00:00:00
+    2. 文件修改时间（附注"文件名未含日期，使用修改时间"）
+    """
+    by_qid: Dict[str, QuestionItem] = {q.qid: q for q in questions}
+    hist_qid_order: List[str] = []
+
+    version_ts = _extract_version_date(hist_csv)
+    ts_source = "文件名日期"
+    if version_ts is None:
+        version_ts = datetime.fromtimestamp(hist_csv.stat().st_mtime)
+        ts_source = "文件修改时间"
+
+    with open(hist_csv, "r", encoding="utf-8-sig", newline="") as f:
+        reader = csv.DictReader(f)
+        for row_idx, row in enumerate(reader, start=1):
+            qid = (row.get("qid") or row.get("题目编号") or "").strip()
+            if not qid:
+                continue
+            hist_qid_order.append(qid)
+            if qid not in by_qid:
+                continue
+            q = by_qid[qid]
+            for field_name, value in row.items():
+                if not value:
+                    continue
+                key = field_name.lower()
+                if "阈值" in field_name or "threshold" in key:
+                    q.history.append(HistoryEntry(
+                        timestamp=version_ts,
+                        field="threshold",
+                        old_value=q.threshold,
+                        new_value=str(value),
+                        author=f"history:{hist_csv.stem}",
+                        note=f"从历史版本 CSV 恢复的阈值（{ts_source}）",
+                    ))
+                elif "单位" in field_name or "unit" in key:
+                    q.history.append(HistoryEntry(
+                        timestamp=version_ts,
+                        field="unit",
+                        old_value=q.unit,
+                        new_value=str(value),
+                        author=f"history:{hist_csv.stem}",
+                        note=f"从历史版本 CSV 恢复的单位（{ts_source}）",
+                    ))
+                elif "备注" in field_name or "note" in key:
+                    q.history.append(HistoryEntry(
+                        timestamp=version_ts,
+                        field="note",
+                        old_value=None,
+                        new_value=str(value),
+                        author=f"history:{hist_csv.stem}",
+                        note=f"从历史版本 CSV 恢复的备注（{ts_source}）",
+                    ))
+    return hist_qid_order
+
+
 def build_review_bundle(input_dir: Path) -> ReviewBundle:
     """从输入目录装配完整复盘包。"""
     csv_candidates = list(input_dir.glob("*.csv")) + list(input_dir.glob("*.CSV"))
@@ -203,11 +329,13 @@ def build_review_bundle(input_dir: Path) -> ReviewBundle:
 
     questions = parse_question_list(csv_path, screenshots_dir)
 
+    history_qid_orders: List[Tuple[str, List[str]]] = []
     if history_dir.exists():
         for hist_csv in sorted(history_dir.glob("*.csv")):
-            _merge_history_csv(questions, hist_csv)
+            order = _merge_history_csv(questions, hist_csv)
+            history_qid_orders.append((hist_csv.stem, order))
 
-    sort_traces = build_sort_traces(questions)
+    sort_traces = build_sort_traces(questions, history_qid_orders)
     change_events = detect_changes(questions)
 
     return ReviewBundle(
@@ -216,47 +344,3 @@ def build_review_bundle(input_dir: Path) -> ReviewBundle:
         change_events=change_events,
         source_file=str(csv_path),
     )
-
-
-def _merge_history_csv(questions: List[QuestionItem], hist_csv: Path) -> None:
-    """把历史版本 CSV 合并进当前题目的 history。"""
-    by_qid = {q.qid: q for q in questions}
-    with open(hist_csv, "r", encoding="utf-8-sig", newline="") as f:
-        reader = csv.DictReader(f)
-        ts = datetime.fromtimestamp(hist_csv.stat().st_mtime)
-        for row in reader:
-            qid = (row.get("qid") or row.get("题目编号") or "").strip()
-            if qid not in by_qid:
-                continue
-            q = by_qid[qid]
-            for field_name, value in row.items():
-                if not value:
-                    continue
-                key = field_name.lower()
-                if "阈值" in field_name or "threshold" in key:
-                    q.history.append(HistoryEntry(
-                        timestamp=ts,
-                        field="threshold",
-                        old_value=q.threshold,
-                        new_value=str(value),
-                        author=f"history:{hist_csv.stem}",
-                        note="从历史版本 CSV 恢复的阈值",
-                    ))
-                elif "单位" in field_name or "unit" in key:
-                    q.history.append(HistoryEntry(
-                        timestamp=ts,
-                        field="unit",
-                        old_value=q.unit,
-                        new_value=str(value),
-                        author=f"history:{hist_csv.stem}",
-                        note="从历史版本 CSV 恢复的单位",
-                    ))
-                elif "备注" in field_name or "note" in key:
-                    q.history.append(HistoryEntry(
-                        timestamp=ts,
-                        field="note",
-                        old_value=None,
-                        new_value=str(value),
-                        author=f"history:{hist_csv.stem}",
-                        note="从历史版本 CSV 恢复的备注",
-                    ))
