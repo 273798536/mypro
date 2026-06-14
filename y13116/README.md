@@ -10,7 +10,7 @@
 python3 boundary_check.py
 ```
 
-脚本会读取 `data/` 下的批次数据，执行校验、检测重复、关联晚到附件，然后生成复核页面。
+脚本会读取 `data/` 下的批次数据，执行校验、检测重复、关联晚到附件，然后生成复核页面和 CSV 导出。
 
 **第二步：查看复核摘要页面**
 
@@ -21,6 +21,15 @@ output/review_summary.html
 ```
 
 用浏览器直接打开即可，页面上按已处理、待补材料、人工改判分类汇总。
+
+**第三步（可选）：用 Excel 打开导出的明细**
+
+```
+output/verified_results.csv        校验明细（含边界标签、状态、重复标记）
+output/late_attachments_detail.csv 晚到附件明细
+```
+
+这两份是 `utf-8-sig` 编码 + RFC 4180 标准 CSV，Excel / WPS / Numbers 双击即可正常打开，列不会错位。
 
 ---
 
@@ -76,15 +85,29 @@ output/review_summary.html
 
 ## 数据格式说明
 
-所有数据用 CSV 格式，方便用 Excel 打开和编辑。
+所有数据用 **RFC 4180 标准 CSV** 格式，`utf-8`（源文件）或 `utf-8-sig`（导出给 Excel 的文件）编码。
 
-**current_batch.csv（当前批次）** 字段：
+**CSV 格式保证**：
+- 字段中包含逗号、引号、换行时自动用双引号包裹
+- 字段中的双引号用 `""` 转义
+- 脚本读取 CSV 时会校验**列数**，任何一行列数对不上立刻报错并指出行号，不会静默错位
+
+**源 CSV 字段规范**：
+
+**current_batch.csv（当前批次，8列）**：
 - 记录ID、场景描述、n、k、计算类型、提交结果、来源行号、数据来源
 
-**late_attachments.csv（晚到附件）** 问题类型取值：
+**historical_answers.csv（历史答案，10列）**：
+- 记录ID、场景名称、n值、k值、组合类型、计算结果、边界状态、校验结论、校验人、日期
+
+**late_attachments.csv（晚到附件，8列）** 问题类型取值：
 - `公式不明确` — 公式/条件描述不清
 - `单位不统一` — 单位口径不一致
 - `阈值超界` — 结果超出系统处理范围
+
+**导出 CSV（在 output/ 下）**：
+- `verified_results.csv`（15列）：完整校验明细，和页面第四区块完全一致
+- `late_attachments_detail.csv`（8列）：晚到附件明细，和页面第三区块完全一致
 
 ---
 

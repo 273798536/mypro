@@ -391,19 +391,19 @@ body {
         </div>
         <div class="time-tag">
           <span class="label">生成时间</span>
-          <span class="value">2026-06-12 20:09</span>
+          <span class="value">2026-06-14 09:05</span>
         </div>
       </div>
     </header>
 
     <section class="summary-cards">
       <div class="card card-done">
-        <div class="card-number">12</div>
+        <div class="card-number">13</div>
         <div class="card-label">已处理</div>
         <div class="card-sub">共 15 条记录</div>
       </div>
       <div class="card card-pending">
-        <div class="card-number">1</div>
+        <div class="card-number">0</div>
         <div class="card-label">待补材料</div>
         <div class="card-sub">晚到附件 3 条</div>
       </div>
@@ -413,7 +413,7 @@ body {
         <div class="card-sub">约束组合需复核</div>
       </div>
       <div class="card card-boundary">
-        <div class="card-number">6</div>
+        <div class="card-number">7</div>
         <div class="card-label">边界样本</div>
         <div class="card-sub">含历史参考 8 条</div>
       </div>
@@ -438,15 +438,6 @@ body {
             </tr>
           </thead>
           <tbody>
-        <tr>
-          <td>CUR-005</td>
-          <td>n=5</td>
-          <td>N/A</td>
-          <td>5</td>
-          <td>5</td>
-          <td>计算类型不明确</td>
-          <td>1</td>
-        </tr>
 
           </tbody>
         </table>
@@ -528,7 +519,7 @@ body {
           <td>LAT-005</td>
           <td>2025-12-04 16:30</td>
           <td><span class="issue-tag issue-unit">单位不统一</span></td>
-          <td>样本中有组"和"队"两种表述，是否等价"</td>
+          <td>样本中有「组」和「队」两种表述，是否等价</td>
           <td>待确认口径</td>
           <td>钱伟</td>
           <td>1条</td>
@@ -614,18 +605,18 @@ body {
           <td class="notes">-</td>
           <td><span class="status-badge status-done">已处理</span></td>
         </tr>
-        <tr class="status-pending">
+        <tr class="status-done">
           <td>CUR-005</td>
-          <td>n=5</td>
-          <td>N/A</td>
+          <td>n=5,k=5的组合</td>
           <td>5</td>
           <td>5</td>
-          <td>-</td>
-          <td>N/A</td>
-          <td class="boundary-tags">-</td>
-          <td class="issues">计算类型不明确</td>
+          <td>组合</td>
+          <td>1</td>
+          <td>1</td>
+          <td class="boundary-tags">全选/全集</td>
+          <td class="issues">-</td>
           <td class="notes">-</td>
-          <td><span class="status-badge status-pending">待补材料</span></td>
+          <td><span class="status-badge status-done">已处理</span></td>
         </tr>
         <tr class="status-done">
           <td>CUR-006</td>
@@ -681,13 +672,13 @@ body {
         </tr>
         <tr class="status-done">
           <td>CUR-010</td>
-          <td>k>n的组合(10选15)</td>
+          <td>k&gt;n的组合(10选15)</td>
           <td>10</td>
           <td>15</td>
           <td>组合</td>
           <td>0</td>
           <td>0</td>
-          <td class="boundary-tags">越界(k>n)</td>
+          <td class="boundary-tags">越界(k&gt;n)</td>
           <td class="issues">-</td>
           <td class="notes">-</td>
           <td><span class="status-badge status-done">已处理</span></td>
@@ -790,55 +781,55 @@ body {
           <td>从10人中选3人组队</td>
           <td>10</td>
           <td>3</td>
-          <td>组合C(n</td>
-          <td>k)</td>
+          <td>组合C(n,k)</td>
           <td>120</td>
           <td>正常</td>
           <td>通过</td>
+          <td>张敏</td>
         </tr>
         <tr>
           <td>HIS-002</td>
           <td>排列5个不同颜色的球</td>
           <td>5</td>
           <td>5</td>
-          <td>排列P(n</td>
-          <td>n)</td>
+          <td>排列P(n,n)</td>
           <td>120</td>
           <td>边界-全排列</td>
           <td>通过</td>
+          <td>张敏</td>
         </tr>
         <tr>
           <td>HIS-003</td>
           <td>从8本书中选0本</td>
           <td>8</td>
           <td>0</td>
-          <td>组合C(n</td>
-          <td>0)</td>
+          <td>组合C(n,0)</td>
           <td>1</td>
           <td>边界-空集</td>
           <td>通过</td>
+          <td>李昊</td>
         </tr>
         <tr>
           <td>HIS-004</td>
           <td>15人选5人排成一排</td>
           <td>15</td>
           <td>5</td>
-          <td>排列P(n</td>
-          <td>k)</td>
+          <td>排列P(n,k)</td>
           <td>360360</td>
           <td>正常</td>
           <td>通过</td>
+          <td>张敏</td>
         </tr>
         <tr>
           <td>HIS-005</td>
           <td>从20人中选20人</td>
           <td>20</td>
           <td>20</td>
-          <td>组合C(n</td>
-          <td>n)</td>
+          <td>组合C(n,n)</td>
           <td>1</td>
           <td>边界-全集</td>
           <td>通过</td>
+          <td>李昊</td>
         </tr>
 
           </tbody>
@@ -891,18 +882,18 @@ body {
         </tr>
         <tr>
           <td>BDY-003</td>
-          <td>n=0</td>
-          <td>k=0空组合</td>
+          <td>n=0,k=0空组合</td>
           <td>0</td>
           <td>0</td>
           <td>组合</td>
           <td>1</td>
           <td>边界-零空</td>
           <td>论文《组合数学基础》</td>
+          <td>历史有争议</td>
         </tr>
         <tr>
           <td>BDY-004</td>
-          <td>k>n时组合为0</td>
+          <td>k&gt;n时组合为0</td>
           <td>5</td>
           <td>7</td>
           <td>组合</td>
@@ -962,7 +953,7 @@ body {
     </section>
 
     <footer class="page-footer">
-      <p>组合计数边界校验 · 复核摘要页 · 参数版本 v2.3.1 · 生成于 2026-06-12 20:09</p>
+      <p>组合计数边界校验 · 复核摘要页 · 参数版本 v2.3.1 · 生成于 2026-06-14 09:05</p>
       <p class="footer-note">本页面由 boundary_check.py 自动生成，如有疑问请联系建模助教小岑。</p>
     </footer>
   </div>
