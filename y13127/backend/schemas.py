@@ -245,6 +245,15 @@ class ExportRequest(BaseModel):
     exported_by: Optional[str] = None
 
 
+class BatchExportRequest(BaseModel):
+    """批量导出请求体：trial_ids + 导出配置。前后端都用这个结构。"""
+    trial_ids: List[int] = Field(..., description="要导出的试算ID列表", min_length=1)
+    export_type: str = "screenshot"
+    export_format: str = "xlsx"
+    caption_override: Optional[str] = None
+    exported_by: Optional[str] = None
+
+
 class ExportRecordOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int

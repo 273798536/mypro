@@ -39,6 +39,97 @@ const downloadBlob = (blob, filename) => {
   setTimeout(() => URL.revokeObjectURL(url), 2000);
 };
 
+// ========== 导出辅助：blob 错误识别 + 文件名解析 ==========
+
+const parseFilenameFromHeaders = (headers, fallback) => {
+  // 兼容 axios / fetch 不同大小写（headers 是 axios 的对象，也可能是 Headers）
+  const getH = (k) => {
+    if (!headers) return null;
+    if (typeof headers.get === "function") return headers.get(k);
+    return headers[k] || headers[k.toLowerCase()];
+  };
+  const cd = getH("Content-Disposition") || getH("content-disposition") || "";
+  const m = cd.match(/filename\*?=UTF-8''(.+?)(?:;|$)/i) || cd.match(/filename="?([^";]+)"?/i);
+  return m ? decodeURIComponent(m[1].trim()) : (fallback || `导出_${Date.now()}.xlsx`);
+};
+
+const extractBlobError = async (res) => {
+  // 双保险：优先把 blob 当 JSON 解析（中文细节完整），header X-Error-Detail 是 URL 编码截短版
+  try {
+    const txt = await res.data.text();
+    const j = JSON.parse(txt);
+    if (j && (j.detail || j.message)) return j.detail || j.message;
+  } catch (_) { /* 不是 JSON，就是正常 Excel */ }
+  // 回退：读 X-Error / X-Error-Detail 头（URL 编码，截短版）
+  const headers = res.headers || {};
+  const getH = (k) => (typeof headers.get === "function" ? headers.get(k) : (headers[k] || headers[k.toLowerCase()]));
+  if (getH("X-Error")) {
+    const quoted = getH("X-Error-Detail") || "";
+    try { return decodeURIComponent(quoted); } catch (_) { return quoted || "导出失败"; }
+  }
+  return null;
+};
+
+const doExportRequest = async (trialIds, extra = {}) => {
+  if (!trialIds || !trialIds.length) {
+    ElMessage.warning("请先勾选要导出的记录");
+    return null;
+  }
+  try {
+    const res = await axios.post(`${API_BASE}/api/trials/export`, {
+      trial_ids: trialIds,
+      export_type: "screenshot",
+      export_format: "xlsx",
+      exported_by: "阿乔",
+      ...extra,
+    }, { responseType: "blob" });
+
+    const errMsg = await extractBlobError(res);
+    if (errMsg) {
+      ElNotification.error({ title: "导出失败", message: errMsg, duration: 5000 });
+      return null;
+    }
+
+    const fn = parseFilenameFromHeaders(res.headers, `贝叶斯先验参数试算_${trialIds.length}条.xlsx`);
+    downloadBlob(res.data, fn);
+    ElMessage.success(`已导出 ${trialIds.length} 条（含截图说明Sheet，状态与页面一致）`);
+    return fn;
+  } catch (e) {
+    const msg = e?.response?.data?.detail || e?.message || "导出请求失败，请检查后端服务是否运行";
+    ElNotification.error({ title: "导出失败", message: msg, duration: 5000 });
+    return null;
+  }
+};
+
+const doExportDetail = async (trialId) => {
+  try {
+    const res = await axios.get(`${API_BASE}/api/trials/${trialId}/export-detail`, { responseType: "blob" });
+    const errMsg = await extractBlobError(res);
+    if (errMsg) { ElNotification.error({ title: "导出失败", message: errMsg }); return null; }
+    const fn = parseFilenameFromHeaders(res.headers, `详情_${trialId}.xlsx`);
+    downloadBlob(res.data, fn);
+    ElMessage.success("详情已导出（含 6 个 Sheet：主记录/权重/状态/历史答案/追溯/导出记录）");
+    return fn;
+  } catch (e) {
+    const msg = e?.response?.data?.detail || e?.message || "导出请求失败";
+    ElNotification.error({ title: "导出失败", message: msg });
+    return null;
+  }
+};
+
+const doDownloadExportFile = async (filename) => {
+  try {
+    const res = await axios.get(`${API_BASE}/api/exports/${filename}`, { responseType: "blob" });
+    const errMsg = await extractBlobError(res);
+    if (errMsg) { ElNotification.error({ title: "下载失败", message: errMsg }); return; }
+    const fn = parseFilenameFromHeaders(res.headers, filename);
+    downloadBlob(res.data, fn);
+  } catch (e) {
+    const msg = e?.response?.data?.detail || e?.message || "下载失败";
+    ElNotification.error({ title: "下载失败", message: msg });
+  }
+};
+
 // ========== Dashboard ==========
 const Dashboard = {
   props: ["dicts"],
@@ -291,28 +382,20 @@ const TrialList = {
       doSearch();
     };
     const doExport = async () => {
-      if (!selected.value.length) return;
-      try {
-        const ids = selected.value.map(r => r.id);
-        const qs = ids.map(i => `trial_ids=${i}`).join("&");
-        const res = await axios.post(`${API_BASE}/api/trials/export?${qs}`,
-          { export_type: "screenshot", export_format: "xlsx", exported_by: "阿乔" }, { responseType: "blob" });
-        const fn = res.headers["content-disposition"]?.match(/filename\*?=UTF-8''(.+)/i)?.[1] || `贝叶斯试算_${Date.now()}.xlsx`;
-        downloadBlob(res.data, decodeURIComponent(fn));
-        ElMessage.success(`已导出 ${ids.length} 条（含截图说明Sheet）`);
-      } catch (e) {}
+      if (!selected.value.length) {
+        ElMessage.warning("请先勾选要导出的记录");
+        return;
+      }
+      const ids = selected.value.map(r => r.id);
+      await doExportRequest(ids);
     };
     const exportAll = async () => {
-      if (!items.value.length) return;
-      try {
-        const ids = items.value.map(r => r.id);
-        const qs = ids.map(i => `trial_ids=${i}`).join("&");
-        const res = await axios.post(`${API_BASE}/api/trials/export?${qs}`,
-          { export_type: "screenshot", export_format: "xlsx", exported_by: "阿乔" }, { responseType: "blob" });
-        const fn = res.headers["content-disposition"]?.match(/filename\*?=UTF-8''(.+)/i)?.[1] || `贝叶斯试算_${Date.now()}.xlsx`;
-        downloadBlob(res.data, decodeURIComponent(fn));
-        ElMessage.success("已导出");
-      } catch (e) {}
+      if (!items.value.length) {
+        ElMessage.warning("当前页没有可导出的记录");
+        return;
+      }
+      const ids = items.value.map(r => r.id);
+      await doExportRequest(ids);
     };
     onMounted(doSearch);
     return { filter, items, total, selected, doSearch, resetFilters, doExport, exportAll, statusTagClass };

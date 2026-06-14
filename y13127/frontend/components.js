@@ -206,7 +206,7 @@ const TrialDetail = {
           <el-form-item label="改权重理由"><el-input v-model="editForm.weight_change_reason" placeholder="为什么改权重？"/></el-form-item>
           <el-form-item label="参考历史答案">
             <el-select v-model="editForm.weight_change_historical_answer_id" clearable filterable style="width:100%">
-              <el-option v-for="h in detail.historical_answers" :key="h.id" :label="`#${h.id} ${h.answer_source} = ${h.answer_value}`" :value="h.id"/>
+              <el-option v-for="h in detail.historical_answers" :key="h.id" :label="'#' + h.id + ' ' + h.answer_source + ' = ' + h.answer_value" :value="h.id"/>
             </el-select>
           </el-form-item>
           <el-divider>重复样本</el-divider>
@@ -405,10 +405,8 @@ const TrialDetail = {
       load();
     };
     const exportDetail = async () => {
-      const res = await axios.get(`${API_BASE}/api/trials/${props.trialId}/export-detail`, { responseType: "blob" });
-      const fn = res.headers["content-disposition"]?.match(/filename\*?=UTF-8''(.+)/i)?.[1] || `${detail.value.trial_no}_详情.xlsx`;
-      downloadBlob(res.data, decodeURIComponent(fn));
-      ElMessage.success("详情已导出（含所有关联记录）");
+      await doExportDetail(props.trialId);
+      load();
     };
 
     onMounted(load);
@@ -472,7 +470,7 @@ const TrialImport = {
           </el-form-item>
         </el-form>
         <el-alert v-if="lastResult" style="margin-top:14px;"
-                  :title="`导入结果：成功 ${lastResult.created_count}，失败 ${lastResult.error_count}`"
+                  :title="'导入结果：成功 ' + lastResult.created_count + '，失败 ' + lastResult.error_count"
                   :type="lastResult.error_count?'warning':'success'" show-icon closable>
           <div v-if="lastResult.errors?.length" style="margin-top:8px;">
             <div style="font-weight:600; margin-bottom:6px;">错误明细：</div>
@@ -588,8 +586,7 @@ const ExportRecords = {
     const items = ref([]);
     const load = async () => { items.value = await http.get("/api/export-records"); };
     const download = async (fn) => {
-      const res = await axios.get(`${API_BASE}/api/exports/${fn}`, { responseType: "blob" });
-      downloadBlob(res.data, fn);
+      await doDownloadExportFile(fn);
     };
     onMounted(load);
     return { items, load, download, formatTime };
@@ -606,7 +603,7 @@ const Handover = {
         <div v-for="s in handover?.sections || []" :key="s.title" class="handover-section">
           <h3>{{ s.title }}</h3>
           <ul>
-            <li v-for="(it, i) in s.items" :key="i" v-html="it.replace(/(GET|POST|PUT) \/[^\s]+/g, (m)=>`<code>${m}</code>`).replace(/backend[^\s]+\.db/g, (m)=>`<code>${m}</code>`)"></li>
+            <li v-for="(it, i) in s.items" :key="i" v-html="it.replace(/(GET|POST|PUT) \/[^\s]+/g, function(m){ return '<code>' + m + '</code>' }).replace(/backend[^\s]+\.db/g, function(m){ return '<code>' + m + '</code>' })"></li>
           </ul>
         </div>
       </div>

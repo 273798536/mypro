@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException, Query, UploadFile, File, Form
-from fastapi.responses import StreamingResponse, JSONResponse, FileResponse
+from fastapi import FastAPI, Depends, HTTPException, Query, UploadFile, File, Form, Body
+from fastapi.responses import StreamingResponse, JSONResponse, FileResponse, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from io import BytesIO
@@ -39,7 +40,53 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["Content-Disposition", "X-Error", "X-Error-Detail"],
 )
+
+
+# ========== 统一错误处理：即使返回 blob，错误也能被前端读到 ==========
+
+def _json_error(status_code: int, detail: str) -> Response:
+    """导出链路里抛错时：返回 JSON 错误体 + X-Error 头，前端双保险都能识别。
+
+    注意：HTTP 头只能是 latin-1，中文 detail 只放在 JSON body 里，
+    X-Error-Detail 头只放简化的 ASCII 占位（前端优先读 JSON body）。
+    """
+    from urllib.parse import quote
+    body = json.dumps({"detail": detail}, ensure_ascii=False).encode("utf-8")
+    # 头里只放 URL 编码版本，且截短，避免 latin-1 编码错误
+    safe_detail_quoted = quote(detail or "error", safe="")[:200]
+    return Response(
+        content=body,
+        status_code=status_code,
+        media_type="application/json",
+        headers={
+            "X-Error": "1",
+            "X-Error-Detail": safe_detail_quoted,
+            "Access-Control-Expose-Headers": "X-Error,X-Error-Detail,Content-Disposition",
+        },
+    )
+
+
+@app.exception_handler(HTTPException)
+def _http_exception_handler(request, exc):
+    # 导出相关请求 (responseType=blob) 也能拿到错误信息
+    if "/api/trials/export" in str(request.url) or "/api/exports/" in str(request.url) \
+            or "/export-detail" in str(request.url):
+        return _json_error(exc.status_code, exc.detail if isinstance(exc.detail, str) else str(exc.detail))
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+
+
+@app.exception_handler(RequestValidationError)
+def _validation_exception_handler(request, exc):
+    detail = "; ".join(
+        f"{'/'.join(str(x) for x in e.get('loc', []))}: {e.get('msg', '')}"
+        for e in exc.errors()
+    ) or "请求参数校验失败"
+    if "/api/trials/export" in str(request.url) or "/api/exports/" in str(request.url) \
+            or "/export-detail" in str(request.url):
+        return _json_error(400, detail)
+    return JSONResponse(status_code=400, content={"detail": detail})
 
 
 @app.on_event("startup")
@@ -465,89 +512,108 @@ def list_traces(trial_id: int, db: Session = Depends(get_db)):
     ]
 
 
-# ============ 导出接口（状态一致性核心） ============
+# ========== 导出接口（状态一致性核心） ============
+
+XLSX_MEDIA = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+
+def _disposition_header(filename: str) -> str:
+    """RFC 5987 编码，中文文件名在所有浏览器下正确。"""
+    from urllib.parse import quote
+    return f"attachment; filename*=UTF-8''{quote(filename)}"
+
+
+def _xlsx_response(content: bytes, filename: str) -> StreamingResponse:
+    return StreamingResponse(
+        BytesIO(content),
+        media_type=XLSX_MEDIA,
+        headers={
+            "Content-Disposition": _disposition_header(filename),
+            "Access-Control-Expose-Headers": "Content-Disposition,X-Error,X-Error-Detail",
+        },
+    )
+
+
+def _get_export_dir() -> str:
+    d = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "exports")
+    os.makedirs(d, exist_ok=True)
+    return d
+
 
 @app.post("/api/trials/export", tags=["导出"],
-          summary="批量导出试算（含截图说明Sheet，状态文字与接口完全一致）")
+          summary="批量导出（trial_ids + 配置统一放 JSON body，前后端一致）")
 def export_trials(
-    trial_ids: List[int],
-    data: schemas.ExportRequest,
+    payload: schemas.BatchExportRequest,
     db: Session = Depends(get_db),
 ):
+    """
+    Body 格式: { "trial_ids": [1,2,3], "export_type": "screenshot",
+                 "export_format": "xlsx", "caption_override": "", "exported_by": "阿乔" }
+    """
+    trial_ids = list(dict.fromkeys(payload.trial_ids))  # 去重保序
+
+    if not trial_ids:
+        raise HTTPException(400, "trial_ids 不能为空")
+
     trials = []
+    missing = []
     for tid in trial_ids:
         t = services.get_trial(db, tid)
         if t:
             trials.append(services.enrich_trial_labels(t))
+        else:
+            missing.append(str(tid))
+
     if not trials:
-        raise HTTPException(400, "没有可导出的试算")
+        raise HTTPException(400, f"没有可导出的试算，提供的ID全部不存在: {', '.join(missing)}")
 
-    # 为每条试算创建导出记录（快照当时状态，保证一致性）
-    export_filename = (
-        f"贝叶斯先验参数试算_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.xlsx"
+    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    dup_cnt = sum(1 for t in trials if t["is_duplicate"])
+    export_filename = f"贝叶斯先验参数试算_{len(trials)}条_{dup_cnt}重复_{ts}.xlsx"
+
+    sub_req = schemas.ExportRequest(
+        export_type=payload.export_type,
+        export_format=payload.export_format,
+        caption_override=payload.caption_override,
+        exported_by=payload.exported_by,
     )
-    for tid in trial_ids:
-        services.create_export_record(db, tid, data, export_filename)
+    for t in trials:
+        services.create_export_record(db, t["id"], sub_req, export_filename)
 
-    caption = data.caption_override or ""
-    content = export_trials_to_excel(trials, data.export_type, caption)
+    caption = payload.caption_override or ""
+    content = export_trials_to_excel(trials, payload.export_type, caption)
 
-    # 同时保存到文件目录
-    export_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              "data", "exports")
-    os.makedirs(export_dir, exist_ok=True)
-    file_path = os.path.join(export_dir, export_filename)
+    file_path = os.path.join(_get_export_dir(), export_filename)
     with open(file_path, "wb") as f:
         f.write(content)
 
-    return StreamingResponse(
-        BytesIO(content),
-        media_type=(
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ),
-        headers={
-            "Content-Disposition": f"attachment; filename*=UTF-8''{export_filename}"
-        },
-    )
+    return _xlsx_response(content, export_filename)
 
 
 @app.get("/api/trials/{trial_id}/export-detail", tags=["导出"],
-         summary="单条详情全量导出（含历史答案/权重变更/追溯/导出记录）")
+         summary="单条详情全量导出（含历史答案/权重变更/追溯/导出记录 共6个Sheet）")
 def export_detail(trial_id: int, db: Session = Depends(get_db)):
     t = services.get_trial(db, trial_id)
     if not t:
-        raise HTTPException(404, "试算不存在")
+        raise HTTPException(404, f"试算 ID={trial_id} 不存在")
     detail = services.enrich_trial_detail(db, t)
 
-    export_filename = (
-        f"{detail['trial_no']}_详情导出_{datetime.utcnow().strftime('%Y%m%d%H%M%S')}.xlsx"
-    )
-    # 记录导出瞬间的快照
+    ts = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    export_filename = f"{detail['trial_no']}_详情导出_{ts}.xlsx"
+
     services.create_export_record(
         db, trial_id,
         schemas.ExportRequest(export_type="detail", export_format="xlsx",
-                              exported_by="system"),
+                              exported_by="web"),
         export_filename,
     )
 
     content = export_single_detail(detail)
-
-    export_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              "data", "exports")
-    os.makedirs(export_dir, exist_ok=True)
-    file_path = os.path.join(export_dir, export_filename)
+    file_path = os.path.join(_get_export_dir(), export_filename)
     with open(file_path, "wb") as f:
         f.write(content)
 
-    return StreamingResponse(
-        BytesIO(content),
-        media_type=(
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ),
-        headers={
-            "Content-Disposition": f"attachment; filename*=UTF-8''{export_filename}"
-        },
-    )
+    return _xlsx_response(content, export_filename)
 
 
 @app.get("/api/export-records", tags=["导出"],
@@ -571,25 +637,34 @@ def list_export_records(trial_id: Optional[int] = None,
             "export_screenshot_caption": e.export_screenshot_caption,
             "exported_by": e.exported_by,
             "exported_at": e.exported_at,
+            "download_url": f"/api/exports/{e.export_filename}",
         }
         for e in items
     ]
 
 
 @app.get("/api/exports/{filename}", tags=["导出"],
-         summary="下载历史导出文件")
+         summary="下载历史导出文件（已做路径穿越保护，仅允许 .xlsx）")
 def download_export_file(filename: str):
-    export_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              "data", "exports")
-    file_path = os.path.join(export_dir, filename)
+    # 防路径穿越：只取 basename
+    safe_name = os.path.basename(filename)
+    if not safe_name or safe_name != filename:
+        raise HTTPException(400, "文件名非法，禁止路径穿越")
+    if not safe_name.lower().endswith(".xlsx"):
+        raise HTTPException(400, "仅允许下载 .xlsx 文件")
+
+    file_path = os.path.join(_get_export_dir(), safe_name)
     if not os.path.exists(file_path):
-        raise HTTPException(404, "文件不存在")
+        raise HTTPException(404, f"文件不存在: {safe_name}")
+
     return FileResponse(
         file_path,
-        media_type=(
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ),
-        filename=filename,
+        media_type=XLSX_MEDIA,
+        filename=safe_name,
+        headers={
+            "Content-Disposition": _disposition_header(safe_name),
+            "Access-Control-Expose-Headers": "Content-Disposition,X-Error,X-Error-Detail",
+        },
     )
 
 
