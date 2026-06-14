@@ -2,7 +2,9 @@ export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 10);
 }
 
-export function formatNumber(num: number, decimals: number = 4): string {
+export function formatNumber(num: number | null | undefined, decimals: number = 4): string {
+  if (num === null || num === undefined) return '—';
+  if (typeof num !== 'number') return String(num);
   if (isNaN(num)) return 'N/A';
   if (!isFinite(num)) return num > 0 ? '+∞' : '-∞';
   return Number(num.toFixed(decimals)).toString();

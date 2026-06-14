@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
   ChevronDown, ArrowRightLeft, TrendingUp, TrendingDown, Minus,
   Percent, AlertOctagon, Calculator, AlertCircle,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, XCircle, Divider, Edit3,
+  ChevronDown, ChevronRight, AlertTriangle, CheckCircle2, XCircle, Minus, Edit3,
   ArrowRightLeft, AlertOctagon, Calculator, Percent, Info,
 } from 'lucide-react';
 import type { VerificationRecord, BoundaryStatus, CalculationStep, UnitConversion, ZeroDivisionSource } from '@/types';
@@ -143,7 +143,7 @@ function CalculationDetail({ record }: { record: VerificationRecord }) {
 
       <div>
         <div className="text-xs font-medium text-slate-400 mb-2 flex items-center gap-1.5">
-          <Divider className="w-3.5 h-3.5" strokeWidth={1.8} />
+          <Minus className="w-3.5 h-3.5" strokeWidth={1.8} />
           计算过程（{record.calculationSteps.length} 步，中间结果不隐藏）
         </div>
         <div className="space-y-1.5">

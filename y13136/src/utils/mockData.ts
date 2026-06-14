@@ -1,6 +1,37 @@
 import type { RawParameterRecord } from '@/types';
 import { generateId } from './common';
 
+export interface MockJudgment {
+  stateName: string;
+  judgment: string;
+  judgeName: string;
+  timestamp: number;
+}
+
+export function createMockJudgments(): MockJudgment[] {
+  const now = Date.now();
+  return [
+    {
+      stateName: '测试用户B',
+      judgment: '除零边界来自权重=0.5概率=0.00组合，建议业务确认概率是否确实为0，暂按吸收态处理（不改原始数据）',
+      judgeName: '阿乔',
+      timestamp: now - 900000,
+    },
+    {
+      stateName: '边界状态Y',
+      judgment: '行和=0.95，偏差5%刚好踩边界阈值。已通知运营核对本周数据，若用户数波动正常可放宽到边界',
+      judgeName: '阿乔',
+      timestamp: now - 600000,
+    },
+    {
+      stateName: '脏数据Z',
+      judgment: 'N/A / 无效值 是运营手工标注的"已删除"，按异常处理但不导出该状态。下周参数表会清理掉这条',
+      judgeName: '阿乔',
+      timestamp: now - 300000,
+    },
+  ];
+}
+
 export function createMockRawRecords(): RawParameterRecord[] {
   const now = Date.now();
   const data = [
