@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}{{ session.name }} - 录音棚时码清单归档{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h2><i class="bi bi-folder2-open"></i> {{ session.name }}</h2>
+        <p class="text-muted mb-0">
+            创建于 {{ session.created_at }} · 更新于 {{ session.updated_at }}
+            <span class="badge bg-{{ status_colors.get(session.status, 'secondary') }} ms-2">
+                {{ session.status_label }}
+            </span>
+        </p>
+    </div>
+    <div>
+        {% if session.report_generated %}
+        <a href="{{ url_for('view_report', session_id=session.id) }}" class="btn btn-info me-2">
+            <i class="bi bi-file-earmark-text"></i> 查看报告
+        </a>
+        {% endif %}
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> 返回列表
+        </a>
+    </div>
+</div>
+
+{% if session.description %}
+<div class="alert alert-info mb-4">
+    <i class="bi bi-info-circle"></i> {{ session.description }}
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-cloud-upload"></i> 上传文件</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('upload_file', session_id=session.id) }}" method="POST"
+                      enctype="multipart/form-data" id="uploadForm">
+                    <div class="upload-zone mb-3" id="uploadZone">
+                        <i class="bi bi-cloud-arrow-up-fill text-primary" style="font-size: 2rem;"></i>
+                        <p class="mt-2 mb-1"><strong>拖拽文件到此处</strong></p>
+                        <p class="text-muted small mb-2">或点击下方按钮选择文件</p>
+                        <input type="file" class="form-control" id="fileInput" name="files" multiple
+                               accept=".csv,.xlsx,.xls,.txt,.md">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">文件类型</label>
+                        <select class="form-select" name="category">
+                            <option value="auto">自动识别</option>
+                            <option value="channel">舞台通道表</option>
+                            <option value="track">曲目表</option>
+                            <option value="timecode">时码清单</option>
+                            <option value="note">备注/说明</option>
+                        </select>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="oldVersion" name="is_old_version">
+                        <label class="form-check-label" for="oldVersion">
+                            标记为旧版数据
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-upload"></i> 上传
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        {% if session.uploaded_files %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-files"></i> 已上传文件</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for f in session.uploaded_files %}
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-file-earmark-spreadsheet text-success"></i>
+                            <strong>{{ f.filename }}</strong>
+                            {% if f.version_tag %}
+                            <span class="badge bg-secondary ms-1">{{ f.version_tag }}</span>
+                            {% endif %}
+                        </div>
+                        <span class="text-muted small">{{ f.row_count }} 条</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                        <i class="bi bi-clock"></i> {{ f.uploaded_at }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="d-grid gap-2">
+            <a href="{{ url_for('process_session', session_id=session.id) }}"
+               class="btn btn-success btn-lg">
+                <i class="bi bi-gear"></i> 开始处理
+            </a>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        {% if session.match_results %}
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-list-check"></i> 处理结果</h5>
+                <span class="badge bg-secondary">{{ session.match_results | length }} 条</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>状态</th>
+                                <th>结论</th>
+                                <th>来源</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in session.match_results %}
+                            <tr>
+                                <td style="width: 120px;">
+                                    <span class="badge bg-{{ status_colors.get(r.status, 'secondary') }}">
+                                        {{ r.status_label }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {{ r.conclusion }}
+                                    {% if r.time_diff_seconds and r.time_diff_seconds != 0 %}
+                                    <br>
+                                    <small class="text-muted">
+                                        时码差：{{ "%.3f"|format(r.time_diff_seconds) }}s
+                                    </small>
+                                    {% endif %}
+                                </td>
+                                <td style="width: 180px;">
+                                    <span class="source-tag">
+                                        <i class="bi bi-link-45deg"></i> {{ r.sources }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if session.channel_rows %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-diagram-3"></i> 舞台通道表</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>行号</th>
+                                <th>通道名</th>
+                                <th>曲目</th>
+                                <th>时码</th>
+                                <th>版本</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in session.channel_rows %}
+                            <tr class="{% if row.is_old_version %}table-secondary{% endif %}">
+                                <td><span class="source-tag">{{ row.source_row }}</span></td>
+                                <td>{{ row.channel_name }}</td>
+                                <td>{{ row.track_name }}</td>
+                                <td><code>{{ row.timecode }}</code></td>
+                                <td>
+                                    {% if row.is_old_version %}
+                                    <span class="badge bg-secondary">旧版</span>
+                                    {% else %}
+                                    <span class="badge bg-success">当前</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if session.track_rows %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-music-note-list"></i> 曲目表</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>行号</th>
+                                <th>序号</th>
+                                <th>曲目名</th>
+                                <th>时长</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in session.track_rows %}
+                            <tr>
+                                <td><span class="source-tag">{{ row.source_row }}</span></td>
+                                <td>{{ row.track_number }}</td>
+                                <td>{{ row.track_name }}</td>
+                                <td>{{ row.duration }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if session.timecode_entries %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-clock-history"></i> 时码清单</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>行号</th>
+                                <th>条目</th>
+                                <th>时码</th>
+                                <th>关联通道</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in session.timecode_entries %}
+                            <tr>
+                                <td><span class="source-tag">{{ row.source_row }}</span></td>
+                                <td>{{ row.entry_name }}</td>
+                                <td><code>{{ row.timecode }}</code></td>
+                                <td>{{ row.channel_ref }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if session.notes %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-chat-dots"></i> 备注</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for note in session.notes %}
+                <div class="list-group-item {% if note.is_authorization %}list-group-item-primary{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            {% if note.is_authorization %}
+                            <span class="badge bg-primary me-2"><i class="bi bi-key"></i> 授权备注</span>
+                            {% else %}
+                            <span class="badge bg-info me-2"><i class="bi bi-chat"></i> 口头备注</span>
+                            {% endif %}
+                            {{ note.content }}
+                        </div>
+                    </div>
+                    <small class="text-muted">{{ note.created_at }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-4 text-end">
+    <form action="{{ url_for('delete_session_route', session_id=session.id) }}" method="POST"
+          onsubmit="return confirm('确定要删除这个归档吗？此操作不可恢复。');">
+        <button type="submit" class="btn btn-outline-danger btn-sm">
+            <i class="bi bi-trash"></i> 删除此归档
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const uploadZone = document.getElementById('uploadZone');
+const fileInput = document.getElementById('fileInput');
+const uploadForm = document.getElementById('uploadForm');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+
+uploadZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadZone.classList.add('dragover');
+});
+
+uploadZone.addEventListener('dragleave', () => {
+    uploadZone.classList.remove('dragover');
+});
+
+uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        uploadForm.submit();
+    }
+});
+</script>
+{% endblock %}
