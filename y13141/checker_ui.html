@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>整数规划边界校验工具</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f7fa;
+    color: #333;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 24px 32px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+.header h1 { font-size: 24px; margin-bottom: 8px; }
+.header p { opacity: 0.9; font-size: 14px; }
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.card h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+    color: #1a1a1a;
+    border-left: 4px solid #667eea;
+    padding-left: 12px;
+}
+
+.btn-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+.btn-secondary {
+    background: #f0f2f5;
+    color: #333;
+}
+.btn-secondary:hover:not(:disabled) {
+    background: #e5e7eb;
+}
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.btn .icon { font-size: 18px; }
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+}
+.status-pending { background: #fef3c7; color: #92400e; }
+.status-running { background: #dbeafe; color: #1e40af; }
+.status-success { background: #d1fae5; color: #065f46; }
+.status-warning { background: #fee2e2; color: #991b1b; }
+
+.alert {
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    border-left: 4px solid;
+}
+.alert-warning {
+    background: #fff5f5;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+.alert-info {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #1e40af;
+}
+.alert-success {
+    background: #f0fdf4;
+    border-color: #22c55e;
+    color: #166534;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+}
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+}
+th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+}
+tr:hover { background: #f9fafb; }
+.check-ok { color: #059669; font-weight: 600; }
+.check-fail { color: #dc2626; font-weight: 600; }
+
+.log-box {
+    background: #1a1a2e;
+    color: #e0e0e0;
+    padding: 16px;
+    border-radius: 8px;
+    font-family: "SF Mono", "Menlo", "Consolas", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 12px;
+}
+.log-box .log-info { color: #60a5fa; }
+.log-box .log-warning { color: #fbbf24; }
+.log-box .log-error { color: #f87171; }
+
+.report-view {
+    background: #fafafa;
+    padding: 20px;
+    border-radius: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.7;
+}
+.report-view h3 { margin-top: 20px; margin-bottom: 10px; color: #1a1a1a; }
+.report-view table { margin: 12px 0; }
+.report-view th, .report-view td { padding: 8px 12px; font-size: 13px; }
+.report-view code {
+    background: #e5e7eb;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    position: relative;
+}
+.step-indicator::before {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 0;
+}
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    flex: 1;
+}
+.step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-bottom: 8px;
+    transition: all 0.3s;
+}
+.step.active .step-circle {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+.step.completed .step-circle {
+    background: #22c55e;
+    color: white;
+}
+.step-label {
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+}
+.step.active .step-label { color: #667eea; font-weight: 500; }
+.step.completed .step-label { color: #22c55e; }
+
+.hidden { display: none; }
+.spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.comparison-table {
+    margin-top: 16px;
+    overflow-x: auto;
+}
+.comparison-table table {
+    font-size: 13px;
+}
+.comparison-table .correct { background: #dcfce7; }
+.comparison-table .buggy { background: #fee2e2; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>整数规划边界校验工具</h1>
+    <p>模型版本: integer-program-checker v2.1.0 | 校验人: 教研编辑阿宁</p>
+</div>
+
+<div class="card">
+    <h2>操作区</h2>
+    <div class="btn-group">
+        <button class="btn btn-primary" id="btnCheck" onclick="runCheck()">
+            <span class="icon">▶</span>
+            <span id="btnCheckText">一键重跑校验</span>
+        </button>
+        <button class="btn btn-secondary" onclick="toggleReport()">
+            <span class="icon">📄</span>
+            查看Markdown报告
+        </button>
+        <button class="btn btn-secondary" onclick="toggleLog()">
+            <span class="icon">📋</span>
+            查看运行日志
+        </button>
+    </div>
+    <div style="margin-top: 16px;">
+        <span>当前状态: </span>
+        <span class="status-badge status-pending" id="statusBadge">待运行</span>
+    </div>
+</div>
+
+<div class="card" id="resultCard" style="display: none;">
+    <h2>校验结果</h2>
+    <div id="alerts"></div>
+
+    <div class="step-indicator" id="stepIndicator">
+        <div class="step" data-step="1">
+            <div class="step-circle">1</div>
+            <div class="step-label">读取样本</div>
+        </div>
+        <div class="step" data-step="2">
+            <div class="step-circle">2</div>
+            <div class="step-label">约束校验</div>
+        </div>
+        <div class="step" data-step="3">
+            <div class="step-circle">3</div>
+            <div class="step-label">单位检测</div>
+        </div>
+        <div class="step" data-step="4">
+            <div class="step-circle">4</div>
+            <div class="step-label">灵敏度分析</div>
+        </div>
+        <div class="step" data-step="5">
+            <div class="step-circle">5</div>
+            <div class="step-label">生成报告</div>
+        </div>
+    </div>
+
+    <h3 style="margin-top: 24px; font-size: 16px;">样本概览</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>样本ID</th>
+                <th>x₁(台)</th>
+                <th>x₂(班次)</th>
+                <th>原材料B单位</th>
+                <th>约束A</th>
+                <th>约束B</th>
+                <th>目标值匹配</th>
+                <th>灵敏度-5%触发</th>
+            </tr>
+        </thead>
+        <tbody id="sampleTableBody"></tbody>
+    </table>
+
+    <div class="comparison-table">
+        <h3 style="margin-top: 24px; font-size: 16px;">正确路径 vs 错误路径 对比</h3>
+        <table id="comparisonTable">
+            <thead>
+                <tr>
+                    <th>项目</th>
+                    <th class="correct">✅ 正确路径（统一吨）</th>
+                    <th class="buggy">❌ 错误路径（单位未换算）</th>
+                </tr>
+            </thead>
+            <tbody id="comparisonBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card" id="logCard" style="display: none;">
+    <h2>运行日志</h2>
+    <div class="log-box" id="logBox"></div>
+</div>
+
+<div class="card" id="reportCard" style="display: none;">
+    <h2>Markdown分析报告（同页展示）</h2>
+    <div class="report-view" id="reportView"></div>
+</div>
+
+<script>
+let currentResult = null;
+let reportGenerated = false;
+
+async function runCheck() {
+    const btn = document.getElementById('btnCheck');
+    const btnText = document.getElementById('btnCheckText');
+    const statusBadge = document.getElementById('statusBadge');
+
+    btn.disabled = true;
+    btnText.innerHTML = '<span class="spinner"></span> 校验中...';
+    statusBadge.className = 'status-badge status-running';
+    statusBadge.textContent = '校验中...';
+
+    document.getElementById('resultCard').style.display = 'block';
+    resetSteps();
+
+    try {
+        await setStepActive(1);
+        await delay(300);
+
+        const response = await fetch('/api/check', { method: 'POST' });
+        const result = await response.json();
+        currentResult = result;
+        reportGenerated = true;
+
+        await setStepCompleted(1);
+        await setStepActive(2);
+        await delay(200);
+        await setStepCompleted(2);
+        await setStepActive(3);
+        await delay(200);
+        await setStepCompleted(3);
+        await setStepActive(4);
+        await delay(300);
+        await setStepCompleted(4);
+        await setStepActive(5);
+        await delay(200);
+        await setStepCompleted(5);
+
+        renderAlerts(result);
+        renderSampleTable(result);
+        renderComparisonTable(result);
+        renderLog(result.log);
+        renderReport(result.report);
+
+        if (result.batch_status === '挂起') {
+            statusBadge.className = 'status-badge status-warning';
+            statusBadge.textContent = '批次状态：挂起';
+        } else {
+            statusBadge.className = 'status-badge status-success';
+            statusBadge.textContent = '批次状态：通过';
+        }
+
+    } catch (error) {
+        statusBadge.className = 'status-badge status-warning';
+        statusBadge.textContent = '校验失败: ' + error.message;
+    } finally {
+        btn.disabled = false;
+        btnText.textContent = '一键重跑校验';
+    }
+}
+
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function resetSteps() {
+    document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active', 'completed');
+    });
+}
+
+function setStepActive(n) {
+    const step = document.querySelector(`.step[data-step="${n}"]`);
+    step.classList.add('active');
+}
+
+function setStepCompleted(n) {
+    const step = document.querySelector(`.step[data-step="${n}"]`);
+    step.classList.remove('active');
+    step.classList.add('completed');
+}
+
+function renderAlerts(result) {
+    const alertsDiv = document.getElementById('alerts');
+    let html = '';
+
+    html += `<div class="alert alert-info">
+        <strong>样本总数:</strong> ${result.sample_count} 条
+        <strong style="margin-left: 24px;">批次状态:</strong> <span class="check-${result.batch_status === '挂起' ? 'fail' : 'ok'}">${result.batch_status}</span>
+    </div>`;
+
+    if (result.warnings && result.warnings.length > 0) {
+        result.warnings.forEach(w => {
+            html += `<div class="alert alert-warning"><strong>⚠ 警告：</strong>${w}</div>`;
+        });
+    }
+
+    if (result.boundary_mismatch && result.boundary_mismatch.length > 0) {
+        html += `<div class="alert alert-warning">
+            <strong>⚠ 灵敏度结论不一致！</strong>
+            样本 ${result.boundary_mismatch.join(', ')} 的正确路径触发边界，但错误路径给出假稳定结论。
+            这是单位不一致导致的核心问题。
+        </div>`;
+    }
+
+    if (result.batch_status === '挂起') {
+        html += `<div class="alert alert-warning">
+            <strong>处理建议：</strong>按后补说明挂起，邮件通知项目经理确认单位不一致样本和重复样本，
+            <strong>宁可挂起，也不要给出假稳定结论</strong>。
+        </div>`;
+    }
+
+    alertsDiv.innerHTML = html;
+}
+
+function renderSampleTable(result) {
+    const tbody = document.getElementById('sampleTableBody');
+    let html = '';
+    result.samples.forEach(s => {
+        const triggered = s.sensitivity_correct.boundary_triggered;
+        const triggeredBad = s.sensitivity_buggy.boundary_triggered;
+        html += `<tr>
+            <td>${s.id}</td>
+            <td>${s.x1}</td>
+            <td>${s.x2}</td>
+            <td>${s.mat_b_unit}</td>
+            <td class="${s.constraint_a_ok ? 'check-ok' : 'check-fail'}">${s.constraint_a_ok ? '✓' : '✗'}</td>
+            <td class="${s.constraint_b_ok ? 'check-ok' : 'check-fail'}">${s.constraint_b_ok ? '✓' : '✗'}</td>
+            <td class="${s.objective_match ? 'check-ok' : 'check-fail'}">${s.objective_match ? '✓' : '✗'}</td>
+            <td>
+                <span class="${triggered ? 'check-fail' : 'check-ok'}">${triggered ? '是 ✗' : '否 ✓'}</span>
+                ${triggered !== triggeredBad ? '<span style="color:#dc2626; margin-left:8px;">⚠ 假稳定</span>' : ''}
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+function renderComparisonTable(result) {
+    const s = result.samples[0];
+    const c = s.sensitivity_correct;
+    const b = s.sensitivity_buggy;
+
+    const tbody = document.getElementById('comparisonBody');
+    tbody.innerHTML = `
+        <tr>
+            <td>当前消耗原材料B</td>
+            <td class="correct">${c.consume_b_ton} 吨</td>
+            <td class="buggy">${b.consume_b}（单位混乱，误当kg）</td>
+        </tr>
+        <tr>
+            <td>约束右端项 b₂</td>
+            <td class="correct">${c.b_original} 吨</td>
+            <td class="buggy">${b.b_wrong_kg} kg（单位混用）</td>
+        </tr>
+        <tr>
+            <td>当前约束是否满足</td>
+            <td class="correct">${c.consume_b_ton} ≤ ${c.b_original} → <strong>✓</strong></td>
+            <td class="buggy">${b.consume_b} ≤ ${b.b_wrong_kg} → <strong>✓（假通过）</strong></td>
+        </tr>
+        <tr>
+            <td>b₂ +5% 扰动后</td>
+            <td class="correct">${c.b_upper_plus5} 吨</td>
+            <td class="buggy">${b.b_upper} kg</td>
+        </tr>
+        <tr>
+            <td>+5% 后是否可行</td>
+            <td class="correct">${c.consume_b_ton} ≤ ${c.b_upper_plus5} → <strong>✓ 仍可行</strong></td>
+            <td class="buggy">${b.consume_b} ≤ ${b.b_upper} → <strong>✓ 仍可行</strong></td>
+        </tr>
+        <tr>
+            <td>b₂ -5% 扰动后</td>
+            <td class="correct">${c.b_lower_minus5} 吨</td>
+            <td class="buggy">${b.b_lower} kg</td>
+        </tr>
+        <tr>
+            <td>-5% 后是否可行</td>
+            <td class="correct">${c.consume_b_ton} ≤ ${c.b_lower_minus5} → <strong style="color:#dc2626;">✗ 触发边界</strong></td>
+            <td class="buggy">${b.consume_b} ≤ ${b.b_lower} → <strong style="color:#059669;">✓ 仍可行（假稳定！）</strong></td>
+        </tr>
+        <tr>
+            <td><strong>结论</strong></td>
+            <td class="correct"><strong>边界触发，最优解变化</strong></td>
+            <td class="buggy"><strong>假稳定，最优解"不变"</strong></td>
+        </tr>
+    `;
+}
+
+function renderLog(logText) {
+    const logBox = document.getElementById('logBox');
+    let html = logText
+        .replace(/\[INFO\]/g, '<span class="log-info">[INFO]</span>')
+        .replace(/\[WARNING\]/g, '<span class="log-warning">[WARNING]</span>')
+        .replace(/\[ERROR\]/g, '<span class="log-error">[ERROR]</span>')
+        .replace(/⚠/g, '<span class="log-warning">⚠</span>')
+        .replace(/\n/g, '<br>');
+    logBox.innerHTML = html;
+}
+
+function renderReport(reportText) {
+    const reportView = document.getElementById('reportView');
+    let html = markdownToHtml(reportText);
+    reportView.innerHTML = html;
+}
+
+function markdownToHtml(md) {
+    md = md.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    md = md.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    md = md.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    md = md.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    md = md.replace(/`(.+?)`/g, '<code>$1</code>');
+    md = md.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+    md = md.replace(/^---$/gm, '<hr>');
+    md = md.replace(/^\|(.+)\|$/gm, (match) => {
+        if (match.includes('------') || match.includes(':---')) return '';
+        const cells = match.split('|').slice(1, -1).map(c => c.trim());
+        return '<tr>' + cells.map(c => `<td>${c}</td>`).join('') + '</tr>';
+    });
+    md = md.replace(/(<tr>.*<\/tr>\n?)+/g, (match) => {
+        return '<table>' + match + '</table>';
+    });
+    md = md.replace(/\n\n/g, '</p><p>');
+    md = md.replace(/\n/g, '<br>');
+    return '<p>' + md + '</p>';
+}
+
+function toggleLog() {
+    const card = document.getElementById('logCard');
+    card.style.display = card.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleReport() {
+    const card = document.getElementById('reportCard');
+    if (!reportGenerated) {
+        alert('请先点击"一键重跑校验"生成报告');
+        return;
+    }
+    card.style.display = card.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+
+</body>
+</html>
