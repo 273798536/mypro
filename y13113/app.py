@@ -396,26 +396,46 @@ def generate_screenshots():
             'unit': r.unit
         })
 
-    img_base64, filepath = chart_gen.generate_comparison_chart(records_dict)
-    screenshot_processed = Screenshot(
-        session_id=session_id,
-        category='processed',
-        title='正常记录处理结果',
-        description=f'已处理 {state.processed_count} 条正常记录的对比图表，排除除零边界记录',
-        file_path=filepath,
-        image_base64=img_base64,
-        record_ids=','.join([str(r['id']) for r in records_dict if not r['is_boundary']])
-    )
-    db.session.add(screenshot_processed)
-
+    normal_records = [r for r in records_dict if not r['is_boundary']]
     boundary_records = [r for r in records_dict if r['is_boundary']]
+
+    if normal_records:
+        img_base64_n, filepath_n = chart_gen.generate_comparison_chart(
+            normal_records, title="正常记录处理结果（排除边界）"
+        )
+        screenshot_processed = Screenshot(
+            session_id=session_id,
+            category='processed',
+            title='正常记录处理结果',
+            description=f'已处理 {len(normal_records)} 条正常记录的对比图表，严格排除除零边界记录，窗口数：{", ".join([r["window_id"] for r in normal_records])}',
+            file_path=filepath_n,
+            image_base64=img_base64_n,
+            record_ids=','.join([str(r['id']) for r in normal_records])
+        )
+        db.session.add(screenshot_processed)
+
+    if len(records_dict) >= 2:
+        img_base64_a, filepath_a = chart_gen.generate_comparison_chart(
+            records_dict, title="全部记录对照视图（边界已红标）"
+        )
+        screenshot_all = Screenshot(
+            session_id=session_id,
+            category='processed',
+            title='全部记录对照视图',
+            description=f'共 {len(records_dict)} 条记录对照：{len(normal_records)} 条正常(绿) + {len(boundary_records)} 条边界(红)，供两组参数交叉对照使用，红色为除零边界请勿计入正常统计',
+            file_path=filepath_a,
+            image_base64=img_base64_a,
+            record_ids=','.join([str(r['id']) for r in records_dict])
+        )
+        db.session.add(screenshot_all)
+
     if boundary_records:
         img_base64_b, filepath_b = chart_gen.generate_boundary_detail_chart(boundary_records)
         screenshot_pending = Screenshot(
             session_id=session_id,
             category='pending',
             title='除零边界待补材料',
-            description=f'检测到 {len(boundary_records)} 条除零边界记录，排队人数为0，需人工判定处理方式',
+            description=f'检测到 {len(boundary_records)} 条除零边界记录，排队人数为0，需人工判定，涉及窗口：{", ".join([r["window_id"] for r in boundary_records])}',
             file_path=filepath_b,
             image_base64=img_base64_b,
             record_ids=','.join([str(r['id']) for r in boundary_records])
@@ -487,8 +507,43 @@ def load_demo_data():
             'unit': 'seconds'
         },
         {
+            'window_id': 'A-02',
+            'total_wait_time': 960.0,
+            'queue_length': 18,
+            'service_count': 18,
+            'unit': 'seconds'
+        },
+        {
+            'window_id': 'A-03',
+            'total_wait_time': 2040.8,
+            'queue_length': 38,
+            'service_count': 35,
+            'unit': 'seconds'
+        },
+        {
+            'window_id': 'B-01',
+            'total_wait_time': 744.0,
+            'queue_length': 12,
+            'service_count': 12,
+            'unit': 'seconds'
+        },
+        {
+            'window_id': 'B-02',
+            'total_wait_time': 1520.3,
+            'queue_length': 31,
+            'service_count': 29,
+            'unit': 'seconds'
+        },
+        {
             'window_id': 'B-03',
             'total_wait_time': 890.0,
+            'queue_length': 0,
+            'service_count': 0,
+            'unit': 'seconds'
+        },
+        {
+            'window_id': 'C-02',
+            'total_wait_time': 450.0,
             'queue_length': 0,
             'service_count': 0,
             'unit': 'seconds'
@@ -498,13 +553,23 @@ def load_demo_data():
     demo_materials = [
         {
             'category': 'history',
-            'content': '【历史答案-2026.06.10】窗口平均等待时间阈值：高峰期≤5分钟，平峰期≤3分钟。除零记录建议单独统计，不计入均值。',
+            'content': '【历史答案-2026.06.10】窗口平均等待时间阈值：高峰期(9-11点,14-16点)≤5分钟，平峰期≤3分钟。除零记录建议单独统计，不计入均值。边界处理建议：先查运营日志确认是否停机维护，再决定剔除还是按0分钟处理。',
             'source': '历史答案库-案例#20260610'
         },
         {
+            'category': 'normal',
+            'content': '【正常记录说明】本次统计时段：2026-06-12 09:00-10:30（早高峰时段），统计窗口A区3个、B区3个、C区3个，覆盖2条业务线。A-03窗口因临近地铁口，排队人数偏多属正常现象。',
+            'source': '运营日报-2026.06.12'
+        },
+        {
             'category': 'supplement',
-            'content': '【后补说明】B-03窗口因设备维护于09:15-09:45暂停服务，期间系统误记录等待时间890秒，但实际无排队人员。',
-            'source': '运营日志-2026.06.12'
+            'content': '【后补说明-边界1】B-03窗口因打印机卡纸故障于09:15-09:45暂停服务约30分钟，期间系统误记录等待时间890秒，但实际无排队人员，排队人数=0属异常。',
+            'source': '运维日志-2026.06.12/INC#20260612-001'
+        },
+        {
+            'category': 'supplement',
+            'content': '【后补说明-边界2】C-02窗口为备用窗口，当日09:00-10:30期间未开放使用，系统自动记录等待时间450秒但实际无排队，属备用窗误触发上报。',
+            'source': '窗口调度表-2026.06.12'
         }
     ]
 
@@ -543,7 +608,7 @@ def load_demo_data():
 
     state.status = 'demo_loaded'
     state.current_step = state.processed_count + state.boundary_count
-    state.notes = '已加载演示数据：1条正常记录(A-01) + 1条除零边界(B-03)'
+    state.notes = '已加载演示数据：5条正常(A-01~A-03,B-01~B-02) + 2条除零边界(B-03,C-02)'
     state.updated_at = datetime.datetime.now()
     db.session.commit()
 
@@ -574,4 +639,4 @@ with app.app_context():
     db.create_all()
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5003)
