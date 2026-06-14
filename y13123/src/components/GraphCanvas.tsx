@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import type { GraphNode, GraphEdge } from '@/types';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/utils';
+import type { GraphNode } from '@/types';
 
 function NodeTooltip({ node }: { node: GraphNode }) {
   const abnormal = useAppStore((s) =>
@@ -32,17 +32,38 @@ export default function GraphCanvas() {
   const nodes = useAppStore((s) => s.nodes);
   const edges = useAppStore((s) => s.edges);
   const selectedNodeId = useAppStore((s) => s.selectedNodeId);
+  const selectedProblemId = useAppStore((s) => s.selectedProblemId);
   const selectNode = useAppStore((s) => s.selectNode);
-  const [hoverId, setHoverId] = useState<string | null>(null);
+  const toggleNodeAbnormal = useAppStore((s) => s.toggleNodeAbnormal);
   const pending = useAppStore((s) => s.pendingConfirmation);
+  const shortestPath = useAppStore((s) => s.shortestPath);
+  const shortestDistance = useAppStore((s) => s.shortestDistance);
+  const problems = useAppStore((s) => s.problems);
+
+  const [hoverId, setHoverId] = useState<string | null>(null);
 
   const width = 640;
   const height = 300;
+  const currentProblem = problems.find((p) => p.id === selectedProblemId);
+
+  const pathLabel = shortestPath
+    ? `${shortestPath.join(' → ')} = ${shortestDistance}${currentProblem?.unit || 'km'}`
+    : '';
 
   return (
-    <div className="paper-card double-border relative animate-fadeSlideUp rounded-xl p-4" style={{ animationDelay: '120ms' }}>
-      <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-display text-[15px] text-ink-900">最短路径图</h3>
+    <div
+      className="paper-card double-border relative animate-fadeSlideUp rounded-xl p-4"
+      style={{ animationDelay: '120ms' }}
+    >
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h3 className="font-display text-[15px] text-ink-900">
+          最短路径图
+          {currentProblem && !pending && (
+            <span className="ml-2 font-mono-data text-[11px] font-normal text-slateData-500">
+              · {currentProblem.start} → {currentProblem.end}
+            </span>
+          )}
+        </h3>
         <div className="flex items-center gap-3 text-[11.5px] text-slateData-500">
           <span className="inline-flex items-center gap-1">
             <span className="h-2 w-2 rounded-full bg-slateData-500" /> 普通节点
@@ -61,9 +82,17 @@ export default function GraphCanvas() {
 
       <div className="relative overflow-hidden rounded-lg bg-gradient-to-br from-paper-100 to-paper-200">
         {pending && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center bg-paper-100/85 backdrop-blur-[1px]">
-            <div className="rounded-lg border border-ochre-700/30 bg-white px-4 py-2 text-[13px] text-ochre-700 shadow-card">
-              计算挂起：请先确认顶部单位缺失提示
+          <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-2 bg-paper-100/90 backdrop-blur-[1.5px]">
+            <div className="rounded-lg border border-ochre-700/30 bg-white px-5 py-3 text-center shadow-card">
+              <div className="text-[13px] font-medium text-ochre-700">
+                计算挂起中
+              </div>
+              <p className="mt-0.5 text-[11.5px] text-slateData-500">
+                题目清单存在单位 / 距离缺失
+              </p>
+              <p className="text-[11.5px] text-slateData-500">
+                请点击顶部「确认后继续」按钮解锁
+              </p>
             </div>
           </div>
         )}
@@ -96,9 +125,15 @@ export default function GraphCanvas() {
             if (!from || !to) return null;
             const midX = (from.x + to.x) / 2;
             const midY = (from.y + to.y) / 2;
-            const highlighted = e.onShortestPath;
+            const highlighted = !pending && e.onShortestPath;
             return (
-              <g key={`edge-${idx}`}>
+              <g
+                key={`edge-${idx}`}
+                className={cn(
+                  'transition-all duration-500',
+                  pending && 'opacity-60'
+                )}
+              >
                 <line
                   x1={from.x}
                   y1={from.y}
@@ -108,8 +143,9 @@ export default function GraphCanvas() {
                   strokeWidth={highlighted ? 3.5 : 1.8}
                   strokeLinecap="round"
                   className={cn(
-                    'transition-all duration-300',
-                    highlighted && 'drop-shadow-[0_0_4px_rgba(176,137,104,0.5)]'
+                    'transition-all duration-500',
+                    highlighted &&
+                      'drop-shadow-[0_0_4px_rgba(176,137,104,0.5)]'
                   )}
                 />
                 <rect
@@ -120,13 +156,14 @@ export default function GraphCanvas() {
                   rx={4}
                   fill={highlighted ? '#FBF8F0' : '#FFFFFF'}
                   stroke={highlighted ? '#B08968' : '#E4D7B6'}
+                  className="transition-all duration-500"
                 />
                 <text
                   x={midX}
                   y={midY + 3}
                   textAnchor="middle"
                   className={cn(
-                    'font-mono-data text-[11px]',
+                    'font-mono-data text-[11px] transition-all duration-500',
                     highlighted ? 'fill-gold-900' : 'fill-slateData-500'
                   )}
                 >
@@ -138,24 +175,39 @@ export default function GraphCanvas() {
 
           {nodes.map((node) => {
             const isAbnormal = node.isAbnormal;
-            const onPath = node.onShortestPath;
+            const onPath = !pending && node.onShortestPath;
             const selected = selectedNodeId === node.id;
             const hover = hoverId === node.id;
-            const fill = isAbnormal
-              ? '#C8553D'
-              : onPath
-                ? '#B08968'
-                : '#6C757D';
+            const isStart =
+              currentProblem && !pending && node.id === currentProblem.start;
+            const isEnd =
+              currentProblem && !pending && node.id === currentProblem.end;
+
+            const fill = pending
+              ? '#9CA3AF'
+              : isAbnormal
+                ? '#C8553D'
+                : onPath
+                  ? '#B08968'
+                  : '#6C757D';
+
             return (
               <g
                 key={node.id}
                 className="cursor-pointer"
                 transform={`translate(${node.x}, ${node.y})`}
                 onClick={() => selectNode(node.id)}
+                onDoubleClick={() => {
+                  if (pending) return;
+                  const pid =
+                    selectedProblemId ||
+                    (currentProblem ? currentProblem.id : problems[0].id);
+                  if (pid) toggleNodeAbnormal(node.id, pid);
+                }}
                 onMouseEnter={() => setHoverId(node.id)}
                 onMouseLeave={() => setHoverId(null)}
               >
-                {isAbnormal && (
+                {isAbnormal && !pending && (
                   <circle
                     r={12}
                     fill="none"
@@ -189,9 +241,53 @@ export default function GraphCanvas() {
                 >
                   {node.label}
                 </text>
+
+                {isStart && (
+                  <g transform="translate(-28, -2)">
+                    <rect
+                      width={22}
+                      height={16}
+                      rx={3}
+                      fill="#1B4332"
+                    />
+                    <text
+                      x={11}
+                      y={11}
+                      textAnchor="middle"
+                      className="font-mono-data text-[10px] font-semibold fill-paper-50"
+                    >
+                      起
+                    </text>
+                  </g>
+                )}
+                {isEnd && (
+                  <g transform="translate(6, -2)">
+                    <rect
+                      width={22}
+                      height={16}
+                      rx={3}
+                      fill="#C8553D"
+                    />
+                    <text
+                      x={11}
+                      y={11}
+                      textAnchor="middle"
+                      className="font-mono-data text-[10px] font-semibold fill-paper-50"
+                    >
+                      终
+                    </text>
+                  </g>
+                )}
+
                 {hover && (
                   <foreignObject x={-150} y={-90} width={300} height={100}>
-                    <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
+                    <div
+                      style={{
+                        position: 'relative',
+                        display: 'flex',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <NodeTooltip node={node} />
                     </div>
                   </foreignObject>
@@ -201,6 +297,15 @@ export default function GraphCanvas() {
           })}
         </svg>
       </div>
+
+      {currentProblem && !pending && shortestPath && (
+        <div className="mt-3 flex items-center justify-between rounded-md bg-gold-900/5 px-3 py-1.5 text-[12px] text-gold-900 animate-fadeSlideUp">
+          <span className="font-mono-data font-medium">{pathLabel}</span>
+          <span className="text-[11px] text-slateData-500">
+            单击选中 · 双击切换异常判定
+          </span>
+        </div>
+      )}
     </div>
   );
 }
