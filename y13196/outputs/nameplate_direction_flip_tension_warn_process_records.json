@@ -1,0 +1,85 @@
+[
+  {
+    "stage": "数据加载与标准化",
+    "status": "已标准化",
+    "timestamp": "2026-06-14T10:34:30.723804",
+    "inputs_hash": "5b4071ab",
+    "parameters": {
+      "source_file": "examples/nameplate_direction_flip.json",
+      "source_format": "json"
+    },
+    "outputs_summary": {
+      "loaded_count": 15,
+      "gap_count": 1,
+      "invalid_tension_count": 0,
+      "field_mapping": {
+        "tension": "张力",
+        "timestamp": "时间",
+        "direction": "方向",
+        "sensor_id": "铭牌编号",
+        "stage": "阶段",
+        "sequence": "序号"
+      }
+    },
+    "notes": []
+  },
+  {
+    "stage": "方向符号校验",
+    "status": "方向挂起待确认",
+    "timestamp": "2026-06-14T10:34:30.724917",
+    "inputs_hash": "d76edc73",
+    "parameters": {
+      "direction_field_found": "方向"
+    },
+    "outputs_summary": {
+      "declared_direction": "-",
+      "inferred_direction": "+",
+      "is_consistent": false,
+      "issues_count": 2
+    },
+    "notes": [
+      "方向疑似写反，挂起待人工确认，后续分析结果仅供参考",
+      "[critical] SUSPENDED_FOR_HUMAN_REVIEW: 方向符号疑似写反，按策略挂起待算法值班人确认，不输出假稳定结论",
+      "[high] DIRECTION_SIGN_CONFLICT: 铭牌标注方向(-)与张力变化趋势推断方向(+)不一致，疑似方向符号写反"
+    ]
+  },
+  {
+    "stage": "张力极值预警分析",
+    "status": "方向挂起待确认",
+    "timestamp": "2026-06-14T10:34:30.724886",
+    "inputs_hash": "993d87b6",
+    "parameters": {
+      "warning_threshold": 80.0,
+      "danger_threshold": 95.0,
+      "tail_ratio": 0.15
+    },
+    "outputs_summary": {
+      "overall_level": "挂起待确认",
+      "max_tension": 98.1,
+      "max_tension_at_seq": 15,
+      "warning_count": 2,
+      "danger_count": 1,
+      "tail_hidden_risk": true,
+      "extreme_clusters_count": 1
+    },
+    "notes": [
+      "收尾段存在被平均掩盖的风险，请重点查看收尾段",
+      "命中危险阈值点 1 个",
+      "命中预警阈值点 2 个"
+    ]
+  },
+  {
+    "stage": "结果导出",
+    "status": "已导出",
+    "timestamp": "2026-06-14T10:34:30.724917",
+    "inputs_hash": "330edb88",
+    "parameters": {},
+    "outputs_summary": {
+      "page_summary_generated": true,
+      "process_records_count": 4
+    },
+    "notes": [
+      "本文件与page_summary.json的状态标记保持一致"
+    ]
+  }
+]

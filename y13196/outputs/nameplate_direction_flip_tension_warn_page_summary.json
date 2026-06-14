@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-06-14T10:34:30.725222",
+  "source_file": "examples/nameplate_direction_flip.json",
+  "overall_status": "挂起待确认（方向存疑）",
+  "overall_level": "挂起待确认",
+  "direction_suspended": true,
+  "max_tension_display": "98.10",
+  "max_tension_at_seq": 15,
+  "mean_tension_display": "70.53",
+  "warning_points_count": 2,
+  "danger_points_count": 1,
+  "tail_hidden_risk": true,
+  "tail_summary": "收尾段起点=第12条后；有效3点/断点0；峰值98.10；⚠ 隐藏风险: 收尾段均值(91.97)较整体均值(70.53)高出30.4%，平均掩盖了升高趋势",
+  "continuity_summary": "共15条 / 有效14 / 断点1（6.7%） / 最长断档1",
+  "field_mapping_summary": {
+    "tension": "张力",
+    "timestamp": "时间",
+    "direction": "方向",
+    "sensor_id": "铭牌编号",
+    "stage": "阶段",
+    "sequence": "序号"
+  },
+  "direction_summary": "铭牌标注: - / 趋势推断: + / 方向存疑 / 已挂起待人工确认",
+  "failure_reason": {
+    "code": "DIRECTION_AMBIGUOUS",
+    "message": "方向符号存在歧义，已挂起待人工确认",
+    "detail": {
+      "declared_distribution": {
+        "-": 15
+      },
+      "trend_inference": {
+        "first_half_mean": 64.4286,
+        "second_half_mean": 76.6286,
+        "absolute_change": 12.2,
+        "relative_change": 0.173,
+        "valid_points": 14,
+        "rising_steps": 10,
+        "falling_steps": 3,
+        "rising_ratio": 0.7692,
+        "falling_ratio": 0.2308,
+        "strong_monotonic": true
+      }
+    },
+    "suggestion": "请算法值班人核对方向字段的物理含义后重新提交"
+  },
+  "clusters_count": 1,
+  "tail_warnings": 2,
+  "tail_dangers": 1,
+  "data_quality_note": "数据质量正常",
+  "conclusions_block": [
+    {
+      "tag": "挂起",
+      "text": "方向符号疑似写反，已挂起待算法值班人确认；未输出假稳定结论，请人工复核后再提交"
+    }
+  ],
+  "evidence_lines": [
+    "张力最大值 98.10 出现在第 15 条记录 (来源字段: 张力)",
+    "整体均值 70.53，预警阈值 80.0，危险阈值 95.0",
+    "极值簇#0: 第13-15条，峰值98.10，持续3点，位于收尾段"
+  ],
+  "raw_status_marker": "挂起待确认"
+}

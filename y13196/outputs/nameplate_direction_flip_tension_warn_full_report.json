@@ -1,0 +1,575 @@
+{
+  "page_summary": {
+    "generated_at": "2026-06-14T10:34:30.725222",
+    "source_file": "examples/nameplate_direction_flip.json",
+    "overall_status": "挂起待确认（方向存疑）",
+    "overall_level": "挂起待确认",
+    "direction_suspended": true,
+    "max_tension_display": "98.10",
+    "max_tension_at_seq": 15,
+    "mean_tension_display": "70.53",
+    "warning_points_count": 2,
+    "danger_points_count": 1,
+    "tail_hidden_risk": true,
+    "tail_summary": "收尾段起点=第12条后；有效3点/断点0；峰值98.10；⚠ 隐藏风险: 收尾段均值(91.97)较整体均值(70.53)高出30.4%，平均掩盖了升高趋势",
+    "continuity_summary": "共15条 / 有效14 / 断点1（6.7%） / 最长断档1",
+    "field_mapping_summary": {
+      "tension": "张力",
+      "timestamp": "时间",
+      "direction": "方向",
+      "sensor_id": "铭牌编号",
+      "stage": "阶段",
+      "sequence": "序号"
+    },
+    "direction_summary": "铭牌标注: - / 趋势推断: + / 方向存疑 / 已挂起待人工确认",
+    "failure_reason": {
+      "code": "DIRECTION_AMBIGUOUS",
+      "message": "方向符号存在歧义，已挂起待人工确认",
+      "detail": {
+        "declared_distribution": {
+          "-": 15
+        },
+        "trend_inference": {
+          "first_half_mean": 64.4286,
+          "second_half_mean": 76.6286,
+          "absolute_change": 12.2,
+          "relative_change": 0.173,
+          "valid_points": 14,
+          "rising_steps": 10,
+          "falling_steps": 3,
+          "rising_ratio": 0.7692,
+          "falling_ratio": 0.2308,
+          "strong_monotonic": true
+        }
+      },
+      "suggestion": "请算法值班人核对方向字段的物理含义后重新提交"
+    },
+    "clusters_count": 1,
+    "tail_warnings": 2,
+    "tail_dangers": 1,
+    "data_quality_note": "数据质量正常",
+    "conclusions_block": [
+      {
+        "tag": "挂起",
+        "text": "方向符号疑似写反，已挂起待算法值班人确认；未输出假稳定结论，请人工复核后再提交"
+      }
+    ],
+    "evidence_lines": [
+      "张力最大值 98.10 出现在第 15 条记录 (来源字段: 张力)",
+      "整体均值 70.53，预警阈值 80.0，危险阈值 95.0",
+      "极值簇#0: 第13-15条，峰值98.10，持续3点，位于收尾段"
+    ],
+    "raw_status_marker": "挂起待确认"
+  },
+  "process_records": [
+    {
+      "stage": "数据加载与标准化",
+      "status": "已标准化",
+      "timestamp": "2026-06-14T10:34:30.723804",
+      "inputs_hash": "5b4071ab",
+      "parameters": {
+        "source_file": "examples/nameplate_direction_flip.json",
+        "source_format": "json"
+      },
+      "outputs_summary": {
+        "loaded_count": 15,
+        "gap_count": 1,
+        "invalid_tension_count": 0,
+        "field_mapping": {
+          "tension": "张力",
+          "timestamp": "时间",
+          "direction": "方向",
+          "sensor_id": "铭牌编号",
+          "stage": "阶段",
+          "sequence": "序号"
+        }
+      },
+      "notes": []
+    },
+    {
+      "stage": "方向符号校验",
+      "status": "方向挂起待确认",
+      "timestamp": "2026-06-14T10:34:30.724917",
+      "inputs_hash": "d76edc73",
+      "parameters": {
+        "direction_field_found": "方向"
+      },
+      "outputs_summary": {
+        "declared_direction": "-",
+        "inferred_direction": "+",
+        "is_consistent": false,
+        "issues_count": 2
+      },
+      "notes": [
+        "方向疑似写反，挂起待人工确认，后续分析结果仅供参考",
+        "[critical] SUSPENDED_FOR_HUMAN_REVIEW: 方向符号疑似写反，按策略挂起待算法值班人确认，不输出假稳定结论",
+        "[high] DIRECTION_SIGN_CONFLICT: 铭牌标注方向(-)与张力变化趋势推断方向(+)不一致，疑似方向符号写反"
+      ]
+    },
+    {
+      "stage": "张力极值预警分析",
+      "status": "方向挂起待确认",
+      "timestamp": "2026-06-14T10:34:30.724886",
+      "inputs_hash": "993d87b6",
+      "parameters": {
+        "warning_threshold": 80.0,
+        "danger_threshold": 95.0,
+        "tail_ratio": 0.15
+      },
+      "outputs_summary": {
+        "overall_level": "挂起待确认",
+        "max_tension": 98.1,
+        "max_tension_at_seq": 15,
+        "warning_count": 2,
+        "danger_count": 1,
+        "tail_hidden_risk": true,
+        "extreme_clusters_count": 1
+      },
+      "notes": [
+        "收尾段存在被平均掩盖的风险，请重点查看收尾段",
+        "命中危险阈值点 1 个",
+        "命中预警阈值点 2 个"
+      ]
+    },
+    {
+      "stage": "结果导出",
+      "status": "已导出",
+      "timestamp": "2026-06-14T10:34:30.724917",
+      "inputs_hash": "330edb88",
+      "parameters": {},
+      "outputs_summary": {
+        "page_summary_generated": true,
+        "process_records_count": 4
+      },
+      "notes": [
+        "本文件与page_summary.json的状态标记保持一致"
+      ]
+    }
+  ],
+  "analysis_detail": {
+    "status": "方向挂起待确认",
+    "overall_level": "挂起待确认",
+    "direction_suspended": true,
+    "max_tension": 98.1,
+    "max_tension_at_seq": 15,
+    "mean_tension_all_valid": 70.5286,
+    "warning_count": 2,
+    "danger_count": 1,
+    "tail_warning_count": 2,
+    "tail_danger_count": 1,
+    "has_hidden_tail_risk": true,
+    "extreme_points_count": 3,
+    "extreme_points_sample": [
+      {
+        "seq": 15,
+        "index": 14,
+        "tension": 98.1,
+        "level": "危险",
+        "exceed_ratio": 0.0326,
+        "is_tail": true,
+        "source_field": "张力",
+        "source_row_preview": {
+          "序号": "15",
+          "时间": "1718000370",
+          "张力": "98.1",
+          "方向": "-",
+          "铭牌编号": "PL-C-03"
+        }
+      },
+      {
+        "seq": 14,
+        "index": 13,
+        "tension": 93.6,
+        "level": "预警",
+        "exceed_ratio": 0.17,
+        "is_tail": true,
+        "source_field": "张力",
+        "source_row_preview": {
+          "序号": "14",
+          "时间": "1718000365",
+          "张力": "93.6",
+          "方向": "-",
+          "铭牌编号": "PL-C-03"
+        }
+      },
+      {
+        "seq": 13,
+        "index": 12,
+        "tension": 84.2,
+        "level": "预警",
+        "exceed_ratio": 0.0525,
+        "is_tail": true,
+        "source_field": "张力",
+        "source_row_preview": {
+          "序号": "13",
+          "时间": "1718000360",
+          "张力": "84.2",
+          "方向": "-",
+          "铭牌编号": "PL-C-03"
+        }
+      }
+    ],
+    "extreme_clusters": [
+      {
+        "cluster_id": 0,
+        "start_index": 12,
+        "end_index": 14,
+        "start_seq": 13,
+        "end_seq": 15,
+        "duration_points": 3,
+        "max_tension": 98.1,
+        "mean_tension": 91.9667,
+        "level": "危险",
+        "is_tail_cluster": true,
+        "points_count": 3,
+        "points_sample": [
+          {
+            "seq": 13,
+            "index": 12,
+            "tension": 84.2,
+            "level": "预警",
+            "exceed_ratio": 0.0525,
+            "is_tail": true,
+            "source_field": "张力",
+            "source_row_preview": {
+              "序号": "13",
+              "时间": "1718000360",
+              "张力": "84.2",
+              "方向": "-",
+              "铭牌编号": "PL-C-03"
+            }
+          },
+          {
+            "seq": 14,
+            "index": 13,
+            "tension": 93.6,
+            "level": "预警",
+            "exceed_ratio": 0.17,
+            "is_tail": true,
+            "source_field": "张力",
+            "source_row_preview": {
+              "序号": "14",
+              "时间": "1718000365",
+              "张力": "93.6",
+              "方向": "-",
+              "铭牌编号": "PL-C-03"
+            }
+          },
+          {
+            "seq": 15,
+            "index": 14,
+            "tension": 98.1,
+            "level": "危险",
+            "exceed_ratio": 0.0326,
+            "is_tail": true,
+            "source_field": "张力",
+            "source_row_preview": {
+              "序号": "15",
+              "时间": "1718000370",
+              "张力": "98.1",
+              "方向": "-",
+              "铭牌编号": "PL-C-03"
+            }
+          }
+        ]
+      }
+    ],
+    "tail_risk": {
+      "tail_start_index": 12,
+      "tail_count": 3,
+      "valid_in_tail": 3,
+      "gaps_in_tail": 0,
+      "max_in_tail": 98.1,
+      "mean_in_tail": 91.9667,
+      "mean_all_valid": 70.5286,
+      "tail_vs_all_ratio": 1.304,
+      "warning_points_in_tail": 2,
+      "danger_points_in_tail": 1,
+      "hidden_risk_flag": true,
+      "hidden_risk_evidence": {
+        "tail_mean_vs_all_mean_ratio": 1.304,
+        "reason": "收尾段均值(91.97)较整体均值(70.53)高出30.4%，平均掩盖了升高趋势",
+        "tail_max_vs_all_mean_ratio": 1.3909
+      }
+    },
+    "continuity": {
+      "total_records": 15,
+      "valid_count": 14,
+      "gap_count": 1,
+      "invalid_count": 0,
+      "gap_ratio": 0.0667,
+      "longest_gap_streak": 1,
+      "gap_streak_locations_sample": [],
+      "continuity_score": 0.9133
+    },
+    "raw_stats": {
+      "min": 50.2,
+      "max": 98.1,
+      "mean": 70.5286,
+      "median": 67.7,
+      "p90": 90.78,
+      "p95": 95.175,
+      "p99": 97.515,
+      "stdev": 13.5384,
+      "valid_count": 14,
+      "tail_count_config_ratio": 0.15,
+      "warning_threshold": 80.0,
+      "danger_threshold": 95.0
+    },
+    "source_file": "examples/nameplate_direction_flip.json",
+    "analysis_time": "2026-06-14T10:34:30.724886"
+  },
+  "load_detail": {
+    "success": true,
+    "status": "已标准化",
+    "source_file": "examples/nameplate_direction_flip.json",
+    "source_format": "json",
+    "total_source_rows": 15,
+    "loaded_count": 15,
+    "gap_count": 1,
+    "invalid_tension_count": 0,
+    "gap_ratio": 0.06666666666666667,
+    "field_traces": {
+      "tension": {
+        "standard_name": "tension",
+        "matched_source_name": "张力",
+        "candidate_checked": [
+          "tension",
+          "张力"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "timestamp": {
+        "standard_name": "timestamp",
+        "matched_source_name": "时间",
+        "candidate_checked": [
+          "timestamp",
+          "时间"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "direction": {
+        "standard_name": "direction",
+        "matched_source_name": "方向",
+        "candidate_checked": [
+          "direction",
+          "方向"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "sensor_id": {
+        "standard_name": "sensor_id",
+        "matched_source_name": "铭牌编号",
+        "candidate_checked": [
+          "sensor_id",
+          "传感器编号",
+          "sensor",
+          "设备编号",
+          "device_id",
+          "SensorID",
+          "SENSOR_ID",
+          "铭牌编号"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "stage": {
+        "standard_name": "stage",
+        "matched_source_name": "阶段",
+        "candidate_checked": [
+          "stage",
+          "阶段"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "sequence": {
+        "standard_name": "sequence",
+        "matched_source_name": "序号",
+        "candidate_checked": [
+          "sequence",
+          "序号"
+        ],
+        "mapping_version": "default_v1"
+      }
+    },
+    "records_preview": [
+      {
+        "seq": 1,
+        "timestamp": 1718000300.0,
+        "tension": 50.2,
+        "direction_raw": "-",
+        "sensor_id": "PL-C-03",
+        "stage": "热身",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "序号",
+          "timestamp": "时间",
+          "tension": "张力",
+          "direction": "方向",
+          "sensor_id": "铭牌编号",
+          "stage": "阶段"
+        }
+      },
+      {
+        "seq": 2,
+        "timestamp": 1718000305.0,
+        "tension": 58.4,
+        "direction_raw": "-",
+        "sensor_id": "PL-C-03",
+        "stage": "热身",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "序号",
+          "timestamp": "时间",
+          "tension": "张力",
+          "direction": "方向",
+          "sensor_id": "铭牌编号",
+          "stage": "阶段"
+        }
+      },
+      {
+        "seq": 3,
+        "timestamp": 1718000310.0,
+        "tension": 65.7,
+        "direction_raw": "-",
+        "sensor_id": "PL-C-03",
+        "stage": "主训练",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "序号",
+          "timestamp": "时间",
+          "tension": "张力",
+          "direction": "方向",
+          "sensor_id": "铭牌编号",
+          "stage": "阶段"
+        }
+      },
+      {
+        "seq": 4,
+        "timestamp": 1718000315.0,
+        "tension": 70.3,
+        "direction_raw": "-",
+        "sensor_id": "PL-C-03",
+        "stage": "主训练",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "序号",
+          "timestamp": "时间",
+          "tension": "张力",
+          "direction": "方向",
+          "sensor_id": "铭牌编号",
+          "stage": "阶段"
+        }
+      },
+      {
+        "seq": 5,
+        "timestamp": 1718000320.0,
+        "tension": 75.8,
+        "direction_raw": "-",
+        "sensor_id": "PL-C-03",
+        "stage": "主训练",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "序号",
+          "timestamp": "时间",
+          "tension": "张力",
+          "direction": "方向",
+          "sensor_id": "铭牌编号",
+          "stage": "阶段"
+        }
+      }
+    ],
+    "failure_reason": null,
+    "load_time": "2026-06-14T10:34:30.723804"
+  },
+  "direction_detail": {
+    "is_consistent": false,
+    "is_suspended": true,
+    "status": "方向挂起待确认",
+    "inferred_direction": "+",
+    "declared_direction": "-",
+    "direction_from_field": "方向",
+    "needs_human_review": true,
+    "issues": [
+      {
+        "issue_type": "SUSPENDED_FOR_HUMAN_REVIEW",
+        "severity": "critical",
+        "description": "方向符号疑似写反，按策略挂起待算法值班人确认，不输出假稳定结论",
+        "evidence": {
+          "policy": "require_direction_human_review=True",
+          "auto_flip_allowed": false,
+          "action_taken": "挂起待确认，未进行自动修正"
+        },
+        "affected_indices_count": 0,
+        "affected_indices_sample": []
+      },
+      {
+        "issue_type": "DIRECTION_SIGN_CONFLICT",
+        "severity": "high",
+        "description": "铭牌标注方向(-)与张力变化趋势推断方向(+)不一致，疑似方向符号写反",
+        "evidence": {
+          "declared_direction": "-",
+          "inferred_direction": "+",
+          "trend_evidence": {
+            "first_half_mean": 64.4286,
+            "second_half_mean": 76.6286,
+            "absolute_change": 12.2,
+            "relative_change": 0.173,
+            "valid_points": 14,
+            "rising_steps": 10,
+            "falling_steps": 3,
+            "rising_ratio": 0.7692,
+            "falling_ratio": 0.2308,
+            "strong_monotonic": true
+          }
+        },
+        "affected_indices_count": 15,
+        "affected_indices_sample": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ]
+      }
+    ],
+    "evidence_summary": {
+      "declared_distribution": {
+        "-": 15
+      },
+      "trend_inference": {
+        "first_half_mean": 64.4286,
+        "second_half_mean": 76.6286,
+        "absolute_change": 12.2,
+        "relative_change": 0.173,
+        "valid_points": 14,
+        "rising_steps": 10,
+        "falling_steps": 3,
+        "rising_ratio": 0.7692,
+        "falling_ratio": 0.2308,
+        "strong_monotonic": true
+      }
+    }
+  },
+  "consistency_check": {
+    "status_match": true,
+    "page_status": "挂起待确认",
+    "analysis_status": "挂起待确认",
+    "page_overall_status": "挂起待确认（方向存疑）",
+    "export_time": "2026-06-14T10:34:30.725327"
+  }
+}

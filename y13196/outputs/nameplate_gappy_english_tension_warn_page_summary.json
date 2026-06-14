@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-06-14T10:34:30.977496",
+  "source_file": "examples/nameplate_gappy_english.csv",
+  "overall_status": "已检出预警点",
+  "overall_level": "预警",
+  "direction_suspended": false,
+  "max_tension_display": "81.60",
+  "max_tension_at_seq": 9,
+  "mean_tension_display": "65.75",
+  "warning_points_count": 1,
+  "danger_points_count": 0,
+  "tail_hidden_risk": false,
+  "tail_summary": "收尾段起点=第12条后；有效3点/断点0；峰值64.10",
+  "continuity_summary": "共15条 / 有效13 / 断点2（13.3%） / 最长断档2",
+  "field_mapping_summary": {
+    "tension": "tension",
+    "timestamp": "timestamp",
+    "direction": "dir",
+    "sensor_id": "sensor_id",
+    "stage": "stage",
+    "sequence": "seq"
+  },
+  "direction_summary": "铭牌标注: + / 方向一致",
+  "failure_reason": null,
+  "clusters_count": 1,
+  "tail_warnings": 0,
+  "tail_dangers": 0,
+  "data_quality_note": "数据质量正常",
+  "conclusions_block": [
+    {
+      "tag": "预警",
+      "text": "检测到 1 个预警点，其中收尾段 0 个"
+    }
+  ],
+  "evidence_lines": [
+    "张力最大值 81.60 出现在第 9 条记录 (来源字段: tension)",
+    "整体均值 65.75，预警阈值 80.0，危险阈值 95.0",
+    "极值簇#0: 第9-9条，峰值81.60，持续1点，非收尾段"
+  ],
+  "raw_status_marker": "预警"
+}

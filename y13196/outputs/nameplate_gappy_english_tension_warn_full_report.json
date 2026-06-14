@@ -1,0 +1,435 @@
+{
+  "page_summary": {
+    "generated_at": "2026-06-14T10:34:30.977496",
+    "source_file": "examples/nameplate_gappy_english.csv",
+    "overall_status": "已检出预警点",
+    "overall_level": "预警",
+    "direction_suspended": false,
+    "max_tension_display": "81.60",
+    "max_tension_at_seq": 9,
+    "mean_tension_display": "65.75",
+    "warning_points_count": 1,
+    "danger_points_count": 0,
+    "tail_hidden_risk": false,
+    "tail_summary": "收尾段起点=第12条后；有效3点/断点0；峰值64.10",
+    "continuity_summary": "共15条 / 有效13 / 断点2（13.3%） / 最长断档2",
+    "field_mapping_summary": {
+      "tension": "tension",
+      "timestamp": "timestamp",
+      "direction": "dir",
+      "sensor_id": "sensor_id",
+      "stage": "stage",
+      "sequence": "seq"
+    },
+    "direction_summary": "铭牌标注: + / 方向一致",
+    "failure_reason": null,
+    "clusters_count": 1,
+    "tail_warnings": 0,
+    "tail_dangers": 0,
+    "data_quality_note": "数据质量正常",
+    "conclusions_block": [
+      {
+        "tag": "预警",
+        "text": "检测到 1 个预警点，其中收尾段 0 个"
+      }
+    ],
+    "evidence_lines": [
+      "张力最大值 81.60 出现在第 9 条记录 (来源字段: tension)",
+      "整体均值 65.75，预警阈值 80.0，危险阈值 95.0",
+      "极值簇#0: 第9-9条，峰值81.60，持续1点，非收尾段"
+    ],
+    "raw_status_marker": "预警"
+  },
+  "process_records": [
+    {
+      "stage": "数据加载与标准化",
+      "status": "已标准化",
+      "timestamp": "2026-06-14T10:34:30.976552",
+      "inputs_hash": "2ea15316",
+      "parameters": {
+        "source_file": "examples/nameplate_gappy_english.csv",
+        "source_format": "csv"
+      },
+      "outputs_summary": {
+        "loaded_count": 15,
+        "gap_count": 2,
+        "invalid_tension_count": 0,
+        "field_mapping": {
+          "tension": "tension",
+          "timestamp": "timestamp",
+          "direction": "dir",
+          "sensor_id": "sensor_id",
+          "stage": "stage",
+          "sequence": "seq"
+        }
+      },
+      "notes": []
+    },
+    {
+      "stage": "方向符号校验",
+      "status": "方向已校验",
+      "timestamp": "2026-06-14T10:34:30.977320",
+      "inputs_hash": "72645e72",
+      "parameters": {
+        "direction_field_found": "dir"
+      },
+      "outputs_summary": {
+        "declared_direction": "+",
+        "inferred_direction": null,
+        "is_consistent": true,
+        "issues_count": 0
+      },
+      "notes": []
+    },
+    {
+      "stage": "张力极值预警分析",
+      "status": "已分析",
+      "timestamp": "2026-06-14T10:34:30.977285",
+      "inputs_hash": "b2cb1164",
+      "parameters": {
+        "warning_threshold": 80.0,
+        "danger_threshold": 95.0,
+        "tail_ratio": 0.15
+      },
+      "outputs_summary": {
+        "overall_level": "预警",
+        "max_tension": 81.6,
+        "max_tension_at_seq": 9,
+        "warning_count": 1,
+        "danger_count": 0,
+        "tail_hidden_risk": false,
+        "extreme_clusters_count": 1
+      },
+      "notes": [
+        "命中预警阈值点 1 个"
+      ]
+    },
+    {
+      "stage": "结果导出",
+      "status": "已导出",
+      "timestamp": "2026-06-14T10:34:30.977320",
+      "inputs_hash": "8cd0eaa2",
+      "parameters": {},
+      "outputs_summary": {
+        "page_summary_generated": true,
+        "process_records_count": 4
+      },
+      "notes": [
+        "本文件与page_summary.json的状态标记保持一致"
+      ]
+    }
+  ],
+  "analysis_detail": {
+    "status": "已分析",
+    "overall_level": "预警",
+    "direction_suspended": false,
+    "max_tension": 81.6,
+    "max_tension_at_seq": 9,
+    "mean_tension_all_valid": 65.7462,
+    "warning_count": 1,
+    "danger_count": 0,
+    "tail_warning_count": 0,
+    "tail_danger_count": 0,
+    "has_hidden_tail_risk": false,
+    "extreme_points_count": 1,
+    "extreme_points_sample": [
+      {
+        "seq": 9,
+        "index": 8,
+        "tension": 81.6,
+        "level": "预警",
+        "exceed_ratio": 0.02,
+        "is_tail": false,
+        "source_field": "tension",
+        "source_row_preview": {
+          "seq": "9",
+          "timestamp": "1718000440",
+          "tension": "81.6",
+          "dir": "+",
+          "sensor_id": "PL-D-04"
+        }
+      }
+    ],
+    "extreme_clusters": [
+      {
+        "cluster_id": 0,
+        "start_index": 8,
+        "end_index": 8,
+        "start_seq": 9,
+        "end_seq": 9,
+        "duration_points": 1,
+        "max_tension": 81.6,
+        "mean_tension": 81.6,
+        "level": "预警",
+        "is_tail_cluster": false,
+        "points_count": 1,
+        "points_sample": [
+          {
+            "seq": 9,
+            "index": 8,
+            "tension": 81.6,
+            "level": "预警",
+            "exceed_ratio": 0.02,
+            "is_tail": false,
+            "source_field": "tension",
+            "source_row_preview": {
+              "seq": "9",
+              "timestamp": "1718000440",
+              "tension": "81.6",
+              "dir": "+",
+              "sensor_id": "PL-D-04"
+            }
+          }
+        ]
+      }
+    ],
+    "tail_risk": {
+      "tail_start_index": 12,
+      "tail_count": 3,
+      "valid_in_tail": 3,
+      "gaps_in_tail": 0,
+      "max_in_tail": 64.1,
+      "mean_in_tail": 59.7,
+      "mean_all_valid": 65.7462,
+      "tail_vs_all_ratio": 0.908,
+      "warning_points_in_tail": 0,
+      "danger_points_in_tail": 0,
+      "hidden_risk_flag": false,
+      "hidden_risk_evidence": {
+        "tail_mean_vs_all_mean_ratio": 0.908,
+        "tail_max_vs_all_mean_ratio": 0.975
+      }
+    },
+    "continuity": {
+      "total_records": 15,
+      "valid_count": 13,
+      "gap_count": 2,
+      "invalid_count": 0,
+      "gap_ratio": 0.1333,
+      "longest_gap_streak": 2,
+      "gap_streak_locations_sample": [
+        {
+          "start_index": 4,
+          "end_index": 5,
+          "length": 2
+        }
+      ],
+      "continuity_score": 0.8267
+    },
+    "raw_stats": {
+      "min": 47.2,
+      "max": 81.6,
+      "mean": 65.7462,
+      "median": 67.3,
+      "p90": 76.92,
+      "p95": 78.96,
+      "p99": 81.072,
+      "stdev": 9.9235,
+      "valid_count": 13,
+      "tail_count_config_ratio": 0.15,
+      "warning_threshold": 80.0,
+      "danger_threshold": 95.0
+    },
+    "source_file": "examples/nameplate_gappy_english.csv",
+    "analysis_time": "2026-06-14T10:34:30.977285"
+  },
+  "load_detail": {
+    "success": true,
+    "status": "已标准化",
+    "source_file": "examples/nameplate_gappy_english.csv",
+    "source_format": "csv",
+    "total_source_rows": 15,
+    "loaded_count": 15,
+    "gap_count": 2,
+    "invalid_tension_count": 0,
+    "gap_ratio": 0.13333333333333333,
+    "field_traces": {
+      "tension": {
+        "standard_name": "tension",
+        "matched_source_name": "tension",
+        "candidate_checked": [
+          "tension"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "timestamp": {
+        "standard_name": "timestamp",
+        "matched_source_name": "timestamp",
+        "candidate_checked": [
+          "timestamp"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "direction": {
+        "standard_name": "direction",
+        "matched_source_name": "dir",
+        "candidate_checked": [
+          "direction",
+          "方向",
+          "dir"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "sensor_id": {
+        "standard_name": "sensor_id",
+        "matched_source_name": "sensor_id",
+        "candidate_checked": [
+          "sensor_id"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "stage": {
+        "standard_name": "stage",
+        "matched_source_name": "stage",
+        "candidate_checked": [
+          "stage"
+        ],
+        "mapping_version": "default_v1"
+      },
+      "sequence": {
+        "standard_name": "sequence",
+        "matched_source_name": "seq",
+        "candidate_checked": [
+          "sequence",
+          "序号",
+          "seq"
+        ],
+        "mapping_version": "default_v1"
+      }
+    },
+    "records_preview": [
+      {
+        "seq": 1,
+        "timestamp": 1718000400.0,
+        "tension": 47.2,
+        "direction_raw": "+",
+        "sensor_id": "PL-D-04",
+        "stage": "warmup",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "seq",
+          "timestamp": "timestamp",
+          "tension": "tension",
+          "direction": "dir",
+          "sensor_id": "sensor_id",
+          "stage": "stage"
+        }
+      },
+      {
+        "seq": 2,
+        "timestamp": 1718000405.0,
+        "tension": 54.8,
+        "direction_raw": "+",
+        "sensor_id": "PL-D-04",
+        "stage": "warmup",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "seq",
+          "timestamp": "timestamp",
+          "tension": "tension",
+          "direction": "dir",
+          "sensor_id": "sensor_id",
+          "stage": "stage"
+        }
+      },
+      {
+        "seq": 3,
+        "timestamp": 1718000410.0,
+        "tension": 61.5,
+        "direction_raw": "+",
+        "sensor_id": "PL-D-04",
+        "stage": "main",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "seq",
+          "timestamp": "timestamp",
+          "tension": "tension",
+          "direction": "dir",
+          "sensor_id": "sensor_id",
+          "stage": "stage"
+        }
+      },
+      {
+        "seq": 4,
+        "timestamp": 1718000415.0,
+        "tension": 67.3,
+        "direction_raw": "+",
+        "sensor_id": "PL-D-04",
+        "stage": "main",
+        "is_gap": false,
+        "tension_valid": true,
+        "invalid_reason": null,
+        "source_fields": {
+          "sequence": "seq",
+          "timestamp": "timestamp",
+          "tension": "tension",
+          "direction": "dir",
+          "sensor_id": "sensor_id",
+          "stage": "stage"
+        }
+      },
+      {
+        "seq": 5,
+        "timestamp": 1718000420.0,
+        "tension": null,
+        "direction_raw": "+",
+        "sensor_id": "PL-D-04",
+        "stage": "main",
+        "is_gap": true,
+        "tension_valid": false,
+        "invalid_reason": "空值",
+        "source_fields": {
+          "sequence": "seq",
+          "timestamp": "timestamp",
+          "tension": "tension",
+          "direction": "dir",
+          "sensor_id": "sensor_id",
+          "stage": "stage"
+        }
+      }
+    ],
+    "failure_reason": null,
+    "load_time": "2026-06-14T10:34:30.976552"
+  },
+  "direction_detail": {
+    "is_consistent": true,
+    "is_suspended": false,
+    "status": "方向已校验",
+    "inferred_direction": null,
+    "declared_direction": "+",
+    "direction_from_field": "dir",
+    "needs_human_review": false,
+    "issues": [],
+    "evidence_summary": {
+      "declared_distribution": {
+        "+": 15
+      },
+      "trend_inference": {
+        "first_half_mean": 62.6667,
+        "second_half_mean": 68.3857,
+        "absolute_change": 5.719,
+        "relative_change": 0.0873,
+        "valid_points": 13,
+        "rising_steps": 6,
+        "falling_steps": 6,
+        "rising_ratio": 0.5,
+        "falling_ratio": 0.5,
+        "strong_monotonic": false,
+        "note": "张力走势不是压倒性单边（如典型抛物线训练过程），不做方向推断"
+      }
+    }
+  },
+  "consistency_check": {
+    "status_match": true,
+    "page_status": "预警",
+    "analysis_status": "预警",
+    "page_overall_status": "已检出预警点",
+    "export_time": "2026-06-14T10:34:30.977734"
+  }
+}

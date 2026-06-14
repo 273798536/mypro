@@ -1,0 +1,79 @@
+[
+  {
+    "stage": "数据加载与标准化",
+    "status": "已标准化",
+    "timestamp": "2026-06-14T10:34:30.976552",
+    "inputs_hash": "2ea15316",
+    "parameters": {
+      "source_file": "examples/nameplate_gappy_english.csv",
+      "source_format": "csv"
+    },
+    "outputs_summary": {
+      "loaded_count": 15,
+      "gap_count": 2,
+      "invalid_tension_count": 0,
+      "field_mapping": {
+        "tension": "tension",
+        "timestamp": "timestamp",
+        "direction": "dir",
+        "sensor_id": "sensor_id",
+        "stage": "stage",
+        "sequence": "seq"
+      }
+    },
+    "notes": []
+  },
+  {
+    "stage": "方向符号校验",
+    "status": "方向已校验",
+    "timestamp": "2026-06-14T10:34:30.977320",
+    "inputs_hash": "72645e72",
+    "parameters": {
+      "direction_field_found": "dir"
+    },
+    "outputs_summary": {
+      "declared_direction": "+",
+      "inferred_direction": null,
+      "is_consistent": true,
+      "issues_count": 0
+    },
+    "notes": []
+  },
+  {
+    "stage": "张力极值预警分析",
+    "status": "已分析",
+    "timestamp": "2026-06-14T10:34:30.977285",
+    "inputs_hash": "b2cb1164",
+    "parameters": {
+      "warning_threshold": 80.0,
+      "danger_threshold": 95.0,
+      "tail_ratio": 0.15
+    },
+    "outputs_summary": {
+      "overall_level": "预警",
+      "max_tension": 81.6,
+      "max_tension_at_seq": 9,
+      "warning_count": 1,
+      "danger_count": 0,
+      "tail_hidden_risk": false,
+      "extreme_clusters_count": 1
+    },
+    "notes": [
+      "命中预警阈值点 1 个"
+    ]
+  },
+  {
+    "stage": "结果导出",
+    "status": "已导出",
+    "timestamp": "2026-06-14T10:34:30.977320",
+    "inputs_hash": "8cd0eaa2",
+    "parameters": {},
+    "outputs_summary": {
+      "page_summary_generated": true,
+      "process_records_count": 4
+    },
+    "notes": [
+      "本文件与page_summary.json的状态标记保持一致"
+    ]
+  }
+]
