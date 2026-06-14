@@ -1,7 +1,8 @@
 import uuid
 from typing import List, Optional
-from fastapi import FastAPI, Depends, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, Depends, File, Form, HTTPException, UploadFile, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from database import Base, engine, get_db
@@ -15,7 +16,7 @@ from schemas import (
     ReviewSummary, ReviewDashboard, RegressionChartData, ScatterPoint
 )
 from ingestor import ingest_parameter_sheet, load_excel, update_parameter_row
-from piecewise_regression import run_regression_for_sheet
+from piecewise_regression import run_regression_for_sheet, BadMaterialError
 
 Base.metadata.create_all(bind=engine)
 
@@ -28,6 +29,18 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.exception_handler(BadMaterialError)
+async def bad_material_handler(request: Request, exc: BadMaterialError):
+    return JSONResponse(
+        status_code=400,
+        content={
+            "detail": str(exc),
+            "error_type": "bad_material",
+            "details": exc.details,
+        },
+    )
 
 
 def _sheet_out(sheet: ParameterSheet, db: Session) -> ParameterSheetOut:

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { anomalyApi, rowApi } from '../api';
 import type { AnomalyPoint, ParameterRow } from '../types';
 
@@ -20,9 +20,22 @@ export default function AnomalyDetailModal({ anomaly, onClose, onUpdated }: Prop
   const [reviewStatus, setReviewStatus] = useState(anomaly?.review_status || '');
   const [reviewerNote, setReviewerNote] = useState(anomaly?.reviewer_note || '');
   const [saving, setSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [editField, setEditField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const [editReason, setEditReason] = useState('');
+
+  useEffect(() => {
+    if (anomaly) {
+      setReviewStatus(anomaly.review_status || '');
+      setReviewerNote(anomaly.reviewer_note || '');
+      setOriginRow(null);
+      setEditField(null);
+      setEditValue('');
+      setEditReason('');
+      setErrorMsg(null);
+    }
+  }, [anomaly]);
 
   if (!anomaly) return null;
 
@@ -39,6 +52,7 @@ export default function AnomalyDetailModal({ anomaly, onClose, onUpdated }: Prop
 
   const handleSaveReview = async () => {
     setSaving(true);
+    setErrorMsg(null);
     try {
       await anomalyApi.updateReview(anomaly.id, {
         review_status: reviewStatus,
@@ -46,6 +60,8 @@ export default function AnomalyDetailModal({ anomaly, onClose, onUpdated }: Prop
       });
       onUpdated?.();
       onClose();
+    } catch (err: any) {
+      setErrorMsg(err?.response?.data?.detail || err?.message || '保存失败');
     } finally {
       setSaving(false);
     }
@@ -54,6 +70,7 @@ export default function AnomalyDetailModal({ anomaly, onClose, onUpdated }: Prop
   const handleEditField = async () => {
     if (!editField || !originRow) return;
     setSaving(true);
+    setErrorMsg(null);
     try {
       await rowApi.edit(originRow.id, editField, editValue, '复核人', editReason);
       setEditField(null);
@@ -62,6 +79,8 @@ export default function AnomalyDetailModal({ anomaly, onClose, onUpdated }: Prop
       const row = await rowApi.get(originRow.id);
       setOriginRow(row);
       onUpdated?.();
+    } catch (err: any) {
+      setErrorMsg(err?.response?.data?.detail || err?.message || '修改字段失败');
     } finally {
       setSaving(false);
     }
@@ -286,6 +305,12 @@ export default function AnomalyDetailModal({ anomaly, onClose, onUpdated }: Prop
             />
           </div>
         </div>
+
+        {errorMsg && (
+          <div className="warning-text" style={{ marginTop: 12, padding: 8, background: '#fff5f5', borderRadius: 4 }}>
+            {errorMsg}
+          </div>
+        )}
 
         <div className="modal-actions">
           <button className="btn secondary" onClick={onClose}>关闭</button>

@@ -11,21 +11,32 @@ const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
   manual_overrule: { label: '人工改判', cls: 'manual' },
 };
 
+interface RunErrorInfo {
+  detail: string;
+  error_type?: string;
+  details?: Record<string, any>;
+}
+
 export default function ReviewDashboardPage() {
   const { id } = useParams<{ id: string }>();
   const sheetId = Number(id);
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedAnomaly, setSelectedAnomaly] = useState<AnomalyPoint | null>(null);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [runLoading, setRunLoading] = useState(false);
+  const [runError, setRunError] = useState<RunErrorInfo | null>(null);
 
   const loadDashboard = useCallback(async () => {
     if (!sheetId) return;
     setLoading(true);
+    setLoadError(null);
     try {
       const d = await sheetApi.dashboard(sheetId);
       setDashboard(d);
+    } catch (err: any) {
+      setLoadError(err?.response?.data?.detail || err?.message || '加载复核数据失败');
     } finally {
       setLoading(false);
     }
@@ -43,26 +54,59 @@ export default function ReviewDashboardPage() {
   };
 
   const handleRun = async () => {
-    if (!sheetId) return;
+    if (!sheetId || runLoading) return;
+    setRunLoading(true);
+    setRunError(null);
     try {
       await sheetApi.runRegression(sheetId);
-      loadDashboard();
+      await loadDashboard();
     } catch (err: any) {
-      alert(err?.response?.data?.detail || '运行失败');
+      const resp = err?.response?.data || {};
+      setRunError({
+        detail: resp.detail || err?.message || '运行回归失败',
+        error_type: resp.error_type,
+        details: resp.details,
+      });
+    } finally {
+      setRunLoading(false);
     }
   };
+
+  const anomalyTabs = [
+    { key: 'all', label: '全部异常' },
+    { key: 'pending_material', label: '待补材料' },
+    { key: 'processed', label: '已处理' },
+    { key: 'manual_overrule', label: '人工改判' },
+  ];
 
   const filteredAnomalies = dashboard?.anomalies.filter(a => {
     if (filterStatus === 'all') return a.is_outlier;
     return a.is_outlier && a.review_status === filterStatus;
   }) || [];
 
+  const filterCounts: Record<string, number> = { all: 0 };
+  if (dashboard) {
+    filterCounts.all = dashboard.anomalies.filter(a => a.is_outlier).length;
+    ['pending_material', 'processed', 'manual_overrule'].forEach(s => {
+      filterCounts[s] = dashboard.anomalies.filter(a => a.is_outlier && a.review_status === s).length;
+    });
+  }
+
   if (loading) {
     return <div className="empty">加载中...</div>;
   }
 
   if (!dashboard) {
-    return <div className="empty">加载失败</div>;
+    return (
+      <div className="card">
+        <h2>复核数据加载失败</h2>
+        <p className="warning-text">{loadError || '未知错误'}</p>
+        <div style={{ marginTop: 16 }}>
+          <button className="btn" onClick={loadDashboard}>重新加载</button>
+          <Link to="/" style={{ marginLeft: 8 }} className="btn secondary">返回列表</Link>
+        </div>
+      </div>
+    );
   }
 
   const { sheet, latest_result, chart, review_summary, change_logs } = dashboard;
@@ -77,8 +121,12 @@ export default function ReviewDashboardPage() {
           </span>
         </h2>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button className="btn secondary" onClick={handleRun}>
-            重新运行回归
+          <button
+            className="btn secondary"
+            onClick={handleRun}
+            disabled={runLoading || loading}
+          >
+            {runLoading ? '运行中...' : '重新运行回归'}
           </button>
           <Link to={`/sheets/${sheet.id}/rows`} className="btn secondary">
             查看全部明细
@@ -88,6 +136,37 @@ export default function ReviewDashboardPage() {
           </Link>
         </div>
       </div>
+
+      {runError && (
+        <div className="card" style={{ borderLeft: '4px solid #ff4757' }}>
+          <h2 style={{ color: '#ff4757' }}>
+            {runError.error_type === 'bad_material' ? '坏材料，无法运行回归' : '运行回归失败'}
+          </h2>
+          <p style={{ marginBottom: 8 }}>{runError.detail}</p>
+          {runError.details && Object.keys(runError.details).length > 0 && (
+            <div className="raw-data-grid">
+              {Object.entries(runError.details).map(([k, v]) => (
+                <div key={k} style={{ display: 'contents' }}>
+                  <div className="key">{k}</div>
+                  <div>
+                    {typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          {runError.error_type === 'bad_material' && (
+            <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
+              <Link to={`/sheets/${sheet.id}/rows?issues=1`} className="btn small warn">
+                去明细页筛有问题的行
+              </Link>
+              <button className="btn small secondary" onClick={() => setRunError(null)}>
+                关闭提示
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="three-col">
         <div className="stat-box">
@@ -178,30 +257,28 @@ export default function ReviewDashboardPage() {
               <h2 style={{ marginBottom: 0 }}>异常点列表</h2>
             </div>
             <div className="tabs" style={{ marginBottom: 12 }}>
-              <div
-                className={`tab ${filterStatus === 'all' ? 'active' : ''}`}
-                onClick={() => setFilterStatus('all')}
-              >
-                全部异常
-              </div>
-              <div
-                className={`tab ${filterStatus === 'pending_material' ? 'active' : ''}`}
-                onClick={() => setFilterStatus('pending_material')}
-              >
-                待补材料
-              </div>
-              <div
-                className={`tab ${filterStatus === 'processed' ? 'active' : ''}`}
-                onClick={() => setFilterStatus('processed')}
-              >
-                已处理
-              </div>
-              <div
-                className={`tab ${filterStatus === 'manual_overrule' ? 'active' : ''}`}
-                onClick={() => setFilterStatus('manual_overrule')}
-              >
-                人工改判
-              </div>
+              {anomalyTabs.map(tab => (
+                <div
+                  key={tab.key}
+                  className={`tab ${filterStatus === tab.key ? 'active' : ''}`}
+                  onClick={() => setFilterStatus(tab.key)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {tab.label}
+                  <span
+                    style={{
+                      marginLeft: 6,
+                      padding: '1px 6px',
+                      borderRadius: 10,
+                      background: filterStatus === tab.key ? '#3742fa' : '#dfe4ea',
+                      color: filterStatus === tab.key ? '#fff' : '#57606f',
+                      fontSize: 11,
+                    }}
+                  >
+                    {filterCounts[tab.key] || 0}
+                  </span>
+                </div>
+              ))}
             </div>
 
             {filteredAnomalies.length === 0 ? (
