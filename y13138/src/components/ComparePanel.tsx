@@ -1,16 +1,15 @@
-import { useState } from 'react';
-import { ChevronUp, ChevronDown, SplitSquareVertical, ArrowRight } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ChevronUp, ChevronDown, SplitSquareVertical, ArrowRight, GitBranch } from 'lucide-react';
 import { useParamStore } from '@/store/paramStore';
 import { useChartStore } from '@/store/chartStore';
 import { computeSteadyState } from '@/engine/steadyState';
-import { buildTransitionMatrix, multiplyVectorMatrix, formatMatrixEquation } from '@/engine/markov';
+import { buildTransitionMatrix, multiplyVectorMatrix, formatMatrixEquation, runMarkovChain } from '@/engine/markov';
 import { autoConvertByUnitPair } from '@/engine/unitConvert';
-import type { CompareDiffRow } from '@/types';
+import { deriveGraphFromParams, PARAM_MAPPING } from '@/engine/deriveGraph';
+import { detectBoundaryIssues, detectOverflow } from '@/engine/boundary';
+import type { CompareDiffRow, ParamRow, MarkovNode, MarkovEdge, SteadyCalcResult } from '@/types';
 
-function buildDiffRows(): CompareDiffRow[] {
-  const { groups } = useParamStore.getState();
-  const rowsA = groups.A.rows;
-  const rowsB = groups.B.rows;
+function buildDiffRows(rowsA: ParamRow[], rowsB: ParamRow[]): CompareDiffRow[] {
   const allIds = Array.from(new Set([...rowsA.map((r) => r.id), ...rowsB.map((r) => r.id)]));
   return allIds.map((id) => {
     const a = rowsA.find((r) => r.id === id);
@@ -20,13 +19,22 @@ function buildDiffRows(): CompareDiffRow[] {
     const isDiff = Math.abs(valueA - valueB) > 1e-9;
     const calcStepsA: string[] = [];
     const calcStepsB: string[] = [];
-    if (a?.sourceRecordId) calcStepsA.push(`来源：${a.sourceRecordId}（${a.remark || '无备注'}）`);
-    if (b?.sourceRecordId) calcStepsB.push(`来源：${b.sourceRecordId}（${b.remark || '无备注'}）`);
+    const mapEntry = PARAM_MAPPING.find((m) => m.paramId === id);
+    if (mapEntry) {
+      calcStepsA.push(`映射：${mapEntry.kind === 'initial' ? `初始分布 π₀(${mapEntry.target})` : `转移边 P(${mapEntry.target}→${mapEntry.target2})`}`);
+      calcStepsB.push(`映射：${mapEntry.kind === 'initial' ? `初始分布 π₀(${mapEntry.target})` : `转移边 P(${mapEntry.target}→${mapEntry.target2})`}`);
+    }
+    if (a?.sourceRecordId) calcStepsA.push(`来源记录：${a.sourceRecordId}（${a.remark || '无备注'}）`);
+    if (b?.sourceRecordId) calcStepsB.push(`来源记录：${b.sourceRecordId}（${b.remark || '无备注'}）`);
+    if (a?.isLateAttachment) calcStepsA.push('【⚠️ 晚到附件补录】');
+    if (b?.isLateAttachment) calcStepsB.push('【⚠️ 晚到附件补录】');
     let unitConvertNote: string | undefined;
     if (isDiff && a && b) {
       const conv = autoConvertByUnitPair(valueA, a.unit, b.unit);
       if (conv) {
         unitConvertNote = `单位换算过程（A→B）：${conv.steps.join('；')}`;
+      } else if (mapEntry && mapEntry.kind === 'edge') {
+        unitConvertNote = `边概率影响：Δ=${(valueB - valueA).toFixed(3)}，稳态会因矩阵迭代被放大`;
       }
     }
     return {
@@ -43,29 +51,66 @@ function buildDiffRows(): CompareDiffRow[] {
   });
 }
 
-interface MatrixBlockProps {
-  title: string;
-  nodes: ReturnType<typeof useChartStore.getState>['nodes'];
-  edges: ReturnType<typeof useChartStore.getState>['edges'];
-  color: string;
+interface GroupComputeResult {
+  nodes: MarkovNode[];
+  edges: MarkovEdge[];
+  transitionMatrix: number[][];
+  steady: SteadyCalcResult;
+  step1Eqs: string[];
+  step2: number[];
+  boundaryThreshold: number;
+  safeCoefficient: number;
+  abnormalNodeIds: string[];
 }
-function MatrixBlock({ title, nodes, edges, color }: MatrixBlockProps) {
+
+function computeGroup(paramRows: ParamRow[], th: number, sc: number): GroupComputeResult {
+  const derived = deriveGraphFromParams(paramRows, {
+    thresholdSlider: th,
+    safeCoeffSlider: sc,
+  });
+  const { nodes, edges } = derived;
   const P = buildTransitionMatrix(nodes, edges);
-  const result = computeSteadyState(nodes, edges);
+  const steady = computeSteadyState(nodes, edges);
   const initial = nodes.map((n) => n.initialProb);
   const step1 = multiplyVectorMatrix(initial, P);
   const step2 = multiplyVectorMatrix(step1, P);
-  const eq1 = formatMatrixEquation(1, nodes, initial, P, step1).slice(1, 3);
+  const eqs = formatMatrixEquation(1, nodes, initial, P, step1).slice(1, 3);
+  const bc = detectBoundaryIssues(nodes, paramRows, th);
+  const traj = runMarkovChain(nodes, edges, 12);
+  const p8 = paramRows.find((r) => r.id === 'P-08');
+  traj.trajectory.forEach((t) => detectOverflow(t.distribution, p8, sc));
+  const abnormalNodeIds = bc.filter((b) => b.isAbnormal).map((b) => b.nodeId);
+  return {
+    nodes,
+    edges,
+    transitionMatrix: P,
+    steady,
+    step1Eqs: eqs,
+    step2,
+    boundaryThreshold: th,
+    safeCoefficient: sc,
+    abnormalNodeIds,
+  };
+}
 
+interface MatrixBlockProps {
+  title: string;
+  result: GroupComputeResult;
+  color: string;
+}
+function MatrixBlock({ title, result, color }: MatrixBlockProps) {
+  const { nodes, transitionMatrix: P, steady, step1Eqs, step2, abnormalNodeIds, boundaryThreshold, safeCoefficient } = result;
   return (
     <div className="flex-1 min-w-0 border-2 p-3 rounded-sm bg-white" style={{ borderColor: color }}>
-      <h4
-        className="font-serif text-[13px] font-bold mb-2 pb-1 border-b-2"
-        style={{ color, borderColor: color }}
-      >
+      <h4 className="font-serif text-[13px] font-bold mb-2 pb-1 border-b-2" style={{ color, borderColor: color }}>
         {title}
       </h4>
-      <div className="text-[10px] mono text-academic-navy/70 mb-2">转移矩阵 P：</div>
+      <div className="text-[10px] mono text-academic-navy/70 mb-1">
+        边界阈值 θ = {boundaryThreshold} · 安全系数 k = {safeCoefficient}
+      </div>
+      <div className="text-[10px] mono text-academic-navy/70 mb-2">
+        转移矩阵 P（4×4，由参数表 P-03~P-06 + 出度归一化派生）：
+      </div>
       <div className="overflow-x-auto mb-2.5 custom-scroll">
         <table className="mono text-[11px] border-collapse">
           <tbody>
@@ -74,12 +119,11 @@ function MatrixBlock({ title, nodes, edges, color }: MatrixBlockProps) {
                 {row.map((v, j) => (
                   <td
                     key={j}
-                    className={`border px-1.5 py-1 text-center ${
-                      v > 0.3 ? 'font-semibold' : ''
-                    }`}
+                    className={`border px-1.5 py-1 text-center ${v > 0.3 ? 'font-semibold' : ''}`}
                     style={{
-                      color: v < 0.1 ? '#a4161a' : v > 0.3 ? color : '#1e2a5a',
+                      color: v < 0.1 && v > 0 ? '#a4161a' : v > 0.3 ? color : '#1e2a5a',
                       borderColor: 'rgba(30,42,90,0.2)',
+                      backgroundColor: abnormalNodeIds.includes(`S${i}`) ? 'rgba(164, 22, 26, 0.06)' : 'transparent',
                     }}
                   >
                     {v.toFixed(2)}
@@ -92,21 +136,26 @@ function MatrixBlock({ title, nodes, edges, color }: MatrixBlockProps) {
       </div>
 
       <div className="text-[10px] mono text-academic-navy/70 mb-1">
-        稳态 π̄ = [ {result.steadyVector.map((p) => (p * 100).toFixed(1) + '%').join(', ')} ]
+        稳态 π̄ = [ {steady.steadyVector.map((p) => (p * 100).toFixed(1) + '%').join(', ')} ]
       </div>
-      <div className="text-[10px] mono mb-2" style={{ color: result.isConverged ? '#2d6a4f' : '#a4161a' }}>
-        {result.isConverged ? '✅ 收敛正常' : '⚠️ ' + result.convergenceNote}
+      <div className="text-[10px] mono mb-2" style={{ color: steady.isConverged ? '#2d6a4f' : '#a4161a' }}>
+        {steady.isConverged ? '✅ 收敛正常' : '⚠️ ' + steady.convergenceNote}
       </div>
+      {abnormalNodeIds.length > 0 && (
+        <div className="text-[10px] mono text-abnormal-brick mb-2">
+          ⚠️ 异常节点：{abnormalNodeIds.join(', ')}（样本 {'<'} θ={boundaryThreshold}）
+        </div>
+      )}
 
       <div className="text-[10px] mono text-academic-navy/70 mb-1">
-        计算展开示例（第1步）：
+        计算展开示例（第1步 π₁ = π₀ × P）：
       </div>
       <div className="mono text-[10px] leading-relaxed bg-academic-paper-dark/50 p-2 rounded-sm border border-academic-navy/10">
-        {eq1.map((l, i) => (
+        {step1Eqs.map((l, i) => (
           <div key={i}>{l}</div>
         ))}
         <div className="mt-1 pt-1 border-t border-academic-navy/10">
-          π₁(...) = {step2.map((p) => p.toFixed(3)).join(', ')}
+          π₂(...) = [ {step2.map((p) => p.toFixed(3)).join(', ')} ]
         </div>
       </div>
     </div>
@@ -115,11 +164,25 @@ function MatrixBlock({ title, nodes, edges, color }: MatrixBlockProps) {
 
 export default function ComparePanel() {
   const [expanded, setExpanded] = useState(true);
-  const [height, setHeight] = useState(320);
-  const { groups, activeGroupId } = useParamStore();
-  const { nodes, edges, steadyCalc, chainTrajectory } = useChartStore();
-  const diffRows = buildDiffRows();
+  const [height, setHeight] = useState(340);
+  const { groups, activeGroupId, boundaryThreshold, safeCoefficient } = useParamStore();
+  const { steadyCalc, chainTrajectory } = useChartStore();
+  const diffRows = useMemo(
+    () => buildDiffRows(groups.A.rows, groups.B.rows),
+    [groups.A.rows, groups.B.rows],
+  );
   const hasDiff = diffRows.some((r) => r.isDiff);
+
+  const resultA = useMemo(
+    () => computeGroup(groups.A.rows, boundaryThreshold, safeCoefficient),
+    [groups.A.rows, boundaryThreshold, safeCoefficient],
+  );
+  const resultB = useMemo(
+    () => computeGroup(groups.B.rows, boundaryThreshold, safeCoefficient),
+    [groups.B.rows, boundaryThreshold, safeCoefficient],
+  );
+
+  const activeResult = activeGroupId === 'A' ? resultA : resultB;
 
   return (
     <div
@@ -139,7 +202,7 @@ export default function ComparePanel() {
             </span>
           )}
           <span className="text-[10px] mono opacity-70 ml-2">
-            中间计算过程 · 单位换算 · 稳态推导 —— 全展开
+            各自独立派生图 → 转移矩阵 → 稳态求解 —— 全展开对照
           </span>
         </div>
         <div className="flex items-center gap-2 text-xs font-serif">
@@ -156,7 +219,7 @@ export default function ComparePanel() {
               const startY = e.clientY;
               const startH = height;
               const onMove = (ev: MouseEvent) => {
-                setHeight(Math.max(180, Math.min(600, startH + (startY - ev.clientY))));
+                setHeight(Math.max(200, Math.min(680, startH + (startY - ev.clientY))));
               };
               const onUp = () => {
                 window.removeEventListener('mousemove', onMove);
@@ -177,7 +240,7 @@ export default function ComparePanel() {
           <div className="flex-1 overflow-auto custom-scroll p-3 space-y-4">
             <div>
               <h3 className="font-serif text-sm font-bold text-academic-navy mb-2 pb-1 border-b-2 border-academic-navy/30">
-                📊 参数值对照（金黄底为差异项）
+                📊 参数值对照（金黄底为差异项）· 共同阈值 θ={boundaryThreshold} k={safeCoefficient}
               </h3>
               <div className="overflow-x-auto custom-scroll">
                 <table className="w-full text-[11px] mono border-collapse border border-academic-navy/20">
@@ -190,7 +253,7 @@ export default function ComparePanel() {
                         参数名
                       </th>
                       <th className="border px-2 py-1.5 text-center font-serif" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
-                        A组（{groups.A.label.split('：')[1] || groups.A.label}）
+                        A组派生计算
                       </th>
                       <th className="border px-2 py-1.5 text-center font-serif w-[60px]" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
                         单位
@@ -198,12 +261,12 @@ export default function ComparePanel() {
                       <th className="border px-2 py-1.5 text-center font-serif w-[40px]" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
                         Δ
                       </th>
-                      <ArrowRight className="w-4 h-4 text-academic-paper/80 my-auto" />
+                      <GitBranch className="w-4 h-4 text-academic-paper/80 my-auto" />
                       <th className="border px-2 py-1.5 text-center font-serif" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
-                        B组（含晚到附件）
+                        B组派生计算（含晚到）
                       </th>
                       <th className="border px-2 py-1.5 text-left font-serif" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
-                        差异说明 / 单位换算
+                        映射与影响说明
                       </th>
                     </tr>
                   </thead>
@@ -251,11 +314,21 @@ export default function ComparePanel() {
                         >
                           {r.valueB}
                         </td>
-                        <td className="border px-2 py-1.5 font-serif text-[10px] text-academic-navy/75 max-w-[260px]">
-                          {r.unitConvertNote ||
-                            (r.isDiff
-                              ? '参数值不同 → 见计算展开'
-                              : '两组取值一致')}
+                        <td className="border px-2 py-1.5 font-serif text-[10px] text-academic-navy/75 max-w-[280px] align-top">
+                          <div className="mb-0.5">
+                            {r.calcStepsA.length > 0 && (
+                              <div className="mono text-[9px] opacity-80">A: {r.calcStepsA[0]}</div>
+                            )}
+                            {r.calcStepsB.length > 0 && (
+                              <div className="mono text-[9px] opacity-80">B: {r.calcStepsB[0]}</div>
+                            )}
+                          </div>
+                          <div>
+                            {r.unitConvertNote ||
+                              (r.isDiff
+                                ? '值差异 → 见下方两矩阵并排对照'
+                                : '两组取值一致 → 对稳态无差异')}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -266,19 +339,17 @@ export default function ComparePanel() {
 
             <div>
               <h3 className="font-serif text-sm font-bold text-academic-navy mb-2 pb-1 border-b-2 border-academic-navy/30">
-                🧮 马尔可夫链计算过程（并排对照）
+                🧮 马尔可夫链计算过程（并排对照 · 各自独立派生图）
               </h3>
               <div className="flex gap-3 flex-wrap">
                 <MatrixBlock
-                  title="A组：课堂实测（不含晚到附件）"
-                  nodes={nodes}
-                  edges={edges}
+                  title="A组：课堂实测（不含晚到附件）→ 独立派生"
+                  result={resultA}
                   color="#1e2a5a"
                 />
                 <MatrixBlock
-                  title="B组：含晚到附件修正"
-                  nodes={nodes}
-                  edges={edges}
+                  title="B组：含晚到附件修正 → 独立派生"
+                  result={resultB}
                   color="#c46a1b"
                 />
               </div>
@@ -287,12 +358,12 @@ export default function ComparePanel() {
             {steadyCalc && (
               <div className="panel-card p-3 rounded-sm bg-academic-paper/50">
                 <h3 className="font-serif text-sm font-bold text-academic-navy mb-2">
-                  📐 稳态方程完整求解（{activeGroupId}组）
+                  📐 稳态方程完整求解（当前 {activeGroupId} 组：{groups[activeGroupId].label}）
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <div className="text-[10px] mono text-academic-navy/60 mb-1 font-serif">
-                      方程组：
+                      方程组 πP = π 且 Σπᵢ = 1：
                     </div>
                     <div className="mono text-[10.5px] leading-relaxed bg-white p-2 rounded-sm border border-academic-navy/15">
                       {steadyCalc.equations.map((e, i) => (
@@ -302,12 +373,25 @@ export default function ComparePanel() {
                   </div>
                   <div>
                     <div className="text-[10px] mono text-academic-navy/60 mb-1 font-serif">
-                      高斯消元过程：
+                      高斯消元过程（归一化替换第n个方程）：
                     </div>
                     <div className="mono text-[10.5px] leading-relaxed bg-white p-2 rounded-sm border border-academic-navy/15">
                       {steadyCalc.eliminationSteps.map((e, i) => (
                         <div key={i}>{e}</div>
                       ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-2 pt-2 border-t border-academic-navy/15">
+                  <div className="text-[10px] mono text-academic-navy/60">稳态解向量对照：</div>
+                  <div className="grid grid-cols-2 gap-2 mt-1 mono text-[11px]">
+                    <div className="bg-white p-2 rounded-sm border" style={{ borderColor: '#1e2a5a' }}>
+                      <span className="font-serif text-[10px] font-semibold">A组：</span>
+                      [ {resultA.steady.steadyVector.map((p) => (p * 100).toFixed(1) + '%').join(', ')} ]
+                    </div>
+                    <div className="bg-white p-2 rounded-sm border" style={{ borderColor: '#c46a1b' }}>
+                      <span className="font-serif text-[10px] font-semibold">B组：</span>
+                      [ {resultB.steady.steadyVector.map((p) => (p * 100).toFixed(1) + '%').join(', ')} ]
                     </div>
                   </div>
                 </div>
@@ -317,7 +401,7 @@ export default function ComparePanel() {
             {chainTrajectory && (
               <div className="panel-card p-3 rounded-sm bg-white">
                 <h3 className="font-serif text-sm font-bold text-academic-navy mb-2 pb-1 border-b border-academic-navy/15">
-                  📈 马尔可夫链分布随步长演化（π₀ → π₁₂）
+                  📈 马尔可夫链分布随步长演化 π₀ → π₁₂（{activeGroupId}组 · 当前显示）
                 </h3>
                 <div className="overflow-x-auto custom-scroll">
                   <table className="mono text-[10px] border-collapse min-w-full">
@@ -326,7 +410,7 @@ export default function ComparePanel() {
                         <th className="border px-1.5 py-1 bg-academic-navy text-academic-paper font-serif text-left">
                           t步
                         </th>
-                        {nodes.map((n) => (
+                        {activeResult.nodes.map((n) => (
                           <th
                             key={n.id}
                             className={`border px-1.5 py-1 font-serif text-center ${
@@ -385,7 +469,8 @@ export default function ComparePanel() {
                   </table>
                 </div>
                 <div className="mt-2 text-[10px] font-serif text-academic-navy/60">
-                  * 金黄底行：存在概率越界的步 · 红字：越界的节点概率 · Σ列：验证概率和≈1
+                  * 金黄底行：存在概率越界 · 红字：越界节点 · Σ列：概率和归一化验证
+                  · 演化过程使用 {activeGroupId} 组参数独立派生的转移矩阵
                 </div>
               </div>
             )}

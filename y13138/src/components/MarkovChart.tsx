@@ -6,15 +6,17 @@ import type { MarkovNode, MarkovEdge } from '@/types';
 
 interface AbnormalTagProps {
   node: MarkovNode;
+  threshold: number;
+  isThresholdFromSlider: boolean;
 }
 
-function AbnormalTag({ node }: AbnormalTagProps) {
+function AbnormalTag({ node, threshold, isThresholdFromSlider }: AbnormalTagProps) {
   return (
     <g transform={`translate(${node.x + 50}, ${node.y - 50})`}>
       <rect
         x={0}
         y={0}
-        width={220}
+        width={240}
         height={48}
         rx={2}
         fill="#fff1f1"
@@ -26,10 +28,10 @@ function AbnormalTag({ node }: AbnormalTagProps) {
         ⚠️ 边界样本不足
       </text>
       <text x={8} y={30} fontSize={9} fontFamily="'JetBrains Mono', monospace" fill="#a4161a">
-        n={node.sampleCount} {'<'} θ=5（见参数表P-07）
+        n={node.sampleCount} {'<'} θ={threshold}（见P-07）{isThresholdFromSlider ? '（滑块）' : ''}
       </text>
       <text x={8} y={42} fontSize={9} fontFamily="'JetBrains Mono', monospace" fill="#7f1012">
-        参数表原文："有效样本低于此值，外推不可靠"
+        原文："有效样本低于此值，外推结果不可靠"
       </text>
     </g>
   );
@@ -319,6 +321,8 @@ export default function MarkovChart() {
   const selectedEdgeId = useChartStore((s) => s.selectedEdgeId);
   const hoverNodeId = useChartStore((s) => s.hoverNodeId);
   const activeGroupLabel = useParamStore((s) => s.groups[s.activeGroupId].label);
+  const boundaryThreshold = useParamStore((s) => s.boundaryThreshold);
+  const isThresholdFromSlider = boundaryThreshold !== 5;
 
   const nodeMap: Record<string, MarkovNode> = {};
   nodes.forEach((n) => (nodeMap[n.id] = n));
@@ -372,7 +376,14 @@ export default function MarkovChart() {
           ))}
 
           {nodes.map((n) =>
-            n.isAbnormal ? <AbnormalTag key={`abn-${n.id}`} node={n} /> : null,
+            n.isAbnormal ? (
+              <AbnormalTag
+                key={`abn-${n.id}`}
+                node={n}
+                threshold={boundaryThreshold}
+                isThresholdFromSlider={isThresholdFromSlider}
+              />
+            ) : null,
           )}
           {nodes.map((n) =>
             n.overflowWarning ? <OverflowTag key={`ovf-${n.id}`} node={n} /> : null,

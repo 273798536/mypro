@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { MarkovNode, MarkovEdge, ParamRow } from '@/types';
-import { markovNodes, markovEdges } from '@/data/graph';
+import { deriveGraphFromParams } from '@/engine/deriveGraph';
 import { runMarkovChain } from '@/engine/markov';
 import { computeSteadyState } from '@/engine/steadyState';
 import { detectBoundaryIssues, detectOverflow } from '@/engine/boundary';
@@ -8,6 +8,7 @@ import { detectBoundaryIssues, detectOverflow } from '@/engine/boundary';
 interface ChartState {
   nodes: MarkovNode[];
   edges: MarkovEdge[];
+  deriveLog: string[];
   selectedNodeId: string | null;
   selectedEdgeId: string | null;
   hoverNodeId: string | null;
@@ -18,13 +19,18 @@ interface ChartState {
   selectNode: (id: string | null) => void;
   selectEdge: (id: string | null) => void;
   setHoverNode: (id: string | null) => void;
-  recompute: (paramRows: ParamRow[]) => void;
+  recompute: (
+    paramRows: ParamRow[],
+    boundaryThreshold: number,
+    safeCoefficient: number,
+  ) => void;
 }
 
 export const useChartStore = create<ChartState>((set, get) => ({
-  nodes: JSON.parse(JSON.stringify(markovNodes)),
-  edges: JSON.parse(JSON.stringify(markovEdges)),
-  selectedNodeId: 'S2',
+  nodes: [],
+  edges: [],
+  deriveLog: [],
+  selectedNodeId: null,
   selectedEdgeId: null,
   hoverNodeId: null,
   chainTrajectory: null,
@@ -34,22 +40,39 @@ export const useChartStore = create<ChartState>((set, get) => ({
   selectNode: (id) => set({ selectedNodeId: id }),
   selectEdge: (id) => set({ selectedEdgeId: id }),
   setHoverNode: (id) => set({ hoverNodeId: id }),
-  recompute: (paramRows) => {
-    const { nodes, edges } = get();
+
+  recompute: (paramRows, boundaryThreshold, safeCoefficient) => {
+    const derived = deriveGraphFromParams(paramRows, {
+      thresholdSlider: boundaryThreshold,
+      safeCoeffSlider: safeCoefficient,
+    });
+    const nodes: MarkovNode[] = derived.nodes;
+    const edges: MarkovEdge[] = derived.edges;
+
     const traj = runMarkovChain(nodes, edges, 12);
     const steady = computeSteadyState(nodes, edges);
-    const boundary = detectBoundaryIssues(nodes, paramRows);
+    const boundary = detectBoundaryIssues(nodes, paramRows, boundaryThreshold);
+
     const safeLimitP = paramRows.find((r) => r.id === 'P-08');
-    const lastDist = traj.trajectory[traj.trajectory.length - 1].distribution;
-    const overflow = detectOverflow(lastDist, safeLimitP);
+    const overflowChecks = traj.trajectory.map((t) =>
+      detectOverflow(t.distribution, safeLimitP, safeCoefficient),
+    );
+    const overallOverflow = overflowChecks.find((o) => o.hasOverflow);
+    const lastOverflow = overflowChecks[overflowChecks.length - 1];
 
     const newNodes = nodes.map((nd, i) => {
       const bc = boundary[i];
-      const nodeOverflow =
-        overflow.hasOverflow && overflow.stepIndex === i ? overflow.note : undefined;
+      const ovfAtNode = overflowChecks.reduce<{ note?: string }>((acc, o) => {
+        if (o.hasOverflow && o.stepIndex === i) return { note: o.note };
+        return acc;
+      }, {});
+      const nodeOverflow = overallOverflow && lastOverflow && lastOverflow.stepIndex === i
+        ? lastOverflow.note
+        : ovfAtNode.note;
       return {
         ...nd,
         steadyProb: steady.steadyVector[i] ?? nd.steadyProb,
+        initialProb: nd.initialProb,
         isAbnormal: bc?.isAbnormal ?? nd.isAbnormal,
         abnormalReason: bc?.isAbnormal ? bc.reason : undefined,
         overflowWarning: nodeOverflow,
@@ -58,8 +81,11 @@ export const useChartStore = create<ChartState>((set, get) => ({
 
     set({
       nodes: newNodes,
+      edges,
+      deriveLog: derived.log,
       chainTrajectory: traj,
       steadyCalc: steady,
+      selectedNodeId: get().selectedNodeId ?? (newNodes.find((n) => n.isAbnormal)?.id || null),
     });
   },
 }));
