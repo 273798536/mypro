@@ -1,0 +1,230 @@
+import type { EquipmentRecord, NameplateData, JudgmentHistory } from '@/types';
+
+export const nameplateData: NameplateData[] = [
+  {
+    id: 'NP-001',
+    equipmentCode: 'PL-HS-0321',
+    ratedTension: 500,
+    calibrationDate: '2025-11-20',
+    calibrationUnit: '中试院力学校准实验室',
+    originalSpec: 'Q/PL-2023-0321 额定张力500N 工作温度-20~60℃',
+  },
+  {
+    id: 'NP-002',
+    equipmentCode: 'PL-HS-0322',
+    ratedTension: 500,
+    calibrationDate: '2025-12-05',
+    calibrationUnit: '中试院力学校准实验室',
+    originalSpec: 'Q/PL-2023-0322 额定张力500N 工作温度-20~60℃',
+  },
+  {
+    id: 'NP-003',
+    equipmentCode: 'PL-HS-0323',
+    ratedTension: 600,
+    calibrationDate: '2026-01-10',
+    calibrationUnit: '华东计量检测中心',
+    originalSpec: 'Q/PL-2023-0323 额定张力600N（原620N，2026-01更正）工作温度-10~50℃',
+  },
+];
+
+export const equipmentRecords: EquipmentRecord[] = [
+  {
+    id: 'REC-001',
+    equipmentCode: 'PL-HS-0321',
+    recordType: 'smooth',
+    ratedTension: 500,
+    measuredTension: 498.5,
+    paramVersion: 'v2.1',
+    paramVersionHistory: ['v2.1'],
+    judgment: '合格',
+    nameplateId: 'NP-001',
+    attachments: [
+      {
+        id: 'ATT-001',
+        recordId: 'REC-001',
+        name: 'PL-HS-0321出厂检验报告',
+        type: 'inspection_report',
+        isLateArrival: false,
+      },
+    ],
+    anomalyPoints: [],
+  },
+  {
+    id: 'REC-002',
+    equipmentCode: 'PL-HS-0322',
+    recordType: 'supplementary',
+    ratedTension: 500,
+    measuredTension: 512.3,
+    paramVersion: 'v2.2',
+    paramVersionHistory: ['v2.1', 'v2.2'],
+    judgment: '合格（补录后）',
+    nameplateId: 'NP-002',
+    attachments: [
+      {
+        id: 'ATT-002A',
+        recordId: 'REC-002',
+        name: 'PL-HS-0322出厂检验报告',
+        type: 'inspection_report',
+        isLateArrival: false,
+      },
+      {
+        id: 'ATT-002B',
+        recordId: 'REC-002',
+        name: 'PL-HS-0322校准证书（晚到）',
+        type: 'calibration_certificate',
+        isLateArrival: true,
+        impactDescription: '校准证书显示该设备在512N处存在0.3%的系统偏移，补录后实测偏差从2.46%修正为2.15%，仍在合格范围内。',
+        originalConclusion: '实测张力512.3N，偏离额定值2.46%，接近合格上限，需人工确认',
+        revisedConclusion: '实测张力512.3N，考虑校准证书修正后偏差2.15%，合格',
+        paramChanges: [
+          {
+            paramName: '参数版本',
+            beforeValue: 'v2.1',
+            afterValue: 'v2.2',
+          },
+          {
+            paramName: '系统偏移修正',
+            beforeValue: '未计入',
+            afterValue: '+0.3%系统偏移',
+          },
+          {
+            paramName: '偏差计算',
+            beforeValue: '2.46%',
+            afterValue: '2.15%',
+          },
+        ],
+      },
+    ],
+    anomalyPoints: [
+      {
+        id: 'ANO-002',
+        recordId: 'REC-002',
+        source: 'late_attachment',
+        description: '晚到校准证书导致参数版本从v2.1升级至v2.2',
+        explanation: '校准证书晚到3天，原始复核基于v2.1参数，补录校准数据后参数升级至v2.2，结论从"待确认"变为"合格"',
+      },
+    ],
+  },
+  {
+    id: 'REC-003',
+    equipmentCode: 'PL-HS-0321',
+    recordType: 'anomalous',
+    ratedTension: 500,
+    measuredTension: 475.8,
+    paramVersion: 'v2.1',
+    paramVersionHistory: ['v2.1'],
+    judgment: '异常待确认',
+    nameplateId: 'NP-001',
+    attachments: [
+      {
+        id: 'ATT-003',
+        recordId: 'REC-003',
+        name: 'PL-HS-0321出厂检验报告',
+        type: 'inspection_report',
+        isLateArrival: false,
+      },
+    ],
+    anomalyPoints: [
+      {
+        id: 'ANO-003A',
+        recordId: 'REC-003',
+        source: 'alarm',
+        description: '实测张力475.8N，偏离额定值-4.84%，系统报警触发',
+        explanation: '系统自动判定偏离>5%阈值（实际4.84%未达5%），但接近阈值触发了预警',
+      },
+      {
+        id: 'ANO-003B',
+        recordId: 'REC-003',
+        source: 'manual_note',
+        description: '实验老师小林备注：该设备在低温环境下运行，铭牌允许-4.84%偏差',
+        explanation: '铭牌规格Q/PL-2023-0321注明工作温度-20~60℃，当日环境温度-18℃，低温工况允许额外偏差',
+      },
+    ],
+  },
+  {
+    id: 'REC-004',
+    equipmentCode: 'PL-HS-0323',
+    recordType: 'supplementary',
+    ratedTension: 600,
+    measuredTension: 589.2,
+    paramVersion: 'v2.0',
+    paramVersionHistory: ['v1.8', 'v2.0'],
+    judgment: '合格（铭牌更正后）',
+    nameplateId: 'NP-003',
+    attachments: [
+      {
+        id: 'ATT-004A',
+        recordId: 'REC-004',
+        name: 'PL-HS-0323出厂检验报告',
+        type: 'inspection_report',
+        isLateArrival: false,
+      },
+      {
+        id: 'ATT-004B',
+        recordId: 'REC-004',
+        name: 'PL-HS-0323铭牌更正单（晚到）',
+        type: 'nameplate_correction',
+        isLateArrival: true,
+        impactDescription: '铭牌更正单将额定张力从620N修正为600N。更正前实测偏差-4.97%（接近报警线），更正后偏差-1.8%（合格）。',
+        originalConclusion: '实测589.2N，按额定620N计算偏差-4.97%，接近报警线，需确认',
+        revisedConclusion: '实测589.2N，按更正后额定600N计算偏差-1.8%，合格',
+        paramChanges: [
+          {
+            paramName: '参数版本',
+            beforeValue: 'v1.8',
+            afterValue: 'v2.0',
+          },
+          {
+            paramName: '额定张力',
+            beforeValue: '620N',
+            afterValue: '600N',
+          },
+          {
+            paramName: '偏差计算',
+            beforeValue: '-4.97%',
+            afterValue: '-1.8%',
+          },
+        ],
+      },
+    ],
+    anomalyPoints: [
+      {
+        id: 'ANO-004',
+        recordId: 'REC-004',
+        source: 'late_attachment',
+        description: '铭牌更正单晚到导致初始复核基于错误额定值620N',
+        explanation: '原始铭牌标注额定张力620N，后经厂家更正为600N，更正单在首次复核后5天才到达，导致初始结论偏保守',
+      },
+    ],
+  },
+];
+
+export const initialJudgmentHistories: JudgmentHistory[] = [
+  {
+    id: 'JH-001',
+    recordId: 'REC-002',
+    operator: '小林',
+    timestamp: '2026-06-10T14:30:00',
+    previousJudgment: '待确认（接近上限）',
+    newJudgment: '合格（补录后）',
+    reason: '收到晚到校准证书，修正系统偏移后偏差降至2.15%，在合格范围内',
+  },
+  {
+    id: 'JH-002',
+    recordId: 'REC-003',
+    operator: '小林',
+    timestamp: '2026-06-12T09:15:00',
+    previousJudgment: '报警：偏离>5%',
+    newJudgment: '异常待确认',
+    reason: '实测偏离4.84%未达5%报警线，系统误触发。但偏差较大，需确认低温工况是否允许，暂标为异常待确认',
+  },
+  {
+    id: 'JH-003',
+    recordId: 'REC-004',
+    operator: '小林',
+    timestamp: '2026-06-13T16:45:00',
+    previousJudgment: '待确认（接近报警线）',
+    newJudgment: '合格（铭牌更正后）',
+    reason: '收到铭牌更正单，额定值从620N修正为600N，偏差从-4.97%变为-1.8%，合格',
+  },
+];
