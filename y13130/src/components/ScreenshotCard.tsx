@@ -12,10 +12,9 @@ const ScreenshotCard = forwardRef<HTMLDivElement, Props>(({ record, rerunArea },
   const changedMaterials = record.materials.filter((m) => m.changedFromPrevious);
   return (
     <div
-      ref={ref}
-      className="bg-white border-2 border-ink-800 rounded-lg p-6 w-[640px] shadow-xl"
-      style={{ fontFamily: '"JetBrains Mono", monospace' }}
-    >
+        ref={ref}
+        className="bg-white border-2 border-ink-800 rounded-lg p-6 w-[640px] shadow-xl font-mono"
+      >
       <div className="flex items-center justify-between mb-4 border-b-2 border-ink-800 pb-3">
         <div>
           <div className="font-display text-2xl font-bold text-ink-900">凸包面积错题 · 复盘说明</div>

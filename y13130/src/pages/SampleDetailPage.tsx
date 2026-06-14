@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import html2canvas from 'html2canvas';
 import { useStore } from '@/store/useStore';
@@ -16,6 +16,40 @@ export default function SampleDetailPage() {
   const record = records.find((r) => r.id === id);
   const screenshotRef = useRef<HTMLDivElement>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!showPreview) return;
+    let cancelled = false;
+    const run = async () => {
+      await new Promise((r) => setTimeout(r, 250));
+      if (cancelled || !screenshotRef.current) return;
+      try {
+        setExporting(true);
+        setExportMessage('正在生成截图说明...');
+        const canvas = await html2canvas(screenshotRef.current, {
+          scale: 2,
+          backgroundColor: '#ffffff',
+          useCORS: true,
+          logging: false,
+        });
+        const link = document.createElement('a');
+        link.download = `${record?.sampleId || 'record'}-凸包面积复盘说明.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        setExportMessage('截图说明已导出，可直接用于评审会沟通');
+      } catch (e) {
+        setExportMessage(`导出失败：${e instanceof Error ? e.message : String(e)}`);
+      } finally {
+        setExporting(false);
+      }
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [showPreview, record]);
 
   if (!record) {
     return (
@@ -32,16 +66,9 @@ export default function SampleDetailPage() {
 
   const handleRerun = () => rerunRecord(record.id);
 
-  const handleExport = async () => {
-    if (!screenshotRef.current) return;
+  const handleExport = () => {
+    setExportMessage(null);
     setShowPreview(true);
-    await new Promise((r) => setTimeout(r, 100));
-    if (!screenshotRef.current) return;
-    const canvas = await html2canvas(screenshotRef.current, { scale: 2, backgroundColor: '#ffffff' });
-    const link = document.createElement('a');
-    link.download = `${record.sampleId}-凸包面积复盘说明.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
   };
 
   return (
@@ -66,9 +93,16 @@ export default function SampleDetailPage() {
             )}
           </div>
         </div>
-        <button onClick={handleExport} className="btn-primary">
-          <Download size={16} /> 导出截图说明
-        </button>
+        <div className="flex flex-col items-end gap-2">
+          <button onClick={handleExport} className="btn-primary" disabled={exporting}>
+            <Download size={16} /> {exporting ? '导出中...' : '导出截图说明'}
+          </button>
+          {exportMessage && !showPreview && (
+            <span className={`text-xs ${exportMessage.includes('失败') ? 'text-red-600' : 'text-emerald-700'}`}>
+              {exportMessage}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mb-8">
@@ -149,22 +183,23 @@ export default function SampleDetailPage() {
         <span className="ml-2">③ 查看截图说明：点右上「导出截图说明」，生成可直接发评审会的 PNG 卡片。</span>
       </div>
 
-      <div className={showPreview ? 'fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-8' : 'hidden'}>
-        <div className="relative">
-          <button
-            onClick={() => setShowPreview(false)}
-            className="absolute -top-10 right-0 text-white text-sm hover:underline"
-          >
-            关闭预览
-          </button>
-          <div className="overflow-auto max-h-[85vh] bg-white">
+      <div className={showPreview ? 'fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-8' : 'hidden'}>
+        <div className="relative max-h-[90vh] flex flex-col items-center">
+          <div className="flex items-center justify-between w-full mb-3">
+            <span className={`text-sm ${exportMessage && !exporting ? (exportMessage.includes('失败') ? 'text-red-400' : 'text-emerald-300') : 'text-white'}`}>
+              {exportMessage || (exporting ? '正在导出...' : '截图说明预览')}
+            </span>
+            <button
+              onClick={() => setShowPreview(false)}
+              className="text-white text-sm hover:underline ml-4"
+            >
+              关闭预览
+            </button>
+          </div>
+          <div className="overflow-auto max-h-[calc(90vh-40px)] bg-white rounded-lg shadow-2xl">
             <ScreenshotCard ref={screenshotRef} record={record} rerunArea={rerunArea} />
           </div>
         </div>
-      </div>
-
-      <div className="hidden">
-        <ScreenshotCard ref={screenshotRef} record={record} rerunArea={rerunArea} />
       </div>
     </Layout>
   );
