@@ -1,0 +1,178 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .card {
+    @apply bg-white border border-gray-200 shadow-sm;
+  }
+
+  .card-header {
+    @apply px-4 py-3 border-b border-gray-200 flex items-center justify-between;
+  }
+
+  .card-title {
+    @apply font-medium text-gray-900;
+  }
+
+  .card-content {
+    @apply p-4;
+  }
+
+  .btn {
+    @apply px-4 py-2 text-sm font-medium rounded-sm transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-blue-900 text-white hover:bg-blue-800;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 text-white hover:bg-red-700;
+  }
+
+  .table {
+    @apply w-full text-sm;
+  }
+
+  .table th {
+    @apply px-3 py-2 text-left font-medium text-gray-700 bg-gray-50 border-b border-gray-200;
+  }
+
+  .table td {
+    @apply px-3 py-2 border-b border-gray-100;
+  }
+
+  .table tr:hover td {
+    @apply bg-gray-50;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 text-xs font-medium rounded;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .badge-warning {
+    @apply bg-amber-100 text-amber-800;
+  }
+
+  .badge-danger {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .badge-info {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .badge-secondary {
+    @apply bg-gray-100 text-gray-800;
+  }
+}
+
+/* Markdown report styles */
+.markdown-body {
+  @apply text-gray-800 leading-relaxed;
+}
+
+.markdown-body h1 {
+  @apply text-2xl font-bold text-gray-900 border-b border-gray-200 pb-2 mt-6 mb-4;
+}
+
+.markdown-body h2 {
+  @apply text-xl font-semibold text-gray-900 mt-6 mb-3;
+}
+
+.markdown-body h3 {
+  @apply text-lg font-medium text-gray-900 mt-4 mb-2;
+}
+
+.markdown-body p {
+  @apply mb-3;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  @apply mb-3 pl-6;
+}
+
+.markdown-body ul {
+  @apply list-disc;
+}
+
+.markdown-body ol {
+  @apply list-decimal;
+}
+
+.markdown-body li {
+  @apply mb-1;
+}
+
+.markdown-body table {
+  @apply w-full border-collapse mb-4;
+}
+
+.markdown-body th,
+.markdown-body td {
+  @apply border border-gray-300 px-3 py-2 text-sm;
+}
+
+.markdown-body th {
+  @apply bg-gray-50 font-medium text-gray-700;
+}
+
+.markdown-body code {
+  @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+.markdown-body pre {
+  @apply bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto mb-4 text-sm;
+}
+
+.markdown-body pre code {
+  @apply bg-transparent p-0;
+}
+
+.markdown-body blockquote {
+  @apply border-l-4 border-blue-500 pl-4 italic text-gray-600 my-4;
+}
+
+.markdown-body hr {
+  @apply border-t border-gray-200 my-6;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
+}
