@@ -120,7 +120,12 @@ def test_single_calculation_unit_incompatible():
         historical_reference={},
     )
     result = calculate_single(q)
+    assert result.status == CalculationStatus.FAILED, f"量纲不兼容应为 FAILED，实际 {result.status.value}"
+    assert result.final_value is None, f"量纲不兼容时 final_value 应为 None，实际 {result.final_value}"
+    assert result.final_unit is None, f"量纲不兼容时 final_unit 应为 None，实际 {result.final_unit}"
     assert any(e.exception_type.value == "unit_mismatch" for e in result.exceptions)
+    has_trace = any(t.get("step") == "fatal_unit_mismatch" for t in result.value_trace)
+    assert has_trace, "量纲不兼容时 value_trace 应包含 fatal_unit_mismatch 步骤"
     print("OK")
 
 
@@ -230,6 +235,88 @@ def test_cli_with_samples():
     print("OK")
 
 
+def test_export_unit_mismatch_nullifies_final_value():
+    print("[TEST] 导出内容-unit_mismatch 题目 final_value 为空...", end=" ")
+    q = QuestionItem(
+        question_id="Q005-MIRROR",
+        name="导出验证-量纲错误",
+        description="",
+        formula_expression="a * b",
+        input_params={"a": 50, "b": 30},
+        input_unit=Unit.METER,
+        expected_output_unit=Unit.PERSON,
+        supplementary_note="备注：该样例应触发单位不兼容异常",
+        historical_reference={},
+        source_trace={"a": "场地尺寸", "b": "场地尺寸"},
+    )
+    with tempfile.TemporaryDirectory() as tmp:
+        tracker = HistoryTracker()
+        report = run_batch([q], history_tracker=tracker)
+        json_path = os.path.join(tmp, "report.json")
+        csv_path = os.path.join(tmp, "report.csv")
+        export_report_to_json(report, json_path)
+        export_report_to_csv(report, csv_path)
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        r = data["results"][0]
+        assert r["status"] == "failed", f"JSON 中应为 failed，实际 {r['status']}"
+        assert r["final_value"] is None, f"JSON 中 final_value 应为 null，实际 {r['final_value']}"
+        assert r["final_unit"] is None, f"JSON 中 final_unit 应为 null，实际 {r['final_unit']}"
+        assert any(e["exception_type"] == "unit_mismatch" for e in r["exceptions"])
+        with open(csv_path, "r", encoding="utf-8-sig") as f:
+            lines = f.readlines()
+        assert len(lines) == 2
+        header = lines[0].strip().split(",")
+        vals = lines[1].strip().split(",")
+        status_idx = header.index("status")
+        assert vals[status_idx] == "failed", f"CSV status 应为 failed，实际 {vals[status_idx]}"
+        final_val_idx = header.index("final_value")
+        assert vals[final_val_idx] == "" or vals[final_val_idx].lower() == "none", \
+            f"CSV final_value 应为空，实际 {vals[final_val_idx]}"
+    print("OK")
+
+
+def test_sample_batch_q005_failed_in_export():
+    print("[TEST] 样例批次-Q005 在 JSON 导出中为 failed + null...", end=" ")
+    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    q_file = os.path.join(base, "samples", "questions_sample.json")
+    c_file = os.path.join(base, "samples", "confirmations_sample.json")
+    with open(q_file, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+    questions = []
+    for item in raw:
+        q = QuestionItem(
+            question_id=item["question_id"],
+            name=item.get("name", ""),
+            description=item.get("description", ""),
+            formula_expression=item.get("formula_expression", ""),
+            input_params=item.get("input_params", {}),
+            input_unit=Unit(item["input_unit"]) if item.get("input_unit") else None,
+            expected_output_unit=Unit(item["expected_output_unit"]) if item.get("expected_output_unit") else None,
+            supplementary_note=item.get("supplementary_note"),
+            historical_reference=item.get("historical_reference", {}),
+            source_trace=item.get("source_trace", {}),
+        )
+        questions.append(q)
+    with open(c_file, "r", encoding="utf-8") as f:
+        raw_conf = json.load(f)
+    from run_queue_calc import build_confirmations
+    confs = build_confirmations(raw_conf)
+    report = run_batch(questions, manual_confirmations=confs)
+    with tempfile.TemporaryDirectory() as tmp:
+        json_path = os.path.join(tmp, "report.json")
+        export_report_to_json(report, json_path)
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+    q005 = next(r for r in data["results"] if r["question_id"] == "Q005")
+    assert q005["status"] == "failed", f"Q005 应为 failed，实际 {q005['status']}"
+    assert q005["final_value"] is None, f"Q005 final_value 应为 null，实际 {q005['final_value']}"
+    assert q005["final_unit"] is None, f"Q005 final_unit 应为 null，实际 {q005['final_unit']}"
+    assert any(e["exception_type"] == "unit_mismatch" for e in q005["exceptions"]), \
+        "Q005 应包含 unit_mismatch 异常"
+    print("OK")
+
+
 def main():
     tests = [
         test_unit_conversion,
@@ -242,6 +329,8 @@ def main():
         test_manual_confirmation_applied,
         test_batch_run_and_history,
         test_cli_with_samples,
+        test_export_unit_mismatch_nullifies_final_value,
+        test_sample_batch_q005_failed_in_export,
     ]
     passed = 0
     failed = 0

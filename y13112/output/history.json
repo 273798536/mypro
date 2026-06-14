@@ -1,7 +1,7 @@
 [
   {
-    "history_id": "ae1a7b10",
-    "result_id": "94b94612",
+    "history_id": "a39f8761",
+    "result_id": "3f9783df",
     "question_id": "Q001",
     "change_type": "initial_calculation",
     "before": {},
@@ -12,7 +12,7 @@
       "conclusion": "【观众入场平均排队时长】排队窗口参数试算结果：720.0 分钟；备注关联：备注：彩排日早高峰为 08:30-10:00，该参数用于窗口开放数量决策；触发 1 项异常，需关注。",
       "exceptions": [
         {
-          "exception_id": "a2117c10",
+          "exception_id": "923e1241",
           "exception_type": "extrapolation_out_of_range",
           "question_id": "Q001",
           "message": "外推越界：计算值为历史均值的 9000.0%（高于 500.0% 阈值）",
@@ -23,12 +23,12 @@
             "max_ratio_threshold": 5.0
           },
           "suggestion": "请确认是否为特殊情况导致数值偏离，如是请进行人工确认后继续。",
-          "timestamp": "2026-06-12T19:21:41"
+          "timestamp": "2026-06-14T08:16:29"
         }
       ],
       "confirmations": [
         {
-          "confirmation_id": "3274eed3",
+          "confirmation_id": "53207583",
           "question_id": "Q001",
           "reason": "计算值为历史均值的 9000.0%（高于 500.0% 阈值）",
           "original_value": 720.0,
@@ -38,17 +38,17 @@
           "operator": "",
           "status": "pending_confirmation",
           "next_step": "请运营主管或投研助理审核该结果：若为异常请调整参数后重算，若为特殊情况请确认通过。",
-          "timestamp": "2026-06-12T19:21:41"
+          "timestamp": "2026-06-14T08:16:29"
         }
       ]
     },
     "operator": "system",
     "change_reason": "排队窗口参数试算执行：initial_calculation",
-    "timestamp": "2026-06-12T19:21:41"
+    "timestamp": "2026-06-14T08:16:29"
   },
   {
-    "history_id": "6dfcfd23",
-    "result_id": "0c0d464e",
+    "history_id": "15936212",
+    "result_id": "2dd2276e",
     "question_id": "Q002",
     "change_type": "initial_calculation",
     "before": {},
@@ -62,11 +62,11 @@
     },
     "operator": "system",
     "change_reason": "排队窗口参数试算执行：initial_calculation",
-    "timestamp": "2026-06-12T19:21:41"
+    "timestamp": "2026-06-14T08:16:29"
   },
   {
-    "history_id": "9babb1de",
-    "result_id": "7d8a44e1",
+    "history_id": "7fab9004",
+    "result_id": "fe4505c6",
     "question_id": "Q003",
     "change_type": "initial_calculation",
     "before": {},
@@ -80,11 +80,11 @@
     },
     "operator": "system",
     "change_reason": "排队窗口参数试算执行：initial_calculation",
-    "timestamp": "2026-06-12T19:21:41"
+    "timestamp": "2026-06-14T08:16:29"
   },
   {
-    "history_id": "c297df58",
-    "result_id": "be4e8eb4",
+    "history_id": "1c93a5cc",
+    "result_id": "a7bc8258",
     "question_id": "Q004",
     "change_type": "initial_calculation",
     "before": {},
@@ -95,7 +95,7 @@
       "conclusion": "【外推越界样例-极端值】排队窗口参数试算结果：1000.0 人；备注关联：备注：该样例将触发外推越界，进入人工确认流程；触发 1 项异常，需关注。",
       "exceptions": [
         {
-          "exception_id": "771532f5",
+          "exception_id": "72f5803d",
           "exception_type": "extrapolation_out_of_range",
           "question_id": "Q004",
           "message": "外推越界：计算值为历史均值的 2000.0%（高于 500.0% 阈值）",
@@ -106,7 +106,7 @@
             "max_ratio_threshold": 5.0
           },
           "suggestion": "请确认是否为特殊情况导致数值偏离，如是请进行人工确认后继续。",
-          "timestamp": "2026-06-12T19:21:41"
+          "timestamp": "2026-06-14T08:16:29"
         }
       ],
       "confirmations": [
@@ -127,22 +127,22 @@
     },
     "operator": "system",
     "change_reason": "排队窗口参数试算执行：initial_calculation",
-    "timestamp": "2026-06-12T19:21:41"
+    "timestamp": "2026-06-14T08:16:29"
   },
   {
-    "history_id": "d12b91ce",
-    "result_id": "2e300fad",
+    "history_id": "ea62fb10",
+    "result_id": "6b19934f",
     "question_id": "Q005",
     "change_type": "initial_calculation",
     "before": {},
     "after": {
-      "final_value": 1500.0,
-      "final_unit": "米",
-      "status": "warning",
-      "conclusion": "【单位不兼容异常样例】排队窗口参数试算结果：1500.0 米；备注关联：备注：该样例应触发单位不兼容异常；触发 1 项异常，需关注。",
+      "final_value": null,
+      "final_unit": null,
+      "status": "failed",
+      "conclusion": "【单位不兼容异常样例】计算失败，请查看异常信息。",
       "exceptions": [
         {
-          "exception_id": "4ed7fe4f",
+          "exception_id": "40182dcf",
           "exception_type": "unit_mismatch",
           "question_id": "",
           "message": "公式结果单位 米 与目标单位 人 量纲不同",
@@ -154,13 +154,13 @@
             "expected_group": "count"
           },
           "suggestion": "请核对题目清单中公式输出量纲与 expected_output_unit 是否一致。",
-          "timestamp": "2026-06-12T19:21:41"
+          "timestamp": "2026-06-14T08:16:29"
         }
       ],
       "confirmations": []
     },
     "operator": "system",
     "change_reason": "排队窗口参数试算执行：initial_calculation",
-    "timestamp": "2026-06-12T19:21:41"
+    "timestamp": "2026-06-14T08:16:29"
   }
 ]

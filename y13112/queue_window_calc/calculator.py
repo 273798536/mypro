@@ -1,8 +1,8 @@
 from typing import List, Dict, Any, Optional, Tuple
 from .models import (
     QuestionItem, CalculationResult, CalculationStatus,
-    CalculationException, ManualConfirmation, ConfirmationStatus,
-    HistoryRecord, BatchRunReport, Unit,
+    CalculationException, ConfirmationStatus, ExceptionType,
+    ManualConfirmation, HistoryRecord, BatchRunReport, Unit,
 )
 from .formula_engine import safe_eval_formula
 from .unit_converter import (
@@ -64,14 +64,37 @@ def calculate_single(
         )
         if shift_exc is not None:
             result.exceptions.append(shift_exc)
-        if not shifted and question.input_unit != question.expected_output_unit:
+        if shifted:
+            result.adjusted_value = None
+            result.adjusted_unit = None
+            result.final_value = None
+            result.final_unit = None
+            result.linked_note = question.supplementary_note
+            result.status = CalculationStatus.FAILED
+            result.value_trace.append({
+                "step": "fatal_unit_mismatch",
+                "reason": f"输入单位 {question.input_unit.value} 与目标单位 {question.expected_output_unit.value} 量纲不兼容，结果不可用",
+            })
+            result.conclusion = build_conclusion(result, question)
+            return result
+        if question.input_unit != question.expected_output_unit:
             converted, conv_exc = convert_value(
                 raw_val, question.input_unit, question.expected_output_unit
             )
             if conv_exc is not None:
                 result.exceptions.append(conv_exc)
-                result.adjusted_value = raw_val
-                result.adjusted_unit = question.input_unit
+                result.adjusted_value = None
+                result.adjusted_unit = None
+                result.final_value = None
+                result.final_unit = None
+                result.linked_note = question.supplementary_note
+                result.status = CalculationStatus.FAILED
+                result.value_trace.append({
+                    "step": "fatal_unit_conversion_failed",
+                    "reason": f"单位换算失败：{conv_exc.message}",
+                })
+                result.conclusion = build_conclusion(result, question)
+                return result
             else:
                 result.adjusted_value = converted
                 result.adjusted_unit = question.expected_output_unit
@@ -116,13 +139,26 @@ def calculate_single(
         result.final_value = value_for_check
         result.final_unit = result.adjusted_unit or result.raw_unit
     result.linked_note = question.supplementary_note
+    FATAL_EXCEPTION_TYPES = {
+        ExceptionType.FORMULA_ERROR,
+        ExceptionType.MISSING_DATA,
+        ExceptionType.UNIT_MISMATCH,
+        ExceptionType.PARAMETER_OUT_OF_BOUNDS,
+    }
     if result.exceptions:
         has_fatal = any(
-            e.exception_type in ("formula_error", "missing_data")
+            e.exception_type in FATAL_EXCEPTION_TYPES
             for e in result.exceptions
         )
         if has_fatal:
             result.status = CalculationStatus.FAILED
+            if result.final_value is not None:
+                result.final_value = None
+                result.final_unit = None
+                result.value_trace.append({
+                    "step": "fatal_exception_nullify",
+                    "reason": "存在致命异常，最终值已置空，结果不可用",
+                })
         else:
             result.status = CalculationStatus.WARNING
     else:
