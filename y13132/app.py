@@ -366,13 +366,26 @@ def show_data_tab(data_manager, result, all_points):
         elif pt.is_dirty:
             status = "❌ 脏数据"
 
+        # 显示原始值 - 严格保持原始状态，缺失显示 (缺失)
+        disp_orig_x = pt.original_x if pt.original_x is not None else "(缺失)"
+        disp_orig_y = pt.original_y if pt.original_y is not None else "(缺失)"
+        # 显示加权后的值 - 也要处理缺失
+        if np.isnan(pt.x):
+            disp_weighted_x = "(缺失)"
+        else:
+            disp_weighted_x = f"{pt.x * (result.weights.get('x', 1.0) if result else 1.0):.4f}"
+        if np.isnan(pt.y):
+            disp_weighted_y = "(缺失)"
+        else:
+            disp_weighted_y = f"{pt.y * (result.weights.get('y', 1.0) if result else 1.0):.4f}"
+
         rows.append({
             "状态": status,
             "样本ID": pt.id,
-            "X值": pt.x if not pt.is_dirty or pt.original_x is None else pt.original_x,
-            "Y值": pt.y if not pt.is_dirty or pt.original_y is None else pt.original_y,
-            "加权X": f"{pt.x:.4f}",
-            "加权Y": f"{pt.y:.4f}",
+            "原始X": disp_orig_x,
+            "原始Y": disp_orig_y,
+            "加权后X": disp_weighted_x,
+            "加权后Y": disp_weighted_y,
             "脏数据原因": pt.dirty_reason if pt.dirty_reason else "-",
             "数据来源": pt.source,
             "备注": pt.note if pt.note else "-",

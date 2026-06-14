@@ -104,23 +104,21 @@ class DataManager:
                 is_dirty = True
                 dirty_reasons.append("y值格式错误")
 
-            # 检查缺失
+            # 检查缺失 - 用 NaN 表示缺失，保持 original 为 None 记录原始缺失状态
             if x_float is None:
                 is_dirty = True
                 dirty_reasons.append("x值缺失")
-                x_float = 0.0
 
             if y_float is None:
                 is_dirty = True
                 dirty_reasons.append("y值缺失")
-                y_float = 0.0
 
             # 检查异常值（简单范围检查）
-            if x_float < 0 or x_float > 150:
+            if x_float is not None and (x_float < 0 or x_float > 150):
                 is_dirty = True
                 dirty_reasons.append("x值异常范围")
 
-            if y_float < 0 or y_float > 150:
+            if y_float is not None and (y_float < 0 or y_float > 150):
                 is_dirty = True
                 dirty_reasons.append("y值异常范围")
 
@@ -135,14 +133,18 @@ class DataManager:
                     "row_index": idx,
                 })
 
+            # x/y 存储计算值（缺失时用 NaN），original_x/original_y 保存原始值（None 表示缺失）
+            store_x = x_float if x_float is not None else float('nan')
+            store_y = y_float if y_float is not None else float('nan')
+
             point = PointData(
                 id=point_id,
-                x=x_float,
-                y=y_float,
+                x=store_x,
+                y=store_y,
                 is_dirty=is_dirty,
                 dirty_reason=dirty_reason,
-                original_x=float(x_val) if pd.notna(x_val) and x_float is not None else None,
-                original_y=float(y_val) if pd.notna(y_val) and y_float is not None else None,
+                original_x=x_float if pd.notna(x_val) else None,
+                original_y=y_float if pd.notna(y_val) else None,
                 note=note,
                 source=source,
             )

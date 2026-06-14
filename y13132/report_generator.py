@@ -5,6 +5,7 @@
 
 from datetime import datetime
 from typing import List, Dict, Optional
+import numpy as np
 from convex_hull_calculator import ConvexHullResult, PointData
 from data_manager import DataManager
 
@@ -72,15 +73,14 @@ class ReportGenerator:
             sections.append(f"| {dim.upper()}维度 | {value:.4f} |")
         sections.append("")
 
-        # 筛选口径
+        # 筛选口径 - 直接使用记录的筛选参数，不反推
         sections.append("## 三、筛选口径")
         sections.append("")
         sections.append("本次计算采用以下筛选规则：")
         sections.append("")
-        exclude_dup = any("重复" in ep.dirty_reason for ep in result.excluded_points)
-        exclude_dirty = any("脏数据" in ep.note or "缺失" in ep.dirty_reason or "异常" in ep.dirty_reason for ep in result.excluded_points)
-        sections.append(f"- 重复样本: {'排除' if exclude_dup else '保留'}")
-        sections.append(f"- 脏数据（缺失/异常）: {'排除' if exclude_dirty else '保留'}")
+        sections.append(f"- 重复样本: {'排除' if result.exclude_duplicates else '保留'}")
+        sections.append(f"- 脏数据（缺失/异常）: {'排除' if result.exclude_dirty else '保留'}")
+        sections.append(f"- 坐标缺失: 自动排除（不参与计算）")
         sections.append("")
         sections.append(f"> 筛选结果：总样本 {len(result.all_points)} 条 → 有效样本 {len(result.used_points)} 条，排除 {len(result.excluded_points)} 条")
         sections.append("")
@@ -150,12 +150,18 @@ class ReportGenerator:
             sections.append("")
             sections.append("> 保留完整原始数据，所有清洗和筛选均基于原始数据派生，不改动原始记录")
             sections.append("")
-            sections.append("| 样本ID | X值 | Y值 | 是否脏数据 | 脏数据原因 | 是否重复 | 数据来源 | 备注 |")
-            sections.append("|--------|-----|-----|------------|------------|----------|----------|------|")
+            sections.append("| 样本ID | 原始X值 | 原始Y值 | 加权后X | 加权后Y | 是否脏数据 | 脏数据原因 | 是否重复 | 数据来源 | 备注 |")
+            sections.append("|--------|---------|---------|---------|---------|------------|------------|----------|----------|------|")
             for pt in result.all_points:
                 is_dirty = "是" if pt.is_dirty else "否"
                 is_dup = "是" if pt.is_duplicate else "否"
-                sections.append(f"| {pt.id} | {pt.x} | {pt.y} | {is_dirty} | {pt.dirty_reason} | {is_dup} | {pt.source} | {pt.note} |")
+                # 显示原始值 - 缺失用 None 表示
+                disp_orig_x = pt.original_x if pt.original_x is not None else "(缺失)"
+                disp_orig_y = pt.original_y if pt.original_y is not None else "(缺失)"
+                # 显示加权后的值 - NaN 也标出来
+                disp_weighted_x = f"{pt.x * result.weights.get('x', 1.0):.4f}" if not np.isnan(pt.x) else "(缺失)"
+                disp_weighted_y = f"{pt.y * result.weights.get('y', 1.0):.4f}" if not np.isnan(pt.y) else "(缺失)"
+                sections.append(f"| {pt.id} | {disp_orig_x} | {disp_orig_y} | {disp_weighted_x} | {disp_weighted_y} | {is_dirty} | {pt.dirty_reason} | {is_dup} | {pt.source} | {pt.note} |")
             sections.append("")
 
         # 复核说明

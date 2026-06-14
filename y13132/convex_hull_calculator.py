@@ -35,6 +35,8 @@ class ConvexHullResult:
     used_points: List[PointData]
     excluded_points: List[PointData]
     weights: Dict[str, float]
+    exclude_duplicates: bool = True
+    exclude_dirty: bool = True
     calculation_trace: List[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -43,6 +45,8 @@ class ConvexHullResult:
             "hull_points": self.hull_points,
             "hull_indices": self.hull_indices,
             "weights": self.weights,
+            "exclude_duplicates": self.exclude_duplicates,
+            "exclude_dirty": self.exclude_dirty,
             "used_count": len(self.used_points),
             "excluded_count": len(self.excluded_points),
         }
@@ -119,13 +123,19 @@ class ConvexHullCalculator:
             excluded = False
             reasons = []
 
-            if exclude_duplicates and pt.is_duplicate:
+            # 先检查 NaN（缺失值），这类数据自动排除
+            if np.isnan(pt.x) or np.isnan(pt.y):
                 excluded = True
-                reasons.append("重复样本")
+                reasons.append("坐标缺失")
 
-            if exclude_dirty and pt.is_dirty:
-                excluded = True
-                reasons.append(f"脏数据({pt.dirty_reason})")
+            if not excluded:
+                if exclude_duplicates and pt.is_duplicate:
+                    excluded = True
+                    reasons.append("重复样本")
+
+                if exclude_dirty and pt.is_dirty:
+                    excluded = True
+                    reasons.append(f"脏数据({pt.dirty_reason})")
 
             if excluded:
                 pt_excluded = PointData(**pt.__dict__)
@@ -150,6 +160,8 @@ class ConvexHullCalculator:
                 used_points=used_points,
                 excluded_points=excluded_points,
                 weights=weights,
+                exclude_duplicates=exclude_duplicates,
+                exclude_dirty=exclude_dirty,
                 calculation_trace=self.calculation_trace.copy(),
             )
 
@@ -181,6 +193,8 @@ class ConvexHullCalculator:
                 used_points=used_points,
                 excluded_points=excluded_points,
                 weights=weights,
+                exclude_duplicates=exclude_duplicates,
+                exclude_dirty=exclude_dirty,
                 calculation_trace=self.calculation_trace.copy(),
             )
 
@@ -194,6 +208,8 @@ class ConvexHullCalculator:
             used_points=weighted_points,
             excluded_points=excluded_points,
             weights=weights,
+            exclude_duplicates=exclude_duplicates,
+            exclude_dirty=exclude_dirty,
             calculation_trace=self.calculation_trace.copy(),
         )
 

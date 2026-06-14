@@ -1,0 +1,20 @@
+{
+  "weight_changes": [],
+  "calculation_history": [
+    {
+      "timestamp": "2026-06-14 11:41:24",
+      "weights": {
+        "x": 1.0,
+        "y": 1.0
+      },
+      "area": 400.50000000000006,
+      "exclude_duplicates": true,
+      "exclude_dirty": true,
+      "used_points_count": 10,
+      "excluded_points_count": 5,
+      "data_source": "演示数据集（含脏数据）",
+      "operator": "阿宁",
+      "note": ""
+    }
+  ]
+}
