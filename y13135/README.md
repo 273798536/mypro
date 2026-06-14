@@ -40,7 +40,7 @@ sample_input/
 │   ├── M1_v1.png
 │   └── ...
 └── history/               ← 历史版本 CSV，会合并进每题的历史时间线
-    └── questions_v1.csv
+    └── questions_v1_2025-11-15.csv   ← 文件名带日期，用于排序稳定性比对和跳变溯源
 ```
 
 ### 主 CSV 必需字段（中文名也可）
@@ -81,7 +81,7 @@ mc_review/
 ## 快速验证
 
 ```bash
-python -m mc_review -i sample_input -o output
+python3 -m mc_review -i sample_input -o output
 ```
 
 终端会输出摘要统计，`output/review_report.md` 会生成完整报告。
