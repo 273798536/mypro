@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom';
 import { useStore } from '@/store/useStore';
 import Layout from '@/components/Layout';
 import AnomalyTag from '@/components/AnomalyTag';
-import { AlertTriangle, FileText, Clock, CheckCircle2, TriangleAlert, Filter } from 'lucide-react';
+import SubmitForm from '@/components/SubmitForm';
+import { AlertTriangle, FileText, Clock, CheckCircle2, Filter } from 'lucide-react';
 import { AnomalyFilter, ChangedFilter } from '@/types';
 
 export default function HomePage() {
@@ -42,7 +43,7 @@ export default function HomePage() {
         className="block bg-amber-600 text-white rounded-[6px] px-5 py-3 mb-6 flex items-center justify-between hover:bg-amber-500 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <TriangleAlert size={22} />
+          <AlertTriangle size={22} />
           <div>
             <div className="font-bold text-sm">异常隔离区 · 排班同事重点关注</div>
             <div className="text-xs text-amber-100">除零边界与空集合已单独拎出，不会混入正常结果</div>
@@ -59,6 +60,10 @@ export default function HomePage() {
           </div>
         </div>
       </Link>
+
+      <div className="mb-6">
+        <SubmitForm />
+      </div>
 
       <div className="grid grid-cols-4 gap-4 mb-8">
         <div className="card p-4">

@@ -163,24 +163,24 @@ export function shoelaceArea(hull: Point[]): { area: number; steps: CalculationS
     result: Math.abs(diff),
   });
 
-  const denom = 2;
-  if (denom === 0) {
+  const divisor: number = 2;
+  if (divisor === 0) {
     steps.push({
       step: startStep + 3,
       description: '鞋带公式：除零异常',
-      formula: 'area = |sum1 - sum2| / 2',
-      values: { denominator: 0 },
+      formula: 'area = |sum1 - sum2| / divisor',
+      values: { divisor },
       result: 'division_by_zero',
     });
     return { area: NaN, steps };
   }
 
-  const area = Math.abs(diff) / 2;
+  const area = Math.abs(diff) / divisor;
   steps.push({
     step: startStep + 3,
     description: '鞋带公式：除以2得面积',
     formula: 'area = |sum1 - sum2| / 2',
-    values: { numerator: Math.abs(diff), denominator: 2 },
+    values: { numerator: Math.abs(diff), divisor },
     result: area,
   });
 

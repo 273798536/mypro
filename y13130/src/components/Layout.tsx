@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { TriangleAlert, Home, ArrowLeft } from 'lucide-react';
+import { AlertTriangle, Home, ArrowLeft } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ export default function Layout({ children, title, showBack }: LayoutProps) {
                 <ArrowLeft size={18} />
               </Link>
             )}
-            <TriangleAlert className="text-ink-800" size={22} />
+            <AlertTriangle className="text-ink-800" size={22} />
             <div>
               <h1 className="font-display text-xl font-bold text-ink-900 leading-none">
                 {title || '凸包面积错题复盘'}
@@ -33,7 +33,7 @@ export default function Layout({ children, title, showBack }: LayoutProps) {
               <Home size={14} /> 复盘首页
             </Link>
             <Link to="/anomaly" className="btn-ghost !py-1.5 !px-3 text-xs text-amber-600">
-              <TriangleAlert size={14} /> 异常隔离区
+              <AlertTriangle size={14} /> 异常隔离区
             </Link>
           </nav>
         </div>
