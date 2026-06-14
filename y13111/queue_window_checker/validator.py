@@ -287,7 +287,6 @@ class QueueWindowValidator:
                 message=f"公式执行错误: {exc}",
                 raw_reference=config.formula,
             ))
-            result.status = CheckStatus.FAIL
             computed = None
         result.add_step(_make_step(
             "s07",
@@ -310,7 +309,6 @@ class QueueWindowValidator:
 
             bound_before = True
             if not within:
-                result.status = CheckStatus.FAIL
                 if computed < config.lower_bound:
                     result.add_anomaly(Anomaly(
                         anomaly_type=AnomalyType.BOUNDARY_BREACH,

@@ -14,7 +14,9 @@
       * /Users/mac/pro/solo/workspaces/y13111/config/tuned_window_config.json
 
 [已导入的历史答案]
-  - 验证答案A: /Users/mac/pro/solo/workspaces/y13111/samples/现场案例A.csv
+  - 现场案例A (CSV): /Users/mac/pro/solo/workspaces/y13111/samples/现场案例A.csv
+  - 当前参数配置: /Users/mac/pro/solo/workspaces/y13111/config/default_window_config.json
+  - 调参配置: /Users/mac/pro/solo/workspaces/y13111/config/tuned_window_config.json
 
 [异常在哪]
   - 报告「异常列表」sheet / JSON anomalies 字段

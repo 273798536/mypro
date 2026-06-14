@@ -193,8 +193,33 @@ if os.path.exists(xlsx_path):
         check("   Excel材料名与CSV一致", list(df_mats["名称"]) == [r["name"] for _, r in csv_df.iterrows() if r["name"]], "是")
         df_anoms = xl.parse("异常列表")
         check("   Excel异常数与计算一致", len(df_anoms) == len(result2.anomalies), f"{len(df_anoms)} vs {len(result2.anomalies)}")
+        df_overview = xl.parse("概览")
+        check("   Excel概览状态与计算一致", str(df_overview["状态"].iloc[0]) == result2.status.value,
+              f"Excel={df_overview['状态'].iloc[0]}, 计算={result2.status.value}")
     except Exception as e:
         check("   Excel内容一致性", False, str(e))
+
+if os.path.exists(txt_path):
+    try:
+        with open(txt_path, "r", encoding="utf-8") as fp:
+            txt_content = fp.read()
+        check("   TXT状态与计算一致", f"状态: {result2.status.value}" in txt_content,
+              f"预期包含「状态: {result2.status.value}」")
+        check("   TXT异常与计算一致", all(a.message[:20] in txt_content for a in result2.anomalies),
+              "是")
+    except Exception as e:
+        check("   TXT内容一致性", False, str(e))
+
+if os.path.exists(json_path):
+    try:
+        with open(json_path, "r", encoding="utf-8") as fp:
+            js_data = json.load(fp)
+        check("   JSON状态与计算一致", js_data["result"]["status"] == result2.status.value,
+              f"JSON={js_data['result']['status']}, 计算={result2.status.value}")
+        check("   JSON异常数与计算一致", len(js_data["result"]["anomalies"]) == len(result2.anomalies),
+              f"{len(js_data['result']['anomalies'])} vs {len(result2.anomalies)}")
+    except Exception as e:
+        check("   JSON内容一致性", False, str(e))
 
 print()
 print("-- 边界情况检查 --")
@@ -216,6 +241,32 @@ try:
     check("   排序稳定标志=False", result_b.sort_stable is False, f"sort_stable={result_b.sort_stable}")
 except Exception as e:
     check("   排序不稳定处理", False, str(e))
+
+print()
+print("-- 状态机一致性检查 --")
+try:
+    answer_a_only_name = load_csv_answer("samples/现场案例A.csv")
+    validator_x = QueueWindowValidator(cfg)
+    result_x = validator_x.validate(answer_a_only_name)
+    only_name_fail = (
+        result_x.status.value == "不通过"
+        and len(result_x.anomalies) >= 1
+        and any(a.anomaly_type.value == "名称不一致" for a in result_x.anomalies)
+    )
+    check("   名称不一致 -> 状态=不通过", only_name_fail, f"状态={result_x.status.value}, 异常数={len(result_x.anomalies)}")
+
+    from queue_window_checker import CheckResult, CheckStatus, Anomaly, AnomalyType
+    r_up = CheckResult(status=CheckStatus.PASS)
+    r_up.add_anomaly(Anomaly(anomaly_type=AnomalyType.SORT_UNSTABLE, message="t"))
+    r_up.add_anomaly(Anomaly(anomaly_type=AnomalyType.NAME_MISMATCH, message="t"))
+    check("   SUSPENDED + FAIL -> 升级为 FAIL", r_up.status == CheckStatus.FAIL, f"实际={r_up.status.value}")
+
+    r_down = CheckResult(status=CheckStatus.PASS)
+    r_down.add_anomaly(Anomaly(anomaly_type=AnomalyType.BOUNDARY_BREACH, message="t"))
+    r_down.add_anomaly(Anomaly(anomaly_type=AnomalyType.EMPTY_SET, message="t"))
+    check("   FAIL + SUSPENDED -> 保持 FAIL", r_down.status == CheckStatus.FAIL, f"实际={r_down.status.value}")
+except Exception as e:
+    check("   状态机一致性", False, str(e))
 
 print()
 print("=" * 60)

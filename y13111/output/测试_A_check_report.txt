@@ -4,7 +4,7 @@
 历史答案ID: 现场案例A
 来源文件: /Users/mac/pro/solo/workspaces/y13111/samples/现场案例A.csv
 材料数: 5
-状态: 通过
+状态: 不通过
 排序稳定: True
 计算值: 13.3333 个
 使用公式: avg_throughput = total_count / window_size

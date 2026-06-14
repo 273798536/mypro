@@ -128,9 +128,11 @@ class CheckResult:
 
     def add_anomaly(self, anomaly: Anomaly) -> None:
         self.anomalies.append(anomaly)
-        if anomaly.anomaly_type in (AnomalyType.SORT_UNSTABLE, AnomalyType.EMPTY_SET):
-            if self.status != CheckStatus.FAIL:
-                self.status = CheckStatus.SUSPENDED
+        target = _anomaly_target_status(anomaly.anomaly_type)
+        if target is None:
+            return
+        if _status_priority(target) >= _status_priority(self.status):
+            self.status = target
 
     def add_step(self, step: CheckStep) -> None:
         self.steps.append(step)
@@ -145,3 +147,30 @@ class CheckResult:
             "sort_stable": self.sort_stable,
             "step_count": len(self.steps),
         }
+
+
+_STATUS_PRIORITY = {
+    CheckStatus.PASS: 0,
+    CheckStatus.PENDING: 10,
+    CheckStatus.SUSPENDED: 20,
+    CheckStatus.FAIL: 30,
+}
+
+
+def _status_priority(status: CheckStatus) -> int:
+    return _STATUS_PRIORITY.get(status, 0)
+
+
+_ANOMALY_STATUS_MAP: dict[AnomalyType, CheckStatus] = {
+    AnomalyType.NAME_MISMATCH: CheckStatus.FAIL,
+    AnomalyType.UNIT_MISMATCH: CheckStatus.FAIL,
+    AnomalyType.FORMULA_ERROR: CheckStatus.FAIL,
+    AnomalyType.BOUNDARY_BREACH: CheckStatus.FAIL,
+    AnomalyType.BAD_DATA: CheckStatus.FAIL,
+    AnomalyType.EMPTY_SET: CheckStatus.SUSPENDED,
+    AnomalyType.SORT_UNSTABLE: CheckStatus.SUSPENDED,
+}
+
+
+def _anomaly_target_status(atype: AnomalyType) -> CheckStatus | None:
+    return _ANOMALY_STATUS_MAP.get(atype)
