@@ -68,6 +68,11 @@ REQUIRED_COLUMNS = [
     "mc_sample_count", "confidence_level", "spec_lower", "spec_upper",
 ]
 
+REQUIRED_NUMERIC_COLUMNS = [
+    "measurement_nominal", "measurement_tolerance",
+    "mc_sample_count", "confidence_level", "spec_lower", "spec_upper",
+]
+
 
 # ---------------------------------------------------------------------------
 # 数据结构
@@ -122,52 +127,123 @@ class TrialResult:
 
 
 # ---------------------------------------------------------------------------
+# 安全数值解析（防御 CSV 列错位）
+# ---------------------------------------------------------------------------
+
+def _safe_float(value, field_name: str) -> Tuple[Optional[float], Optional[str]]:
+    """
+    安全地将值转为 float。返回 (数值, 错误码或 None)。
+    若为 NaN 或空字符串 → (None, None) 视为缺失。
+    若无法转成数字 → (None, "ERR_MC_001") 视为参数非法。
+    """
+    if pd.isna(value):
+        return None, None
+    if isinstance(value, (int, float)):
+        return float(value), None
+    s = str(value).strip()
+    if not s:
+        return None, None
+    try:
+        return float(s), None
+    except (ValueError, TypeError):
+        return None, "ERR_MC_001"
+
+
+def _safe_int(value, field_name: str) -> Tuple[Optional[int], Optional[str]]:
+    f, err = _safe_float(value, field_name)
+    if err:
+        return None, err
+    if f is None:
+        return None, None
+    return int(f), None
+
+
+# ---------------------------------------------------------------------------
 # 核心计算
 # ---------------------------------------------------------------------------
 
-def _validate_input(row: pd.Series) -> Tuple[bool, List[str]]:
-    """校验输入参数，返回 (是否可试算, 错误码列表)"""
+def _validate_input(row: pd.Series) -> Tuple[bool, List[str], Dict[str, Optional[float]]]:
+    """
+    校验输入参数并解析所有数值。
+    返回: (是否可试算, 错误码列表, 解析后的数值字典)
+    """
     errors = []
+    values: Dict[str, Optional[float]] = {}
 
-    # 必要参数缺失
-    for col in REQUIRED_COLUMNS:
-        if col not in row or pd.isna(row[col]):
+    # 1. 字符串列存在性检查 (param_id, case_name)
+    for col in ["param_id", "case_name"]:
+        v = row.get(col)
+        if v is None or pd.isna(v) or str(v).strip() == "":
             errors.append("ERR_MC_001")
-            break
+            return False, errors, values
 
-    if errors:
-        return False, errors
+    # 2. 数值列存在性和格式检查
+    for col in REQUIRED_NUMERIC_COLUMNS:
+        v, err = _safe_float(row.get(col), col)
+        if err:
+            errors.append("ERR_MC_001")
+            return False, errors, values
+        if v is None:
+            errors.append("ERR_MC_001")
+            return False, errors, values
+        values[col] = v
 
     # 规格范围
-    if row["spec_lower"] >= row["spec_upper"]:
+    spec_lo = values["spec_lower"]
+    spec_hi = values["spec_upper"]
+    if spec_lo >= spec_hi:
         errors.append("ERR_MC_004")
-        return False, errors
+        return False, errors, values
 
-    # 标准差缺失 (待补材料)
-    if pd.isna(row.get("repeatability_std")) or pd.isna(row.get("reproducibility_std")):
+    # 重复性 / 再现性 (可选检查)
+    rep_std, err1 = _safe_float(row.get("repeatability_std"), "repeatability_std")
+    repro_std, err2 = _safe_float(row.get("reproducibility_std"), "reproducibility_std")
+    values["repeatability_std"] = rep_std
+    values["reproducibility_std"] = repro_std
+
+    if err1 or err2:
+        errors.append("ERR_MC_001")
+        return False, errors, values
+
+    if rep_std is None or repro_std is None:
         errors.append("ERR_MC_002")
-        return False, errors
+        return False, errors, values
 
-    return True, errors
+    # measurement_tolerance 解析
+    tol, err = _safe_float(row.get("measurement_tolerance"), "measurement_tolerance")
+    if err:
+        errors.append("ERR_MC_001")
+        return False, errors, values
+    values["measurement_tolerance"] = tol
+
+    # mc_sample_count 转 int
+    n, err = _safe_int(row.get("mc_sample_count"), "mc_sample_count")
+    if err:
+        errors.append("ERR_MC_001")
+        return False, errors, values
+    values["mc_sample_count_int"] = float(n)
+
+    return True, errors, values
 
 
-def _detect_warnings(row: pd.Series) -> List[str]:
+def _detect_warnings(values: Dict[str, Optional[float]]) -> List[str]:
     """检测警告类问题 (不阻断计算，但影响状态)"""
     warns = []
-    n = int(row["mc_sample_count"])
+    n = int(values["mc_sample_count_int"])
+    rep_std = values["repeatability_std"]
+    repro_std = values["reproducibility_std"]
+    tol = values.get("measurement_tolerance")
 
     if n < RECOMMENDED_MIN_SAMPLES:
         warns.append("ERR_MC_003")
 
-    rep_std = float(row["repeatability_std"])
-    repro_std = float(row["reproducibility_std"])
+    if rep_std is not None and repro_std is not None:
+        if rep_std > 0 and repro_std / rep_std > DRIFT_WARNING_FACTOR:
+            warns.append("ERR_MC_006")
 
-    if rep_std > 0 and repro_std / rep_std > DRIFT_WARNING_FACTOR:
-        warns.append("ERR_MC_006")
-
-    if repro_std > 0 and row["measurement_tolerance"] > 0:
-        if repro_std / row["measurement_tolerance"] > 0.3:
-            warns.append("ERR_MC_007")
+        if tol is not None and tol > 0 and repro_std > 0:
+            if repro_std / tol > 0.3:
+                warns.append("ERR_MC_007")
 
     return warns
 
@@ -177,7 +253,7 @@ def _check_sort_instability(
 ) -> bool:
     """
     排序不稳定检测：
-    以该样本与一组合成样本做排名，换一个种子再做一次，
+    抽取两组邻居样本，分别计算当前样本均值在两组邻居中的排名，
     若排名差异超过阈值则判定排序不稳。
     """
     if total_std <= 0:
@@ -188,12 +264,17 @@ def _check_sort_instability(
 
     rng1 = np.random.default_rng(seed)
     rng2 = np.random.default_rng(seed + 9999)
-    neighbors = rng1.normal(nominal * 0.98, total_std, 20)
-    sample1 = rng1.normal(nominal, total_std, n_samples)
-    sample2 = rng2.normal(nominal, total_std, n_samples)
-    rank1 = np.mean(sample1 > neighbors)
-    rank2 = np.mean(sample2 > neighbors)
-    return abs(rank1 - rank2) > 0.05
+    neighbors1 = np.sort(rng1.normal(nominal * 0.98, total_std, 50))
+    neighbors2 = np.sort(rng2.normal(nominal * 0.98, total_std, 50))
+    # 用均值代表该样本的位置，计算其在邻居中的分位排名
+    rank1 = np.searchsorted(neighbors1, nominal) / len(neighbors1)
+    rank2 = np.searchsorted(neighbors2, nominal) / len(neighbors2)
+    # 额外再用样本均值做一次验证
+    s1_mean = np.mean(rng1.normal(nominal, total_std, n_samples))
+    s2_mean = np.mean(rng2.normal(nominal, total_std, n_samples))
+    rank1b = np.searchsorted(neighbors1, s1_mean) / len(neighbors1)
+    rank2b = np.searchsorted(neighbors2, s2_mean) / len(neighbors2)
+    return (abs(rank1 - rank2) > 0.05) or (abs(rank1b - rank2b) > 0.05)
 
 
 def run_single_trial(row: pd.Series, seed: int = 20260613) -> TrialResult:
@@ -202,7 +283,7 @@ def run_single_trial(row: pd.Series, seed: int = 20260613) -> TrialResult:
     param_id = str(row.get("param_id", "UNKNOWN"))
     case_name = str(row.get("case_name", "未命名案例"))
 
-    ok, errors = _validate_input(row)
+    ok, errors, values = _validate_input(row)
     if not ok:
         status = "MATERIAL_PENDING" if "ERR_MC_002" in errors else "MANUAL_REVIEW"
         return TrialResult(
@@ -210,17 +291,17 @@ def run_single_trial(row: pd.Series, seed: int = 20260613) -> TrialResult:
             status=status, error_codes=errors,
         )
 
-    warnings = _detect_warnings(row)
+    warnings = _detect_warnings(values)
 
-    nominal = float(row["measurement_nominal"])
-    tolerance = float(row["measurement_tolerance"])
-    rep_std = float(row["repeatability_std"])
-    repro_std = float(row["reproducibility_std"])
+    nominal = values["measurement_nominal"]
+    tolerance = values["measurement_tolerance"]
+    rep_std = values["repeatability_std"]
+    repro_std = values["reproducibility_std"]
     total_std = np.sqrt(rep_std ** 2 + repro_std ** 2)
-    n = int(row["mc_sample_count"])
-    conf = float(row["confidence_level"])
-    spec_lo = float(row["spec_lower"])
-    spec_hi = float(row["spec_upper"])
+    n = int(values["mc_sample_count_int"])
+    conf = values["confidence_level"]
+    spec_lo = values["spec_lower"]
+    spec_hi = values["spec_upper"]
 
     # ---- 排序不稳定检测 ----
     if _check_sort_instability(nominal, total_std, min(n, 2000), seed):

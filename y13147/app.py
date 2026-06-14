@@ -136,23 +136,23 @@ tab_overview, tab_detail, tab_raw, tab_howto = st.tabs(
 # ---- 跑批 ----
 result_rows = [run_single_trial(row, seed=seed) for _, row in param_df.iterrows()]
 summary_df = pd.DataFrame(
-    [
-        {
-            "参数编号": r.param_id,
-            "案例名称": r.case_name,
-            "状态": r.status_label,
-            "错误/警告码": "、".join(r.error_codes) if r.error_codes else "-",
-            "均值估计": round(r.mean_estimated, 6) if r.mean_estimated is not None else "-",
-            "标准差": round(r.std_estimated, 6) if r.std_estimated is not None else "-",
-            "Cp": round(r.cp, 3) if r.cp is not None else "-",
-            "Cpk": round(r.cpk, 3) if r.cpk is not None else "-",
-            "超规格率": f"{r.out_of_spec_rate*100:.2f}%" if r.out_of_spec_rate is not None else "-",
-            "材料来源": param_df[param_df["param_id"] == r.param_id]["material_source"].iloc[0]
-            if not param_df[param_df["param_id"] == r.param_id].empty else "-",
-        }
-        for r in result_rows
-    ]
-)
+        [
+            {
+                "参数编号": r.param_id,
+                "案例名称": r.case_name,
+                "状态": r.status_label,
+                "错误/警告码": "、".join(r.error_codes) if r.error_codes else None,
+                "均值估计": round(r.mean_estimated, 6) if r.mean_estimated is not None else None,
+                "标准差": round(r.std_estimated, 6) if r.std_estimated is not None else None,
+                "Cp": round(r.cp, 3) if r.cp is not None else None,
+                "Cpk": round(r.cpk, 3) if r.cpk is not None else None,
+                "超规格率(%)": round(r.out_of_spec_rate * 100, 3) if r.out_of_spec_rate is not None else None,
+                "材料来源": param_df[param_df["param_id"] == r.param_id]["material_source"].iloc[0]
+                if not param_df[param_df["param_id"] == r.param_id].empty else None,
+            }
+            for r in result_rows
+        ]
+    )
 
 with tab_overview:
     st.subheader("汇总看板（可截图给项目经理）")
@@ -182,7 +182,7 @@ with tab_overview:
 
     st.dataframe(
         summary_df.style.apply(_color_status, subset=["状态"]),
-        use_container_width=True,
+        width="stretch",
         hide_index=True,
     )
 
@@ -243,7 +243,7 @@ with tab_detail:
         )
         fig.add_vline(x=1.33, line_dash="dash", line_color="gray", annotation_text="Cpk=1.33 (合格线)")
         fig.update_layout(height=480)
-        event = st.plotly_chart(fig, use_container_width=True, on_select="rerun", key="scatter")
+        event = st.plotly_chart(fig, width="stretch", on_select="rerun", key="scatter")
 
         selected_idx = None
         if event and event.get("selection") and event["selection"].get("point_indices"):
@@ -317,7 +317,7 @@ with tab_detail:
                     title=f"{r.case_name} — 蒙特卡洛抽样分布 (n={r.trace.sample_count if r.trace else '?'})",
                     xaxis_title="测量值", yaxis_title="频次", height=400,
                 )
-                st.plotly_chart(fig_hist, use_container_width=True)
+                st.plotly_chart(fig_hist, width="stretch")
 
             # ---- 数字来源线索 ----
             if r.trace:
@@ -349,7 +349,7 @@ with tab_detail:
 # =============================================================================
 with tab_raw:
     st.subheader("参数原始表")
-    st.dataframe(param_df, use_container_width=True, hide_index=True)
+    st.dataframe(param_df, width="stretch", hide_index=True)
     st.download_button(
         "⬇️ 下载当前参数表为 CSV",
         param_df.to_csv(index=False),
