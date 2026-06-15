@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}方案列表 - 夜市外摆方案比选{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>方案列表</h2>
+    <p style="color:#666; margin-bottom:16px;">
+        共 {{ plans|length }} 个方案。点击查看详情，可进行筛选、查看报告、重跑等操作。
+    </p>
+
+    <div class="action-bar">
+        <form method="POST" action="{{ url_for('create_plan') }}" class="inline-form">
+            <input type="text" name="title" placeholder="新方案名称" value="夜市外摆方案比选"
+                   style="padding:8px 10px; border:1px solid #ddd; border-radius:4px; width:240px;">
+            <button type="submit" class="btn btn-primary">+ 启动新方案</button>
+        </form>
+    </div>
+
+    {% if plans %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>方案名称</th>
+                <th>当前版本</th>
+                <th>状态</th>
+                <th>需人工确认</th>
+                <th>更新时间</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in plans %}
+            <tr>
+                <td>{{ plan.id }}</td>
+                <td>{{ plan.title }}</td>
+                <td>v{{ plan.current_version }}</td>
+                <td>
+                    <span class="status-badge status-{{ plan.status }}">
+                        {{ StatusService.get_status_label(plan.status) }}
+                    </span>
+                </td>
+                <td>
+                    {% if plan.need_confirm %}
+                    <span style="color:#e74c3c; font-weight:600;">是</span>
+                    {% else %}
+                    <span style="color:#999;">否</span>
+                    {% endif %}
+                </td>
+                <td>{{ plan.updated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>
+                    <a href="{{ url_for('plan_detail', plan_id=plan.id) }}" class="btn btn-sm btn-primary">查看</a>
+                    <a href="{{ url_for('view_report', plan_id=plan.id) }}" class="btn btn-sm btn-secondary">报告</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#999; text-align:center; padding:40px;">暂无方案，点击上方按钮启动新方案</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h2>使用说明</h2>
+    <div style="font-size:14px; color:#555; line-height:1.8;">
+        <p><strong>三件事：</strong></p>
+        <ol>
+            <li><strong>启动</strong>：点击"启动新方案"，创建一个新的方案比选任务</li>
+            <li><strong>重跑</strong>：在方案详情页点击"重跑"，基于当前数据生成新版本</li>
+            <li><strong>查看Markdown报告</strong>：点击"报告"按钮，查看完整的Markdown格式报告</li>
+        </ol>
+    </div>
+</div>
+{% endblock %}

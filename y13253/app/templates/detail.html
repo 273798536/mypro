@@ -1,0 +1,300 @@
+{% extends "base.html" %}
+
+{% block title %}{{ plan.title }} - 夜市外摆方案比选{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+            <h2 style="border:none; padding:0; margin:0;">{{ plan.title }}</h2>
+            <div style="margin-top:8px;">
+                <span class="status-badge status-{{ plan.status }}">
+                    {{ StatusService.get_status_label(plan.status) }}
+                </span>
+                <span style="color:#999; font-size:13px; margin-left:10px;">
+                    当前版本：v{{ plan.current_version }}
+                </span>
+                <span style="color:#999; font-size:13px; margin-left:10px;">
+                    更新于：{{ plan.updated_at.strftime('%Y-%m-%d %H:%M') }}
+                </span>
+            </div>
+        </div>
+        <div class="action-bar" style="margin:0;">
+            <a href="{{ url_for('view_report', plan_id=plan.id) }}" class="btn btn-success">📄 查看Markdown报告</a>
+            <form method="POST" action="{{ url_for('rerun_plan', plan_id=plan.id) }}" class="inline-form"
+                  onsubmit="return confirm('确定要重跑吗？将生成新版本。');">
+                <input type="text" name="reason" placeholder="重跑原因"
+                       style="padding:6px 10px; border:1px solid #ddd; border-radius:4px; width:160px;">
+                <button type="submit" class="btn btn-warning">🔄 重跑</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if plan.need_confirm %}
+<div class="alert alert-warning">
+    <strong>⚠️ 需要人工确认</strong>
+    <p style="margin-top:4px;">原因：{{ plan.confirm_reason or '暂无' }}</p>
+    {% if plan.next_step %}
+    <p style="margin-top:4px;">下一步：{{ plan.next_step }}</p>
+    {% endif %}
+    <div style="margin-top:10px;">
+        <form method="POST" action="{{ url_for('confirm_plan', plan_id=plan.id) }}" class="inline-form">
+            <input type="text" name="comment" placeholder="确认意见"
+                   style="padding:6px 10px; border:1px solid #ddd; border-radius:4px; width:240px;">
+            <button type="submit" name="confirmed" value="yes" class="btn btn-success btn-sm">✓ 确认通过</button>
+            <button type="submit" name="confirmed" value="no" class="btn btn-danger btn-sm">✗ 驳回</button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('overview')">概览</div>
+        <div class="tab" onclick="switchTab('detail')">明细表</div>
+        <div class="tab" onclick="switchTab('records')">巡检记录</div>
+        <div class="tab" onclick="switchTab('remarks')">备注</div>
+        <div class="tab" onclick="switchTab('versions')">版本历史</div>
+        <div class="tab" onclick="switchTab('status')">状态管理</div>
+    </div>
+
+    <div id="tab-overview" class="tab-content active">
+        <h3>统计概览</h3>
+        <div class="stat-grid">
+            <div class="stat-item">
+                <div class="stat-value">{{ data.statistics.total_locations }}</div>
+                <div class="stat-label">点位数量</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ data.statistics.total_booths }}</div>
+                <div class="stat-label">总摊位数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ data.statistics.total_area }}</div>
+                <div class="stat-label">总面积(㎡)</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ data.statistics.avg_booths_per_location }}</div>
+                <div class="stat-label">平均每点摊位</div>
+            </div>
+        </div>
+
+        <h3>状态分布</h3>
+        <div style="margin-bottom:16px;">
+            {% for status, count in data.statistics.status_counts.items() %}
+            <span class="status-badge status-{{ status }}" style="margin-right:8px;">
+                {{ StatusService.get_status_label(status) }}: {{ count }}
+            </span>
+            {% endfor %}
+        </div>
+
+        <h3>业态分布</h3>
+        <div style="margin-bottom:8px;">
+            {% for bt, count in data.statistics.business_type_counts.items() %}
+            <span style="display:inline-block; background:#eaf2f8; color:#2874a6; padding:4px 10px;
+                         border-radius:12px; font-size:12px; margin-right:8px; margin-bottom:6px;">
+                {{ bt }}: {{ count }}个
+            </span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="tab-detail" class="tab-content">
+        <h3>筛选条件</h3>
+        <form method="GET" action="{{ url_for('plan_detail', plan_id=plan.id) }}" class="filter-bar" style="margin-bottom:16px;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>状态</label>
+                <select name="status">
+                    <option value="">全部</option>
+                    <option value="draft">草稿</option>
+                    <option value="reviewing">复核中</option>
+                    <option value="pending">待确认</option>
+                    <option value="confirmed">已确认</option>
+                    <option value="approved">已通过</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>业态</label>
+                <select name="business_type">
+                    <option value="">全部</option>
+                    {% for bt in data.statistics.business_type_counts.keys() %}
+                    <option value="{{ bt }}">{{ bt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+                <label>点位关键词</label>
+                <input type="text" name="location_keyword" placeholder="输入关键词">
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">筛选</button>
+        </form>
+
+        <h3>点位明细表</h3>
+        {% if data.detail_table %}
+        <table>
+            <thead>
+                <tr>
+                    {% for col in data.detail_table[0].keys() %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data.detail_table %}
+                <tr>
+                    {% for val in row.values() %}
+                    <td>{{ val }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color:#999; text-align:center; padding:30px;">暂无数据</p>
+        {% endif %}
+    </div>
+
+    <div id="tab-records" class="tab-content">
+        <h3>巡检记录与影响分析</h3>
+        <p style="color:#666; font-size:13px; margin-bottom:12px;">
+            红色标记为影响结论的记录，黄色为旧版数据。
+        </p>
+        {% if records %}
+        {% for record in records %}
+        <div class="record-item {% if record.affects_conclusion %}record-affecting{% endif %}{% if record.is_old_version %} record-old{% endif %}">
+            <div class="record-title">
+                {% if record.affects_conclusion %}<span style="color:#e74c3c;">⚠️</span>{% endif %}
+                {% if record.is_old_version %}<span style="color:#f39c12;">📷旧版</span>{% endif %}
+                {{ record.title }}
+            </div>
+            <div class="record-meta">
+                类型：{{ record.record_type }} | 来源：{{ record.source or '未知' }} | {{ record.created_at.strftime('%Y-%m-%d %H:%M') }}
+            </div>
+            <div class="record-content">{{ record.content }}</div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="color:#999;">暂无巡检记录</p>
+        {% endif %}
+    </div>
+
+    <div id="tab-remarks" class="tab-content">
+        <h3>历史备注</h3>
+        <p style="color:#666; font-size:13px; margin-bottom:12px;">
+            所有备注都会保留，合并后的备注也能看到原始说法。
+        </p>
+
+        <div style="margin-bottom:16px;">
+            <form method="POST" action="{{ url_for('add_remark', plan_id=plan.id) }}">
+                <div class="form-group">
+                    <textarea name="content" placeholder="输入备注内容..." required></textarea>
+                </div>
+                <div style="display:flex; gap:10px;">
+                    <input type="text" name="author" placeholder="操作人" style="padding:6px 10px; border:1px solid #ddd; border-radius:4px; width:120px;">
+                    <input type="text" name="source" placeholder="来源（如：微信聊天）" style="padding:6px 10px; border:1px solid #ddd; border-radius:4px; flex:1;">
+                    <button type="submit" class="btn btn-primary btn-sm">添加备注</button>
+                </div>
+            </form>
+        </div>
+
+        {% if remarks %}
+        {% for remark in remarks %}
+        <div class="remark-item">
+            <div class="remark-meta">
+                <strong>{{ remark.author or '匿名' }}</strong>
+                {% if remark.source %}· 来源：{{ remark.source }}{% endif %}
+                · {{ remark.created_at.strftime('%Y-%m-%d %H:%M') }}
+                {% if remark.is_merged %}<span style="color:#27ae60;">[已合并]</span>{% endif %}
+            </div>
+            <div class="remark-content">{{ remark.content }}</div>
+            {% if remark.merged_from %}
+            <details style="margin-top:8px; font-size:12px; color:#999;">
+                <summary style="cursor:pointer;">查看原始说法</summary>
+                <pre style="white-space:pre-wrap; margin-top:6px; padding:8px; background:#f0f0f0; border-radius:4px;">{{ remark.merged_from }}</pre>
+            </details>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="color:#999;">暂无备注</p>
+        {% endif %}
+    </div>
+
+    <div id="tab-versions" class="tab-content">
+        <h3>版本历史</h3>
+        <p style="color:#666; font-size:13px; margin-bottom:12px;">
+            每次修改或重跑都会生成新版本，可随时回退。重启或重跑后，历史备注、状态、报告保持一致。
+        </p>
+        {% if versions %}
+        {% for version in versions %}
+        <div class="version-item {% if version.version_num == plan.current_version %}version-current{% endif %}">
+            <div>
+                <strong>v{{ version.version_num }}</strong>
+                {% if version.version_num == plan.current_version %}
+                <span style="color:#1abc9c; font-size:12px; margin-left:8px;">（当前版本）</span>
+                {% endif %}
+                <span style="color:#999; font-size:12px; margin-left:10px;">
+                    来源：{{ version.source }} | {{ version.created_at.strftime('%Y-%m-%d %H:%M') }}
+                </span>
+                {% if version.description %}
+                <div style="color:#666; font-size:13px; margin-top:4px;">{{ version.description }}</div>
+                {% endif %}
+            </div>
+            {% if version.version_num != plan.current_version %}
+            <form method="POST" action="{{ url_for('rollback_version', plan_id=plan.id, version_num=version.version_num) }}"
+                  class="inline-form" onsubmit="return confirm('确定回退到此版本吗？将生成新版本。');">
+                <button type="submit" class="btn btn-secondary btn-sm">回退到此版本</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="color:#999;">暂无版本记录</p>
+        {% endif %}
+    </div>
+
+    <div id="tab-status" class="tab-content">
+        <h3>状态流转</h3>
+        <p style="color:#666; font-size:13px; margin-bottom:12px;">
+            当前状态：<span class="status-badge status-{{ plan.status }}">{{ StatusService.get_status_label(plan.status) }}</span>
+        </p>
+
+        <h4>可转移到：</h4>
+        <div style="margin-bottom:16px;">
+            {% for s in status_info.allowed_statuses %}
+            <form method="POST" action="{{ url_for('change_status', plan_id=plan.id) }}" class="inline-form"
+                  style="margin-right:8px;">
+                <input type="hidden" name="target_status" value="{{ s }}">
+                <input type="text" name="reason" placeholder="原因"
+                       style="padding:4px 8px; border:1px solid #ddd; border-radius:4px; width:140px; font-size:12px;">
+                <button type="submit" class="btn btn-sm btn-secondary">
+                    → {{ StatusService.get_status_label(s) }}
+                </button>
+            </form>
+            {% endfor %}
+        </div>
+
+        <h4>状态说明</h4>
+        <ul style="font-size:13px; color:#555; line-height:2;">
+            <li><strong>草稿</strong>：初始状态，可编辑修改</li>
+            <li><strong>复核中</strong>：提交给复核人（如阿宁）进行复核</li>
+            <li><strong>待人工确认</strong>：需要人工确认的状态，会显示确认按钮</li>
+            <li><strong>已确认</strong>：复核通过，数据已确认</li>
+            <li><strong>已通过</strong>：最终审核通过</li>
+            <li><strong>已废弃</strong>：方案不再使用</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+}
+</script>
+{% endblock %}
