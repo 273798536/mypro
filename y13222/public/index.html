@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鼓组节拍清单归档系统</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">🥁</span>
+          <h1>鼓组节拍清单归档</h1>
+        </div>
+        <div class="header-right">
+          <span class="user-info">琴房前台：小温</span>
+          <button class="btn btn-ghost" onclick="showGuide()">📖 使用引导</button>
+          <button class="btn btn-ghost" onclick="showStats()">统计概览</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="sidebar">
+        <nav class="nav">
+          <a href="#" class="nav-item active" onclick="showList(event)">
+            <span class="nav-icon">📋</span>
+            <span>清单列表</span>
+          </a>
+          <a href="#" class="nav-item" onclick="showPendingList(event)">
+            <span class="nav-icon">⏳</span>
+            <span>待处理</span>
+            <span class="nav-badge" id="pendingBadge">0</span>
+          </a>
+          <a href="#" class="nav-item" onclick="showConflicts(event)">
+            <span class="nav-icon">⚡</span>
+            <span>版本冲突</span>
+            <span class="nav-badge warning" id="conflictBadge">0</span>
+          </a>
+          <a href="#" class="nav-item" onclick="showBadData(event)">
+            <span class="nav-icon">⚠️</span>
+            <span>异常数据</span>
+            <span class="nav-badge danger" id="badDataBadge">0</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="content">
+        <div id="listView" class="view">
+          <div class="view-header">
+            <h2>节拍清单列表</h2>
+            <div class="view-actions">
+              <div class="search-box">
+                <input type="text" id="searchInput" placeholder="搜索学生名/曲名/编号..." onkeyup="handleSearch(event)">
+                <button class="btn btn-primary" onclick="doSearch()">搜索</button>
+              </div>
+              <select id="statusFilter" class="select" onchange="filterByStatus()">
+                <option value="all">全部状态</option>
+                <option value="待判定">待判定</option>
+                <option value="待复核">待复核</option>
+                <option value="已判定">已判定</option>
+                <option value="已改判">已改判</option>
+                <option value="版本冲突待处理">版本冲突</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>编号</th>
+                  <th>学生</th>
+                  <th>曲名</th>
+                  <th>节拍型</th>
+                  <th>难度</th>
+                  <th>状态</th>
+                  <th>判定结果</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="listBody">
+                <tr><td colspan="8" class="loading">加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="pagination" id="pagination">
+          </div>
+        </div>
+
+        <div id="detailView" class="view" style="display:none;">
+          <div class="view-header">
+            <button class="btn btn-ghost" onclick="showList()">← 返回列表</button>
+            <h2 id="detailTitle">详情</h2>
+            <div class="view-actions">
+              <button class="btn btn-primary" id="judgeBtn" onclick="openJudgeModal()">改判</button>
+            </div>
+          </div>
+
+          <div class="detail-content">
+            <div class="detail-section">
+              <h3 class="section-title">基本信息</h3>
+              <div class="detail-grid">
+                <div class="detail-item">
+                  <label>清单编号</label>
+                  <span id="detailItemNo">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>学生姓名</label>
+                  <span id="detailStudentName">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>授课老师</label>
+                  <span id="detailTeacherName">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>曲名</label>
+                  <span id="detailPieceName">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>曲名别名</label>
+                  <span id="detailPieceAlias">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>节拍型</label>
+                  <span id="detailBeatPattern">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>难度</label>
+                  <span id="detailDifficulty">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>当前状态</label>
+                  <span id="detailStatus" class="status-badge">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>来源版本</label>
+                  <span id="detailSourceVersion">-</span>
+                </div>
+                <div class="detail-item">
+                  <label>合同引用</label>
+                  <span id="detailContractRef">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div id="warningSection" class="detail-section warning-section" style="display:none;">
+              <h3 class="section-title">⚠️ 数据异常提示</h3>
+              <div id="warningContent"></div>
+            </div>
+
+            <div id="versionConflictSection" class="detail-section conflict-section" style="display:none;">
+              <h3 class="section-title">⚡ 版本冲突提示</h3>
+              <div id="versionConflictContent"></div>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="section-title">判定结果</h3>
+              <div class="judge-result">
+                <div class="judge-result-main">
+                  <span class="judge-label">判定结果：</span>
+                  <span id="detailJudgeResult" class="judge-value">未判定</span>
+                </div>
+                <div class="judge-remark">
+                  <span class="judge-label">判定备注：</span>
+                  <p id="detailJudgeRemark">暂无备注</p>
+                </div>
+                <div class="judge-meta">
+                  <span>判定人：<span id="detailJudgeBy">-</span></span>
+                  <span>判定时间：<span id="detailJudgeAt">-</span></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="section-title">附件材料</h3>
+              <div id="attachmentsList" class="attachments-list">
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <h3 class="section-title">
+                改判历史
+                <span class="history-count" id="historyCount">0条</span>
+              </h3>
+              <div id="historyList" class="history-list">
+              </div>
+            </div>
+
+            <div id="badDataSection" class="detail-section bad-data-section" style="display:none;">
+              <h3 class="section-title">🔍 坏数据溯源</h3>
+              <div id="badDataList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="judgeModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>改判操作</h3>
+        <button class="modal-close" onclick="closeJudgeModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>判定结果</label>
+          <select id="judgeResultSelect" class="select">
+            <option value="通过">通过</option>
+            <option value="优秀">优秀</option>
+            <option value="良好">良好</option>
+            <option value="待改进">待改进</option>
+            <option value="存疑">存疑</option>
+            <option value="驳回">驳回</option>
+            <option value="通过（名称不一致备注）">通过（名称不一致备注）</option>
+            <option value="通过（别名重复备注）">通过（别名重复备注）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>判定备注</label>
+          <textarea id="judgeRemarkTextarea" class="textarea" rows="4" placeholder="请填写判定理由和说明..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>操作人</label>
+          <input type="text" id="judgeOperator" class="input" value="小温" placeholder="请输入操作人姓名">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeJudgeModal()">取消</button>
+        <button class="btn btn-primary" onclick="submitJudge()">确认改判</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="statsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>统计概览</h3>
+        <button class="modal-close" onclick="closeStatsModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-label">总记录数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statJudged">0</div>
+            <div class="stat-label">已判定</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statPending">0</div>
+            <div class="stat-label">待处理</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="statChanged">0</div>
+            <div class="stat-label">已改判</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-value" id="statConflicts">0</div>
+            <div class="stat-label">版本冲突</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-value" id="statBadData">0</div>
+            <div class="stat-label">异常数据</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="guideModal" class="modal">
+    <div class="modal-content" style="width:600px;">
+      <div class="modal-header">
+        <h3>📖 鼓组节拍清单归档 - 交接使用引导</h3>
+        <button class="modal-close" onclick="closeGuideModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="guide-section">
+          <h4 style="margin-bottom:10px;color:#1890ff;">第一步：从合同扫描件找到原始说法</h4>
+          <ol style="padding-left:20px;line-height:1.8;color:#555;">
+            <li>点击左侧「清单列表」查看所有节拍清单</li>
+            <li>点击任意记录的「详情」进入详情页</li>
+            <li>在「附件材料」区域找到 <strong>合同扫描件</strong></li>
+            <li>附件描述中标明了「第X页第X行」，可对照原始合同</li>
+          </ol>
+          <div style="background:#f6ffed;padding:10px 14px;border-radius:6px;margin-top:8px;border-left:3px solid #52c41a;font-size:13px;color:#389e0d;">
+            💡 试试：打开 <strong>DRUM-2024-003 张小雨</strong> 的详情，看合同扫描件第4页第15行的姓名差异
+          </div>
+        </div>
+
+        <div class="guide-section" style="margin-top:20px;">
+          <h4 style="margin-bottom:10px;color:#faad14;">第二步：从截图说明讲清处理结果</h4>
+          <ol style="padding-left:20px;line-height:1.8;color:#555;">
+            <li>详情页「判定结果」区域显示当前判定结论</li>
+            <li>「附件材料」中的<strong>截图说明</strong>佐证处理依据</li>
+            <li>「改判历史」时间线可追溯每次判定的变化</li>
+            <li>每次改判都会记录：变更前后、操作人、原因、时间</li>
+          </ol>
+          <div style="background:#fff7e6;padding:10px 14px;border-radius:6px;margin-top:8px;border-left:3px solid #faad14;font-size:13px;color:#ad6800;">
+            💡 试试：打开 <strong>DRUM-2024-007 周小龙</strong> 的详情，看两次改判的历史轨迹
+          </div>
+        </div>
+
+        <div class="guide-section" style="margin-top:20px;">
+          <h4 style="margin-bottom:10px;color:#ff4d4f;">第三步：处理异常数据和版本冲突</h4>
+          <ol style="padding-left:20px;line-height:1.8;color:#555;">
+            <li>左侧「异常数据」可查看所有问题记录</li>
+            <li>详情页黄色区块提示<strong>曲名别名重复</strong>、<strong>姓名不一致</strong>等问题</li>
+            <li>红色区块提示<strong>版本冲突</strong>，列出版本来源和处理建议</li>
+            <li>坏数据溯源标明合同出处：第几页第几行</li>
+            <li>旧版文件<strong>不会自动覆盖</strong>新版，需人工确认</li>
+          </ol>
+          <div style="background:#fff1f0;padding:10px 14px;border-radius:6px;margin-top:8px;border-left:3px solid #ff4d4f;font-size:13px;color:#cf1322;">
+            💡 试试：打开 <strong>DRUM-2024-004 刘小峰</strong> 的详情，体验版本冲突处理流程
+          </div>
+        </div>
+
+        <div class="guide-section" style="margin-top:20px;">
+          <h4 style="margin-bottom:10px;color:#1a1a2e;">第四步：改判练习</h4>
+          <ol style="padding-left:20px;line-height:1.8;color:#555;">
+            <li>在详情页点击右上角「改判」按钮</li>
+            <li>选择判定结果，填写备注</li>
+            <li>确认后数据<strong>真实写回后端数据库</strong></li>
+            <li>改判历史中会新增一条记录</li>
+          </ol>
+          <div style="background:#f0f5ff;padding:10px 14px;border-radius:6px;margin-top:8px;border-left:3px solid #1890ff;font-size:13px;color:#0050b3;">
+            💡 试试：对 <strong>DRUM-2024-006 陈小美</strong>（待判定状态）进行一次改判操作
+          </div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f0f0f0;text-align:center;">
+          <button class="btn btn-primary" onclick="closeGuideModal(); startGuideTour();">🚀 开始引导试用</button>
+          <button class="btn btn-ghost" onclick="closeGuideModal()" style="margin-left:10px;">先自己逛逛</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
