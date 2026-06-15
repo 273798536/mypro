@@ -1,0 +1,312 @@
+[
+  {
+    "id": "dd175260-d365-4816-a52b-dcdb2862c051",
+    "name": "中山路人民广场站",
+    "road": "中山路",
+    "direction": "东向西",
+    "location": "人民广场南侧",
+    "coordinates": {
+      "lat": 31.2304,
+      "lng": 121.4737
+    },
+    "status": "approved",
+    "remark": "方案已确认，符合公示要求",
+    "materials": [
+      {
+        "id": "c01f8a0e-5a08-43ef-b674-dc236d75fee5",
+        "name": "中山路人民广场公交港湾设计图",
+        "source": "gis",
+        "isNameConsistent": true,
+        "nameRemark": "",
+        "description": "GIS点位导出的设计图纸，名称与点位一致",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      },
+      {
+        "id": "c059fb86-b079-4678-8ea0-82e6ae9e4012",
+        "name": "人民广场站客流调查报告",
+        "source": "manual",
+        "isNameConsistent": true,
+        "nameRemark": "",
+        "description": "2024年Q4客流调查数据",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "photos": [
+      {
+        "id": "8ab8e2a2-066e-4e14-8b9a-7f270d834bf4",
+        "url": "/photos/zhongshan-1.jpg",
+        "thumbnail": "/photos/zhongshan-1-thumb.jpg",
+        "uploader": "张工",
+        "description": "现场现状照片-正面",
+        "changes": "补充现场现状照片，确认点位位置准确",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "history": [
+      {
+        "id": "713d5e92-351c-42a7-b5dd-f2fcc7e3a776",
+        "action": "create",
+        "operator": "system",
+        "beforeStatus": null,
+        "afterStatus": "approved",
+        "remark": "创建公交港湾记录",
+        "changes": null,
+        "timestamp": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "createdAt": "2026-06-15T21:43:20.955Z",
+    "updatedAt": "2026-06-15T21:43:20.955Z"
+  },
+  {
+    "id": "aeda91e5-95ec-46e3-8ff4-207c5cb8849e",
+    "name": "解放路图书馆站",
+    "road": "解放路",
+    "direction": "南向北",
+    "location": "市图书馆东侧",
+    "coordinates": {
+      "lat": 31.2356,
+      "lng": 121.4802
+    },
+    "status": "coordinate_mismatch",
+    "remark": "GIS坐标偏至相邻的文化路，实际点位在图书馆东门，与地图标注相差约120米",
+    "materials": [
+      {
+        "id": "5d28b64a-519a-4ee2-9225-baaf944827f6",
+        "name": "解放路公交港湾规划图",
+        "source": "gis",
+        "isNameConsistent": true,
+        "nameRemark": "",
+        "description": "GIS系统导出的规划点位图",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "photos": [],
+    "history": [
+      {
+        "id": "ff794a0c-0fa4-4425-b806-5bfd54173c0e",
+        "action": "create",
+        "operator": "system",
+        "beforeStatus": null,
+        "afterStatus": "coordinate_mismatch",
+        "remark": "创建公交港湾记录",
+        "changes": null,
+        "timestamp": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "createdAt": "2026-06-15T21:43:20.956Z",
+    "updatedAt": "2026-06-15T21:43:20.956Z"
+  },
+  {
+    "id": "311de7d0-11f4-45d6-8ffd-8f586e4fbf68",
+    "name": "人民路百货大楼站",
+    "road": "人民路",
+    "direction": "西向东",
+    "location": "百货大楼对面",
+    "coordinates": {
+      "lat": 31.2289,
+      "lng": 121.4698
+    },
+    "status": "name_mismatch",
+    "remark": "材料名称与GIS点位名称不一致，需核实是否为同一位置",
+    "materials": [
+      {
+        "id": "5cf291b8-71d7-40e3-b313-88e1afff5d10",
+        "name": "人民路百货大楼站",
+        "source": "gis",
+        "isNameConsistent": true,
+        "nameRemark": "",
+        "description": "GIS点位原始名称",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      },
+      {
+        "id": "091c2623-5ed9-4c9f-95a3-7ad029163f67",
+        "name": "人民路商业中心站",
+        "source": "manual",
+        "isNameConsistent": false,
+        "nameRemark": "材料中称\"商业中心站\"，但GIS点位名为\"百货大楼站\"，疑似为同一位置的不同命名",
+        "description": "设计院提供的方案材料，使用了\"商业中心站\"名称",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      },
+      {
+        "id": "6105163b-32fd-4ecf-bf0d-d73e62dcee91",
+        "name": "百货大楼站交通影响评估",
+        "source": "field",
+        "isNameConsistent": true,
+        "nameRemark": "",
+        "description": "现场调研的交通影响评估报告",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "photos": [],
+    "history": [
+      {
+        "id": "2019df9e-12a5-4121-bac3-86447a8c1e4c",
+        "action": "create",
+        "operator": "system",
+        "beforeStatus": null,
+        "afterStatus": "name_mismatch",
+        "remark": "创建公交港湾记录",
+        "changes": null,
+        "timestamp": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "createdAt": "2026-06-15T21:43:20.956Z",
+    "updatedAt": "2026-06-15T21:43:20.956Z"
+  },
+  {
+    "id": "790d398a-4a22-413d-a88c-eea65fa1fe92",
+    "name": "建设路公园站",
+    "road": "建设路",
+    "direction": "北向南",
+    "location": "城市公园西门",
+    "coordinates": {
+      "lat": 31.2401,
+      "lng": 121.4756
+    },
+    "status": "photo_supplemented",
+    "remark": "现场照片已补录，点位位置已确认",
+    "materials": [
+      {
+        "id": "48529046-e510-4fa6-8c80-92f483709697",
+        "name": "建设路公园站GIS点位数据",
+        "source": "gis",
+        "isNameConsistent": true,
+        "nameRemark": "",
+        "description": "GIS系统导出数据",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "photos": [
+      {
+        "id": "f138589d-4ae4-4877-95a9-5f1971b81e47",
+        "url": "/photos/jianshe-1.jpg",
+        "thumbnail": "/photos/jianshe-1-thumb.jpg",
+        "uploader": "李工",
+        "description": "公园西门公交站位现状",
+        "changes": "补录现场照片，确认站位在公园西门北侧约30米处，与GIS坐标一致",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      },
+      {
+        "id": "f2375485-24fa-41bc-92b3-733505b8b0fc",
+        "url": "/photos/jianshe-2.jpg",
+        "thumbnail": "/photos/jianshe-2-thumb.jpg",
+        "uploader": "李工",
+        "description": "周边道路情况",
+        "changes": "补充周边道路环境照片，辅助判断港湾设置可行性",
+        "createdAt": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "history": [
+      {
+        "id": "b30edce8-25a0-4f31-b2f1-43e8b4a76976",
+        "action": "create",
+        "operator": "system",
+        "beforeStatus": null,
+        "afterStatus": "photo_supplemented",
+        "remark": "创建公交港湾记录",
+        "changes": null,
+        "timestamp": "2026-06-15T21:43:20.956Z"
+      }
+    ],
+    "createdAt": "2026-06-15T21:43:20.956Z",
+    "updatedAt": "2026-06-15T21:43:20.956Z"
+  },
+  {
+    "id": "6709862d-c3a1-4d6f-bb8b-53c1498e36c6",
+    "name": "长江大道市政府站",
+    "road": "长江大道",
+    "direction": "东向西",
+    "location": "市政府南门",
+    "coordinates": {
+      "lat": 31.225,
+      "lng": 121.485
+    },
+    "status": "pending",
+    "remark": "材料齐全，待审核",
+    "materials": [
+      {
+        "id": "0fff66fc-8608-45ef-8c77-b12ceb1afd9f",
+        "name": "长江大道市政府公交港湾方案",
+        "source": "gis",
+        "isNameConsistent": true,
+        "nameRemark": "",
+        "description": "GIS点位及初步方案",
+        "createdAt": "2026-06-15T21:43:20.957Z"
+      }
+    ],
+    "photos": [],
+    "history": [
+      {
+        "id": "dcd4473f-f428-498e-a028-90cd95713057",
+        "action": "create",
+        "operator": "system",
+        "beforeStatus": null,
+        "afterStatus": "pending",
+        "remark": "创建公交港湾记录",
+        "changes": null,
+        "timestamp": "2026-06-15T21:43:20.957Z"
+      }
+    ],
+    "createdAt": "2026-06-15T21:43:20.957Z",
+    "updatedAt": "2026-06-15T21:43:20.957Z"
+  },
+  {
+    "id": "6afc5e86-d16a-4852-9b19-1ec19150ab14",
+    "name": "黄河路小区站",
+    "road": "黄河路",
+    "direction": "南向北",
+    "location": "阳光小区门口",
+    "coordinates": {
+      "lat": 31.245,
+      "lng": 121.46
+    },
+    "status": "photo_supplemented",
+    "remark": "草稿，待补充材料",
+    "materials": [],
+    "photos": [
+      {
+        "id": "8c5df37d-cb36-44d5-822f-f65c6532b76c",
+        "url": "/photos/huanghe-1.jpg",
+        "thumbnail": "",
+        "uploader": "",
+        "description": "黄河路小区门口现场照片",
+        "changes": "现场补录，确认点位在小区正门南侧15米处，与GIS坐标基本一致",
+        "createdAt": "2026-06-15T21:46:38.019Z"
+      }
+    ],
+    "history": [
+      {
+        "id": "89c72267-bd30-48ca-a6c9-a7c042d55fa0",
+        "action": "create",
+        "operator": "system",
+        "beforeStatus": null,
+        "afterStatus": "draft",
+        "remark": "创建公交港湾记录",
+        "changes": null,
+        "timestamp": "2026-06-15T21:43:20.957Z"
+      },
+      {
+        "id": "14475beb-7c2c-4981-81fb-edf0e31c5201",
+        "action": "photo_add",
+        "operator": "ç°åºæèå¸",
+        "beforeStatus": "draft",
+        "afterStatus": "photo_supplemented",
+        "remark": "补录现场照片：黄河路小区门口现场照片",
+        "changes": "现场补录，确认点位在小区正门南侧15米处，与GIS坐标基本一致",
+        "timestamp": "2026-06-15T21:46:38.019Z"
+      },
+      {
+        "id": "25b42013-4e42-484b-8a5a-793524777460",
+        "action": "status_change",
+        "operator": "ç°åºæèå¸",
+        "beforeStatus": "draft",
+        "afterStatus": "photo_supplemented",
+        "remark": "补录照片后状态更新",
+        "changes": null,
+        "timestamp": "2026-06-15T21:46:38.019Z"
+      }
+    ],
+    "createdAt": "2026-06-15T21:43:20.957Z",
+    "updatedAt": "2026-06-15T21:46:38.019Z"
+  }
+]

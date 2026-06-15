@@ -1,0 +1,16 @@
+{
+  "name": "bus-bay-public-notice",
+  "version": "1.0.0",
+  "description": "公交港湾公示清单管理系统 - 后端服务",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node src/app.js",
+    "test": "node tests/verify.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  }
+}
