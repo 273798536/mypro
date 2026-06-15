@@ -1,0 +1,112 @@
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #f0f2f5;
+}
+
+.app-layout {
+  min-height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: linear-gradient(90deg, #722ed1 0%, #9254de 100%);
+}
+
+.app-header-title {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.app-header-sub {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  margin-left: 12px;
+}
+
+.app-content {
+  margin: 16px 24px;
+}
+
+.card-shadow {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.highlight-row {
+  background: #fff7e6 !important;
+}
+
+.manual-override-row {
+  background: #fff1f0 !important;
+}
+
+.progress-dimension-bar {
+  margin-bottom: 8px;
+}
+
+.sidebar-logo {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 8px;
+  border-radius: 4px;
+}
+
+.auth-warning-banner {
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #262626;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: '';
+  width: 3px;
+  height: 14px;
+  background: #722ed1;
+  border-radius: 2px;
+}
+
+.plain-text-reason {
+  white-space: pre-line;
+  line-height: 1.7;
+  color: #595959;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-card .ant-statistic-title {
+  color: #8c8c8c;
+  font-size: 13px;
+}
+
+.status-tag-inline {
+  margin-right: 4px;
+}
+
+.empty-center {
+  padding: 60px 0;
+  text-align: center;
+}
