@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Noto Sans SC", system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #061525;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a2540;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1b6ca0;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00d4ff;
+}
+
+@layer components {
+  .card-dark {
+    @apply bg-ocean-900 border border-ocean-700/50 rounded-xl p-5 shadow-lg;
+  }
+
+  .card-dark-hover {
+    @apply card-dark hover:border-ice/30 transition-all duration-200;
+  }
+
+  .input-field {
+    @apply bg-ocean-950 border border-ocean-700/50 rounded-lg px-3 py-2 text-sm text-slate-200
+           placeholder:text-slate-500 focus:outline-none focus:border-ice/60 focus:ring-1 focus:ring-ice/30
+           transition-all duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-ice/90 hover:bg-ice text-ocean-950 font-medium px-4 py-2 rounded-lg
+           transition-all duration-200 hover:shadow-lg hover:shadow-ice/20;
+  }
+
+  .btn-secondary {
+    @apply bg-ocean-800 hover:bg-ocean-700 text-slate-200 border border-ocean-600/50
+           px-4 py-2 rounded-lg transition-all duration-200;
+  }
+
+  .badge-available {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium
+           bg-reef/15 text-reef-light border border-reef/30;
+  }
+
+  .badge-deferred {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium
+           bg-amber/15 text-amber-light border border-amber/30;
+  }
+
+  .badge-recollect {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium
+           bg-coral/15 text-coral-light border border-coral/30;
+  }
+
+  .section-title {
+    @apply text-lg font-bold text-slate-100 flex items-center gap-2;
+  }
+
+  .data-mono {
+    @apply font-mono text-ice;
+  }
+}
