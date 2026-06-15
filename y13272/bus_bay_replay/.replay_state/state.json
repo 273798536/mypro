@@ -1,0 +1,333 @@
+{
+  "created_at": "2026-06-16T03:24:36.961463",
+  "last_updated": "2026-06-16T03:24:36.961464",
+  "records": {
+    "C0001": {
+      "complaint_id": "C0001",
+      "bay_name": "人民广场站",
+      "bay_address": "人民大道100号",
+      "complaint_type": "候车亭损坏",
+      "description": "候车亭玻璃破裂，有安全隐患",
+      "submitter": "张师傅",
+      "submit_time": "2024-06-10T09:30:00",
+      "status": "已处理",
+      "handler": "老何",
+      "handle_result": "已更换钢化玻璃",
+      "handle_time": "2024-06-12T14:20:00",
+      "source": "manual",
+      "extra": {}
+    },
+    "C0002": {
+      "complaint_id": "C0002",
+      "bay_name": "中山公园站",
+      "bay_address": "中山路200号",
+      "complaint_type": "座椅破损",
+      "description": "座椅木板断裂，无法使用",
+      "submitter": "李阿姨",
+      "submit_time": "2024-06-11T10:15:00",
+      "status": "待现场看",
+      "handler": "",
+      "handle_result": "无法正常候车",
+      "handle_time": null,
+      "source": "manual",
+      "extra": {}
+    },
+    "C0003": {
+      "complaint_id": "C0003",
+      "bay_name": "火车站北广场",
+      "bay_address": "站前路50号",
+      "complaint_type": "站牌模糊",
+      "description": "线路指示牌字迹不清",
+      "submitter": "王大爷",
+      "submit_time": "2024-06-12T08:00:00",
+      "status": "待现场看",
+      "handler": "",
+      "handle_result": "乘客反映找不到车",
+      "handle_time": null,
+      "source": "manual",
+      "extra": {}
+    },
+    "C0004": {
+      "complaint_id": "C0004",
+      "bay_name": "科技园站",
+      "bay_address": "科技大道88号",
+      "complaint_type": "积水问题",
+      "description": "雨天站台积水严重",
+      "submitter": "刘女士",
+      "submit_time": "2024-06-13T16:45:00",
+      "status": "已处理",
+      "handler": "老何",
+      "handle_result": "已疏通排水",
+      "handle_time": "2024-06-15T11:00:00",
+      "source": "manual",
+      "extra": {}
+    },
+    "C0005": {
+      "complaint_id": "C0005",
+      "bay_name": "体育馆站",
+      "bay_address": "体育路30号",
+      "complaint_type": "卫生问题",
+      "description": "垃圾桶满溢，有异味",
+      "submitter": "陈先生",
+      "submit_time": "2024-06-14T07:30:00",
+      "status": "待现场看",
+      "handler": "",
+      "handle_result": "环境差影响候车",
+      "handle_time": null,
+      "source": "manual",
+      "extra": {}
+    },
+    "C0006": {
+      "complaint_id": "C0006",
+      "bay_name": "步行街站",
+      "bay_address": "步行街入口",
+      "complaint_type": "照明问题",
+      "description": "夜间站台灯不亮",
+      "submitter": "赵师傅",
+      "submit_time": "2024-06-15T20:00:00",
+      "status": "待复核",
+      "handler": "老何",
+      "handle_result": "已报修，待配件",
+      "handle_time": "2024-06-16T09:00:00",
+      "source": "manual",
+      "extra": {}
+    },
+    "C0007": {
+      "complaint_id": "C0007",
+      "bay_name": "医院站",
+      "bay_address": "健康路1号",
+      "complaint_type": "无障碍设施",
+      "description": "盲道被占用",
+      "submitter": "孙女士",
+      "submit_time": "2024-06-16T11:30:00",
+      "status": "待现场看",
+      "handler": "",
+      "handle_result": "影响视障人士",
+      "handle_time": null,
+      "source": "manual",
+      "extra": {}
+    }
+  },
+  "minutes": {
+    "MIN-meeting_minutes-001": [
+      {
+        "minute_id": "MIN-meeting_minutes-001",
+        "meeting_time": "2024-06-12T14:00:00",
+        "meeting_title": "公交港湾设施整改会议纪要 v1",
+        "content": "讨论本月公交港湾投诉处理进展。\n1. 人民广场站候车亭损坏，由老何负责更换玻璃\n2. 中山公园站座椅破损，下周安排现场查看\n3. 早晚高峰投诉口径：以现场核实为准\n4. 火车站北广场站牌问题，纳入待办\nC0001、C0002、C0003",
+        "recorder": "小王",
+        "version": 1,
+        "is_appendum": false,
+        "appendum_note": null,
+        "screenshot_refs": [],
+        "related_complaint_ids": [],
+        "raw_source": "# 公交港湾设施整改会议纪要 v1\n\n**时间**: 2024-06-12 14:00\n**记录人**: 小王\n\n## 议题\n\n讨论本月公交港湾投诉处理进展。\n\n## 决议\n\n1. 人民广场站候车亭损坏，由老何负责更换玻璃\n2. 中山公园站座椅破损，下周安排现场查看\n3. 早晚高峰投诉口径：以现场核实为准\n4. 火车站北广场站牌问题，纳入待办\n\n## 相关投诉\n\nC0001、C0002、C0003"
+      },
+      {
+        "minute_id": "MIN-meeting_minutes-001",
+        "meeting_time": "2024-06-14T10:00:00",
+        "meeting_title": "公交港湾设施整改会议纪要 v2 - 补录",
+        "content": "补充会议内容及后续整改情况。\n1. 早晚高峰口径：早高峰以7-9点为准，晚高峰以17-19点为准\n2. 新增科技园站积水问题处理\n老何临时判断：C0004积水问题优先级提高，提前处理\nC0004",
+        "recorder": "小王",
+        "version": 2,
+        "is_appendum": true,
+        "appendum_note": null,
+        "screenshot_refs": [
+          "screenshots/v2_site_photo.jpg"
+        ],
+        "related_complaint_ids": [],
+        "raw_source": "# 公交港湾设施整改会议纪要 v2 - 补录\n\n**时间**: 2024-06-14 10:00\n**记录人**: 小王\n\n## 议题\n\n补充会议内容及后续整改情况。\n\n## 补充内容\n\n1. 早晚高峰口径：早高峰以7-9点为准，晚高峰以17-19点为准\n2. 新增科技园站积水问题处理\n\n## 备注\n\n老何临时判断：C0004积水问题优先级提高，提前处理\n\n## 截图\n\n![v2现场照片](screenshots/v2_site_photo.jpg)\n\n## 相关投诉\n\nC0004"
+      },
+      {
+        "minute_id": "MIN-meeting_minutes-001",
+        "meeting_time": "2024-06-16T15:00:00",
+        "meeting_title": "公交港湾设施整改会议纪要 v3 - 最终版",
+        "content": "最终确认整改方案及公示前复核。\n1. 所有已处理点位公示前复核\n2. 待现场看点位本周内完成\n3. 冲突记录单独标注\n会议纪要v2的早晚高峰口径有误，以v3为准：\n- 早高峰：6:30-9:00\n- 晚高峰：16:30-19:00\nC0001、C0004、C0006",
+        "recorder": "老周",
+        "version": 3,
+        "is_appendum": false,
+        "appendum_note": null,
+        "screenshot_refs": [
+          "screenshots/final_version.png",
+          "screenshots/compare.jpg"
+        ],
+        "related_complaint_ids": [],
+        "raw_source": "# 公交港湾设施整改会议纪要 v3 - 最终版\n\n**时间**: 2024-06-16 15:00\n**记录人**: 老周\n\n## 议题\n\n最终确认整改方案及公示前复核。\n\n## 最终决议\n\n1. 所有已处理点位公示前复核\n2. 待现场看点位本周内完成\n3. 冲突记录单独标注\n\n## 备注\n\n会议纪要v2的早晚高峰口径有误，以v3为准：\n- 早高峰：6:30-9:00\n- 晚高峰：16:30-19:00\n\n## 截图\n\n![最终版](screenshots/final_version.png)\n![现场对比图](screenshots/compare.jpg)\n\n## 相关投诉\n\nC0001、C0004、C0006"
+      }
+    ]
+  },
+  "history": [
+    {
+      "entry_id": "HIS-d6e0ecd3",
+      "entity_type": "complaint",
+      "entity_id": "C0001",
+      "action": "提交",
+      "actor": "import",
+      "timestamp": "2024-06-10T09:30:00",
+      "before_value": null,
+      "after_value": {
+        "bay_name": "人民广场站",
+        "status": "已处理",
+        "description": "候车亭玻璃破裂，有安全隐患"
+      },
+      "reason": "初始提交",
+      "source_ref": "manual"
+    },
+    {
+      "entry_id": "HIS-d6c3c9aa",
+      "entity_type": "complaint",
+      "entity_id": "C0002",
+      "action": "提交",
+      "actor": "import",
+      "timestamp": "2024-06-11T10:15:00",
+      "before_value": null,
+      "after_value": {
+        "bay_name": "中山公园站",
+        "status": "待现场看",
+        "description": "座椅木板断裂，无法使用"
+      },
+      "reason": "初始提交",
+      "source_ref": "manual"
+    },
+    {
+      "entry_id": "HIS-84112dc4",
+      "entity_type": "complaint",
+      "entity_id": "C0003",
+      "action": "提交",
+      "actor": "import",
+      "timestamp": "2024-06-12T08:00:00",
+      "before_value": null,
+      "after_value": {
+        "bay_name": "火车站北广场",
+        "status": "待现场看",
+        "description": "线路指示牌字迹不清"
+      },
+      "reason": "初始提交",
+      "source_ref": "manual"
+    },
+    {
+      "entry_id": "HIS-5400b5be",
+      "entity_type": "complaint",
+      "entity_id": "C0004",
+      "action": "提交",
+      "actor": "import",
+      "timestamp": "2024-06-13T16:45:00",
+      "before_value": null,
+      "after_value": {
+        "bay_name": "科技园站",
+        "status": "已处理",
+        "description": "雨天站台积水严重"
+      },
+      "reason": "初始提交",
+      "source_ref": "manual"
+    },
+    {
+      "entry_id": "HIS-32100c81",
+      "entity_type": "complaint",
+      "entity_id": "C0005",
+      "action": "提交",
+      "actor": "import",
+      "timestamp": "2024-06-14T07:30:00",
+      "before_value": null,
+      "after_value": {
+        "bay_name": "体育馆站",
+        "status": "待现场看",
+        "description": "垃圾桶满溢，有异味"
+      },
+      "reason": "初始提交",
+      "source_ref": "manual"
+    },
+    {
+      "entry_id": "HIS-2fee97c9",
+      "entity_type": "complaint",
+      "entity_id": "C0006",
+      "action": "提交",
+      "actor": "import",
+      "timestamp": "2024-06-15T20:00:00",
+      "before_value": null,
+      "after_value": {
+        "bay_name": "步行街站",
+        "status": "待复核",
+        "description": "夜间站台灯不亮"
+      },
+      "reason": "初始提交",
+      "source_ref": "manual"
+    },
+    {
+      "entry_id": "HIS-10200820",
+      "entity_type": "complaint",
+      "entity_id": "C0007",
+      "action": "提交",
+      "actor": "import",
+      "timestamp": "2024-06-16T11:30:00",
+      "before_value": null,
+      "after_value": {
+        "bay_name": "医院站",
+        "status": "待现场看",
+        "description": "盲道被占用"
+      },
+      "reason": "初始提交",
+      "source_ref": "manual"
+    },
+    {
+      "entry_id": "HIS-e5d47a43",
+      "entity_type": "meeting_minute",
+      "entity_id": "MIN-meeting_minutes-001",
+      "action": "提交",
+      "actor": "import",
+      "timestamp": "2026-06-16T03:24:36.961435",
+      "before_value": null,
+      "after_value": {
+        "version": 1,
+        "title": "公交港湾设施整改会议纪要 v1",
+        "is_appendum": false,
+        "screenshot_count": 0
+      },
+      "reason": "会议纪要 v1",
+      "source_ref": "# 公交港湾设施整改会议纪要 v1\n\n**时间**: 2024-06-12 14:00\n**记录人**: 小王\n\n## 议题\n\n讨论本月公交港湾投诉处理进展。\n\n## 决议\n\n1. 人民广场站候车亭损"
+    },
+    {
+      "entry_id": "HIS-f54426ad",
+      "entity_type": "meeting_minute",
+      "entity_id": "MIN-meeting_minutes-001",
+      "action": "修改",
+      "actor": "import",
+      "timestamp": "2026-06-16T03:24:36.961445",
+      "before_value": null,
+      "after_value": {
+        "version": 2,
+        "title": "公交港湾设施整改会议纪要 v2 - 补录",
+        "is_appendum": true,
+        "screenshot_count": 1
+      },
+      "reason": "会议纪要 v2",
+      "source_ref": "# 公交港湾设施整改会议纪要 v2 - 补录\n\n**时间**: 2024-06-14 10:00\n**记录人**: 小王\n\n## 议题\n\n补充会议内容及后续整改情况。\n\n## 补充内容\n\n1. 早晚高"
+    },
+    {
+      "entry_id": "HIS-1070b220",
+      "entity_type": "meeting_minute",
+      "entity_id": "MIN-meeting_minutes-001",
+      "action": "修改",
+      "actor": "import",
+      "timestamp": "2026-06-16T03:24:36.961454",
+      "before_value": null,
+      "after_value": {
+        "version": 3,
+        "title": "公交港湾设施整改会议纪要 v3 - 最终版",
+        "is_appendum": false,
+        "screenshot_count": 2
+      },
+      "reason": "会议纪要 v3",
+      "source_ref": "# 公交港湾设施整改会议纪要 v3 - 最终版\n\n**时间**: 2024-06-16 15:00\n**记录人**: 老周\n\n## 议题\n\n最终确认整改方案及公示前复核。\n\n## 最终决议\n\n1. 所"
+    }
+  ],
+  "idempotency_seen": [
+    "1080dec42a5a7145",
+    "f59ca917dda5afe9",
+    "9b31b99257079223",
+    "46cb06b880ff115d",
+    "34eafe1c4b582155",
+    "e12ad0e2a25cbb2d",
+    "e304f8b39ba269ed"
+  ]
+}
