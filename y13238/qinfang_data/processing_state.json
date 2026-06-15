@@ -1,0 +1,132 @@
+{
+  "materials": [
+    {
+      "id": "98960d14",
+      "filename": "moonlight_sonata_v1.flac",
+      "canonical_name": "moonlight_sonata_v1",
+      "aliases": [],
+      "version": 1,
+      "status": "anomalous",
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.597263+00:00",
+      "updated_at": "2026-06-15T15:22:34.598141+00:00"
+    },
+    {
+      "id": "fc5d8867",
+      "filename": "moonlight_v1.mp3",
+      "canonical_name": "moonlight",
+      "aliases": [],
+      "version": 1,
+      "status": "normal",
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598387+00:00",
+      "updated_at": "2026-06-15T15:22:34.598392+00:00"
+    },
+    {
+      "id": "e20f53d9",
+      "filename": "moonlight_v2.mp3",
+      "canonical_name": "moonlight",
+      "aliases": [],
+      "version": 2,
+      "status": "normal",
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598477+00:00",
+      "updated_at": "2026-06-15T15:22:34.598486+00:00"
+    },
+    {
+      "id": "e05b0501",
+      "filename": "spring_v1.mp3",
+      "canonical_name": "spring",
+      "aliases": [],
+      "version": 1,
+      "status": "normal",
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598592+00:00",
+      "updated_at": "2026-06-15T15:22:34.598597+00:00"
+    },
+    {
+      "id": "320a8a41",
+      "filename": "spring_v1.wav",
+      "canonical_name": "spring",
+      "aliases": [],
+      "version": 1,
+      "status": "anomalous",
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598632+00:00",
+      "updated_at": "2026-06-15T15:22:34.598635+00:00"
+    },
+    {
+      "id": "a713f0ae",
+      "filename": "旧录音-月光曲2023.mp3",
+      "canonical_name": "旧录音-月光曲2023",
+      "aliases": [],
+      "version": 1,
+      "status": "anomalous",
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598839+00:00",
+      "updated_at": "2026-06-15T15:22:34.598843+00:00"
+    },
+    {
+      "id": "8b152062",
+      "filename": "月光_v1.mp3",
+      "canonical_name": "月光",
+      "aliases": [],
+      "version": 1,
+      "status": "normal",
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598974+00:00",
+      "updated_at": "2026-06-15T15:22:34.598979+00:00"
+    }
+  ],
+  "exception_queue": [
+    {
+      "id": "b2ac2271",
+      "material_id": "98960d14",
+      "material_filename": "moonlight_sonata_v1.flac",
+      "exception_type": "naming_inconsistent",
+      "status": "pending",
+      "reason": "文件名「moonlight_sonata_v1.flac」不符合命名规范（应为：曲名_v版本号.扩展名），无法自动解析版本和曲名。",
+      "next_step": "请确认该文件对应的标准曲名和版本，人工补充后重扫。",
+      "resolved_by": "",
+      "resolved_at": null,
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598309+00:00"
+    },
+    {
+      "id": "7037c97f",
+      "material_id": "320a8a41",
+      "material_filename": "spring_v1.wav",
+      "exception_type": "version_mismatch",
+      "status": "pending",
+      "reason": "曲名「spring」已存在版本 v1（文件：spring_v1.mp3），新旧版本并存，无法确定哪份最新。",
+      "next_step": "请确认最新版本并更新版本号，或将旧版本标记为已归档，然后重扫。",
+      "resolved_by": "",
+      "resolved_at": null,
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598653+00:00"
+    },
+    {
+      "id": "cc999412",
+      "material_id": "a713f0ae",
+      "material_filename": "旧录音-月光曲2023.mp3",
+      "exception_type": "naming_inconsistent",
+      "status": "pending",
+      "reason": "文件名「旧录音-月光曲2023.mp3」不符合命名规范（应为：曲名_v版本号.扩展名），无法自动解析版本和曲名。",
+      "next_step": "请确认该文件对应的标准曲名和版本，人工补充后重扫。",
+      "resolved_by": "",
+      "resolved_at": null,
+      "notes": [],
+      "created_at": "2026-06-15T15:22:34.598907+00:00"
+    }
+  ],
+  "scan_history": [
+    {
+      "id": "c39b073e",
+      "scan_time": "2026-06-15T15:22:34.599001+00:00",
+      "files_scanned": 7,
+      "exceptions_found": 3,
+      "materials_added": 7
+    }
+  ],
+  "last_scan_time": "2026-06-15T15:22:34.599001+00:00"
+}
