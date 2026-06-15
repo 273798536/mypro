@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>播客片头清单归档</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1a1a2e; color: #eee; min-height: 100vh; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    header { margin-bottom: 24px; }
+    h1 { font-size: 24px; margin-bottom: 8px; color: #fff; }
+    .subtitle { color: #888; font-size: 14px; }
+    .summary-bar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; margin-bottom: 24px; }
+    .summary-card { background: #16213e; padding: 16px; border-radius: 8px; text-align: center; }
+    .summary-card .num { font-size: 28px; font-weight: bold; }
+    .summary-card .label { font-size: 12px; color: #888; margin-top: 4px; }
+    .num.total { color: #fff; }
+    .num.matched { color: #4ade80; }
+    .num.mismatched { color: #f87171; }
+    .num.late { color: #fbbf24; }
+    .num.review { color: #fb923c; }
+    .num.authorized { color: #60a5fa; }
+    .num.archived { color: #a78bfa; }
+    .actions { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+    .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+    .btn-primary { background: #4f46e5; color: #fff; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-secondary { background: #374151; color: #fff; }
+    .btn-secondary:hover { background: #4b5563; }
+    .btn-danger { background: #dc2626; color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-success { background: #059669; color: #fff; }
+    .btn-success:hover { background: #047857; }
+    .btn-warning { background: #d97706; color: #fff; }
+    .btn-warning:hover { background: #b45309; }
+    .btn-small { padding: 6px 12px; font-size: 12px; }
+    table { width: 100%; border-collapse: collapse; background: #16213e; border-radius: 8px; overflow: hidden; }
+    th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid #1f2937; }
+    th { background: #0f172a; font-weight: 600; font-size: 13px; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; }
+    tr:hover { background: #1e293b; }
+    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+    .status-matched { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+    .status-mismatch_filename, .status-mismatch_timecode, .status-mismatch_both { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+    .status-late_arrival { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+    .status-rejudged { background: rgba(251, 146, 60, 0.2); color: #fb923c; }
+    .status-authorized { background: rgba(96, 165, 250, 0.2); color: #60a5fa; }
+    .status-archived { background: rgba(167, 139, 250, 0.2); color: #a78bfa; }
+    .issues { font-size: 13px; color: #fca5a5; }
+    .issues .source { color: #fbbf24; font-style: italic; margin-top: 4px; display: block; }
+    .deviation { font-family: 'SF Mono', Monaco, monospace; font-size: 13px; }
+    .deviation.half-frame { color: #fbbf24; }
+    .row-actions { display: flex; gap: 6px; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: #16213e; border-radius: 12px; padding: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-content h2 { margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; margin-bottom: 6px; font-size: 14px; color: #9ca3af; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; background: #1f2937; border: 1px solid #374151; border-radius: 6px; color: #fff; font-size: 14px; }
+    .form-group textarea { min-height: 80px; resize: vertical; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
+    .history-list { list-style: none; }
+    .history-item { padding: 12px; background: #1f2937; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid #4f46e5; }
+    .history-item .meta { font-size: 12px; color: #9ca3af; margin-bottom: 8px; }
+    .history-item .reason { font-size: 14px; color: #fff; margin-bottom: 8px; }
+    .history-item .changes { font-size: 12px; font-family: 'SF Mono', Monaco, monospace; }
+    .history-item .changes .old { color: #f87171; text-decoration: line-through; }
+    .history-item .changes .new { color: #4ade80; }
+    .source-tag { display: inline-block; padding: 2px 8px; background: #374151; border-radius: 4px; font-size: 11px; margin-right: 6px; }
+    .source-auto_align { background: rgba(79, 70, 229, 0.3); color: #818cf8; }
+    .source-manual_rejudge { background: rgba(251, 146, 60, 0.3); color: #fdba74; }
+    .source-authorization { background: rgba(96, 165, 250, 0.3); color: #93c5fd; }
+    .source-system_detect { background: rgba(167, 139, 250, 0.3); color: #c4b5fd; }
+    .trouble-section { background: #16213e; border-radius: 8px; padding: 16px; margin-bottom: 24px; border-left: 4px solid #f87171; }
+    .trouble-section h3 { margin-bottom: 12px; color: #f87171; }
+    .trouble-item { padding: 10px; background: #1f2937; border-radius: 6px; margin-bottom: 8px; font-size: 13px; }
+    .trouble-item strong { color: #fbbf24; }
+    .hidden { display: none; }
+    .expand-btn { background: none; border: none; color: #60a5fa; cursor: pointer; font-size: 12px; }
+    .raw-source { background: #0f172a; padding: 8px; border-radius: 4px; font-family: 'SF Mono', Monaco, monospace; font-size: 12px; color: #fbbf24; margin-top: 8px; border-left: 3px solid #fbbf24; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎙️ 播客片头清单归档</h1>
+      <p class="subtitle">舞台通道表 × 曲目表 对齐与追溯系统</p>
+    </header>
+
+    <div class="trouble-section">
+      <h3>🔍 坏材料排查指引</h3>
+      <div class="trouble-item">
+        <strong>文件名不匹配：</strong>查看 <code>alignmentIssues</code>，对比舞台原始文件名和曲目表预期文件名
+      </div>
+      <div class="trouble-item">
+        <strong>时码偏半拍：</strong>不是含糊警告！点击条目查看 <code>rawDescription</code> 原始说法 + 录音师 <code>engineerNote</code>
+      </div>
+      <div class="trouble-item">
+        <strong>晚到附件：</strong>标记为 <code>late_arrival</code>，查看 <code>receivedAt</code> 实际接收时间
+      </div>
+      <div class="trouble-item">
+        <strong>改判历史：</strong>点击「历史」按钮，评审会前可追溯每一次状态变更的来源和原因
+      </div>
+    </div>
+
+    <div class="summary-bar" id="summaryBar">
+      <div class="summary-card"><div class="num total" id="sumTotal">0</div><div class="label">总计</div></div>
+      <div class="summary-card"><div class="num matched" id="sumMatched">0</div><div class="label">已匹配</div></div>
+      <div class="summary-card"><div class="num mismatched" id="sumMismatched">0</div><div class="label">不匹配</div></div>
+      <div class="summary-card"><div class="num late" id="sumLate">0</div><div class="label">晚到</div></div>
+      <div class="summary-card"><div class="num review" id="sumReview">0</div><div class="label">待复核</div></div>
+      <div class="summary-card"><div class="num authorized" id="sumAuthorized">0</div><div class="label">已授权</div></div>
+      <div class="summary-card"><div class="num archived" id="sumArchived">0</div><div class="label">已归档</div></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="runAutoAlign()">🚀 自动对齐</button>
+      <button class="btn btn-secondary" onclick="loadData()">🔄 刷新数据</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>状态</th>
+          <th>通道</th>
+          <th>曲目</th>
+          <th>最终标题</th>
+          <th>时码偏差</th>
+          <th>问题 & 来源</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="archiveTable">
+        <tr><td colspan="7" style="text-align: center; padding: 40px; color: #666;">点击「自动对齐」开始处理</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal" id="rejudgeModal">
+    <div class="modal-content">
+      <h2>人工改判</h2>
+      <input type="hidden" id="rejudgeItemId">
+      <div class="form-group">
+        <label>操作人</label>
+        <input type="text" id="rejudgeOperator" placeholder="例如：老王">
+      </div>
+      <div class="form-group">
+        <label>改判原因</label>
+        <textarea id="rejudgeReason" placeholder="请详细说明改判原因，该记录将进入历史"></textarea>
+      </div>
+      <div class="form-group">
+        <label>覆盖时码（可选）</label>
+        <input type="text" id="rejudgeTimecode" placeholder="例如：00:00:35:00">
+      </div>
+      <div class="form-group">
+        <label>覆盖标题（可选）</label>
+        <input type="text" id="rejudgeTitle" placeholder="例如：主题音乐（修正版）">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('rejudgeModal')">取消</button>
+        <button class="btn btn-warning" onclick="submitRejudge()">确认改判</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="authorizeModal">
+    <div class="modal-content">
+      <h2>授权对齐</h2>
+      <input type="hidden" id="authorizeItemId">
+      <div class="form-group">
+        <label>授权人</label>
+        <input type="text" id="authorizeName" placeholder="例如：老许">
+      </div>
+      <div class="form-group">
+        <label>授权备注</label>
+        <textarea id="authorizeNote" placeholder="该备注将用于重新对齐文件、曲目表和最终清单"></textarea>
+      </div>
+      <div class="form-group">
+        <label>时码修正（可选）</label>
+        <input type="text" id="authorizeTimecode" placeholder="例如：00:01:25:10">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('authorizeModal')">取消</button>
+        <button class="btn btn-success" onclick="submitAuthorize()">确认授权</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="historyModal">
+    <div class="modal-content">
+      <h2>历史追溯</h2>
+      <ul class="history-list" id="historyList"></ul>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('historyModal')">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+    let archiveItems = [];
+    let stageRecords = [];
+    let trackItems = [];
+
+    const statusLabels = {
+      matched: '已匹配',
+      mismatch_filename: '文件名不匹配',
+      mismatch_timecode: '时码不匹配',
+      mismatch_both: '双重不匹配',
+      late_arrival: '晚到附件',
+      rejudged: '已改判',
+      authorized: '已授权',
+      archived: '已归档',
+      pending: '待处理'
+    };
+
+    const sourceLabels = {
+      auto_align: '自动对齐',
+      manual_rejudge: '人工改判',
+      authorization: '授权',
+      system_detect: '系统'
+    };
+
+    async function loadSummary() {
+      const res = await fetch(`${API_BASE}/summary`);
+      const data = await res.json();
+      document.getElementById('sumTotal').textContent = data.total;
+      document.getElementById('sumMatched').textContent = data.matched;
+      document.getElementById('sumMismatched').textContent = data.mismatched;
+      document.getElementById('sumLate').textContent = data.lateArrival;
+      document.getElementById('sumReview').textContent = data.needReview;
+      document.getElementById('sumAuthorized').textContent = data.authorized;
+      document.getElementById('sumArchived').textContent = data.archived;
+    }
+
+    async function loadData() {
+      const [res1, res2, res3] = await Promise.all([
+        fetch(`${API_BASE}/archive-items`),
+        fetch(`${API_BASE}/stage-records`),
+        fetch(`${API_BASE}/track-items`)
+      ]);
+      archiveItems = await res1.json();
+      stageRecords = await res2.json();
+      trackItems = await res3.json();
+      renderTable();
+      loadSummary();
+    }
+
+    async function runAutoAlign() {
+      const res = await fetch(`${API_BASE}/auto-align`, { method: 'POST' });
+      const data = await res.json();
+      alert(data.message);
+      loadData();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('archiveTable');
+      if (archiveItems.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #666;">点击「自动对齐」开始处理</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = archiveItems.map(item => {
+        const stage = item.stageRecord;
+        const track = item.trackItem;
+        const isHalfFrame = Math.abs(item.timecodeDeviationMs) <= 20 && item.timecodeDeviationMs !== 0;
+        const showArchiveBtn = ['matched', 'rejudged', 'authorized'].includes(item.status);
+        const showRejudgeBtn = item.status !== 'archived';
+        const showAuthorizeBtn = ['mismatch_filename', 'mismatch_timecode', 'mismatch_both', 'late_arrival', 'rejudged'].includes(item.status);
+
+        const issuesHtml = item.alignmentIssues.map((issue, i) => {
+          if (issue.includes('原始描述') || issue.includes('舞台通道原始描述') || issue.includes('录音师备注')) {
+            return `<span class="source">📌 ${issue}</span>`;
+          }
+          return `<div>⚠️ ${issue}</div>`;
+        }).join('');
+
+        const rawSourceHtml = (stage && (stage.rawDescription.includes('半拍') || stage.rawDescription.includes('晚到')))
+          ? `<button class="expand-btn" onclick="toggleRawSource('${item.id}')">▼ 查看原始说法</button>
+             <div class="raw-source hidden" id="raw-${item.id}">
+               <div>原始描述: ${stage.rawDescription}</div>
+               ${stage.engineerNote ? `<div>录音师备注: ${stage.engineerNote}</div>` : ''}
+             </div>`
+          : '';
+
+        return `
+          <tr>
+            <td><span class="status-badge status-${item.status}">${statusLabels[item.status]}</span></td>
+            <td>CH${stage ? stage.channelNo : '-'}</td>
+            <td>TRK${track ? track.trackNo : '-'}</td>
+            <td>${item.finalTitle}</td>
+            <td class="deviation ${isHalfFrame ? 'half-frame' : ''}">${formatDeviation(item.timecodeDeviationMs)}</td>
+            <td class="issues">
+              ${issuesHtml || '<span style="color:#4ade80">✓ 无问题</span>'}
+              ${rawSourceHtml}
+            </td>
+            <td>
+              <div class="row-actions">
+                <button class="btn btn-small btn-secondary" onclick="showHistory('${item.id}')">历史</button>
+                ${showRejudgeBtn ? `<button class="btn btn-small btn-warning" onclick="showRejudge('${item.id}')">改判</button>` : ''}
+                ${showAuthorizeBtn ? `<button class="btn btn-small btn-success" onclick="showAuthorize('${item.id}')">授权</button>` : ''}
+                ${showArchiveBtn ? `<button class="btn btn-small btn-primary" onclick="archiveItem('${item.id}')">归档</button>` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function toggleRawSource(id) {
+      const el = document.getElementById(`raw-${id}`);
+      el.classList.toggle('hidden');
+    }
+
+    function formatDeviation(ms) {
+      const absMs = Math.abs(ms);
+      const dir = ms > 0 ? '晚' : ms < 0 ? '早' : '同步';
+      if (absMs === 0) return '同步';
+      if (absMs < 1000) return `${absMs}ms ${dir}`;
+      return `${(absMs/1000).toFixed(2)}s ${dir}`;
+    }
+
+    function showRejudge(itemId) {
+      document.getElementById('rejudgeItemId').value = itemId;
+      document.getElementById('rejudgeModal').classList.add('active');
+    }
+
+    function showAuthorize(itemId) {
+      const item = archiveItems.find(i => i.id === itemId);
+      document.getElementById('authorizeItemId').value = itemId;
+      if (item && item.stageRecord) {
+        document.getElementById('authorizeTimecode').value = item.stageRecord.timecodeStart;
+      }
+      document.getElementById('authorizeModal').classList.add('active');
+    }
+
+    async function showHistory(itemId) {
+      const res = await fetch(`${API_BASE}/archive-items/${itemId}/history`);
+      const history = await res.json();
+      const listEl = document.getElementById('historyList');
+
+      listEl.innerHTML = history.map(log => `
+        <li class="history-item">
+          <div class="meta">
+            <span class="source-tag source-${log.source}">${sourceLabels[log.source]}</span>
+            ${log.operator} · ${new Date(log.timestamp).toLocaleString('zh-CN')}
+          </div>
+          <div class="reason">${log.reason}</div>
+          <div class="changes">
+            <span class="old">${statusLabels[log.previousStatus]}</span>
+            → <span class="new">${statusLabels[log.newStatus]}</span>
+          </div>
+          ${Object.keys(log.newValue).length > 0 ? `
+            <div class="changes" style="margin-top: 8px;">
+              ${Object.entries(log.newValue).map(([key, val]) => {
+                const oldVal = log.previousValue[key];
+                if (oldVal !== undefined && JSON.stringify(oldVal) !== JSON.stringify(val)) {
+                  return `<div>${key}: <span class="old">${JSON.stringify(oldVal)}</span> → <span class="new">${JSON.stringify(val)}</span></div>`;
+                }
+                return '';
+              }).join('')}
+            </div>
+          ` : ''}
+        </li>
+      `).reverse().join('');
+
+      document.getElementById('historyModal').classList.add('active');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    async function submitRejudge() {
+      const itemId = document.getElementById('rejudgeItemId').value;
+      const operator = document.getElementById('rejudgeOperator').value;
+      const reason = document.getElementById('rejudgeReason').value;
+      const overrideTimecode = document.getElementById('rejudgeTimecode').value || undefined;
+      const overrideTitle = document.getElementById('rejudgeTitle').value || undefined;
+
+      if (!operator || !reason) {
+        alert('请填写操作人和原因');
+        return;
+      }
+
+      const item = archiveItems.find(i => i.id === itemId);
+      const res = await fetch(`${API_BASE}/rejudge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          archiveItemId: itemId,
+          operator,
+          reason,
+          newStageRecordId: item?.stageRecordId,
+          newTrackItemId: item?.trackItemId,
+          overrideTimecode,
+          overrideTitle
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('改判成功');
+        closeModal('rejudgeModal');
+        loadData();
+      } else {
+        alert(data.error || '改判失败');
+      }
+    }
+
+    async function submitAuthorize() {
+      const itemId = document.getElementById('authorizeItemId').value;
+      const authorizer = document.getElementById('authorizeName').value;
+      const note = document.getElementById('authorizeNote').value;
+      const overrideTimecode = document.getElementById('authorizeTimecode').value || undefined;
+
+      if (!authorizer || !note) {
+        alert('请填写授权人和备注');
+        return;
+      }
+
+      const item = archiveItems.find(i => i.id === itemId);
+      const res = await fetch(`${API_BASE}/authorize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          archiveItemId: itemId,
+          authorizer,
+          note,
+          alignmentDecision: {
+            useStageFile: item?.stageRecordId || '',
+            useTrackItem: item?.trackItemId || '',
+            overrideTimecode
+          }
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message);
+        closeModal('authorizeModal');
+        loadData();
+      } else {
+        alert(data.error || '授权失败');
+      }
+    }
+
+    async function archiveItem(itemId) {
+      if (!confirm('确认归档该条目？归档后不可修改。')) return;
+
+      const res = await fetch(`${API_BASE}/archive/${itemId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ operator: '当前用户' })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert('归档成功');
+        loadData();
+      } else {
+        alert(data.error || '归档失败');
+      }
+    }
+
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('active');
+      });
+    });
+
+    loadSummary();
+  </script>
+</body>
+</html>
