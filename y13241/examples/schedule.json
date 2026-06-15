@@ -1,0 +1,22 @@
+[
+  {
+    "track_id": "TRK001",
+    "title": "夏日海浪",
+    "artist": "乐队A",
+    "start_time": "10:00:00:00",
+    "end_time": "10:05:00:00",
+    "expected_filename": "TRK001_乐队A_夏日海浪.wav",
+    "booth": "主舞台",
+    "day": 1
+  },
+  {
+    "track_id": "TRK002",
+    "title": "城市夜曲",
+    "artist": "乐队B",
+    "start_time": "10:05:00:00",
+    "end_time": "10:10:00:00",
+    "expected_filename": "TRK002_乐队B_城市夜曲.wav",
+    "booth": "主舞台",
+    "day": 1
+  }
+]

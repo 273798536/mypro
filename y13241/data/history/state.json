@@ -1,0 +1,712 @@
+{
+  "schedule_items": [
+    {
+      "id": "b89804de-8617-417b-8851-94fa4bab2d8c",
+      "track_id": "TRK001",
+      "title": "夏日海浪",
+      "artist": "乐队A",
+      "start_time": {
+        "hours": 10,
+        "minutes": 0,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 5,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK001_乐队A_夏日海浪.wav",
+      "booth": "主舞台",
+      "day": 1,
+      "status": "processed",
+      "notes": [
+        "录音师老许确认：音量已调整到合适水平"
+      ],
+      "screenshots": [
+        "data/history/screenshots/b89804de-8617-417b-8851-94fa4bab2d8c_20260616_003646.png"
+      ],
+      "metadata": {}
+    },
+    {
+      "id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+      "track_id": "TRK002",
+      "title": "城市夜曲",
+      "artist": "乐队B",
+      "start_time": {
+        "hours": 10,
+        "minutes": 5,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 10,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK002_乐队B_城市夜曲.wav",
+      "booth": "主舞台",
+      "day": 1,
+      "status": "needs_confirmation",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "db9eb577-ae32-4260-918a-9e800aa42ee2",
+      "track_id": "TRK003",
+      "title": "时间重叠1",
+      "artist": "乐队C",
+      "start_time": {
+        "hours": 10,
+        "minutes": 8,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 13,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK003_乐队C_时间重叠1.wav",
+      "booth": "主舞台",
+      "day": 1,
+      "status": "needs_confirmation",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "b375c7fb-057c-4417-9e5e-09e9ee7f2b7a",
+      "track_id": "TRK004",
+      "title": "时间重叠2",
+      "artist": "乐队D",
+      "start_time": {
+        "hours": 10,
+        "minutes": 9,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 14,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK004_乐队D_时间重叠2.wav",
+      "booth": "主舞台",
+      "day": 1,
+      "status": "needs_confirmation",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "eda5f880-7b42-4a82-ab99-1bf3862f670b",
+      "track_id": "TRK005",
+      "title": "文件名不匹配",
+      "artist": "乐队E",
+      "start_time": {
+        "hours": 10,
+        "minutes": 15,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 20,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK005_乐队E_正确文件名.wav",
+      "booth": "电子舞台",
+      "day": 1,
+      "status": "processed",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "c1dadf49-49ee-480a-8117-60c268bf3f9a",
+      "track_id": "TRK006",
+      "title": "缺失文件",
+      "artist": "乐队F",
+      "start_time": {
+        "hours": 10,
+        "minutes": 20,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 25,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK006_乐队F_缺失文件.wav",
+      "booth": "电子舞台",
+      "day": 1,
+      "status": "needs_evidence",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
+      "track_id": "TRK007",
+      "title": "时码偏差",
+      "artist": "乐队G",
+      "start_time": {
+        "hours": 10,
+        "minutes": 25,
+        "seconds": 0,
+        "frames": 12,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 30,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK007_乐队G_时码偏差.wav",
+      "booth": "摇滚舞台",
+      "day": 1,
+      "status": "pending",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "7dce8e6f-fc71-4a29-ac65-db95709aa961",
+      "track_id": "TRK008",
+      "title": "重复条目",
+      "artist": "乐队H",
+      "start_time": {
+        "hours": 10,
+        "minutes": 30,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 35,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK008_乐队H_重复条目.wav",
+      "booth": "民谣舞台",
+      "day": 1,
+      "status": "processed",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "455aa2af-8e62-4f89-a8b6-fc78cf3b1efb",
+      "track_id": "TRK008",
+      "title": "重复条目副本",
+      "artist": "乐队H2",
+      "start_time": {
+        "hours": 10,
+        "minutes": 35,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 40,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK008_乐队H2_重复.wav",
+      "booth": "民谣舞台",
+      "day": 1,
+      "status": "needs_confirmation",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "2a1ea4e8-5d01-4077-bd84-5050900b39d2",
+      "track_id": "TRK009",
+      "title": "正常条目",
+      "artist": "乐队I",
+      "start_time": {
+        "hours": 10,
+        "minutes": 40,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 45,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK009_乐队I_正常条目.wav",
+      "booth": "主舞台",
+      "day": 2,
+      "status": "processed",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    },
+    {
+      "id": "6bc42796-2b90-487b-8a61-89210f2aa9a8",
+      "track_id": "TRK011",
+      "title": "多余文件测试",
+      "artist": "乐队K",
+      "start_time": {
+        "hours": 10,
+        "minutes": 50,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "end_time": {
+        "hours": 10,
+        "minutes": 55,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "expected_filename": "TRK011_乐队K_多余.wav",
+      "booth": "电子舞台",
+      "day": 2,
+      "status": "needs_evidence",
+      "notes": [],
+      "screenshots": [],
+      "metadata": {}
+    }
+  ],
+  "audio_files": [
+    {
+      "id": "800d1f35-b93f-42eb-8016-4ced9488dd7d",
+      "filename": "TRK007_10:25:00:00_乐队G_时码偏差.wav",
+      "file_path": "data/audio_files/TRK007_10:25:00:00_乐队G_时码偏差.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.054636",
+      "modified_at": "2026-06-16T00:33:16.055025",
+      "track_id": "TRK007",
+      "title": null,
+      "timecode": {
+        "hours": 10,
+        "minutes": 25,
+        "seconds": 0,
+        "frames": 0,
+        "fps": 25.0
+      },
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    },
+    {
+      "id": "da8fde8c-9e6a-4c52-bfb9-0927163af666",
+      "filename": "TRK008_乐队H_重复条目.wav",
+      "file_path": "data/audio_files/TRK008_乐队H_重复条目.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.057903",
+      "modified_at": "2026-06-16T00:33:16.058455",
+      "track_id": "TRK008",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    },
+    {
+      "id": "8483ac34-8f42-4df9-9b60-7594bc26dd39",
+      "filename": "TRK002_乐队B_城市夜曲.wav",
+      "file_path": "data/audio_files/TRK002_乐队B_城市夜曲.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.051382",
+      "modified_at": "2026-06-16T00:33:16.051485",
+      "track_id": "TRK002",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    },
+    {
+      "id": "38bf4ab5-77ac-4a71-86aa-f5afe70f9713",
+      "filename": "TRK009_乐队I_正常条目.wav",
+      "file_path": "data/audio_files/TRK009_乐队I_正常条目.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.060605",
+      "modified_at": "2026-06-16T00:33:16.060827",
+      "track_id": "TRK009",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    },
+    {
+      "id": "e39dbd8f-c7cf-475d-84f3-decc7e9052e8",
+      "filename": "TRK005_文件名不匹配_旧版本.jpg",
+      "file_path": "data/audio_files/TRK005_文件名不匹配_旧版本.jpg",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.066799",
+      "modified_at": "2026-06-16T00:33:16.066900",
+      "track_id": "TRK005",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": true,
+      "is_note": false,
+      "metadata": {
+        "extension": "jpg"
+      }
+    },
+    {
+      "id": "ed40a347-0a30-4fa8-8bf4-7d98fe7522b0",
+      "filename": "TRK012_多余文件_不在曲目表.wav",
+      "file_path": "data/audio_files/TRK012_多余文件_不在曲目表.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.060983",
+      "modified_at": "2026-06-16T00:33:16.061170",
+      "track_id": "TRK012",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    },
+    {
+      "id": "ab602c91-cd9e-403e-a9de-666ceeb59838",
+      "filename": "TRK001_录音备注.md",
+      "file_path": "data/audio_files/TRK001_录音备注.md",
+      "file_size": 58,
+      "created_at": "2026-06-16T00:33:16.067003",
+      "modified_at": "2026-06-16T00:33:16.067085",
+      "track_id": "TRK001",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": true,
+      "metadata": {
+        "extension": "md"
+      }
+    },
+    {
+      "id": "9f7f01dd-9a60-4cf3-91ce-b7d32e0d03f0",
+      "filename": "TRK005_文件名备注.txt",
+      "file_path": "data/audio_files/TRK005_文件名备注.txt",
+      "file_size": 52,
+      "created_at": "2026-06-16T00:33:16.067227",
+      "modified_at": "2026-06-16T00:33:16.067287",
+      "track_id": "TRK005",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": true,
+      "metadata": {
+        "extension": "txt"
+      }
+    },
+    {
+      "id": "a9b67e6d-d58a-4be7-90b4-f880cb1faf57",
+      "filename": "TRK003_乐队C_时间重叠1.wav",
+      "file_path": "data/audio_files/TRK003_乐队C_时间重叠1.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.053627",
+      "modified_at": "2026-06-16T00:33:16.053992",
+      "track_id": "TRK003",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    },
+    {
+      "id": "4b25bbd0-f9d7-491b-904f-873d6987fa87",
+      "filename": "TRK001_乐队A_彩排截图.png",
+      "file_path": "data/audio_files/TRK001_乐队A_彩排截图.png",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.064460",
+      "modified_at": "2026-06-16T00:33:16.064628",
+      "track_id": "TRK001",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": true,
+      "is_note": false,
+      "metadata": {
+        "extension": "png"
+      }
+    },
+    {
+      "id": "d66fd1ee-e6c6-4cef-a7f1-771e7260100a",
+      "filename": "TRK005_乐队E_错误文件名.wav",
+      "file_path": "data/audio_files/TRK005_乐队E_错误文件名.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.054454",
+      "modified_at": "2026-06-16T00:33:16.054556",
+      "track_id": "TRK005",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    },
+    {
+      "id": "cb55178d-2d5a-4dde-affd-f1d3ed267814",
+      "filename": "TRK001_乐队A_夏日海浪.wav",
+      "file_path": "data/audio_files/TRK001_乐队A_夏日海浪.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.050792",
+      "modified_at": "2026-06-16T00:33:16.051176",
+      "track_id": "TRK001",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    },
+    {
+      "id": "420b86df-2121-4b48-8306-eb87f4ac5e9d",
+      "filename": "TRK004_乐队D_时间重叠2.wav",
+      "file_path": "data/audio_files/TRK004_乐队D_时间重叠2.wav",
+      "file_size": 11,
+      "created_at": "2026-06-16T00:33:16.054187",
+      "modified_at": "2026-06-16T00:33:16.054351",
+      "track_id": "TRK004",
+      "title": null,
+      "timecode": null,
+      "is_screenshot": false,
+      "is_note": false,
+      "metadata": {
+        "extension": "wav"
+      }
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "3e860484-b5eb-4646-91a5-a9982d00fec5",
+      "conflict_type": "name_mismatch",
+      "schedule_item_id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
+      "audio_file_id": "800d1f35-b93f-42eb-8016-4ced9488dd7d",
+      "description": "文件名不匹配：曲目表预期 'TRK007_乐队G_时码偏差.wav'，实际文件 'TRK007_10:25:00:00_乐队G_时码偏差.wav'",
+      "severity": "warning",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": false,
+      "confirmation_reason": null,
+      "next_steps": null
+    },
+    {
+      "id": "a14ee5de-cb9e-4d6b-bddd-c03f0836ecec",
+      "conflict_type": "missing_file",
+      "schedule_item_id": "c1dadf49-49ee-480a-8117-60c268bf3f9a",
+      "audio_file_id": null,
+      "description": "缺失音频文件：曲目 '缺失文件' (TRK006) 在音频文件夹中未找到对应文件",
+      "severity": "error",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": true,
+      "confirmation_reason": "需要确认文件是否确实缺失，还是文件名格式不标准导致未识别",
+      "next_steps": [
+        "检查音频文件夹中是否存在该曲目文件",
+        "确认文件名是否包含正确的TRACK ID",
+        "如文件已存在但命名不规范，请重命名文件",
+        "如文件确实缺失，请联系录音师补录"
+      ]
+    },
+    {
+      "id": "7a40f028-010a-455b-957e-56c2f9f2799e",
+      "conflict_type": "missing_file",
+      "schedule_item_id": "6bc42796-2b90-487b-8a61-89210f2aa9a8",
+      "audio_file_id": null,
+      "description": "缺失音频文件：曲目 '多余文件测试' (TRK011) 在音频文件夹中未找到对应文件",
+      "severity": "error",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": true,
+      "confirmation_reason": "需要确认文件是否确实缺失，还是文件名格式不标准导致未识别",
+      "next_steps": [
+        "检查音频文件夹中是否存在该曲目文件",
+        "确认文件名是否包含正确的TRACK ID",
+        "如文件已存在但命名不规范，请重命名文件",
+        "如文件确实缺失，请联系录音师补录"
+      ]
+    },
+    {
+      "id": "84a45870-f15d-4e96-9b61-e1ee7229da6c",
+      "conflict_type": "extra_file",
+      "schedule_item_id": null,
+      "audio_file_id": "ed40a347-0a30-4fa8-8bf4-7d98fe7522b0",
+      "description": "多余文件：音频文件 'TRK012_多余文件_不在曲目表.wav' 的 TRACK ID 'TRK012' 不在曲目表中",
+      "severity": "info",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": true,
+      "confirmation_reason": "需要确认该文件是否为错误提交，还是曲目表有遗漏",
+      "next_steps": [
+        "检查曲目表是否遗漏了该曲目",
+        "确认该文件是否属于本次音乐节",
+        "如为错误提交，请删除该文件",
+        "如曲目表遗漏，请更新曲目表"
+      ]
+    },
+    {
+      "id": "81e25832-7727-482e-b9fa-c7461aa19694",
+      "conflict_type": "time_overlap",
+      "schedule_item_id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+      "audio_file_id": null,
+      "description": "时间重叠：第1天 主舞台 摊位 '城市夜曲' (10:05:00:00-10:10:00:00) 与 '时间重叠1' (10:08:00:00-10:13:00:00) 重叠 120.00 秒",
+      "severity": "error",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": true,
+      "confirmation_reason": "排期冲突必须人工调整，算法无法自动决定优先级",
+      "next_steps": [
+        "联系排期负责人确认两个节目的优先级",
+        "调整其中一个节目的时间或摊位",
+        "确认是否需要合并或取消其中一个节目",
+        "调整后重新运行检测"
+      ]
+    },
+    {
+      "id": "5ec0dade-1bda-43a7-980d-7f9da0da7cb8",
+      "conflict_type": "time_overlap",
+      "schedule_item_id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+      "audio_file_id": null,
+      "description": "时间重叠：第1天 主舞台 摊位 '城市夜曲' (10:05:00:00-10:10:00:00) 与 '时间重叠2' (10:09:00:00-10:14:00:00) 重叠 60.00 秒",
+      "severity": "error",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": true,
+      "confirmation_reason": "排期冲突必须人工调整，算法无法自动决定优先级",
+      "next_steps": [
+        "联系排期负责人确认两个节目的优先级",
+        "调整其中一个节目的时间或摊位",
+        "确认是否需要合并或取消其中一个节目",
+        "调整后重新运行检测"
+      ]
+    },
+    {
+      "id": "889128ff-8719-40be-8c3e-29bf97b58d82",
+      "conflict_type": "time_overlap",
+      "schedule_item_id": "db9eb577-ae32-4260-918a-9e800aa42ee2",
+      "audio_file_id": null,
+      "description": "时间重叠：第1天 主舞台 摊位 '时间重叠1' (10:08:00:00-10:13:00:00) 与 '时间重叠2' (10:09:00:00-10:14:00:00) 重叠 240.00 秒",
+      "severity": "error",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": true,
+      "confirmation_reason": "排期冲突必须人工调整，算法无法自动决定优先级",
+      "next_steps": [
+        "联系排期负责人确认两个节目的优先级",
+        "调整其中一个节目的时间或摊位",
+        "确认是否需要合并或取消其中一个节目",
+        "调整后重新运行检测"
+      ]
+    },
+    {
+      "id": "d215e636-1bbd-4742-82bb-87e165d340ac",
+      "conflict_type": "timecode_drift",
+      "schedule_item_id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
+      "audio_file_id": "800d1f35-b93f-42eb-8016-4ced9488dd7d",
+      "description": "时码偏差超过半拍：曲目 '时码偏差' 预期时码 10:25:00:12，文件时码 10:25:00:00，偏差 0.4800 秒 (允许偏差 0.0200 秒)",
+      "severity": "warning",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": false,
+      "confirmation_reason": null,
+      "next_steps": null
+    },
+    {
+      "id": "c06fdd96-181e-495f-9836-49ab3332c8de",
+      "conflict_type": "duplicate",
+      "schedule_item_id": "455aa2af-8e62-4f89-a8b6-fc78cf3b1efb",
+      "audio_file_id": null,
+      "description": "重复条目：TRACK ID 'TRK008' 在曲目表中出现 2 次。首现条目：'重复条目'，重复条目：'重复条目副本'",
+      "severity": "warning",
+      "resolution": null,
+      "resolved_at": null,
+      "resolved_by": null,
+      "requires_manual_confirmation": true,
+      "confirmation_reason": "需要确认哪一条是正确的排期",
+      "next_steps": [
+        "检查重复条目的详细信息",
+        "保留正确的条目，删除错误的重复条目",
+        "如两条都是需要的，请修改其中一条的TRACK ID"
+      ]
+    }
+  ],
+  "stats": {
+    "total": 11,
+    "processed": 5,
+    "skipped": 0,
+    "bad": 0,
+    "needs_evidence": 0,
+    "needs_confirmation": 0,
+    "conflicts_detected": 9,
+    "conflicts_resolved": 0,
+    "start_time": "2026-06-16T00:36:43.113875",
+    "end_time": null
+  },
+  "bad_rows": [],
+  "skipped_rows": [
+    {
+      "row": 12,
+      "data": {
+        "track_id": "",
+        "title": "缺少track_id",
+        "artist": "乐队J",
+        "start_time": "10:45:00:00",
+        "end_time": "10:50:00:00",
+        "expected_filename": "TRK010_乐队J_缺少id.wav",
+        "booth": "主舞台",
+        "day": "2"
+      },
+      "reason": "missing_required_fields"
+    }
+  ]
+}

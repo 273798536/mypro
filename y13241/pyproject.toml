@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "festival-scheduler"
+version = "0.1.0"
+description = "音乐节摊位排期冲突检测与管理工具"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+    "pandas>=2.0.0",
+    "python-dateutil>=2.8.0",
+    "PyYAML>=6.0",
+]
+
+[project.scripts]
+festival = "festival_scheduler.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
