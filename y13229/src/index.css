@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    background-image:
+      radial-gradient(
+        ellipse 60% 40% at 80% -10%,
+        rgba(212, 165, 116, 0.14),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 60% 50% at -10% 110%,
+        rgba(30, 58, 95, 0.08),
+        transparent 60%
+      );
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .theater-card {
+    @apply rounded-xl border border-ink-100 bg-white shadow-card;
+  }
+  .theater-input {
+    @apply w-full rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm
+           text-ink-800 placeholder:text-ink-300 outline-none transition
+           focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30;
+  }
+  .theater-select {
+    @apply w-full rounded-lg border border-ink-200 bg-white px-3 py-2 text-sm
+           text-ink-800 outline-none transition
+           focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30;
+  }
+  .theater-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2
+           text-sm font-medium transition active:translate-y-px
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .theater-btn-primary {
+    @apply theater-btn bg-ink-700 text-white hover:bg-ink-800 active:bg-ink-900;
+  }
+  .theater-btn-amber {
+    @apply theater-btn bg-amber-400 text-ink-900 hover:bg-amber-500;
+  }
+  .theater-btn-ghost {
+    @apply theater-btn border border-ink-200 bg-white text-ink-700 hover:bg-ink-50;
+  }
+  .theater-btn-danger {
+    @apply theater-btn bg-rouge-500 text-white hover:bg-rouge-600;
+  }
+  .theater-chip {
+    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(30, 58, 95, 0.2);
+    border-radius: 3px;
+  }
+}
