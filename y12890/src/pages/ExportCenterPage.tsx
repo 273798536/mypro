@@ -1,0 +1,365 @@
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { AppLayout } from '../components/layout/AppLayout';
+import { StatusBadge } from '../components/StatusBadge';
+import { useReviewStore } from '../store/useReviewStore';
+import { DataStatus } from '../types/common';
+import { Download, FileSpreadsheet, FileText, CheckCircle2, AlertTriangle, ChevronRight, Eye, Settings, RefreshCw } from 'lucide-react';
+import { formatNumber } from '../utils/format';
+
+export const ExportCenterPage: React.FC = () => {
+  const { taskId } = useParams<{ taskId: string }>();
+  const navigate = useNavigate();
+  const {
+    reviewBatch,
+    consistencyReport,
+    isLoading,
+    completeReview,
+  } = useReviewStore();
+
+  const [exportFormat, setExportFormat] = useState<'excel' | 'csv' | 'pdf'>('excel');
+  const [includeStatus, setIncludeStatus] = useState<DataStatus[]>([
+    DataStatus.AVAILABLE,
+    DataStatus.PENDING,
+    DataStatus.NEED_REVIEW,
+  ]);
+  const [includeExplanations, setIncludeExplanations] = useState(true);
+  const [includeOriginalTimezone, setIncludeOriginalTimezone] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportSuccess, setExportSuccess] = useState(false);
+
+  const totalRecords = reviewBatch?.entries?.length || 0;
+  const availableRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.AVAILABLE).length || 0;
+  const pendingRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.PENDING).length || 0;
+  const reviewRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.NEED_REVIEW).length || 0;
+  const recollectRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.RECOLLECT).length || 0;
+
+  const selectedCount = includeStatus.reduce((sum, status) => {
+    switch (status) {
+      case DataStatus.AVAILABLE: return sum + availableRecords;
+      case DataStatus.PENDING: return sum + pendingRecords;
+      case DataStatus.NEED_REVIEW: return sum + reviewRecords;
+      case DataStatus.RECOLLECT: return sum + recollectRecords;
+      default: return sum;
+    }
+  }, 0);
+
+  const unresolvedIssues = consistencyReport?.issues?.filter(i => !i.resolved).length || 0;
+
+  const handleStatusToggle = (status: DataStatus) => {
+    if (includeStatus.includes(status)) {
+      setIncludeStatus(includeStatus.filter(s => s !== status));
+    } else {
+      setIncludeStatus([...includeStatus, status]);
+    }
+  };
+
+  const handleExport = () => {
+    setIsExporting(true);
+    setTimeout(() => {
+      setIsExporting(false);
+      setExportSuccess(true);
+      setTimeout(() => setExportSuccess(false), 3000);
+    }, 2000);
+  };
+
+  return (
+    <AppLayout
+      title="结果导出"
+      subtitle="明珠海珍品 · 2026年6月巡检 · 数据导出中心"
+    >
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 mb-4">
+          <button
+            onClick={() => navigate(`/tasks/${taskId}/map`)}
+            className="text-slate-500 hover:text-ocean-600 transition-colors text-sm flex items-center gap-1"
+          >
+            ← 返回地图面板
+          </button>
+          <span className="text-slate-300">/</span>
+          <span className="text-slate-700 text-sm">结果导出</span>
+        </div>
+
+        <div className="bg-gradient-to-r from-ocean-900 to-ocean-800 rounded-2xl p-6 text-white">
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <Download className="w-6 h-6 text-tide-400" />
+                <span className="text-tide-400 text-sm font-medium">导出中心</span>
+              </div>
+              <h2 className="text-2xl font-display font-bold mb-2">
+                数据一致性校验通过后导出
+              </h2>
+              <p className="text-ocean-200 max-w-3xl leading-relaxed">
+                本批次共 <span className="text-tide-400 font-bold">{totalRecords}</span> 条记录，
+                其中可用 <span className="text-status-available font-bold">{availableRecords}</span> 条、
+                暂缓 <span className="text-status-pending font-bold">{pendingRecords}</span> 条、
+                需复核 <span className="text-status-review font-bold">{reviewRecords}</span> 条、
+                需重采 <span className="text-status-recollect font-bold">{recollectRecords}</span> 条。
+                {unresolvedIssues > 0 && (
+                  <span className="text-status-review ml-2">
+                    ⚠️ 仍有 {unresolvedIssues} 处不一致未确认
+                  </span>
+                )}
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-4xl font-display font-bold text-tide-400">
+                {selectedCount}
+              </div>
+              <div className="text-sm text-ocean-300">将导出记录数</div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-4 gap-4 mt-6">
+            <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <CheckCircle2 className="w-4 h-4 text-status-available" />
+                <span className="text-sm text-ocean-200">可用数据</span>
+              </div>
+              <div className="text-2xl font-bold text-white">{availableRecords}</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-4 h-4 text-status-pending" />
+                <span className="text-sm text-ocean-200">暂缓处理</span>
+              </div>
+              <div className="text-2xl font-bold text-white">{pendingRecords}</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-4 h-4 text-status-review" />
+                <span className="text-sm text-ocean-200">需场长复核</span>
+              </div>
+              <div className="text-2xl font-bold text-white">{reviewRecords}</div>
+            </div>
+            <div className="bg-white/10 backdrop-blur rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <AlertTriangle className="w-4 h-4 text-status-recollect" />
+                <span className="text-sm text-ocean-200">建议重采</span>
+              </div>
+              <div className="text-2xl font-bold text-white">{recollectRecords}</div>
+            </div>
+          </div>
+        </div>
+
+        {unresolvedIssues > 0 && (
+          <div className="bg-status-review/10 border border-status-review/30 rounded-lg p-5">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-status-review flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-status-review">
+                  ⚠️ 存在 {unresolvedIssues} 处未确认的一致性问题
+                </p>
+                <p className="text-sm text-slate-600 mt-1">
+                  建议先返回复核工作台处理这些不一致项，确认后再导出，以确保导出数据的准确性。
+                </p>
+              </div>
+              <button
+                onClick={() => navigate(`/tasks/${taskId}/review`)}
+                className="px-4 py-2 bg-status-review text-white text-sm rounded-lg hover:bg-status-review/90 transition-colors"
+              >
+                去处理
+              </button>
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <Settings className="w-4 h-4 text-ocean-500" />
+              导出设置
+            </h3>
+
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">导出格式</label>
+                <div className="flex gap-3">
+                  {[
+                    { id: 'excel' as const, label: 'Excel', icon: FileSpreadsheet },
+                    { id: 'csv' as const, label: 'CSV', icon: FileText },
+                    { id: 'pdf' as const, label: 'PDF报告', icon: FileText },
+                  ].map((fmt) => {
+                    const Icon = fmt.icon;
+                    return (
+                      <button
+                        key={fmt.id}
+                        onClick={() => setExportFormat(fmt.id)}
+                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                          exportFormat === fmt.id
+                            ? 'border-ocean-500 bg-ocean-50 text-ocean-700'
+                            : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {fmt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">包含数据状态</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { status: DataStatus.AVAILABLE, label: '可用数据' },
+                    { status: DataStatus.PENDING, label: '暂缓处理' },
+                    { status: DataStatus.NEED_REVIEW, label: '需复核' },
+                    { status: DataStatus.RECOLLECT, label: '需重采' },
+                  ].map((item) => (
+                    <label
+                      key={item.status}
+                      className="flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors hover:bg-slate-50"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={includeStatus.includes(item.status)}
+                        onChange={() => handleStatusToggle(item.status)}
+                        className="w-4 h-4 text-ocean-600 rounded focus:ring-ocean-500"
+                      />
+                      <StatusBadge status={item.status} size="sm" />
+                      <span className="text-sm text-slate-600">{item.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeExplanations}
+                    onChange={(e) => setIncludeExplanations(e.target.checked)}
+                    className="w-4 h-4 text-ocean-600 rounded focus:ring-ocean-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-slate-700">包含解释说明</span>
+                    <p className="text-xs text-slate-500">导出每条记录的计算说明和异常解释</p>
+                  </div>
+                </label>
+
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeOriginalTimezone}
+                    onChange={(e) => setIncludeOriginalTimezone(e.target.checked)}
+                    className="w-4 h-4 text-ocean-600 rounded focus:ring-ocean-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-slate-700">包含原始时区</span>
+                    <p className="text-xs text-slate-500">同时导出原始时区和校正后时区的数据</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl border border-slate-200 p-5">
+            <h3 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <Eye className="w-4 h-4 text-ocean-500" />
+              导出预览
+            </h3>
+
+            <div className="bg-slate-50 rounded-lg p-4 mb-4">
+              <div className="text-sm text-slate-600 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">文件名</span>
+                  <span className="font-mono">明珠海珍品_202606巡检_数据报告.{exportFormat}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">导出记录</span>
+                  <span className="font-mono">{selectedCount} 条</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">包含说明</span>
+                  <span className={includeExplanations ? 'text-status-available' : 'text-slate-400'}>
+                    {includeExplanations ? '是' : '否'}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">原始时区</span>
+                  <span className={includeOriginalTimezone ? 'text-status-available' : 'text-slate-400'}>
+                    {includeOriginalTimezone ? '包含' : '不包含'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {consistencyReport && (
+              <div className={`rounded-lg p-4 mb-4 ${
+                consistencyReport.isConsistent
+                  ? 'bg-status-available/10 border border-status-available/30'
+                  : 'bg-status-review/10 border border-status-review/30'
+              }`}>
+                <div className="flex items-start gap-2">
+                  {consistencyReport.isConsistent ? (
+                    <CheckCircle2 className="w-5 h-5 text-status-available flex-shrink-0" />
+                  ) : (
+                    <AlertTriangle className="w-5 h-5 text-status-review flex-shrink-0" />
+                  )}
+                  <div>
+                    <p className={`text-sm font-medium ${
+                      consistencyReport.isConsistent ? 'text-status-available' : 'text-status-review'
+                    }`}>
+                      {consistencyReport.isConsistent
+                        ? '✅ 一致性校验通过'
+                        : `⚠️ ${unresolvedIssues} 处不一致未确认`}
+                    </p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {consistencyReport.explanation}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <button
+                onClick={handleExport}
+                disabled={isExporting || selectedCount === 0}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md font-medium"
+              >
+                {isExporting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    正在生成导出文件...
+                  </>
+                ) : exportSuccess ? (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    导出成功！
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    导出 {selectedCount} 条记录
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={() => navigate('/')}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-all"
+              >
+                返回任务队列
+              </button>
+            </div>
+
+            {exportSuccess && (
+              <div className="mt-4 p-4 bg-status-available/10 rounded-lg border border-status-available/30">
+                <p className="text-sm text-status-available font-medium">
+                  ✅ 导出成功！文件已保存至：
+                </p>
+                <p className="text-xs text-slate-600 mt-1 font-mono">
+                  /Downloads/明珠海珍品_202606巡检_数据报告.{exportFormat}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </AppLayout>
+  );
+};
