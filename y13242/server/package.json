@@ -1,0 +1,16 @@
+{
+  "name": "music-festival-booth-archive-server",
+  "version": "1.0.0",
+  "description": "音乐节摊位清单归档 - 后端服务",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node src/index.js",
+    "seed": "node data/seed.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
