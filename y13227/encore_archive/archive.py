@@ -1,0 +1,240 @@
+import re
+import json
+import os
+from datetime import datetime
+from typing import List, Dict, Any, Optional, Tuple
+
+from .models import (
+    EncoreRecord,
+    Track,
+    ArchiveStore,
+    compute_hash,
+    STATUS_OK,
+    STATUS_EXPIRED,
+    STATUS_MODIFIED,
+    STATUS_MISMATCH,
+    STATUS_PENDING,
+    STATUS_LABELS,
+)
+
+
+EXPIRED_KEYWORDS = [
+    "授权到期", "版权到期", "授权过期", "版权过期",
+    "expired", "expire",
+]
+
+MODIFIED_KEYWORDS = [
+    "后补", "补录", "改口径", "口径修改", "修订", "更正",
+]
+
+
+def parse_tracks_file(content: str) -> List[Track]:
+    lines = [ln.strip() for ln in content.splitlines() if ln.strip()]
+    tracks = []
+    for ln in lines:
+        parts = re.split(r"\s*[|,，\t]\s*", ln)
+        title = parts[0].strip()
+        artist = parts[1].strip() if len(parts) > 1 else ""
+        duration = parts[2].strip() if len(parts) > 2 else ""
+        note = parts[3].strip() if len(parts) > 3 else ""
+        if re.match(r"^\d+[\.、]\s*", title):
+            title = re.sub(r"^\d+[\.、]\s*", "", title)
+        tracks.append(Track(title=title, artist=artist, duration=duration, note=note))
+    return tracks
+
+
+def detect_expired(*texts: str) -> bool:
+    blob = "\n".join(texts).lower()
+    return any(kw.lower() in blob for kw in EXPIRED_KEYWORDS)
+
+
+def detect_modified(*texts: str) -> bool:
+    blob = "\n".join(texts)
+    return any(kw in blob for kw in MODIFIED_KEYWORDS)
+
+
+def filename_matches_tracks(filename: str, tracks: List[Track]) -> Tuple[bool, str]:
+    if not filename:
+        return False, "文件名为空"
+    if not tracks:
+        return False, "曲目表为空"
+    track_titles = {t.title for t in tracks}
+    fn = os.path.splitext(os.path.basename(filename))[0]
+    hits = 0
+    for t in track_titles:
+        if t and t in fn:
+            hits += 1
+    if hits == 0:
+        return False, f"文件名 '{filename}' 未包含任何曲目名"
+    ratio = hits / len(track_titles)
+    if ratio < 0.5:
+        return False, f"仅命中 {hits}/{len(track_titles)} 首曲目，匹配度不足"
+    return True, f"匹配 {hits}/{len(track_titles)} 首曲目"
+
+
+def compute_record_hashes(rec: EncoreRecord) -> None:
+    rec.filename_hash = compute_hash(rec.filename)
+    tracks_str = json.dumps([t.__dict__ for t in rec.tracks], ensure_ascii=False, sort_keys=True)
+    rec.tracks_hash = compute_hash(tracks_str)
+    combined = "|".join([
+        rec.filename,
+        tracks_str,
+        rec.supplementary_note,
+        rec.verbal_note,
+        rec.rehearsal_note,
+    ])
+    rec.combined_hash = compute_hash(combined)
+
+
+def evaluate_status(rec: EncoreRecord, prev: Optional[EncoreRecord] = None) -> None:
+    reasons = []
+    is_expired = detect_expired(
+        rec.supplementary_note, rec.verbal_note, rec.rehearsal_note,
+        *[t.note for t in rec.tracks],
+    )
+    is_modified = detect_modified(
+        rec.supplementary_note, rec.verbal_note, rec.rehearsal_note,
+    )
+    ok_match, match_detail = filename_matches_tracks(rec.filename, rec.tracks)
+
+    if is_expired:
+        rec.status = STATUS_EXPIRED
+        reasons.append("检测到授权/版权到期关键字")
+    if is_modified:
+        if rec.status == STATUS_PENDING:
+            rec.status = STATUS_MODIFIED
+        reasons.append("检测到后补/改口径关键字")
+    if not ok_match:
+        if rec.status == STATUS_PENDING:
+            rec.status = STATUS_MISMATCH
+        reasons.append(match_detail)
+    if rec.status == STATUS_PENDING:
+        rec.status = STATUS_OK
+        reasons.append("校验通过")
+
+    if prev is not None and prev.combined_hash and rec.combined_hash != prev.combined_hash:
+        if rec.status == STATUS_OK:
+            rec.status = STATUS_MODIFIED
+        reasons.append("与上一版本材料口径有变更")
+
+    rec.status_detail = "；".join(reasons)
+
+
+def build_change_log(rec: EncoreRecord, prev: Optional[EncoreRecord]) -> List[Dict[str, Any]]:
+    log = list(prev.change_log) if prev else []
+    entry = {"version": rec.version, "at": datetime.now().isoformat(timespec="seconds"), "diffs": []}
+    if prev is None:
+        entry["diffs"].append("初始版本")
+        return [entry]
+    if prev.filename != rec.filename:
+        entry["diffs"].append(f"文件名: {prev.filename!r} -> {rec.filename!r}")
+    if prev.tracks_hash != rec.tracks_hash:
+        entry["diffs"].append("曲目表内容有变更")
+    if prev.supplementary_note != rec.supplementary_note:
+        entry["diffs"].append("后补备注有变更")
+    if prev.verbal_note != rec.verbal_note:
+        entry["diffs"].append("口头说明有变更")
+    if prev.rehearsal_note != rec.rehearsal_note:
+        entry["diffs"].append("排练/授权备注有变更")
+    if not entry["diffs"]:
+        entry["diffs"].append("无实质变更")
+    log.append(entry)
+    return log
+
+
+def align_annotations_and_delivery(rec: EncoreRecord, prev: Optional[EncoreRecord]) -> None:
+    if prev:
+        rec.manual_annotations = list(dict.fromkeys(prev.manual_annotations + rec.manual_annotations))
+        merged = list(prev.delivery_checklist)
+        existing_ids = {d.get("item") for d in merged}
+        for d in rec.delivery_checklist:
+            if d.get("item") not in existing_ids:
+                merged.append(d)
+                existing_ids.add(d.get("item"))
+        rec.delivery_checklist = merged
+
+
+def archive_submit(
+    store: ArchiveStore,
+    record_id: str,
+    filename: str,
+    tracks_content: str,
+    supplementary_note: str = "",
+    verbal_note: str = "",
+    rehearsal_note: str = "",
+    manual_annotations: Optional[List[str]] = None,
+    delivery_checklist: Optional[List[Dict[str, Any]]] = None,
+) -> Tuple[Optional[EncoreRecord], Dict[str, Any]]:
+    if not record_id:
+        return None, {"ok": False, "error": "record_id 不能为空"}
+    tracks = parse_tracks_file(tracks_content)
+    if not tracks:
+        return None, {"ok": False, "error": "未解析到任何曲目，请检查曲目表格式"}
+    prev = store.load(record_id)
+    if prev is None:
+        rec = EncoreRecord(record_id=record_id)
+    else:
+        rec = EncoreRecord(
+            record_id=record_id,
+            version=prev.version + 1,
+            manual_annotations=list(prev.manual_annotations),
+            delivery_checklist=list(prev.delivery_checklist),
+            change_log=list(prev.change_log),
+        )
+    rec.filename = filename or rec.filename
+    rec.tracks = tracks
+    rec.supplementary_note = supplementary_note or rec.supplementary_note
+    rec.verbal_note = verbal_note or rec.verbal_note
+    rec.rehearsal_note = rehearsal_note or rec.rehearsal_note
+    if manual_annotations:
+        rec.manual_annotations.extend(manual_annotations)
+    if delivery_checklist:
+        rec.delivery_checklist.extend(delivery_checklist)
+    compute_record_hashes(rec)
+    evaluate_status(rec, prev)
+    align_annotations_and_delivery(rec, prev)
+    rec.change_log = build_change_log(rec, prev)
+    store.save(rec)
+    meta = {
+        "ok": True,
+        "version": rec.version,
+        "status": rec.status,
+        "status_label": STATUS_LABELS.get(rec.status, rec.status),
+        "track_count": len(rec.tracks),
+    }
+    return rec, meta
+
+
+def build_page_summary(store: ArchiveStore, record_id: str) -> Dict[str, Any]:
+    rec = store.load(record_id)
+    if rec is None:
+        return {"ok": False, "error": f"记录 {record_id} 不存在"}
+    versions = store.load_all_versions(record_id)
+    return {
+        "ok": True,
+        "record_id": record_id,
+        "latest_version": rec.version,
+        "status": rec.status,
+        "status_label": STATUS_LABELS.get(rec.status, rec.status),
+        "status_detail": rec.status_detail,
+        "filename": rec.filename,
+        "track_count": len(rec.tracks),
+        "tracks": [t.__dict__ for t in rec.tracks],
+        "supplementary_note": rec.supplementary_note,
+        "verbal_note": rec.verbal_note,
+        "rehearsal_note": rec.rehearsal_note,
+        "manual_annotations": rec.manual_annotations,
+        "delivery_checklist": rec.delivery_checklist,
+        "versions": [
+            {
+                "version": v.version,
+                "status": v.status,
+                "status_label": STATUS_LABELS.get(v.status, v.status),
+                "updated_at": v.updated_at,
+                "combined_hash": v.combined_hash,
+            }
+            for v in versions
+        ],
+        "change_log": rec.change_log,
+        "updated_at": rec.updated_at,
+    }
