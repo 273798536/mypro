@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鼓组节拍版本复核系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+  .modal-mask { background: rgba(0,0,0,0.45); }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  .fade-in { animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn { from {opacity:0; transform: translateY(4px);} to {opacity:1; transform:translateY(0);} }
+  .toast { position: fixed; top: 20px; right: 20px; z-index: 9999; }
+</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- ============ 顶部材料入口卡 ============ -->
+<header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white shadow-lg">
+  <div class="max-w-7xl mx-auto px-6 py-5">
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <div>
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+          <span class="text-3xl">🥁</span>
+          鼓组节拍版本复核
+        </h1>
+        <p class="text-indigo-100 text-sm mt-1">文件 · 曲目表 · 复核清单 — 三端对齐 · 状态一致 · 可追溯</p>
+      </div>
+      <div class="flex flex-wrap gap-2" id="entryActions">
+        <button onclick="openImportModal()" class="bg-white text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-lg font-medium shadow flex items-center gap-2 transition">
+          <span>📥</span> 导入曲目表
+        </button>
+        <button onclick="viewReport()" class="bg-amber-300 hover:bg-amber-200 text-amber-900 px-4 py-2 rounded-lg font-medium shadow flex items-center gap-2 transition">
+          <span>📄</span> 预览Markdown报告
+        </button>
+        <button onclick="downloadReport()" class="bg-emerald-400 hover:bg-emerald-300 text-emerald-900 px-4 py-2 rounded-lg font-medium shadow flex items-center gap-2 transition">
+          <span>⬇️</span> 导出报告
+        </button>
+        <button onclick="openMappingsModal()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg font-medium shadow flex items-center gap-2 transition">
+          <span>🔗</span> 字段映射
+        </button>
+      </div>
+    </div>
+    <!-- 新手友好：材料入口说明 -->
+    <div class="mt-4 bg-white/10 backdrop-blur rounded-lg px-4 py-3 text-sm flex items-start gap-3">
+      <span class="text-xl">💡</span>
+      <div class="text-indigo-50 leading-relaxed">
+        <strong>新手速览：</strong>
+        ①「导入曲目表」提交复核人交来的表格数据（字段名不一致也能识别）→
+        ② 列表中查看<strong class="text-yellow-200">处理状态</strong>，点击一行查看详情 →
+        ③ 授权到期/不匹配的条目在<strong>右侧异常出口</strong>可直接跳转，补<strong class="text-yellow-200">授权备注</strong>后自动重新对齐。
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-6 py-6 flex gap-6">
+
+  <!-- ============ 主体区域 ============ -->
+  <section class="flex-1 min-w-0">
+
+    <!-- 统计卡 -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6" id="statsCards"></div>
+
+    <!-- 过滤条 -->
+    <div class="bg-white rounded-xl shadow p-4 mb-4 flex flex-wrap gap-3 items-center">
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-slate-600">状态：</span>
+        <select id="filterStatus" onchange="loadTracks()" class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+          <option value="">全部</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-slate-600">来源：</span>
+        <select id="filterSource" onchange="loadTracks()" class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+          <option value="">全部</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-2 flex-1 min-w-[200px]">
+        <input id="filterKeyword" oninput="loadTracks()" placeholder="搜索文件名 / 曲目名..."
+          class="flex-1 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+      </div>
+      <button onclick="loadTracks()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-sm">刷新</button>
+    </div>
+
+    <!-- 曲目列表 -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+      <div class="overflow-x-auto scrollbar-thin">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-slate-600 border-b border-slate-200">
+            <tr>
+              <th class="px-4 py-3 text-left font-medium">ID</th>
+              <th class="px-4 py-3 text-left font-medium">文件名 / 曲目</th>
+              <th class="px-4 py-3 text-left font-medium">鼓组版本</th>
+              <th class="px-4 py-3 text-left font-medium">来源 · 行</th>
+              <th class="px-4 py-3 text-left font-medium">处理状态</th>
+              <th class="px-4 py-3 text-left font-medium">授权到期</th>
+              <th class="px-4 py-3 text-center font-medium">操作</th>
+            </tr>
+          </thead>
+          <tbody id="tracksTableBody" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+      <div id="emptyState" class="hidden py-20 text-center text-slate-400">
+        <div class="text-5xl mb-3">🗂️</div>
+        <p>暂无复核记录，点击顶部「导入曲目表」开始</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 右侧：异常出口 ============ -->
+  <aside class="w-80 shrink-0">
+    <div class="bg-white rounded-xl shadow p-5 sticky top-6">
+      <div class="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
+        <span class="text-2xl">🚨</span>
+        <div>
+          <h3 class="font-bold text-slate-800">异常出口</h3>
+          <p class="text-xs text-slate-500">点击可快速筛选需人工处理的条目</p>
+        </div>
+      </div>
+      <div id="abnormalList" class="space-y-2"></div>
+
+      <div class="mt-6 pt-4 border-t border-slate-100">
+        <h4 class="text-sm font-semibold text-slate-700 mb-3">📊 来源分布</h4>
+        <div id="sourceList" class="space-y-1 text-sm"></div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- ============ 详情弹窗 ============ -->
+<div id="detailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="modal-mask absolute inset-0" onclick="closeDetail()"></div>
+  <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden fade-in">
+    <div class="flex items-center justify-between p-5 border-b border-slate-100 bg-gradient-to-r from-indigo-50 to-purple-50">
+      <h3 class="font-bold text-lg text-slate-800 flex items-center gap-2">
+        <span>📋</span> 复核明细 <span id="detailId" class="text-indigo-600 text-base"></span>
+      </h3>
+      <button onclick="closeDetail()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+    </div>
+    <div class="p-5 overflow-y-auto scrollbar-thin" style="max-height: calc(85vh - 140px)" id="detailBody"></div>
+    <div class="p-4 border-t border-slate-100 bg-slate-50 flex gap-2 justify-end">
+      <button onclick="openChangeStatus()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">改状态</button>
+      <button onclick="openAddNote()" class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm">补授权备注</button>
+      <button onclick="closeDetail()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-4 py-2 rounded-lg text-sm">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 改状态弹窗 ============ -->
+<div id="statusModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+  <div class="modal-mask absolute inset-0" onclick="closeStatusModal()"></div>
+  <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-md fade-in">
+    <div class="p-5 border-b border-slate-100">
+      <h3 class="font-bold text-lg">修改处理状态</h3>
+    </div>
+    <div class="p-5 space-y-4">
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">新状态 *</label>
+        <select id="newStatus" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 outline-none"></select>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">操作人</label>
+        <input id="statusOperator" value="复核人" class="w-full border rounded-lg px-3 py-2 text-sm outline-none">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">备注说明</label>
+        <textarea id="statusRemark" rows="2" class="w-full border rounded-lg px-3 py-2 text-sm outline-none"></textarea>
+      </div>
+    </div>
+    <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+      <button onclick="closeStatusModal()" class="px-4 py-2 rounded-lg bg-slate-200 text-sm">取消</button>
+      <button onclick="submitChangeStatus()" class="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 补授权备注弹窗 ============ -->
+<div id="noteModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+  <div class="modal-mask absolute inset-0" onclick="closeNoteModal()"></div>
+  <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-md fade-in">
+    <div class="p-5 border-b border-amber-100 bg-amber-50">
+      <h3 class="font-bold text-lg flex items-center gap-2"><span>📝</span> 补授权备注（重新对齐）</h3>
+      <p class="text-xs text-amber-700 mt-1">提交后自动记录影响范围与来源行，状态改为「已重新对齐」</p>
+    </div>
+    <div class="p-5 space-y-4">
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">授权备注 *</label>
+        <textarea id="authNote" rows="3" placeholder="例如：版权方同意延期至2026-12-31，合同编号..."
+          class="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-amber-400"></textarea>
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">影响范围说明（可选）</label>
+        <input id="impactScope" placeholder="例如：全平台下架、演出禁用..."
+          class="w-full border rounded-lg px-3 py-2 text-sm outline-none">
+      </div>
+      <div>
+        <label class="block text-sm text-slate-600 mb-1">操作人</label>
+        <input id="noteOperator" value="复核人" class="w-full border rounded-lg px-3 py-2 text-sm outline-none">
+      </div>
+    </div>
+    <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-2">
+      <button onclick="closeNoteModal()" class="px-4 py-2 rounded-lg bg-slate-200 text-sm">取消</button>
+      <button onclick="submitAddNote()" class="px-4 py-2 rounded-lg bg-amber-500 text-white text-sm">提交并重新对齐</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 导入弹窗 ============ -->
+<div id="importModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+  <div class="modal-mask absolute inset-0" onclick="closeImportModal()"></div>
+  <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl fade-in">
+    <div class="p-5 border-b border-slate-100">
+      <h3 class="font-bold text-lg flex items-center gap-2"><span>📥</span> 导入曲目表</h3>
+      <p class="text-xs text-slate-500 mt-1">字段名不一致也能识别（映射规则在「字段映射」中维护），核心字段「来源」和「处理状态」自动保住</p>
+    </div>
+    <div class="p-5 space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">JSON 数据格式</label>
+        <pre class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-600 overflow-x-auto">[
+  {"文件名": "Drum_001.wav", "曲目名称": "序曲", "来源": "林姐曲目表A", "行号": 2, "处理状态": "pending"}
+]</pre>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">粘贴曲目表 JSON</label>
+        <textarea id="importJson" rows="8" class="w-full border rounded-lg px-3 py-2 text-sm font-mono outline-none focus:ring-2 focus:ring-indigo-400"
+          placeholder='[{"文件名":"...","曲目名称":"...","来源":"...","行号":1,"处理状态":"pending"}]'></textarea>
+      </div>
+    </div>
+    <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-between gap-2">
+      <button onclick="loadDemoImport()" class="text-sm text-indigo-600 hover:text-indigo-800">填入示例数据</button>
+      <div class="flex gap-2">
+        <button onclick="closeImportModal()" class="px-4 py-2 rounded-lg bg-slate-200 text-sm">取消</button>
+        <button onclick="submitImport()" class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm">确认导入</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Markdown 预览弹窗 ============ -->
+<div id="reportModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+  <div class="modal-mask absolute inset-0" onclick="closeReportModal()"></div>
+  <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden fade-in">
+    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+      <h3 class="font-bold text-lg flex items-center gap-2"><span>📄</span> Markdown 报告预览（与导出文件内容一致）</h3>
+      <button onclick="closeReportModal()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+    </div>
+    <pre id="reportContent" class="p-6 text-sm overflow-auto scrollbar-thin bg-slate-50" style="max-height: calc(85vh - 80px); white-space: pre-wrap; word-break: break-word;"></pre>
+  </div>
+</div>
+
+<!-- ============ 字段映射弹窗 ============ -->
+<div id="mappingsModal" class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4">
+  <div class="modal-mask absolute inset-0" onclick="closeMappingsModal()"></div>
+  <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-xl max-h-[85vh] overflow-hidden fade-in">
+    <div class="p-5 border-b border-slate-100">
+      <h3 class="font-bold text-lg flex items-center gap-2"><span>🔗</span> 字段名映射</h3>
+      <p class="text-xs text-slate-500 mt-1">复核人曲目表字段名前后不一致时，在这里添加对应关系，保证「来源」和「处理状态」一定能识别</p>
+    </div>
+    <div class="p-5 space-y-4 overflow-y-auto scrollbar-thin" style="max-height: calc(85vh - 240px)">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs text-slate-600 mb-1">曲目表字段名</label>
+          <input id="mapIncoming" class="w-full border rounded-lg px-3 py-2 text-sm outline-none" placeholder="如：曲目别名">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-600 mb-1">标准字段名</label>
+          <select id="mapStandard" class="w-full border rounded-lg px-3 py-2 text-sm outline-none">
+            <option value="file_name">file_name 文件名</option>
+            <option value="track_name">track_name 曲目名称</option>
+            <option value="track_code">track_code 曲目编号</option>
+            <option value="beat_version">beat_version 鼓组版本</option>
+            <option value="source">source 来源 ⭐</option>
+            <option value="source_row">source_row 来源行 ⭐</option>
+            <option value="process_status">process_status 处理状态 ⭐</option>
+            <option value="authorization_expire_date">authorization_expire_date 授权到期日</option>
+            <option value="authorization_note">authorization_note 授权备注</option>
+            <option value="impact_scope">impact_scope 影响范围</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="submitMapping()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg py-2 text-sm">添加映射</button>
+      <div class="border-t pt-4">
+        <h4 class="text-sm font-semibold mb-2">已有映射</h4>
+        <div id="mappingsList" class="space-y-1 max-h-64 overflow-y-auto text-xs scrollbar-thin"></div>
+      </div>
+    </div>
+    <div class="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+      <button onclick="closeMappingsModal()" class="px-4 py-2 rounded-lg bg-slate-200 text-sm">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Toast ============ -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
