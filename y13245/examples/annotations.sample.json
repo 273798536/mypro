@@ -1,0 +1,14 @@
+[
+  {
+    "row_hash": "REPLACE_WITH_HASH",
+    "annotator": "老许",
+    "status": "ok",
+    "comment": "确认已重录为 v3，旧版已从发布清单中移除，可放心使用"
+  },
+  {
+    "row_hash": "REPLACE_WITH_HASH_2",
+    "annotator": "接手同事A",
+    "status": "ok",
+    "comment": "排练录音确认，无需另行授权"
+  }
+]

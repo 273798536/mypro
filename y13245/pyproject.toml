@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "podcast-intro-review"
+version = "0.1.0"
+description = "播客片头版本复核工具 —— 旧版母带检测/授权备注识别/交付清单对齐"
+requires-python = ">=3.9"
+readme = "README.md"
+authors = [{ name = "播客片头版本复核小组" }]
+license = { text = "MIT" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Environment :: Console",
+]
+
+[project.scripts]
+podcast-intro-review = "podcast_intro_review.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["podcast_intro_review*"]
