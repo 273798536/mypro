@@ -1,0 +1,220 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f5f6f8;
+  color: #222;
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #c00000;
+}
+
+.header h1 {
+  font-size: 22px;
+  color: #c00000;
+  font-weight: 700;
+}
+
+.header .subtitle {
+  color: #888;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all .15s;
+}
+
+.btn-primary { background: #c00000; color: #fff; }
+.btn-primary:hover { background: #a00000; }
+
+.btn-secondary { background: #fff; color: #444; border: 1px solid #ddd; }
+.btn-secondary:hover { background: #f5f5f5; }
+
+.btn-sm { padding: 4px 10px; font-size: 12px; }
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.table-wrap {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+
+tr.anomaly td { background: #fffbe6; }
+tr.anomaly:hover td { background: #fff4cc; }
+
+tr:hover td { background: #fafafa; }
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.tag-red { background: #ffe5e5; color: #c00000; }
+.tag-green { background: #e5f5e5; color: #2b8a3e; }
+.tag-yellow { background: #fff4cc; color: #b8860b; }
+.tag-gray { background: #eee; color: #666; }
+.tag-blue { background: #e7f1ff; color: #1c7ed6; }
+
+.human-reason {
+  color: #c00000;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.hint {
+  color: #888;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.modal-mask {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 999;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 560px;
+  max-width: 92vw;
+  max-height: 86vh;
+  overflow: auto;
+}
+
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-body { padding: 20px; }
+.modal-footer {
+  padding: 12px 20px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.field { margin-bottom: 14px; }
+.field label {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.field textarea { min-height: 72px; resize: vertical; }
+.field-row { display: flex; gap: 12px; }
+.field-row .field { flex: 1; }
+
+.log-item {
+  padding: 10px 0;
+  border-bottom: 1px dashed #eee;
+}
+.log-item:last-child { border-bottom: none; }
+.log-meta {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+}
+.log-diff { font-size: 13px; color: #333; }
+.log-diff .old { color: #c00000; text-decoration: line-through; }
+.log-diff .new { color: #2b8a3e; font-weight: 500; }
+
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: #999;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #1c7ed6;
+  cursor: pointer;
+  padding: 2px 6px;
+  font-size: 12px;
+  text-decoration: underline;
+}
