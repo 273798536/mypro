@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+@import 'leaflet/dist/leaflet.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #0F172A;
+  background: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer components {
+  .bay-card {
+    @apply bg-white border border-slate-200 rounded-md shadow-card transition-all duration-200;
+  }
+
+  .bay-card:hover {
+    @apply shadow-card-hover border-prussia-200;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-prussia-700 text-white text-sm font-medium rounded-md transition-all duration-200 hover:bg-prussia-800 active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-prussia-300 text-prussia-700 text-sm font-medium rounded-md transition-all duration-200 hover:bg-prussia-50 active:scale-[0.98];
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md transition-all duration-200 hover:bg-red-700;
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 bg-white border border-slate-300 text-sm text-slate-900 rounded-md transition-all duration-200 placeholder:text-slate-400 focus:outline-none focus:border-prussia-400 focus:ring-2 focus:ring-prussia-100;
+  }
+
+  .select-field {
+    @apply w-full px-3 py-2 bg-white border border-slate-300 text-sm text-slate-900 rounded-md transition-all duration-200 focus:outline-none focus:border-prussia-400 focus:ring-2 focus:ring-prussia-100;
+  }
+
+  .tag {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded;
+  }
+
+  .table-badge {
+    @apply inline-flex items-center justify-center px-2 py-0.5 rounded text-xs font-medium;
+  }
+
+  .page-title {
+    @apply font-serif text-xl font-semibold text-prussia-900;
+  }
+
+  .section-title {
+    @apply font-serif text-base font-semibold text-prussia-800;
+  }
+
+  .data-mono {
+    @apply font-mono text-sm tabular-nums;
+  }
+
+  .red-corner {
+    position: relative;
+  }
+
+  .red-corner::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 0 8px 8px;
+    border-color: transparent transparent #DC2626 transparent;
+    pointer-events: none;
+  }
+
+  .timeline-node {
+    @apply relative pl-8;
+  }
+
+  .timeline-node::before {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #E2E8F0;
+    border: 2px solid #94A3B8;
+    z-index: 1;
+  }
+
+  .timeline-node.active::before {
+    background: #1E3A5F;
+    border-color: #34619C;
+  }
+
+  .timeline-line {
+    @apply absolute w-0.5 bg-slate-200;
+    left: 10px;
+    top: 1rem;
+    bottom: 0;
+  }
+}
+
+.leaflet-container {
+  background: #E2E8F0;
+  font-family: inherit;
+  border-radius: 6px;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
