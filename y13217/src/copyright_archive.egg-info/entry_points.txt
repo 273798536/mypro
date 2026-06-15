@@ -1,0 +1,2 @@
+[console_scripts]
+copyright-archive = copyright_archive.cli:main

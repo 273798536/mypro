@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "copyright-archive"
+version = "1.0.0"
+description = "版权授权清单归档处理系统 - 文件名与曲目表匹配、历史追踪、时间线生成"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.0.0",
+    "openpyxl>=3.1.0",
+    "click>=8.1.0",
+    "python-dateutil>=2.8.0",
+    "Jinja2>=3.1.0",
+]
+
+[project.scripts]
+copyright-archive = "copyright_archive.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

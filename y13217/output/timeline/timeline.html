@@ -1,0 +1,999 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>版权授权清单归档 - 历史时间线</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .summary-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .summary-card .label {
+            color: #666;
+            margin-top: 5px;
+        }
+        .timeline {
+            position: relative;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            transform: translateX(-50%);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            width: 50%;
+            padding-right: 40px;
+        }
+        .timeline-item:nth-child(even) {
+            margin-left: 50%;
+            padding-right: 0;
+            padding-left: 40px;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 20px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #667eea;
+            z-index: 1;
+        }
+        .timeline-item:nth-child(even)::before {
+            right: auto;
+            left: -8px;
+        }
+        .timeline-item.high-importance::before {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 10px rgba(255,107,107,0.5);
+        }
+        .timeline-item.medium-importance::before {
+            background: #ffa502;
+            border-color: #ffa502;
+        }
+        .timeline-content {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .timeline-content:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+        .timeline-item.high-importance .timeline-content {
+            background: #fff5f5;
+            border-left: 4px solid #ff6b6b;
+        }
+        .timeline-item.medium-importance .timeline-content {
+            background: #fffaf0;
+            border-left: 4px solid #ffa502;
+        }
+        .actor-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .actor-linjie { background: #d4edda; color: #155724; }
+        .actor-operation { background: #fff3cd; color: #856404; }
+        .actor-system { background: #d1ecf1; color: #0c5460; }
+        .actor-manual { background: #f8d7da; color: #721c24; }
+        .timestamp {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        .action {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .details {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.95rem;
+            color: #555;
+        }
+        .details p { margin-bottom: 5px; }
+        .details p:last-child { margin-bottom: 0; }
+        .target {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #ddd;
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            opacity: 0.8;
+        }
+        @media (max-width: 768px) {
+            .timeline::before { left: 20px; }
+            .timeline-item {
+                width: 100%;
+                padding-left: 60px !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+            }
+            .timeline-item::before {
+                left: 12px !important;
+                right: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎵 版权授权清单归档</h1>
+            <p>历史时间线 - 可直接用于沟通的完整变更记录</p>
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="number">6</div>
+                <div class="label">版权文件总数</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">4</div>
+                <div class="label">最终匹配</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">5</div>
+                <div class="label">判断被覆盖</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">4</div>
+                <div class="label">林姐判断数</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">1</div>
+                <div class="label">运营主管改动</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">28</div>
+                <div class="label">历史事件总数</div>
+            </div>
+        </div>
+
+        <div class="timeline">
+            
+            <div class="timeline-item normal-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">曲目表解析完成</div>
+                    <div class="details">
+                        
+                        <p><strong>当前版曲目数:</strong> 5</p>
+                        
+                        <p><strong>旧版曲目数:</strong> 3</p>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item normal-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">版权文件解析完成</div>
+                    <div class="details">
+                        
+                        <p><strong>文件总数:</strong> 6</p>
+                        
+                        <p><strong>有ID文件数:</strong> 5</p>
+                        
+                        <p><strong>无ID文件数:</strong> 1</p>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item normal-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">备注记录解析完成</div>
+                    <div class="details">
+                        
+                        <p><strong>后补备注数:</strong> 1</p>
+                        
+                        <p><strong>口头备注数:</strong> 3</p>
+                        
+                        <p><strong>运营备注数:</strong> 1</p>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item normal-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">文件解析完成</div>
+                    <div class="details">
+                        
+                        <p><strong>曲目数量:</strong> 8</p>
+                        
+                        <p><strong>版权文件数量:</strong> 6</p>
+                        
+                        <p><strong>备注数量:</strong> 5</p>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item normal-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">初步匹配完成</div>
+                    <div class="details">
+                        
+                        <p><strong>已匹配数:</strong> 5</p>
+                        
+                        <p><strong>不匹配数:</strong> 0</p>
+                        
+                        <p><strong>待确认数:</strong> 1</p>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">后补备注确认判断</div>
+                    <div class="details">
+                        
+                        <p><strong>当前判断:</strong> 已匹配</p>
+                        
+                        <p><strong>备注内容:</strong> TRK003 文件名中的_Jay是标注别名，不影响匹配，按周杰伦处理</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK003_青花瓷_周杰伦_Jay_独家授权.pdf
+                         | 🎵 曲目: TRK003
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">应用后补备注</div>
+                    <div class="details">
+                        
+                        <p><strong>备注内容:</strong> TRK003 文件名中的_Jay是标注别名，不影响匹配，按周杰伦处理</p>
+                        
+                        <p><strong>影响文件数:</strong> 1</p>
+                        
+                        <p><strong>影响判断卡:</strong> ['TRK003_青花瓷_周杰伦_Jay_独家授权.pdf']</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK003_青花瓷_周杰伦_Jay_独家授权.pdf
+                         | 🎵 曲目: TRK003
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡被口头备注覆盖</div>
+                    <div class="details">
+                        
+                        <p><strong>原判断:</strong> 已匹配</p>
+                        
+                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>新判断:</strong> 已匹配</p>
+                        
+                        <p><strong>新原因:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
+                        
+                        <p><strong>备注内容:</strong> 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景</p>
+                        
+                        <p><strong>改动类型:</strong> 补充/调整</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf
+                         | 🎵 曲目: TRK005
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">应用口头备注</div>
+                    <div class="details">
+                        
+                        <p><strong>备注内容:</strong> 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景</p>
+                        
+                        <p><strong>影响文件数:</strong> 1</p>
+                        
+                        <p><strong>影响判断卡:</strong> ['TRK005_演员_薛之谦_非独家授权_彩排版.pdf']</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf
+                         | 🎵 曲目: TRK005
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡被口头备注覆盖</div>
+                    <div class="details">
+                        
+                        <p><strong>原判断:</strong> 待确认</p>
+                        
+                        <p><strong>原原因:</strong> 系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID</p>
+                        
+                        <p><strong>新判断:</strong> 已匹配</p>
+                        
+                        <p><strong>新原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+                        
+                        <p><strong>备注内容:</strong> 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+                        
+                        <p><strong>改动类型:</strong> 判断变更</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: 成都_赵雷_独家授权.pdf
+                         | 🎵 曲目: TRK004
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">应用口头备注</div>
+                    <div class="details">
+                        
+                        <p><strong>备注内容:</strong> 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+                        
+                        <p><strong>影响文件数:</strong> 1</p>
+                        
+                        <p><strong>影响判断卡:</strong> ['成都_赵雷_独家授权.pdf']</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: 成都_赵雷_独家授权.pdf
+                         | 🎵 曲目: TRK004
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡被口头备注覆盖</div>
+                    <div class="details">
+                        
+                        <p><strong>原判断:</strong> 已匹配</p>
+                        
+                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>新判断:</strong> 不匹配</p>
+                        
+                        <p><strong>新原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>备注内容:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>改动类型:</strong> 判断变更</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK001_夜空中最亮的星_逃跑计划_独家授权.pdf
+                         | 🎵 曲目: TRK001
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡被口头备注覆盖</div>
+                    <div class="details">
+                        
+                        <p><strong>原判断:</strong> 已匹配</p>
+                        
+                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>新判断:</strong> 不匹配</p>
+                        
+                        <p><strong>新原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>备注内容:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>改动类型:</strong> 判断变更</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf
+                         | 🎵 曲目: TRK001
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">应用口头备注</div>
+                    <div class="details">
+                        
+                        <p><strong>备注内容:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>影响文件数:</strong> 2</p>
+                        
+                        <p><strong>影响判断卡:</strong> ['TRK001_夜空中最亮的星_逃跑计划_独家授权.pdf', 'TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf']</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf
+                         | 🎵 曲目: TRK001
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-operation">运营主管</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡被运营备注覆盖</div>
+                    <div class="details">
+                        
+                        <p><strong>原判断:</strong> 已匹配</p>
+                        
+                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>新判断:</strong> 已匹配</p>
+                        
+                        <p><strong>新原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
+                        
+                        <p><strong>备注内容:</strong> 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认</p>
+                        
+                        <p><strong>改动类型:</strong> 补充/调整</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf
+                         | 🎵 曲目: TRK002
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-operation">运营主管</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">应用运营备注</div>
+                    <div class="details">
+                        
+                        <p><strong>备注内容:</strong> 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认</p>
+                        
+                        <p><strong>影响文件数:</strong> 1</p>
+                        
+                        <p><strong>影响判断卡:</strong> ['TRK002_平凡之路_朴树_非独家授权.pdf']</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf
+                         | 🎵 曲目: TRK002
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">备注应用完成</div>
+                    <div class="details">
+                        
+                        <p><strong>已应用备注数:</strong> 5</p>
+                        
+                        <p><strong>林姐备注数:</strong> 4</p>
+                        
+                        <p><strong>运营主管备注数:</strong> 1</p>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡变更摘要</div>
+                    <div class="details">
+                        
+                        <p><strong>判断卡ID:</strong> CARD_d865dc5ddfe1</p>
+                        
+                        <p><strong>文件:</strong> TRK001_夜空中最亮的星_逃跑计划_独家授权.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK001</p>
+                        
+                        <p><strong>初始判断:</strong> 已匹配</p>
+                        
+                        <p><strong>初始原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>最终判断:</strong> 不匹配</p>
+                        
+                        <p><strong>最终原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>被覆盖:</strong> 是</p>
+                        
+                        <p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
+                        
+                        <p><strong>覆盖时间:</strong> 2026-06-10 23:49:38</p>
+                        
+                        <p><strong>覆盖原因:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK001_夜空中最亮的星_逃跑计划_独家授权.pdf
+                         | 🎵 曲目: TRK001
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡变更摘要</div>
+                    <div class="details">
+                        
+                        <p><strong>判断卡ID:</strong> CARD_34f7d5ec85b2</p>
+                        
+                        <p><strong>文件:</strong> TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK001</p>
+                        
+                        <p><strong>初始判断:</strong> 已匹配</p>
+                        
+                        <p><strong>初始原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>最终判断:</strong> 不匹配</p>
+                        
+                        <p><strong>最终原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>被覆盖:</strong> 是</p>
+                        
+                        <p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
+                        
+                        <p><strong>覆盖时间:</strong> 2026-06-10 23:49:38</p>
+                        
+                        <p><strong>覆盖原因:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf
+                         | 🎵 曲目: TRK001
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡变更摘要</div>
+                    <div class="details">
+                        
+                        <p><strong>判断卡ID:</strong> CARD_54114963aa50</p>
+                        
+                        <p><strong>文件:</strong> TRK002_平凡之路_朴树_非独家授权.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK002</p>
+                        
+                        <p><strong>初始判断:</strong> 已匹配</p>
+                        
+                        <p><strong>初始原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>最终判断:</strong> 已匹配</p>
+                        
+                        <p><strong>最终原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
+                        
+                        <p><strong>被覆盖:</strong> 是</p>
+                        
+                        <p><strong>覆盖人:</strong> 运营主管</p>
+                        
+                        <p><strong>覆盖时间:</strong> 2026-06-14 02:49:38</p>
+                        
+                        <p><strong>覆盖原因:</strong> 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf
+                         | 🎵 曲目: TRK002
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡变更摘要</div>
+                    <div class="details">
+                        
+                        <p><strong>判断卡ID:</strong> CARD_3b19a6bafee1</p>
+                        
+                        <p><strong>文件:</strong> TRK005_演员_薛之谦_非独家授权_彩排版.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK005</p>
+                        
+                        <p><strong>初始判断:</strong> 已匹配</p>
+                        
+                        <p><strong>初始原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>最终判断:</strong> 已匹配</p>
+                        
+                        <p><strong>最终原因:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
+                        
+                        <p><strong>被覆盖:</strong> 是</p>
+                        
+                        <p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
+                        
+                        <p><strong>覆盖时间:</strong> 2026-06-09 04:49:38</p>
+                        
+                        <p><strong>覆盖原因:</strong> 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf
+                         | 🎵 曲目: TRK005
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item medium-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">判断卡变更摘要</div>
+                    <div class="details">
+                        
+                        <p><strong>判断卡ID:</strong> CARD_69274eb0027b</p>
+                        
+                        <p><strong>文件:</strong> 成都_赵雷_独家授权.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK004</p>
+                        
+                        <p><strong>初始判断:</strong> 待确认</p>
+                        
+                        <p><strong>初始原因:</strong> 系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID</p>
+                        
+                        <p><strong>最终判断:</strong> 已匹配</p>
+                        
+                        <p><strong>最终原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+                        
+                        <p><strong>被覆盖:</strong> 是</p>
+                        
+                        <p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
+                        
+                        <p><strong>覆盖时间:</strong> 2026-06-10 01:49:38</p>
+                        
+                        <p><strong>覆盖原因:</strong> 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: 成都_赵雷_独家授权.pdf
+                         | 🎵 曲目: TRK004
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item normal-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-system">系统</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">处理完成总结</div>
+                    <div class="details">
+                        
+                        <p><strong>判断卡总数:</strong> 6</p>
+                        
+                        <p><strong>已覆盖数:</strong> 5</p>
+                        
+                        <p><strong>林姐覆盖数:</strong> 4</p>
+                        
+                        <p><strong>运营主管覆盖数:</strong> 1</p>
+                        
+                        <p><strong>最终匹配数:</strong> 4</p>
+                        
+                        <p><strong>最终不匹配数:</strong> 2</p>
+                        
+                        <p><strong>待人工确认数:</strong> 0</p>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">林姐判断记录（留存）</div>
+                    <div class="details">
+                        
+                        <p><strong>文件:</strong> TRK001_夜空中最亮的星_逃跑计划_独家授权.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK001</p>
+                        
+                        <p><strong>林姐判断:</strong> 不匹配</p>
+                        
+                        <p><strong>判断理由:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>覆盖的原判断:</strong> 已匹配</p>
+                        
+                        <p><strong>判断时间:</strong> 2026-06-10 23:49:38</p>
+                        
+                        <p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK001_夜空中最亮的星_逃跑计划_独家授权.pdf
+                         | 🎵 曲目: TRK001
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">林姐判断记录（留存）</div>
+                    <div class="details">
+                        
+                        <p><strong>文件:</strong> TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK001</p>
+                        
+                        <p><strong>林姐判断:</strong> 不匹配</p>
+                        
+                        <p><strong>判断理由:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+                        
+                        <p><strong>覆盖的原判断:</strong> 已匹配</p>
+                        
+                        <p><strong>判断时间:</strong> 2026-06-10 23:49:38</p>
+                        
+                        <p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf
+                         | 🎵 曲目: TRK001
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">林姐判断记录（留存）</div>
+                    <div class="details">
+                        
+                        <p><strong>文件:</strong> TRK005_演员_薛之谦_非独家授权_彩排版.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK005</p>
+                        
+                        <p><strong>林姐判断:</strong> 已匹配</p>
+                        
+                        <p><strong>判断理由:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
+                        
+                        <p><strong>覆盖的原判断:</strong> 已匹配</p>
+                        
+                        <p><strong>判断时间:</strong> 2026-06-09 04:49:38</p>
+                        
+                        <p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf
+                         | 🎵 曲目: TRK005
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">林姐判断记录（留存）</div>
+                    <div class="details">
+                        
+                        <p><strong>文件:</strong> 成都_赵雷_独家授权.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK004</p>
+                        
+                        <p><strong>林姐判断:</strong> 已匹配</p>
+                        
+                        <p><strong>判断理由:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+                        
+                        <p><strong>覆盖的原判断:</strong> 待确认</p>
+                        
+                        <p><strong>判断时间:</strong> 2026-06-10 01:49:38</p>
+                        
+                        <p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: 成都_赵雷_独家授权.pdf
+                         | 🎵 曲目: TRK004
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="timeline-item high-importance">
+                <div class="timeline-content">
+                    <span class="actor-badge actor-operation">运营主管</span>
+                    <div class="timestamp">⏰ 2026-06-15 22:49:40</div>
+                    <div class="action">运营主管临时改动（已入历史）</div>
+                    <div class="details">
+                        
+                        <p><strong>文件:</strong> TRK002_平凡之路_朴树_非独家授权.pdf</p>
+                        
+                        <p><strong>曲目ID:</strong> TRK002</p>
+                        
+                        <p><strong>改动类型:</strong> 彩排前临时调整</p>
+                        
+                        <p><strong>原判断:</strong> 已匹配</p>
+                        
+                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
+                        
+                        <p><strong>新判断:</strong> 已匹配</p>
+                        
+                        <p><strong>新原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
+                        
+                        <p><strong>改动时间:</strong> 2026-06-14 02:49:38</p>
+                        
+                        <p><strong>说明:</strong> 此改动已记入完整历史，可追溯变更过程，而非仅修改当前结果</p>
+                        
+                    </div>
+                    
+                    <div class="target">
+                        📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf
+                         | 🎵 曲目: TRK002
+                    </div>
+                    
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="footer">
+            <p>生成时间: 2026-06-15 22:49:40 | 此时间线可直接用于跨部门沟通</p>
+        </div>
+    </div>
+</body>
+</html>
+        

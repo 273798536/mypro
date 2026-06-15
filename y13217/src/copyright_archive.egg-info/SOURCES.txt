@@ -1,0 +1,17 @@
+pyproject.toml
+src/copyright_archive/__init__.py
+src/copyright_archive/cli.py
+src/copyright_archive/file_parser.py
+src/copyright_archive/history_tracker.py
+src/copyright_archive/manual_confirmation.py
+src/copyright_archive/matching_processor.py
+src/copyright_archive/models.py
+src/copyright_archive/note_processor.py
+src/copyright_archive/sample_data_generator.py
+src/copyright_archive/timeline_generator.py
+src/copyright_archive.egg-info/PKG-INFO
+src/copyright_archive.egg-info/SOURCES.txt
+src/copyright_archive.egg-info/dependency_links.txt
+src/copyright_archive.egg-info/entry_points.txt
+src/copyright_archive.egg-info/requires.txt
+src/copyright_archive.egg-info/top_level.txt
