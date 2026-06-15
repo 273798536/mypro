@@ -1,0 +1,33 @@
+{
+  "package": "古典民乐精选-Vol1",
+  "tracks": [
+    {
+      "track_no": 1,
+      "title": "春江花月夜",
+      "aliases": ["夕阳箫鼓"],
+      "duration": "05:32",
+      "iswc": "T-000.000.001-0"
+    },
+    {
+      "track_no": 2,
+      "title": "十面埋伏",
+      "aliases": ["霸王卸甲"],
+      "duration": "06:18",
+      "iswc": "T-000.000.002-0"
+    },
+    {
+      "track_no": 3,
+      "title": "高山流水",
+      "aliases": [],
+      "duration": "04:45",
+      "iswc": "T-000.000.003-0"
+    },
+    {
+      "track_no": 4,
+      "title": "夕阳箫鼓",
+      "aliases": ["春江花月夜(变体)"],
+      "duration": "05:02",
+      "iswc": "T-000.000.004-0"
+    }
+  ]
+}
