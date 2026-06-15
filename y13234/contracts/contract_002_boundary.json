@@ -1,0 +1,14 @@
+{
+  "contract_id": "CT-2026-002",
+  "artist_name": "赵鸣",
+  "sample_pack_name": "Bass Theory",
+  "producer": "许老录音棚",
+  "split_ratio": null,
+  "version": "1.0",
+  "scan_date": "2026-06-01",
+  "source_file": "CT-2026-002_scan.pdf",
+  "assets": [
+    {"asset_name": "bass_slap_07", "type": "one-shot", "revenue": 950.00}
+  ],
+  "note": "分账比例栏空白，可能临时改动未补录"
+}

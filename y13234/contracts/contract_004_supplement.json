@@ -1,0 +1,17 @@
+{
+  "contract_id": "CT-2026-003",
+  "artist_name": "何薇",
+  "sample_pack_name": "Piano Textures",
+  "producer": "许老录音棚",
+  "split_ratio": {
+    "producer": 0.60,
+    "artist": 0.40
+  },
+  "version": "1.1",
+  "scan_date": "2026-06-10",
+  "source_file": "CT-2026-003_scan.pdf",
+  "assets": [
+    {"asset_name": "piano_chord_Cm7", "type": "one-shot", "revenue": 2100.00}
+  ],
+  "note": "补录合同，原CT-2025-009因税率调整重签，版本1.1"
+}

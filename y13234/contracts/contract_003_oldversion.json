@@ -1,0 +1,19 @@
+{
+  "contract_id": "CT-2025-017",
+  "artist_name": "林小棠",
+  "sample_pack_name": "Urban Echoes Vol.2",
+  "producer": "许老录音棚",
+  "split_ratio": {
+    "producer": 0.50,
+    "artist": 0.50
+  },
+  "version": "1.0",
+  "scan_date": "2025-11-08",
+  "source_file": "CT-2025-017_scan_old.pdf",
+  "assets": [
+    {"asset_name": "drum_loop_01", "type": "loop", "revenue": 3200.00},
+    {"asset_name": "pad_ambient_03", "type": "one-shot", "revenue": 1800.00},
+    {"asset_name": "fx_riser_02", "type": "fx", "revenue": 600.00}
+  ],
+  "note": "旧版母带遗留合同，分账比例与新版不一致，fx_riser_02已在v2中移除"
+}

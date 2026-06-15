@@ -1,0 +1,18 @@
+{
+  "contract_id": "CT-2026-001",
+  "artist_name": "林小棠",
+  "sample_pack_name": "Urban Echoes Vol.2",
+  "producer": "许老录音棚",
+  "split_ratio": {
+    "producer": 0.55,
+    "artist": 0.45
+  },
+  "version": "2.0",
+  "scan_date": "2026-05-20",
+  "source_file": "CT-2026-001_scan.pdf",
+  "assets": [
+    {"asset_name": "drum_loop_01", "type": "loop", "revenue": 3200.00},
+    {"asset_name": "pad_ambient_03", "type": "one-shot", "revenue": 1800.00}
+  ],
+  "note": "常规合同，双方签字齐全"
+}
