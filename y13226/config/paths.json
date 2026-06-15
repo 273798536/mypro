@@ -1,0 +1,8 @@
+{
+  "audio_files_dir": "data/audio_files",
+  "history_dir": "data/history",
+  "output_dir": "data/output",
+  "screenshot_dir": "data/output/screenshots",
+  "history_log": "data/history/conflict_history.json",
+  "latest_result": "data/output/latest_result.json"
+}

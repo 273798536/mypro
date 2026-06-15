@@ -1,0 +1,16 @@
+{
+  "standard_fields": {
+    "song_name": ["曲名", "曲目名称", "歌曲名", "song_name", "name", "title"],
+    "alias": ["别名", "副标题", "又名", "alias", "subtitle"],
+    "performance_time": ["演出时间", "排期时间", "时间", "performance_time", "time", "datetime"],
+    "theater": ["剧场", "剧院", "场地", "theater", "venue", "stage"],
+    "performance_order": ["演出顺序", "出场顺序", "序号", "order", "sequence", "index"],
+    "performer": ["表演者", "演员", "演奏者", "performer", "artist", "musician"],
+    "duration": ["时长", "持续时间", "duration", "length"],
+    "version": ["版本", "版次", "version", "edition"],
+    "source": ["来源", "文件来源", "source", "origin"],
+    "status": ["处理状态", "状态", "status", "state"]
+  },
+  "required_fields": ["song_name", "performance_time", "theater"],
+  "preserve_fields": ["source", "status"]
+}
