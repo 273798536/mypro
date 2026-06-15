@@ -1,0 +1,23 @@
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+      <rect width="800" height="600" fill="#f0f4f8"/>
+      <rect x="100" y="150" width="200" height="150" fill="#4a90d9" rx="5"/>
+      <rect x="120" y="170" width="60" height="50" fill="#fff" rx="2"/>
+      <rect x="200" y="170" width="60" height="50" fill="#fff" rx="2"/>
+      <rect x="160" y="240" width="80" height="60" fill="#2c5aa0" rx="2"/>
+      <text x="200" y="140" text-anchor="middle" fill="#333" font-size="16" font-family="Arial">第一实验小学</text>
+      <rect x="350" y="200" width="40" height="70" fill="#e74c3c" rx="2"/>
+      <rect x="420" y="210" width="45" height="60" fill="#3498db" rx="2"/>
+      <rect x="500" y="205" width="42" height="65" fill="#f39c12" rx="2"/>
+      <rect x="580" y="200" width="38" height="70" fill="#2ecc71" rx="2"/>
+      <rect x="0" y="320" width="800" height="30" fill="#95a5a6"/>
+      <line x1="0" y1="335" x2="800" y2="335" stroke="#fff" stroke-width="2" stroke-dasharray="20,10"/>
+      <rect x="100" y="350" width="600" height="200" fill="#d5e8d4" rx="5"/>
+      <text x="400" y="450" text-anchor="middle" fill="#82b366" font-size="20" font-family="Arial" font-weight="bold">临时接送区</text>
+      <circle cx="700" cy="150" r="30" fill="#ff6b6b"/>
+      <text x="700" y="155" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">!</text>
+      <text x="700" y="200" text-anchor="middle" fill="#e74c3c" font-size="12">违停</text>
+      <text x="400" y="40" text-anchor="middle" fill="#333" font-size="20" font-weight="bold">巡检照片 - 实验一小门口</text>
+      <text x="400" y="65" text-anchor="middle" fill="#666" font-size="14">2026-06-13 07:30</text>
+    </svg>
+  
