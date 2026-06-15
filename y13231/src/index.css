@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Source Serif Pro', serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  body {
+    @apply bg-primary-50 text-primary-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-4 py-2 bg-primary-800 text-white rounded border border-primary-900 
+           hover:bg-primary-700 hover:shadow-lg transition-all duration-200 
+           hover:-translate-y-0.5 active:translate-y-0;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2 bg-white text-primary-800 rounded border border-primary-300 
+           hover:bg-primary-50 hover:shadow-md transition-all duration-200;
+  }
+  
+  .btn-danger {
+    @apply px-4 py-2 bg-red-600 text-white rounded border border-red-700 
+           hover:bg-red-500 transition-all duration-200;
+  }
+  
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border;
+  }
+  
+  .badge-timecode {
+    @apply bg-accent-100 text-accent-800 border-accent-300;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg border border-primary-200 shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 border border-primary-300 rounded bg-white 
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
+           placeholder:text-primary-400;
+  }
+  
+  .select-field {
+    @apply w-full px-3 py-2 border border-primary-300 rounded bg-white 
+           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+  
+  .table-header {
+    @apply bg-primary-700 text-white font-semibold;
+  }
+  
+  .table-row {
+    @apply border-b border-primary-100 hover:bg-primary-50 transition-colors;
+  }
+  
+  .table-row-alt {
+    @apply bg-primary-50/50;
+  }
+  
+  .timeline-node {
+    @apply w-4 h-4 rounded-full bg-primary-600 border-4 border-white shadow;
+  }
+  
+  .timeline-line {
+    @apply w-0.5 bg-primary-200;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #486581 #f0f4f8;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #f0f4f8;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #486581;
+    border-radius: 3px;
+  }
+  
+  .animate-stagger-1 { animation-delay: 50ms; }
+  .animate-stagger-2 { animation-delay: 100ms; }
+  .animate-stagger-3 { animation-delay: 150ms; }
+  .animate-stagger-4 { animation-delay: 200ms; }
+  .animate-stagger-5 { animation-delay: 250ms; }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
