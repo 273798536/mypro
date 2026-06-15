@@ -1,0 +1,32 @@
+{
+  "name": "night-market-capacity-review",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "queue": "node scripts/check-queue.js",
+    "review": "node scripts/start-review.js"
+  },
+  "dependencies": {
+    "vue": "^3.4.0",
+    "vue-router": "^4.3.0",
+    "pinia": "^2.1.7",
+    "element-plus": "^2.7.0",
+    "@element-plus/icons-vue": "^2.3.1",
+    "dayjs": "^1.11.10",
+    "lodash-es": "^4.17.21",
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "@types/leaflet": "^1.9.8",
+    "@types/lodash-es": "^4.17.12",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vue-tsc": "^2.0.0",
+    "sass": "^1.72.0"
+  }
+}
