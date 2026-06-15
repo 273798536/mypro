@@ -1,0 +1,811 @@
+{
+  "records": [
+    {
+      "id": "20637a2cf928",
+      "record_no": "CD2026061603365151E2",
+      "community_name": "阳光花园小区",
+      "street_name": "人民路街道",
+      "intersection": "人民路与建设路交叉口",
+      "address": "阳光花园东门北侧",
+      "longitude": 116.4074,
+      "latitude": 39.9042,
+      "time_period": "早高峰(7:00-9:00)",
+      "peak_type": "早高峰",
+      "scenario_label": "早高峰:车辆排队3辆以上 / 晚高峰:有居民占位不充电",
+      "side_note": "早晚高峰问题分别处理，统一口径后公示",
+      "screenshot_note": "保留各时段截图说明",
+      "complaint_content": "早高峰充电桩不够，上班族排长队",
+      "complaint_count": 3,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "阳光花园东门北侧",
+      "coord_deviation_meters": 18.31,
+      "status": "normal",
+      "conflict_with": [],
+      "merge_candidate_ids": [
+        "486cbb48e548"
+      ],
+      "merge_status": "candidate",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 2,
+          "raw_content": {
+            "社区名": "阳光花园小区",
+            "街道": "人民路街道",
+            "路口": "人民路与建设路交叉口",
+            "详细地址": "阳光花园东门北侧",
+            "经度": "116.4074",
+            "纬度": "39.9042",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": "车辆排队3辆以上",
+            "侧边说明": "建议早高峰增加临时疏导",
+            "截图说明": "截图1：7:45分排队照片",
+            "问题描述": "早高峰充电桩不够，上班族排长队",
+            "投诉次数": "3"
+          }
+        },
+        {
+          "source_file": "会议纪要_2026年第2周.xlsx",
+          "sheet_name": "第二周补充",
+          "row_number": 2,
+          "raw_content": {
+            "社区名": "阳光花园小区",
+            "街道": "人民路街道",
+            "路口": "人民路与建设路交叉口",
+            "详细地址": "阳光花园东门北侧",
+            "经度": "116.4074",
+            "纬度": "39.9042",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": "排队严重，已增至5辆",
+            "侧边说明": "已协调物业设置引导员",
+            "截图说明": "截图1-补：8:00高峰现场",
+            "问题描述": "第二周早高峰排队增加，已联系物业",
+            "投诉次数": "4"
+          }
+        }
+      ],
+      "bad_data_flags": [],
+      "created_at": "2026-06-16T03:36:51.635347",
+      "updated_at": "2026-06-16T03:36:51.646793",
+      "version": 8,
+      "import_batch_id": "83884f478759"
+    },
+    {
+      "id": "486cbb48e548",
+      "record_no": "CD202606160336517F7D",
+      "community_name": "阳光花园小区",
+      "street_name": "人民路街道",
+      "intersection": "人民路与建设路交叉口",
+      "address": "阳光花园东门北侧",
+      "longitude": 116.4074,
+      "latitude": 39.9042,
+      "time_period": "晚高峰(17:30-19:30)",
+      "peak_type": "晚高峰",
+      "scenario_label": "早高峰:车辆排队3辆以上 / 晚高峰:有居民占位不充电",
+      "side_note": "早晚高峰问题分别处理，统一口径后公示",
+      "screenshot_note": "保留各时段截图说明",
+      "complaint_content": "晚高峰有居民用物品占位不充电",
+      "complaint_count": 5,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "阳光花园东门北侧",
+      "coord_deviation_meters": 218.3,
+      "status": "normal",
+      "conflict_with": [],
+      "merge_candidate_ids": [
+        "20637a2cf928"
+      ],
+      "merge_status": "candidate",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 3,
+          "raw_content": {
+            "社区名": "阳光花园小区",
+            "街道": "人民路街道",
+            "路口": "人民路与建设路交叉口",
+            "详细地址": "阳光花园东门北侧",
+            "经度": "116.4074",
+            "纬度": "39.9042",
+            "时间段": "晚高峰(17:30-19:30)",
+            "峰时类型": "晚高峰",
+            "场景标注": "有居民占位不充电",
+            "侧边说明": "占位问题物业不管",
+            "截图说明": "截图2：18:10占位照片",
+            "问题描述": "晚高峰有居民用物品占位不充电",
+            "投诉次数": "5"
+          }
+        }
+      ],
+      "bad_data_flags": [
+        "人工确认: 经算法值班人确认：阳光花园小区坐标正确"
+      ],
+      "created_at": "2026-06-16T03:36:51.635452",
+      "updated_at": "2026-06-16T03:36:51.646841",
+      "version": 7,
+      "import_batch_id": "9c211cfb89b3"
+    },
+    {
+      "id": "46fe135af2fd",
+      "record_no": "CD202606160336511335",
+      "community_name": "翠湖苑",
+      "street_name": "翠湖路街道",
+      "intersection": "翠湖路与湖心路交叉口",
+      "address": "翠湖苑西门充电桩",
+      "longitude": 116.3972,
+      "latitude": 39.91,
+      "time_period": "早高峰(7:00-9:00)",
+      "peak_type": "早高峰",
+      "scenario_label": "电动车充电紧张",
+      "side_note": "需要增设充电桩",
+      "screenshot_note": null,
+      "complaint_content": "早高峰居民反映充电难",
+      "complaint_count": 2,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "翠湖苑西门充电桩",
+      "coord_deviation_meters": 274.72,
+      "status": "merged_into_f4a8deaa7bf1",
+      "conflict_with": [
+        "f4a8deaa7bf1"
+      ],
+      "merge_candidate_ids": [
+        "f4a8deaa7bf1"
+      ],
+      "merge_status": "merged",
+      "merged_into_id": "f4a8deaa7bf1",
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 4,
+          "raw_content": {
+            "社区名": "翠湖苑",
+            "街道": "翠湖路街道",
+            "路口": "翠湖路与湖心路交叉口",
+            "详细地址": "翠湖苑西门充电桩",
+            "经度": "116.3972",
+            "纬度": "39.91",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": "电动车充电紧张",
+            "侧边说明": "需要增设充电桩",
+            "截图说明": null,
+            "问题描述": "早高峰居民反映充电难",
+            "投诉次数": "2"
+          }
+        },
+        {
+          "source_file": "会议纪要_2026年第2周.xlsx",
+          "sheet_name": "第二周补充",
+          "row_number": 3,
+          "raw_content": {
+            "社区名": "翠湖苑",
+            "街道": "翠湖路街道",
+            "路口": "翠湖路与湖心路交叉口",
+            "详细地址": "翠湖苑西门充电桩",
+            "经度": "116.3972",
+            "纬度": "39.91",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": "早高峰私拉线问题",
+            "侧边说明": "建议安装新充电桩",
+            "截图说明": null,
+            "问题描述": "早高峰部分居民开始私拉线，需注意",
+            "投诉次数": "3"
+          }
+        }
+      ],
+      "bad_data_flags": [
+        "人工确认: 经算法值班人确认：翠湖苑坐标正确"
+      ],
+      "created_at": "2026-06-16T03:36:51.635567",
+      "updated_at": "2026-06-16T03:36:51.648458",
+      "version": 10,
+      "import_batch_id": "83884f478759"
+    },
+    {
+      "id": "f4a8deaa7bf1",
+      "record_no": "CD202606160336518B2A",
+      "community_name": "翠湖苑",
+      "street_name": "翠湖路街道",
+      "intersection": "翠湖路与湖心路交叉口",
+      "address": "翠湖苑西门充电桩",
+      "longitude": 116.3972,
+      "latitude": 39.91,
+      "time_period": "晚高峰(17:30-19:30)",
+      "peak_type": "晚高峰",
+      "scenario_label": "电动车充电紧张",
+      "side_note": "乱拉线问题；需要增设充电桩",
+      "screenshot_note": "截图3：晚高峰现场",
+      "complaint_content": "晚高峰时有人私拉电线充电；早高峰居民反映充电难",
+      "complaint_count": 6,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "翠湖苑西门充电桩",
+      "coord_deviation_meters": 248.62,
+      "status": "conflict",
+      "conflict_with": [
+        "46fe135af2fd"
+      ],
+      "merge_candidate_ids": [],
+      "merge_status": "none",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 5,
+          "raw_content": {
+            "社区名": "翠湖苑",
+            "街道": "翠湖路街道",
+            "路口": "翠湖路与湖心路交叉口",
+            "详细地址": "翠湖苑西门充电桩",
+            "经度": "116.3972",
+            "纬度": "39.91",
+            "时间段": "晚高峰(17:30-19:30)",
+            "峰时类型": "晚高峰",
+            "场景标注": null,
+            "侧边说明": "乱拉线问题",
+            "截图说明": "截图3：晚高峰现场",
+            "问题描述": "晚高峰时有人私拉电线充电",
+            "投诉次数": "4"
+          }
+        },
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 4,
+          "raw_content": {
+            "社区名": "翠湖苑",
+            "街道": "翠湖路街道",
+            "路口": "翠湖路与湖心路交叉口",
+            "详细地址": "翠湖苑西门充电桩",
+            "经度": "116.3972",
+            "纬度": "39.91",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": "电动车充电紧张",
+            "侧边说明": "需要增设充电桩",
+            "截图说明": null,
+            "问题描述": "早高峰居民反映充电难",
+            "投诉次数": "2"
+          }
+        },
+        {
+          "source_file": "会议纪要_2026年第2周.xlsx",
+          "sheet_name": "第二周补充",
+          "row_number": 3,
+          "raw_content": {
+            "社区名": "翠湖苑",
+            "街道": "翠湖路街道",
+            "路口": "翠湖路与湖心路交叉口",
+            "详细地址": "翠湖苑西门充电桩",
+            "经度": "116.3972",
+            "纬度": "39.91",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": "早高峰私拉线问题",
+            "侧边说明": "建议安装新充电桩",
+            "截图说明": null,
+            "问题描述": "早高峰部分居民开始私拉线，需注意",
+            "投诉次数": "3"
+          }
+        }
+      ],
+      "bad_data_flags": [
+        "人工确认: 经算法值班人确认：翠湖苑坐标正确"
+      ],
+      "created_at": "2026-06-16T03:36:51.635700",
+      "updated_at": "2026-06-16T03:36:51.650575",
+      "version": 8,
+      "import_batch_id": "9c211cfb89b3"
+    },
+    {
+      "id": "fcb348143d36",
+      "record_no": "CD20260616033651E883",
+      "community_name": "东城雅居",
+      "street_name": "东环路街道",
+      "intersection": "东环路与朝阳路交叉口",
+      "address": "东城雅居南门停车场",
+      "longitude": 116.42,
+      "latitude": 39.92,
+      "time_period": "全天",
+      "peak_type": "全天",
+      "scenario_label": "居民投诉停车占充电位",
+      "side_note": "加强停车管理",
+      "screenshot_note": "截图4：占位车辆",
+      "complaint_content": "燃油车占用充电车位问题",
+      "complaint_count": 1,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "东城雅居南门停车场",
+      "coord_deviation_meters": 296.75,
+      "status": "conflict",
+      "conflict_with": [
+        "891659a2b520"
+      ],
+      "merge_candidate_ids": [
+        "891659a2b520"
+      ],
+      "merge_status": "candidate",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 6,
+          "raw_content": {
+            "社区名": "东城雅居",
+            "街道": "东环路街道",
+            "路口": "东环路与朝阳路交叉口",
+            "详细地址": "东城雅居南门停车场",
+            "经度": "116.42",
+            "纬度": "39.92",
+            "时间段": "全天",
+            "峰时类型": "全天",
+            "场景标注": "居民投诉停车占充电位",
+            "侧边说明": "加强停车管理",
+            "截图说明": "截图4：占位车辆",
+            "问题描述": "燃油车占用充电车位问题",
+            "投诉次数": "1"
+          }
+        }
+      ],
+      "bad_data_flags": [
+        "人工确认: 经算法值班人确认：东城雅居坐标正确"
+      ],
+      "created_at": "2026-06-16T03:36:51.635749",
+      "updated_at": "2026-06-16T03:36:51.651969",
+      "version": 4,
+      "import_batch_id": "9c211cfb89b3"
+    },
+    {
+      "id": "d79890240c89",
+      "record_no": "CD2026061603365119CD",
+      "community_name": "金色年华",
+      "street_name": "金沙大道街道",
+      "intersection": "金沙大道与建设路口",
+      "address": "金色年华小区内",
+      "longitude": 116.45,
+      "latitude": 39.93,
+      "time_period": "晚高峰(17:30-19:30)",
+      "peak_type": "晚高峰",
+      "scenario_label": "私拉线充电",
+      "side_note": "私拉线情况严重",
+      "screenshot_note": null,
+      "complaint_content": "有业主私拉电线从楼下接电",
+      "complaint_count": 2,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "金色年华小区内",
+      "coord_deviation_meters": 135.93,
+      "status": "conflict",
+      "conflict_with": [
+        "6f88e4969dff"
+      ],
+      "merge_candidate_ids": [
+        "6f88e4969dff"
+      ],
+      "merge_status": "candidate",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 7,
+          "raw_content": {
+            "社区名": "金色年华",
+            "街道": "金沙大道街道",
+            "路口": null,
+            "详细地址": "金色年华小区内",
+            "经度": "116.45",
+            "纬度": "39.93",
+            "时间段": null,
+            "峰时类型": "晚高峰",
+            "场景标注": "私拉线充电",
+            "侧边说明": "私拉线情况严重",
+            "截图说明": null,
+            "问题描述": "有业主私拉电线从楼下接电",
+            "投诉次数": "2"
+          }
+        },
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 8,
+          "raw_content": {
+            "社区名": "金色年华",
+            "街道": "金沙大道街道",
+            "路口": "金沙大道与建设路口",
+            "详细地址": "金色年华西门",
+            "经度": "116.4495",
+            "纬度": "39.9298",
+            "时间段": "晚高峰(17:30-19:30)",
+            "峰时类型": "晚高峰",
+            "场景标注": "晚高峰排队严重",
+            "侧边说明": "需要增加2个桩位",
+            "截图说明": null,
+            "问题描述": "晚高峰时充电桩全部占用，等待时间长",
+            "投诉次数": "3"
+          }
+        }
+      ],
+      "bad_data_flags": [],
+      "created_at": "2026-06-16T03:36:51.635784",
+      "updated_at": "2026-06-16T03:36:51.644117",
+      "version": 5,
+      "import_batch_id": "9c211cfb89b3"
+    },
+    {
+      "id": "922668e7b4a2",
+      "record_no": "CD20260616033651A91B",
+      "community_name": "和平里社区",
+      "street_name": "和平路街道",
+      "intersection": "和平路与胜利路交叉口",
+      "address": "和平里2号楼下",
+      "longitude": 116.38,
+      "latitude": 39.89,
+      "time_period": "早高峰(7:00-9:00)",
+      "peak_type": "早高峰",
+      "scenario_label": "无异常",
+      "side_note": "此处无充电需求",
+      "screenshot_note": "无截图",
+      "complaint_content": "此处无充电桩，居民没有充电需求",
+      "complaint_count": 1,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "和平里2号楼下",
+      "coord_deviation_meters": 252.38,
+      "status": "normal",
+      "conflict_with": [],
+      "merge_candidate_ids": [],
+      "merge_status": "none",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 9,
+          "raw_content": {
+            "社区名": "和平里社区",
+            "街道": "和平路街道",
+            "路口": "和平路与胜利路交叉口",
+            "详细地址": "和平里2号楼下",
+            "经度": "116.38",
+            "纬度": "39.89",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": "无异常",
+            "侧边说明": "此处无充电需求",
+            "截图说明": "无截图",
+            "问题描述": "此处无充电桩，居民没有充电需求",
+            "投诉次数": "0"
+          }
+        }
+      ],
+      "bad_data_flags": [
+        "人工确认: 经算法值班人确认：和平里社区坐标正确"
+      ],
+      "created_at": "2026-06-16T03:36:51.635868",
+      "updated_at": "2026-06-16T03:36:51.653108",
+      "version": 3,
+      "import_batch_id": "9c211cfb89b3"
+    },
+    {
+      "id": "20fe9c0bf01a",
+      "record_no": "CD20260616033651D947",
+      "community_name": "滨江一号",
+      "street_name": "滨江大道街道",
+      "intersection": "滨江大道与中山路口",
+      "address": "滨江一号地下车库B区",
+      "longitude": 116.41,
+      "latitude": 39.87,
+      "time_period": "早高峰(7:00-9:00)",
+      "peak_type": "早高峰",
+      "scenario_label": "没有充电位",
+      "side_note": "地库信号不好也有影响",
+      "screenshot_note": "截图5：无空位截图",
+      "complaint_content": "早高峰地下车库B区充电位全满",
+      "complaint_count": 2,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "滨江一号地下车库B区",
+      "coord_deviation_meters": 168.7,
+      "status": "conflict",
+      "conflict_with": [
+        "bc4b43296c79"
+      ],
+      "merge_candidate_ids": [
+        "bc4b43296c79"
+      ],
+      "merge_status": "candidate",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 10,
+          "raw_content": {
+            "社区名": "滨江一号",
+            "街道": "滨江大道街道",
+            "路口": "滨江大道与中山路口",
+            "详细地址": "滨江一号地下车库B区",
+            "经度": "116.41",
+            "纬度": "39.87",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": "没有充电位",
+            "侧边说明": "地库信号不好也有影响",
+            "截图说明": "截图5：无空位截图",
+            "问题描述": "早高峰地下车库B区充电位全满",
+            "投诉次数": "2"
+          }
+        }
+      ],
+      "bad_data_flags": [
+        "人工确认: 经算法值班人确认：滨江一号坐标正确"
+      ],
+      "created_at": "2026-06-16T03:36:51.635902",
+      "updated_at": "2026-06-16T03:36:51.654061",
+      "version": 6,
+      "import_batch_id": "9c211cfb89b3"
+    },
+    {
+      "id": "bc4b43296c79",
+      "record_no": "CD20260616033651C7D3",
+      "community_name": "滨江一号",
+      "street_name": "滨江大道街道",
+      "intersection": "滨江大道与中山路口",
+      "address": "滨江一号地下车库B区",
+      "longitude": 116.41,
+      "latitude": 39.87,
+      "time_period": "晚高峰(17:30-19:30)",
+      "peak_type": "晚高峰",
+      "scenario_label": "排队5辆车",
+      "side_note": "地库通风差有投诉",
+      "screenshot_note": "截图6：18:30排队",
+      "complaint_content": "晚高峰地库排队5辆以上，通风差有异味",
+      "complaint_count": 4,
+      "unified_note_id": null,
+      "coord_status": "verified",
+      "coord_verified_address": "滨江一号地下车库B区",
+      "coord_deviation_meters": 169.84,
+      "status": "conflict",
+      "conflict_with": [
+        "20fe9c0bf01a"
+      ],
+      "merge_candidate_ids": [
+        "20fe9c0bf01a"
+      ],
+      "merge_status": "candidate",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第1周.xlsx",
+          "sheet_name": "会议纪要汇总",
+          "row_number": 11,
+          "raw_content": {
+            "社区名": "滨江一号",
+            "街道": "滨江大道街道",
+            "路口": "滨江大道与中山路口",
+            "详细地址": "滨江一号地下车库B区",
+            "经度": "116.41",
+            "纬度": "39.87",
+            "时间段": "晚高峰(17:30-19:30)",
+            "峰时类型": "晚高峰",
+            "场景标注": "排队5辆车",
+            "侧边说明": "地库通风差有投诉",
+            "截图说明": "截图6：18:30排队",
+            "问题描述": "晚高峰地库排队5辆以上，通风差有异味",
+            "投诉次数": "4"
+          }
+        }
+      ],
+      "bad_data_flags": [
+        "人工确认: 经算法值班人确认：滨江一号坐标正确"
+      ],
+      "created_at": "2026-06-16T03:36:51.635934",
+      "updated_at": "2026-06-16T03:36:51.655135",
+      "version": 6,
+      "import_batch_id": "9c211cfb89b3"
+    },
+    {
+      "id": "891659a2b520",
+      "record_no": "CD20260616033651B78C",
+      "community_name": "东城雅居",
+      "street_name": "东环路街道",
+      "intersection": "东环路与朝阳路交叉口",
+      "address": "东城雅居南门停车场",
+      "longitude": 116.42,
+      "latitude": 39.92,
+      "time_period": "晚高峰(17:30-19:30)",
+      "peak_type": "晚高峰",
+      "scenario_label": "晚高峰燃油车占位",
+      "side_note": "城管协助清理占位",
+      "screenshot_note": "截图A：晚高峰占位",
+      "complaint_content": "晚高峰燃油车占位问题加剧",
+      "complaint_count": 2,
+      "unified_note_id": null,
+      "coord_status": "pending",
+      "coord_verified_address": null,
+      "coord_deviation_meters": null,
+      "status": "conflict",
+      "conflict_with": [
+        "fcb348143d36"
+      ],
+      "merge_candidate_ids": [
+        "fcb348143d36"
+      ],
+      "merge_status": "candidate",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第2周.xlsx",
+          "sheet_name": "第二周补充",
+          "row_number": 4,
+          "raw_content": {
+            "社区名": "东城雅居",
+            "街道": "东环路街道",
+            "路口": "东环路与朝阳路交叉口",
+            "详细地址": "东城雅居南门停车场",
+            "经度": "116.42",
+            "纬度": "39.92",
+            "时间段": "晚高峰(17:30-19:30)",
+            "峰时类型": "晚高峰",
+            "场景标注": "晚高峰燃油车占位",
+            "侧边说明": "城管协助清理占位",
+            "截图说明": "截图A：晚高峰占位",
+            "问题描述": "晚高峰燃油车占位问题加剧",
+            "投诉次数": "2"
+          }
+        }
+      ],
+      "bad_data_flags": [],
+      "created_at": "2026-06-16T03:36:51.643936",
+      "updated_at": "2026-06-16T03:36:51.644106",
+      "version": 2,
+      "import_batch_id": "83884f478759"
+    },
+    {
+      "id": "6f88e4969dff",
+      "record_no": "CD202606160336511F6D",
+      "community_name": "金色年华",
+      "street_name": "金沙大道街道",
+      "intersection": "金沙大道与建设路口",
+      "address": "金色年华西门",
+      "longitude": 116.4495,
+      "latitude": 39.9298,
+      "time_period": "早高峰(7:00-9:00)",
+      "peak_type": "早高峰",
+      "scenario_label": null,
+      "side_note": "已增设1个临时桩位",
+      "screenshot_note": "截图Z：新增桩位",
+      "complaint_content": "新增临时桩位后情况有所缓解",
+      "complaint_count": 1,
+      "unified_note_id": null,
+      "coord_status": "pending",
+      "coord_verified_address": null,
+      "coord_deviation_meters": null,
+      "status": "conflict",
+      "conflict_with": [
+        "d79890240c89"
+      ],
+      "merge_candidate_ids": [
+        "d79890240c89"
+      ],
+      "merge_status": "candidate",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第2周.xlsx",
+          "sheet_name": "第二周补充",
+          "row_number": 5,
+          "raw_content": {
+            "社区名": "金色年华",
+            "街道": "金沙大道街道",
+            "路口": "金沙大道与建设路口",
+            "详细地址": "金色年华西门",
+            "经度": "116.4495",
+            "纬度": "39.9298",
+            "时间段": "早高峰(7:00-9:00)",
+            "峰时类型": "早高峰",
+            "场景标注": null,
+            "侧边说明": "已增设1个临时桩位",
+            "截图说明": "截图Z：新增桩位",
+            "问题描述": "新增临时桩位后情况有所缓解",
+            "投诉次数": "1"
+          }
+        }
+      ],
+      "bad_data_flags": [],
+      "created_at": "2026-06-16T03:36:51.643973",
+      "updated_at": "2026-06-16T03:36:51.644125",
+      "version": 2,
+      "import_batch_id": "83884f478759"
+    },
+    {
+      "id": "7a7b00350012",
+      "record_no": "CD202606160336510BB1",
+      "community_name": "新海花园",
+      "street_name": "海港路街道",
+      "intersection": "海港路与东海路口",
+      "address": "新海花园南门",
+      "longitude": 118.5,
+      "latitude": 32.0,
+      "time_period": "早高峰",
+      "peak_type": "早高峰",
+      "scenario_label": "居民反映充电难",
+      "side_note": "需要现场勘查",
+      "screenshot_note": null,
+      "complaint_content": "新社区，有充电需求但无配套",
+      "complaint_count": 5,
+      "unified_note_id": null,
+      "coord_status": "pending",
+      "coord_verified_address": null,
+      "coord_deviation_meters": null,
+      "status": "normal",
+      "conflict_with": [],
+      "merge_candidate_ids": [],
+      "merge_status": "none",
+      "merged_into_id": null,
+      "source_refs": [
+        {
+          "source_file": "会议纪要_2026年第2周.xlsx",
+          "sheet_name": "第二周补充",
+          "row_number": 6,
+          "raw_content": {
+            "社区名": "新海花园",
+            "街道": "海港路街道",
+            "路口": "海港路与东海路口",
+            "详细地址": "新海花园南门",
+            "经度": "118.5",
+            "纬度": "32",
+            "时间段": "早高峰",
+            "峰时类型": "早高峰",
+            "场景标注": "居民反映充电难",
+            "侧边说明": "需要现场勘查",
+            "截图说明": null,
+            "问题描述": "新社区，有充电需求但无配套",
+            "投诉次数": "5"
+          }
+        }
+      ],
+      "bad_data_flags": [],
+      "created_at": "2026-06-16T03:36:51.644009",
+      "updated_at": "2026-06-16T03:36:51.644010",
+      "version": 1,
+      "import_batch_id": "83884f478759"
+    }
+  ],
+  "unified_notes": [],
+  "batches": [
+    {
+      "id": "9c211cfb89b3",
+      "file_name": "会议纪要_2026年第1周.xlsx",
+      "file_size": 6523,
+      "uploaded_at": "2026-06-16T03:36:51.635942",
+      "total_rows": 10,
+      "imported_rows": 10,
+      "new_records": 9,
+      "updated_records": 1
+    },
+    {
+      "id": "83884f478759",
+      "file_name": "会议纪要_2026年第2周.xlsx",
+      "file_size": 5981,
+      "uploaded_at": "2026-06-16T03:36:51.644017",
+      "total_rows": 5,
+      "imported_rows": 5,
+      "new_records": 3,
+      "updated_records": 2
+    }
+  ]
+}
