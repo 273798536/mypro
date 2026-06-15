@@ -1,0 +1,51 @@
+{
+  "records": [
+    {
+      "booth_id": "B001",
+      "booth_name": "主舞台-民谣之夜",
+      "performer": "鹿先森乐队",
+      "contact": "13800138001",
+      "authorization_period": "2026-06-18 至 2026-06-20",
+      "timing_offset_ms": 0,
+      "note": "正常摊位，材料齐全"
+    },
+    {
+      "booth_id": "B002",
+      "booth_name": "电音区-BASS风暴",
+      "performer": "DJ KAKA",
+      "contact": "13800138002",
+      "authorization_period": "",
+      "备注": "授权期限：详见附页3 2026-06-17 至 2026-06-22，待补充到主表",
+      "timing_offset_ms": 0,
+      "setlist_pending": false
+    },
+    {
+      "booth_id": "B003",
+      "booth_name": "独立音乐人区-晨曦",
+      "performer": "陈绮贞工作室",
+      "contact": "13800138003",
+      "authorization_period": "2026-06-16 至 2026-06-21",
+      "timing_offset_ms": 320,
+      "note": "时码偏半拍，现场调音确认中"
+    },
+    {
+      "booth_id": "B004",
+      "booth_name": "嘻哈区-地下八英里",
+      "performer": "GAI 厂牌",
+      "contact": "13800138004",
+      "authorization_period": "注：授权期限为 2026-06-17 至 2026-06-21，已邮件确认",
+      "timing_offset_ms": 0,
+      "setlist_pending": true,
+      "note": "曲目表分批次提交，目前凑齐60%"
+    },
+    {
+      "booth_id": "B005",
+      "booth_name": "民谣弹唱区-旅途",
+      "performer": "赵雷团队",
+      "contact": "13800138005",
+      "authorization_period": "2026-06-17 至 2026-06-21",
+      "timing_offset_ms": 600,
+      "note": "开场时间偏差较大，需现场重新校准"
+    }
+  ]
+}

@@ -1,0 +1,388 @@
+[
+  {
+    "booth_id": "B003",
+    "booth_name": "独立音乐人区-晨曦",
+    "performer": "陈绮贞工作室",
+    "contact": "13800138003",
+    "authorization_period": "2026-06-16 至 2026-06-21",
+    "authorization_visible": true,
+    "setlist_complete": true,
+    "timing_offset_ms": 320,
+    "raw_data": {
+      "booth_id": "B003",
+      "booth_name": "独立音乐人区-晨曦",
+      "performer": "陈绮贞工作室",
+      "contact": "13800138003",
+      "authorization_period": "2026-06-16 至 2026-06-21",
+      "timing_offset_ms": 320,
+      "note": "时码偏半拍，现场调音确认中"
+    },
+    "version": {
+      "version_id": "462a7d519249",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/samples/sample_batch1.json",
+      "file_hash": "d315ab258faf756553d605b8d20293e69e1ce7213761b6c712b3079b9f65c867",
+      "source": "sample_batch1.json",
+      "imported_at": "2026-06-16T00:56:24.248436",
+      "note": "扫描时间 2026-06-16 00:56:24"
+    },
+    "status": "待复核",
+    "anomalies": [
+      {
+        "anomaly_id": "792d719a800f",
+        "type": "时码偏差",
+        "level": "轻微异常",
+        "description": "时码偏差 320ms（在允许范围但需留意）",
+        "location": "演出时间编排表",
+        "suggestion": "标记为'待复核'，现场音控确认后更新",
+        "screenshot_hint": "截图：时间编排表中该摊位对应时间段",
+        "detected_at": "2026-06-16T00:56:24.312212",
+        "resolved": false,
+        "resolved_at": null,
+        "resolver_note": ""
+      }
+    ],
+    "history": [
+      {
+        "action": "创建记录",
+        "detail": "初始导入，来源：sample_batch1.json",
+        "operator": "值班脚本_v2_第二批",
+        "timestamp": "2026-06-16T00:56:24.312242"
+      }
+    ],
+    "created_at": "2026-06-16T00:56:24.249464",
+    "updated_at": "2026-06-16T00:56:24.312245",
+    "operator": ""
+  },
+  {
+    "booth_id": "B004",
+    "booth_name": "嘻哈区-地下八英里",
+    "performer": "GAI 厂牌",
+    "contact": "13800138004",
+    "authorization_period": "2026-06-17 至 2026-06-21",
+    "authorization_visible": true,
+    "setlist_complete": true,
+    "timing_offset_ms": 50,
+    "raw_data": {
+      "booth_id": "B004",
+      "booth_name": "嘻哈区-地下八英里",
+      "performer": "GAI 厂牌",
+      "contact": "13800138004",
+      "authorization_period": "2026-06-17 至 2026-06-21",
+      "timing_offset_ms": 50,
+      "setlist_pending": false,
+      "note": "第二批曲目已凑齐，授权期限已提取到独立字段",
+      "_batch_note": "这是第二批提交的补充材料"
+    },
+    "version": {
+      "version_id": "2c6d407cd874",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/samples/sample_batch2_later.json",
+      "file_hash": "6c9dc535b68ebadf5584d0f5897b2ef8fd79d1569ea0693ccb66043955dae42e",
+      "source": "sample_batch2_later.json",
+      "imported_at": "2026-06-16T00:56:24.260584",
+      "note": "扫描时间 2026-06-16 00:56:24"
+    },
+    "status": "待复核",
+    "anomalies": [
+      {
+        "anomaly_id": "657297482fb9",
+        "type": "时码偏差",
+        "level": "轻微异常",
+        "description": "时码偏差 50ms（在允许范围但需留意）",
+        "location": "演出时间编排表",
+        "suggestion": "标记为'待复核'，现场音控确认后更新",
+        "screenshot_hint": "截图：时间编排表中该摊位对应时间段",
+        "detected_at": "2026-06-16T00:56:24.329196",
+        "resolved": false,
+        "resolved_at": null,
+        "resolver_note": ""
+      }
+    ],
+    "history": [
+      {
+        "action": "创建记录",
+        "detail": "初始导入，来源：sample_batch1.json",
+        "operator": "值班脚本_v2_第二批",
+        "timestamp": "2026-06-16T00:56:24.316077"
+      },
+      {
+        "action": "增量更新",
+        "detail": "从来源 sample_batch2_later.json 导入新版数据",
+        "operator": "值班脚本_v2_第二批",
+        "timestamp": "2026-06-16T00:56:24.329279"
+      }
+    ],
+    "created_at": "2026-06-16T00:56:24.249472",
+    "updated_at": "2026-06-16T00:56:24.329290",
+    "operator": ""
+  },
+  {
+    "booth_id": "B005",
+    "booth_name": "民谣弹唱区-旅途",
+    "performer": "赵雷团队",
+    "contact": "13800138005",
+    "authorization_period": "2026-06-17 至 2026-06-21",
+    "authorization_visible": true,
+    "setlist_complete": true,
+    "timing_offset_ms": 600,
+    "raw_data": {
+      "booth_id": "B005",
+      "booth_name": "民谣弹唱区-旅途",
+      "performer": "赵雷团队",
+      "contact": "13800138005",
+      "authorization_period": "2026-06-17 至 2026-06-21",
+      "timing_offset_ms": 600,
+      "note": "开场时间偏差较大，需现场重新校准"
+    },
+    "version": {
+      "version_id": "462a7d519249",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/samples/sample_batch1.json",
+      "file_hash": "d315ab258faf756553d605b8d20293e69e1ce7213761b6c712b3079b9f65c867",
+      "source": "sample_batch1.json",
+      "imported_at": "2026-06-16T00:56:24.248436",
+      "note": "扫描时间 2026-06-16 00:56:24"
+    },
+    "status": "待复核",
+    "anomalies": [
+      {
+        "anomaly_id": "5640eb9e9654",
+        "type": "时码偏差",
+        "level": "致命异常",
+        "description": "时码偏差 600ms（超过阈值 500ms）",
+        "location": "演出时间编排表",
+        "suggestion": "请与音控组确认实际演出时间",
+        "screenshot_hint": "截图：曲目时间轴与系统时间对比，标注偏差位置",
+        "detected_at": "2026-06-16T00:56:24.323849",
+        "resolved": false,
+        "resolved_at": null,
+        "resolver_note": ""
+      }
+    ],
+    "history": [
+      {
+        "action": "创建记录",
+        "detail": "初始导入，来源：sample_batch1.json",
+        "operator": "值班脚本_v2_第二批",
+        "timestamp": "2026-06-16T00:56:24.323935"
+      }
+    ],
+    "created_at": "2026-06-16T00:56:24.249483",
+    "updated_at": "2026-06-16T00:56:24.323939",
+    "operator": ""
+  },
+  {
+    "booth_id": "B006",
+    "booth_name": "爵士酒廊-午夜蓝调",
+    "performer": "Blue Note Trio",
+    "contact": "13800138006",
+    "authorization_period": "2026-06-17 至 2026-06-20",
+    "authorization_visible": true,
+    "setlist_complete": true,
+    "timing_offset_ms": 120,
+    "raw_data": {
+      "booth_id": "B006",
+      "booth_name": "爵士酒廊-午夜蓝调",
+      "performer": "Blue Note Trio",
+      "contact": "13800138006",
+      "authorization_period": "2026-06-17 至 2026-06-20",
+      "timing_offset_ms": 120,
+      "note": "新增摊位"
+    },
+    "version": {
+      "version_id": "2c6d407cd874",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/samples/sample_batch2_later.json",
+      "file_hash": "6c9dc535b68ebadf5584d0f5897b2ef8fd79d1569ea0693ccb66043955dae42e",
+      "source": "sample_batch2_later.json",
+      "imported_at": "2026-06-16T00:56:24.260584",
+      "note": "扫描时间 2026-06-16 00:56:24"
+    },
+    "status": "待复核",
+    "anomalies": [
+      {
+        "anomaly_id": "613e0364a939",
+        "type": "时码偏差",
+        "level": "轻微异常",
+        "description": "时码偏差 120ms（在允许范围但需留意）",
+        "location": "演出时间编排表",
+        "suggestion": "标记为'待复核'，现场音控确认后更新",
+        "screenshot_hint": "截图：时间编排表中该摊位对应时间段",
+        "detected_at": "2026-06-16T00:56:24.333313",
+        "resolved": false,
+        "resolved_at": null,
+        "resolver_note": ""
+      }
+    ],
+    "history": [
+      {
+        "action": "创建记录",
+        "detail": "初始导入，来源：sample_batch2_later.json",
+        "operator": "值班脚本_v2_第二批",
+        "timestamp": "2026-06-16T00:56:24.333355"
+      }
+    ],
+    "created_at": "2026-06-16T00:56:24.260826",
+    "updated_at": "2026-06-16T00:56:24.333358",
+    "operator": ""
+  },
+  {
+    "booth_id": "B007",
+    "booth_name": "民谣弹唱区-春风十里",
+    "performer": "好妹妹乐队",
+    "contact": "13800138007",
+    "authorization_period": "2026-06-17 至 2026-06-20",
+    "authorization_visible": true,
+    "setlist_complete": true,
+    "timing_offset_ms": 80,
+    "raw_data": {
+      "booth_id": "B007",
+      "摊位名": "民谣弹唱区-春风十里",
+      "演出方": "好妹妹乐队",
+      "联系方式": "13800138007",
+      "授权期限": "2026-06-17 至 2026-06-20",
+      "时码偏差": "80",
+      "备注": "材料齐全"
+    },
+    "version": {
+      "version_id": "35afe1a270bf",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/samples/sample_csv.csv",
+      "file_hash": "414fe8720d202f1b23259578dc84e296bfda583e6cbf224ff93b6038d774b1c4",
+      "source": "sample_csv.csv",
+      "imported_at": "2026-06-16T00:56:24.265267",
+      "note": "扫描时间 2026-06-16 00:56:24"
+    },
+    "status": "待复核",
+    "anomalies": [
+      {
+        "anomaly_id": "0141639c274a",
+        "type": "时码偏差",
+        "level": "轻微异常",
+        "description": "时码偏差 80ms（在允许范围但需留意）",
+        "location": "演出时间编排表",
+        "suggestion": "标记为'待复核'，现场音控确认后更新",
+        "screenshot_hint": "截图：时间编排表中该摊位对应时间段",
+        "detected_at": "2026-06-16T00:56:24.348757",
+        "resolved": false,
+        "resolved_at": null,
+        "resolver_note": ""
+      }
+    ],
+    "history": [
+      {
+        "action": "创建记录",
+        "detail": "初始导入，来源：sample_csv.csv",
+        "operator": "值班脚本_v2_第二批",
+        "timestamp": "2026-06-16T00:56:24.348790"
+      }
+    ],
+    "created_at": "2026-06-16T00:56:24.299486",
+    "updated_at": "2026-06-16T00:56:24.348794",
+    "operator": ""
+  },
+  {
+    "booth_id": "B008",
+    "booth_name": "朋克区-尖叫之夜",
+    "performer": "新裤子乐队",
+    "contact": "13800138008",
+    "authorization_period": "详见备注栏：授权期限 2026-06-16 至 2026-06-21",
+    "authorization_visible": false,
+    "setlist_complete": true,
+    "timing_offset_ms": 0,
+    "raw_data": {
+      "booth_id": "B008",
+      "摊位名": "朋克区-尖叫之夜",
+      "演出方": "新裤子乐队",
+      "联系方式": "13800138008",
+      "授权期限": "详见备注栏：授权期限 2026-06-16 至 2026-06-21",
+      "时码偏差": "0",
+      "备注": "时码待确认"
+    },
+    "version": {
+      "version_id": "35afe1a270bf",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/samples/sample_csv.csv",
+      "file_hash": "414fe8720d202f1b23259578dc84e296bfda583e6cbf224ff93b6038d774b1c4",
+      "source": "sample_csv.csv",
+      "imported_at": "2026-06-16T00:56:24.265267",
+      "note": "扫描时间 2026-06-16 00:56:24"
+    },
+    "status": "待复核",
+    "anomalies": [
+      {
+        "anomaly_id": "5ab25339b27c",
+        "type": "授权期限备注藏",
+        "level": "严重异常",
+        "description": "授权期限藏在备注字段中，未在醒目位置展示",
+        "location": "授权期限字段 / 备注字段",
+        "suggestion": "请将授权期限独立存放至专用字段，并在公示材料正文显示",
+        "screenshot_hint": "截图：摊位表备注栏，圈出含授权期限的备注单元格",
+        "detected_at": "2026-06-16T00:56:24.360576",
+        "resolved": false,
+        "resolved_at": null,
+        "resolver_note": ""
+      }
+    ],
+    "history": [
+      {
+        "action": "创建记录",
+        "detail": "初始导入，来源：sample_csv.csv",
+        "operator": "值班脚本_v2_第二批",
+        "timestamp": "2026-06-16T00:56:24.360639"
+      }
+    ],
+    "created_at": "2026-06-16T00:56:24.299526",
+    "updated_at": "2026-06-16T00:56:24.360642",
+    "operator": ""
+  },
+  {
+    "booth_id": "B009",
+    "booth_name": "古风区-长安月下",
+    "performer": "银临工作室",
+    "contact": "13800138009",
+    "authorization_period": "2026-06-17 至 2026-06-20",
+    "authorization_visible": true,
+    "setlist_complete": false,
+    "timing_offset_ms": 0,
+    "raw_data": {
+      "booth_id": "B009",
+      "摊位名": "古风区-长安月下",
+      "演出方": "银临工作室",
+      "联系方式": "13800138009",
+      "授权期限": "2026-06-17 至 2026-06-20",
+      "时码偏差": "0",
+      "备注": "曲目待补，未齐"
+    },
+    "version": {
+      "version_id": "35afe1a270bf",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/samples/sample_csv.csv",
+      "file_hash": "414fe8720d202f1b23259578dc84e296bfda583e6cbf224ff93b6038d774b1c4",
+      "source": "sample_csv.csv",
+      "imported_at": "2026-06-16T00:56:24.265267",
+      "note": "扫描时间 2026-06-16 00:56:24"
+    },
+    "status": "待补证据",
+    "anomalies": [
+      {
+        "anomaly_id": "6e0eb9c2d951",
+        "type": "曲目表不全",
+        "level": "严重异常",
+        "description": "曲目表未凑齐，分批提交中",
+        "location": "曲目清单",
+        "suggestion": "待曲目表齐全后再提交完整版本",
+        "screenshot_hint": "截图：当前已提交曲目页，标注缺失部分",
+        "detected_at": "2026-06-16T00:56:24.365185",
+        "resolved": false,
+        "resolved_at": null,
+        "resolver_note": ""
+      }
+    ],
+    "history": [
+      {
+        "action": "创建记录",
+        "detail": "初始导入，来源：sample_csv.csv",
+        "operator": "值班脚本_v2_第二批",
+        "timestamp": "2026-06-16T00:56:24.365232"
+      }
+    ],
+    "created_at": "2026-06-16T00:56:24.304028",
+    "updated_at": "2026-06-16T00:56:24.365235",
+    "operator": ""
+  }
+]

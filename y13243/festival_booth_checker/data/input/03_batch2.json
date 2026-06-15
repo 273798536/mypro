@@ -1,0 +1,24 @@
+{
+  "records": [
+    {
+      "booth_id": "B004",
+      "booth_name": "嘻哈区-地下八英里",
+      "performer": "GAI 厂牌",
+      "contact": "13800138004",
+      "authorization_period": "2026-06-17 至 2026-06-21",
+      "timing_offset_ms": 50,
+      "setlist_pending": false,
+      "note": "第二批曲目已凑齐，授权期限已提取到独立字段",
+      "_batch_note": "这是第二批提交的补充材料"
+    },
+    {
+      "booth_id": "B006",
+      "booth_name": "爵士酒廊-午夜蓝调",
+      "performer": "Blue Note Trio",
+      "contact": "13800138006",
+      "authorization_period": "2026-06-17 至 2026-06-20",
+      "timing_offset_ms": 120,
+      "note": "新增摊位"
+    }
+  ]
+}

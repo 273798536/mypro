@@ -1,0 +1,14 @@
+{
+  "records": [
+    {
+      "booth_id": "B001",
+      "booth_name": "主舞台-民谣之夜（旧版2025）",
+      "performer": "鹿先森乐队",
+      "contact": "13800138001-OLD",
+      "authorization_period": "2025-06-01 至 2025-06-05",
+      "timing_offset_ms": 0,
+      "note": "这是2025年的旧数据，测试版本冲突检测",
+      "_imported_at": "2025-05-01T10:00:00"
+    }
+  ]
+}
