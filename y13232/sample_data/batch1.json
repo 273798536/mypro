@@ -1,0 +1,50 @@
+[
+  {
+    "name": "开场鼓组采样包",
+    "category": "打击乐",
+    "version": "1.0",
+    "source": "林姐-排练群",
+    "source_raw": "排练群截图2024-01-15",
+    "submitted_by": "林姐",
+    "submitted_at": "2024-01-15 10:30:00",
+    "file_size": 1024000,
+    "status": "已处理",
+    "notes": "已确认可用"
+  },
+  {
+    "name": "弦乐组音色库",
+    "category": "弦乐",
+    "version": "2.1",
+    "source": "王老师-邮件",
+    "source_raw": "邮件附件string_lib.zip",
+    "submitted_by": "王老师",
+    "submitted_at": "2024-01-16 14:20:00",
+    "file_size": 52428800,
+    "status": "已处理",
+    "notes": "高质量弦乐采样"
+  },
+  {
+    "name": "合唱人声母音",
+    "category": "人声",
+    "version": "1.0",
+    "source": "林姐-排练群",
+    "source_raw": "排练群语音转文字记录",
+    "submitted_by": "林姐",
+    "submitted_at": "2024-01-17 09:15:00",
+    "file_size": 0,
+    "status": "待补材料",
+    "notes": "只收到清单，未收到实际采样文件"
+  },
+  {
+    "name": "低音贝斯Loop包",
+    "category": "贝斯",
+    "version": "1.5",
+    "source": "张同学-网盘",
+    "source_raw": "百度网盘分享链接",
+    "submitted_by": "张同学",
+    "submitted_at": "2024-01-18 16:45:00",
+    "file_size": 8388608,
+    "status": "人工改判",
+    "notes": "原标注为待补，后确认文件已上传"
+  }
+]

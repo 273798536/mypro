@@ -1,0 +1,50 @@
+[
+  {
+    "name": "开场鼓组 采样包",
+    "category": "打击乐",
+    "version": "1.0",
+    "source": "李同学-排练群",
+    "source_raw": "排练群截图2024-01-20 第3行",
+    "submitted_by": "李同学",
+    "submitted_at": "2024-01-20 11:00:00",
+    "file_size": 1024000,
+    "status": "待补材料",
+    "notes": "第二次提交，名称略有差异"
+  },
+  {
+    "name": "弦乐组音色库v3.0",
+    "category": "弦乐",
+    "version": "3.0",
+    "source": "王老师-微信",
+    "source_raw": "微信文件传输 string_lib_v3.zip",
+    "submitted_by": "王老师",
+    "submitted_at": "2024-01-21 08:30:00",
+    "file_size": 83886080,
+    "status": "待补材料",
+    "notes": "新版本，需确认是否覆盖"
+  },
+  {
+    "name": "铜管乐采样集",
+    "category": "铜管",
+    "version": "1.2",
+    "source": "赵老师-排练群",
+    "source_raw": "排练群截图2024-01-21 第7行",
+    "submitted_by": "赵老师",
+    "submitted_at": "2024-01-21 15:20:00",
+    "file_size": 20971520,
+    "status": "待补材料",
+    "notes": "新增铜管乐素材"
+  },
+  {
+    "name": "弦乐组音色库v1.0",
+    "category": "弦乐",
+    "version": "1.0",
+    "source": "实习生-旧文件夹",
+    "source_raw": "旧备份文件夹 string_old.zip",
+    "submitted_by": "实习生小陈",
+    "submitted_at": "2024-01-22 10:00:00",
+    "file_size": 31457280,
+    "status": "待补材料",
+    "notes": "旧版本文件，来源不明"
+  }
+]
