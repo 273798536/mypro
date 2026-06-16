@@ -1,0 +1,320 @@
+import type { BatchInfo, BuoyData, NoSailZone, ViolationRecord, WaterQualityRecord, FarmLog, Anomaly, ReviewRound } from '../types';
+
+export const batchInfo: BatchInfo = {
+  id: 'batch-001',
+  name: '2024年夏季第三批',
+  date: '2024-06-15',
+  area: 12.5,
+  location: '青岛崂山养殖区A3区',
+};
+
+export const buoyDataList: BuoyData[] = [
+  {
+    id: 'buoy-001',
+    timestamp: '2024-06-15T08:00:00',
+    location: { lat: 36.1234, lng: 120.5678 },
+    temperature: 22.5,
+    salinity: 31.2,
+    dissolvedOxygen: 7.8,
+    pH: 8.1,
+    chlorophyll: 2.3,
+    turbidity: 5.2,
+  },
+  {
+    id: 'buoy-002',
+    timestamp: '2024-06-15T12:00:00',
+    location: { lat: 36.1240, lng: 120.5685 },
+    temperature: 24.1,
+    salinity: 30.8,
+    dissolvedOxygen: 7.2,
+    pH: 8.0,
+    chlorophyll: 2.8,
+    turbidity: 6.1,
+  },
+  {
+    id: 'buoy-003',
+    timestamp: '2024-06-15T16:00:00',
+    location: { lat: 36.1238, lng: 120.5680 },
+    temperature: 23.8,
+    salinity: 31.0,
+    dissolvedOxygen: 7.5,
+    pH: 8.1,
+    chlorophyll: 2.5,
+    turbidity: 5.8,
+  },
+  {
+    id: 'buoy-004',
+    timestamp: '2024-06-15T20:00:00',
+    location: { lat: 36.1230, lng: 120.5675 },
+    temperature: 21.9,
+    salinity: 31.5,
+    dissolvedOxygen: 8.1,
+    pH: 8.2,
+    chlorophyll: 2.1,
+    turbidity: 4.9,
+  },
+];
+
+export const noSailZones: NoSailZone[] = [
+  {
+    id: 'zone-001',
+    name: '航道禁航区',
+    polygon: [
+      { lat: 36.1250, lng: 120.5700 },
+      { lat: 36.1260, lng: 120.5720 },
+      { lat: 36.1230, lng: 120.5730 },
+      { lat: 36.1220, lng: 120.5710 },
+    ],
+    reason: '主航道通行安全',
+  },
+  {
+    id: 'zone-002',
+    name: '生态保护区',
+    polygon: [
+      { lat: 36.1200, lng: 120.5650 },
+      { lat: 36.1210, lng: 120.5670 },
+      { lat: 36.1190, lng: 120.5680 },
+      { lat: 36.1180, lng: 120.5660 },
+    ],
+    reason: '海洋生态保护',
+  },
+];
+
+export const violationRecords: ViolationRecord[] = [
+  {
+    id: 'violation-001',
+    point: {
+      timestamp: '2024-06-15T14:30:00',
+      location: { lat: 36.1255, lng: 120.5715 },
+    },
+    zoneId: 'zone-001',
+    zoneName: '航道禁航区',
+    driftReason: '东南风3级导致浮标漂移约200米',
+    intercepted: true,
+    interceptionNote: '已触发漂移拦截机制，该时段数据已从计算中排除，建议核实浮标锚定情况',
+  },
+];
+
+export const waterQualityRecords: WaterQualityRecord[] = [
+  {
+    id: 'water-001',
+    timestamp: '2024-06-15T08:00:00',
+    index: '溶解氧',
+    value: 7.8,
+    unit: 'mg/L',
+    standard: 6.0,
+    level: 'normal',
+    reviewNotes: [
+      {
+        id: 'note-001',
+        timestamp: '2024-06-15T09:00:00',
+        reviewer: '张助理',
+        content: '初测正常，符合养殖标准',
+        isSupplement: false,
+        source: '浮标自动监测',
+      },
+    ],
+  },
+  {
+    id: 'water-002',
+    timestamp: '2024-06-15T08:00:00',
+    index: 'pH值',
+    value: 8.1,
+    unit: '',
+    standard: 8.5,
+    level: 'normal',
+    reviewNotes: [
+      {
+        id: 'note-002',
+        timestamp: '2024-06-15T09:00:00',
+        reviewer: '张助理',
+        content: '在正常范围内',
+        isSupplement: false,
+        source: '浮标自动监测',
+      },
+    ],
+  },
+  {
+    id: 'water-003',
+    timestamp: '2024-06-15T12:00:00',
+    index: '浊度',
+    value: 12.5,
+    unit: 'NTU',
+    standard: 10.0,
+    level: 'warning',
+    reviewNotes: [
+      {
+        id: 'note-003',
+        timestamp: '2024-06-15T13:00:00',
+        reviewer: '张助理',
+        content: '午间浊度偏高，可能与潮汐有关',
+        isSupplement: false,
+        source: '浮标自动监测',
+      },
+      {
+        id: 'note-004',
+        timestamp: '2024-06-15T16:30:00',
+        reviewer: '李研究员',
+        content: '补录：下午人工采样复测浊度为8.2 NTU，确认午间偏高为潮汐扰动所致，不影响水质评价',
+        isSupplement: true,
+        source: '人工采样复核',
+      },
+    ],
+  },
+  {
+    id: 'water-004',
+    timestamp: '2024-06-15T08:00:00',
+    index: '叶绿素a',
+    value: 2.3,
+    unit: 'μg/L',
+    standard: 5.0,
+    level: 'normal',
+    reviewNotes: [
+      {
+        id: 'note-005',
+        timestamp: '2024-06-15T09:00:00',
+        reviewer: '张助理',
+        content: '正常，无富营养化风险',
+        isSupplement: false,
+        source: '浮标自动监测',
+      },
+    ],
+  },
+];
+
+export const farmLogs: FarmLog[] = [
+  {
+    id: 'log-001',
+    date: '2024-06-14',
+    content: '正常巡检，海带生长良好，无异常脱落。水温22°C，盐度31psu。',
+    isDelayed: false,
+    delayedDays: 0,
+    affectedConclusions: [],
+    version: 1,
+  },
+  {
+    id: 'log-002',
+    date: '2024-06-15',
+    content: '当日浮标数据显示浊度午间偏高，已安排人工采样复核。预计明日出具详细检测报告。',
+    isDelayed: true,
+    delayedDays: 1,
+    affectedConclusions: ['conclusion-002', 'conclusion-004'],
+    previousVersion: '当日仅完成浮标监测，人工检测结果待补充',
+    version: 1,
+  },
+  {
+    id: 'log-003',
+    date: '2024-06-13',
+    content: '完成本批次海带苗种投放，共投放12.5亩，苗种规格均匀。',
+    isDelayed: false,
+    delayedDays: 0,
+    affectedConclusions: [],
+    version: 1,
+  },
+];
+
+export const anomalies: Anomaly[] = [
+  {
+    id: 'anomaly-001',
+    title: '养殖日志延迟提交',
+    description: '6月15日养殖日志中人工采样检测结果尚未提交，延迟1天',
+    category: 'supplement_material',
+    severity: 'medium',
+    sourceModule: '养殖日志',
+    nextAction: '联系现场人员，催促提交人工检测报告',
+    relatedDataId: 'log-002',
+  },
+  {
+    id: 'anomaly-002',
+    title: '浮标漂移进入禁航区',
+    description: '14:30浮标数据点位于航道禁航区内，数据已被拦截',
+    category: 'adjust_caliber',
+    severity: 'high',
+    sourceModule: '禁航区检测',
+    nextAction: '核实浮标锚定状态，评估是否需要调整估算口径',
+    relatedDataId: 'violation-001',
+  },
+  {
+    id: 'anomaly-003',
+    title: '午间浊度超标预警',
+    description: '12:00浊度12.5 NTU超过标准值10.0 NTU',
+    category: 'supplement_material',
+    severity: 'low',
+    sourceModule: '水质预警',
+    nextAction: '等待补录的人工采样复核数据，确认是否为潮汐扰动所致',
+    relatedDataId: 'water-003',
+  },
+  {
+    id: 'anomaly-004',
+    title: '盐度接近适用范围下限',
+    description: '当前盐度30.8 psu，接近适用范围下限29 psu',
+    category: 'adjust_caliber',
+    severity: 'low',
+    sourceModule: '浮标数据',
+    nextAction: '持续监测盐度变化，如持续偏低需考虑调整估算公式参数',
+    relatedDataId: 'buoy-002',
+  },
+];
+
+export const reviewRounds: ReviewRound[] = [
+  {
+    id: 'review-001',
+    roundNumber: 1,
+    timestamp: '2024-06-15T10:00:00',
+    status: 'completed',
+    tideData: {
+      date: '2024-06-15',
+      highTideTime: '05:23',
+      highTideHeight: 4.2,
+      lowTideTime: '11:45',
+      lowTideHeight: 0.8,
+      source: '国家海洋局青岛站',
+    },
+    weatherData: {
+      date: '2024-06-15',
+      temperature: { min: 18, max: 26 },
+      windSpeed: 4.5,
+      windDirection: '东南风',
+      precipitation: 0,
+      source: '青岛市气象局',
+    },
+    noSailCheck: {
+      totalPoints: 24,
+      violationCount: 1,
+      violations: [violationRecords[0]],
+      status: 'warning',
+    },
+    reviewer: '张助理',
+    notes: '第一轮复核，发现1处禁航区越界，已标记待核实',
+  },
+  {
+    id: 'review-002',
+    roundNumber: 2,
+    timestamp: '2024-06-16T09:00:00',
+    status: 'in_progress',
+    tideData: {
+      date: '2024-06-16',
+      highTideTime: '06:10',
+      highTideHeight: 4.0,
+      lowTideTime: '12:30',
+      lowTideHeight: 1.0,
+      source: '国家海洋局青岛站',
+    },
+    weatherData: {
+      date: '2024-06-16',
+      temperature: { min: 19, max: 27 },
+      windSpeed: 3.2,
+      windDirection: '南风',
+      precipitation: 2.5,
+      source: '青岛市气象局',
+    },
+    noSailCheck: {
+      totalPoints: 24,
+      violationCount: 0,
+      violations: [],
+      status: 'pass',
+    },
+    reviewer: '李研究员',
+    notes: '第二轮复核进行中，待补充水质人工检测数据',
+  },
+];
