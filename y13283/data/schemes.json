@@ -1,0 +1,22 @@
+[
+  {
+    "scheme_id": "SCH_A",
+    "name": "直立声屏障",
+    "description": "3米高直立式声屏障，主要针对东门和北门区域",
+    "barrier_type": "直立型",
+    "estimated_cost": 120.0,
+    "noise_reduction_db": 8.5,
+    "coverage_points": ["PT001", "PT002", "PT005", "PT007"],
+    "version": 1
+  },
+  {
+    "scheme_id": "SCH_B",
+    "name": "半封闭声屏障",
+    "description": "5米高半封闭声屏障，覆盖儿童活动区和健身步道",
+    "barrier_type": "半封闭型",
+    "estimated_cost": 280.0,
+    "noise_reduction_db": 15.0,
+    "coverage_points": ["PT003", "PT004", "PT006"],
+    "version": 1
+  }
+]

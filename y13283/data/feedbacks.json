@@ -1,0 +1,29 @@
+[
+  {
+    "feedback_id": "FB001",
+    "point_id": "PT001",
+    "original_text": "东门早上7点广场舞音响很大，居民反映很久了",
+    "merged_text": "东门入口噪声源含交通+广场舞，早晚高峰均需关注",
+    "source": "社区张主任",
+    "feedback_time": "2026-06-10 09:30",
+    "version": 1
+  },
+  {
+    "feedback_id": "FB002",
+    "point_id": "PT001",
+    "original_text": "上周测过一次是67分贝，好像比之前降了一点",
+    "merged_text": "东门入口噪声源含交通+广场舞，早晚高峰均需关注；复测67dB略有下降",
+    "source": "社区李委员",
+    "feedback_time": "2026-06-12 14:15",
+    "version": 2
+  },
+  {
+    "feedback_id": "FB003",
+    "point_id": "PT003",
+    "original_text": "下午接孩子的时候特别吵，希望能装隔音墙",
+    "merged_text": "儿童活动区下午放学时段噪声突出，居民诉求安装隔音设施",
+    "source": "家长代表王先生",
+    "feedback_time": "2026-06-11 16:45",
+    "version": 1
+  }
+]
