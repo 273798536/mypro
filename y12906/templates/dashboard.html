@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工具调用失败回放器</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC, "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #303133; }
+        .header { background: linear-gradient(135deg, #409eff, #67c23a); color: #fff; padding: 20px 30px; }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .toolbar { background: #fff; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+        .toolbar label { font-size: 14px; color: #606266; }
+        .toolbar select, .toolbar button { padding: 8px 16px; border: 1px solid #dcdfe6; border-radius: 4px; background: #fff; font-size: 14px; cursor: pointer; }
+        .toolbar button { background: #409eff; color: #fff; border-color: #409eff; }
+        .toolbar button:hover { background: #66b1ff; }
+        .toolbar button.secondary { background: #67c23a; border-color: #67c23a; }
+        .toolbar button.warning { background: #e6a23c; border-color: #e6a23c; }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .stat-card .label { font-size: 14px; color: #909399; margin-bottom: 8px; }
+        .stat-card .value { font-size: 28px; font-weight: bold; }
+        .stat-card.success .value { color: #67c23a; }
+        .stat-card.fail .value { color: #f56c6c; }
+        .stat-card.blocked .value { color: #e6a23c; }
+        .stat-card.lost .value { color: #909399; }
+        .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .chart-card { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .chart-card h3 { font-size: 16px; margin-bottom: 16px; color: #303133; }
+        .chart-container { height: 300px; position: relative; }
+        .tabs { display: flex; gap: 0; margin-bottom: 20px; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .tab { padding: 12px 24px; cursor: pointer; font-size: 14px; border-bottom: 3px solid transparent; }
+        .tab.active { background: #ecf5ff; border-bottom-color: #409eff; color: #409eff; font-weight: 500; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .table-container { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #ebeef5; }
+        th { background: #f5f7fa; font-weight: 600; color: #606266; }
+        tr:hover { background: #f5f7fa; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; }
+        .tag-success { background: #f0f9eb; color: #67c23a; }
+        .tag-fail { background: #fef0f0; color: #f56c6c; }
+        .tag-blocked { background: #fdf6ec; color: #e6a23c; }
+        .tag-lost { background: #f4f4f5; color: #909399; }
+        .tag-supplement { background: #ecf5ff; color: #409eff; }
+        .tag-old { background: #fef0f0; color: #f56c6c; }
+        .tag-bias { background: #fdf6ec; color: #e6a23c; }
+        .compare-section { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .compare-section h3 { margin-bottom: 16px; }
+        .compare-controls { display: flex; gap: 16px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+        .diff-positive { color: #67c23a; }
+        .diff-negative { color: #f56c6c; }
+        .lost-section { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .lost-section h3 { margin-bottom: 16px; color: #f56c6c; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: #fff; border-radius: 8px; padding: 24px; width: 500px; max-width: 90%; }
+        .modal-content h3 { margin-bottom: 16px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 14px; color: #606266; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 14px; }
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; }
+        .form-actions button { padding: 8px 20px; border-radius: 4px; cursor: pointer; border: 1px solid #dcdfe6; background: #fff; }
+        .form-actions button.primary { background: #409eff; color: #fff; border-color: #409eff; }
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .filter-bar select, .filter-bar input { padding: 6px 12px; border: 1px solid #dcdfe6; border-radius: 4px; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔧 工具调用失败回放器</h1>
+        <p>知识库运营 · 重复运行 / 补录 / 人工确认 三位一体</p>
+    </div>
+
+    <div class="container">
+        <div class="toolbar">
+            <label>选择批次:</label>
+            <select id="batchSelect">
+                <option value="">全部批次</option>
+            </select>
+            <button onclick="runReplay()">▶ 重新运行</button>
+            <button class="secondary" onclick="openSupplementModal()">📝 补录</button>
+            <button class="warning" onclick="openConfirmModal()">✓ 人工确认</button>
+            <button onclick="exportReport()">⬇ 下载报告</button>
+            <span style="margin-left:auto; color:#909399; font-size:13px;">
+                图表 / 明细 / 下载 同一数据源
+            </span>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">总调用数</div>
+                <div class="value" id="statTotal">0</div>
+            </div>
+            <div class="stat-card success">
+                <div class="label">成功数</div>
+                <div class="value" id="statSuccess">0</div>
+            </div>
+            <div class="stat-card fail">
+                <div class="label">失败数</div>
+                <div class="value" id="statFail">0</div>
+            </div>
+            <div class="stat-card blocked">
+                <div class="label">拦截数</div>
+                <div class="value" id="statBlocked">0</div>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart-card">
+                <h3>📊 状态分布</h3>
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>📋 失败类型分布</h3>
+                <div class="chart-container">
+                    <canvas id="failTypeChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="compare-section">
+            <h3>🔄 安全拦截前后对比 <span style="font-size:13px; color:#909399; font-weight:normal;">（版本回滚 / 安全策略调整前后分布差别</span></h3>
+            <div class="compare-controls">
+                <label>批次1:</label>
+                <select id="compareBatch1"></select>
+                <label>批次2:</label>
+                <select id="compareBatch2"></select>
+                <button onclick="compareBatches()">对比</button>
+                <span id="compareResult" style="margin-left:auto; font-size:14px;"></span>
+            </div>
+            <div class="chart-container" style="height:250px;">
+                <canvas id="compareChart"></canvas>
+            </div>
+        </div>
+
+        <div class="lost-section">
+            <h3>⚠️ 版本回滚丢失记录 <span style="font-size:13px; color:#909399; font-weight:normal;">（训练组看报告也能知道卡在哪份材料上</span></h3>
+            <div id="lostRecords"></div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('details')">调用明细</div>
+            <div class="tab" onclick="switchTab('questions')">题目清单</div>
+            <div class="tab" onclick="switchTab('materials')">材料清单</div>
+            <div class="tab" onclick="switchTab('feedbacks')">人工反馈</div>
+        </div>
+
+        <div class="tab-content active" id="tab-details">
+            <div class="table-container">
+                <div class="filter-bar">
+                    <select id="statusFilter" onchange="loadDetails()">
+                        <option value="">全部状态</option>
+                        <option value="成功">成功</option>
+                        <option value="失败">失败</option>
+                        <option value="拦截">拦截</option>
+                        <option value="丢失">丢失</option>
+                    </select>
+                    <input type="text" id="searchInput" placeholder="搜索题目ID或题干..." onkeyup="filterDetails()">
+                </div>
+                <table id="detailsTable">
+                    <thead>
+                        <tr>
+                            <th>调用ID</th>
+                            <th>题目ID</th>
+                            <th>题干</th>
+                            <th>工具</th>
+                            <th>状态</th>
+                            <th>失败类型</th>
+                            <th>错误信息</th>
+                            <th>材料</th>
+                            <th>单位</th>
+                            <th>批次</th>
+                            <th>版本</th>
+                            <th>标记</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-questions">
+            <div class="table-container">
+                <table id="questionsTable">
+                    <thead>
+                        <tr>
+                            <th>题目ID</th>
+                            <th>题干</th>
+                            <th>材料</th>
+                            <th>单位</th>
+                            <th>类型</th>
+                            <th>难度</th>
+                            <th>反馈数</th>
+                            <th>调用数</th>
+                            <th>标记</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-materials">
+            <div class="table-container">
+                <table id="materialsTable">
+                    <thead>
+                        <tr>
+                            <th>材料编号</th>
+                            <th>材料名称</th>
+                            <th>切分批次</th>
+                            <th>切分人</th>
+                            <th>切分日期</th>
+                            <th>备注</th>
+                            <th>标记</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab-content" id="tab-feedbacks">
+            <div class="table-container">
+                <table id="feedbacksTable">
+                    <thead>
+                        <tr>
+                            <th>题目ID</th>
+                            <th>反馈人</th>
+                            <th>反馈类型</th>
+                            <th>反馈内容</th>
+                            <th>处理状态</th>
+                            <th>反馈日期</th>
+                            <th>备注</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="supplementModal">
+        <div class="modal-content">
+            <h3>📝 补录信息</h3>
+            <div class="form-group">
+                <label>题目ID</label>
+                <select id="supplementQid"></select>
+            </div>
+            <div class="form-group">
+                <label>补录字段</label>
+                <select id="supplementField">
+                    <option value="单位">单位</option>
+                    <option value="备注">备注</option>
+                    <option value="标准答案">标准答案</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>补录值</label>
+                <input type="text" id="supplementValue" placeholder="请输入补录内容">
+            </div>
+            <div class="form-group">
+                <label>操作人</label>
+                <input type="text" id="supplementOperator" value="知识库运营">
+            </div>
+            <div class="form-actions">
+                <button onclick="closeSupplementModal()">取消</button>
+                <button class="primary" onclick="submitSupplement()">确认补录</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <h3>✓ 人工确认</h3>
+            <div class="form-group">
+                <label>题目ID</label>
+                <select id="confirmQid"></select>
+            </div>
+            <div class="form-group">
+                <label>确认结果</label>
+                <select id="confirmResult">
+                    <option value="通过">通过</option>
+                    <option value="驳回">驳回</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>确认意见</label>
+                <textarea id="confirmComment" rows="3" placeholder="请输入确认意见"></textarea>
+            </div>
+            <div class="form-group">
+                <label>操作人</label>
+                <input type="text" id="confirmOperator" value="知识库运营">
+            </div>
+            <div class="form-actions">
+                <button onclick="closeConfirmModal()">取消</button>
+                <button class="primary" onclick="submitConfirm()">确认提交</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = { details: [], questions: [], materials: [], feedbacks: [] };
+        let statusChart, failTypeChart, compareChart;
+        let currentBatch = '';
+
+        function init() {
+            loadBatches();
+            loadStatistics();
+            loadDetails();
+            loadQuestions();
+            loadMaterials();
+            loadFeedbacks();
+            loadLostRecords();
+            loadCompareBatches();
+        }
+
+        function loadBatches() {
+            fetch('/api/batches')
+                .then(r => r.json())
+                .then(data => {
+                    const select = document.getElementById('batchSelect');
+                    select.innerHTML = '<option value="">全部批次</option>';
+                    data.forEach(b => {
+                        const opt = document.createElement('option');
+                        opt.value = b.batch_id;
+                        opt.textContent = `${b.batch_id} (${b.version}) - 共${b.total_calls}条`;
+                        select.appendChild(opt);
+                    });
+                    select.onchange = () => {
+                        currentBatch = select.value;
+                        loadStatistics();
+                        loadDetails();
+                    };
+                });
+        }
+
+        function loadStatistics() {
+            const url = currentBatch ? `/api/statistics?batch_id=${currentBatch}` : '/api/statistics';
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('statTotal').textContent = data.summary.total;
+                    document.getElementById('statSuccess').textContent = data.summary.success;
+                    document.getElementById('statFail').textContent = data.summary.fail;
+                    document.getElementById('statBlocked').textContent = data.summary.blocked;
+
+                    renderStatusChart(data.summary);
+                    renderFailTypeChart(data.fail_by_type);
+                });
+        }
+
+        function renderStatusChart(summary) {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            if (statusChart) statusChart.destroy();
+            statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['成功', '失败', '拦截', '丢失'],
+                    datasets: [{
+                        data: [summary.success, summary.fail, summary.blocked, summary.lost],
+                        backgroundColor: ['#67c23a', '#f56c6c', '#e6a23c', '#909399']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' }
+                    }
+                }
+            });
+        }
+
+        function renderFailTypeChart(failTypes) {
+            const ctx = document.getElementById('failTypeChart').getContext('2d');
+            if (failTypeChart) failTypeChart.destroy();
+            const labels = Object.keys(failTypes);
+            const values = Object.values(failTypes);
+            failTypeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '失败数量',
+                        data: values,
+                        backgroundColor: '#409eff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+
+        function loadDetails() {
+            let url = '/api/details';
+            if (currentBatch) url += `?batch_id=${currentBatch}`;
+            const statusFilter = document.getElementById('statusFilter').value;
+            if (statusFilter) {
+                url += (currentBatch ? '&' : '?') + `status=${statusFilter}`;
+            }
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    currentData.details = data;
+                    renderDetails(data);
+                });
+        }
+
+        function renderDetails(data) {
+            const tbody = document.querySelector('#detailsTable tbody');
+            tbody.innerHTML = '';
+            data.forEach(d => {
+                const tr = document.createElement('tr');
+                const statusClass = d.status === '成功' ? 'tag-success' :
+                    d.status === '失败' ? 'tag-fail' :
+                    d.status === '拦截' ? 'tag-blocked' : 'tag-lost';
+                let tags = '';
+                if (d.is_supplement) tags += '<span class="tag tag-supplement">补录</span> ';
+                if (d.is_old_table) tags += '<span class="tag tag-old">旧表</span> ';
+                if (d.is_missing_unit) tags += '<span class="tag tag-bias">漏填单位</span> ';
+                tr.innerHTML = `
+                    <td>${d.call_id}</td>
+                    <td>${d.question_id}</td>
+                    <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${d.question_text}">${d.question_text}</td>
+                    <td>${d.tool_name}</td>
+                    <td><span class="tag ${statusClass}">${d.status}</span></td>
+                    <td>${d.fail_type || '-'}</td>
+                    <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${d.error_msg}">${d.error_msg || '-'}</td>
+                    <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${d.material_name}">${d.material_name || '-'}</td>
+                    <td>${d.unit || '<span style="color:#f56c6c;">未填</span>'}</td>
+                    <td>${d.batch}</td>
+                    <td>${d.version}</td>
+                    <td>${tags}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterDetails() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = currentData.details.filter(d =>
+                d.question_id.toLowerCase().includes(keyword) ||
+                d.question_text.toLowerCase().includes(keyword)
+            );
+            renderDetails(filtered);
+        }
+
+        function loadQuestions() {
+            fetch('/api/questions')
+                .then(r => r.json())
+                .then(data => {
+                    currentData.questions = data;
+                    const tbody = document.querySelector('#questionsTable tbody');
+                    tbody.innerHTML = '';
+                    data.forEach(q => {
+                        const tr = document.createElement('tr');
+                        let tags = '';
+                        if (q.is_supplement) tags += '<span class="tag tag-supplement">补录</span> ';
+                        if (q.is_old) tags += '<span class="tag tag-old">旧表</span> ';
+                        if (q.is_bias) tags += '<span class="tag tag-bias">偏科</span> ';
+                        tr.innerHTML = `
+                            <td>${q.id}</td>
+                            <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q.text}">${q.text}</td>
+                            <td style="max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q.material}">${q.material}</td>
+                            <td>${q.unit || '<span style="color:#f56c6c;">未填</span>'}</td>
+                            <td>${q.type}</td>
+                            <td>${q.difficulty}</td>
+                            <td>${q.feedback_count}</td>
+                            <td>${q.call_count}</td>
+                            <td>${tags}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+        function loadMaterials() {
+            fetch('/api/materials')
+                .then(r => r.json())
+                .then(data => {
+                    currentData.materials = data;
+                    const tbody = document.querySelector('#materialsTable tbody');
+                    tbody.innerHTML = '';
+                    data.forEach(m => {
+                        const tr = document.createElement('tr');
+                        let tag = m.is_supplement ? '<span class="tag tag-supplement">补录</span>' : '';
+                        tr.innerHTML = `
+                            <td>${m.id}</td>
+                            <td>${m.name}</td>
+                            <td>${m.batch}</td>
+                            <td>${m.operator}</td>
+                            <td>${m.date}</td>
+                            <td>${m.remark || '-'}</td>
+                            <td>${tag}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+        function loadFeedbacks() {
+            fetch('/api/feedbacks')
+                .then(r => r.json())
+                .then(data => {
+                    currentData.feedbacks = data;
+                    const tbody = document.querySelector('#feedbacksTable tbody');
+                    tbody.innerHTML = '';
+                    data.forEach(f => {
+                        const tr = document.createElement('tr');
+                        const statusClass = f['处理状态'] === '已处理' ? 'tag-success' :
+                            f['处理状态'] === '待确认' ? 'tag-blocked' : 'tag-fail';
+                        tr.innerHTML = `
+                            <td>${f['题目ID']}</td>
+                            <td>${f['反馈人']}</td>
+                            <td>${f['反馈类型']}</td>
+                            <td style="max-width:200px;">${f['反馈内容']}</td>
+                            <td><span class="tag ${statusClass}">${f['处理状态']}</span></td>
+                            <td>${f['反馈日期']}</td>
+                            <td style="max-width:150px;">${f['备注'] || '-'}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                });
+        }
+
+        function loadLostRecords() {
+            fetch('/api/lost')
+                .then(r => r.json())
+                .then(data => {
+                    const container = document.getElementById('lostRecords');
+                    if (data.length === 0) {
+                        container.innerHTML = '<p style="color:#67c23a;">暂无丢失记录 ✓</p>';
+                        return;
+                    }
+                    let html = '<table style="width:100%; border-collapse:collapse; font-size:13px;"><thead><tr><th>题目ID</th><th>题干</th><th>材料编号</th><th>材料名称</th><th>切分批次</th><th>备注</th></tr></thead><tbody>';
+                    data.forEach(r => {
+                        html += `<tr>
+                            <td>${r.question_id}</td>
+                            <td>${r.question_text}</td>
+                            <td>${r.material_id}</td>
+                            <td style="color:#f56c6c; font-weight:500;">${r.material_name}</td>
+                            <td>${r.batch}</td>
+                            <td>${r.remark || '版本回滚丢失'}</td>
+                        </tr>`;
+                    });
+                    html += '</tbody></table>';
+                    html += `<p style="margin-top:12px; font-size:13px; color:#606266;">
+                        💡 训练组看报告即可定位：卡在 <strong style="color:#f56c6c;">${data.length}</strong> 份材料，
+                        共 <strong>${data.length}</strong> 条记录丢失
+                    </p>`;
+                    container.innerHTML = html;
+                });
+        }
+
+        function loadCompareBatches() {
+            fetch('/api/batches')
+                .then(r => r.json())
+                .then(data => {
+                    ['compareBatch1', 'compareBatch2'].forEach(id => {
+                        const select = document.getElementById(id);
+                        select.innerHTML = '';
+                        data.forEach((b, i) => {
+                            const opt = document.createElement('option');
+                            opt.value = b.batch_id;
+                            opt.textContent = `${b.batch_id} (${b.version})`;
+                            select.appendChild(opt);
+                        });
+                    });
+                    if (data.length >= 2) {
+                        document.getElementById('compareBatch1').value = data[0].batch_id;
+                        document.getElementById('compareBatch2').value = data[data.length - 1].batch_id;
+                        compareBatches();
+                    }
+                });
+        }
+
+        function compareBatches() {
+            const b1 = document.getElementById('compareBatch1').value;
+            const b2 = document.getElementById('compareBatch2').value;
+            fetch(`/api/compare?batch1=${b1}&batch2=${b2}`)
+                .then(r => r.json())
+                .then(data => {
+                    const diff = data.diff;
+                    const rateDiff = diff.success_rate_diff;
+                    const rateText = rateDiff >= 0 ? `+${rateDiff}%` : `${rateDiff}%`;
+                    const rateClass = rateDiff >= 0 ? 'diff-positive' : 'diff-negative';
+                    document.getElementById('compareResult').innerHTML =
+                        `成功率变化: <span class="${rateClass}"><strong>${rateText}</strong></span>`;
+
+                    const ctx = document.getElementById('compareChart').getContext('2d');
+                    if (compareChart) compareChart.destroy();
+                    compareChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: ['成功', '失败', '拦截', '丢失'],
+                            datasets: [
+                                {
+                                    label: b1,
+                                    data: [
+                                        data.batch1.summary.success,
+                                        data.batch1.summary.fail,
+                                        data.batch1.summary.blocked,
+                                        data.batch1.summary.lost
+                                    ],
+                                    backgroundColor: 'rgba(64, 158, 255, 0.7)'
+                                },
+                                {
+                                    label: b2,
+                                    data: [
+                                        data.batch2.summary.success,
+                                        data.batch2.summary.success,
+                                        data.batch2.summary.fail,
+                                        data.batch2.summary.blocked,
+                                        data.batch2.summary.lost
+                                    ],
+                                    backgroundColor: 'rgba(103, 194, 58, 0.7)'
+                                }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: { beginAtZero: true }
+                            }
+                        }
+                    });
+                });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('tab-' + tabName).classList.add('active');
+        }
+
+        function runReplay() {
+            const batch = currentBatch || null;
+            fetch('/api/replay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ batch_id: batch })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    alert(`回放完成！新批次: ${data.batch_id}，共 ${data.call_count} 条调用`);
+                    loadBatches();
+                    loadStatistics();
+                    loadDetails();
+                    loadCompareBatches();
+                });
+        }
+
+        function openSupplementModal() {
+            loadQuestionSelect('supplementQid');
+            document.getElementById('supplementModal').classList.add('active');
+        }
+
+        function closeSupplementModal() {
+            document.getElementById('supplementModal').classList.remove('active');
+        }
+
+        function openConfirmModal() {
+            loadQuestionSelect('confirmQid');
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        function loadQuestionSelect(selectId) {
+            fetch('/api/questions')
+                .then(r => r.json())
+                .then(data => {
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '';
+                    data.forEach(q => {
+                        const opt = document.createElement('option');
+                        opt.value = q.id;
+                        opt.textContent = `${q.id} - ${q.text.substring(0, 30)}...`;
+                        select.appendChild(opt);
+                    });
+                });
+        }
+
+        function submitSupplement() {
+            const qid = document.getElementById('supplementQid').value;
+            const field = document.getElementById('supplementField').value;
+            const value = document.getElementById('supplementValue').value;
+            const operator = document.getElementById('supplementOperator').value;
+
+            if (!value) {
+                alert('请输入补录值');
+                return;
+            }
+
+            fetch('/api/supplement', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question_id: qid,
+                    field_name: field,
+                    field_value: value,
+                    operator: operator
+                })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('补录成功！');
+                        closeSupplementModal();
+                        loadQuestions();
+                        loadDetails();
+                    }
+                });
+        }
+
+        function submitConfirm() {
+            const qid = document.getElementById('confirmQid').value;
+            const result = document.getElementById('confirmResult').value;
+            const comment = document.getElementById('confirmComment').value;
+            const operator = document.getElementById('confirmOperator').value;
+
+            fetch('/api/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    question_id: qid,
+                    result: result,
+                    comment: comment,
+                    operator: operator
+                })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('人工确认已提交！');
+                        closeConfirmModal();
+                        loadFeedbacks();
+                    }
+                });
+        }
+
+        function exportReport() {
+            const url = currentBatch
+                ? `/api/export?batch_id=${currentBatch}&format=json`
+                : '/api/export?format=json';
+            window.location.href = url;
+        }
+
+        init();
+    </script>
+</body>
+</html>
