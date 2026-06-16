@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>老街消防公示清单</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f5f5f0;--card:#fff;--border:#e0ddd5;--primary:#2c5f2d;--primary-light:#4a8c4b;--accent:#c0392b;--accent-light:#e74c3c;--warn:#e67e22;--info:#2980b9;--text:#333;--text2:#666;--radius:8px}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:var(--primary);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.header h1{font-size:20px;font-weight:600;letter-spacing:1px}
+.header .actions{display:flex;gap:10px}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:7px 16px;border:none;border-radius:var(--radius);cursor:pointer;font-size:13px;font-weight:500;transition:all .15s}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-light)}
+.btn-danger{background:var(--accent);color:#fff}
+.btn-danger:hover{background:var(--accent-light)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-warn{background:var(--warn);color:#fff}
+.btn-info{background:var(--info);color:#fff}
+.tabs{display:flex;gap:0;background:var(--card);border-bottom:1px solid var(--border);padding:0 24px}
+.tab{padding:12px 20px;cursor:pointer;font-size:14px;color:var(--text2);border-bottom:2px solid transparent;transition:all .15s}
+.tab:hover{color:var(--primary)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary);font-weight:600}
+.main{max-width:1200px;margin:0 auto;padding:20px 24px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card-title{font-size:16px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.stat-card .num{font-size:28px;font-weight:700}
+.stat-card .label{font-size:12px;color:var(--text2);margin-top:4px}
+.stat-card.pending .num{color:var(--warn)}
+.stat-card.processed .num{color:var(--primary)}
+.stat-card.needs_evidence .num{color:var(--accent)}
+.stat-card.alerts .num{color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border)}
+th{background:#fafaf5;font-weight:600;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+tr:hover{background:#fafaf5}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-pending{background:#fef3cd;color:#856404}
+.badge-processing{background:#cce5ff;color:#004085}
+.badge-processed{background:#d4edda;color:#155724}
+.badge-needs_evidence{background:#f8d7da;color:#721c24}
+.badge-unresolved{background:#f8d7da;color:#721c24}
+.badge-resolved{background:#d4edda;color:#155724}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:500;margin-bottom:4px;color:var(--text2)}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:inherit}
+.form-group textarea{min-height:80px;resize:vertical}
+.chain-timeline{position:relative;padding-left:24px}
+.chain-timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
+.chain-node{position:relative;margin-bottom:16px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.chain-node::before{content:'';position:absolute;left:-20px;top:16px;width:12px;height:12px;border-radius:50%;border:2px solid var(--primary);background:#fff}
+.chain-node.superseded::before{background:var(--border);border-color:var(--border)}
+.chain-node.current::before{background:var(--primary)}
+.chain-node .version{font-weight:600;color:var(--primary);font-size:13px}
+.chain-node .content{margin:4px 0;font-size:14px}
+.chain-node .meta{font-size:12px;color:var(--text2)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:var(--card);border-radius:12px;width:90%;max-width:600px;max-height:85vh;overflow-y:auto;padding:24px;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.modal h2{font-size:18px;margin-bottom:16px}
+.modal .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.empty{text-align:center;padding:40px;color:var(--text2);font-size:14px}
+.tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:11px;margin-right:4px;background:#eef;color:var(--info)}
+.mono{font-family:"SF Mono",Menlo,monospace;font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔥 老街消防公示清单</h1>
+  <div class="actions">
+    <button class="btn btn-outline" onclick="exportMarkdown()">📥 导出报告</button>
+    <button class="btn btn-primary" onclick="showAddPoint()">＋ 新增点位</button>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('dashboard')">📊 看板</div>
+  <div class="tab" onclick="switchTab('points')">📍 GIS 点位</div>
+  <div class="tab" onclick="switchTab('records')">📋 处理记录</div>
+  <div class="tab" onclick="switchTab('alerts')">⚠️ 容量告警</div>
+  <div class="tab" onclick="switchTab('merges')">🔗 归并记录</div>
+</div>
+
+<div class="main" id="main"></div>
+<div id="modal-root"></div>
+
+<script>
+const API = '';
+let currentTab = 'dashboard';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(API + path, { headers: { 'Content-Type': 'application/json' }, ...opts });
+  if (opts.raw) return res;
+  return res.json();
+}
+
+async function render() {
+  const main = document.getElementById('main');
+  switch (currentTab) {
+    case 'dashboard': await renderDashboard(main); break;
+    case 'points': await renderPoints(main); break;
+    case 'records': await renderRecords(main); break;
+    case 'alerts': await renderAlerts(main); break;
+    case 'merges': await renderMerges(main); break;
+  }
+}
+
+async function renderDashboard(el) {
+  const s = await api('/api/dashboard');
+  el.innerHTML = `
+    <div class="stats">
+      <div class="stat-card"><div class="num">${s.total}</div><div class="label">总计</div></div>
+      <div class="stat-card pending"><div class="num">${s.pending}</div><div class="label">⏳ 待处理</div></div>
+      <div class="stat-card processed"><div class="num">${s.processed}</div><div class="label">✅ 已处理</div></div>
+      <div class="stat-card needs_evidence"><div class="num">${s.needs_evidence}</div><div class="label">📎 待补证据</div></div>
+      <div class="stat-card alerts"><div class="num">${s.unresolved_alerts}</div><div class="label">⚠️ 未解决告警</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 最近待处理记录</div>
+      <div id="dash-pending"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📎 待补证据项</div>
+      <div id="dash-evidence"></div>
+    </div>
+  `;
+  const pending = await api('/api/processing-records?status=pending');
+  const evidence = await api('/api/processing-records?status=needs_evidence');
+  document.getElementById('dash-pending').innerHTML = pending.length ? renderRecordTable(pending) : '<div class="empty">暂无待处理项</div>';
+  document.getElementById('dash-evidence').innerHTML = evidence.length ? renderRecordTable(evidence) : '<div class="empty">暂无待补证据项</div>';
+}
+
+function renderRecordTable(rows) {
+  const statusLabel = { pending: '⏳ 待处理', processing: '🔄 处理中', processed: '✅ 已处理', needs_evidence: '📎 待补证据' };
+  return `<table><tr><th>点位</th><th>版本</th><th>意见</th><th>状态</th><th>操作</th></tr>
+    ${rows.map(r => `<tr>
+      <td>${r.gis_point_name || '-'}</td>
+      <td>v${r.opinion_version}</td>
+      <td>${(r.opinion_content || '').slice(0, 40)}${(r.opinion_content || '').length > 40 ? '…' : ''}</td>
+      <td><span class="badge badge-${r.status}">${statusLabel[r.status] || r.status}</span></td>
+      <td><button class="btn btn-sm btn-outline" onclick="showEditRecord(${r.id})">编辑</button></td>
+    </tr>`).join('')}</table>`;
+}
+
+async function renderPoints(el) {
+  const points = await api('/api/gis-points');
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">📍 GIS 点位列表</div>
+      ${points.length ? `<table><tr><th>ID</th><th>名称</th><th>地址</th><th>坐标</th><th>意见数</th><th>未解决告警</th><th>操作</th></tr>
+      ${points.map(p => `<tr>
+        <td class="mono">${p.id}</td>
+        <td><a href="#" onclick="showChain(${p.id});return false">${p.name}</a></td>
+        <td>${p.address || '-'}</td>
+        <td class="mono">${p.longitude}, ${p.latitude}</td>
+        <td>${p.opinion_count}</td>
+        <td>${p.unresolved_alerts > 0 ? `<span class="badge badge-unresolved">${p.unresolved_alerts}</span>` : '0'}</td>
+        <td>
+          <button class="btn btn-sm btn-outline" onclick="showChain(${p.id})">处理链</button>
+          <button class="btn btn-sm btn-outline" onclick="showEditPoint(${p.id})">编辑</button>
+          <button class="btn btn-sm btn-danger" onclick="deletePoint(${p.id})">删除</button>
+        </td>
+      </tr>`).join('')}</table>` : '<div class="empty">暂无点位，点击右上角新增</div>'}
+    </div>
+  `;
+}
+
+async function renderRecords(el) {
+  const rows = await api('/api/processing-records');
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">📋 全部处理记录</div>
+      <div style="margin-bottom:12px;display:flex;gap:8px">
+        <button class="btn btn-sm btn-outline" onclick="filterRecords('')">全部</button>
+        <button class="btn btn-sm btn-outline" onclick="filterRecords('pending')">待处理</button>
+        <button class="btn btn-sm btn-outline" onclick="filterRecords('needs_evidence')">待补证据</button>
+        <button class="btn btn-sm btn-outline" onclick="filterRecords('processed')">已处理</button>
+      </div>
+      <div id="records-table">${renderRecordTable(rows)}</div>
+    </div>
+  `;
+}
+
+async function filterRecords(status) {
+  const rows = status ? await api('/api/processing-records?status=' + status) : await api('/api/processing-records');
+  document.getElementById('records-table').innerHTML = renderRecordTable(rows);
+}
+
+async function renderAlerts(el) {
+  const alerts = await api('/api/capacity-alerts');
+  const unresolved = alerts.filter(a => !a.resolved);
+  const resolved = alerts.filter(a => a.resolved);
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">⚠️ 容量告警（${unresolved.length} 未解决）</div>
+      <button class="btn btn-sm btn-primary" onclick="showAddAlert()" style="margin-bottom:12px">＋ 新增告警</button>
+      ${unresolved.length ? `<table><tr><th>点位</th><th>类型</th><th>原始数据溯源</th><th>详情</th><th>操作</th></tr>
+      ${unresolved.map(a => `<tr>
+        <td>${a.gis_point_name || '-'}</td>
+        <td>${a.alert_type}</td>
+        <td class="mono">${a.original_data_ref}</td>
+        <td>${a.detail || '-'}</td>
+        <td><button class="btn btn-sm btn-primary" onclick="resolveAlert(${a.id})">标记已解决</button></td>
+      </tr>`).join('')}</table>` : '<div class="empty">无未解决告警</div>'}
+    </div>
+    ${resolved.length ? `<div class="card"><div class="card-title">✅ 已解决告警</div>
+      <table><tr><th>点位</th><th>类型</th><th>溯源</th><th>解决时间</th></tr>
+      ${resolved.map(a => `<tr>
+        <td>${a.gis_point_name || '-'}</td><td>${a.alert_type}</td><td class="mono">${a.original_data_ref}</td><td>${a.resolved_at || '-'}</td>
+      </tr>`).join('')}</table></div>` : ''}
+  `;
+}
+
+async function renderMerges(el) {
+  const merges = await api('/api/merge-evidences');
+  el.innerHTML = `
+    <div class="card">
+      <div class="card-title">🔗 归并记录</div>
+      <button class="btn btn-sm btn-primary" onclick="showAddMerge()" style="margin-bottom:12px">＋ 新增归并</button>
+      ${merges.length ? `<table><tr><th>合并至点位</th><th>来源点位IDs</th><th>归并原因</th><th>证据</th><th>时间</th></tr>
+      ${merges.map(m => `<tr>
+        <td>${m.merged_point_name || '-'}</td>
+        <td class="mono">${m.source_gis_point_ids}</td>
+        <td>${m.merge_reason || '-'}</td>
+        <td>${(m.evidence_markdown || '').slice(0, 60)}…</td>
+        <td>${m.created_at}</td>
+      </tr>`).join('')}</table>` : '<div class="empty">暂无归并记录</div>'}
+    </div>
+  `;
+}
+
+async function showChain(pointId) {
+  const data = await api('/api/chain/' + pointId);
+  const p = data.point;
+  const statusLabel = { pending: '⏳ 待处理', processing: '🔄 处理中', processed: '✅ 已处理', needs_evidence: '📎 待补证据' };
+  const nodes = data.opinions.map(o => {
+    const isCurrent = !o.supersedes_id || data.opinions.every(x => x.supersedes_id !== o.id);
+    return `<div class="chain-node ${isCurrent ? 'current' : 'superseded'}">
+      <div class="version">v${o.version} ${isCurrent ? '（当前）' : '（已覆盖）'}</div>
+      <div class="content">${o.content}</div>
+      ${o.source_description ? `<div class="meta">来源：${o.source_description}</div>` : ''}
+      ${o.supersedes_id ? `<div class="meta">覆盖 v${o.version - 1}</div>` : ''}
+      <div class="meta">状态：<span class="badge badge-${o.processing_status}">${statusLabel[o.processing_status] || o.processing_status}</span></div>
+      ${o.changed_judgments ? `<div class="meta" style="color:var(--accent)">判断变更：${o.changed_judgments}</div>` : ''}
+      ${o.markdown_report ? `<div class="meta" style="margin-top:8px;padding:8px;background:#fafaf5;border-radius:4px;font-size:12px;white-space:pre-wrap">${o.markdown_report}</div>` : ''}
+      <div style="margin-top:8px;display:flex;gap:6px">
+        <button class="btn btn-sm btn-outline" onclick="showEditRecordByOpinion(${o.id})">编辑处理记录</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const alertHtml = data.alerts.length ? `<div style="margin-top:16px">
+    <strong>⚠️ 容量告警</strong>
+    ${data.alerts.map(a => `<div style="padding:8px;margin:4px 0;background:#fff3cd;border-radius:4px;font-size:13px">
+      ${a.alert_type}：${a.detail || '无详情'}<br>
+      <span class="mono" style="font-size:11px">溯源 → ${a.original_data_ref}</span>
+      ${!a.resolved ? `<button class="btn btn-sm btn-primary" style="margin-left:8px" onclick="resolveAlert(${a.id})">解决</button>` : '<span class="badge badge-resolved">已解决</span>'}
+    </div>`).join('')}
+  </div>` : '';
+
+  const mergeHtml = data.merges.length ? `<div style="margin-top:16px">
+    <strong>🔗 归并记录</strong>
+    ${data.merges.map(m => `<div style="padding:8px;margin:4px 0;background:#e8f4f8;border-radius:4px;font-size:13px">
+      来源点位：${m.source_gis_point_ids}<br>
+      ${m.evidence_markdown}
+    </div>`).join('')}
+  </div>` : '';
+
+  showModal(`
+    <h2>${p.name} — 处理链</h2>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:16px">
+      📍 ${p.address || '未填地址'} &nbsp; 🗺️ ${p.longitude}, ${p.latitude} &nbsp; 📝 ${p.notes || '无备注'}
+    </div>
+    <button class="btn btn-sm btn-primary" onclick="showAddOpinion(${p.id})" style="margin-bottom:12px">＋ 新增意见</button>
+    <button class="btn btn-sm btn-outline" onclick="showAddAlertForPoint(${p.id})" style="margin-bottom:12px">⚠️ 新增告警</button>
+    <div class="chain-timeline">${nodes || '<div class="empty">暂无意见记录</div>'}</div>
+    ${alertHtml}
+    ${mergeHtml}
+  `);
+}
+
+function showAddPoint() {
+  showModal(`
+    <h2>新增 GIS 点位</h2>
+    <div class="form-group"><label>名称 *</label><input id="f-name" placeholder="如：老街东段3号"></div>
+    <div class="form-group"><label>经度 *</label><input id="f-lng" type="number" step="0.0001" placeholder="116.3974"></div>
+    <div class="form-group"><label>纬度 *</label><input id="f-lat" type="number" step="0.0001" placeholder="39.9087"></div>
+    <div class="form-group"><label>地址</label><input id="f-addr" placeholder="详细地址"></div>
+    <div class="form-group"><label>备注</label><textarea id="f-notes" placeholder="GIS点位备注，说明判断依据"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitAddPoint()">保存</button>
+    </div>
+  `);
+}
+
+async function submitAddPoint() {
+  const body = {
+    name: document.getElementById('f-name').value,
+    longitude: parseFloat(document.getElementById('f-lng').value),
+    latitude: parseFloat(document.getElementById('f-lat').value),
+    address: document.getElementById('f-addr').value,
+    notes: document.getElementById('f-notes').value
+  };
+  if (!body.name || isNaN(body.longitude) || isNaN(body.latitude)) return alert('请填写必填项');
+  await api('/api/gis-points', { method: 'POST', body: JSON.stringify(body) });
+  closeModal();
+  render();
+}
+
+async function showEditPoint(id) {
+  const p = await api('/api/gis-points/' + id);
+  showModal(`
+    <h2>编辑点位：${p.name}</h2>
+    <div class="form-group"><label>名称</label><input id="f-name" value="${p.name}"></div>
+    <div class="form-group"><label>经度</label><input id="f-lng" type="number" step="0.0001" value="${p.longitude}"></div>
+    <div class="form-group"><label>纬度</label><input id="f-lat" type="number" step="0.0001" value="${p.latitude}"></div>
+    <div class="form-group"><label>地址</label><input id="f-addr" value="${p.address || ''}"></div>
+    <div class="form-group"><label>备注</label><textarea id="f-notes">${p.notes || ''}</textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitEditPoint(${id})">保存</button>
+    </div>
+  `);
+}
+
+async function submitEditPoint(id) {
+  await api('/api/gis-points/' + id, {
+    method: 'PUT',
+    body: JSON.stringify({
+      name: document.getElementById('f-name').value,
+      longitude: parseFloat(document.getElementById('f-lng').value),
+      latitude: parseFloat(document.getElementById('f-lat').value),
+      address: document.getElementById('f-addr').value,
+      notes: document.getElementById('f-notes').value
+    })
+  });
+  closeModal();
+  render();
+}
+
+async function deletePoint(id) {
+  if (!confirm('确认删除该点位及其所有关联数据？')) return;
+  await api('/api/gis-points/' + id, { method: 'DELETE' });
+  render();
+}
+
+async function showAddOpinion(gisPointId) {
+  const opinions = await api('/api/opinions?gis_point_id=' + gisPointId);
+  const latest = opinions.length ? opinions[opinions.length - 1] : null;
+  const supersedeOption = latest ? `<div class="form-group"><label>覆盖旧版本</label>
+    <select id="f-supersedes">
+      <option value="">不覆盖（独立新增）</option>
+      <option value="${latest.id}" selected>覆盖 v${latest.version}（${(latest.content || '').slice(0, 30)}…）</option>
+    </select></div>` : '';
+  showModal(`
+    <h2>新增意见（点位 #${gisPointId}）</h2>
+    <div class="form-group"><label>意见内容 *</label><textarea id="f-content" placeholder="录入该点位的意见内容"></textarea></div>
+    ${supersedeOption}
+    <div class="form-group"><label>来源说明</label><input id="f-source" placeholder="如：周一早会备注、GIS点位原始说法"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitAddOpinion(${gisPointId})">保存</button>
+    </div>
+  `);
+}
+
+async function submitAddOpinion(gisPointId) {
+  const body = {
+    gis_point_id: gisPointId,
+    content: document.getElementById('f-content').value,
+    supersedes_id: document.getElementById('f-supersedes') ? (parseInt(document.getElementById('f-supersedes').value) || null) : null,
+    source_description: document.getElementById('f-source') ? document.getElementById('f-source').value : ''
+  };
+  if (!body.content) return alert('请填写意见内容');
+  await api('/api/opinions', { method: 'POST', body: JSON.stringify(body) });
+  closeModal();
+  showChain(gisPointId);
+}
+
+async function showEditRecord(recordId) {
+  const rows = await api('/api/processing-records');
+  const r = rows.find(x => x.id === recordId);
+  if (!r) return;
+  showEditRecordForm(r);
+}
+
+async function showEditRecordByOpinion(opinionEntryId) {
+  const rows = await api('/api/processing-records');
+  const r = rows.find(x => x.opinion_entry_id === opinionEntryId);
+  if (!r) return alert('未找到处理记录');
+  showEditRecordForm(r);
+}
+
+function showEditRecordForm(r) {
+  showModal(`
+    <h2>编辑处理记录 #${r.id}</h2>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:12px">
+      点位：${r.gis_point_name} &nbsp; 版本：v${r.opinion_version}
+    </div>
+    <div class="form-group"><label>状态</label>
+      <select id="f-status">
+        <option value="pending" ${r.status === 'pending' ? 'selected' : ''}>⏳ 待处理</option>
+        <option value="processing" ${r.status === 'processing' ? 'selected' : ''}>🔄 处理中</option>
+        <option value="processed" ${r.status === 'processed' ? 'selected' : ''}>✅ 已处理</option>
+        <option value="needs_evidence" ${r.status === 'needs_evidence' ? 'selected' : ''}>📎 待补证据</option>
+      </select>
+    </div>
+    <div class="form-group"><label>判断变更说明</label><textarea id="f-judgments">${r.changed_judgments || ''}</textarea></div>
+    <div class="form-group"><label>Markdown 报告</label><textarea id="f-report" style="min-height:120px">${r.markdown_report || ''}</textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitEditRecord(${r.id})">保存</button>
+    </div>
+  `);
+}
+
+async function submitEditRecord(id) {
+  await api('/api/processing-records/' + id, {
+    method: 'PUT',
+    body: JSON.stringify({
+      status: document.getElementById('f-status').value,
+      changed_judgments: document.getElementById('f-judgments').value,
+      markdown_report: document.getElementById('f-report').value
+    })
+  });
+  closeModal();
+  render();
+}
+
+function showAddAlert() {
+  showModal(`
+    <h2>新增容量告警</h2>
+    <div class="form-group"><label>GIS 点位 ID *</label><input id="f-gisid" type="number" placeholder="关联的点位ID"></div>
+    <div class="form-group"><label>告警类型</label><select id="f-atype"><option value="capacity_overflow">容量超限</option><option value="data_mismatch">数据不一致</option><option value="duplicate">疑似重复</option></select></div>
+    <div class="form-group"><label>原始数据溯源 *</label><input id="f-ref" placeholder="关联GIS点位的原始说法/来源"></div>
+    <div class="form-group"><label>详情</label><textarea id="f-detail" placeholder="告警详细描述"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitAddAlert()">保存</button>
+    </div>
+  `);
+}
+
+function showAddAlertForPoint(gisPointId) {
+  showModal(`
+    <h2>新增容量告警（点位 #${gisPointId}）</h2>
+    <div class="form-group"><label>告警类型</label><select id="f-atype"><option value="capacity_overflow">容量超限</option><option value="data_mismatch">数据不一致</option><option value="duplicate">疑似重复</option></select></div>
+    <div class="form-group"><label>原始数据溯源 *</label><input id="f-ref" placeholder="关联GIS点位的原始说法/来源"></div>
+    <div class="form-group"><label>详情</label><textarea id="f-detail" placeholder="告警详细描述"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitAddAlertForPoint(${gisPointId})">保存</button>
+    </div>
+  `);
+}
+
+async function submitAddAlert() {
+  const body = {
+    gis_point_id: parseInt(document.getElementById('f-gisid').value),
+    alert_type: document.getElementById('f-atype').value,
+    original_data_ref: document.getElementById('f-ref').value,
+    detail: document.getElementById('f-detail').value
+  };
+  if (!body.gis_point_id || !body.original_data_ref) return alert('请填写必填项');
+  await api('/api/capacity-alerts', { method: 'POST', body: JSON.stringify(body) });
+  closeModal();
+  render();
+}
+
+async function submitAddAlertForPoint(gisPointId) {
+  const body = {
+    gis_point_id: gisPointId,
+    alert_type: document.getElementById('f-atype').value,
+    original_data_ref: document.getElementById('f-ref').value,
+    detail: document.getElementById('f-detail').value
+  };
+  if (!body.original_data_ref) return alert('请填写原始数据溯源');
+  await api('/api/capacity-alerts', { method: 'POST', body: JSON.stringify(body) });
+  closeModal();
+  showChain(gisPointId);
+}
+
+async function resolveAlert(id) {
+  await api('/api/capacity-alerts/' + id + '/resolve', { method: 'PUT' });
+  render();
+}
+
+function showAddMerge() {
+  showModal(`
+    <h2>新增归并记录</h2>
+    <div class="form-group"><label>合并至点位 ID *</label><input id="f-merged" type="number" placeholder="目标点位ID"></div>
+    <div class="form-group"><label>来源点位 IDs *</label><input id="f-sources" placeholder="如：1,2,3 或 [1,2,3]"></div>
+    <div class="form-group"><label>归并原因</label><input id="f-reason" placeholder="为何归并这些点位"></div>
+    <div class="form-group"><label>证据 Markdown *</label><textarea id="f-evidence" placeholder="归并的证据说明，需留痕"></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitAddMerge()">保存</button>
+    </div>
+  `);
+}
+
+async function submitAddMerge() {
+  let sources = document.getElementById('f-sources').value.trim();
+  if (sources.startsWith('[')) {
+    // already JSON
+  } else {
+    sources = JSON.stringify(sources.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n)));
+  }
+  const body = {
+    merged_gis_point_id: parseInt(document.getElementById('f-merged').value),
+    source_gis_point_ids: sources,
+    merge_reason: document.getElementById('f-reason').value,
+    evidence_markdown: document.getElementById('f-evidence').value
+  };
+  if (!body.merged_gis_point_id || !body.evidence_markdown) return alert('请填写必填项');
+  await api('/api/merge-evidences', { method: 'POST', body: JSON.stringify(body) });
+  closeModal();
+  render();
+}
+
+function exportMarkdown() {
+  window.open('/api/export/markdown', '_blank');
+}
+
+function showModal(html) {
+  document.getElementById('modal-root').innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+      <div class="modal">${html}</div>
+    </div>
+  `;
+}
+
+function closeModal() {
+  document.getElementById('modal-root').innerHTML = '';
+}
+
+render();
+</script>
+</body>
+</html>

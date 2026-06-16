@@ -1,0 +1,17 @@
+{
+  "name": "laojie-fire-notice",
+  "version": "1.0.0",
+  "description": "老街消防公示清单 - GIS点位处理链与状态追踪系统",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "init-db": "node src/db.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.0"
+  },
+  "devDependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
