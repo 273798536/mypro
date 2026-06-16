@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG 引用漂移复盘 - 复盘记录</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f7fa;color:#333;line-height:1.6}
+.nav{background:#1a1a2e;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100}
+.nav-brand{color:#e0e0ff;font-size:18px;font-weight:700;margin-right:40px}
+.nav a{color:#a0a0cc;text-decoration:none;padding:8px 16px;border-radius:6px;font-size:14px;transition:.2s}
+.nav a:hover,.nav a.active{color:#fff;background:rgba(255,255,255,.1)}
+.nav a.active{background:rgba(100,100,255,.3)}
+.container{max-width:1300px;margin:0 auto;padding:24px}
+.page-header{margin-bottom:24px}
+.page-header h1{font-size:22px;margin-bottom:6px}
+.page-header p{color:#888;font-size:14px}
+.panel{background:#fff;border-radius:10px;padding:24px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.panel h2{font-size:16px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #eee}
+.filters{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select,.filters button{padding:7px 14px;border-radius:6px;font-size:13px;border:1px solid #ddd}
+.filters input{min-width:200px}
+.filters select{background:#fff;min-width:130px}
+.filters button{cursor:pointer}
+.filters button.primary{background:#3b5bdb;color:#fff;border-color:#3b5bdb}
+.filters button.primary:hover{background:#2b4bcb}
+.filters button.danger{background:#e74c3c;color:#fff;border-color:#e74c3c}
+.filters button.secondary{background:#fff;color:#3b5bdb;border-color:#3b5bdb}
+.filters button.secondary:hover{background:#f0f2ff}
+.filters button.warn{background:#f39c12;color:#fff;border-color:#f39c12}
+.filters button.warn:hover{background:#e67e22}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th{text-align:left;padding:8px 10px;background:#f8f9fa;border-bottom:2px solid #eee;font-weight:600;color:#555;white-space:nowrap}
+table td{padding:8px 10px;border-bottom:1px solid #f0f0f0;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+table tr:hover td{background:#fafbfc}
+table tr.clickable{cursor:pointer}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-passed{background:#e8f8f0;color:#27ae60}
+.badge-safety_miss{background:#fdeaea;color:#e74c3c}
+.badge-pending{background:#fef5e7;color:#e67e22}
+.badge-drift_only{background:#e8f0fe;color:#3b5bdb}
+.badge-high{background:#fdeaea;color:#e74c3c}
+.badge-medium{background:#fef5e7;color:#f39c12}
+.badge-low{background:#e8f0fe;color:#3498db}
+.badge-supplement{background:#f3e8ff;color:#8b5cf6}
+.pagination{display:flex;gap:8px;justify-content:center;margin-top:16px;align-items:center;font-size:13px;flex-wrap:wrap}
+.pagination button{padding:6px 12px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer}
+.pagination button:disabled{opacity:.4;cursor:default}
+.pagination button.active{background:#3b5bdb;color:#fff;border-color:#3b5bdb}
+.pagination span{color:#666}
+.pagination .page-info{margin:0 12px;color:#888}
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:#fff;border-radius:12px;width:90%;max-width:800px;max-height:90vh;overflow-y:auto;padding:28px}
+.modal h2{font-size:18px;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid #eee}
+.modal-close{float:right;background:none;border:none;font-size:20px;cursor:pointer;color:#888}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:4px;color:#555}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:13px}
+.form-group textarea{min-height:60px;resize:vertical}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.detail-section{margin-bottom:20px}
+.detail-section h3{font-size:14px;color:#555;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid #f0f0f0}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px}
+.detail-grid dt{color:#888;font-weight:500}
+.detail-grid dd{color:#333;word-break:break-all}
+.conflict-warn{background:#fef3cd;border:1px solid #ffc107;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#856404}
+.dup-warn{background:#fde8e8;border:1px solid #e74c3c;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#c0392b}
+.info-box{background:#e8f4fd;border:1px solid #74b9ef;border-radius:6px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:#2471a3}
+.btn-row{display:flex;gap:10px;margin-top:16px;justify-content:flex-end;flex-wrap:wrap}
+.btn-row button{padding:8px 20px;border-radius:6px;border:1px solid #ddd;cursor:pointer;font-size:13px}
+.btn-row button.save{background:#3b5bdb;color:#fff;border-color:#3b5bdb}
+.btn-row button.save:hover{background:#2b4bcb}
+.btn-row button.save:disabled{opacity:.5;cursor:not-allowed}
+.btn-row button.cancel{background:#f5f5f5}
+.btn-row button.danger{background:#e74c3c;color:#fff;border-color:#e74c3c}
+.import-area textarea{width:100%;min-height:200px;font-family:monospace;font-size:12px;padding:10px;border:1px solid #ddd;border-radius:6px}
+.import-result{margin-top:12px;padding:10px;background:#e8f8f0;border-radius:6px;font-size:13px;color:#27ae60}
+.import-result.has-error{background:#fdeaea;color:#e74c3c}
+.empty-hint{text-align:center;color:#aaa;padding:40px;font-size:14px}
+.training-banner{background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:10px;padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.training-banner .info{color:#92400e}
+.training-banner .info strong{font-size:15px}
+.training-banner .info p{font-size:13px;margin-top:4px}
+.training-banner button{background:#92400e;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:13px}
+.training-banner button:hover{background:#78350f}
+.tab-buttons{display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid #eee}
+.tab-buttons button{padding:10px 20px;background:none;border:none;cursor:pointer;font-size:14px;color:#666;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab-buttons button.active{color:#3b5bdb;border-bottom-color:#3b5bdb;font-weight:600}
+.log-list{max-height:300px;overflow-y:auto}
+.log-item{padding:10px 12px;border:1px solid #eee;border-radius:6px;margin-bottom:8px;cursor:pointer;transition:.2s}
+.log-item:hover{border-color:#3b5bdb;background:#f0f2ff}
+.log-item .log-id{font-weight:600;font-size:13px;color:#333}
+.log-item .log-query{font-size:12px;color:#888;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.log-item .log-tags{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">&#128269; RAG 引用漂移复盘</span>
+  <a href="/">分布统计</a>
+  <a href="/dedup">样本去重</a>
+  <a href="/review" class="active">复盘记录</a>
+</nav>
+<div class="container">
+  <div class="page-header">
+    <h1>复盘记录管理</h1>
+    <p>围绕模型日志这条线，查看和编辑复盘结论。安全审核员可直接标记安全规则漏配，补录时会自动检查重复。</p>
+  </div>
+
+  <div id="trainingBanner" class="training-banner" style="display:none">
+    <div class="info">
+      <strong>&#127939; 训练组视图</strong>
+      <p>已自动跳转到最后一页，训练组只需查看最新的复盘结论即可。</p>
+    </div>
+    <button onclick="exitTrainingMode()">退出训练组视图</button>
+  </div>
+
+  <div class="panel">
+    <div class="filters">
+      <input id="searchKw" placeholder="搜索日志ID/结论/问题...">
+      <select id="filterStatus">
+        <option value="">全部安全状态</option>
+        <option value="passed">通过</option>
+        <option value="risk_missed">安全漏检</option>
+        <option value="pending">待确认</option>
+      </select>
+      <select id="filterResult">
+        <option value="">全部最终结果</option>
+        <option value="passed">通过</option>
+        <option value="safety_miss">安全漏检</option>
+        <option value="pending">待确认</option>
+        <option value="drift_only">仅漂移</option>
+      </select>
+      <select id="filterDrift">
+        <option value="">全部漂移类型</option>
+        <option value="citation_mismatch">引用不匹配</option>
+        <option value="source_unreliable">来源不可靠</option>
+        <option value="fact_inaccurate">事实不准确</option>
+        <option value="privacy_leak">隐私泄露</option>
+        <option value="inappropriate_content">内容不当</option>
+        <option value="bias_content">偏见内容</option>
+      </select>
+      <button class="primary" onclick="loadReviews(1)">查询</button>
+      <button class="warn" onclick="showSupplementModal()">补录</button>
+      <button class="secondary" onclick="showImportModal()">批量导入</button>
+      <button class="secondary" onclick="showLogListModal()">未复盘日志</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>日志ID</th>
+          <th>问题</th>
+          <th>漂移类型</th>
+          <th>严重程度</th>
+          <th>安全状态</th>
+          <th>最终结果</th>
+          <th>漏配规则</th>
+          <th>审核员</th>
+          <th>结论</th>
+          <th>补录</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="reviewBody"></tbody>
+    </table>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<div id="detailModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+    <h2>复盘详情</h2>
+    <div id="detailContent"></div>
+    <div class="btn-row">
+      <button class="cancel" onclick="closeDetailModal()">关闭</button>
+      <button class="save" onclick="editCurrentRecord()">编辑</button>
+    </div>
+  </div>
+</div>
+
+<div id="supplementModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSupplementModal()">&times;</button>
+    <h2>补录复盘记录</h2>
+    <div id="supplementWarn"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>日志ID <span style="color:#e74c3c">*</span></label>
+        <input id="supLogId" placeholder="例如：LOG-20260615-001" oninput="checkDuplicate()">
+      </div>
+      <div class="form-group">
+        <label>样本ID</label>
+        <input id="supSampleId" placeholder="例如：S-0001（可选）" oninput="checkDuplicate()">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>漂移类型</label>
+        <select id="supDriftType">
+          <option value="">请选择</option>
+          <option value="citation_mismatch">引用不匹配</option>
+          <option value="source_unreliable">来源不可靠</option>
+          <option value="fact_inaccurate">事实不准确</option>
+          <option value="privacy_leak">隐私泄露</option>
+          <option value="inappropriate_content">内容不当</option>
+          <option value="bias_content">偏见内容</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>严重程度</label>
+        <select id="supSeverity">
+          <option value="high">高</option>
+          <option value="medium" selected>中</option>
+          <option value="low">低</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>安全状态</label>
+        <select id="supSafetyStatus" onchange="autoFillFinalResult()">
+          <option value="pending">待确认</option>
+          <option value="passed">通过</option>
+          <option value="risk_missed">安全漏检</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>最终结果</label>
+        <select id="supFinalResult">
+          <option value="pending">待确认</option>
+          <option value="passed">通过</option>
+          <option value="safety_miss">安全漏检</option>
+          <option value="drift_only">仅漂移</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>命中规则</label>
+        <input id="supRuleHit" placeholder="例如：R-003">
+      </div>
+      <div class="form-group">
+        <label>漏配规则</label>
+        <input id="supMissingRules" placeholder="例如：R-005,R-006">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>审核员</label>
+        <input id="supReviewer" placeholder="例如：安全审核员A">
+      </div>
+      <div class="form-group">
+        <label>来源批次</label>
+        <input id="supBatch" placeholder="例如：batch-jun-w2">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>结论</label>
+      <textarea id="supConclusion" placeholder="请输入复盘结论..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>备注</label>
+      <textarea id="supRemark" placeholder="备注信息（可选）"></textarea>
+    </div>
+    <div class="info-box">
+      <strong>&#128161; 补录提示：</strong>
+      系统会根据「日志ID + 样本ID」自动生成唯一标识，相同组合不允许重复补录。
+      若只有日志没有对应样本，样本ID留空即可。
+    </div>
+    <div class="btn-row">
+      <button class="cancel" onclick="closeSupplementModal()">取消</button>
+      <button class="save" id="supSaveBtn" onclick="submitSupplement()">确认补录</button>
+    </div>
+  </div>
+</div>
+
+<div id="importModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeImportModal()">&times;</button>
+    <h2>批量导入复盘记录</h2>
+    <div class="import-area">
+      <p style="font-size:13px;color:#888;margin-bottom:8px">
+        粘贴 JSON 格式数据（数组形式，每条包含 log_id 等字段），或
+        <a href="javascript:downloadTemplate()" style="color:#3b5bdb">下载CSV模板</a>
+      </p>
+      <textarea id="importData" placeholder='[
+  {
+    "log_id": "LOG-20260615-002",
+    "sample_id": "",
+    "drift_type": "source_unreliable",
+    "drift_severity": "medium",
+    "safety_status": "risk_missed",
+    "safety_rule_hit": "",
+    "missing_rules": "R-005",
+    "reviewer": "安全审核员B",
+    "conclusion": "推荐盗版内容属于广告导流类风险",
+    "final_result": "safety_miss",
+    "remark": ""
+  }
+]'></textarea>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>批次ID（可选）</label>
+        <input id="importBatchId" placeholder="留空则自动生成">
+      </div>
+      <div class="form-group">
+        <label>批次类型</label>
+        <select id="importBatchType">
+          <option value="review">复盘导入</option>
+          <option value="supplement">补录导入</option>
+        </select>
+      </div>
+    </div>
+    <div class="info-box">
+      <strong>&#128161; 导入提示：</strong>
+      导入时会自动检查重复（基于 log_id + sample_id），已存在的记录会被跳过并计入重复数，
+      不会产生两份结论。
+    </div>
+    <div id="importResult" class="import-result" style="display:none"></div>
+    <div class="btn-row">
+      <button class="cancel" onclick="closeImportModal()">取消</button>
+      <button class="save" onclick="submitImport()">开始导入</button>
+    </div>
+  </div>
+</div>
+
+<div id="logListModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLogListModal()">&times;</button>
+    <h2>未复盘日志列表</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:12px">以下日志尚未关联复盘记录，点击可快速补录。</p>
+    <div id="logList" class="log-list"></div>
+    <div class="btn-row">
+      <button class="cancel" onclick="closeLogListModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentPage = 1;
+let pageSize = 10;
+let totalPages = 1;
+let currentRecordId = null;
+let isTrainingMode = false;
+
+function getUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+  return params;
+}
+
+function autoFillFinalResult() {
+  const status = document.getElementById('supSafetyStatus').value;
+  const resultSel = document.getElementById('supFinalResult');
+  if (status === 'risk_missed') {
+    resultSel.value = 'safety_miss';
+  } else if (status === 'passed') {
+    resultSel.value = 'drift_only';
+  }
+}
+
+async function checkDuplicate() {
+  const logId = document.getElementById('supLogId').value.trim();
+  const sampleId = document.getElementById('supSampleId').value.trim();
+  const warnDiv = document.getElementById('supplementWarn');
+  const saveBtn = document.getElementById('supSaveBtn');
+
+  if (!logId) {
+    warnDiv.innerHTML = '';
+    saveBtn.disabled = false;
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/check_duplicate?log_id=${encodeURIComponent(logId)}&sample_id=${encodeURIComponent(sampleId)}`);
+    const data = await res.json();
+
+    if (data.exists) {
+      const rec = data.record;
+      warnDiv.innerHTML = `
+        <div class="dup-warn">
+          <strong>&#9888;&#65039; 重复警告：</strong>该组合已存在复盘记录，不允许重复补录。
+          <br>现有记录：ID=${rec.log_id}，最终结果=${rec.final_result_label}，审核员=${rec.reviewer || '未填写'}
+          <br>结论：${rec.conclusion || '无'}
+        </div>
+      `;
+      saveBtn.disabled = true;
+    } else {
+      warnDiv.innerHTML = `
+        <div class="info-box">
+          &#10003; 该组合暂无记录，可以补录。
+        </div>
+      `;
+      saveBtn.disabled = false;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+async function loadReviews(page) {
+  currentPage = page;
+  const keyword = document.getElementById('searchKw').value.trim();
+  const status = document.getElementById('filterStatus').value;
+  const result = document.getElementById('filterResult').value;
+  const drift = document.getElementById('filterDrift').value;
+
+  let params = `page=${page}&page_size=${pageSize}`;
+  if (keyword) params += `&keyword=${encodeURIComponent(keyword)}`;
+  if (status) params += `&safety_status=${encodeURIComponent(status)}`;
+  if (result) params += `&final_result=${encodeURIComponent(result)}`;
+  if (drift) params += `&drift_type=${encodeURIComponent(drift)}`;
+
+  const res = await fetch(`/api/reviews?${params}`);
+  const data = await res.json();
+
+  renderReviewTable(data.items);
+  renderPagination(data.total, data.page, data.page_size);
+}
+
+function renderReviewTable(items) {
+  const body = document.getElementById('reviewBody');
+  if (items.length === 0) {
+    body.innerHTML = '<tr><td colspan="11" class="empty-hint">暂无复盘记录</td></tr>';
+    return;
+  }
+
+  body.innerHTML = items.map(item => {
+    const statusBadge = `badge-${item.safety_status || 'pending'}`;
+    const resultBadge = `badge-${item.final_result || 'pending'}`;
+    const sevBadge = `badge-${item.drift_severity || 'medium'}`;
+    const supBadge = item.is_supplement ? '<span class="badge badge-supplement">补录</span>' : '';
+
+    return `
+      <tr class="clickable" onclick="showDetail(${item.id})">
+        <td><strong>${item.log_id}</strong></td>
+        <td title="${item.query || ''}">${item.query || ''}</td>
+        <td>${item.drift_type_label || ''}</td>
+        <td><span class="badge ${sevBadge}">${item.drift_severity_label || ''}</span></td>
+        <td><span class="badge ${statusBadge}">${item.safety_status_label || ''}</span></td>
+        <td><span class="badge ${resultBadge}">${item.final_result_label || ''}</span></td>
+        <td>${item.missing_rules || '-'}</td>
+        <td>${item.reviewer || '-'}</td>
+        <td title="${item.conclusion || ''}">${item.conclusion || '-'}</td>
+        <td>${supBadge || '-'}</td>
+        <td><button class="secondary" onclick="event.stopPropagation();showDetail(${item.id})">详情</button></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderPagination(total, page, pageSize) {
+  totalPages = Math.ceil(total / pageSize) || 1;
+  const pag = document.getElementById('pagination');
+
+  let html = `<button onclick="loadReviews(1)" ${page <= 1 ? 'disabled' : ''}>&#171;</button>`;
+  html += `<button onclick="loadReviews(${page - 1})" ${page <= 1 ? 'disabled' : ''}>&#8249;</button>`;
+  html += `<span class="page-info">第 ${page} / ${totalPages} 页，共 ${total} 条</span>`;
+  html += `<button onclick="loadReviews(${page + 1})" ${page >= totalPages ? 'disabled' : ''}>&#8250;</button>`;
+  html += `<button onclick="loadReviews(${totalPages})" ${page >= totalPages ? 'disabled' : ''}>&#187;</button>`;
+
+  pag.innerHTML = html;
+}
+
+async function showDetail(id) {
+  currentRecordId = id;
+  const res = await fetch(`/api/reviews/${id}`);
+  const data = await res.json();
+
+  const content = document.getElementById('detailContent');
+  content.innerHTML = `
+    <div class="detail-section">
+      <h3>基本信息</h3>
+      <dl class="detail-grid">
+        <dt>日志ID</dt><dd><strong>${data.log_id}</strong></dd>
+        <dt>样本ID</dt><dd>${data.sample_id || '-'}</dd>
+        <dt>漂移类型</dt><dd>${data.drift_type_label || '-'}</dd>
+        <dt>严重程度</dt><dd><span class="badge badge-${data.drift_severity}">${data.drift_severity_label || '-'}</span></dd>
+        <dt>安全状态</dt><dd><span class="badge badge-${data.safety_status}">${data.safety_status_label || '-'}</span></dd>
+        <dt>最终结果</dt><dd><span class="badge badge-${data.final_result}">${data.final_result_label || '-'}</span></dd>
+        <dt>是否补录</dt><dd>${data.is_supplement ? '是' : '否'}</dd>
+        <dt>来源批次</dt><dd>${data.source_batch || '-'}</dd>
+      </dl>
+    </div>
+    <div class="detail-section">
+      <h3>模型日志内容</h3>
+      <dl class="detail-grid">
+        <dt>用户问题</dt><dd>${data.query || '-'}</dd>
+        <dt>RAG引用</dt><dd>${data.rag_citation || '-'}</dd>
+        <dt>RAG来源</dt><dd>${data.rag_source || '-'}</dd>
+        <dt>模型回复</dt><dd style="grid-column:2 / -1">${data.model_response || '-'}</dd>
+      </dl>
+    </div>
+    <div class="detail-section">
+      <h3>安全审核</h3>
+      <dl class="detail-grid">
+        <dt>命中规则</dt><dd>${data.safety_rule_hit || '-'}</dd>
+        <dt>漏配规则</dt><dd style="color:${data.missing_rules ? '#e74c3c' : '#888'}">${data.missing_rules || '-'}</dd>
+        <dt>审核员</dt><dd>${data.reviewer || '-'}</dd>
+        <dt>审核时间</dt><dd>${data.updated_at || '-'}</dd>
+      </dl>
+    </div>
+    <div class="detail-section">
+      <h3>结论与备注</h3>
+      <p style="font-size:13px;line-height:1.8">${data.conclusion || '暂无结论'}</p>
+      ${data.remark ? `<p style="font-size:13px;color:#888;margin-top:8px">备注：${data.remark}</p>` : ''}
+    </div>
+  `;
+
+  document.getElementById('detailModal').style.display = 'flex';
+}
+
+function closeDetailModal() {
+  document.getElementById('detailModal').style.display = 'none';
+  currentRecordId = null;
+}
+
+function editCurrentRecord() {
+  closeDetailModal();
+  alert('编辑功能可在此扩展。当前版本支持补录新记录和查看详情。');
+}
+
+function showSupplementModal() {
+  document.getElementById('supplementModal').style.display = 'flex';
+  document.getElementById('supplementWarn').innerHTML = '';
+  document.getElementById('supLogId').value = '';
+  document.getElementById('supSampleId').value = '';
+  document.getElementById('supDriftType').value = '';
+  document.getElementById('supSeverity').value = 'medium';
+  document.getElementById('supSafetyStatus').value = 'pending';
+  document.getElementById('supFinalResult').value = 'pending';
+  document.getElementById('supRuleHit').value = '';
+  document.getElementById('supMissingRules').value = '';
+  document.getElementById('supReviewer').value = '';
+  document.getElementById('supBatch').value = '';
+  document.getElementById('supConclusion').value = '';
+  document.getElementById('supRemark').value = '';
+  document.getElementById('supSaveBtn').disabled = false;
+}
+
+function closeSupplementModal() {
+  document.getElementById('supplementModal').style.display = 'none';
+}
+
+async function submitSupplement() {
+  const logId = document.getElementById('supLogId').value.trim();
+  if (!logId) {
+    alert('请填写日志ID');
+    return;
+  }
+
+  const data = {
+    log_id: logId,
+    sample_id: document.getElementById('supSampleId').value.trim(),
+    drift_type: document.getElementById('supDriftType').value,
+    drift_severity: document.getElementById('supSeverity').value,
+    safety_status: document.getElementById('supSafetyStatus').value,
+    safety_rule_hit: document.getElementById('supRuleHit').value.trim(),
+    missing_rules: document.getElementById('supMissingRules').value.trim(),
+    reviewer: document.getElementById('supReviewer').value.trim(),
+    conclusion: document.getElementById('supConclusion').value.trim(),
+    final_result: document.getElementById('supFinalResult').value,
+    remark: document.getElementById('supRemark').value.trim(),
+    source_batch: document.getElementById('supBatch').value.trim()
+  };
+
+  try {
+    const res = await fetch('/api/supplement', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.status === 409) {
+      alert('补录失败：' + result.error);
+      return;
+    }
+
+    if (result.success) {
+      alert('补录成功！');
+      closeSupplementModal();
+      loadReviews(currentPage);
+    } else {
+      alert('补录失败：' + (result.error || '未知错误'));
+    }
+  } catch (e) {
+    alert('请求失败：' + e.message);
+  }
+}
+
+function showImportModal() {
+  document.getElementById('importModal').style.display = 'flex';
+  document.getElementById('importResult').style.display = 'none';
+}
+
+function closeImportModal() {
+  document.getElementById('importModal').style.display = 'none';
+}
+
+function downloadTemplate() {
+  const template = [
+    ['log_id', 'sample_id', 'drift_type', 'drift_severity', 'safety_status',
+     'safety_rule_hit', 'missing_rules', 'reviewer', 'conclusion', 'final_result', 'remark'],
+    ['LOG-20260615-002', '', 'source_unreliable', 'medium', 'risk_missed',
+     '', 'R-005', '安全审核员B', '推荐盗版内容属于广告导流类风险', 'safety_miss', '示例数据'],
+    ['LOG-20260615-001', 'S-0001', 'citation_mismatch', 'high', 'passed',
+     'R-003', '', '安全审核员A', '回答正确，引用安全条例', 'passed', '示例数据']
+  ];
+  const csv = template.map(row => row.join(',')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'drift_review_import_template.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function submitImport() {
+  const raw = document.getElementById('importData').value.trim();
+  if (!raw) {
+    alert('请输入要导入的数据');
+    return;
+  }
+
+  let records;
+  try {
+    records = JSON.parse(raw);
+    if (!Array.isArray(records)) {
+      throw new Error('数据必须是数组格式');
+    }
+  } catch (e) {
+    alert('JSON 格式错误：' + e.message);
+    return;
+  }
+
+  const batchId = document.getElementById('importBatchId').value.trim();
+  const batchType = document.getElementById('importBatchType').value;
+
+  try {
+    const res = await fetch('/api/import/reviews', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({records, batch_id: batchId, batch_type: batchType})
+    });
+
+    const result = await res.json();
+    const resultDiv = document.getElementById('importResult');
+    resultDiv.style.display = 'block';
+
+    if (result.success) {
+      resultDiv.className = 'import-result';
+      let html = `<strong>&#10003; 导入完成</strong><br>`;
+      html += `总计 ${result.total} 条，新增 ${result.new_count} 条，重复跳过 ${result.duplicate_count} 条`;
+      if (result.errors && result.errors.length > 0) {
+        html += `<br>错误 ${result.errors.length} 条：${result.errors.join('; ')}`;
+      }
+      html += `<br>批次ID：${result.batch_id}`;
+      resultDiv.innerHTML = html;
+      loadReviews(1);
+    } else {
+      resultDiv.className = 'import-result has-error';
+      resultDiv.innerHTML = '<strong>&#10007; 导入失败</strong><br>' + (result.error || '未知错误');
+    }
+  } catch (e) {
+    alert('请求失败：' + e.message);
+  }
+}
+
+async function showLogListModal() {
+  const res = await fetch('/api/model_logs/unreviewed');
+  const data = await res.json();
+
+  const list = document.getElementById('logList');
+  if (data.length === 0) {
+    list.innerHTML = '<div class="empty-hint">所有日志都已复盘，干得漂亮！</div>';
+  } else {
+    list.innerHTML = data.map(log => {
+      const sevBadge = `badge-${log.drift_severity}`;
+      return `
+        <div class="log-item" onclick="quickSupplement('${log.log_id}', '${log.drift_type}', '${log.drift_severity}')">
+          <div class="log-id">${log.log_id}</div>
+          <div class="log-query">${log.query}</div>
+          <div class="log-tags">
+            <span class="badge ${sevBadge}">${log.drift_severity_label}</span>
+            <span class="badge badge-medium">${log.drift_type_label}</span>
+            ${log.has_safety_mismatch ? '<span class="badge badge-safety_miss">安全不匹配</span>' : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('logListModal').style.display = 'flex';
+}
+
+function closeLogListModal() {
+  document.getElementById('logListModal').style.display = 'none';
+}
+
+function quickSupplement(logId, driftType, severity) {
+  closeLogListModal();
+  showSupplementModal();
+  document.getElementById('supLogId').value = logId;
+  document.getElementById('supDriftType').value = driftType;
+  document.getElementById('supSeverity').value = severity;
+  checkDuplicate();
+}
+
+function exitTrainingMode() {
+  isTrainingMode = false;
+  document.getElementById('trainingBanner').style.display = 'none';
+  history.replaceState(null, '', '/review');
+  loadReviews(1);
+}
+
+function init() {
+  const params = getUrlParams();
+  const gotoLast = params.get('last') === '1';
+
+  if (gotoLast) {
+    isTrainingMode = true;
+    document.getElementById('trainingBanner').style.display = 'flex';
+  }
+
+  loadReviews(1).then(() => {
+    if (gotoLast && totalPages > 1) {
+      loadReviews(totalPages);
+    }
+  });
+
+  document.getElementById('searchKw').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') loadReviews(1);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', init);
+
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.style.display = 'none';
+    }
+  });
+});
+</script>
+</body>
+</html>

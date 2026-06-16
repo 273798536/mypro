@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG 引用漂移复盘 - 样本去重</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f7fa;color:#333;line-height:1.6}
+.nav{background:#1a1a2e;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100}
+.nav-brand{color:#e0e0ff;font-size:18px;font-weight:700;margin-right:40px}
+.nav a{color:#a0a0cc;text-decoration:none;padding:8px 16px;border-radius:6px;font-size:14px;transition:.2s}
+.nav a:hover,.nav a.active{color:#fff;background:rgba(255,255,255,.1)}
+.nav a.active{background:rgba(100,100,255,.3)}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+.page-header{margin-bottom:24px}
+.page-header h1{font-size:22px;margin-bottom:6px}
+.page-header p{color:#888;font-size:14px}
+.panel{background:#fff;border-radius:10px;padding:24px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.panel h2{font-size:16px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #eee}
+.tab-buttons{display:flex;gap:8px;margin-bottom:16px;border-bottom:2px solid #eee}
+.tab-buttons button{padding:10px 20px;background:none;border:none;cursor:pointer;font-size:14px;color:#666;border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab-buttons button.active{color:#3b5bdb;border-bottom-color:#3b5bdb;font-weight:600}
+.filters{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filters input,.filters select,.filters button{padding:7px 14px;border-radius:6px;font-size:13px;border:1px solid #ddd}
+.filters input{min-width:200px}
+.filters select{background:#fff;min-width:130px}
+.filters button{cursor:pointer}
+.filters button.primary{background:#3b5bdb;color:#fff;border-color:#3b5bdb}
+.filters button.primary:hover{background:#2b4bcb}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th{text-align:left;padding:8px 12px;background:#f8f9fa;border-bottom:2px solid #eee;font-weight:600;color:#555;white-space:nowrap}
+table td{padding:8px 12px;border-bottom:1px solid #f0f0f0}
+table tr:hover td{background:#fafbfc}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-dup{background:#fdeaea;color:#e74c3c}
+.badge-ok{background:#e8f8f0;color:#27ae60}
+.pagination{display:flex;gap:8px;justify-content:center;margin-top:16px;align-items:center;font-size:13px}
+.pagination button{padding:6px 12px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer}
+.pagination button:disabled{opacity:.4;cursor:default}
+.pagination .page-info{color:#666;margin:0 12px}
+.dup-group{border:1px solid #f0f0f0;border-radius:8px;padding:16px;margin-bottom:12px;background:#fafbfc}
+.dup-group .original{background:#fff;border:1px dashed #27ae60;border-radius:6px;padding:12px;margin-bottom:10px}
+.dup-group .original .label{color:#27ae60;font-size:12px;font-weight:600;margin-bottom:4px}
+.dup-group .duplicates{display:flex;flex-direction:column;gap:8px}
+.dup-group .dup-item{background:#fff;border:1px solid #f0c0c0;border-radius:6px;padding:10px;padding-left:12px;border-left:3px solid #e74c3c}
+.dup-group .dup-item .label{color:#e74c3c;font-size:12px;font-weight:600;margin-bottom:4px}
+.dup-group .sample-id{font-weight:600;font-size:13px}
+.dup-group .query{font-size:13px;color:#666;margin-top:4px}
+.dup-group .answer{font-size:12px;color:#999;margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dup-group .meta{display:flex;gap:12px;margin-top:6px;font-size:12px;color:#888}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat-item{background:#fff;border-radius:8px;padding:16px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.stat-item .value{font-size:24px;font-weight:700}
+.stat-item .value.danger{color:#e74c3c}
+.stat-item .value.ok{color:#27ae60}
+.stat-item .label{font-size:12px;color:#888;margin-top:4px}
+.empty-hint{text-align:center;color:#aaa;padding:40px;font-size:14px}
+.tip-box{background:#fef3cd;border:1px solid #ffc107;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#856404}
+.tip-box strong{color:#92400e}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">&#128269; RAG 引用漂移复盘</span>
+  <a href="/">分布统计</a>
+  <a href="/dedup" class="active">样本去重</a>
+  <a href="/review">复盘记录</a>
+</nav>
+<div class="container">
+  <div class="page-header">
+    <h1>样本去重检查</h1>
+    <p>月底或课前检查训练样本去重情况，确保同一问题不会出现两份不同结论。</p>
+  </div>
+
+  <div class="tip-box">
+    <strong>&#128161; 使用提示：</strong>
+    日常通过「分布统计」看整体趋势，月底或课前集中检查样本去重。
+    重复样本可能导致同一问题产生多份不同结论，影响复盘准确性。
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="value" id="totalSamples">0</div>
+      <div class="label">样本总数</div>
+    </div>
+    <div class="stat-item">
+      <div class="value ok" id="uniqueSamples">0</div>
+      <div class="label">非重复样本</div>
+    </div>
+    <div class="stat-item">
+      <div class="value danger" id="dupSamples">0</div>
+      <div class="label">重复样本</div>
+    </div>
+    <div class="stat-item">
+      <div class="value" id="dupGroups">0</div>
+      <div class="label">去重组数</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="tab-buttons">
+      <button class="active" onclick="switchTab('groups')">去重组</button>
+      <button onclick="switchTab('list')">样本列表</button>
+    </div>
+
+    <div id="groupsTab">
+      <div id="dupGroupsList"></div>
+    </div>
+
+    <div id="listTab" style="display:none">
+      <div class="filters">
+        <input id="searchKw" placeholder="搜索样本ID或问题...">
+        <select id="filterDup">
+          <option value="">全部</option>
+          <option value="1">仅重复</option>
+          <option value="0">仅非重复</option>
+        </select>
+        <button class="primary" onclick="loadSamples(1)">查询</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>样本ID</th>
+            <th>问题</th>
+            <th>来源数据集</th>
+            <th>是否重复</th>
+            <th>重复于</th>
+            <th>录入时间</th>
+          </tr>
+        </thead>
+        <tbody id="sampleBody"></tbody>
+      </table>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentTab = 'groups';
+let currentPage = 1;
+let pageSize = 20;
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-buttons button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (tab === 'groups') {
+    document.getElementById('groupsTab').style.display = 'block';
+    document.getElementById('listTab').style.display = 'none';
+    loadDupGroups();
+  } else {
+    document.getElementById('groupsTab').style.display = 'none';
+    document.getElementById('listTab').style.display = 'block';
+    loadSamples(1);
+  }
+}
+
+async function loadStats() {
+  const res = await fetch('/api/stats/overview');
+  const data = await res.json();
+  document.getElementById('totalSamples').textContent = data.total_samples;
+  document.getElementById('dupSamples').textContent = data.duplicate_samples;
+  document.getElementById('uniqueSamples').textContent = data.total_samples - data.duplicate_samples;
+}
+
+async function loadDupGroups() {
+  const res = await fetch('/api/samples/duplicate_groups');
+  const data = await res.json();
+
+  document.getElementById('dupGroups').textContent = data.length;
+
+  const list = document.getElementById('dupGroupsList');
+  if (data.length === 0) {
+    list.innerHTML = '<div class="empty-hint">暂无重复样本组</div>';
+    return;
+  }
+
+  list.innerHTML = data.map((group, idx) => {
+    const orig = group.original_sample || {};
+    return `
+      <div class="dup-group">
+        <div class="original">
+          <div class="label">&#128205; 原始样本 #${idx + 1}</div>
+          <div class="sample-id">${orig.sample_id || '-'}</div>
+          <div class="query">${orig.query || '-'}</div>
+          <div class="answer">期望回答：${orig.expected_answer || '-'}</div>
+          <div class="meta">
+            <span>来源：${orig.source_dataset || '-'}</span>
+            <span>录入：${orig.timestamp || '-'}</span>
+          </div>
+        </div>
+        <div class="duplicates">
+          ${group.duplicate_ids.map(did => `
+            <div class="dup-item">
+              <div class="label">&#9888;&#65039; 重复样本</div>
+              <div class="sample-id">${did}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function loadSamples(page) {
+  currentPage = page;
+  const keyword = document.getElementById('searchKw').value.trim();
+  const isDup = document.getElementById('filterDup').value;
+
+  let params = `page=${page}&page_size=${pageSize}`;
+  if (keyword) params += `&keyword=${encodeURIComponent(keyword)}`;
+  if (isDup !== '') params += `&is_duplicate=${isDup}`;
+
+  const res = await fetch(`/api/samples?${params}`);
+  const data = await res.json();
+
+  renderSampleTable(data.items);
+  renderPagination(data.total, data.page, data.page_size);
+}
+
+function renderSampleTable(items) {
+  const body = document.getElementById('sampleBody');
+  if (items.length === 0) {
+    body.innerHTML = '<tr><td colspan="6" class="empty-hint">暂无样本</td></tr>';
+    return;
+  }
+
+  body.innerHTML = items.map(s => {
+    const dupBadge = s.is_duplicate
+      ? '<span class="badge badge-dup">重复</span>'
+      : '<span class="badge badge-ok">唯一</span>';
+    return `
+      <tr>
+        <td><strong>${s.sample_id}</strong></td>
+        <td>${s.query}</td>
+        <td>${s.source_dataset || '-'}</td>
+        <td>${dupBadge}</td>
+        <td>${s.duplicate_of || '-'}</td>
+        <td>${s.timestamp || '-'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function renderPagination(total, page, pageSize) {
+  const totalPages = Math.ceil(total / pageSize) || 1;
+  const pag = document.getElementById('pagination');
+
+  let html = `<button onclick="loadSamples(1)" ${page <= 1 ? 'disabled' : ''}>&#171;</button>`;
+  html += `<button onclick="loadSamples(${page - 1})" ${page <= 1 ? 'disabled' : ''}>&#8249;</button>`;
+  html += `<span class="page-info">第 ${page} / ${totalPages} 页，共 ${total} 条</span>`;
+  html += `<button onclick="loadSamples(${page + 1})" ${page >= totalPages ? 'disabled' : ''}>&#8250;</button>`;
+  html += `<button onclick="loadSamples(${totalPages})" ${page >= totalPages ? 'disabled' : ''}>&#187;</button>`;
+
+  pag.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadStats();
+  loadDupGroups();
+
+  document.getElementById('searchKw').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') loadSamples(1);
+  });
+});
+</script>
+</body>
+</html>

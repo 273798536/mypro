@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG 引用漂移复盘 - 分布统计</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#f5f7fa;color:#333;line-height:1.6}
+.nav{background:#1a1a2e;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100}
+.nav-brand{color:#e0e0ff;font-size:18px;font-weight:700;margin-right:40px}
+.nav a{color:#a0a0cc;text-decoration:none;padding:8px 16px;border-radius:6px;font-size:14px;transition:.2s}
+.nav a:hover,.nav a.active{color:#fff;background:rgba(255,255,255,.1)}
+.nav a.active{background:rgba(100,100,255,.3)}
+.container{max-width:1200px;margin:0 auto;padding:24px}
+.hero{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border-radius:12px;padding:32px;margin-bottom:24px}
+.hero h1{font-size:24px;margin-bottom:8px}
+.hero p{color:#a0b0cc;font-size:14px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:#fff;border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.stat-card .label{font-size:13px;color:#888;margin-bottom:6px}
+.stat-card .value{font-size:28px;font-weight:700}
+.stat-card .value.danger{color:#e74c3c}
+.stat-card .value.warn{color:#f39c12}
+.stat-card .value.ok{color:#27ae60}
+.panel{background:#fff;border-radius:10px;padding:24px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.panel h2{font-size:16px;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #eee}
+.bar-chart{display:flex;flex-direction:column;gap:10px}
+.bar-row{display:flex;align-items:center;gap:12px}
+.bar-label{width:100px;font-size:13px;color:#666;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:28px;background:#f0f0f0;border-radius:6px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:6px;transition:width .6s;display:flex;align-items:center;padding-left:8px;font-size:12px;color:#fff;min-width:30px}
+.bar-fill.high{background:#e74c3c}
+.bar-fill.medium{background:#f39c12}
+.bar-fill.low{background:#3498db}
+.bar-count{font-size:12px;color:#999;margin-left:8px;flex-shrink:0;width:40px}
+.safety-miss-table{width:100%;border-collapse:collapse;font-size:13px}
+.safety-miss-table th{text-align:left;padding:8px 12px;background:#f8f9fa;border-bottom:2px solid #eee;font-weight:600;color:#555}
+.safety-miss-table td{padding:8px 12px;border-bottom:1px solid #f0f0f0}
+.safety-miss-table tr:hover td{background:#fafbfc}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600}
+.badge-danger{background:#fdeaea;color:#e74c3c}
+.badge-warn{background:#fef5e7;color:#f39c12}
+.date-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding:8px 0}
+.date-bar{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px}
+.date-bar .bar{width:100%;background:linear-gradient(180deg,#3498db,#2980b9);border-radius:4px 4px 0 0;min-height:2px;transition:height .6s}
+.date-bar .bar:hover{background:linear-gradient(180deg,#e74c3c,#c0392b)}
+.date-bar .count{font-size:10px;color:#888}
+.date-bar .dt{font-size:10px;color:#aaa}
+.quick-links{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
+.quick-links a{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#f0f2ff;color:#3b5bdb;border-radius:8px;text-decoration:none;font-size:13px;font-weight:500;transition:.2s}
+.quick-links a:hover{background:#3b5bdb;color:#fff}
+.export-bar{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.export-bar select,.export-bar button{padding:6px 14px;border-radius:6px;font-size:13px;border:1px solid #ddd}
+.export-bar select{background:#fff;min-width:120px}
+.export-bar button{background:#3b5bdb;color:#fff;border-color:#3b5bdb;cursor:pointer;transition:.2s}
+.export-bar button:hover{background:#2b4bcb}
+.export-bar button.secondary{background:#fff;color:#3b5bdb}
+.export-bar button.secondary:hover{background:#f0f2ff}
+.empty-hint{text-align:center;color:#aaa;padding:40px;font-size:14px}
+.tip-box{background:#f0f7ff;border:1px solid #b8d4ff;border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:13px;color:#2563eb}
+.tip-box strong{color:#1d4ed8}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">&#128269; RAG 引用漂移复盘</span>
+  <a href="/" class="active">分布统计</a>
+  <a href="/dedup">样本去重</a>
+  <a href="/review">复盘记录</a>
+</nav>
+<div class="container">
+  <div class="hero">
+    <h1>RAG 引用漂移复盘 — 分布统计</h1>
+    <p>日常入口：查看漂移分布、安全漏检趋势、漏配规则排行。月底或课前切换到「样本去重」检查去重情况。</p>
+    <div class="quick-links">
+      <a href="/dedup">&#128202; 样本去重（月底/课前）</a>
+      <a href="/review">&#128221; 复盘记录详情</a>
+      <a href="/review?last=1" style="background:#fef3c7;color:#92400e;">&#127939; 训练组入口（最后一页）</a>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <strong>&#128161; 首次使用提示：</strong> 系统已预置 12 条模型日志、8 条训练样本、8 条安全规则和 6 条复盘示例数据。
+    安全审核员可直接在「复盘记录」中查看安全漏配案例，无需先造表。
+  </div>
+
+  <div class="stats-grid" id="overviewCards"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <div class="panel">
+      <h2>漂移类型分布</h2>
+      <div class="bar-chart" id="driftTypeChart"></div>
+    </div>
+    <div class="panel">
+      <h2>严重程度分布</h2>
+      <div class="bar-chart" id="severityChart"></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>近14天漂移趋势</h2>
+    <div class="date-chart" id="dateChart"></div>
+  </div>
+
+  <div class="panel">
+    <h2>安全规则漏配排行</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:12px">
+      模型日志与训练样本对不上时，安全规则漏配会被混入正常结果。以下为漏配次数最多的规则：
+    </p>
+    <table class="safety-miss-table">
+      <thead><tr><th>规则编号</th><th>规则名称</th><th>漏配次数</th><th>风险等级</th></tr></thead>
+      <tbody id="safetyMissBody"></tbody>
+    </table>
+  </div>
+
+  <div class="panel">
+    <h2>导出复盘数据</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:12px">
+      导出内容与界面摘要严格一致，页面显示通过则文件中也写通过。
+    </p>
+    <div class="export-bar">
+      <select id="exportSafetyStatus">
+        <option value="">全部安全状态</option>
+        <option value="passed">通过</option>
+        <option value="risk_missed">安全漏检</option>
+        <option value="pending">待确认</option>
+      </select>
+      <select id="exportFinalResult">
+        <option value="">全部最终结果</option>
+        <option value="passed">通过</option>
+        <option value="safety_miss">安全漏检</option>
+        <option value="pending">待确认</option>
+      </select>
+      <button onclick="exportCSV()">导出 CSV</button>
+      <button class="secondary" onclick="exportJSON()">导出 JSON</button>
+      <button class="secondary" onclick="downloadTemplate()">下载导入模板</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const DRIFT_COLORS = {
+  citation_mismatch: '#3498db',
+  source_unreliable: '#e67e22',
+  fact_inaccurate: '#9b59b6',
+  privacy_leak: '#e74c3c',
+  inappropriate_content: '#c0392b',
+  bias_content: '#1abc9c'
+};
+
+async function loadOverview() {
+  const res = await fetch('/api/stats/overview');
+  const data = await res.json();
+  const cards = document.getElementById('overviewCards');
+  cards.innerHTML = `
+    <div class="stat-card">
+      <div class="label">漂移日志总数</div>
+      <div class="value">${data.total_drift}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">已复盘数</div>
+      <div class="value ok">${data.total_reviewed}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">安全漏检数</div>
+      <div class="value danger">${data.safety_miss_count}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">安全不匹配</div>
+      <div class="value warn">${data.safety_mismatch_count}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">训练样本数</div>
+      <div class="value">${data.total_samples}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">重复样本</div>
+      <div class="value warn">${data.duplicate_samples}</div>
+    </div>
+  `;
+}
+
+async function loadDriftType() {
+  const res = await fetch('/api/stats/by_drift_type');
+  const data = await res.json();
+  const max = Math.max(...data.map(d => d.count), 1);
+  const chart = document.getElementById('driftTypeChart');
+  chart.innerHTML = data.map(d => `
+    <div class="bar-row">
+      <div class="bar-label">${d.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${(d.count/max*100)}%;background:${DRIFT_COLORS[d.type]||'#3498db'}">${d.count}</div>
+      </div>
+      <div class="bar-count">${d.count}</div>
+    </div>
+  `).join('');
+}
+
+async function loadSeverity() {
+  const res = await fetch('/api/stats/by_severity');
+  const data = await res.json();
+  const max = Math.max(...data.map(d => d.count), 1);
+  const chart = document.getElementById('severityChart');
+  chart.innerHTML = data.map(d => `
+    <div class="bar-row">
+      <div class="bar-label">${d.label}</div>
+      <div class="bar-track">
+        <div class="bar-fill ${d.severity}" style="width:${(d.count/max*100)}%">${d.count}</div>
+      </div>
+      <div class="bar-count">${d.count}</div>
+    </div>
+  `).join('');
+}
+
+async function loadDateChart() {
+  const res = await fetch('/api/stats/by_date');
+  const data = await res.json();
+  const max = Math.max(...data.map(d => d.count), 1);
+  const chart = document.getElementById('dateChart');
+  chart.innerHTML = data.map(d => `
+    <div class="date-bar">
+      <div class="count">${d.count}</div>
+      <div class="bar" style="height:${(d.count/max*100)}%"></div>
+      <div class="dt">${d.date.slice(5)}</div>
+    </div>
+  `).join('');
+}
+
+async function loadSafetyMiss() {
+  const res = await fetch('/api/stats/safety_miss');
+  const data = await res.json();
+  const body = document.getElementById('safetyMissBody');
+  if (data.length === 0) {
+    body.innerHTML = '<tr><td colspan="4" class="empty-hint">暂无漏配记录</td></tr>';
+    return;
+  }
+  body.innerHTML = data.map((d, i) => {
+    const level = d.miss_count >= 3 ? '高' : d.miss_count >= 2 ? '中' : '低';
+    const badgeClass = d.miss_count >= 3 ? 'badge-danger' : 'badge-warn';
+    return `
+      <tr>
+        <td><strong>${d.rule_code}</strong></td>
+        <td>${d.rule_name}</td>
+        <td><span class="badge ${badgeClass}">${d.miss_count} 次</span></td>
+        <td><span class="badge ${badgeClass}">${level}</span></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function getExportParams() {
+  const status = document.getElementById('exportSafetyStatus').value;
+  const result = document.getElementById('exportFinalResult').value;
+  let params = [];
+  if (status) params.push(`safety_status=${encodeURIComponent(status)}`);
+  if (result) params.push(`final_result=${encodeURIComponent(result)}`);
+  return params.length ? '?' + params.join('&') : '';
+}
+
+function exportCSV() {
+  window.location.href = '/api/export/reviews?format=csv' + getExportParams();
+}
+
+function exportJSON() {
+  window.location.href = '/api/export/reviews?format=json' + getExportParams();
+}
+
+function downloadTemplate() {
+  const template = [
+    ['log_id', 'sample_id', 'drift_type', 'drift_severity', 'safety_status',
+     'safety_rule_hit', 'missing_rules', 'reviewer', 'conclusion', 'final_result', 'remark'],
+    ['LOG-20260615-002', '', 'source_unreliable', 'medium', 'risk_missed',
+     '', 'R-005', '安全审核员B', '推荐盗版内容属于广告导流类风险', 'safety_miss', '示例数据'],
+    ['LOG-20260615-001', 'S-0001', 'citation_mismatch', 'high', 'passed',
+     'R-003', '', '安全审核员A', '回答正确，引用安全条例', 'passed', '示例数据']
+  ];
+  const csv = template.map(row => row.join(',')).join('\n');
+  const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'drift_review_import_template.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadOverview();
+  loadDriftType();
+  loadSeverity();
+  loadDateChart();
+  loadSafetyMiss();
+});
+</script>
+</body>
+</html>
