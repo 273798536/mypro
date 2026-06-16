@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长上下文截断审计报告</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #4472C4, #2d5aa0);
+            color: white;
+            padding: 24px 32px;
+            border-radius: 8px 8px 0 0;
+        }
+        .header h1 { font-size: 24px; margin-bottom: 8px; }
+        .header .subtitle { opacity: 0.9; font-size: 14px; }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            padding: 20px 32px;
+            background: white;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .stat-card {
+            background: #f8f9fc;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #4472C4;
+            margin-bottom: 4px;
+        }
+        .stat-card .label { font-size: 13px; color: #666; }
+        .stat-card.danger .value { color: #c0392b; }
+        .stat-card.warning .value { color: #e67e22; }
+        .content {
+            background: white;
+            padding: 24px 32px;
+            border-radius: 0 0 8px 8px;
+        }
+        .section { margin-bottom: 28px; }
+        .section h2 {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #4472C4;
+            display: inline-block;
+        }
+        .reason-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .reason-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .reason-name { width: 120px; font-size: 14px; color: #555; }
+        .reason-bar-bg {
+            flex: 1;
+            height: 24px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .reason-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4472C4, #6ba3e5);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: white;
+            font-size: 12px;
+            font-weight: 500;
+            min-width: 30px;
+        }
+        .reason-count { width: 60px; text-align: right; font-weight: 500; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        th {
+            background: #f5f7fa;
+            font-weight: 600;
+            color: #555;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover { background: #f9fafc; }
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-yes { background: #ffeaea; color: #c0392b; }
+        .tag-no { background: #eafaf1; color: #27ae60; }
+        .tag-high { background: #ffeaea; color: #c0392b; }
+        .tag-medium { background: #fff5e6; color: #e67e22; }
+        .tag-low { background: #e8f4fd; color: #2980b9; }
+        .preview {
+            max-width: 300px;
+            font-size: 12px;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .change-section { margin-top: 20px; }
+        .change-item {
+            background: #fafbfc;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .change-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .change-field {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding: 8px 0;
+            border-top: 1px solid #eee;
+        }
+        .change-field:first-of-type { border-top: none; }
+        .field-name { width: 100px; color: #888; font-size: 13px; }
+        .field-before, .field-after {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .field-before { background: #fff0f0; color: #c0392b; text-decoration: line-through; }
+        .field-after { background: #f0fff4; color: #27ae60; font-weight: 500; }
+        .arrow { color: #999; font-size: 18px; }
+        .explanation {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            margin-top: 20px;
+            border-radius: 0 6px 6px 0;
+        }
+        .explanation h3 { font-size: 15px; margin-bottom: 10px; color: #92400e; }
+        .explanation ul { padding-left: 20px; }
+        .explanation li { margin-bottom: 6px; font-size: 13px; color: #78350f; }
+        .table-container { overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>长上下文截断审计报告</h1>
+            <div class="subtitle">生成时间：2026年06月16日 09:20:11</div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="value">6</div>
+                <div class="label">总记录数</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="value">2</div>
+                <div class="label">截断记录数</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="value">33.3%</div>
+                <div class="label">截断率</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">228</div>
+                <div class="label">平均Token数</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2>截断原因分布</h2>
+                <div class="reason-bar">
+                    
+                    <div class="reason-item">
+                        <div class="reason-name">人工截断标记</div>
+                        <div class="reason-bar-bg">
+                            <div class="reason-bar-fill" style="width: 100.0%">
+                                2
+                            </div>
+                        </div>
+                        <div class="reason-count">2条</div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>详细记录</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>记录编号</th>
+                                <th>是否截断</th>
+                                <th>截断原因</th>
+                                <th>原因说明</th>
+                                <th>严重程度</th>
+                                <th>数据来源</th>
+                                <th>原始内容预览</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td><strong>REC-004</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-yes">截断</span>
+                                    
+                                </td>
+                                <td>人工截断标记</td>
+                                <td>人工复核判断：输入不完整</td>
+                                <td>
+                                    
+                                    <span class="tag tag-medium">中</span>
+                                    
+                                </td>
+                                <td>群反馈补充</td>
+                                <td class="preview" title="产品需求文档：用户中心改版v2.0一、项目背景当前用户中心页面功能分散，用户找信息困难，客服咨询量居高不下。二、改版目标1. 提升用户自助解决问题的比例，降低客服工单量30%；2. 优化页面布局，提升...">产品需求文档：用户中心改版v2.0一、项目背景当前用户中心页面功能分散，用户找信息困难，客服咨询量居高不下。二、改版目标1. 提升用户自助解决问题的比例，降低客服工单量30%；2. 优化页面布局，提升...</td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>REC-006</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-no">正常</span>
+                                    
+                                </td>
+                                <td>人工截断标记</td>
+                                <td>人工复核判断：不截断</td>
+                                <td>
+                                    
+                                    <span class="tag tag-medium">中</span>
+                                    
+                                </td>
+                                <td>群反馈补充</td>
+                                <td class="preview" title="客户投诉处理记录客户名称：某某科技有限公司投诉时间：2024-03-15投诉内容：系统在处理批量数据导入时经常超时，数据量大约有5万条左右的时候就不行了。处理过程：1. 接到投诉后立即排查日志，发现是...">客户投诉处理记录客户名称：某某科技有限公司投诉时间：2024-03-15投诉内容：系统在处理批量数据导入时经常超时，数据量大约有5万条左右的时候就不行了。处理过程：1. 接到投诉后立即排查日志，发现是...</td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>REC-009</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-no">正常</span>
+                                    
+                                </td>
+                                <td>人工截断标记</td>
+                                <td>人工复核判断：不截断</td>
+                                <td>
+                                    
+                                    <span class="tag tag-medium">中</span>
+                                    
+                                </td>
+                                <td>群反馈补充</td>
+                                <td class="preview" title="【紧急】线上故障报告故障时间：2024-03-10 14:30-16:45故障影响：支付系统异常，约30%的用户下单失败故障原因：数据库主库连接池耗尽，导致请求排队故障处理过程：1. 14:35 收到...">【紧急】线上故障报告故障时间：2024-03-10 14:30-16:45故障影响：支付系统异常，约30%的用户下单失败故障原因：数据库主库连接池耗尽，导致请求排队故障处理过程：1. 14:35 收到...</td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>REC-010</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-no">正常</span>
+                                    
+                                </td>
+                                <td>单位不明确</td>
+                                <td>人工复核判断：不截断</td>
+                                <td>
+                                    
+                                    <span class="tag tag-low">低</span>
+                                    
+                                </td>
+                                <td>群反馈补充</td>
+                                <td class="preview" title="项目复盘：一季度产品迭代整体情况概述：一季度共完成了12个需求的迭代交付，其中重点项目有3个，分别是用户中心改版、营销工具升级、数据看板一期。整体交付率85%，延期项目主要集中在数据相关的需求。存在的...">项目复盘：一季度产品迭代整体情况概述：一季度共完成了12个需求的迭代交付，其中重点项目有3个，分别是用户中心改版、营销工具升级、数据看板一期。整体交付率85%，延期项目主要集中在数据相关的需求。存在的...</td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>REC-011</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-yes">截断</span>
+                                    
+                                </td>
+                                <td>人工截断标记</td>
+                                <td>人工复核判断：截断-工具调用错误</td>
+                                <td>
+                                    
+                                    <span class="tag tag-medium">中</span>
+                                    
+                                </td>
+                                <td>群反馈补充</td>
+                                <td class="preview" title="工具调用异常记录工具名称：search_codebase调用时间：2024-03-12 10:23:45错误信息：参数 query 类型错误，期望 string 实际收到 number请求参数：que...">工具调用异常记录工具名称：search_codebase调用时间：2024-03-12 10:23:45错误信息：参数 query 类型错误，期望 string 实际收到 number请求参数：que...</td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>REC-012</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-no">正常</span>
+                                    
+                                </td>
+                                <td>人工截断标记</td>
+                                <td>人工复核判断：不截断-特殊场景</td>
+                                <td>
+                                    
+                                    <span class="tag tag-medium">中</span>
+                                    
+                                </td>
+                                <td>群反馈补充</td>
+                                <td class="preview" title="数据分析报告模板一、数据概览总用户数：付费用户数：活跃度：留存率：二、用户画像性别分布：年龄分布：地域分布：三、行为特征访问频次：停留时长：转化路径：四、结论与建议1.2.3.">数据分析报告模板一、数据概览总用户数：付费用户数：活跃度：留存率：二、用户画像性别分布：年龄分布：地域分布：三、行为特征访问频次：停留时长：转化路径：四、结论与建议1.2.3.</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            
+            <div class="section">
+                <h2>人工修正记录</h2>
+                <div class="change-section">
+                    
+                    <div class="change-item">
+                        <div class="change-title">
+                            📝 记录 REC-004 - 版本 1 → 2
+                        </div>
+                        
+                        <div class="change-field">
+                            <div class="field-name">截断原因</div>
+                            <div class="field-before">人工截断标记</div>
+                            <div class="arrow">→</div>
+                            <div class="field-after">输入不完整</div>
+                        </div>
+                        
+                        <div class="change-field">
+                            <div class="field-name">人工备注</div>
+                            <div class="field-before">文档没写完截断了</div>
+                            <div class="arrow">→</div>
+                            <div class="field-after">实际是文档没写完就提交了，不是系统截断的，属于输入本身不完整</div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="change-item">
+                        <div class="change-title">
+                            📝 记录 REC-006 - 版本 1 → 2
+                        </div>
+                        
+                        <div class="change-field">
+                            <div class="field-name">截断原因</div>
+                            <div class="field-before">单位不明确</div>
+                            <div class="arrow">→</div>
+                            <div class="field-after">不截断</div>
+                        </div>
+                        
+                        <div class="change-field">
+                            <div class="field-name">严重程度</div>
+                            <div class="field-before">low</div>
+                            <div class="arrow">→</div>
+                            <div class="field-after">medium</div>
+                        </div>
+                        
+                        <div class="change-field">
+                            <div class="field-name">人工备注</div>
+                            <div class="field-before">数据量没写单位</div>
+                            <div class="arrow">→</div>
+                            <div class="field-after">数据量单位明确（条），之前标注有误，这条不算截断</div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            
+
+            <div class="explanation">
+                <h3>💡 名词说明</h3>
+                <ul>
+                    <li><strong>Token</strong>：模型处理文字的基本单位，中文大概1-2个字一个token</li>
+                    <li><strong>上下文窗口</strong>：模型一次能处理的最大token数量</li>
+                    <li><strong>截断</strong>：内容太长，模型处理不了，后面的部分被切掉</li>
+                    <li><strong>工具调用参数错误</strong>：调用工具时参数传错，导致内容处理失败</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
