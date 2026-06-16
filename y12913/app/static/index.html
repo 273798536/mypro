@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoRA 合并版本台账</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #1f2937; font-size: 14px; }
+  .app { display: flex; min-height: 100vh; }
+  .sidebar { width: 240px; background: linear-gradient(180deg, #1e3a5f 0%, #2d4a6f 100%); color: #fff; padding: 20px 0; flex-shrink: 0; }
+  .logo { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,.1); margin-bottom: 16px; }
+  .logo h1 { font-size: 18px; font-weight: 600; }
+  .logo p { font-size: 12px; opacity: .7; margin-top: 4px; }
+  .nav { list-style: none; }
+  .nav li { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background .2s; border-left: 3px solid transparent; }
+  .nav li:hover { background: rgba(255,255,255,.08); }
+  .nav li.active { background: rgba(255,255,255,.12); border-left-color: #60a5fa; }
+  .nav li .tag { margin-left: auto; background: #ef4444; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 10px; }
+  .main { flex: 1; display: flex; flex-direction: column; }
+  .topbar { background: #fff; padding: 16px 24px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; }
+  .topbar h2 { font-size: 18px; font-weight: 600; }
+  .topbar .actions { display: flex; gap: 8px; }
+  .content { padding: 24px; flex: 1; overflow: auto; }
+  .page { display: none; }
+  .page.active { display: block; }
+  .card { background: #fff; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.06); padding: 20px; margin-bottom: 20px; }
+  .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: none; border-radius: 6px; font-size: 13px; cursor: pointer; transition: all .2s; font-weight: 500; }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
+  .btn-secondary:hover { background: #e5e7eb; }
+  .btn-success { background: #059669; color: #fff; }
+  .btn-success:hover { background: #047857; }
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .stat-card { background: #fff; border-radius: 10px; padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,.06); border-left: 4px solid #2563eb; }
+  .stat-card.green { border-left-color: #059669; }
+  .stat-card.red { border-left-color: #dc2626; }
+  .stat-card.yellow { border-left-color: #d97706; }
+  .stat-card.gray { border-left-color: #6b7280; }
+  .stat-card.purple { border-left-color: #7c3aed; }
+  .stat-label { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 700; }
+  .stat-sub { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+  .filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+  .filter-row input, .filter-row select { padding: 7px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; outline: none; }
+  .filter-row input:focus, .filter-row select:focus { border-color: #2563eb; }
+  .filter-row .search { flex: 1; min-width: 200px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f3f4f6; }
+  th { background: #f9fafb; font-weight: 600; color: #374151; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+  tbody tr:hover { background: #f9fafb; }
+  .badge { display: inline-block; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+  .badge-pass { background: #d1fae5; color: #065f46; }
+  .badge-fail { background: #fee2e2; color: #991b1b; }
+  .badge-pending { background: #f3f4f6; color: #374151; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .badge-gray { background: #e5e7eb; color: #374151; }
+  .badge-info { background: #dbeafe; color: #1e40af; }
+  .tag-gray { display: inline-block; padding: 2px 6px; background: #f3f4f6; border-radius: 4px; font-size: 11px; color: #6b7280; }
+  .actions-cell { display: flex; gap: 6px; }
+  .link-btn { color: #2563eb; cursor: pointer; background: none; border: none; padding: 0; font-size: 13px; }
+  .link-btn:hover { text-decoration: underline; }
+  .modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 1000; }
+  .modal-mask.show { display: flex; }
+  .modal { background: #fff; border-radius: 12px; max-width: 900px; width: 90%; max-height: 90vh; overflow: auto; }
+  .modal-header { padding: 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; }
+  .modal-header h3 { font-size: 18px; }
+  .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; }
+  .modal-body { padding: 20px; }
+  .modal-footer { padding: 16px 20px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end; gap: 8px; }
+  .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .info-item { padding: 10px 14px; background: #f9fafb; border-radius: 6px; }
+  .info-item .label { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+  .info-item .value { font-size: 14px; font-weight: 500; word-break: break-all; }
+  .section-title { font-size: 14px; font-weight: 600; margin: 20px 0 12px; padding-bottom: 8px; border-bottom: 2px solid #2563eb; display: inline-block; }
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: #e5e7eb; }
+  .timeline-item { position: relative; margin-bottom: 18px; }
+  .timeline-item::before { content: ''; position: absolute; left: -21px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: #2563eb; border: 2px solid #fff; box-shadow: 0 0 0 2px #2563eb; }
+  .timeline-item.fail::before { background: #dc2626; box-shadow: 0 0 0 2px #dc2626; }
+  .timeline-item.warn::before { background: #d97706; box-shadow: 0 0 0 2px #d97706; }
+  .timeline-item.success::before { background: #059669; box-shadow: 0 0 0 2px #059669; }
+  .timeline-title { font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .timeline-meta { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+  .timeline-detail { background: #f9fafb; padding: 10px; border-radius: 6px; font-family: ui-monospace, monospace; font-size: 12px; white-space: pre-wrap; }
+  .feedback-card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 12px; background: #fff; position: relative; }
+  .feedback-card.duplicate { opacity: .6; border-style: dashed; background: #fafafa; }
+  .feedback-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .feedback-meta { font-size: 11px; color: #6b7280; }
+  .dup-badge { position: absolute; top: 8px; right: 8px; background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 4px; font-size: 10px; }
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .compare-card { background: #fff; border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.06); border: 2px solid transparent; }
+  .compare-card.a { border-color: #3b82f6; }
+  .compare-card.b { border-color: #8b5cf6; }
+  .compare-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .compare-title { font-weight: 600; font-size: 13px; }
+  .case-block { margin-bottom: 16px; }
+  .case-prompt { background: #eff6ff; padding: 10px; border-radius: 6px; margin-bottom: 10px; font-size: 12px; }
+  .case-output { background: #f9fafb; padding: 10px; border-radius: 6px; font-size: 12px; white-space: pre-wrap; max-height: 200px; overflow: auto; }
+  .chain-card { background: linear-gradient(90deg, #f0f9ff 0%, #e0f2fe 100%); border-radius: 10px; padding: 16px; margin-bottom: 12px; border-left: 4px solid #0284c7; }
+  .chain-node { font-weight: 600; margin-bottom: 6px; color: #0c4a6e; }
+  .form-row { margin-bottom: 14px; }
+  .form-row label { display: block; font-size: 12px; color: #374151; margin-bottom: 6px; font-weight: 500; }
+  .form-row input, .form-row select, .form-row textarea { width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; outline: none; font-family: inherit; }
+  .form-row textarea { min-height: 90px; resize: vertical; }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: #2563eb; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; }
+  .alert-info { background: #dbeafe; color: #1e40af; border: 1px solid #bfdbfe; }
+  .alert-warn { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+  .issue-item { padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 12px; }
+  .issue-block { background: #fee2e2; color: #991b1b; }
+  .issue-warn { background: #fef3c7; color: #92400e; }
+  .issue-info { background: #dbeafe; color: #1e40af; }
+  .export-preview { background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px dashed #d1d5db; }
+  .export-preview h4 { font-size: 13px; margin-bottom: 10px; }
+  .kv-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+  .kv-row:last-child { border-bottom: none; }
+  .kv-row .k { color: #6b7280; }
+  .kv-row .v { font-weight: 500; }
+  .empty { padding: 60px 20px; text-align: center; color: #9ca3af; }
+  .empty .icon { font-size: 48px; margin-bottom: 12px; opacity: .5; }
+  .progress-bar { height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; margin-top: 6px; }
+  .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #2563eb, #60a5fa); }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>🤖 LoRA 合并台账</h1>
+      <p>MLOps 版本管理控制台</p>
+    </div>
+    <ul class="nav">
+      <li class="active" data-page="gray">
+        <span>⚖️</span><span>灰度对比</span><span class="tag">日常入口</span>
+      </li>
+      <li data-page="ledger">
+        <span>📋</span><span>台账列表</span>
+      </li>
+      <li data-page="export">
+        <span>📊</span><span>报告导出</span>
+      </li>
+      <li data-page="safety">
+        <span>🛡️</span><span>安全规则</span>
+      </li>
+      <li data-page="samples">
+        <span>🧪</span><span>样本生成</span>
+      </li>
+    </ul>
+  </aside>
+  <main class="main">
+    <div class="topbar">
+      <h2 id="pageTitle">灰度对比 · 日常入口</h2>
+      <div class="actions">
+        <button class="btn btn-secondary btn-sm" onclick="showPage('ledger')">📋 全部台账</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <div id="page-gray" class="page active">
+        <div class="card">
+          <div class="card-title">
+            <span>灰度对比配置</span>
+          </div>
+          <div class="alert alert-info">
+            💡 <strong>日常入口</strong>：选择待验证的 LoRA 版本（A）与基准版本（B）运行对比，快速判断输出差异和安全一致性。
+          </div>
+          <div class="two-col">
+            <div class="form-row">
+              <label>待发布版本 (A)</label>
+              <select id="grayRecordA"></select>
+            </div>
+            <div class="form-row">
+              <label>对比基准版本 (B · 可选)</label>
+              <select id="grayRecordB">
+                <option value="">— 不对比，仅基准自测 —</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="runGrayCompare()">🚀 运行灰度对比 (5个测试用例)</button>
+        </div>
+        <div id="grayResultArea"></div>
+        <div class="card" id="grayHistoryCard" style="display:none;">
+          <div class="card-title"><span>历史对比结果</span></div>
+          <table>
+            <thead><tr><th>ID</th><th>A 版本</th><th>B 版本</th><th>用例</th><th>差异分</th><th>安全判定</th><th>创建时间</th></tr></thead>
+            <tbody id="grayHistoryBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="page-ledger" class="page">
+        <div class="stats-grid" id="statsGrid"></div>
+        <div class="card">
+          <div class="card-title"><span>台账检索</span>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="openCreateModal()">+ 新建记录</button>
+              <button class="btn btn-success btn-sm" onclick="window.location.reload()">🔄 刷新</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <input class="search" id="searchInput" placeholder="🔍 搜索：LoRA编号 / 名称 / 基础模型" oninput="loadRecords()">
+            <select id="filterStatus" onchange="loadRecords()">
+              <option value="">全部状态</option>
+              <option value="pending">处理中</option>
+              <option value="processing">处理中</option>
+              <option value="completed">已完成</option>
+            </select>
+            <select id="filterMerge" onchange="loadRecords()">
+              <option value="">全部合并结论</option>
+              <option value="pass">✅ 通过</option>
+              <option value="fail">❌ 不通过</option>
+              <option value="need_confirm">⚠️ 待人工确认</option>
+              <option value="pending">⏳ 待确认</option>
+            </select>
+            <select id="filterGray" onchange="loadRecords()">
+              <option value="">灰度/全量</option>
+              <option value="true">仅灰度</option>
+              <option value="false">仅全量</option>
+            </select>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>LoRA编号</th><th>名称</th><th>版本</th><th>基础模型</th>
+                <th>样本数</th><th>灰度</th><th>安全检查</th>
+                <th>合并结论</th><th>反馈</th><th>更新时间</th><th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="ledgerBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="page-export" class="page">
+        <div class="card">
+          <div class="card-title"><span>报告导出 · 月底 / 课前</span></div>
+          <div class="alert alert-warn">
+            ⚠️ <strong>导出校验</strong>：导出内容与界面摘要严格一致，哈希摘要嵌入文件防止窜改。
+            导出完成后请打开文件确认"合并结果"列与界面显示一致。
+          </div>
+          <div class="three-col">
+            <div class="form-row">
+              <label>导出类型</label>
+              <select id="expType">
+                <option value="monthly">月度台账</option>
+                <option value="weekly">周度台账</option>
+                <option value="course">课前验收</option>
+                <option value="full">全量导出</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>文件格式</label>
+              <select id="expFormat">
+                <option value="xlsx">Excel (.xlsx) · 推荐</option>
+                <option value="csv">CSV (.csv)</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>操作人</label>
+              <input id="expOperator" value="mlops_engineer">
+            </div>
+          </div>
+          <div class="two-col">
+            <div class="form-row">
+              <label>合并结论筛选</label>
+              <select id="expMerge">
+                <option value="">全部</option>
+                <option value="pass">仅通过</option>
+                <option value="fail">仅失败</option>
+                <option value="need_confirm">仅待确认</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label>是否灰度发布</label>
+              <select id="expGray">
+                <option value="">全部</option>
+                <option value="true">仅灰度</option>
+                <option value="false">仅非灰度</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="doExport()">📥 生成导出文件</button>
+        </div>
+        <div class="card" id="exportResultCard" style="display:none;">
+          <div class="card-title"><span>导出结果预览（与文件摘要一致）</span></div>
+          <div class="two-col">
+            <div class="export-preview">
+              <h4>📊 摘要哈希校验</h4>
+              <div id="exportSummaryArea"></div>
+            </div>
+            <div class="export-preview">
+              <h4>📄 导出文件</h4>
+              <div id="exportFileArea"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span>摘要统计 · 实时</span></div>
+          <div id="exportStatsArea"></div>
+        </div>
+      </div>
+
+      <div id="page-safety" class="page">
+        <div class="card">
+          <div class="card-title"><span>安全规则库</span>
+            <button class="btn btn-secondary btn-sm" onclick="refreshRules()">🔄 刷新</button>
+          </div>
+          <div class="alert alert-info">
+            💡 修改规则后，对已有台账运行 <code>安全检查</code> 即可按新规则重新判定，无需反复问同事。
+          </div>
+          <table>
+            <thead><tr><th>规则ID</th><th>名称</th><th>类型</th><th>严重级别</th><th>启用</th><th>描述</th></tr></thead>
+            <tbody id="safetyRuleBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="page-samples" class="page">
+        <div class="card">
+          <div class="card-title"><span>样例数据生成</span></div>
+          <div class="alert alert-info">
+            🧪 一键生成 <strong>正常 / 边界 / 明显坏</strong> 三类样本，用于验证工具是否真跑、溯源链路是否通顺、重复反馈去重是否生效。
+          </div>
+          <table style="margin-bottom:16px;">
+            <thead><tr><th>样本类型</th><th>数量</th><th>特征</th><th>预期安全结论</th><th>预期合并结论</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="badge badge-pass">正常样本</span></td>
+                <td>5 条</td>
+                <td>真实参数配置、收敛状态良好</td>
+                <td>✅ 通过</td><td>✅ 通过</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-warn">边界样本</span></td>
+                <td>4 条</td>
+                <td>含<strong>长文本截断</strong>、灰区话术、小样本过拟合</td>
+                <td>⚠️ 待确认</td><td>⚠️ 待人工确认</td>
+              </tr>
+              <tr>
+                <td><span class="badge badge-fail">坏样本</span></td>
+                <td>3 条</td>
+                <td>暴力内容、PII泄露、重复垃圾输出</td>
+                <td>❌ 未通过</td><td>❌ 不通过</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="btn btn-primary" onclick="generateSamples()">🧪 一键生成样例数据</button>
+        </div>
+        <div class="card" id="sampleResultCard" style="display:none;">
+          <div class="card-title"><span>生成结果</span></div>
+          <div id="sampleResult"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="modal-mask" id="detailModal">
+  <div class="modal" style="max-width:1000px;">
+    <div class="modal-header">
+      <h3>台账详情 & 溯源倒查</h3>
+      <button class="modal-close" onclick="closeModal('detailModal')">×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="openFeedbackModal()">💬 新增人工反馈</button>
+      <button class="btn btn-primary" onclick="runSingleSafety()">🛡️ 重新安全检查</button>
+      <button class="btn btn-secondary" onclick="closeModal('detailModal')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="feedbackModal">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-header">
+      <h3>新增 / 补录 人工反馈</h3>
+      <button class="modal-close" onclick="closeModal('feedbackModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info">
+        💡 相同反馈ID或内容会被<strong>自动去重</strong>，不会出现"同一件事两份结论"。
+      </div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>反馈ID *</label>
+          <input id="fbFeedbackId" placeholder="FB-2026XXXX">
+        </div>
+        <div class="form-row">
+          <label>反馈类型</label>
+          <select id="fbType">
+            <option value="model_review">模型评审</option>
+            <option value="safety_review">安全审计</option>
+            <option value="boundary_review">边界评估</option>
+            <option value="manual_supplement">人工补录</option>
+          </select>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>审核人</label>
+          <input id="fbReviewer" placeholder="zhangsan">
+        </div>
+        <div class="form-row">
+          <label>结论</label>
+          <select id="fbConclusion">
+            <option value="pending">待审核</option>
+            <option value="approved">✅ 通过</option>
+            <option value="rejected">❌ 驳回</option>
+            <option value="neutral">➖ 中立</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>置信度 (0-1)</label>
+        <input id="fbConfidence" type="number" step="0.01" min="0" max="1" value="0.85">
+      </div>
+      <div class="form-row">
+        <label>反馈内容 *</label>
+        <textarea id="fbContent" placeholder="详细的人工评审意见..."></textarea>
+      </div>
+      <div class="form-row">
+        <label>来源渠道</label>
+        <select id="fbChannel">
+          <option value="manual">人工录入</option>
+          <option value="review_board">评审委员会</option>
+          <option value="safety_audit">安全审计</option>
+          <option value="manual_supplement">补录</option>
+          <option value="reimport_api">重导API</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('feedbackModal')">取消</button>
+      <button class="btn btn-primary" onclick="submitFeedback()">提交反馈</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="createModal">
+  <div class="modal" style="max-width:700px;">
+    <div class="modal-header">
+      <h3>新建 LoRA 台账记录</h3>
+      <button class="modal-close" onclick="closeModal('createModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="two-col">
+        <div class="form-row"><label>LoRA编号 *</label><input id="cLoraId" placeholder="LORA-N-2026001"></div>
+        <div class="form-row"><label>LoRA名称 *</label><input id="cLoraName" placeholder="客服意图识别v2"></div>
+      </div>
+      <div class="two-col">
+        <div class="form-row"><label>基础模型 *</label><input id="cBase" placeholder="qwen2.5-7b-instruct"></div>
+        <div class="form-row"><label>版本号 *</label><input id="cVersion" placeholder="v1.0.0"></div>
+      </div>
+      <div class="form-row"><label>数据集名称</label><input id="cDataset" placeholder="客服对话数据集"></div>
+      <div class="three-col">
+        <div class="form-row"><label>样本数</label><input id="cSamples" type="number" value="5000"></div>
+        <div class="form-row"><label>Epoch</label><input id="cEpoch" type="number" value="3"></div>
+        <div class="form-row"><label>学习率</label><input id="cLr" type="number" step="0.0001" value="0.0001"></div>
+      </div>
+      <div class="two-col">
+        <div class="form-row"><label>Rank</label><input id="cRank" type="number" value="16"></div>
+        <div class="form-row"><label>Alpha</label><input id="cAlpha" type="number" step="0.1" value="32"></div>
+      </div>
+      <div class="form-row"><label>来源引用</label><input id="cSourceRef" placeholder="训练任务ID-JOBXXXX"></div>
+      <div class="two-col">
+        <div class="form-row">
+          <label>来源类型</label>
+          <select id="cSourceType">
+            <option value="manual">人工录入</option>
+            <option value="import">批量导入</option>
+            <option value="api">API同步</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>灰度发布</label>
+          <select id="cGray"><option value="false">否</option><option value="true">是</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label>截断备注（长文本截断记录时填写，用于倒查）</label>
+        <textarea id="cTrunc" placeholder="超长上下文截断位置：xx字符处，原始来源：xxx..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('createModal')">取消</button>
+      <button class="btn btn-primary" onclick="submitCreate()">创建并运行检查</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "";
+let currentDetailId = null;
+let recordsCache = [];
+let statsCache = null;
+
+function $(id) { return document.getElementById(id); }
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  $('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav li').forEach(l => l.classList.remove('active'));
+  document.querySelector(`.nav li[data-page="${name}"]`).classList.add('active');
+  const titles = {
+    gray: '灰度对比 · 日常入口',
+    ledger: '台账列表',
+    export: '报告导出 · 月底 / 课前',
+    safety: '安全规则管理',
+    samples: '样本生成 · 验收测试'
+  };
+  $('pageTitle').innerText = titles[name] || '';
+  if (name === 'ledger') { loadRecords(); loadStats(); }
+  if (name === 'gray') { loadGrayOptions(); loadGrayHistory(); }
+  if (name === 'export') { loadExportStats(); $('exportResultCard').style.display='none'; }
+  if (name === 'safety') { refreshRules(); }
+}
+
+document.querySelectorAll('.nav li').forEach(li => {
+  li.onclick = () => showPage(li.dataset.page);
+});
+
+async function api(url, method='GET', body=null) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + url, opts);
+  if (!r.ok) { const e = await r.json().catch(()=>({})); throw new Error(e.detail || r.statusText); }
+  return r.json();
+}
+
+function mergeBadge(v) {
+  const m = { pass:['badge-pass','✅ 通过'], fail:['badge-fail','❌ 不通过'],
+    need_confirm:['badge-warn','⚠️ 待确认'], pending:['badge-pending','⏳ 待确认'] };
+  const [cls, text] = m[v] || ['badge-gray', v];
+  return `<span class="badge ${cls}">${text}</span>`;
+}
+function safetyBadge(v) {
+  const m = { pass:['badge-pass','✅ 通过'], fail:['badge-fail','❌ 未通过'],
+    need_confirm:['badge-warn','⚠️ 有警告'], pending:['badge-pending','未检查'] };
+  const [cls, text] = m[v] || ['badge-gray', v];
+  return `<span class="badge ${cls}">${text}</span>`;
+}
+function conclusionBadge(v) {
+  const m = { approved:['badge-pass','✅ 通过'], rejected:['badge-fail','❌ 驳回'],
+    neutral:['badge-gray','➖ 中立'], pending:['badge-pending','⏳ 待审核'] };
+  const [cls, text] = m[v] || ['badge-gray', v || '-'];
+  return `<span class="badge ${cls}">${text}</span>`;
+}
+function fmtTime(t) { if (!t) return '-'; return new Date(t).toLocaleString('zh-CN'); }
+
+async function loadStats() {
+  const s = await api('/api/stats/summary');
+  statsCache = s;
+  const passRate = s.total ? (s.pass_count/s.total*100).toFixed(1)+'%' : '-';
+  $('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-label">台账总数</div><div class="stat-value">${s.total}</div><div class="stat-sub">全量记录</div></div>
+    <div class="stat-card green"><div class="stat-label">✅ 通过</div><div class="stat-value">${s.pass_count}</div><div class="stat-sub">通过率 ${passRate}</div></div>
+    <div class="stat-card red"><div class="stat-label">❌ 不通过</div><div class="stat-value">${s.fail_count}</div><div class="stat-sub">被拦截</div></div>
+    <div class="stat-card yellow"><div class="stat-label">⚠️ 待确认</div><div class="stat-value">${s.need_confirm_count}</div><div class="stat-sub">需人工介入</div></div>
+    <div class="stat-card gray"><div class="stat-label">⏳ 处理中</div><div class="stat-value">${s.pending_count}</div><div class="stat-sub">待检查/反馈</div></div>
+    <div class="stat-card purple"><div class="stat-label">🚀 灰度发布</div><div class="stat-value">${s.gray_release_count}</div><div class="stat-sub">灰度中</div></div>
+  `;
+}
+
+async function loadRecords() {
+  const kw = $('searchInput').value;
+  const status = $('filterStatus').value;
+  const merge = $('filterMerge').value;
+  const gray = $('filterGray').value;
+  const params = new URLSearchParams();
+  if (kw) params.set('keyword', kw);
+  if (status) params.set('status', status);
+  if (merge) params.set('merge_result', merge);
+  if (gray) params.set('is_gray_release', gray);
+  params.set('limit', 200);
+  const data = await api('/api/records?'+params);
+  recordsCache = data;
+  if (!data.length) {
+    $('ledgerBody').innerHTML = '<tr><td colspan="11"><div class="empty"><div class="icon">📭</div>暂无记录，去"样本生成"一键导入样例吧～</div></td></tr>';
+    return;
+  }
+  $('ledgerBody').innerHTML = data.map(r => `
+    <tr>
+      <td><strong>${r.lora_id}</strong></td>
+      <td>${r.lora_name}</td>
+      <td><span class="tag-gray">${r.version}</span></td>
+      <td>${r.base_model}</td>
+      <td>${r.sample_count}</td>
+      <td>${r.is_gray_release ? '<span class="badge badge-info">灰度</span>' : '<span class="tag-gray">全量</span>'}</td>
+      <td>${safetyBadge(r.safety_check_result)}</td>
+      <td>${mergeBadge(r.merge_result)}</td>
+      <td style="text-align:center;">${r.feedback_count}${r.latest_feedback ? '<br><small style="color:#9ca3af;">'+r.latest_feedback.reviewer+'</small>' : ''}</td>
+      <td style="font-size:12px;color:#6b7280;">${fmtTime(r.updated_at)}</td>
+      <td class="actions-cell">
+        <button class="link-btn" onclick="openDetail(${r.id})">详情</button>
+        <button class="link-btn" onclick="deleteRecord(${r.id})" style="color:#dc2626;">删除</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function openDetail(id) {
+  currentDetailId = id;
+  const trace = await api(`/api/records/${id}/trace`);
+  const r = trace.record;
+  $('detailBody').innerHTML = `
+    <div class="alert alert-info" style="margin-bottom:16px;">
+      🔗 <strong>溯源倒查链路</strong>：合并结果 ← 安全检查 ← 数据处理 ← 截断标记 ← 原始来源
+    </div>
+    <h4 class="section-title">📌 基础信息</h4>
+    <div class="info-grid">
+      <div class="info-item"><div class="label">LoRA编号</div><div class="value"><strong>${r.lora_id}</strong></div></div>
+      <div class="info-item"><div class="label">LoRA名称</div><div class="value">${r.lora_name}</div></div>
+      <div class="info-item"><div class="label">基础模型</div><div class="value">${r.base_model}</div></div>
+      <div class="info-item"><div class="label">版本号</div><div class="value">${r.version}</div></div>
+      <div class="info-item"><div class="label">数据集</div><div class="value">${r.dataset_name || '-'}</div></div>
+      <div class="info-item"><div class="label">样本数 / Epoch / 学习率</div><div class="value">${r.sample_count} / ${r.epoch} / ${r.learning_rate}</div></div>
+      <div class="info-item"><div class="label">Rank / Alpha</div><div class="value">${r.rank} / ${r.alpha}</div></div>
+      <div class="info-item"><div class="label">灰度发布</div><div class="value">${r.is_gray_release ? '是' : '否'}</div></div>
+      <div class="info-item"><div class="label">安全检查</div><div class="value">${safetyBadge(r.safety_check_result)}</div></div>
+      <div class="info-item"><div class="label">合并结论</div><div class="value">${mergeBadge(r.merge_result)}</div></div>
+    </div>
+    ${r.truncation_note ? `<div class="alert alert-warn"><strong>⚠️ 长文本截断备注：</strong>${r.truncation_note}</div>` : ''}
+
+    <h4 class="section-title">🔗 来源处理链（倒查）</h4>
+    ${trace.source_chain.map((c,i) => `
+      <div class="chain-card">
+        <div class="chain-node">步骤 ${i+1} · ${c.node}</div>
+        <div style="font-size:13px;white-space:pre-wrap;">${typeof c.detail==='object'?JSON.stringify(c.detail,null,2):c.detail}</div>
+      </div>
+    `).join('')}
+
+    <h4 class="section-title">🛡️ 安全检查详情</h4>
+    ${r.safety_check_detail && r.safety_check_detail.issues && r.safety_check_detail.issues.length ?
+      r.safety_check_detail.issues.map(i => `<div class="issue-item issue-${i.severity==='block'?'block':i.severity==='warn'?'warn':'info'}">
+        <strong>[${i.rule_id}] ${i.rule_name}</strong> (${i.severity}) · 命中：${i.matched_text}<br><small>${i.message}</small>
+      </div>`).join('')
+      : '<div class="alert alert-success">✅ 无安全问题</div>'
+    }
+
+    <h4 class="section-title">📝 处理日志（按时间升序，共 ${trace.logs.length} 条）</h4>
+    <div class="timeline">
+      ${trace.logs.map(l => `
+        <div class="timeline-item ${l.result==='fail'?'fail':l.result==='pass'||l.result==='success'?'success':l.result==='need_confirm'?'warn':''}">
+          <div class="timeline-title">${l.stage} · ${l.action} <span class="badge badge-${l.result==='fail'?'fail':l.result==='success'||l.result==='pass'?'pass':'warn'}">${l.result}</span></div>
+          <div class="timeline-meta">${l.operator || 'system'} · ${fmtTime(l.created_at)}${l.error_msg?' · <span style="color:#dc2626;">'+l.error_msg+'</span>':''}</div>
+          ${l.detail ? `<div class="timeline-detail">${typeof l.detail==='object'?JSON.stringify(l.detail,null,2):l.detail}</div>` : ''}
+          ${l.raw_source_snapshot ? `<div class="timeline-detail" style="background:#fef3c7;margin-top:6px;">📷 原始来源快照：${l.raw_source_snapshot}</div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+
+    <h4 class="section-title">💬 人工反馈（共 ${trace.feedbacks.length} 条）</h4>
+    ${trace.feedbacks.length ? trace.feedbacks.map(f => `
+      <div class="feedback-card ${f.is_duplicate?'duplicate':''}">
+        ${f.is_duplicate ? `<div class="dup-badge">⚠️ 重复 · 源#${f.duplicate_of}</div>` : ''}
+        <div class="feedback-head">
+          <div>
+            ${conclusionBadge(f.conclusion)}
+            <strong style="margin-left:8px;">${f.feedback_id}</strong>
+            <span class="tag-gray" style="margin-left:6px;">${f.feedback_type || '-'}</span>
+          </div>
+          <div class="feedback-meta">${fmtTime(f.created_at)}</div>
+        </div>
+        <div style="margin-bottom:8px;white-space:pre-wrap;">${f.content}</div>
+        <div class="feedback-meta">
+          审核人：<strong>${f.reviewer || '-'}</strong> · 置信度：${f.confidence || '-'}
+          · 渠道：${f.source_channel || '-'}${f.import_batch ? ' · 批次：'+f.import_batch : ''}
+        </div>
+      </div>
+    `).join('') : '<div class="empty" style="padding:20px;">暂无人工反馈</div>'}
+  `;
+  $('detailModal').classList.add('show');
+}
+
+async function deleteRecord(id) {
+  if (!confirm('确认删除这条台账？')) return;
+  await api(`/api/records/${id}`, 'DELETE');
+  loadRecords(); loadStats();
+}
+
+function openCreateModal() { $('createModal').classList.add('show'); }
+async function submitCreate() {
+  try {
+    const data = {
+      lora_id: $('cLoraId').value, lora_name: $('cLoraName').value,
+      base_model: $('cBase').value, version: $('cVersion').value,
+      dataset_name: $('cDataset').value || null,
+      sample_count: Number($('cSamples').value) || 0, epoch: Number($('cEpoch').value) || 0,
+      learning_rate: Number($('cLr').value) || 0, rank: Number($('cRank').value) || 0,
+      alpha: Number($('cAlpha').value) || 0,
+      is_gray_release: $('cGray').value === 'true',
+      source_type: $('cSourceType').value, source_ref: $('cSourceRef').value || null,
+      truncation_note: $('cTrunc').value || null
+    };
+    if (!data.lora_id || !data.lora_name || !data.base_model || !data.version) {
+      alert('请填写 * 必填字段'); return;
+    }
+    const r = await api('/api/records', 'POST', data);
+    await api(`/api/records/${r.id}/safety-check`, 'POST');
+    closeModal('createModal');
+    ['cLoraId','cLoraName','cBase','cVersion','cDataset','cSamples','cEpoch','cLr','cRank','cAlpha','cSourceRef','cTrunc'].forEach(i => $(i).value = '');
+    loadRecords(); loadStats();
+    alert('创建并已运行安全检查');
+  } catch(e) { alert(e.message); }
+}
+
+function openFeedbackModal() {
+  if (!currentDetailId) return;
+  $('fbFeedbackId').value = 'FB-' + Date.now().toString().slice(-8);
+  $('fbContent').value = '';
+  $('feedbackModal').classList.add('show');
+}
+async function submitFeedback() {
+  try {
+    const fb = {
+      record_id: currentDetailId,
+      feedback_id: $('fbFeedbackId').value,
+      feedback_type: $('fbType').value,
+      content: $('fbContent').value,
+      reviewer: $('fbReviewer').value || null,
+      conclusion: $('fbConclusion').value,
+      confidence: Number($('fbConfidence').value) || null,
+      source_channel: $('fbChannel').value
+    };
+    if (!fb.feedback_id || !fb.content) { alert('请填写反馈ID和内容'); return; }
+    const r = await api('/api/feedbacks', 'POST', fb);
+    closeModal('feedbackModal');
+    if (r.is_duplicate) alert('⚠️ 检测到重复反馈，已自动标记为重复（重复源#'+r.duplicate_of+'）');
+    openDetail(currentDetailId);
+    loadRecords(); loadStats();
+  } catch(e) { alert(e.message); }
+}
+
+async function runSingleSafety() {
+  if (!currentDetailId) return;
+  const r = await api(`/api/records/${currentDetailId}/safety-check`, 'POST');
+  alert(`安全检查：${r.safety_result}\n合并结论：${r.merge_result}\n命中问题：${r.issues.length}`);
+  openDetail(currentDetailId);
+  loadRecords(); loadStats();
+}
+
+async function loadGrayOptions() {
+  const data = await api('/api/records?limit=200');
+  const optsA = '<option value="">— 选择待发布版本 —</option>' +
+    data.map(r => `<option value="${r.id}">${r.lora_id} · ${r.lora_name} (${r.version})</option>`).join('');
+  $('grayRecordA').innerHTML = optsA;
+  const optsB = '<option value="">— 不对比，仅基准自测 —</option>' +
+    data.map(r => `<option value="${r.id}">${r.lora_id} · ${r.lora_name} (${r.version})</option>`).join('');
+  $('grayRecordB').innerHTML = optsB;
+}
+
+async function runGrayCompare() {
+  const a = $('grayRecordA').value; if (!a) { alert('请选择版本 A'); return; }
+  const b = $('grayRecordB').value;
+  const res = await api(`/api/gray-comparisons/run?record_id=${a}&compared_lora_id=${b||''}`, 'POST');
+  const hasB = !!b;
+  $('grayResultArea').innerHTML = `
+    <div class="card">
+      <div class="card-title"><span>对比结果 · ${res.count} 个测试用例</span>
+        <div>总差异均值：${(res.results.reduce((s,x)=>s+x.diff_score,0)/res.count*100).toFixed(1)}%</div>
+      </div>
+      ${res.results.map((c, idx) => `
+        <div class="case-block">
+          <div class="case-prompt"><strong>用例 ${idx+1} [${c.test_case_id}]：</strong>${c.input_prompt}</div>
+          <div class="compare-grid">
+            <div class="compare-card a">
+              <div class="compare-head">
+                <span class="compare-title">🅰️ 待发布版本</span>
+                ${safetyBadge(c.safety_a)}
+              </div>
+              <div class="case-output">${c.output_a}</div>
+            </div>
+            ${hasB ? `
+            <div class="compare-card b">
+              <div class="compare-head">
+                <span class="compare-title">🅱️ 基准版本</span>
+                ${c.safety_b?safetyBadge(c.safety_b):''}
+              </div>
+              <div class="case-output">${c.output_b}</div>
+            </div>
+            ` : ''}
+          </div>
+          ${hasB ? `<div style="text-align:center;margin-top:8px;">
+            <span class="badge badge-info">差异分：${(c.diff_score*100).toFixed(1)}%</span>
+            <div class="progress-bar" style="max-width:300px;margin:4px auto;"><div class="fill" style="width:${c.diff_score*100}%"></div></div>
+          </div>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+  loadGrayHistory();
+}
+
+async function loadGrayHistory() {
+  const list = await api('/api/gray-comparisons?limit=50');
+  if (!list.length) return;
+  $('grayHistoryCard').style.display = 'block';
+  $('grayHistoryBody').innerHTML = list.slice(0, 30).map(c => {
+    const recA = recordsCache.find(r=>r.id===c.record_id);
+    const recB = recordsCache.find(r=>r.id===c.compared_lora_id);
+    return `<tr>
+      <td>${c.id}</td>
+      <td>${recA?recA.lora_id:c.record_id}</td>
+      <td>${recB?recB.lora_id:'(自测)'}</td>
+      <td>${c.test_case_id}</td>
+      <td>${(c.diff_score*100).toFixed(1)}%</td>
+      <td>A:${safetyBadge(c.safety_a)}${c.safety_b?' / B:'+safetyBadge(c.safety_b):''}</td>
+      <td>${fmtTime(c.created_at)}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function doExport() {
+  const body = {
+    export_type: $('expType').value, export_format: $('expFormat').value,
+    operator: $('expOperator').value, scope_filter: {}
+  };
+  const mg = $('expMerge').value; if (mg) body.scope_filter.merge_result = [mg];
+  const gy = $('expGray').value; if (gy) body.scope_filter.is_gray_release = gy === 'true';
+  const r = await api('/api/export', 'POST', body);
+  $('exportResultCard').style.display = 'block';
+  const s = r.summary;
+  $('exportSummaryArea').innerHTML = `
+    <div class="kv-row"><span class="k">生成时间</span><span class="v">${new Date(s.generated_at).toLocaleString('zh-CN')}</span></div>
+    <div class="kv-row"><span class="k">台账总数</span><span class="v">${s.total}</span></div>
+    <div class="kv-row"><span class="k">通过数 / 通过率</span><span class="v">${s.pass_count} / ${s.pass_rate}%</span></div>
+    <div class="kv-row"><span class="k">失败 / 待确认 / 处理中</span><span class="v">${s.fail_count} / ${s.need_confirm_count} / ${s.pending_count}</span></div>
+    <div class="kv-row"><span class="k">灰度发布 / 安全告警</span><span class="v">${s.gray_release_count} / ${s.safety_warn_count}</span></div>
+    <div class="kv-row"><span class="k">有人工反馈</span><span class="v">${s.has_feedback_count}</span></div>
+    <div class="kv-row"><span class="k">摘要哈希</span><span class="v"><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">${r.summary_hash || '-'}</code></span></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid #e5e7eb;">
+      <small style="color:#6b7280;">界面显示的"合并结论"与导出文件中的"合并结果(界面一致)"列是同一数据，不会出现"页面通过、文件待确认"的不一致情况。</small>
+    </div>
+  `;
+  $('exportFileArea').innerHTML = `
+    <div class="kv-row"><span class="k">文件名</span><span class="v"><code>${r.file_name}</code></span></div>
+    <div class="kv-row"><span class="k">格式</span><span class="v">${r.file_name.split('.').pop().toUpperCase()}</span></div>
+    <div class="kv-row"><span class="k">导出类型</span><span class="v">${body.export_type}</span></div>
+    <div class="kv-row"><span class="k">操作人</span><span class="v">${body.operator}</span></div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-success" onclick="window.open('${API}/api/export/download/${r.file_name}', '_blank')">⬇️ 下载文件</button>
+    </div>
+  `;
+}
+
+async function loadExportStats() {
+  const s = await api('/api/stats/summary');
+  const rows = [
+    ['台账总数', s.total],
+    ['✅ 通过 (与导出列一致)', s.pass_count],
+    ['❌ 不通过 (与导出列一致)', s.fail_count],
+    ['⚠️ 待人工确认 (与导出列一致)', s.need_confirm_count],
+    ['⏳ 处理中', s.pending_count],
+    ['🚀 灰度发布', s.gray_release_count],
+    ['🛡️ 安全告警', s.safety_warn_count],
+    ['💬 有人工反馈', s.has_feedback_count],
+    ['📊 通过率', s.total ? (s.pass_count/s.total*100).toFixed(2)+'%' : '-']
+  ];
+  $('exportStatsArea').innerHTML = '<div class="two-col">' +
+    rows.map(r => `<div class="kv-row"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('') +
+    '</div>';
+}
+
+async function refreshRules() {
+  const data = await api('/api/safety-rules');
+  if (!data.length) {
+    $('safetyRuleBody').innerHTML = '<tr><td colspan="6"><div class="empty">暂无规则，将自动初始化默认规则</div></td></tr>';
+    return;
+  }
+  $('safetyRuleBody').innerHTML = data.map(r => `
+    <tr>
+      <td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;">${r.rule_id}</code></td>
+      <td><strong>${r.rule_name}</strong></td>
+      <td><span class="tag-gray">${r.rule_type || '-'}</span></td>
+      <td>${r.severity==='block'?'<span class="badge badge-fail">BLOCK</span>':r.severity==='warn'?'<span class="badge badge-warn">WARN</span>':'<span class="badge badge-info">INFO</span>'}</td>
+      <td>${r.is_active?'<span class="badge badge-pass">启用</span>':'<span class="badge badge-gray">停用</span>'}</td>
+      <td>${r.description || '-'}</td>
+    </tr>
+  `).join('');
+}
+
+async function generateSamples() {
+  const r = await api('/api/samples/generate', 'POST');
+  $('sampleResultCard').style.display = 'block';
+  $('sampleResult').innerHTML = `
+    <div class="alert alert-success">✅ 样例生成成功！共生成 ${r.generated.total} 条记录</div>
+    <div class="three-col">
+      <div class="stat-card green"><div class="stat-label">正常样本</div><div class="stat-value">${r.generated.normal}</div><div class="stat-sub">安全检查+合并均通过</div></div>
+      <div class="stat-card yellow"><div class="stat-label">边界样本</div><div class="stat-value">${r.generated.boundary}</div><div class="stat-sub">含截断记录倒查+待确认</div></div>
+      <div class="stat-card red"><div class="stat-label">明显坏样本</div><div class="stat-value">${r.generated.bad}</div><div class="stat-sub">暴力/PII/重复 · 拦截</div></div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="alert alert-warn">
+        🧪 <strong>验收建议</strong>：<br>
+        1️⃣ 去 <strong>台账列表</strong> 查看"多轮对话截断测试"这条记录，点击【详情】→ 检查 <code>来源处理链</code> 和 <code>原始来源快照</code> 是否完整。<br>
+        2️⃣ 去 <strong>报告导出</strong> 导出 Excel，打开"摘要"和"台账明细"工作表，确认"合并结果(界面一致)"列与界面显示完全匹配。<br>
+        3️⃣ 对已有记录尝试"新增人工反馈"使用相同 content → 应自动标为重复。<br>
+        4️⃣ 去 <strong>灰度对比</strong> 选择两条记录跑一遍，观察差异分和安全对比。
+      </div>
+      <button class="btn btn-primary" onclick="showPage('ledger')">📋 去台账列表看看</button>
+    </div>
+  `;
+}
+
+function closeModal(id) { $(id).classList.remove('show'); }
+
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadRecords();
+  await loadStats();
+  await loadGrayOptions();
+  try { await refreshRules(); } catch(e) {}
+});
+</script>
+</body>
+</html>
