@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary-50: #f0f4f8;
+  --color-primary-100: #d9e2ec;
+  --color-primary-200: #bcccdc;
+  --color-primary-300: #9fb3c8;
+  --color-primary-400: #829ab1;
+  --color-primary-500: #627d98;
+  --color-primary-600: #486581;
+  --color-primary-700: #334e68;
+  --color-primary-800: #1e3a5f;
+  --color-primary-900: #102a43;
+
+  --color-accent-50: #fff2ec;
+  --color-accent-100: #ffd9c7;
+  --color-accent-200: #ffb899;
+  --color-accent-300: #ff9266;
+  --color-accent-400: #f46d3d;
+  --color-accent-500: #e85d3c;
+  --color-accent-600: #d94a2a;
+  --color-accent-700: #c23a1e;
+  --color-accent-800: #a22e15;
+  --color-accent-900: #7f2410;
+
+  --color-background: #f4f6f9;
+  --color-surface: #ffffff;
+  --color-surface-secondary: #f9fafb;
+
+  --color-text-primary: #2d3748;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #718096;
+
+  --color-success: #38a169;
+  --color-warning: #dd6b20;
+  --color-danger: #c53030;
+
+  --font-display: 'Noto Serif SC', serif;
+  --font-body: 'Noto Sans SC', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-secondary);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary-300);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-500);
+}
+
+/* 动画延迟类 */
+.animation-delay-100 { animation-delay: 100ms; }
+.animation-delay-200 { animation-delay: 200ms; }
+.animation-delay-300 { animation-delay: 300ms; }
+.animation-delay-400 { animation-delay: 400ms; }
+.animation-delay-500 { animation-delay: 500ms; }
+
+/* 斜线底纹背景（用于异常记录） */
+.bg-diagonal-stripe {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(232, 93, 60, 0.05) 10px,
+    rgba(232, 93, 60, 0.05) 20px
+  );
+}
+
+/* 差异高亮 */
+.diff-added {
+  background-color: rgba(56, 161, 105, 0.15);
+  border-left: 3px solid var(--color-success);
+}
+
+.diff-removed {
+  background-color: rgba(197, 48, 48, 0.15);
+  border-left: 3px solid var(--color-danger);
+}
+
+.diff-modified {
+  background-color: rgba(221, 107, 32, 0.15);
+  border-left: 3px solid var(--color-warning);
+}
