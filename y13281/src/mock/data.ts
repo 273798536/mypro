@@ -1,0 +1,402 @@
+import type { MonitorPoint, InspectionMaterial, PhotoRecord, ReviewRecord, ChangeLog, TimePeriod } from '../types';
+
+export const mockMonitorPoints: MonitorPoint[] = [
+  {
+    id: 'mp-001',
+    name: '东门广场舞区',
+    lat: 31.2304,
+    lng: 121.4737,
+    positionX: -4,
+    positionY: 0.5,
+    positionZ: -3,
+    area: '东区',
+    status: 'need_evidence',
+    noiseCapacity: 60,
+  },
+  {
+    id: 'mp-002',
+    name: '南门儿童乐园',
+    lat: 31.2298,
+    lng: 121.4742,
+    positionX: 3,
+    positionY: 0.5,
+    positionZ: -4,
+    area: '南区',
+    status: 'pending',
+    noiseCapacity: 65,
+  },
+  {
+    id: 'mp-003',
+    name: '西门健身区',
+    lat: 31.2308,
+    lng: 121.4728,
+    positionX: 4,
+    positionY: 0.5,
+    positionZ: 2,
+    area: '西区',
+    status: 'confirmed',
+    noiseCapacity: 60,
+  },
+  {
+    id: 'mp-004',
+    name: '北门休息廊',
+    lat: 31.2312,
+    lng: 121.4735,
+    positionX: -2,
+    positionY: 0.5,
+    positionZ: 4,
+    area: '北区',
+    status: 'processed',
+    noiseCapacity: 55,
+  },
+  {
+    id: 'mp-005',
+    name: '中央音乐喷泉',
+    lat: 31.2305,
+    lng: 121.4735,
+    positionX: 0,
+    positionY: 0.5,
+    positionZ: 0,
+    area: '中心区',
+    status: 'pending',
+    noiseCapacity: 70,
+  },
+];
+
+export const mockMaterials: InspectionMaterial[] = [
+  {
+    id: 'mat-001',
+    monitorPointId: 'mp-001',
+    type: 'photo',
+    title: '早高峰广场舞照片',
+    description: '早晨7:30广场舞活动现场',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=park%20square%20dance%20morning%20activity%20elderly%20people%20dancing&image_size=square',
+    noiseValue: 68,
+    timePeriod: 'morning',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-15 08:00',
+    caliberChanged: true,
+    originalCaliber: '早高峰噪声限值65dB',
+    currentCaliber: '早高峰噪声限值60dB',
+  },
+  {
+    id: 'mat-002',
+    monitorPointId: 'mp-001',
+    type: 'photo',
+    title: '晚高峰广场舞照片',
+    description: '晚上19:00广场舞活动现场',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=park%20evening%20dance%20activity%20crowd%20with%20lights&image_size=square',
+    noiseValue: 72,
+    timePeriod: 'evening',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-15 20:00',
+    caliberChanged: false,
+    originalCaliber: '',
+    currentCaliber: '',
+  },
+  {
+    id: 'mat-003',
+    monitorPointId: 'mp-001',
+    type: 'boundary',
+    title: '东门噪声边界样本',
+    description: '东门区域噪声敏感点边界测量',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sound%20level%20meter%20measuring%20noise%20in%20park&image_size=square',
+    noiseValue: 60,
+    timePeriod: 'morning',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-14 10:00',
+    caliberChanged: false,
+    originalCaliber: '',
+    currentCaliber: '',
+  },
+  {
+    id: 'mat-004',
+    monitorPointId: 'mp-002',
+    type: 'photo',
+    title: '儿童乐园早间照片',
+    description: '早晨9:00儿童游乐区',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=children%20playground%20park%20morning%20kids%20playing&image_size=square',
+    noiseValue: 62,
+    timePeriod: 'morning',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-15 09:30',
+    caliberChanged: false,
+    originalCaliber: '',
+    currentCaliber: '',
+  },
+  {
+    id: 'mat-005',
+    monitorPointId: 'mp-002',
+    type: 'photo',
+    title: '儿童乐园晚间照片',
+    description: '晚上18:30儿童游乐区',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=playground%20evening%20sunset%20park%20atmosphere&image_size=square',
+    noiseValue: 58,
+    timePeriod: 'evening',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-15 19:00',
+    caliberChanged: true,
+    originalCaliber: '晚高峰噪声限值65dB',
+    currentCaliber: '晚高峰噪声限值60dB',
+  },
+  {
+    id: 'mat-006',
+    monitorPointId: 'mp-003',
+    type: 'photo',
+    title: '健身区晨间照片',
+    description: '早晨6:30市民健身活动',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=outdoor%20gym%20park%20morning%20exercise%20equipment&image_size=square',
+    noiseValue: 55,
+    timePeriod: 'morning',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-15 07:00',
+    caliberChanged: false,
+    originalCaliber: '',
+    currentCaliber: '',
+  },
+  {
+    id: 'mat-007',
+    monitorPointId: 'mp-004',
+    type: 'photo',
+    title: '休息廊晨间照片',
+    description: '早晨8:00市民休息区',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=park%20pavilion%20rest%20area%20morning%20peaceful&image_size=square',
+    noiseValue: 48,
+    timePeriod: 'morning',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-15 08:30',
+    caliberChanged: false,
+    originalCaliber: '',
+    currentCaliber: '',
+  },
+  {
+    id: 'mat-008',
+    monitorPointId: 'mp-005',
+    type: 'photo',
+    title: '音乐喷泉午间照片',
+    description: '中午12:00喷泉表演',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=musical%20fountain%20park%20center%20water%20show&image_size=square',
+    noiseValue: 75,
+    timePeriod: 'morning',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-15 12:30',
+    caliberChanged: false,
+    originalCaliber: '',
+    currentCaliber: '',
+  },
+  {
+    id: 'mat-009',
+    monitorPointId: 'mp-005',
+    type: 'boundary',
+    title: '中央区噪声边界样本',
+    description: '中央喷泉区域边界测量',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=noise%20measurement%20device%20park%20fountain%20area&image_size=square',
+    noiseValue: 70,
+    timePeriod: 'morning',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-14 15:00',
+    caliberChanged: false,
+    originalCaliber: '',
+    currentCaliber: '',
+  },
+  {
+    id: 'mat-010',
+    monitorPointId: 'mp-005',
+    type: 'note',
+    title: '口头说明记录',
+    description: '喷泉表演时间调整为周末及节假日12:00-12:30',
+    imageUrl: '',
+    noiseValue: 0,
+    timePeriod: 'morning',
+    submittedBy: '周姐',
+    submittedAt: '2026-06-15 13:00',
+    caliberChanged: false,
+    originalCaliber: '',
+    currentCaliber: '',
+  },
+];
+
+export const mockPhotoRecords: PhotoRecord[] = [
+  {
+    id: 'photo-001',
+    monitorPointId: 'mp-003',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=fitness%20area%20park%20verification%20photo%20on-site%20inspection&image_size=square',
+    description: '现场复核确认健身区噪声在限值内',
+    recordedBy: '现场老师',
+    recordedAt: '2026-06-15 14:00',
+    changes: ['确认噪声值55dB正常', '状态更新为已确认'],
+  },
+  {
+    id: 'photo-002',
+    monitorPointId: 'mp-004',
+    imageUrl: 'https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=park%20pavilion%20quiet%20area%20verification%20photo&image_size=square',
+    description: '休息廊环境安静，符合要求',
+    recordedBy: '现场老师',
+    recordedAt: '2026-06-15 14:30',
+    changes: ['确认噪声值48dB正常', '状态更新为已处理'],
+  },
+];
+
+export const mockReviewRecords: ReviewRecord[] = [
+  {
+    id: 'review-001',
+    monitorPointId: 'mp-001',
+    isOverLimit: true,
+    noiseCapacity: 60,
+    measuredValue: 68,
+    timePeriod: 'morning',
+    needManualConfirm: true,
+    confirmReason: '1. 噪声测量值68dB超出容量限值60dB的10%以上\n2. 该监测点材料存在口径变更记录\n3. 早晚高峰测量口径不一致',
+    nextStep: '请现场老师补录现场照片确认实际情况，或联系周姐说明口径变更原因',
+    reviewedBy: '系统',
+    reviewedAt: '2026-06-15 21:00',
+    status: 'pending',
+  },
+  {
+    id: 'review-002',
+    monitorPointId: 'mp-001',
+    isOverLimit: true,
+    noiseCapacity: 60,
+    measuredValue: 72,
+    timePeriod: 'evening',
+    needManualConfirm: true,
+    confirmReason: '噪声测量值72dB超出容量限值60dB的20%',
+    nextStep: '请现场老师补录晚间现场照片',
+    reviewedBy: '系统',
+    reviewedAt: '2026-06-15 21:05',
+    status: 'pending',
+  },
+  {
+    id: 'review-003',
+    monitorPointId: 'mp-002',
+    isOverLimit: false,
+    noiseCapacity: 65,
+    measuredValue: 62,
+    timePeriod: 'morning',
+    needManualConfirm: false,
+    confirmReason: '',
+    nextStep: '',
+    reviewedBy: '系统',
+    reviewedAt: '2026-06-15 21:10',
+    status: 'confirmed',
+  },
+  {
+    id: 'review-004',
+    monitorPointId: 'mp-002',
+    isOverLimit: false,
+    noiseCapacity: 65,
+    measuredValue: 58,
+    timePeriod: 'evening',
+    needManualConfirm: true,
+    confirmReason: '该监测点材料存在口径变更记录：晚高峰限值由65dB改为60dB',
+    nextStep: '请确认口径变更的合理性',
+    reviewedBy: '系统',
+    reviewedAt: '2026-06-15 21:15',
+    status: 'pending',
+  },
+  {
+    id: 'review-005',
+    monitorPointId: 'mp-003',
+    isOverLimit: false,
+    noiseCapacity: 60,
+    measuredValue: 55,
+    timePeriod: 'morning',
+    needManualConfirm: false,
+    confirmReason: '',
+    nextStep: '',
+    reviewedBy: '现场老师',
+    reviewedAt: '2026-06-15 14:00',
+    status: 'confirmed',
+  },
+  {
+    id: 'review-006',
+    monitorPointId: 'mp-004',
+    isOverLimit: false,
+    noiseCapacity: 55,
+    measuredValue: 48,
+    timePeriod: 'morning',
+    needManualConfirm: false,
+    confirmReason: '',
+    nextStep: '',
+    reviewedBy: '现场老师',
+    reviewedAt: '2026-06-15 14:30',
+    status: 'confirmed',
+  },
+  {
+    id: 'review-007',
+    monitorPointId: 'mp-005',
+    isOverLimit: true,
+    noiseCapacity: 70,
+    measuredValue: 75,
+    timePeriod: 'morning',
+    needManualConfirm: true,
+    confirmReason: '噪声测量值75dB超出容量限值70dB，需确认是否为特殊时段',
+    nextStep: '请核实喷泉表演时段是否属于常规运营时间',
+    reviewedBy: '系统',
+    reviewedAt: '2026-06-15 21:20',
+    status: 'pending',
+  },
+];
+
+export const mockChangeLogs: ChangeLog[] = [
+  {
+    id: 'log-001',
+    materialId: 'mat-001',
+    field: 'noiseValue',
+    oldValue: '65dB',
+    newValue: '68dB',
+    changedAt: '2026-06-15 09:00',
+  },
+  {
+    id: 'log-002',
+    materialId: 'mat-001',
+    field: 'caliber',
+    oldValue: '早高峰噪声限值65dB',
+    newValue: '早高峰噪声限值60dB',
+    changedAt: '2026-06-15 09:05',
+  },
+  {
+    id: 'log-003',
+    materialId: 'mat-005',
+    field: 'caliber',
+    oldValue: '晚高峰噪声限值65dB',
+    newValue: '晚高峰噪声限值60dB',
+    changedAt: '2026-06-15 19:30',
+  },
+];
+
+export const getNoiseColor = (value: number, capacity: number): string => {
+  const ratio = value / capacity;
+  if (ratio < 0.8) return '#38a169';
+  if (ratio < 1.0) return '#d69e2e';
+  if (ratio < 1.1) return '#ed8936';
+  return '#e53e3e';
+};
+
+export const getStatusColor = (status: string): string => {
+  switch (status) {
+    case 'confirmed': return '#38a169';
+    case 'processed': return '#3182ce';
+    case 'pending': return '#d69e2e';
+    case 'need_evidence': return '#e53e3e';
+    default: return '#718096';
+  }
+};
+
+export const getStatusText = (status: string): string => {
+  switch (status) {
+    case 'confirmed': return '已确认';
+    case 'processed': return '已处理';
+    case 'pending': return '待复核';
+    case 'need_evidence': return '待补证';
+    default: return '未知';
+  }
+};
+
+export const getTimePeriodText = (period: TimePeriod): string => {
+  return period === 'morning' ? '早高峰' : '晚高峰';
+};
+
+export const getAreaList = (): string[] => {
+  return ['东区', '南区', '西区', '北区', '中心区'];
+};
