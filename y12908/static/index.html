@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>对话多轮遗忘诊断</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 30px; }
+        .header h1 { font-size: 24px; margin-bottom: 5px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        .nav { background: white; padding: 0 30px; border-bottom: 1px solid #e0e0e0; display: flex; gap: 5px; }
+        .nav-item { padding: 15px 20px; cursor: pointer; border-bottom: 3px solid transparent; font-size: 14px; color: #666; }
+        .nav-item.active { color: #667eea; border-bottom-color: #667eea; font-weight: 600; }
+        .nav-item:hover { background: #f0f4ff; }
+        .container { padding: 30px; }
+        .page { display: none; }
+        .page.active { display: block; }
+        .card { background: white; border-radius: 8px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .card h2 { font-size: 18px; margin-bottom: 16px; color: #333; }
+        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+        .btn-danger { background: #ef5350; color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 14px; color: #555; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-group textarea { min-height: 120px; font-family: monospace; }
+        .form-row { display: flex; gap: 16px; }
+        .form-row .form-group { flex: 1; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; color: #555; }
+        tr:hover { background: #f8f9fa; }
+        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .status-pass { background: #e8f5e9; color: #2e7d32; }
+        .status-fail { background: #ffebee; color: #c62828; }
+        .status-pending { background: #fff3e0; color: #ef6c00; }
+        .status-error { background: #fce4ec; color: #ad1457; }
+        .severity-high { background: #ffebee; color: #c62828; }
+        .severity-medium { background: #fff3e0; color: #ef6c00; }
+        .severity-low { background: #e3f2fd; color: #1565c0; }
+        .severity-critical { background: #ffcdd2; color: #b71c1c; font-weight: bold; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .stat-card .label { font-size: 13px; color: #888; margin-bottom: 8px; }
+        .stat-card .value { font-size: 28px; font-weight: 700; color: #333; }
+        .stat-card .delta { font-size: 12px; margin-top: 4px; }
+        .delta-up { color: #c62828; }
+        .delta-down { color: #2e7d32; }
+        .error-box { background: #ffebee; color: #c62828; padding: 16px; border-radius: 6px; margin-bottom: 16px; }
+        .error-box h4 { margin-bottom: 8px; }
+        .error-box ul { margin-left: 20px; }
+        .error-box li { margin: 4px 0; font-size: 14px; }
+        .tabs { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 16px; }
+        .tab { padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab.active { border-bottom-color: #667eea; color: #667eea; font-weight: 600; }
+        .diff-view { display: flex; gap: 20px; font-family: monospace; font-size: 13px; }
+        .diff-col { flex: 1; }
+        .diff-col h4 { font-size: 13px; color: #888; margin-bottom: 8px; }
+        .diff-content { background: #f8f9fa; padding: 12px; border-radius: 6px; white-space: pre-wrap; }
+        .missing-rule { background: #fff8e1; padding: 8px 12px; border-radius: 4px; margin: 4px 0; font-size: 13px; }
+        .actionable-step { background: #e8f5e9; padding: 8px 12px; border-radius: 4px; margin: 4px 0; font-size: 13px; }
+        .json-preview { background: #f5f5f5; padding: 12px; border-radius: 6px; font-family: monospace; font-size: 12px; max-height: 200px; overflow-y: auto; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>对话多轮遗忘诊断</h1>
+        <p>AI/ML 工作流工具 - 样本去重 · 诊断分析 · 人工修正 · 指标监控</p>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item active" data-page="deduplication">样本去重（日常入口）</div>
+        <div class="nav-item" data-page="diagnosis">诊断结果</div>
+        <div class="nav-item" data-page="correction">人工修正</div>
+        <div class="nav-item" data-page="metrics">分组指标</div>
+        <div class="nav-item" data-page="comparison">灰度对比</div>
+        <div class="nav-item" data-page="security">安全规则</div>
+    </div>
+
+    <div class="container">
+        <div id="deduplication" class="page active">
+            <div class="card">
+                <h2>样本导入</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>批次名称</label>
+                        <input type="text" id="batchName" placeholder="如: 2024Q1训练样本_v3">
+                    </div>
+                    <div class="form-group">
+                        <label>导入人</label>
+                        <input type="text" id="importedBy" value="产品经理" placeholder="请输入姓名">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>样本数据（JSON 格式）</label>
+                    <textarea id="samplesData" placeholder='[{"content": {"turns": [{"user": "你好", "assistant": "您好！"}]}, "split_type": "train"}]'></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="importSamples()">导入样本</button>
+            </div>
+
+            <div class="card">
+                <h2>评测题库导入</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>题库名称</label>
+                        <input type="text" id="bankName" placeholder="如: 产品课评测题_第2期">
+                    </div>
+                    <div class="form-group">
+                        <label>导入批次ID（可选，用于防止重复导入）</label>
+                        <input type="text" id="importBatchId" placeholder="留空自动生成">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>题库数据（JSON 格式）</label>
+                    <textarea id="questionsData" placeholder='[{"content": {"question": "如何优化模型表现？", "answer": "从数据、模型、训练三方面入手"}}]'></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="importEvaluationBank()">导入评测题库</button>
+            </div>
+
+            <div class="card">
+                <h2>批次列表</h2>
+                <button class="btn btn-secondary btn-sm" onclick="loadBatches()">刷新</button>
+                <div id="batchesList" style="margin-top: 16px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>重复样本检测</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>批次ID（可选，不填则检测全部）</label>
+                        <input type="text" id="dupBatchId" placeholder="输入批次ID">
+                    </div>
+                    <div class="form-group">
+                        <label>相似度阈值</label>
+                        <input type="number" id="dupThreshold" value="0.95" step="0.05" min="0" max="1">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="checkDuplicates()">检测重复</button>
+                <div id="duplicatesResult" style="margin-top: 16px;"></div>
+            </div>
+        </div>
+
+        <div id="diagnosis" class="page">
+            <div class="card">
+                <h2>运行诊断</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>批次ID</label>
+                        <input type="text" id="diagBatchId" placeholder="输入要诊断的批次ID">
+                    </div>
+                    <div class="form-group">
+                        <label>样本ID（单独诊断）</label>
+                        <input type="number" id="diagSampleId" placeholder="输入样本ID">
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="diagnoseBatch()">诊断整个批次</button>
+                <button class="btn btn-secondary" onclick="diagnoseSample()">诊断单个样本</button>
+            </div>
+
+            <div class="card">
+                <h2>诊断摘要</h2>
+                <div class="form-group">
+                    <label>批次ID</label>
+                    <input type="text" id="summaryBatchId" placeholder="输入批次ID查看摘要">
+                </div>
+                <button class="btn btn-primary" onclick="loadBatchSummary()">查看摘要</button>
+                <div id="summaryResult" style="margin-top: 16px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>诊断结果查询</h2>
+                <div class="form-group">
+                    <label>样本ID</label>
+                    <input type="number" id="resultSampleId" placeholder="输入样本ID">
+                </div>
+                <button class="btn btn-primary" onclick="loadDiagnosisResult()">查看最新诊断</button>
+                <button class="btn btn-secondary" onclick="loadDiagnosisHistory()">查看历史</button>
+                <div id="diagnosisResult" style="margin-top: 16px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>导出诊断结果</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>批次ID</label>
+                        <input type="text" id="exportBatchId" placeholder="输入批次ID">
+                    </div>
+                    <div class="form-group">
+                        <label>导出格式</label>
+                        <select id="exportFormat">
+                            <option value="csv">CSV</option>
+                            <option value="json">JSON</option>
+                            <option value="jsonl">JSONL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>导出类型</label>
+                        <select id="exportType">
+                            <option value="samples">全部样本</option>
+                            <option value="report">问题样本报告</option>
+                            <option value="corrections">修正记录</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="exportData()">导出</button>
+            </div>
+        </div>
+
+        <div id="correction" class="page">
+            <div class="card">
+                <h2>人工修正诊断结果</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>样本ID</label>
+                        <input type="number" id="corrSampleId" placeholder="输入样本ID">
+                    </div>
+                    <div class="form-group">
+                        <label>新状态</label>
+                        <select id="corrNewStatus">
+                            <option value="PASS">通过</option>
+                            <option value="FAIL">失败</option>
+                            <option value="TO_BE_CONFIRMED">待确认</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>修正原因</label>
+                    <input type="text" id="corrReason" placeholder="请说明修正原因">
+                </div>
+                <div class="form-group">
+                    <label>修正人</label>
+                    <input type="text" id="corrBy" value="产品经理">
+                </div>
+                <button class="btn btn-primary" onclick="overrideDiagnosis()">覆盖诊断结果</button>
+            </div>
+
+            <div class="card">
+                <h2>修正样本内容</h2>
+                <div class="form-group">
+                    <label>样本ID</label>
+                    <input type="number" id="contentSampleId" placeholder="输入样本ID">
+                </div>
+                <div class="form-group">
+                    <label>新内容（JSON）</label>
+                    <textarea id="newContent" placeholder='{"turns": [{"user": "你好", "assistant": "您好！"}]}'></textarea>
+                </div>
+                <div class="form-group">
+                    <label>修正原因</label>
+                    <input type="text" id="contentReason" placeholder="请说明修正原因">
+                </div>
+                <button class="btn btn-primary" onclick="correctContent()">提交修正</button>
+            </div>
+
+            <div class="card">
+                <h2>修正记录</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>样本ID（可选）</label>
+                        <input type="number" id="filterSampleId" placeholder="输入样本ID过滤">
+                    </div>
+                    <div class="form-group">
+                        <label>修正类型</label>
+                        <select id="filterCorrType">
+                            <option value="">全部</option>
+                            <option value="override_diagnosis">覆盖诊断</option>
+                            <option value="content">内容修正</option>
+                            <option value="status">状态修正</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="loadCorrections()">查询</button>
+                <div id="correctionsList" style="margin-top: 16px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>版本管理</h2>
+                <div class="form-group">
+                    <label>样本ID</label>
+                    <input type="number" id="versionSampleId" placeholder="输入样本ID">
+                </div>
+                <button class="btn btn-primary" onclick="loadVersions()">查看版本历史</button>
+                <button class="btn btn-secondary" onclick="compareVersions()">对比版本</button>
+                <div id="versionsResult" style="margin-top: 16px;"></div>
+            </div>
+        </div>
+
+        <div id="metrics" class="page">
+            <div class="card">
+                <h2>计算批次指标</h2>
+                <div class="form-group">
+                    <label>批次ID</label>
+                    <input type="text" id="metricsBatchId" placeholder="输入批次ID">
+                </div>
+                <button class="btn btn-primary" onclick="calculateMetrics()">计算指标</button>
+                <button class="btn btn-secondary" onclick="loadMetrics()">查看指标</button>
+                <div id="metricsResult" style="margin-top: 16px;"></div>
+            </div>
+        </div>
+
+        <div id="comparison" class="page">
+            <div class="card">
+                <h2>灰度对比分析（月底/课前用）</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>批次A ID</label>
+                        <input type="text" id="batchAId" placeholder="如: 2024Q1训练样本_v2">
+                    </div>
+                    <div class="form-group">
+                        <label>批次B ID</label>
+                        <input type="text" id="batchBId" placeholder="如: 2024Q1训练样本_v3">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>对比指标</label>
+                        <select id="compareMetric">
+                            <option value="sample_status_ratio">样本状态比例</option>
+                            <option value="sample_status_count">样本状态数量</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>分组（可选）</label>
+                        <select id="compareGroup">
+                            <option value="">全部分组</option>
+                            <option value="CLEAN">干净样本</option>
+                            <option value="DIRTY">脏样本</option>
+                            <option value="LEAKAGE">泄漏样本</option>
+                            <option value="CORRECTED">已修正</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="compareBatches()">生成对比分析</button>
+                <div id="comparisonResult" style="margin-top: 16px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>历史对比记录</h2>
+                <button class="btn btn-secondary btn-sm" onclick="loadComparisons()">刷新</button>
+                <div id="comparisonsList" style="margin-top: 16px;"></div>
+            </div>
+        </div>
+
+        <div id="security" class="page">
+            <div class="card">
+                <h2>安全规则管理</h2>
+                <button class="btn btn-secondary btn-sm" onclick="loadSecurityRules()">刷新规则</button>
+                <div id="securityRulesList" style="margin-top: 16px;"></div>
+            </div>
+
+            <div class="card">
+                <h2>添加新规则</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>规则编码</label>
+                        <input type="text" id="ruleCode" placeholder="如: LEAKAGE_004">
+                    </div>
+                    <div class="form-group">
+                        <label>规则名称</label>
+                        <input type="text" id="ruleName" placeholder="如: 时间窗口隔离规则">
+                    </div>
+                    <div class="form-group">
+                        <label>严重程度</label>
+                        <select id="ruleSeverity">
+                            <option value="low">低</option>
+                            <option value="medium">中</option>
+                            <option value="high">高</option>
+                            <option value="critical">严重</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>规则描述</label>
+                    <input type="text" id="ruleDesc" placeholder="描述规则的具体内容">
+                </div>
+                <button class="btn btn-primary" onclick="createSecurityRule()">添加规则</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        function showError(error) {
+            const errorData = error.error || {};
+            let html = `<div class="error-box">`;
+            html += `<h4>${errorData.code || '错误'}: ${errorData.message || '未知错误'}</h4>`;
+            if (errorData.missing_rules && errorData.missing_rules.length > 0) {
+                html += `<p><strong>缺失的安全规则:</strong></p>`;
+                errorData.missing_rules.forEach(rule => {
+                    html += `<div class="missing-rule">${rule.rule_code} - ${rule.rule_name} (${rule.severity}): ${rule.description}</div>`;
+                });
+            }
+            if (errorData.actionable_steps && errorData.actionable_steps.length > 0) {
+                html += `<p><strong>可操作建议:</strong></p>`;
+                html += `<ul>`;
+                errorData.actionable_steps.forEach(step => {
+                    html += `<div class="actionable-step">✓ ${step}</div>`;
+                });
+                html += `</ul>`;
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                item.classList.add('active');
+                document.getElementById(item.dataset.page).classList.add('active');
+            });
+        });
+
+        async function apiCall(path, method = 'GET', data = null) {
+            const options = { method, headers: { 'Content-Type': 'application/json' } };
+            if (data) options.body = JSON.stringify(data);
+            const res = await fetch(API_BASE + path, options);
+            const result = await res.json();
+            return { ok: res.ok, status: res.status, data: result };
+        }
+
+        async function importSamples() {
+            const batchName = document.getElementById('batchName').value;
+            const createdBy = document.getElementById('importedBy').value;
+            let samples;
+            try {
+                samples = JSON.parse(document.getElementById('samplesData').value);
+            } catch (e) {
+                alert('JSON 格式错误: ' + e.message);
+                return;
+            }
+            const res = await apiCall('/samples/import', 'POST', { batch_name: batchName, samples, created_by: createdBy });
+            const target = document.getElementById('batchesList');
+            if (res.ok) {
+                target.innerHTML = `<div class="stat-card"><div class="label">导入结果</div><div class="value">成功</div><div style="margin-top:8px;">批次ID: ${res.data.batch_id}<br>导入: ${res.data.imported} / 重复: ${res.data.duplicates} / 失败: ${res.data.failed}</div></div>`;
+                loadBatches();
+            } else {
+                target.innerHTML = showError(res.data);
+            }
+        }
+
+        async function importEvaluationBank() {
+            const bankName = document.getElementById('bankName').value;
+            const importBatchId = document.getElementById('importBatchId').value || null;
+            let questions;
+            try {
+                questions = JSON.parse(document.getElementById('questionsData').value);
+            } catch (e) {
+                alert('JSON 格式错误: ' + e.message);
+                return;
+            }
+            const res = await apiCall('/evaluation-bank/import', 'POST', { bank_name: bankName, questions, import_batch_id: importBatchId });
+            const target = document.getElementById('batchesList');
+            if (res.ok) {
+                target.innerHTML = `<div class="stat-card"><div class="label">题库导入结果</div><div class="value">成功</div><div style="margin-top:8px;">导入批次ID: ${res.data.import_batch_id}<br>导入: ${res.data.imported} / 重复: ${res.data.duplicates} / 失败: ${res.data.failed}</div></div>`;
+            } else {
+                target.innerHTML = showError(res.data);
+            }
+        }
+
+        async function loadBatches() {
+            const res = await apiCall('/batches');
+            const target = document.getElementById('batchesList');
+            if (res.ok && res.data.length > 0) {
+                let html = '<table><tr><th>批次ID</th><th>批次名称</th><th>总数</th><th>状态分布</th><th>创建时间</th><th>操作</th></tr>';
+                res.data.forEach(batch => {
+                    const statusText = Object.entries(batch.status_counts).map(([k, v]) => `${k}:${v}`).join(', ');
+                    html += `<tr><td><code>${batch.batch_id}</code></td><td>${batch.batch_name}</td><td>${batch.total_count}</td><td>${statusText}</td><td>${batch.created_at}</td><td><button class="btn btn-sm btn-secondary" onclick="document.getElementById('diagBatchId').value='${batch.batch_id}'">诊断</button></td></tr>`;
+                });
+                html += '</table>';
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = '<p>暂无批次数据</p>';
+            }
+        }
+
+        async function checkDuplicates() {
+            const batchId = document.getElementById('dupBatchId').value;
+            const threshold = document.getElementById('dupThreshold').value;
+            const url = `/deduplication/check?threshold=${threshold}` + (batchId ? `&batch_id=${batchId}` : '');
+            const res = await apiCall(url);
+            const target = document.getElementById('duplicatesResult');
+            if (res.ok) {
+                const dups = res.data.duplicates;
+                if (dups.length === 0) {
+                    target.innerHTML = '<p>未检测到重复样本</p>';
+                } else {
+                    let html = `<p>共检测到 ${dups.length} 组重复样本:</p><table><tr><th>类型</th><th>相似度</th><th>原样本ID</th><th>重复样本ID</th></tr>`;
+                    dups.forEach(d => {
+                        html += `<tr><td>${d.type}</td><td>${(d.similarity * 100).toFixed(1)}%</td><td>${d.original_sample_id}</td><td>${d.duplicate_sample_id}</td></tr>`;
+                    });
+                    html += '</table>';
+                    target.innerHTML = html;
+                }
+            } else {
+                target.innerHTML = showError(res.data);
+            }
+        }
+
+        async function diagnoseBatch() {
+            const batchId = document.getElementById('diagBatchId').value;
+            if (!batchId) { alert('请输入批次ID'); return; }
+            const res = await apiCall(`/diagnosis/batches/${batchId}`, 'POST');
+            const target = document.getElementById('diagnosisResult');
+            if (res.ok) {
+                target.innerHTML = `<div class="stat-card"><div class="label">批次诊断结果</div><div class="value">${(res.data.pass_rate * 100).toFixed(1)}% 通过率</div><div style="margin-top:8px;">总数: ${res.data.total} / 通过: ${res.data.passed} / 失败: ${res.data.failed} / 错误: ${res.data.errors}</div></div>`;
+            } else {
+                target.innerHTML = showError(res.data);
+            }
+        }
+
+        async function diagnoseSample() {
+            const sampleId = document.getElementById('diagSampleId').value;
+            if (!sampleId) { alert('请输入样本ID'); return; }
+            const res = await apiCall(`/diagnosis/samples/${sampleId}`, 'POST');
+            const target = document.getElementById('diagnosisResult');
+            if (res.ok) {
+                target.innerHTML = renderDiagnosisResult(res.data);
+            } else {
+                target.innerHTML = showError(res.data);
+            }
+        }
+
+        function renderDiagnosisResult(data) {
+            const statusClass = 'status-' + data.status.toLowerCase();
+            const severityClass = data.severity ? 'severity-' + data.severity.toLowerCase() : '';
+            let html = `<div class="stat-card"><div class="label">诊断状态</div><span class="status-badge ${statusClass}">${data.status}</span><div class="label" style="margin-top:16px;">诊断摘要</div><div class="value" style="font-size:16px;">${data.summary}</div>`;
+            if (data.severity) {
+                html += `<div style="margin-top:12px;"><span class="status-badge ${severityClass}">严重程度: ${data.severity}</span></div>`;
+            }
+            html += `<div class="label" style="margin-top:16px;">置信度</div><div class="value" style="font-size:20px;">${(data.confidence * 100).toFixed(1)}%</div>`;
+            if (data.matched_rules && data.matched_rules.length > 0) {
+                html += `<div class="label" style="margin-top:16px;">触发规则</div><div>${data.matched_rules.join(', ')}</div>`;
+            }
+            if (data.missing_rules && data.missing_rules.length > 0) {
+                html += `<div class="label" style="margin-top:16px;">缺失规则</div><div style="color:#c62828;">${data.missing_rules.join(', ')}</div>`;
+            }
+            if (data.details) {
+                html += `<div class="label" style="margin-top:16px;">详细信息</div><div class="json-preview">${JSON.stringify(data.details, null, 2)}</div>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        async function loadBatchSummary() {
+            const batchId = document.getElementById('summaryBatchId').value;
+            if (!batchId) { alert('请输入批次ID'); return; }
+            const res = await apiCall(`/summary/batches/${batchId}`);
+            const target = document.getElementById('summaryResult');
+            if (res.ok) {
+                const data = res.data;
+                let html = `<div class="stats-grid">`;
+                html += `<div class="stat-card"><div class="label">样本总数</div><div class="value">${data.total_samples}</div></div>`;
+                html += `<div class="stat-card"><div class="label">已诊断</div><div class="value">${data.diagnosed_count}</div></div>`;
+                html += `<div class="stat-card"><div class="label">通过率</div><div class="value">${(data.pass_rate * 100).toFixed(1)}%</div></div>`;
+                html += `</div>`;
+                html += `<div class="card"><h3>状态分布</h3><table><tr><th>状态</th><th>数量</th></tr>`;
+                Object.entries(data.status_counts).forEach(([k, v]) => {
+                    html += `<tr><td>${k}</td><td>${v}</td></tr>`;
+                });
+                html += `</table></div>`;
+                html += `<p style="color:#888; font-size:13px; margin-top:10px;">生成时间: ${data.generated_at}</p>`;
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = showError(res.data);
+            }
+        }
+
+        async function loadDiagnosisResult() {
+            const sampleId = document.getElementById('resultSampleId').value;
+            if (!sampleId) { alert('请输入样本ID'); return; }
+            const res = await apiCall(`/diagnosis/samples/${sampleId}/latest`);
+            const target = document.getElementById('diagnosisResult');
+            if (res.ok && res.data) {
+                target.innerHTML = renderDiagnosisResult(res.data);
+            } else {
+                target.innerHTML = '<p>暂无诊断结果</p>';
+            }
+        }
+
+        async function loadDiagnosisHistory() {
+            const sampleId = document.getElementById('resultSampleId').value;
+            if (!sampleId) { alert('请输入样本ID'); return; }
+            const res = await apiCall(`/diagnosis/samples/${sampleId}/history`);
+            const target = document.getElementById('diagnosisResult');
+            if (res.ok && res.data.length > 0) {
+                let html = '<h3>诊断历史</h3><table><tr><th>时间</th><th>状态</th><th>摘要</th><th>诊断人</th><th>是否最新</th></tr>';
+                res.data.forEach(item => {
+                    const statusClass = 'status-' + item.status.toLowerCase();
+                    html += `<tr><td>${item.updated_at}</td><td><span class="status-badge ${statusClass}">${item.status}</span></td><td>${item.summary}</td><td>${item.diagnosed_by}</td><td>${item.is_latest ? '✓' : ''}</td></tr>`;
+                });
+                html += '</table>';
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = '<p>暂无历史记录</p>';
+            }
+        }
+
+        function exportData() {
+            const batchId = document.getElementById('exportBatchId').value;
+            const format = document.getElementById('exportFormat').value;
+            const type = document.getElementById('exportType').value;
+            let url;
+            if (type === 'samples') {
+                url = `${API_BASE}/export/samples?format=${format}` + (batchId ? `&batch_id=${batchId}` : '');
+            } else if (type === 'report') {
+                if (!batchId) { alert('导出报告需要批次ID'); return; }
+                url = `${API_BASE}/export/report/${batchId}?format=${format}`;
+            } else {
+                url = `${API_BASE}/export/corrections?format=${format}` + (batchId ? `&batch_id=${batchId}` : '');
+            }
+            window.open(url, '_blank');
+        }
+
+        async function overrideDiagnosis() {
+            const sampleId = document.getElementById('corrSampleId').value;
+            const newStatus = document.getElementById('corrNewStatus').value;
+            const reason = document.getElementById('corrReason').value;
+            const by = document.getElementById('corrBy').value;
+            if (!sampleId) { alert('请输入样本ID'); return; }
+            const res = await apiCall('/corrections/override-diagnosis', 'POST', {
+                sample_id: parseInt(sampleId), new_status: newStatus, reason, overridden_by: by
+            });
+            if (res.ok) {
+                alert('修正成功！');
+                loadCorrections();
+            } else {
+                document.getElementById('correctionsList').innerHTML = showError(res.data);
+            }
+        }
+
+        async function correctContent() {
+            const sampleId = document.getElementById('contentSampleId').value;
+            const reason = document.getElementById('contentReason').value;
+            let newContent;
+            try {
+                newContent = JSON.parse(document.getElementById('newContent').value);
+            } catch (e) {
+                alert('JSON 格式错误: ' + e.message);
+                return;
+            }
+            if (!sampleId) { alert('请输入样本ID'); return; }
+            const res = await apiCall('/corrections', 'POST', {
+                sample_id: parseInt(sampleId),
+                correction_type: 'content',
+                new_value: newContent,
+                correction_reason: reason,
+                corrected_by: document.getElementById('corrBy').value
+            });
+            if (res.ok) {
+                alert('修正成功！新版本已创建');
+                loadCorrections();
+            } else {
+                document.getElementById('correctionsList').innerHTML = showError(res.data);
+            }
+        }
+
+        async function loadCorrections() {
+            const sampleId = document.getElementById('filterSampleId').value;
+            const corrType = document.getElementById('filterCorrType').value;
+            let url = '/corrections?limit=50';
+            if (sampleId) url += `&sample_id=${sampleId}`;
+            if (corrType) url += `&correction_type=${corrType}`;
+            const res = await apiCall(url);
+            const target = document.getElementById('correctionsList');
+            if (res.ok && res.data.length > 0) {
+                let html = '<table><tr><th>ID</th><th>样本ID</th><th>类型</th><th>原因</th><th>修正人</th><th>版本</th><th>时间</th></tr>';
+                res.data.forEach(item => {
+                    html += `<tr><td>${item.id}</td><td>${item.sample_id}</td><td>${item.correction_type}</td><td>${item.correction_reason || '-'}</td><td>${item.corrected_by}</td><td>${item.version_number || '-'}</td><td>${item.created_at}</td></tr>`;
+                });
+                html += '</table>';
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = '<p>暂无修正记录</p>';
+            }
+        }
+
+        async function loadVersions() {
+            const sampleId = document.getElementById('versionSampleId').value;
+            if (!sampleId) { alert('请输入样本ID'); return; }
+            const res = await apiCall(`/samples/${sampleId}/versions`);
+            const target = document.getElementById('versionsResult');
+            if (res.ok && res.data.length > 0) {
+                let html = '<h3>版本历史</h3><table><tr><th>版本号</th><th>哈希</th><th>变更原因</th><th>变更人</th><th>时间</th></tr>';
+                res.data.forEach(item => {
+                    html += `<tr><td>${item.version_number}</td><td><code>${item.content_hash.substring(0, 16)}...</code></td><td>${item.change_reason || '-'}</td><td>${item.changed_by}</td><td>${item.created_at}</td></tr>`;
+                });
+                html += '</table>';
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = '<p>暂无版本记录</p>';
+            }
+        }
+
+        async function compareVersions() {
+            const sampleId = document.getElementById('versionSampleId').value;
+            const versionA = prompt('请输入基准版本号:');
+            const versionB = prompt('请输入对比版本号:');
+            if (!sampleId || !versionA || !versionB) return;
+            const res = await apiCall(`/samples/${sampleId}/versions/compare?version_a=${versionA}&version_b=${versionB}`);
+            const target = document.getElementById('versionsResult');
+            if (res.ok) {
+                let html = `<h3>版本对比 (v${versionA} → v${versionB})</h3><p>共 ${res.data.total_changes} 处变更</p>`;
+                res.data.changes.forEach(change => {
+                    html += `<div class="card" style="margin:10px 0;"><h4>第 ${change.turn_index} 轮 (${change.change_type})</h4><div class="diff-view"><div class="diff-col"><h4>旧值</h4><div class="diff-content">${JSON.stringify(change.old_value, null, 2)}</div></div><div class="diff-col"><h4>新值</h4><div class="diff-content">${JSON.stringify(change.new_value, null, 2)}</div></div></div></div>`;
+                });
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = showError(res.data);
+            }
+        }
+
+        async function calculateMetrics() {
+            const batchId = document.getElementById('metricsBatchId').value;
+            if (!batchId) { alert('请输入批次ID'); return; }
+            const res = await apiCall(`/metrics/batches/${batchId}`, 'POST');
+            const target = document.getElementById('metricsResult');
+            if (res.ok && res.data.length > 0) {
+                renderMetrics(res.data, target);
+            } else {
+                target.innerHTML = '<p>暂无指标数据</p>';
+            }
+        }
+
+        async function loadMetrics() {
+            const batchId = document.getElementById('metricsBatchId').value;
+            if (!batchId) { alert('请输入批次ID'); return; }
+            const res = await apiCall(`/metrics/batches/${batchId}`);
+            const target = document.getElementById('metricsResult');
+            if (res.ok && res.data.length > 0) {
+                renderMetrics(res.data, target);
+            } else {
+                target.innerHTML = '<p>暂无指标数据</p>';
+            }
+        }
+
+        function renderMetrics(data, target) {
+            let html = '<table><tr><th>指标名称</th><th>分组</th><th>指标值</th><th>样本数</th><th>时间</th></tr>';
+            data.forEach(m => {
+                let displayValue = m.metric_value;
+                if (m.metric_name.includes('ratio')) {
+                    displayValue = (m.metric_value * 100).toFixed(2) + '%';
+                }
+                html += `<tr><td>${m.metric_name}</td><td>${m.group_key}</td><td>${displayValue}</td><td>${m.sample_count}</td><td>${m.created_at}</td></tr>`;
+            });
+            html += '</table>';
+            target.innerHTML = html;
+        }
+
+        async function compareBatches() {
+            const batchA = document.getElementById('batchAId').value;
+            const batchB = document.getElementById('batchBId').value;
+            const metric = document.getElementById('compareMetric').value;
+            const group = document.getElementById('compareGroup').value || null;
+            if (!batchA || !batchB) { alert('请输入两个批次ID'); return; }
+            const res = await apiCall('/metrics/compare', 'POST', {
+                batch_a_id: batchA, batch_b_id: batchB, metric_name: metric, group_key: group
+            });
+            const target = document.getElementById('comparisonResult');
+            if (res.ok && res.data.length > 0) {
+                let html = `<div class="stats-grid">`;
+                res.data.forEach(c => {
+                    const deltaClass = c.diff_value > 0 ? 'delta-up' : 'delta-down';
+                    const sigMark = c.is_significant ? ' ⚠️' : '';
+                    html += `<div class="stat-card"><div class="label">${c.metric_name}</div><div class="value">A: ${(c.value_a * 100).toFixed(1)}% → B: ${(c.value_b * 100).toFixed(1)}%</div><div class="delta ${deltaClass}">${c.diff_value > 0 ? '+' : ''}${(c.diff_value * 100).toFixed(2)}% (${c.diff_percent > 0 ? '+' : ''}${c.diff_percent.toFixed(1)}%)${sigMark}</div>`;
+                    if (c.analysis_notes) {
+                        html += `<div style="margin-top:8px; font-size:12px; color:#666;">${c.analysis_notes.replace(/\n/g, '<br>')}</div>`;
+                    }
+                    html += `</div>`;
+                });
+                html += `</div>`;
+                target.innerHTML = html;
+                loadComparisons();
+            } else {
+                target.innerHTML = showError(res.data);
+            }
+        }
+
+        async function loadComparisons() {
+            const res = await apiCall('/metrics/comparisons?limit=20');
+            const target = document.getElementById('comparisonsList');
+            if (res.ok && res.data.length > 0) {
+                let html = '<table><tr><th>批次A</th><th>批次B</th><th>指标</th><th>A值</th><th>B值</th><th>差异%</th><th>显著</th><th>时间</th></tr>';
+                res.data.forEach(c => {
+                    html += `<tr><td>${c.batch_a_name}</td><td>${c.batch_b_name}</td><td>${c.metric_name}</td><td>${(c.value_a * 100).toFixed(1)}%</td><td>${(c.value_b * 100).toFixed(1)}%</td><td style="color:${c.diff_percent > 0 ? '#c62828' : '#2e7d32'}">${c.diff_percent > 0 ? '+' : ''}${c.diff_percent.toFixed(1)}%</td><td>${c.is_significant ? '⚠️ 是' : '否'}</td><td>${c.created_at}</td></tr>`;
+                });
+                html += '</table>';
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = '<p>暂无对比记录</p>';
+            }
+        }
+
+        async function loadSecurityRules() {
+            const res = await apiCall('/security-rules');
+            const target = document.getElementById('securityRulesList');
+            if (res.ok && res.data.length > 0) {
+                let html = '<table><tr><th>编码</th><th>名称</th><th>描述</th><th>严重程度</th><th>状态</th><th>操作</th></tr>';
+                res.data.forEach(rule => {
+                    const sevClass = 'severity-' + rule.severity.toLowerCase();
+                    html += `<tr><td><code>${rule.rule_code}</code></td><td>${rule.rule_name}</td><td>${rule.description}</td><td><span class="status-badge ${sevClass}">${rule.severity}</span></td><td>${rule.is_active ? '✓ 启用' : '✗ 禁用'}</td><td><button class="btn btn-sm btn-secondary" onclick="toggleRule(${rule.id}, ${!rule.is_active})">${rule.is_active ? '禁用' : '启用'}</button></td></tr>`;
+                });
+                html += '</table>';
+                target.innerHTML = html;
+            } else {
+                target.innerHTML = '<p>暂无安全规则</p>';
+            }
+        }
+
+        async function toggleRule(ruleId, isActive) {
+            const res = await apiCall(`/security-rules/${ruleId}`, 'PUT', { is_active: isActive });
+            if (res.ok) {
+                loadSecurityRules();
+            } else {
+                document.getElementById('securityRulesList').innerHTML = showError(res.data);
+            }
+        }
+
+        async function createSecurityRule() {
+            const ruleCode = document.getElementById('ruleCode').value;
+            const ruleName = document.getElementById('ruleName').value;
+            const ruleDesc = document.getElementById('ruleDesc').value;
+            const ruleSeverity = document.getElementById('ruleSeverity').value;
+            if (!ruleCode || !ruleName) { alert('请填写规则编码和名称'); return; }
+            const res = await apiCall('/security-rules', 'POST', {
+                rule_code: ruleCode, rule_name: ruleName, description: ruleDesc, severity: ruleSeverity
+            });
+            if (res.ok) {
+                alert('规则创建成功！');
+                loadSecurityRules();
+                document.getElementById('ruleCode').value = '';
+                document.getElementById('ruleName').value = '';
+                document.getElementById('ruleDesc').value = '';
+            } else {
+                document.getElementById('securityRulesList').innerHTML = showError(res.data);
+            }
+        }
+
+        loadBatches();
+        loadSecurityRules();
+    </script>
+</body>
+</html>
