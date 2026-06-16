@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family:
+      "Source Han Sans SC",
+      "Noto Sans SC",
+      "PingFang SC",
+      "Microsoft YaHei",
+      system-ui,
+      sans-serif;
+  }
+  body {
+    @apply bg-municipal-50 text-municipal-900 antialiased;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-[2px] border transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-municipal-600 text-white border-municipal-700 hover:bg-municipal-500 hover:shadow-card-hover focus:ring-municipal-500;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-municipal-700 border-municipal-200 hover:bg-municipal-50 focus:ring-municipal-300;
+  }
+  .btn-warning {
+    @apply btn bg-warning-500 text-white border-warning-600 hover:bg-warning-400 focus:ring-warning-400;
+  }
+  .btn-danger {
+    @apply btn bg-danger-500 text-white border-danger-600 hover:bg-danger-400 focus:ring-danger-400;
+  }
+  .btn-success {
+    @apply btn bg-success-500 text-white border-success-600 hover:bg-success-400 focus:ring-success-400;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-municipal-600 border-transparent hover:bg-municipal-100;
+  }
+  .card {
+    @apply bg-white border border-municipal-100 rounded shadow-card;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 text-xs font-medium rounded;
+  }
+  .badge-pending {
+    @apply bg-municipal-100 text-municipal-700;
+  }
+  .badge-active {
+    @apply bg-success-100 text-success-600;
+  }
+  .badge-suspended {
+    @apply bg-warning-100 text-warning-600;
+  }
+  .badge-withdrawn {
+    @apply bg-danger-100 text-danger-600;
+  }
+  .input {
+    @apply w-full px-3 py-2 text-sm bg-white border border-municipal-200 rounded-[2px] focus:outline-none focus:ring-2 focus:ring-municipal-400 focus:border-municipal-400;
+  }
+  .label {
+    @apply block text-sm font-medium text-municipal-700 mb-1;
+  }
+  .table-cell {
+    @apply px-4 py-3 text-sm border-b border-municipal-100;
+  }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #b3c5db transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #b3c5db;
+    border-radius: 3px;
+  }
+}
