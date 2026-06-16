@@ -1,0 +1,5 @@
+{"record_hash": 0, "source_index": 0, "score_chosen": 0.85, "score_rejected": 0.42, "verdict": "chosen_better", "human_remark": ""}
+{"record_hash": 1, "source_index": 1, "score_chosen": 0.52, "score_rejected": 0.78, "verdict": "rejected_better", "human_remark": "标注员B和标注员A观点相反，我觉得B的排序更合理"}
+{"record_hash": 2, "source_index": 2, "score_chosen": 0.91, "score_rejected": 0.35, "verdict": "chosen_better", "human_remark": ""}
+{"record_hash": 3, "source_index": 3, "score_chosen": 0.80, "score_rejected": 0.45, "verdict": "chosen_better", "human_remark": ""}
+{"record_hash": 4, "source_index": 4, "score_chosen": 0.73, "score_rejected": 0.71, "verdict": "ambiguous", "human_remark": "截断后两条回答模型打分很接近，无法判断偏好"}
