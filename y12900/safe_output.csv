@@ -1,0 +1,7 @@
+﻿sample_id,split,content,label,status,source_file,line_number,image_name,remark,content_hash,reason
+train-001,train,请解释梯度下降算法的工作原理,梯度下降是通过迭代沿着梯度反方向更新参数来最小化损失函数的优化方法。,leakage,examples/leakage_demo.jsonl,1,grad_desc_01.png,算法产品经理-第1批第1条,d032e8cc5ed39347,与验证样本 val-001 相似度 1.0
+train-002,train,梯度下降算法的工作原理是什么？,梯度下降是一种迭代优化算法，沿负梯度方向更新参数以最小化损失。,clean,examples/leakage_demo.jsonl,2,grad_desc_02.png,算法产品经理-第1批第2条,81867a572f69b722,
+train-003,train,什么是反向传播算法？,反向传播是训练神经网络的核心算法，通过链式法则计算梯度。,leakage,examples/leakage_demo.jsonl,3,backprop_01.png,算法产品经理-第1批第3条,3282508c03b342e5,与验证样本 val-003 相似度 0.875
+train-004,train,测试测试测试测试测试,占位,clean,examples/leakage_demo.jsonl,4,test_garbage.png,待确认-疑似坏数据,e794a2c61b8ec7c7,
+train-005,train,Transformer 模型的核心组件有哪些？,自注意力机制、位置编码、前馈网络、残差连接和层归一化。,clean,examples/leakage_demo.jsonl,5,transformer_01.png,算法产品经理-第2批第5条,70a3467ca1b31b92,
+val-002,val,什么是注意力机制？,注意力机制让模型能关注输入中最重要的部分。,clean,examples/leakage_demo.jsonl,7,eval_attn_01.png,评测题库-第15题,48618f67702373d2,

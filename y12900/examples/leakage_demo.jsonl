@@ -1,0 +1,8 @@
+{"id": "train-001", "split": "train", "content": "请解释梯度下降算法的工作原理", "answer": "梯度下降是通过迭代沿着梯度反方向更新参数来最小化损失函数的优化方法。", "image_name": "grad_desc_01.png", "remark": "算法产品经理-第1批第1条"}
+{"id": "train-002", "split": "train", "content": "梯度下降算法的工作原理是什么？", "answer": "梯度下降是一种迭代优化算法，沿负梯度方向更新参数以最小化损失。", "image_name": "grad_desc_02.png", "remark": "算法产品经理-第1批第2条"}
+{"id": "train-003", "split": "train", "content": "什么是反向传播算法？", "answer": "反向传播是训练神经网络的核心算法，通过链式法则计算梯度。", "image_name": "backprop_01.png", "remark": "算法产品经理-第1批第3条"}
+{"id": "train-004", "split": "train", "content": "测试测试测试测试测试", "answer": "占位", "image_name": "test_garbage.png", "remark": "待确认-疑似坏数据"}
+{"id": "train-005", "split": "train", "content": "Transformer 模型的核心组件有哪些？", "answer": "自注意力机制、位置编码、前馈网络、残差连接和层归一化。", "image_name": "transformer_01.png", "remark": "算法产品经理-第2批第5条"}
+{"id": "val-001", "split": "val", "content": "请解释梯度下降算法的工作原理", "answer": "梯度下降是一种迭代优化方法，沿负梯度方向更新参数。", "image_name": "eval_grad_01.png", "remark": "评测题库-第12题"}
+{"id": "val-002", "split": "val", "content": "什么是注意力机制？", "answer": "注意力机制让模型能关注输入中最重要的部分。", "image_name": "eval_attn_01.png", "remark": "评测题库-第15题"}
+{"id": "val-003", "split": "val", "content": "什么是反向传播？", "answer": "反向传播用于训练神经网络，基于链式法则计算梯度。", "image_name": "eval_bp_01.png", "remark": "评测题库-第20题"}

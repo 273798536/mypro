@@ -1,0 +1,13 @@
+﻿sample_id,split,content,label,status,source_file,line_number,image_name,remark,content_hash,reason
+s-001,train,什么是机器学习？它和传统编程有什么主要区别？,机器学习是让计算机从数据中学习规律的技术。,leakage,examples/sample_data.csv,2,img_0001.jpg,算法产品经理提供-第1批,7e54dc838505ec69,泄漏: 与验证样本 s-004 相似度 1.0
+s-002,train,机器学习与传统编程的区别是什么,机器学习通过数据学习规律，传统是显式规则。,clean,examples/sample_data.csv,3,img_0002.jpg,算法产品经理提供-第1批,661a374e40c07783,
+s-003,train,深度学习的基本原理是什么？,深度学习是基于多层神经网络的机器学习方法。,clean,examples/sample_data.csv,4,img_0003.jpg,算法产品经理提供-第1批,140a2c1440ebc1f6,
+s-004,val,什么是机器学习？它和传统编程有什么主要区别？,机器学习是让计算机从数据中学习规律的技术。,leakage,examples/sample_data.csv,5,img_0010.jpg,评测题库-第3题,7e54dc838505ec69,泄漏: 与训练样本 s-001 相似度 1.0
+s-005,val,请解释卷积神经网络的工作原理,CNN通过卷积层提取局部特征，池化层降维。,clean,examples/sample_data.csv,6,img_0011.jpg,评测题库-第7题,ab0fcc70e7ac38e9,
+s-009,val,随机森林是一种集成学习方法，由多棵决策树组成并通过投票输出结果。,随机森林通过bagging集成多棵决策树。,leakage,examples/sample_data.csv,10,img_0012.jpg,评测题库-第9题,83f1671a4f25877e,泄漏: 与训练样本 s-007 相似度 1.0
+s-011,train,梯度下降算法是迭代优化算法，沿负梯度方向更新参数以最小化损失函数。,梯度下降通过迭代更新参数最小化损失。,clean,examples/sample_data.csv,12,img_0007.jpg,算法产品经理提供-第3批,e4bd84967f6615ef,
+s-007,train,随机森林是一种集成学习方法，由多棵决策树组成并通过投票输出结果。,随机森林通过bagging方式集成多棵决策树。,leakage,examples/sample_data.csv,8,img_0005.jpg,算法产品经理提供-第2批,83f1671a4f25877e,疑似近重复组（train 内，共 2 条），平均相似度 0.8966，请人工复核
+s-008,train,随机森林是集成学习方法，由很多决策树组成，通过投票来输出结果。,随机森林是通过bagging集成多棵决策树。,needs_review,examples/sample_data.csv,9,img_0006.jpg,算法产品经理提供-第2批,ccc842e75437e606,疑似近重复组（train 内，共 2 条），平均相似度 0.8966，请人工复核
+s-006,train,测试测试测试测试测试测试测试测试测试测试测试测试测试,占位,bad,examples/sample_data.csv,7,img_0004.jpg,疑似坏数据-需要复核,6592efd3cecfdcce,匹配垃圾内容模式: ^(测试|test|demo|示例|占位|todo|待补充)
+s-010,train,aaaaaaaabbbbbbbbaaaaaaaaabbbbbbbb,,bad,examples/sample_data.csv,11,,,de8045a6fd4eaa99,字符重复度极高
+s-012,train,梯度下降是迭代优化算法，沿负梯度方向更新参数来最小化损失函数。,梯度下降迭代更新参数最小化损失函数。,duplicate,examples/sample_data.csv,13,img_0008.jpg,算法产品经理提供-第3批,09642f9906f277b5,s-011

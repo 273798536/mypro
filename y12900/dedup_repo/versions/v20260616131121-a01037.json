@@ -1,0 +1,473 @@
+{
+  "version": {
+    "version_id": "v20260616131121-a01037",
+    "parent_version_id": "v20260616131119-dfe431",
+    "description": "去重+泄漏检测",
+    "sample_count": 12,
+    "dedup_record_count": 0,
+    "leakage_record_count": 2,
+    "audit_count": 12,
+    "created_at": "2026-06-16T13:11:21.061254",
+    "created_by": "cli-snapshot",
+    "checksum": ""
+  },
+  "samples": [
+    {
+      "sample_id": "s-001",
+      "content": "什么是机器学习？它和传统编程有什么主要区别？",
+      "split": "train",
+      "label": "机器学习是让计算机从数据中学习规律的技术。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 2,
+        "image_name": "img_0001.jpg",
+        "remark": "算法产品经理提供-第1批"
+      },
+      "metadata": {
+        "original_row": 2,
+        "source_file": "examples/sample_data.csv",
+        "leakage_flag": true,
+        "leakage_reason": "相似度 1.0"
+      },
+      "created_at": "2026-06-16T13:11:19.951507",
+      "content_hash": "7e54dc838505ec69"
+    },
+    {
+      "sample_id": "s-002",
+      "content": "机器学习与传统编程的区别是什么",
+      "split": "train",
+      "label": "机器学习通过数据学习规律，传统是显式规则。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 3,
+        "image_name": "img_0002.jpg",
+        "remark": "算法产品经理提供-第1批"
+      },
+      "metadata": {
+        "original_row": 3,
+        "source_file": "examples/sample_data.csv"
+      },
+      "created_at": "2026-06-16T13:11:19.951519",
+      "content_hash": "661a374e40c07783"
+    },
+    {
+      "sample_id": "s-003",
+      "content": "深度学习的基本原理是什么？",
+      "split": "train",
+      "label": "深度学习是基于多层神经网络的机器学习方法。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 4,
+        "image_name": "img_0003.jpg",
+        "remark": "算法产品经理提供-第1批"
+      },
+      "metadata": {
+        "original_row": 4,
+        "source_file": "examples/sample_data.csv"
+      },
+      "created_at": "2026-06-16T13:11:19.951525",
+      "content_hash": "140a2c1440ebc1f6"
+    },
+    {
+      "sample_id": "s-004",
+      "content": "什么是机器学习？它和传统编程有什么主要区别？",
+      "split": "val",
+      "label": "机器学习是让计算机从数据中学习规律的技术。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 5,
+        "image_name": "img_0010.jpg",
+        "remark": "评测题库-第3题"
+      },
+      "metadata": {
+        "original_row": 5,
+        "source_file": "examples/sample_data.csv",
+        "leakage_flag": true,
+        "leakage_reason": "相似度 1.0"
+      },
+      "created_at": "2026-06-16T13:11:19.951529",
+      "content_hash": "7e54dc838505ec69"
+    },
+    {
+      "sample_id": "s-005",
+      "content": "请解释卷积神经网络的工作原理",
+      "split": "val",
+      "label": "CNN通过卷积层提取局部特征，池化层降维。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 6,
+        "image_name": "img_0011.jpg",
+        "remark": "评测题库-第7题"
+      },
+      "metadata": {
+        "original_row": 6,
+        "source_file": "examples/sample_data.csv"
+      },
+      "created_at": "2026-06-16T13:11:19.951533",
+      "content_hash": "ab0fcc70e7ac38e9"
+    },
+    {
+      "sample_id": "s-009",
+      "content": "随机森林是一种集成学习方法，由多棵决策树组成并通过投票输出结果。",
+      "split": "val",
+      "label": "随机森林通过bagging集成多棵决策树。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 10,
+        "image_name": "img_0012.jpg",
+        "remark": "评测题库-第9题"
+      },
+      "metadata": {
+        "original_row": 10,
+        "source_file": "examples/sample_data.csv",
+        "leakage_flag": true,
+        "leakage_reason": "相似度 1.0"
+      },
+      "created_at": "2026-06-16T13:11:19.951550",
+      "content_hash": "83f1671a4f25877e"
+    },
+    {
+      "sample_id": "s-007",
+      "content": "随机森林是一种集成学习方法，由多棵决策树组成并通过投票输出结果。",
+      "split": "train",
+      "label": "随机森林通过bagging方式集成多棵决策树。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 8,
+        "image_name": "img_0005.jpg",
+        "remark": "算法产品经理提供-第2批"
+      },
+      "metadata": {
+        "original_row": 8,
+        "source_file": "examples/sample_data.csv",
+        "needs_review_reason": "疑似近重复组（train 内，共 2 条），平均相似度 0.8966，请人工复核",
+        "leakage_flag": true,
+        "leakage_reason": "相似度 1.0"
+      },
+      "created_at": "2026-06-16T13:11:19.951542",
+      "content_hash": "83f1671a4f25877e"
+    },
+    {
+      "sample_id": "s-008",
+      "content": "随机森林是集成学习方法，由很多决策树组成，通过投票来输出结果。",
+      "split": "train",
+      "label": "随机森林是通过bagging集成多棵决策树。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 9,
+        "image_name": "img_0006.jpg",
+        "remark": "算法产品经理提供-第2批"
+      },
+      "metadata": {
+        "original_row": 9,
+        "source_file": "examples/sample_data.csv",
+        "needs_review_reason": "疑似近重复组（train 内，共 2 条），平均相似度 0.8966，请人工复核"
+      },
+      "created_at": "2026-06-16T13:11:19.951546",
+      "content_hash": "ccc842e75437e606"
+    },
+    {
+      "sample_id": "s-011",
+      "content": "梯度下降算法是迭代优化算法，沿负梯度方向更新参数以最小化损失函数。",
+      "split": "train",
+      "label": "梯度下降通过迭代更新参数最小化损失。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 12,
+        "image_name": "img_0007.jpg",
+        "remark": "算法产品经理提供-第3批"
+      },
+      "metadata": {
+        "original_row": 12,
+        "source_file": "examples/sample_data.csv",
+        "needs_review_reason": "疑似近重复组（train 内，共 2 条），平均相似度 0.9333，请人工复核"
+      },
+      "created_at": "2026-06-16T13:11:19.951558",
+      "content_hash": "e4bd84967f6615ef"
+    },
+    {
+      "sample_id": "s-012",
+      "content": "梯度下降是迭代优化算法，沿负梯度方向更新参数来最小化损失函数。",
+      "split": "train",
+      "label": "梯度下降迭代更新参数最小化损失函数。",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 13,
+        "image_name": "img_0008.jpg",
+        "remark": "算法产品经理提供-第3批"
+      },
+      "metadata": {
+        "original_row": 13,
+        "source_file": "examples/sample_data.csv",
+        "needs_review_reason": "疑似近重复组（train 内，共 2 条），平均相似度 0.9333，请人工复核"
+      },
+      "created_at": "2026-06-16T13:11:19.951562",
+      "content_hash": "09642f9906f277b5"
+    },
+    {
+      "sample_id": "s-006",
+      "content": "测试测试测试测试测试测试测试测试测试测试测试测试测试",
+      "split": "train",
+      "label": "占位",
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 7,
+        "image_name": "img_0004.jpg",
+        "remark": "疑似坏数据-需要复核"
+      },
+      "metadata": {
+        "original_row": 7,
+        "source_file": "examples/sample_data.csv",
+        "bad_reason": "匹配垃圾内容模式: ^(测试|test|demo|示例|占位|todo|待补充)"
+      },
+      "created_at": "2026-06-16T13:11:19.951538",
+      "content_hash": "6592efd3cecfdcce"
+    },
+    {
+      "sample_id": "s-010",
+      "content": "aaaaaaaabbbbbbbbaaaaaaaaabbbbbbbb",
+      "split": "train",
+      "label": null,
+      "source_ref": {
+        "source_file": "examples/sample_data.csv",
+        "line_number": 11,
+        "image_name": null,
+        "remark": null
+      },
+      "metadata": {
+        "original_row": 11,
+        "source_file": "examples/sample_data.csv",
+        "bad_reason": "字符重复度极高"
+      },
+      "created_at": "2026-06-16T13:11:19.951554",
+      "content_hash": "de8045a6fd4eaa99"
+    }
+  ],
+  "dedup_records": [],
+  "leakage_records": [
+    {
+      "train_sample_id": "s-001",
+      "val_sample_id": "s-004",
+      "similarity": 1.0,
+      "method": "hybrid_pairwise",
+      "recorded_at": "2026-06-16T13:11:21.061063"
+    },
+    {
+      "train_sample_id": "s-007",
+      "val_sample_id": "s-009",
+      "similarity": 1.0,
+      "method": "hybrid_pairwise",
+      "recorded_at": "2026-06-16T13:11:21.061070"
+    }
+  ],
+  "audit_log": [
+    {
+      "action": "create",
+      "sample_id": "s-001",
+      "detail": {
+        "status": "clean",
+        "trace": {
+          "sample_id": "s-001",
+          "content_hash": "7e54dc838505ec69",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 2,
+          "image_name": "img_0001.jpg",
+          "remark": "算法产品经理提供-第1批"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057515"
+    },
+    {
+      "action": "create",
+      "sample_id": "s-002",
+      "detail": {
+        "status": "clean",
+        "trace": {
+          "sample_id": "s-002",
+          "content_hash": "661a374e40c07783",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 3,
+          "image_name": "img_0002.jpg",
+          "remark": "算法产品经理提供-第1批"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057524"
+    },
+    {
+      "action": "create",
+      "sample_id": "s-003",
+      "detail": {
+        "status": "clean",
+        "trace": {
+          "sample_id": "s-003",
+          "content_hash": "140a2c1440ebc1f6",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 4,
+          "image_name": "img_0003.jpg",
+          "remark": "算法产品经理提供-第1批"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057545"
+    },
+    {
+      "action": "create",
+      "sample_id": "s-004",
+      "detail": {
+        "status": "clean",
+        "trace": {
+          "sample_id": "s-004",
+          "content_hash": "7e54dc838505ec69",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 5,
+          "image_name": "img_0010.jpg",
+          "remark": "评测题库-第3题"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057550"
+    },
+    {
+      "action": "create",
+      "sample_id": "s-005",
+      "detail": {
+        "status": "clean",
+        "trace": {
+          "sample_id": "s-005",
+          "content_hash": "ab0fcc70e7ac38e9",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 6,
+          "image_name": "img_0011.jpg",
+          "remark": "评测题库-第7题"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057553"
+    },
+    {
+      "action": "create",
+      "sample_id": "s-009",
+      "detail": {
+        "status": "clean",
+        "trace": {
+          "sample_id": "s-009",
+          "content_hash": "83f1671a4f25877e",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 10,
+          "image_name": "img_0012.jpg",
+          "remark": "评测题库-第9题"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057558"
+    },
+    {
+      "action": "flag_review",
+      "sample_id": "s-007",
+      "detail": {
+        "status": "needs_review",
+        "reason": "疑似近重复组（train 内，共 2 条），平均相似度 0.8966，请人工复核",
+        "trace": {
+          "sample_id": "s-007",
+          "content_hash": "83f1671a4f25877e",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 8,
+          "image_name": "img_0005.jpg",
+          "remark": "算法产品经理提供-第2批"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057562"
+    },
+    {
+      "action": "flag_review",
+      "sample_id": "s-008",
+      "detail": {
+        "status": "needs_review",
+        "reason": "疑似近重复组（train 内，共 2 条），平均相似度 0.8966，请人工复核",
+        "trace": {
+          "sample_id": "s-008",
+          "content_hash": "ccc842e75437e606",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 9,
+          "image_name": "img_0006.jpg",
+          "remark": "算法产品经理提供-第2批"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057564"
+    },
+    {
+      "action": "flag_review",
+      "sample_id": "s-011",
+      "detail": {
+        "status": "needs_review",
+        "reason": "疑似近重复组（train 内，共 2 条），平均相似度 0.9333，请人工复核",
+        "trace": {
+          "sample_id": "s-011",
+          "content_hash": "e4bd84967f6615ef",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 12,
+          "image_name": "img_0007.jpg",
+          "remark": "算法产品经理提供-第3批"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057567"
+    },
+    {
+      "action": "flag_review",
+      "sample_id": "s-012",
+      "detail": {
+        "status": "needs_review",
+        "reason": "疑似近重复组（train 内，共 2 条），平均相似度 0.9333，请人工复核",
+        "trace": {
+          "sample_id": "s-012",
+          "content_hash": "09642f9906f277b5",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 13,
+          "image_name": "img_0008.jpg",
+          "remark": "算法产品经理提供-第3批"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057569"
+    },
+    {
+      "action": "flag_bad",
+      "sample_id": "s-006",
+      "detail": {
+        "status": "bad",
+        "reason": "匹配垃圾内容模式: ^(测试|test|demo|示例|占位|todo|待补充)",
+        "trace": {
+          "sample_id": "s-006",
+          "content_hash": "6592efd3cecfdcce",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 7,
+          "image_name": "img_0004.jpg",
+          "remark": "疑似坏数据-需要复核"
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057573"
+    },
+    {
+      "action": "flag_bad",
+      "sample_id": "s-010",
+      "detail": {
+        "status": "bad",
+        "reason": "字符重复度极高",
+        "trace": {
+          "sample_id": "s-010",
+          "content_hash": "de8045a6fd4eaa99",
+          "source_file": "examples/sample_data.csv",
+          "line_number": 11
+        }
+      },
+      "operator": "version-snapshot-dedup",
+      "timestamp": "2026-06-16T13:11:21.057576"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+id,split,content,label,image_name,remark,source
+s-001,train,什么是机器学习？它和传统编程有什么主要区别？,机器学习是让计算机从数据中学习规律的技术。,img_0001.jpg,算法产品经理提供-第1批,training_qa_v1.csv
+s-002,train,机器学习与传统编程的区别是什么,机器学习通过数据学习规律，传统是显式规则。,img_0002.jpg,算法产品经理提供-第1批,training_qa_v1.csv
+s-003,train,深度学习的基本原理是什么？,深度学习是基于多层神经网络的机器学习方法。,img_0003.jpg,算法产品经理提供-第1批,training_qa_v1.csv
+s-004,val,什么是机器学习？它和传统编程有什么主要区别？,机器学习是让计算机从数据中学习规律的技术。,img_0010.jpg,评测题库-第3题,eval_questions.csv
+s-005,val,请解释卷积神经网络的工作原理,CNN通过卷积层提取局部特征，池化层降维。,img_0011.jpg,评测题库-第7题,eval_questions.csv
+s-006,train,测试测试测试测试测试测试测试测试测试测试测试测试测试,占位,img_0004.jpg,疑似坏数据-需要复核,training_qa_v1.csv
+s-007,train,随机森林是一种集成学习方法，由多棵决策树组成并通过投票输出结果。,随机森林通过bagging方式集成多棵决策树。,img_0005.jpg,算法产品经理提供-第2批,training_qa_v1.csv
+s-008,train,随机森林是集成学习方法，由很多决策树组成，通过投票来输出结果。,随机森林是通过bagging集成多棵决策树。,img_0006.jpg,算法产品经理提供-第2批,training_qa_v1.csv
+s-009,val,随机森林是一种集成学习方法，由多棵决策树组成并通过投票输出结果。,随机森林通过bagging集成多棵决策树。,img_0012.jpg,评测题库-第9题,eval_questions.csv
+s-010,train,aaaaaaaabbbbbbbbaaaaaaaaabbbbbbbb,,,,
+s-011,train,梯度下降算法是迭代优化算法，沿负梯度方向更新参数以最小化损失函数。,梯度下降通过迭代更新参数最小化损失。,img_0007.jpg,算法产品经理提供-第3批,training_qa_v1.csv
+s-012,train,梯度下降是迭代优化算法，沿负梯度方向更新参数来最小化损失函数。,梯度下降迭代更新参数最小化损失函数。,img_0008.jpg,算法产品经理提供-第3批,training_qa_v1.csv

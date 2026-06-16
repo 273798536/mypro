@@ -1,0 +1,29 @@
+{
+  "versions": [
+    {
+      "version_id": "v20260616131121-a01037",
+      "parent_version_id": "v20260616131119-dfe431",
+      "description": "去重+泄漏检测",
+      "sample_count": 12,
+      "dedup_record_count": 0,
+      "leakage_record_count": 2,
+      "audit_count": 12,
+      "created_at": "2026-06-16T13:11:21.061254",
+      "created_by": "cli-snapshot",
+      "checksum": "767fd0cc4ccc6c2c52e5a636676638aa05a8571c6fa09b6aaf97bbe2beec613e"
+    },
+    {
+      "version_id": "v20260616131119-dfe431",
+      "parent_version_id": null,
+      "description": "初始版本",
+      "sample_count": 12,
+      "dedup_record_count": 0,
+      "leakage_record_count": 0,
+      "audit_count": 0,
+      "created_at": "2026-06-16T13:11:19.951921",
+      "created_by": "cli",
+      "checksum": "15ca50df22f4b66bc29d8823379377a5f0382b248d9e9e2541a7dd45c1394ae2"
+    }
+  ],
+  "latest": "v20260616131121-a01037"
+}
