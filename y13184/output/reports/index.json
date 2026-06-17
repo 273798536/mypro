@@ -1,39 +1,39 @@
 {
   "reports": [
     {
-      "report_id": "report_20260614_014318_149",
-      "generated_at": "2026-06-14 01:43:18",
+      "report_id": "report_20260618_030315_967",
+      "generated_at": "2026-06-18 03:03:15",
       "report_time_start": "2024-06-14 08:00:00",
       "report_time_end": "2024-06-14 16:00:00",
       "nameplate_version": 5,
       "total_records": 97,
       "anomaly_count": 3,
       "data_hash": "c822d4c0146d7442",
-      "nameplate_snapshot_hash": "5f1e2bbd81305218",
+      "nameplate_snapshot_hash": "3400cc99bdf7add3",
       "operator": "小林"
     },
     {
-      "report_id": "report_20260614_014318_135",
-      "generated_at": "2026-06-14 01:43:18",
+      "report_id": "report_20260618_030315_931",
+      "generated_at": "2026-06-18 03:03:15",
       "report_time_start": "2024-06-14 08:00:00",
       "report_time_end": "2024-06-14 16:00:00",
       "nameplate_version": 3,
       "total_records": 97,
       "anomaly_count": 30,
       "data_hash": "c822d4c0146d7442",
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "operator": "小林"
     },
     {
-      "report_id": "report_20260614_014318_128",
-      "generated_at": "2026-06-14 01:43:18",
+      "report_id": "report_20260618_030315_909",
+      "generated_at": "2026-06-18 03:03:15",
       "report_time_start": "2024-06-14 08:00:00",
       "report_time_end": "2024-06-14 16:00:00",
       "nameplate_version": 1,
       "total_records": 97,
       "anomaly_count": 3,
       "data_hash": "c822d4c0146d7442",
-      "nameplate_snapshot_hash": "21e1c67f08a9f100",
+      "nameplate_snapshot_hash": "324b90b86b720437",
       "operator": "小林"
     }
   ]

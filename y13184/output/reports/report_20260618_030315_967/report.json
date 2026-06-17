@@ -1,11 +1,11 @@
 {
   "meta": {
-    "report_id": "report_20260614_014318_149",
-    "generated_at": "2026-06-14 01:43:18",
+    "report_id": "report_20260618_030315_967",
+    "generated_at": "2026-06-18 03:03:15",
     "report_time_start": "2024-06-14 08:00:00",
     "report_time_end": "2024-06-14 16:00:00",
     "nameplate_version": 5,
-    "nameplate_snapshot_hash": "5f1e2bbd81305218",
+    "nameplate_snapshot_hash": "3400cc99bdf7add3",
     "data_hash": "c822d4c0146d7442",
     "data_source_file": "water_drops.csv",
     "total_records": 97,
@@ -33,7 +33,7 @@
   },
   "nameplate_snapshot": {
     "version": 5,
-    "timestamp": "2026-06-14 01:43:18",
+    "timestamp": "2026-06-18 03:03:15",
     "operator": "小林",
     "change_reason": "高温预警解除，恢复出厂阈值",
     "thresholds": {
@@ -46,20 +46,20 @@
     "notes": [
       {
         "note_id": "note_3_1",
-        "timestamp": "2026-06-14 01:43:18",
+        "timestamp": "2026-06-18 03:03:15",
         "operator": "小林",
         "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "impact_description": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
         "is_retracted": true,
         "retract_reason": "预警解除，恢复原高温阈值标准",
-        "retract_timestamp": "2026-06-14 01:43:18",
+        "retract_timestamp": "2026-06-18 03:03:15",
         "retract_operator": "小林"
       }
     ],
     "device_model": "CT-2000",
     "device_id": "CT-001",
     "factory_date": "2023-03-15",
-    "snapshot_hash": "5f1e2bbd81305218"
+    "snapshot_hash": "3400cc99bdf7add3"
   },
   "anomalies": [
     {
@@ -71,7 +71,7 @@
       "threshold_value": 100.0,
       "threshold_name": "water_drop_flow_high",
       "nameplate_version": 5,
-      "nameplate_snapshot_hash": "5f1e2bbd81305218",
+      "nameplate_snapshot_hash": "3400cc99bdf7add3",
       "trace_chain": {
         "record_id": "wd_000015",
         "record_timestamp": "2024-06-14 09:15:00",
@@ -82,7 +82,7 @@
         "unit": "L/min",
         "description": "流量 105.0L/min 超过上限 100.0L/min",
         "nameplate_version": 5,
-        "nameplate_snapshot_hash": "5f1e2bbd81305218",
+        "nameplate_snapshot_hash": "3400cc99bdf7add3",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "高温预警解除，恢复出厂阈值",
         "active_notes_count": 0,
@@ -94,7 +94,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "retract_reason": "预警解除，恢复原高温阈值标准",
             "retract_operator": "小林",
-            "retract_timestamp": "2026-06-14 01:43:18"
+            "retract_timestamp": "2026-06-18 03:03:15"
           }
         ],
         "source_file": "water_drops.csv",
@@ -110,7 +110,7 @@
       "threshold_value": 35.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 5,
-      "nameplate_snapshot_hash": "5f1e2bbd81305218",
+      "nameplate_snapshot_hash": "3400cc99bdf7add3",
       "trace_chain": {
         "record_id": "wd_000025",
         "record_timestamp": "2024-06-14 10:05:00",
@@ -121,7 +121,7 @@
         "unit": "L/min",
         "description": "温度 36.2℃ 超过上限 35.0℃",
         "nameplate_version": 5,
-        "nameplate_snapshot_hash": "5f1e2bbd81305218",
+        "nameplate_snapshot_hash": "3400cc99bdf7add3",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "高温预警解除，恢复出厂阈值",
         "active_notes_count": 0,
@@ -133,7 +133,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "retract_reason": "预警解除，恢复原高温阈值标准",
             "retract_operator": "小林",
-            "retract_timestamp": "2026-06-14 01:43:18"
+            "retract_timestamp": "2026-06-18 03:03:15"
           }
         ],
         "source_file": "water_drops.csv",
@@ -149,7 +149,7 @@
       "threshold_value": 10.0,
       "threshold_name": "water_drop_flow_low",
       "nameplate_version": 5,
-      "nameplate_snapshot_hash": "5f1e2bbd81305218",
+      "nameplate_snapshot_hash": "3400cc99bdf7add3",
       "trace_chain": {
         "record_id": "wd_000080",
         "record_timestamp": "2024-06-14 14:40:00",
@@ -160,7 +160,7 @@
         "unit": "L/min",
         "description": "流量 8.5L/min 低于下限 10.0L/min",
         "nameplate_version": 5,
-        "nameplate_snapshot_hash": "5f1e2bbd81305218",
+        "nameplate_snapshot_hash": "3400cc99bdf7add3",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "高温预警解除，恢复出厂阈值",
         "active_notes_count": 0,
@@ -172,7 +172,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "retract_reason": "预警解除，恢复原高温阈值标准",
             "retract_operator": "小林",
-            "retract_timestamp": "2026-06-14 01:43:18"
+            "retract_timestamp": "2026-06-18 03:03:15"
           }
         ],
         "source_file": "water_drops.csv",

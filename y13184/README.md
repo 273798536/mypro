@@ -6,12 +6,48 @@
 
 ---
 
+## 运行前说明
+
+### 你的 Python 叫什么？
+
+不同系统里 Python 的命令名不一样：
+
+- **macOS / 多数 Linux**：命令叫 `python3`（`python` 可能不存在）
+- **部分 Linux / Windows**：命令叫 `python`
+
+先在终端里确认一下：
+
+```bash
+python3 --version   # 如果能输出版本号，就用 python3
+python --version    # 如果上面那条不行，试试这个
+```
+
+下面文档里所有命令示例都写 `python3`。如果你环境里只有 `python`，把 `python3` 换成 `python` 就行。
+
+### 更简单的方式：用 Makefile
+
+不想记 `python3 -m cooling_tower_report.cli ...` 这么长的命令？
+项目根目录有 `Makefile`，直接敲：
+
+```bash
+make demo      # 跑演示数据，一键体验全流程
+make list      # 看报告列表
+make check     # 校验报告一致性
+make export    # 导出CSV
+```
+
+`make help` 可以看全部命令。
+
+---
+
 ## 快速开始
 
 ### 第零步：先跑 demo 看看效果
 
 ```bash
-python -m cooling_tower_report.cli demo
+make demo
+# 或者：
+python3 -m cooling_tower_report.cli demo
 ```
 
 这会生成一套演示数据：水滴记录、铭牌版本、两份报告，还会自动做一次跳变分析。
@@ -20,7 +56,7 @@ python -m cooling_tower_report.cli demo
 ### 第一步：生成报告
 
 ```bash
-python -m cooling_tower_report.cli generate --operator 小林
+python3 -m cooling_tower_report.cli generate --operator 小林
 ```
 
 会输出：
@@ -46,16 +82,19 @@ python -m cooling_tower_report.cli generate --operator 小林
 
 ## 常用命令
 
+> 下面所有命令都可以把 `python3 -m cooling_tower_report.cli` 换成 `make` 对应的目标，
+> 详情看 `make help`。
+
 ### 查看报告列表
 
 ```bash
-python -m cooling_tower_report.cli list
+python3 -m cooling_tower_report.cli list
 ```
 
 ### 对比两份报告为什么不一样（跳变分析）
 
 ```bash
-python -m cooling_tower_report.cli jump 旧报告ID 新报告ID
+python3 -m cooling_tower_report.cli jump 旧报告ID 新报告ID
 ```
 
 会告诉你结果跳变是因为：
@@ -68,7 +107,7 @@ python -m cooling_tower_report.cli jump 旧报告ID 新报告ID
 ### 一键校验报告一致性
 
 ```bash
-python -m cooling_tower_report.cli check [报告ID]
+python3 -m cooling_tower_report.cli check [报告ID]
 ```
 
 不传报告ID就校验最新的一份。检查三件事：
@@ -82,16 +121,16 @@ python -m cooling_tower_report.cli check [报告ID]
 
 ```bash
 # 查看当前所有备注和版本历史
-python -m cooling_tower_report.cli note list
+python3 -m cooling_tower_report.cli note list
 
 # 追加一条备注（必须写清楚"影响了哪些判断"）
-python -m cooling_tower_report.cli note add \
+python3 -m cooling_tower_report.cli note add \
   --operator 小林 \
   --content "二号塔填料检修，高温阈值临时调至32度" \
   --impact "温度高于32℃即算高温异常，原35℃阈值暂时失效"
 
 # 撤回一条备注（错了的说法不能删，要标撤回）
-python -m cooling_tower_report.cli note retract \
+python3 -m cooling_tower_report.cli note retract \
   --operator 小林 \
   --note-id note_2_1 \
   --reason "检修完成，恢复原阈值"
@@ -104,10 +143,10 @@ python -m cooling_tower_report.cli note retract \
 
 ```bash
 # 查看当前阈值
-python -m cooling_tower_report.cli threshold show
+python3 -m cooling_tower_report.cli threshold show
 
 # 修改阈值（必须说明原因和操作人）
-python -m cooling_tower_report.cli threshold set \
+python3 -m cooling_tower_report.cli threshold set \
   --operator 小林 \
   --reason "夏季高温预警" \
   --temp-high 38
@@ -117,10 +156,10 @@ python -m cooling_tower_report.cli threshold set \
 
 ```bash
 # 导出最新报告的CSV
-python -m cooling_tower_report.cli export
+python3 -m cooling_tower_report.cli export
 
 # 导出指定报告的CSV
-python -m cooling_tower_report.cli export 报告ID
+python3 -m cooling_tower_report.cli export 报告ID
 ```
 
 ---
@@ -194,7 +233,7 @@ output/
 
 ### 日常交班
 
-1. 小林上班，跑 `python -m cooling_tower_report.cli generate --operator 小林`
+1. 小林上班，跑 `python3 -m cooling_tower_report.cli generate --operator 小林`
 2. 看 `output/csv/{报告ID}_anomalies.csv`，有几个异常心里有数
 3. 有疑问就开 `_detail.csv`，追一下是触发了哪个阈值、哪版铭牌
 4. 交班时把报告ID告诉下一班的同事

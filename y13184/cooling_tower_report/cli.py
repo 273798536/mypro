@@ -4,20 +4,20 @@
 实验老师小林的"操作面板"——
 不用写代码，跑几条命令就能搞定日常工作。
 
-常用命令：
-  python -m cooling_tower_report.cli generate
+常用命令（你的环境里如果 python 不存在就换成 python3）：
+  python3 -m cooling_tower_report.cli generate
     生成一份新报告
 
-  python -m cooling_tower_report.cli list
+  python3 -m cooling_tower_report.cli list
     列出所有历史报告
 
-  python -m cooling_tower_report.cli jump <旧报告ID> <新报告ID>
+  python3 -m cooling_tower_report.cli jump <旧报告ID> <新报告ID>
     对比两份报告，看结果为什么跳变了
 
-  python -m cooling_tower_report.cli check <报告ID>
+  python3 -m cooling_tower_report.cli check <报告ID>
     一键校验报告一致性
 
-  python -m cooling_tower_report.cli export <报告ID>
+  python3 -m cooling_tower_report.cli export <报告ID>
     导出CSV明细
 """
 
@@ -25,6 +25,7 @@ import argparse
 import csv
 import json
 import os
+import shutil
 import sys
 from datetime import datetime
 
@@ -36,6 +37,24 @@ from .consistency import ConsistencyChecker
 
 DEFAULT_DATA_DIR = "data"
 DEFAULT_OUTPUT_DIR = "output"
+
+
+def _py_cmd() -> str:
+    """
+    返回当前环境可用的 Python 命令前缀。
+
+    为什么需要这个？
+    有的系统 python 指向 python3，有的只有 python3 没有 python。
+    我们输出帮助信息的时候，要告诉用户"你该敲什么命令"，
+    不能写死 `python` 然后用户一跑就 command not found。
+    """
+    if shutil.which("python3"):
+        return "python3"
+    return "python"
+
+
+PY_CMD = _py_cmd()
+PY_RUN = f"{PY_CMD} -m cooling_tower_report.cli"
 
 
 def _get_paths():
@@ -53,7 +72,7 @@ def cmd_generate(args):
     if not os.path.exists(water_data_path):
         print(f"错误：找不到水滴数据文件 {water_data_path}")
         print("请先准备 data/water_drops.csv，或运行 demo 数据：")
-        print("  python -m cooling_tower_report.cli demo")
+        print(f"  {PY_RUN} demo")
         sys.exit(1)
 
     nameplate_mgr = NameplateManager(nameplate_path)
@@ -473,19 +492,19 @@ def cmd_demo(args):
     print("=" * 60)
     print()
     print(f"  1. 看报告列表：")
-    print(f"     python3 -m cooling_tower_report.cli list")
+    print(f"     {PY_RUN} list")
     print()
     print(f"  2. 校验最新报告一致性（报告/铭牌/数据对不对得上）：")
-    print(f"     python3 -m cooling_tower_report.cli check")
+    print(f"     {PY_RUN} check")
     print()
     print(f"  3. 看铭牌版本历史和备注：")
-    print(f"     python3 -m cooling_tower_report.cli note list")
+    print(f"     {PY_RUN} note list")
     print()
     print(f"  4. 导出最新报告的CSV（3个文件）：")
-    print(f"     python3 -m cooling_tower_report.cli export")
+    print(f"     {PY_RUN} export")
     print()
     print(f"  5. 自己对比两份报告：")
-    print(f"     python3 -m cooling_tower_report.cli jump {rid1} {rid3}")
+    print(f"     {PY_RUN} jump {rid1} {rid3}")
     print()
 
 

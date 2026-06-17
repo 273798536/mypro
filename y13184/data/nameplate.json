@@ -2,7 +2,7 @@
   "versions": [
     {
       "version": 1,
-      "timestamp": "2026-06-14 01:43:18",
+      "timestamp": "2026-06-18 03:03:15",
       "operator": "system",
       "change_reason": "初始铭牌——出厂默认配置",
       "thresholds": {
@@ -16,11 +16,11 @@
       "device_model": "CT-2000",
       "device_id": "CT-001",
       "factory_date": "2023-03-15",
-      "snapshot_hash": "21e1c67f08a9f100"
+      "snapshot_hash": "324b90b86b720437"
     },
     {
       "version": 2,
-      "timestamp": "2026-06-14 01:43:18",
+      "timestamp": "2026-06-18 03:03:15",
       "operator": "小林",
       "change_reason": "夏季高温预警，临时收紧高温阈值",
       "thresholds": {
@@ -34,11 +34,11 @@
       "device_model": "CT-2000",
       "device_id": "CT-001",
       "factory_date": "2023-03-15",
-      "snapshot_hash": "7bb272f6d37a96ae"
+      "snapshot_hash": "e930477ac2070136"
     },
     {
       "version": 3,
-      "timestamp": "2026-06-14 01:43:18",
+      "timestamp": "2026-06-18 03:03:15",
       "operator": "小林",
       "change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
       "thresholds": {
@@ -51,7 +51,7 @@
       "notes": [
         {
           "note_id": "note_3_1",
-          "timestamp": "2026-06-14 01:43:18",
+          "timestamp": "2026-06-18 03:03:15",
           "operator": "小林",
           "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
           "impact_description": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
@@ -64,11 +64,11 @@
       "device_model": "CT-2000",
       "device_id": "CT-001",
       "factory_date": "2023-03-15",
-      "snapshot_hash": "49d07e80b7a87792"
+      "snapshot_hash": "f803392412671bea"
     },
     {
       "version": 4,
-      "timestamp": "2026-06-14 01:43:18",
+      "timestamp": "2026-06-18 03:03:15",
       "operator": "小林",
       "change_reason": "撤回备注 note_3_1：预警解除，恢复原高温阈值标准",
       "thresholds": {
@@ -81,24 +81,24 @@
       "notes": [
         {
           "note_id": "note_3_1",
-          "timestamp": "2026-06-14 01:43:18",
+          "timestamp": "2026-06-18 03:03:15",
           "operator": "小林",
           "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
           "impact_description": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
           "is_retracted": true,
           "retract_reason": "预警解除，恢复原高温阈值标准",
-          "retract_timestamp": "2026-06-14 01:43:18",
+          "retract_timestamp": "2026-06-18 03:03:15",
           "retract_operator": "小林"
         }
       ],
       "device_model": "CT-2000",
       "device_id": "CT-001",
       "factory_date": "2023-03-15",
-      "snapshot_hash": "2025fd5cfe41b950"
+      "snapshot_hash": "32ebb738b89ced50"
     },
     {
       "version": 5,
-      "timestamp": "2026-06-14 01:43:18",
+      "timestamp": "2026-06-18 03:03:15",
       "operator": "小林",
       "change_reason": "高温预警解除，恢复出厂阈值",
       "thresholds": {
@@ -111,20 +111,20 @@
       "notes": [
         {
           "note_id": "note_3_1",
-          "timestamp": "2026-06-14 01:43:18",
+          "timestamp": "2026-06-18 03:03:15",
           "operator": "小林",
           "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
           "impact_description": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
           "is_retracted": true,
           "retract_reason": "预警解除，恢复原高温阈值标准",
-          "retract_timestamp": "2026-06-14 01:43:18",
+          "retract_timestamp": "2026-06-18 03:03:15",
           "retract_operator": "小林"
         }
       ],
       "device_model": "CT-2000",
       "device_id": "CT-001",
       "factory_date": "2023-03-15",
-      "snapshot_hash": "5f1e2bbd81305218"
+      "snapshot_hash": "3400cc99bdf7add3"
     }
   ]
 }

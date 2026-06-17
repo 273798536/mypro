@@ -1,11 +1,11 @@
 {
   "meta": {
-    "report_id": "report_20260614_014318_128",
-    "generated_at": "2026-06-14 01:43:18",
+    "report_id": "report_20260618_030315_909",
+    "generated_at": "2026-06-18 03:03:15",
     "report_time_start": "2024-06-14 08:00:00",
     "report_time_end": "2024-06-14 16:00:00",
     "nameplate_version": 1,
-    "nameplate_snapshot_hash": "21e1c67f08a9f100",
+    "nameplate_snapshot_hash": "324b90b86b720437",
     "data_hash": "c822d4c0146d7442",
     "data_source_file": "water_drops.csv",
     "total_records": 97,
@@ -33,7 +33,7 @@
   },
   "nameplate_snapshot": {
     "version": 1,
-    "timestamp": "2026-06-14 01:43:18",
+    "timestamp": "2026-06-18 03:03:15",
     "operator": "system",
     "change_reason": "初始铭牌——出厂默认配置",
     "thresholds": {
@@ -47,7 +47,7 @@
     "device_model": "CT-2000",
     "device_id": "CT-001",
     "factory_date": "2023-03-15",
-    "snapshot_hash": "21e1c67f08a9f100"
+    "snapshot_hash": "324b90b86b720437"
   },
   "anomalies": [
     {
@@ -59,7 +59,7 @@
       "threshold_value": 100.0,
       "threshold_name": "water_drop_flow_high",
       "nameplate_version": 1,
-      "nameplate_snapshot_hash": "21e1c67f08a9f100",
+      "nameplate_snapshot_hash": "324b90b86b720437",
       "trace_chain": {
         "record_id": "wd_000015",
         "record_timestamp": "2024-06-14 09:15:00",
@@ -70,7 +70,7 @@
         "unit": "L/min",
         "description": "流量 105.0L/min 超过上限 100.0L/min",
         "nameplate_version": 1,
-        "nameplate_snapshot_hash": "21e1c67f08a9f100",
+        "nameplate_snapshot_hash": "324b90b86b720437",
         "nameplate_operator": "system",
         "nameplate_change_reason": "初始铭牌——出厂默认配置",
         "active_notes_count": 0,
@@ -90,7 +90,7 @@
       "threshold_value": 35.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 1,
-      "nameplate_snapshot_hash": "21e1c67f08a9f100",
+      "nameplate_snapshot_hash": "324b90b86b720437",
       "trace_chain": {
         "record_id": "wd_000025",
         "record_timestamp": "2024-06-14 10:05:00",
@@ -101,7 +101,7 @@
         "unit": "L/min",
         "description": "温度 36.2℃ 超过上限 35.0℃",
         "nameplate_version": 1,
-        "nameplate_snapshot_hash": "21e1c67f08a9f100",
+        "nameplate_snapshot_hash": "324b90b86b720437",
         "nameplate_operator": "system",
         "nameplate_change_reason": "初始铭牌——出厂默认配置",
         "active_notes_count": 0,
@@ -121,7 +121,7 @@
       "threshold_value": 10.0,
       "threshold_name": "water_drop_flow_low",
       "nameplate_version": 1,
-      "nameplate_snapshot_hash": "21e1c67f08a9f100",
+      "nameplate_snapshot_hash": "324b90b86b720437",
       "trace_chain": {
         "record_id": "wd_000080",
         "record_timestamp": "2024-06-14 14:40:00",
@@ -132,7 +132,7 @@
         "unit": "L/min",
         "description": "流量 8.5L/min 低于下限 10.0L/min",
         "nameplate_version": 1,
-        "nameplate_snapshot_hash": "21e1c67f08a9f100",
+        "nameplate_snapshot_hash": "324b90b86b720437",
         "nameplate_operator": "system",
         "nameplate_change_reason": "初始铭牌——出厂默认配置",
         "active_notes_count": 0,

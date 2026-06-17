@@ -1,11 +1,11 @@
 {
   "meta": {
-    "report_id": "report_20260614_014318_135",
-    "generated_at": "2026-06-14 01:43:18",
+    "report_id": "report_20260618_030315_931",
+    "generated_at": "2026-06-18 03:03:15",
     "report_time_start": "2024-06-14 08:00:00",
     "report_time_end": "2024-06-14 16:00:00",
     "nameplate_version": 3,
-    "nameplate_snapshot_hash": "49d07e80b7a87792",
+    "nameplate_snapshot_hash": "f803392412671bea",
     "data_hash": "c822d4c0146d7442",
     "data_source_file": "water_drops.csv",
     "total_records": 97,
@@ -33,7 +33,7 @@
   },
   "nameplate_snapshot": {
     "version": 3,
-    "timestamp": "2026-06-14 01:43:18",
+    "timestamp": "2026-06-18 03:03:15",
     "operator": "小林",
     "change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
     "thresholds": {
@@ -46,7 +46,7 @@
     "notes": [
       {
         "note_id": "note_3_1",
-        "timestamp": "2026-06-14 01:43:18",
+        "timestamp": "2026-06-18 03:03:15",
         "operator": "小林",
         "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "impact_description": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
@@ -59,7 +59,7 @@
     "device_model": "CT-2000",
     "device_id": "CT-001",
     "factory_date": "2023-03-15",
-    "snapshot_hash": "49d07e80b7a87792"
+    "snapshot_hash": "f803392412671bea"
   },
   "anomalies": [
     {
@@ -71,7 +71,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000014",
         "record_timestamp": "2024-06-14 09:10:00",
@@ -82,7 +82,7 @@
         "unit": "L/min",
         "description": "温度 32.2℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -92,7 +92,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -110,7 +110,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000015",
         "record_timestamp": "2024-06-14 09:15:00",
@@ -121,7 +121,7 @@
         "unit": "L/min",
         "description": "温度 32.5℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -131,7 +131,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -149,7 +149,7 @@
       "threshold_value": 100.0,
       "threshold_name": "water_drop_flow_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000015",
         "record_timestamp": "2024-06-14 09:15:00",
@@ -160,7 +160,7 @@
         "unit": "L/min",
         "description": "流量 105.0L/min 超过上限 100.0L/min",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -170,7 +170,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -188,7 +188,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000016",
         "record_timestamp": "2024-06-14 09:20:00",
@@ -199,7 +199,7 @@
         "unit": "L/min",
         "description": "温度 32.8℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -209,7 +209,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -227,7 +227,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000017",
         "record_timestamp": "2024-06-14 09:25:00",
@@ -238,7 +238,7 @@
         "unit": "L/min",
         "description": "温度 33.1℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -248,7 +248,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -266,7 +266,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000018",
         "record_timestamp": "2024-06-14 09:30:00",
@@ -277,7 +277,7 @@
         "unit": "L/min",
         "description": "温度 33.4℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -287,7 +287,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -305,7 +305,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000019",
         "record_timestamp": "2024-06-14 09:35:00",
@@ -316,7 +316,7 @@
         "unit": "L/min",
         "description": "温度 33.7℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -326,7 +326,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -344,7 +344,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000025",
         "record_timestamp": "2024-06-14 10:05:00",
@@ -355,7 +355,7 @@
         "unit": "L/min",
         "description": "温度 36.2℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -365,7 +365,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -383,7 +383,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000034",
         "record_timestamp": "2024-06-14 10:50:00",
@@ -394,7 +394,7 @@
         "unit": "L/min",
         "description": "温度 32.2℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -404,7 +404,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -422,7 +422,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000035",
         "record_timestamp": "2024-06-14 10:55:00",
@@ -433,7 +433,7 @@
         "unit": "L/min",
         "description": "温度 32.5℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -443,7 +443,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -461,7 +461,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000036",
         "record_timestamp": "2024-06-14 11:00:00",
@@ -472,7 +472,7 @@
         "unit": "L/min",
         "description": "温度 32.8℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -482,7 +482,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -500,7 +500,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000037",
         "record_timestamp": "2024-06-14 11:05:00",
@@ -511,7 +511,7 @@
         "unit": "L/min",
         "description": "温度 33.1℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -521,7 +521,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -539,7 +539,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000038",
         "record_timestamp": "2024-06-14 11:10:00",
@@ -550,7 +550,7 @@
         "unit": "L/min",
         "description": "温度 33.4℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -560,7 +560,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -578,7 +578,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000039",
         "record_timestamp": "2024-06-14 11:15:00",
@@ -589,7 +589,7 @@
         "unit": "L/min",
         "description": "温度 33.7℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -599,7 +599,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -617,7 +617,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000040",
         "record_timestamp": "2024-06-14 11:20:00",
@@ -628,7 +628,7 @@
         "unit": "L/min",
         "description": "温度 33.5℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -638,7 +638,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -656,7 +656,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000054",
         "record_timestamp": "2024-06-14 12:30:00",
@@ -667,7 +667,7 @@
         "unit": "L/min",
         "description": "温度 32.2℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -677,7 +677,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -695,7 +695,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000056",
         "record_timestamp": "2024-06-14 12:40:00",
@@ -706,7 +706,7 @@
         "unit": "L/min",
         "description": "温度 32.8℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -716,7 +716,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -734,7 +734,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000057",
         "record_timestamp": "2024-06-14 12:45:00",
@@ -745,7 +745,7 @@
         "unit": "L/min",
         "description": "温度 33.1℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -755,7 +755,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -773,7 +773,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000058",
         "record_timestamp": "2024-06-14 12:50:00",
@@ -784,7 +784,7 @@
         "unit": "L/min",
         "description": "温度 33.4℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -794,7 +794,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -812,7 +812,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000059",
         "record_timestamp": "2024-06-14 12:55:00",
@@ -823,7 +823,7 @@
         "unit": "L/min",
         "description": "温度 33.7℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -833,7 +833,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -851,7 +851,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000074",
         "record_timestamp": "2024-06-14 14:10:00",
@@ -862,7 +862,7 @@
         "unit": "L/min",
         "description": "温度 32.2℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -872,7 +872,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -890,7 +890,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000075",
         "record_timestamp": "2024-06-14 14:15:00",
@@ -901,7 +901,7 @@
         "unit": "L/min",
         "description": "温度 32.5℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -911,7 +911,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -929,7 +929,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000076",
         "record_timestamp": "2024-06-14 14:20:00",
@@ -940,7 +940,7 @@
         "unit": "L/min",
         "description": "温度 32.8℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -950,7 +950,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -968,7 +968,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000077",
         "record_timestamp": "2024-06-14 14:25:00",
@@ -979,7 +979,7 @@
         "unit": "L/min",
         "description": "温度 33.1℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -989,7 +989,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -1007,7 +1007,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000078",
         "record_timestamp": "2024-06-14 14:30:00",
@@ -1018,7 +1018,7 @@
         "unit": "L/min",
         "description": "温度 33.4℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -1028,7 +1028,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -1046,7 +1046,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000079",
         "record_timestamp": "2024-06-14 14:35:00",
@@ -1057,7 +1057,7 @@
         "unit": "L/min",
         "description": "温度 33.7℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -1067,7 +1067,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -1085,7 +1085,7 @@
       "threshold_value": 10.0,
       "threshold_name": "water_drop_flow_low",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000080",
         "record_timestamp": "2024-06-14 14:40:00",
@@ -1096,7 +1096,7 @@
         "unit": "L/min",
         "description": "流量 8.5L/min 低于下限 10.0L/min",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -1106,7 +1106,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -1124,7 +1124,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000094",
         "record_timestamp": "2024-06-14 15:50:00",
@@ -1135,7 +1135,7 @@
         "unit": "L/min",
         "description": "温度 32.2℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -1145,7 +1145,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -1163,7 +1163,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000095",
         "record_timestamp": "2024-06-14 15:55:00",
@@ -1174,7 +1174,7 @@
         "unit": "L/min",
         "description": "温度 32.5℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -1184,7 +1184,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
@@ -1202,7 +1202,7 @@
       "threshold_value": 32.0,
       "threshold_name": "water_drop_temp_high",
       "nameplate_version": 3,
-      "nameplate_snapshot_hash": "49d07e80b7a87792",
+      "nameplate_snapshot_hash": "f803392412671bea",
       "trace_chain": {
         "record_id": "wd_000096",
         "record_timestamp": "2024-06-14 16:00:00",
@@ -1213,7 +1213,7 @@
         "unit": "L/min",
         "description": "温度 32.8℃ 超过上限 32.0℃",
         "nameplate_version": 3,
-        "nameplate_snapshot_hash": "49d07e80b7a87792",
+        "nameplate_snapshot_hash": "f803392412671bea",
         "nameplate_operator": "小林",
         "nameplate_change_reason": "追加备注：接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
         "active_notes_count": 1,
@@ -1223,7 +1223,7 @@
             "content": "接调度通知，本周高温橙色预警，冷却塔高温阈值临时收紧",
             "impact": "温度高于32℃即算高温异常，原35℃标准暂停执行，待预警解除后恢复",
             "operator": "小林",
-            "timestamp": "2026-06-14 01:43:18"
+            "timestamp": "2026-06-18 03:03:15"
           }
         ],
         "retracted_notes_count": 0,
