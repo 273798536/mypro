@@ -1,8 +1,17 @@
+from __future__ import annotations
+
 import json
 from dataclasses import asdict
 from datetime import datetime
+from enum import Enum
 from pathlib import Path
 from mc_verify.models import HistoryEntry, QuestionItem, ProcessStatus, MCResult
+
+
+def _json_default(obj):
+    if isinstance(obj, Enum):
+        return obj.value
+    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
 
 
 class HistoryStore:
@@ -20,7 +29,7 @@ class HistoryStore:
     def _save(self):
         self.store_path.parent.mkdir(parents=True, exist_ok=True)
         with open(self.store_path, "w", encoding="utf-8") as f:
-            json.dump([asdict(e) for e in self.entries], f, ensure_ascii=False, indent=2)
+            json.dump([asdict(e) for e in self.entries], f, ensure_ascii=False, indent=2, default=_json_default)
 
     def record_import(self, items: list[QuestionItem]):
         for item in items:

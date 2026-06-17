@@ -1,0 +1,518 @@
+[
+  {
+    "entry_id": "5dc364c7",
+    "timestamp": "2026-06-17T15:40:05.554793",
+    "question_id": "Q001",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "sqrt(a**2 + b**2)",
+      "expected_value": 1.4142136,
+      "unit": "m",
+      "source_fields": {},
+      "source_description": "直角三角形斜边长度，两直角边 a=1m, b=1m",
+      "unit_trace": {
+        "status": "ok",
+        "original_field": "unit",
+        "original_value": "m",
+        "expected_unit": "m",
+        "actual_unit": "m",
+        "detail": "单位字段直接提供"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "d4b4d0bf",
+    "timestamp": "2026-06-17T15:40:05.554811",
+    "question_id": "Q002",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "a * b * sin(c)",
+      "expected_value": 0.5,
+      "unit": "m²",
+      "source_fields": {},
+      "source_description": "三角形面积，a=1, b=1, c=30°（单位待补）",
+      "unit_trace": {
+        "status": "ok",
+        "original_field": "unit",
+        "original_value": "m²",
+        "expected_unit": "m²",
+        "actual_unit": "m²",
+        "detail": "单位字段直接提供"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "4b789dbd",
+    "timestamp": "2026-06-17T15:40:05.554824",
+    "question_id": "Q003",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "2 * pi * r",
+      "expected_value": 6.2831853,
+      "unit": null,
+      "source_fields": {},
+      "source_description": "圆的周长，半径r=1米",
+      "unit_trace": {
+        "status": "mismatch",
+        "original_field": "source_description",
+        "original_value": "圆的周长，半径r=1米",
+        "expected_unit": "m",
+        "actual_unit": null,
+        "detail": "题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "1953202a",
+    "timestamp": "2026-06-17T15:40:05.554852",
+    "question_id": "Q004",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "4 * pi * r**2",
+      "expected_value": 12.5663706,
+      "unit": null,
+      "source_fields": {},
+      "source_description": "球表面积 r=1，结果单位未标注",
+      "unit_trace": {
+        "status": "missing",
+        "original_field": "(无来源字段)",
+        "original_value": "球表面积 r=1，结果单位未标注",
+        "expected_unit": null,
+        "actual_unit": null,
+        "detail": "题目描述: '球表面积 r=1，结果单位未标注'"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "43123036",
+    "timestamp": "2026-06-17T15:40:05.554867",
+    "question_id": "Q005",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "e**x",
+      "expected_value": 2.7182818,
+      "unit": null,
+      "source_fields": {},
+      "source_description": "自然指数 e^1，无单位纯数值",
+      "unit_trace": {
+        "status": "missing",
+        "original_field": "(无来源字段)",
+        "original_value": "自然指数 e^1，无单位纯数值",
+        "expected_unit": null,
+        "actual_unit": null,
+        "detail": "题目描述: '自然指数 e^1，无单位纯数值'"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "e5bc0695",
+    "timestamp": "2026-06-17T15:40:05.555276",
+    "question_id": "boundary_ba9c48",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "1/r",
+      "expected_value": null,
+      "unit": null,
+      "source_fields": {},
+      "source_description": "boundary",
+      "unit_trace": {
+        "status": "missing",
+        "original_field": "(无来源字段)",
+        "original_value": "boundary",
+        "expected_unit": null,
+        "actual_unit": null,
+        "detail": "题目描述: 'boundary'"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "fe502a3b",
+    "timestamp": "2026-06-17T15:40:05.599591",
+    "question_id": "Q001",
+    "change_type": "verify",
+    "before": {
+      "process_status": "passed"
+    },
+    "after": {
+      "process_status": "passed",
+      "mc_mean": 1.415801271306254,
+      "mc_std": 0.05720050436339274,
+      "mc_error": 0.0005720050436339274,
+      "relative_error": 0.0011226531170778755,
+      "sample_count": 10000,
+      "anomalies": []
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成"
+  },
+  {
+    "entry_id": "679dd03b",
+    "timestamp": "2026-06-17T15:40:05.645809",
+    "question_id": "Q002",
+    "change_type": "verify",
+    "before": {
+      "process_status": "failed"
+    },
+    "after": {
+      "process_status": "failed",
+      "mc_mean": 0.8399985078260656,
+      "mc_std": 0.07489951640623628,
+      "mc_error": 0.0007489951640623628,
+      "relative_error": 0.6799970156521311,
+      "sample_count": 10000,
+      "anomalies": [
+        "相对误差 67.9997% 超过容限 5.0000%，MC均值=0.839999，期望值=0.5"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成"
+  },
+  {
+    "entry_id": "8b853888",
+    "timestamp": "2026-06-17T15:40:05.675987",
+    "question_id": "Q003",
+    "change_type": "verify",
+    "before": {
+      "process_status": "unit_blocked"
+    },
+    "after": {
+      "process_status": "unit_blocked",
+      "mc_mean": 6.283500654280608,
+      "mc_std": 0.36150839579274446,
+      "mc_error": 0.0036150839579274447,
+      "relative_error": 5.019019264130674e-05,
+      "sample_count": 10000,
+      "anomalies": [
+        "单位状态 [mismatch]: 题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注 (来源字段: 'source_description')"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成；单位问题: 题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注"
+  },
+  {
+    "entry_id": "00cecdb0",
+    "timestamp": "2026-06-17T15:40:05.707800",
+    "question_id": "Q004",
+    "change_type": "verify",
+    "before": {
+      "process_status": "unit_blocked"
+    },
+    "after": {
+      "process_status": "unit_blocked",
+      "mc_mean": 12.609231418754657,
+      "mc_std": 1.4464549718075572,
+      "mc_error": 0.014464549718075571,
+      "relative_error": 0.0034107555887820298,
+      "sample_count": 10000,
+      "anomalies": [
+        "单位状态 [missing]: 题目描述: '球表面积 r=1，结果单位未标注' (来源字段: '(无来源字段)')"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成；单位问题: 题目描述: '球表面积 r=1，结果单位未标注'"
+  },
+  {
+    "entry_id": "6dd9ec45",
+    "timestamp": "2026-06-17T15:40:05.733717",
+    "question_id": "Q005",
+    "change_type": "verify",
+    "before": {
+      "process_status": "unit_blocked"
+    },
+    "after": {
+      "process_status": "unit_blocked",
+      "mc_mean": 2.722919715762713,
+      "mc_std": 0.15659988703491542,
+      "mc_error": 0.0015659988703491542,
+      "relative_error": 0.0017061938768500734,
+      "sample_count": 10000,
+      "anomalies": [
+        "单位状态 [missing]: 题目描述: '自然指数 e^1，无单位纯数值' (来源字段: '(无来源字段)')"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成；单位问题: 题目描述: '自然指数 e^1，无单位纯数值'"
+  },
+  {
+    "entry_id": "fdf354dd",
+    "timestamp": "2026-06-17T15:40:05.759608",
+    "question_id": "boundary_ba9c48",
+    "change_type": "verify",
+    "before": {
+      "process_status": "unit_blocked"
+    },
+    "after": {
+      "process_status": "unit_blocked",
+      "mc_mean": 1.00328017234306,
+      "mc_std": 0.05796332214636065,
+      "mc_error": 0.0005796332214636065,
+      "relative_error": 0.0,
+      "sample_count": 10000,
+      "anomalies": [
+        "单位状态 [missing]: 题目描述: 'boundary' (来源字段: '(无来源字段)')"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成；单位问题: 题目描述: 'boundary'"
+  },
+  {
+    "entry_id": "f9efff8e",
+    "timestamp": "2026-06-17T15:40:41.966693",
+    "question_id": "Q001",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "sqrt(a**2 + b**2)",
+      "expected_value": 1.4142136,
+      "unit": "m",
+      "source_fields": {},
+      "source_description": "直角三角形斜边长度，两直角边 a=1m, b=1m",
+      "unit_trace": {
+        "status": "ok",
+        "original_field": "unit",
+        "original_value": "m",
+        "expected_unit": "m",
+        "actual_unit": "m",
+        "detail": "单位字段直接提供"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "b2aa7294",
+    "timestamp": "2026-06-17T15:40:41.966707",
+    "question_id": "Q002",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "a * b * sin(c)",
+      "expected_value": 0.5,
+      "unit": "m²",
+      "source_fields": {},
+      "source_description": "三角形面积，a=1, b=1, c=30°（单位待补）",
+      "unit_trace": {
+        "status": "ok",
+        "original_field": "unit",
+        "original_value": "m²",
+        "expected_unit": "m²",
+        "actual_unit": "m²",
+        "detail": "单位字段直接提供"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "f958aef0",
+    "timestamp": "2026-06-17T15:40:41.966719",
+    "question_id": "Q003",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "2 * pi * r",
+      "expected_value": 6.2831853,
+      "unit": null,
+      "source_fields": {},
+      "source_description": "圆的周长，半径r=1米",
+      "unit_trace": {
+        "status": "mismatch",
+        "original_field": "source_description",
+        "original_value": "圆的周长，半径r=1米",
+        "expected_unit": "m",
+        "actual_unit": null,
+        "detail": "题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "7b677903",
+    "timestamp": "2026-06-17T15:40:41.966730",
+    "question_id": "Q004",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "4 * pi * r**2",
+      "expected_value": 12.5663706,
+      "unit": null,
+      "source_fields": {},
+      "source_description": "球表面积 r=1，结果单位未标注",
+      "unit_trace": {
+        "status": "missing",
+        "original_field": "(无来源字段)",
+        "original_value": "球表面积 r=1，结果单位未标注",
+        "expected_unit": null,
+        "actual_unit": null,
+        "detail": "题目描述: '球表面积 r=1，结果单位未标注'"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "9a934831",
+    "timestamp": "2026-06-17T15:40:41.966741",
+    "question_id": "Q005",
+    "change_type": "import",
+    "before": {},
+    "after": {
+      "formula": "e**x",
+      "expected_value": 2.7182818,
+      "unit": null,
+      "source_fields": {},
+      "source_description": "自然指数 e^1，无单位纯数值",
+      "unit_trace": {
+        "status": "missing",
+        "original_field": "(无来源字段)",
+        "original_value": "自然指数 e^1，无单位纯数值",
+        "expected_unit": null,
+        "actual_unit": null,
+        "detail": "题目描述: '自然指数 e^1，无单位纯数值'"
+      }
+    },
+    "confirmed_by": null,
+    "explanation": "导入题目: 来源字段=[]"
+  },
+  {
+    "entry_id": "5632c284",
+    "timestamp": "2026-06-17T15:40:42.014470",
+    "question_id": "Q001",
+    "change_type": "verify",
+    "before": {
+      "process_status": "passed"
+    },
+    "after": {
+      "process_status": "passed",
+      "mc_mean": 1.415801271306254,
+      "mc_std": 0.05720050436339274,
+      "mc_error": 0.0005720050436339274,
+      "relative_error": 0.0011226531170778755,
+      "sample_count": 10000,
+      "anomalies": []
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成"
+  },
+  {
+    "entry_id": "bf5c8e6a",
+    "timestamp": "2026-06-17T15:40:42.060479",
+    "question_id": "Q002",
+    "change_type": "verify",
+    "before": {
+      "process_status": "failed"
+    },
+    "after": {
+      "process_status": "failed",
+      "mc_mean": 0.8399985078260656,
+      "mc_std": 0.07489951640623628,
+      "mc_error": 0.0007489951640623628,
+      "relative_error": 0.6799970156521311,
+      "sample_count": 10000,
+      "anomalies": [
+        "相对误差 67.9997% 超过容限 5.0000%，MC均值=0.839999，期望值=0.5"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成"
+  },
+  {
+    "entry_id": "48a756ba",
+    "timestamp": "2026-06-17T15:40:42.093918",
+    "question_id": "Q003",
+    "change_type": "verify",
+    "before": {
+      "process_status": "unit_blocked"
+    },
+    "after": {
+      "process_status": "unit_blocked",
+      "mc_mean": 6.283500654280608,
+      "mc_std": 0.36150839579274446,
+      "mc_error": 0.0036150839579274447,
+      "relative_error": 5.019019264130674e-05,
+      "sample_count": 10000,
+      "anomalies": [
+        "单位状态 [mismatch]: 题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注 (来源字段: 'source_description')"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成；单位问题: 题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注"
+  },
+  {
+    "entry_id": "5e334f03",
+    "timestamp": "2026-06-17T15:40:42.129071",
+    "question_id": "Q004",
+    "change_type": "verify",
+    "before": {
+      "process_status": "unit_blocked"
+    },
+    "after": {
+      "process_status": "unit_blocked",
+      "mc_mean": 12.609231418754657,
+      "mc_std": 1.4464549718075572,
+      "mc_error": 0.014464549718075571,
+      "relative_error": 0.0034107555887820298,
+      "sample_count": 10000,
+      "anomalies": [
+        "单位状态 [missing]: 题目描述: '球表面积 r=1，结果单位未标注' (来源字段: '(无来源字段)')"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成；单位问题: 题目描述: '球表面积 r=1，结果单位未标注'"
+  },
+  {
+    "entry_id": "29cecc4f",
+    "timestamp": "2026-06-17T15:40:42.155711",
+    "question_id": "Q005",
+    "change_type": "verify",
+    "before": {
+      "process_status": "unit_blocked"
+    },
+    "after": {
+      "process_status": "unit_blocked",
+      "mc_mean": 2.722919715762713,
+      "mc_std": 0.15659988703491542,
+      "mc_error": 0.0015659988703491542,
+      "relative_error": 0.0017061938768500734,
+      "sample_count": 10000,
+      "anomalies": [
+        "单位状态 [missing]: 题目描述: '自然指数 e^1，无单位纯数值' (来源字段: '(无来源字段)')"
+      ]
+    },
+    "confirmed_by": null,
+    "explanation": "蒙特卡洛验算完成；单位问题: 题目描述: '自然指数 e^1，无单位纯数值'"
+  },
+  {
+    "entry_id": "508397de",
+    "timestamp": "2026-06-17T15:40:42.157001",
+    "question_id": "Q005",
+    "change_type": "confirm",
+    "before": {
+      "process_status": "unit_blocked"
+    },
+    "after": {
+      "process_status": "passed"
+    },
+    "confirmed_by": "human",
+    "explanation": "教研阿宁确认：Q005 是纯数值 e^1，无单位属于正常情况，特批通过"
+  }
+]

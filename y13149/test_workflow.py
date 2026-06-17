@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import sys
 import os
@@ -31,7 +33,7 @@ def test_field_mapper():
     r2 = map_record({"equation": "x*2", "correct_answer": 10, "content": "乘法"})
     assert r2["formula"] == "x*2"
     assert r2["expected_value"] == 10
-    assert "content" in r2["source_fields"]
+    assert r2["source_description"] == "乘法"
 
     r3 = map_record({"weird_col": "val", "formula": "1+1"})
     assert r3["formula"] == "1+1"

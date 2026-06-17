@@ -1,0 +1,164 @@
+{
+  "report_id": "61d362ff",
+  "timestamp": "2026-06-17T15:40:42.156677",
+  "param_version": "1.0.0",
+  "mc_sample_count": 10000,
+  "mc_seed": 42,
+  "total_questions": 5,
+  "passed": 1,
+  "failed": 1,
+  "unit_blocked": 3,
+  "results": [
+    {
+      "question_id": "Q001",
+      "mc_mean": 1.415801271306254,
+      "mc_std": 0.05720050436339274,
+      "mc_error": 0.0005720050436339274,
+      "relative_error": 0.0011226531170778755,
+      "sample_count": 10000,
+      "seed": 42,
+      "anomalies": [],
+      "unit_trace": {
+        "status": "ok",
+        "original_field": "unit",
+        "original_value": "m",
+        "expected_unit": "m",
+        "actual_unit": "m",
+        "detail": "单位字段直接提供"
+      }
+    },
+    {
+      "question_id": "Q002",
+      "mc_mean": 0.8399985078260656,
+      "mc_std": 0.07489951640623628,
+      "mc_error": 0.0007489951640623628,
+      "relative_error": 0.6799970156521311,
+      "sample_count": 10000,
+      "seed": 42,
+      "anomalies": [
+        "相对误差 67.9997% 超过容限 5.0000%，MC均值=0.839999，期望值=0.5"
+      ],
+      "unit_trace": {
+        "status": "ok",
+        "original_field": "unit",
+        "original_value": "m²",
+        "expected_unit": "m²",
+        "actual_unit": "m²",
+        "detail": "单位字段直接提供"
+      }
+    },
+    {
+      "question_id": "Q003",
+      "mc_mean": 6.283500654280608,
+      "mc_std": 0.36150839579274446,
+      "mc_error": 0.0036150839579274447,
+      "relative_error": 5.019019264130674e-05,
+      "sample_count": 10000,
+      "seed": 42,
+      "anomalies": [
+        "单位状态 [mismatch]: 题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注 (来源字段: 'source_description')"
+      ],
+      "unit_trace": {
+        "status": "mismatch",
+        "original_field": "source_description",
+        "original_value": "圆的周长，半径r=1米",
+        "expected_unit": "m",
+        "actual_unit": null,
+        "detail": "题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注"
+      }
+    },
+    {
+      "question_id": "Q004",
+      "mc_mean": 12.609231418754657,
+      "mc_std": 1.4464549718075572,
+      "mc_error": 0.014464549718075571,
+      "relative_error": 0.0034107555887820298,
+      "sample_count": 10000,
+      "seed": 42,
+      "anomalies": [
+        "单位状态 [missing]: 题目描述: '球表面积 r=1，结果单位未标注' (来源字段: '(无来源字段)')"
+      ],
+      "unit_trace": {
+        "status": "missing",
+        "original_field": "(无来源字段)",
+        "original_value": "球表面积 r=1，结果单位未标注",
+        "expected_unit": null,
+        "actual_unit": null,
+        "detail": "题目描述: '球表面积 r=1，结果单位未标注'"
+      }
+    },
+    {
+      "question_id": "Q005",
+      "mc_mean": 2.722919715762713,
+      "mc_std": 0.15659988703491542,
+      "mc_error": 0.0015659988703491542,
+      "relative_error": 0.0017061938768500734,
+      "sample_count": 10000,
+      "seed": 42,
+      "anomalies": [
+        "单位状态 [missing]: 题目描述: '自然指数 e^1，无单位纯数值' (来源字段: '(无来源字段)')"
+      ],
+      "unit_trace": {
+        "status": "missing",
+        "original_field": "(无来源字段)",
+        "original_value": "自然指数 e^1，无单位纯数值",
+        "expected_unit": null,
+        "actual_unit": null,
+        "detail": "题目描述: '自然指数 e^1，无单位纯数值'"
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "question_id": "Q002",
+      "detail": "相对误差 67.9997% 超过容限 5.0000%，MC均值=0.839999，期望值=0.5"
+    },
+    {
+      "question_id": "Q003",
+      "detail": "单位状态 [mismatch]: 题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注 (来源字段: 'source_description')"
+    },
+    {
+      "question_id": "Q004",
+      "detail": "单位状态 [missing]: 题目描述: '球表面积 r=1，结果单位未标注' (来源字段: '(无来源字段)')"
+    },
+    {
+      "question_id": "Q005",
+      "detail": "单位状态 [missing]: 题目描述: '自然指数 e^1，无单位纯数值' (来源字段: '(无来源字段)')"
+    }
+  ],
+  "unit_missing_details": [
+    {
+      "question_id": "Q003",
+      "unit_status": "mismatch",
+      "original_field": "source_description",
+      "original_value": "圆的周长，半径r=1米",
+      "expected_unit": "m",
+      "actual_unit": null,
+      "trace_detail": "题目描述含中文单位提示 'm'，但数值字段缺少对应单位标注",
+      "source_description": "圆的周长，半径r=1米",
+      "source_fields": {}
+    },
+    {
+      "question_id": "Q004",
+      "unit_status": "missing",
+      "original_field": "(无来源字段)",
+      "original_value": "球表面积 r=1，结果单位未标注",
+      "expected_unit": null,
+      "actual_unit": null,
+      "trace_detail": "题目描述: '球表面积 r=1，结果单位未标注'",
+      "source_description": "球表面积 r=1，结果单位未标注",
+      "source_fields": {}
+    },
+    {
+      "question_id": "Q005",
+      "unit_status": "missing",
+      "original_field": "(无来源字段)",
+      "original_value": "自然指数 e^1，无单位纯数值",
+      "expected_unit": null,
+      "actual_unit": null,
+      "trace_detail": "题目描述: '自然指数 e^1，无单位纯数值'",
+      "source_description": "自然指数 e^1，无单位纯数值",
+      "source_fields": {}
+    }
+  ]
+}

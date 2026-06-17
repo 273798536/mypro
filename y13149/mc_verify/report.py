@@ -1,7 +1,20 @@
+from __future__ import annotations
+
 import json
 from dataclasses import asdict
+from enum import Enum
 from pathlib import Path
 from mc_verify.models import BatchReport, MCResult, QuestionItem, UnitStatus
+
+
+def _json_default(obj):
+    if isinstance(obj, Enum):
+        return obj.value
+    raise TypeError(f"Object of type {obj.__class__.__name__} is not JSON serializable")
+
+
+def _deep_to_jsonable(obj):
+    return json.loads(json.dumps(obj, default=_json_default))
 
 
 def generate_report(
@@ -51,6 +64,7 @@ def generate_report(
                 "source_fields": item.source_fields,
             })
 
+    results_jsonable = _deep_to_jsonable([asdict(r) for r in results])
     report = BatchReport(
         param_version=param_version,
         mc_sample_count=mc_sample_count,
@@ -59,13 +73,13 @@ def generate_report(
         passed=passed,
         failed=failed,
         unit_blocked=unit_blocked,
-        results=[asdict(r) for r in results],
+        results=results_jsonable,
         anomalies=all_anomalies,
         unit_missing_details=unit_missing_details,
     )
 
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(asdict(report), f, ensure_ascii=False, indent=2)
+        json.dump(asdict(report), f, ensure_ascii=False, indent=2, default=_json_default)
 
     return report
 

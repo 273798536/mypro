@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 _FIELD_ALIASES = {
     "formula": ["formula", "公式", "表达式", "expression", "equation", "formula_text"],
     "expected_value": ["expected_value", "期望值", "标准答案", "answer", "expected", "result", "correct_answer", "ans", "标准值"],

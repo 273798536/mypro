@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import re
 from mc_verify.models import QuestionItem, UnitTrace, UnitStatus
 
