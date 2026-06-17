@@ -1,0 +1,26 @@
+{
+  "version": "v2024.05.12",
+  "release_time": "2024-05-12T09:00:00",
+  "operator": "算法值班-小李",
+  "description": "本周模型V3.2上线，包含COPD问答模型优化和糖尿病用药问答专项增强。修正了上周张工反馈的心血管题目关键词匹配过严问题。",
+  "referenced_sample_ids": [
+    "QA-2024-0512-001",
+    "QA-2024-0512-002",
+    "QA-2024-0512-003",
+    "QA-2024-0512-004",
+    "QA-2024-0512-005"
+  ],
+  "attachments": [
+    {
+      "name": "COPD模型优化报告.pdf",
+      "content": "详见附件链接",
+      "is_late": false,
+      "arrive_time": "2024-05-12T08:50:00"
+    }
+  ],
+  "threshold_adjustment": {
+    "关键词匹配阈值": 0.78,
+    "语义相似度阈值": 0.82
+  },
+  "missing_references": []
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "sample_id": "QA-2024-0512-001",
+    "question": "患者男性，65岁，反复咳嗽咳痰20年，加重伴呼吸困难1周。查体：桶状胸，双肺叩诊过清音，P2>A2。最可能的诊断是？",
+    "answer": "慢性阻塞性肺疾病急性加重期",
+    "reference_answer": "慢性阻塞性肺疾病急性加重期（AECOPD）",
+    "predicted_status": "正确",
+    "final_status": "正确",
+    "corrections": [
+      {
+        "operator": "周姐",
+        "old_status": "错误",
+        "new_status": "正确",
+        "reason": "答案核心关键词匹配，仅缺少英文缩写，属于正确范围",
+        "timestamp": "2024-05-12T10:30:00"
+      }
+    ],
+    "notes": "初判模型给分偏低，周姐复核后调整",
+    "row_status": "已处理"
+  },
+  {
+    "sample_id": "QA-2024-0512-002",
+    "question": "简述急性心肌梗死的典型心电图表现",
+    "answer": "ST段弓背向上抬高，T波倒置",
+    "reference_answer": "ST段弓背向上型抬高、病理性Q波、T波倒置",
+    "predicted_status": "错误",
+    "final_status": "错误",
+    "corrections": [],
+    "notes": "缺少病理性Q波这一关键要点",
+    "row_status": "已处理"
+  },
+  {
+    "sample_id": "QA-2024-0512-003",
+    "question": "",
+    "answer": "二甲双胍",
+    "reference_answer": null,
+    "predicted_status": "待确认",
+    "final_status": "待确认",
+    "corrections": [],
+    "notes": "该条记录从上游系统导入时问题字段丢失，需联系数据源补录",
+    "row_status": "已处理",
+    "bad_reason": null
+  },
+  {
+    "sample_id": "QA-2024-0512-004",
+    "question": "2型糖尿病一线首选口服降糖药是？",
+    "answer": "二甲双胍",
+    "reference_answer": "二甲双胍（Metformin）",
+    "predicted_status": "正确",
+    "final_status": "正确",
+    "corrections": [],
+    "notes": null,
+    "row_status": "已处理"
+  },
+  {
+    "sample_id": "QA-2024-0512-005",
+    "question": "高血压危象首选降压药物是？",
+    "answer": "硝苯地平",
+    "reference_answer": "硝普钠（Sodium Nitroprusside）",
+    "predicted_status": "错误",
+    "final_status": "待确认",
+    "corrections": [
+      {
+        "operator": "周姐",
+        "old_status": "错误",
+        "new_status": "待确认",
+        "reason": "不同教材有争议，需等专家组讨论结果",
+        "timestamp": "2024-05-12T15:20:00"
+      }
+    ],
+    "notes": "标注负责人周姐临时改为待确认，等待晚到的专家会诊附件",
+    "row_status": "已处理"
+  }
+]
