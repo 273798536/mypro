@@ -19,7 +19,9 @@ def _level_label(rate: float) -> str:
 
 
 def generate_plain_report(prompt_version_id: int) -> Dict[str, Any]:
-    """生成普通话解释版的报告摘要，可直接复制给同事"""
+    """生成普通话解释版的报告摘要，可直接复制给同事。
+    保证即使还没有评测记录（total=0）或没有设置样本配比，也能返回可读的报告。
+    """
     pv = db.get_prompt_version(prompt_version_id)
     if not pv:
         return {}
@@ -34,6 +36,10 @@ def generate_plain_report(prompt_version_id: int) -> Dict[str, Any]:
     exception_cnt = summary["exception"]
     fail_cnt = summary["fail"]
 
+    best: Optional[tuple] = None
+    worst: Optional[tuple] = None
+    biased: List[str] = []
+
     lines: List[str] = []
     lines.append(f"【评测结论摘要：{version_name}】")
     lines.append(f"生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
@@ -41,13 +47,19 @@ def generate_plain_report(prompt_version_id: int) -> Dict[str, Any]:
     lines.append("")
 
     # 总体评价
-    level = _level_label(pass_rate)
     lines.append(f"一、总体情况：")
-    lines.append(
-        f"  本次共评测 {total} 道题目，整体通过率为 {pass_rate}%，平均得分 {avg_score} 分，"
-        f"{level}。其中，通过 {summary['pass']} 题，不通过 {fail_cnt} 题，"
-        f"发生异常 {exception_cnt} 题，待评测 {summary['pending']} 题。"
-    )
+    if total == 0:
+        lines.append(
+            "  当前版本还没有导入任何评测记录，所以还没有通过率、平均分等指标。"
+            "请在『📥 导入评测结果』页签上传评测数据，或先到『📚 评测题库管理』准备题目。"
+        )
+    else:
+        level = _level_label(pass_rate)
+        lines.append(
+            f"  本次共评测 {total} 道题目，整体通过率为 {pass_rate}%，平均得分 {avg_score} 分，"
+            f"{level}。其中，通过 {summary['pass']} 题，不通过 {fail_cnt} 题，"
+            f"发生异常 {exception_cnt} 题，待评测 {summary['pending']} 题。"
+        )
 
     # 分类偏科分析
     by_cat = summary["by_category"]
@@ -70,6 +82,13 @@ def generate_plain_report(prompt_version_id: int) -> Dict[str, Any]:
                 f"表现最弱的是【{worst[0]}】（通过率 {worst[1]['pass_rate']}%），"
                 f"两者相差 {round(best[1]['pass_rate'] - worst[1]['pass_rate'], 2)} 个百分点，存在一定偏科。"
             )
+    else:
+        lines.append("")
+        lines.append(f"二、分类表现：")
+        if total == 0:
+            lines.append("  （还没有评测记录，等导入评测结果后会自动按分类统计通过率。）")
+        else:
+            lines.append("  （当前题目还未标注分类，请到评测题库中补充『分类』字段后再看。）")
 
     # 样本配比
     if ratio:
@@ -94,6 +113,13 @@ def generate_plain_report(prompt_version_id: int) -> Dict[str, Any]:
         if biased:
             lines.append("")
             lines.append(f"  → 样本配比存在偏科的类别：{'；'.join(biased)}")
+    else:
+        lines.append("")
+        lines.append(f"三、评测集样本配比：")
+        if total == 0:
+            lines.append("  （还没有评测记录，暂无样本占比。可以先在『🧪 样本配比分析』页签设置预期占比。）")
+        else:
+            lines.append("  （暂时没有配比数据，系统会在导入评测记录后自动计算实际占比。）")
 
     # 难度分布
     by_diff = summary["by_difficulty"]
@@ -105,27 +131,45 @@ def generate_plain_report(prompt_version_id: int) -> Dict[str, Any]:
             lines.append(
                 f"  · {diff}：{info['total']} 题，通过 {info['pass']} 题，通过率 {rate}%"
             )
+    else:
+        lines.append("")
+        lines.append(f"四、难度分布：")
+        if total == 0:
+            lines.append("  （还没有评测记录。）")
+        else:
+            lines.append("  （当前题目还未标注难度。）")
 
     # 建议
     lines.append("")
     lines.append(f"五、建议：")
-    suggestions = []
-    if exception_cnt > 0:
+    suggestions: List[str] = []
+    if total == 0:
         suggestions.append(
-            f"当前有 {exception_cnt} 道题发生了异常，请优先处理异常（可在『异常追溯』页签查看具体异常详情和处理意见）。"
+            "先到『📚 评测题库管理』准备或导入题库（至少要包含『题目ID』和『题目内容』两列）。"
         )
-    if worst[1]["pass_rate"] < 60:
         suggestions.append(
-            f"建议针对【{worst[0]}】类别补充相关训练样本，或在提示词中加入更明确的领域引导语。"
+            "再到『📥 导入评测结果』页签上传对应提示词版本的评测结果（至少要有『题目ID』列，可选『得分』『是否通过』『异常类型』等列）。"
         )
-    if pass_rate < 70:
         suggestions.append(
-            f"整体通过率偏低，建议检查提示词模板的系统性引导是否充分，并参考通过率高的类别的成功范式。"
+            "之后在『🧪 样本配比分析』设置每个分类的预期占比，系统会自动识别是否偏科。"
         )
-    if biased:
-        suggestions.append(
-            f"评测集样本配比在 {len(biased)} 个类别上偏离预期较大，建议补充样本以平衡分布，避免评测结论失真。"
-        )
+    else:
+        if exception_cnt > 0:
+            suggestions.append(
+                f"当前有 {exception_cnt} 道题发生了异常，请优先处理异常（可在『🔍 异常追溯 & 处理意见』页签查看具体异常详情并补充处理意见）。"
+            )
+        if worst is not None and worst[1]["pass_rate"] < 60:
+            suggestions.append(
+                f"建议针对【{worst[0]}】类别补充相关训练样本，或在提示词中加入更明确的领域引导语。"
+            )
+        if pass_rate < 70:
+            suggestions.append(
+                f"整体通过率偏低，建议检查提示词模板的系统性引导是否充分，并参考通过率高的类别的成功范式。"
+            )
+        if biased:
+            suggestions.append(
+                f"评测集样本配比在 {len(biased)} 个类别上偏离预期较大，建议补充样本以平衡分布，避免评测结论失真。"
+            )
     if not suggestions:
         suggestions.append("当前指标整体健康，可继续按此方向迭代。")
     for i, s in enumerate(suggestions, 1):
@@ -138,6 +182,7 @@ def generate_plain_report(prompt_version_id: int) -> Dict[str, Any]:
         "imported_at": imported_at,
         "summary": summary,
         "ratio": ratio,
+        "data_status": "empty" if total == 0 else ("partial" if exception_cnt or summary["pending"] else "ready"),
     }
 
 
@@ -193,40 +238,53 @@ def _friendly_df(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_export_workbook(prompt_version_id: int) -> bytes:
-    """生成多 Sheet 的 Excel，列名友好，适合不懂代码的同事查看"""
+    """生成多 Sheet 的 Excel，列名友好，适合不懂代码的同事查看。
+    保证即使空数据，8 个 Sheet 也都存在（含占位说明），业务方打开不会看到空壳。
+    """
     pv = db.get_prompt_version(prompt_version_id)
     if not pv:
         raise ValueError("提示词版本不存在")
     report = generate_plain_report(prompt_version_id)
     summary = report["summary"]
     ratio = report["ratio"]
+    total = summary["total"]
     records = db.list_eval_records(prompt_version_id=prompt_version_id)
     exceptions = db.list_eval_records(prompt_version_id=prompt_version_id, only_exception=True)
     fails = db.list_eval_records(prompt_version_id=prompt_version_id, only_fail=True)
 
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
-        # Sheet 1: 报告摘要（含普通话解释）
+        workbook = writer.book
+        wrap_format = workbook.add_format({"text_wrap": True, "valign": "top"})
+        header_format = workbook.add_format({"bold": True, "bg_color": "#DDEBF7"})
+        placeholder_format = workbook.add_format({"italic": True, "font_color": "#7a8699"})
+
+        # ---------- Sheet 1: 报告摘要（含普通话解释） ----------
         summary_lines = report["plain_text"].split("\n")
-        pd.DataFrame({"报告内容": summary_lines}).to_excel(
+        pd.DataFrame({"报告内容（可直接复制发给同事）": summary_lines}).to_excel(
             writer, sheet_name="1_评测结论摘要", index=False
         )
 
-        # Sheet 2: 总体指标
+        # ---------- Sheet 2: 总体指标 ----------
         overview = pd.DataFrame([{
             "提示词版本": pv["version_name"],
+            "版本描述": pv.get("description") or "(无)",
             "导入时间": pv["imported_at"],
             "题目总数": summary["total"],
             "通过题数": summary["pass"],
             "不通过题数": summary["fail"],
             "异常题数": summary["exception"],
             "待评测题数": summary["pending"],
-            "整体通过率(%)": summary["pass_rate"],
-            "平均得分": summary["avg_score"],
+            "整体通过率(%)": summary["pass_rate"] if total > 0 else "(暂无数据)",
+            "平均得分": summary["avg_score"] if total > 0 else "(暂无数据)",
+            "数据状态": report.get("data_status", "unknown"),
         }])
         overview.to_excel(writer, sheet_name="2_总体指标", index=False)
+        if total == 0:
+            ws = writer.sheets["2_总体指标"]
+            ws.write(3, 0, "说明：当前版本还没有评测记录，请先在看板中导入题库和评测结果。", placeholder_format)
 
-        # Sheet 3: 分类表现
+        # ---------- Sheet 3: 分类表现 ----------
         if summary["by_category"]:
             cat_rows = []
             for cat, info in summary["by_category"].items():
@@ -240,8 +298,14 @@ def build_export_workbook(prompt_version_id: int) -> bytes:
                     "平均得分": info["avg_score"],
                 })
             pd.DataFrame(cat_rows).to_excel(writer, sheet_name="3_分类表现", index=False)
+        else:
+            pd.DataFrame([{
+                "说明": "暂无分类表现数据。",
+                "可能原因": "还没有导入评测记录，或评测题库中的题目未标注『分类』字段。",
+                "下一步": "请在『📚 评测题库管理』中补充题目分类，再到『📥 导入评测结果』上传评测结果。",
+            }]).to_excel(writer, sheet_name="3_分类表现", index=False)
 
-        # Sheet 4: 样本配比（偏科原因说明）
+        # ---------- Sheet 4: 样本配比（偏科原因说明） ----------
         if ratio:
             ratio_rows = []
             for r in ratio:
@@ -249,11 +313,13 @@ def build_export_workbook(prompt_version_id: int) -> bytes:
                 reason = ""
                 if dev is not None:
                     if dev > 10:
-                        reason = f"实际占比比预期多了 {dev} 个百分点，该类别样本偏多"
+                        reason = f"实际占比比预期多了 {dev} 个百分点，该类别样本偏多，建议减少或补充其他类别"
                     elif dev < -10:
-                        reason = f"实际占比比预期少了 {abs(dev)} 个百分点，该类别样本不足"
+                        reason = f"实际占比比预期少了 {abs(dev)} 个百分点，该类别样本不足，建议补充"
                     else:
                         reason = "占比符合预期"
+                else:
+                    reason = "(未设置预期占比，无法判断是否偏科)"
                 ratio_rows.append({
                     "题目分类": r["category"],
                     "实际题目数": r["actual_count"] or 0,
@@ -263,8 +329,14 @@ def build_export_workbook(prompt_version_id: int) -> bytes:
                     "偏科原因说明": reason,
                 })
             pd.DataFrame(ratio_rows).to_excel(writer, sheet_name="4_样本配比_偏科原因", index=False)
+        else:
+            pd.DataFrame([{
+                "说明": "暂无样本配比数据。",
+                "可能原因": "还没有导入评测记录，或尚未在『🧪 样本配比分析』中设置预期占比。",
+                "下一步": "先导入评测结果，再到『🧪 样本配比分析』填写每个分类的预期占比，系统会自动识别偏科。",
+            }]).to_excel(writer, sheet_name="4_样本配比_偏科原因", index=False)
 
-        # Sheet 5: 难度分布
+        # ---------- Sheet 5: 难度分布 ----------
         if summary["by_difficulty"]:
             diff_rows = []
             for diff, info in summary["by_difficulty"].items():
@@ -277,8 +349,14 @@ def build_export_workbook(prompt_version_id: int) -> bytes:
                     "通过率(%)": rate,
                 })
             pd.DataFrame(diff_rows).to_excel(writer, sheet_name="5_难度分布", index=False)
+        else:
+            pd.DataFrame([{
+                "说明": "暂无难度分布数据。",
+                "可能原因": "评测题库中的题目未标注『难度』字段，或还没有导入评测记录。",
+                "下一步": "请在题库中补充难度字段（简单/中等/困难）。",
+            }]).to_excel(writer, sheet_name="5_难度分布", index=False)
 
-        # Sheet 6: 全部评测明细
+        # ---------- Sheet 6: 全部评测明细 ----------
         if records:
             detail_cols = [
                 "question_id", "question_text", "category", "difficulty",
@@ -292,8 +370,14 @@ def build_export_workbook(prompt_version_id: int) -> bytes:
             for c in existing:
                 detail_df[c] = detail_df[c].map(_translate)
             _friendly_df(detail_df).to_excel(writer, sheet_name="6_全部评测明细", index=False)
+        else:
+            pd.DataFrame([{
+                "说明": "暂无评测明细。",
+                "导入要求": "评测结果文件至少包含『题目ID』列，可选列：得分、是否通过、异常类型、异常详情、模型输出、耗时毫秒等。",
+                "下一步": "请在『📥 导入评测结果』页签上传 CSV 或 Excel 文件。",
+            }]).to_excel(writer, sheet_name="6_全部评测明细", index=False)
 
-        # Sheet 7: 异常明细（附处理意见列，方便业务方填回）
+        # ---------- Sheet 7: 异常明细（附处理意见列，方便业务方填回） ----------
         if exceptions:
             exc_cols = [
                 "question_id", "question_text", "category", "difficulty",
@@ -308,8 +392,13 @@ def build_export_workbook(prompt_version_id: int) -> bytes:
             for c in existing:
                 exc_df[c] = exc_df[c].map(_translate)
             _friendly_df(exc_df).to_excel(writer, sheet_name="7_异常明细_请处理", index=False)
+        else:
+            pd.DataFrame([{
+                "说明": "太好了！当前版本没有异常记录。",
+                "后续": "如果之后发现异常，此 Sheet 会自动列出所有异常题目，并预留『处理意见』和『处理人』两列供填写。",
+            }]).to_excel(writer, sheet_name="7_异常明细_请处理", index=False)
 
-        # Sheet 8: 不通过明细
+        # ---------- Sheet 8: 不通过明细 ----------
         if fails:
             fail_cols = [
                 "question_id", "question_text", "category", "difficulty",
@@ -322,14 +411,18 @@ def build_export_workbook(prompt_version_id: int) -> bytes:
             for c in existing:
                 fail_df[c] = fail_df[c].map(_translate)
             _friendly_df(fail_df).to_excel(writer, sheet_name="8_不通过明细", index=False)
+        else:
+            pd.DataFrame([{
+                "说明": "当前没有不通过的题目。",
+                "补充": "如果有题目不通过，会在此 Sheet 列出题目内容、参考答案、模型输出，方便对比分析。",
+            }]).to_excel(writer, sheet_name="8_不通过明细", index=False)
 
-        # 调整列宽
-        workbook = writer.book
-        wrap_format = workbook.add_format({"text_wrap": True, "valign": "top"})
+        # ---------- 全局调整列宽与表头样式 ----------
         for sheet_name in writer.sheets:
             ws = writer.sheets[sheet_name]
-            ws.set_column(0, 20, 22, wrap_format)
-            ws.set_row(0, 30, workbook.add_format({"bold": True, "bg_color": "#DDEBF7"}))
+            ws.set_column(0, 20, 28, wrap_format)
+            ws.set_row(0, 30, header_format)
+            ws.freeze_panes(1, 0)
 
     return output.getvalue()
 

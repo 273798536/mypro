@@ -353,37 +353,53 @@ elif page.startswith("📥"):
 elif page.startswith("🧪"):
     st.header("🧪 样本配比分析 · 偏科原因一眼看懂")
     if CUR_PV_ID is None:
-        st.info("请先选择提示词版本。")
+        st.info("请先在左侧选择提示词版本。")
         st.stop()
 
     pv = db.get_prompt_version(CUR_PV_ID)
     ratio = db.get_dataset_ratio(CUR_PV_ID)
     summary = db.get_prompt_version_summary(CUR_PV_ID)
+    total = summary["total"]
 
-    st.caption(f"当前版本：{pv['version_name']}")
+    st.caption(f"当前版本：{pv['version_name']} · 已评测 {total} 题")
+    if total == 0:
+        st.info(
+            "ℹ️  当前版本还没有评测记录，实际占比暂时为 0。"
+            "你仍然可以先在这里配置每个分类的预期占比，等评测结果导入后系统会自动计算偏离程度。"
+        )
+
+    ratio_map = {r["category"]: r for r in ratio}
+    cats_from_db = db.get_question_categories()
+    all_cats = list(dict.fromkeys(list(ratio_map.keys()) + cats_from_db))
+
     with st.form("expected_ratio_form"):
         st.markdown("##### 设置每个分类的『预期占比』")
-        ratio_map = {r["category"]: r for r in ratio}
-        cols = st.columns(3)
-        new_ratios = {}
-        cats = list(ratio_map.keys()) + [c for c in db.get_question_categories() if c not in ratio_map]
-        for i, cat in enumerate(cats):
-            col = cols[i % len(cols)]
-            cur = ratio_map.get(cat, {})
-            default = cur.get("expected_ratio")
-            if default is None:
-                default = round(cur.get("actual_ratio", 0), 2)
-            new_ratios[cat] = col.number_input(
-                f"{cat} 预期占比(%) · 实际 {cur.get('actual_ratio', 0)}%",
-                min_value=0.0, max_value=100.0, value=float(default), step=0.5,
-                key=f"ratio_{cat}",
+        if not all_cats:
+            st.info(
+                "还没有任何分类可用。请先在『📚 评测题库管理』导入带『分类』字段的题目，"
+                "或者先导入评测记录，系统会自动识别分类。"
             )
-        submitted = st.form_submit_button("保存预期占比并重新计算偏离程度", type="primary")
-        if submitted:
-            total = sum(new_ratios.values())
-            db.set_expected_ratio(CUR_PV_ID, new_ratios)
-            st.success(f"✅ 已保存。当前预期占比合计：{total}%（建议合计约 100%）")
-            ratio = db.get_dataset_ratio(CUR_PV_ID)
+            submitted = st.form_submit_button("保存预期占比并重新计算偏离程度", type="primary", disabled=True)
+        else:
+            cols = st.columns(3)
+            new_ratios = {}
+            for i, cat in enumerate(all_cats):
+                col = cols[i % len(cols)]
+                cur = ratio_map.get(cat, {})
+                default = cur.get("expected_ratio")
+                if default is None:
+                    default = round(cur.get("actual_ratio", 0) or 0, 2)
+                new_ratios[cat] = col.number_input(
+                    f"{cat} 预期占比(%) · 实际 {cur.get('actual_ratio', 0) or 0}%",
+                    min_value=0.0, max_value=100.0, value=float(default), step=0.5,
+                    key=f"ratio_{cat}",
+                )
+            submitted = st.form_submit_button("保存预期占比并重新计算偏离程度", type="primary")
+            if submitted:
+                total_r = sum(new_ratios.values())
+                db.set_expected_ratio(CUR_PV_ID, new_ratios)
+                st.success(f"✅ 已保存。当前预期占比合计：{total_r}%（建议合计约 100%）")
+                ratio = db.get_dataset_ratio(CUR_PV_ID)
 
     if ratio:
         st.divider()
@@ -411,7 +427,7 @@ elif page.startswith("🧪"):
                 "实际占比(%)": r["actual_ratio"] or 0,
                 "预期占比(%)": r["expected_ratio"] if r["expected_ratio"] is not None else "(未设置)",
                 "偏离(百分点)": dev if dev is not None else "-",
-                "评估": tag,
+                "评估": tag or "(未设置预期占比)",
             })
         df = pd.DataFrame(rows_view)
         st.dataframe(df, use_container_width=True, hide_index=True)
@@ -420,8 +436,12 @@ elif page.startswith("🧪"):
             st.markdown("##### 🎯 偏科原因（普通话解释，可复制）")
             plain = "本评测集在分类样本分布上存在以下偏科：\n" + "；\n".join(biased) + "。"
             st.markdown(f'<div class="report-box">{plain}</div>', unsafe_allow_html=True)
+        elif any(r["expected_ratio"] is not None for r in ratio):
+            st.success("✅ 所有已设置预期占比的分类都在预期范围内，无明显偏科。")
         else:
-            st.success("✅ 所有分类占比都在预期范围内，无明显偏科。")
+            st.info("还没有为任何分类设置预期占比，请在上方填写后点击『保存预期占比』。")
+    elif total > 0:
+        st.info("暂未计算出配比结果，请确认是否已导入评测记录。")
 
 # ==============================================================
 # 页面 6: 异常追溯 & 处理意见
@@ -542,29 +562,58 @@ elif page.startswith("🔍"):
 elif page.startswith("📄"):
     st.header("📄 生成报告 & 导出 · 可直接转给不懂代码的同事")
     if CUR_PV_ID is None:
-        st.info("请先选择提示词版本。")
+        st.info("请先在左侧选择提示词版本。还没有版本的话，去『🔖 提示词版本』页签导入一个，或点『🧩 示例数据 / 初始化』一键生成。")
         st.stop()
 
     pv = db.get_prompt_version(CUR_PV_ID)
-    report = rp.generate_plain_report(CUR_PV_ID)
+    if not pv:
+        st.error("当前提示词版本不存在，可能已被删除。请在左侧重新选择。")
+        st.stop()
+
+    try:
+        report = rp.generate_plain_report(CUR_PV_ID)
+    except Exception as e:
+        st.error(f"生成报告时出错：{e}")
+        st.stop()
+    if not report:
+        st.error("无法生成报告，请稍后重试。")
+        st.stop()
+
+    summary = report["summary"]
+    total = summary["total"]
+    data_status = report.get("data_status", "unknown")
+
+    # 顶部状态横幅
+    status_info = {
+        "empty": ("⚠️", "该版本还没有评测记录", "橙"),
+        "partial": ("ℹ️", "评测记录不完整（还有异常或待评测）", "蓝"),
+        "ready": ("✅", "评测记录完整，可以交付", "绿"),
+    }.get(data_status, ("ℹ️", "数据状态未知", "灰"))
+    icon, msg, color = status_info
+    if color == "绿":
+        st.success(f"{icon} {msg}")
+    elif color == "橙":
+        st.warning(f"{icon} {msg}。下面依然可以预览报告模板和下载 Excel（里面会写清楚下一步怎么补数据）。")
+    else:
+        st.info(f"{icon} {msg}")
 
     st.subheader(f"报告摘要（版本：{pv['version_name']}）")
     st.markdown("##### 💬 普通话解释版 · 可直接复制给同事")
     with st.container():
         st.markdown(f'<div class="report-box">{report["plain_text"]}</div>', unsafe_allow_html=True)
-    c_copy1, c_copy2 = st.columns([1, 5])
-    c_copy1.button("📋 一键复制", on_click=lambda: st.toast("请选中上方文字复制，或导出 Excel / Markdown。"))
+    cc1, cc2 = st.columns([1, 5])
+    cc1.button("📋 一键复制（手动选中复制即可）", disabled=True, help="浏览器安全限制：请直接选中上方文字复制")
+    cc2.caption("提示：选中上方灰色框里的文字直接 Ctrl+C / Cmd+C 即可；也可以下载下方的 Markdown / Excel。")
 
     st.divider()
     st.subheader("📊 结构化指标详情")
-    summary = report["summary"]
     mc1, mc2, mc3, mc4, mc5, mc6 = st.columns(6)
     mc1.metric("题目总数", summary["total"])
     mc2.metric("通过", summary["pass"])
     mc3.metric("不通过", summary["fail"])
     mc4.metric("异常", summary["exception"])
-    mc5.metric("通过率", f"{summary['pass_rate']}%")
-    mc6.metric("平均得分", summary["avg_score"])
+    mc5.metric("通过率", f"{summary['pass_rate']}%" if total > 0 else "—")
+    mc6.metric("平均得分", summary["avg_score"] if total > 0 else "—")
 
     st.markdown("##### 各分类表现")
     if summary["by_category"]:
@@ -580,6 +629,11 @@ elif page.startswith("📄"):
                 "平均得分": info["avg_score"],
             })
         st.dataframe(pd.DataFrame(cat_rows), use_container_width=True, hide_index=True)
+    else:
+        if total == 0:
+            st.info("还没有评测记录，等导入评测结果后会自动按分类统计。")
+        else:
+            st.info("当前题目未标注『分类』字段，请到『📚 评测题库管理』补充。")
 
     st.markdown("##### 样本配比 / 偏科原因")
     if report["ratio"]:
@@ -603,6 +657,11 @@ elif page.startswith("📄"):
                 "偏科原因": reason or "（未设置预期占比，无法判断）",
             })
         st.dataframe(pd.DataFrame(ratio_rows), use_container_width=True, hide_index=True)
+    else:
+        if total == 0:
+            st.info("还没有评测记录，暂无样本占比。可以先去『🧪 样本配比分析』设置预期占比。")
+        else:
+            st.info("暂时没有配比数据，系统会在导入评测记录后自动计算。")
 
     st.divider()
     st.subheader("📥 导出文件 · 给业务方 / 不懂代码的同事看")
@@ -611,17 +670,21 @@ elif page.startswith("📄"):
         safe_name = pv["version_name"].replace("/", "_").replace("\\", "_")
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"评测报告_{safe_name}_{ts}.xlsx"
+        label_prefix = "（数据齐全）" if data_status == "ready" else ("（空批次占位说明版）" if data_status == "empty" else "（部分数据）")
         st.download_button(
-            "⬇️ 下载 Excel 报告（8 个 Sheet，中文列名 + 偏科原因说明）",
+            f"⬇️ 下载 Excel 报告 {label_prefix} · 8 个 Sheet / 中文列名 / 偏科原因说明",
             data=wb_bytes,
             file_name=filename,
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             type="primary",
             use_container_width=True,
         )
-        md_text = f"# 评测报告 · {pv['version_name']}\n\n" \
-                  f"生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" \
-                  f"---\n\n{report['plain_text']}\n"
+        md_text = (
+            f"# 评测报告 · {pv['version_name']}\n\n"
+            f"生成时间：{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n"
+            f"数据状态：{msg}\n\n"
+            f"---\n\n{report['plain_text']}\n"
+        )
         st.download_button(
             "⬇️ 下载 Markdown 报告（适合复制粘贴到文档 / IM）",
             data=md_text.encode("utf-8"),
@@ -629,9 +692,13 @@ elif page.startswith("📄"):
             mime="text/markdown",
             use_container_width=True,
         )
-        st.caption("Excel 包含 8 个 Sheet：①评测结论摘要 ②总体指标 ③分类表现 ④样本配比_偏科原因 ⑤难度分布 ⑥全部评测明细 ⑦异常明细_请处理 ⑧不通过明细")
+        st.caption(
+            "Excel 固定 8 个 Sheet：①评测结论摘要 ②总体指标 ③分类表现 ④样本配比_偏科原因 "
+            "⑤难度分布 ⑥全部评测明细 ⑦异常明细_请处理 ⑧不通过明细。即使暂时没有数据，每个 Sheet 也会给出说明和下一步操作。"
+        )
     except Exception as e:
         st.error(f"生成导出文件失败：{e}")
+        st.caption("可以刷新页面后重试，或先检查提示词版本是否存在。")
 
 # ==============================================================
 # 页面 8: 示例数据 / 初始化
