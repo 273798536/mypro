@@ -1,0 +1,63 @@
+[
+  {
+    "ticket_id": "YX-2026-0615-001",
+    "content": "用户反映APP在iOS17.4版本更新后，首页加载速度明显变慢，多次下拉刷新无响应，已连续3天出现该问题，影响日常使用",
+    "ai_cluster_label": "性能问题",
+    "ai_cluster_confidence": 0.92,
+    "ai_evidence": ["加载慢", "下拉刷新无响应", "iOS17.4", "连续3天"],
+    "manual_label": "性能问题",
+    "old_model_label": null,
+    "review_status": "待复核",
+    "source": "线上工单",
+    "timestamp": "2026-06-15 09:23:11"
+  },
+  {
+    "ticket_id": "YX-2026-0615-002",
+    "content": "客服电话打不通，连续拨打3次都是等待10分钟以上没人接，之前投诉订单一直不给处理，退款申请提交了3天都在审核中，体验极差要投诉到12315",
+    "ai_cluster_label": "服务投诉",
+    "ai_cluster_confidence": 0.87,
+    "ai_evidence": ["客服电话打不通", "等待10分钟", "退款审核中", "投诉12315"],
+    "manual_label": "退款问题",
+    "old_model_label": null,
+    "review_status": "待复核",
+    "source": "线上工单",
+    "timestamp": "2026-06-15 10:15:42"
+  },
+  {
+    "ticket_id": "YX-2026-0614-007",
+    "content": "会员自动续费没有提前通知，直接从银行卡扣款298元，联系客服说不能退，说协议里有写了，但我根本没看到，属于恶意扣款",
+    "ai_cluster_label": "自动续费投诉",
+    "ai_cluster_confidence": 0.95,
+    "ai_evidence": ["自动续费", "未通知", "扣款298元", "不能退", "协议未看到"],
+    "manual_label": "自动续费投诉",
+    "old_model_label": "普通投诉",
+    "old_model_confidence": 0.71,
+    "review_status": "待复核",
+    "source": "线上工单",
+    "timestamp": "2026-06-14 16:42:08"
+  },
+  {
+    "ticket_id": "YX-2026-0615-003",
+    "content": "商品页面显示有货，下单后第二天通知没货要退款，这不是虚假宣传吗？等了三天又说可以发货但要再等一周，反反复复",
+    "ai_cluster_label": "库存问题",
+    "ai_cluster_confidence": 0.78,
+    "ai_evidence": ["显示有货", "下单没货", "虚假宣传", "反复通知"],
+    "manual_label": "虚假宣传",
+    "old_model_label": null,
+    "review_status": "待复核",
+    "source": "线上工单",
+    "timestamp": "2026-06-15 11:08:55"
+  },
+  {
+    "ticket_id": "YX-2026-0614-012",
+    "content": "订单物流信息三天没更新，显示已发货但查不到快递单号，问客服就说帮忙查，然后就没下文了，到底发没发？",
+    "ai_cluster_label": "物流问题",
+    "ai_cluster_confidence": 0.91,
+    "ai_evidence": ["物流没更新", "查不到快递单号", "客服没下文"],
+    "manual_label": null,
+    "old_model_label": null,
+    "review_status": "待复核",
+    "source": "线上工单",
+    "timestamp": "2026-06-14 14:30:19"
+  }
+]
