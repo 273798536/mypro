@@ -1,5 +1,5 @@
 import React from 'react'
-import { STATUS_LABEL, SOURCE_LABEL, formatValue, formatTime, getSceneDescription } from '@/utils/format'
+import { STATUS_LABEL, SOURCE_LABEL, formatValue, formatTime, getSceneDescription, safeNum } from '@/utils/format'
 import type { WarningRecord } from '@/types'
 import { AlertTriangle, CheckCircle2, Clock, ShieldAlert, XCircle, RotateCcw } from 'lucide-react'
 
@@ -28,7 +28,7 @@ const STATUS_CLASS: Record<string, string> = {
 }
 
 export default function WarningCard({ record, onConfirm, onReject, onExpand, isExpanded }: Props) {
-  const isOverThreshold = record.measuredValue > record.threshold
+  const isOverThreshold = safeNum(record.measuredValue) > safeNum(record.threshold)
 
   return (
     <div

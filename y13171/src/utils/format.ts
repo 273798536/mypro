@@ -14,10 +14,22 @@ export const SOURCE_LABEL: Record<NoteSource, string> = {
   backfill: '补录自原始记录',
 }
 
-export const formatValue = (v: number) => `${v.toFixed(1)}mm`
+const FALLBACK_NUM = 0
+
+export const safeNum = (v: number | null | undefined): number => {
+  if (typeof v !== 'number' || Number.isNaN(v)) return FALLBACK_NUM
+  return v
+}
+
+export const formatValue = (v: number) => {
+  const n = safeNum(v)
+  return `${n.toFixed(1)}mm`
+}
 
 export const formatTime = (iso: string) => {
+  if (!iso) return ''
   const d = new Date(iso)
+  if (Number.isNaN(d.getTime())) return ''
   const pad = (n: number) => String(n).padStart(2, '0')
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
@@ -34,31 +46,36 @@ export const getSummaryText = (records: WarningRecord[]) => {
   const suspendedCount = records.filter((r) => r.status === 'suspended').length
   const confirmedCount = records.filter((r) => r.status === 'confirmed').length
   const lastModified = records.reduce(
-    (max, r) => (r.lastModified > max ? r.lastModified : max),
+    (max, r) => (r.lastModified && r.lastModified > max ? r.lastModified : max),
     ''
   )
   return { total, warningCount, suspendedCount, confirmedCount, lastModified }
 }
 
 export const getSceneDescription = (sceneLabel: string): string => {
-  return `当前场景：${sceneLabel}。该标注与卡片列表和页面摘要保持一致，源自同一条记录的场景标注字段。`
+  const label = sceneLabel?.trim() || '未设置场景标注'
+  return `当前场景：${label}。该标注与卡片列表和页面摘要保持一致，源自同一条记录的场景标注字段。`
 }
 
 export const getPageSummaryPhrase = (records: WarningRecord[], selectedRecord: WarningRecord | null): string => {
   const { total, warningCount, suspendedCount } = getSummaryText(records)
   if (selectedRecord) {
-    const over = selectedRecord.measuredValue > selectedRecord.threshold ? '超' : '未超'
-    return `共${total}条记录，${warningCount}条预警，${suspendedCount}条待确认；${selectedRecord.sceneLabel}，实测${formatValue(selectedRecord.measuredValue)}${over}阈值${formatValue(selectedRecord.threshold)}，来源：${selectedRecord.sourceTag}`
+    const mv = safeNum(selectedRecord.measuredValue)
+    const th = safeNum(selectedRecord.threshold)
+    const over = mv > th ? '超' : '未超'
+    const scene = selectedRecord.sceneLabel?.trim() || '未设置场景标注'
+    const tag = selectedRecord.sourceTag?.trim() || '来源未标注'
+    return `共${total}条记录，${warningCount}条预警，${suspendedCount}条待确认；${scene}，实测${formatValue(mv)}${over}阈值${formatValue(th)}，来源：${tag}`
   }
   return `共${total}条记录，${warningCount}条预警，${suspendedCount}条待确认；点击左侧卡片查看具体场景。`
 }
 
 export const getSidePhrase = (sceneLabel: string): string => {
-  return `当前场景：${sceneLabel}。该标注与卡片列表和页面摘要保持一致，源自同一条记录的场景标注字段。`
+  return getSceneDescription(sceneLabel)
 }
 
 export const getCardPhrase = (sceneLabel: string): string => {
-  return sceneLabel
+  return sceneLabel?.trim() || '未设置场景标注'
 }
 
 export const buildExportContent = (
@@ -71,6 +88,13 @@ export const buildExportContent = (
   const cardPhrase = selectedRecord
     ? getCardPhrase(selectedRecord.sceneLabel)
     : '未选中具体记录'
+
+  const consistentLabel = selectedRecord?.sceneLabel?.trim() || ''
+  const passed = selectedRecord
+    ? summaryPhrase.includes(consistentLabel) &&
+      scenePhrase.includes(consistentLabel) &&
+      cardPhrase === consistentLabel
+    : false
 
   const csvHeader = [
     '设备编号',
@@ -86,30 +110,41 @@ export const buildExportContent = (
     '最后修改',
   ].join(',')
 
-  const csvRows = records.map((r) => [
-    r.deviceId,
-    r.measuredValue.toFixed(1),
-    r.threshold.toFixed(1),
-    STATUS_LABEL[r.status],
-    r.sceneLabel,
-    `"${r.note.replace(/"/g, '""')}"`,
-    r.sourceTag,
-    r.isBackfilled ? '是' : '否',
-    r.originalTime ? formatTime(r.originalTime) : '',
-    formatTime(r.recordTime),
-  ].join(','))
+  const csvRows = records.map((r) => {
+    const mv = safeNum(r.measuredValue)
+    const th = safeNum(r.threshold)
+    const scene = (r.sceneLabel || '').replace(/"/g, '""')
+    const note = (r.note || '').replace(/"/g, '""')
+    const source = (r.sourceTag || '').replace(/"/g, '""')
+    return [
+      r.deviceId || '',
+      mv.toFixed(1),
+      th.toFixed(1),
+      STATUS_LABEL[r.status] || r.status,
+      `"${scene}"`,
+      `"${note}"`,
+      `"${source}"`,
+      r.isBackfilled ? '是' : '否',
+      r.originalTime ? formatTime(r.originalTime) : '',
+      formatTime(r.recordTime),
+      formatTime(r.lastModified),
+    ].join(',')
+  })
 
-  const csvContent = [
+  const csvLines = [
     '# 梁体挠度阈值预警 - 数据导出',
     `# 导出时间: ${formatTime(new Date().toISOString())}`,
     `# 页面摘要: ${summaryPhrase}`,
     `# 侧边说明: ${scenePhrase}`,
     `# 卡片场景标注: ${cardPhrase}`,
-    `# 三套话一致性校验: ${selectedRecord ? (summaryPhrase.includes(selectedRecord.sceneLabel) && scenePhrase.includes(selectedRecord.sceneLabel) && cardPhrase === selectedRecord.sceneLabel ? '通过' : '不一致') : '未选中具体记录'}`,
+    `# 三套话一致性校验: ${selectedRecord ? (passed ? '通过' : '不一致') : '未选中具体记录'}`,
+    `# 记录总数: ${records.length}`,
     '#',
     csvHeader,
     ...csvRows,
-  ].join('\n')
+  ]
+
+  const csvContent = '\uFEFF' + csvLines.join('\n')
 
   const jsonContent = JSON.stringify({
     exportMeta: {
@@ -119,27 +154,31 @@ export const buildExportContent = (
       cardSceneLabel: cardPhrase,
       consistencyCheck: selectedRecord
         ? {
-            passed: summaryPhrase.includes(selectedRecord.sceneLabel) &&
-                    scenePhrase.includes(selectedRecord.sceneLabel) &&
-                    cardPhrase === selectedRecord.sceneLabel,
-            sharedPhrase: selectedRecord.sceneLabel,
+            passed,
+            sharedPhrase: consistentLabel,
+            details: {
+              pageSummaryContainsScene: summaryPhrase.includes(consistentLabel),
+              sideDescriptionContainsScene: scenePhrase.includes(consistentLabel),
+              cardLabelEqualsScene: cardPhrase === consistentLabel,
+            },
           }
         : { passed: false, reason: '未选中具体记录' },
+      recordCount: records.length,
     },
     records: records.map((r) => ({
       deviceId: r.deviceId,
-      measuredValue: r.measuredValue,
-      threshold: r.threshold,
+      measuredValue: safeNum(r.measuredValue),
+      threshold: safeNum(r.threshold),
       status: r.status,
-      statusLabel: STATUS_LABEL[r.status],
+      statusLabel: STATUS_LABEL[r.status] || r.status,
       sceneLabel: r.sceneLabel,
       note: r.note,
       noteSource: r.noteSource,
       sourceTag: r.sourceTag,
-      isBackfilled: r.isBackfilled,
-      originalTime: r.originalTime,
+      isBackfilled: !!r.isBackfilled,
+      originalTime: r.originalTime || null,
       recordTime: r.recordTime,
-      lastModified: r.lastModified,
+      lastModified: r.lastModified || r.recordTime,
       id: r.id,
     })),
   }, null, 2)
@@ -148,6 +187,14 @@ export const buildExportContent = (
 }
 
 export const downloadFile = (content: string, filename: string, mimeType: string): boolean => {
+  if (typeof content !== 'string') {
+    console.error('导出失败：内容格式错误')
+    return false
+  }
+  if (!filename) {
+    console.error('导出失败：文件名为空')
+    return false
+  }
   try {
     const blob = new Blob([content], { type: mimeType })
     const url = URL.createObjectURL(blob)
@@ -157,7 +204,7 @@ export const downloadFile = (content: string, filename: string, mimeType: string
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
     return true
   } catch (e) {
     console.error('导出失败:', e)
