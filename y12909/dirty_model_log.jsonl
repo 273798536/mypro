@@ -1,0 +1,9 @@
+{"record_hash": "zzzzzzzzzzzzzzzz", "source_index": 0, "score_chosen": 0.85, "score_rejected": 0.42, "verdict": "chosen_better", "human_remark": ""}
+{"record_hash": 123, "source_index": 1, "score_chosen": 0.52, "score_rejected": 0.78, "verdict": "rejected_better", "human_remark": "类型是int不是str"}
+{"record_hash": "abcdefghabcdefgh", "source_index": 2, "score_chosen": 0.91, "score_rejected": 0.35, "verdict": "chosen_better", "human_remark": "含字母h不是十六进制字符"}
+{"record_hash": "short", "source_index": 3, "score_chosen": 0.80, "score_rejected": 0.45, "verdict": "chosen_better", "human_remark": "长度只有5，不是16位"}
+{"record_hash": "too_long_aaaaaaaaaaaaaaa", "source_index": 4, "score_chosen": 0.73, "score_rejected": 0.71, "verdict": "ambiguous", "human_remark": "长度超过16"}
+{"record_hash": "deadbeefdeadbeef", "source_index": 0, "score_chosen": 0.85, "score_rejected": 0.42, "verdict": "chosen_better", "human_remark": "合法十六进制但与真实数据哈希不匹配，用来验证错位检测"}
+{"score_chosen": 0.73, "score_rejected": 0.71, "verdict": "ambiguous", "human_remark": "缺少record_hash和source_index两个字段"}
+{"record_hash": "", "source_index": 2, "score_chosen": 0.73, "score_rejected": 0.71, "verdict": "ambiguous", "human_remark": "空字符串"}
+{"record_hash": "1234567890abcdef", "source_index": 4, "score_chosen": 0.73, "score_rejected": 0.71, "verdict": "ambiguous", "human_remark": "长度16的合法十六进制，但与冲突记录f705a4559d4a62e2不一致，验证错位"}

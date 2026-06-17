@@ -50,6 +50,18 @@ def prompt_hash(record: dict) -> str:
     return hashlib.md5(p.encode("utf-8")).hexdigest()
 
 
+def is_valid_record_hash(s: Any, expected_len: int = 16) -> bool:
+    if not isinstance(s, str):
+        return False
+    if len(s) != expected_len:
+        return False
+    try:
+        int(s, 16)
+        return True
+    except (ValueError, TypeError):
+        return False
+
+
 def record_hash(record: dict) -> str:
     core = json.dumps(
         {"prompt": record.get("prompt", ""), "chosen": record.get("chosen", ""), "rejected": record.get("rejected", "")},
@@ -301,10 +313,21 @@ def cmd_replay(args: argparse.Namespace) -> None:
             invalid_log_entries.append((lineno, "缺少 record_hash 和 source_index，无法建立关联"))
             continue
 
-        rh_is_valid = isinstance(rh, str) and len(rh) >= 8 and any(c.isalpha() for c in rh)
+        rh_is_valid = is_valid_record_hash(rh)
         if rh is not None and not rh_is_valid:
+            expected_len = 16
+            problems = []
+            if not isinstance(rh, str):
+                problems.append(f"类型应为str，实际是{type(rh).__name__}")
+            elif len(rh) != expected_len:
+                problems.append(f"长度应为{expected_len}，实际是{len(rh)}")
+            elif isinstance(rh, str):
+                non_hex = [c for c in rh if c not in "0123456789abcdefABCDEF"]
+                if non_hex:
+                    problems.append(f"包含非法十六进制字符: {''.join(non_hex)}")
+            hint = "，".join(problems) if problems else ""
             invalid_log_entries.append(
-                (lineno, f"record_hash={rh!r} 看起来不是合法哈希（应为16位十六进制字符串），若用数字索引请改为 source_index 字段")
+                (lineno, f"record_hash={rh!r} 不是合法的16位十六进制字符串{('，' + hint) if hint else ''}。若用数字索引请改为 source_index 字段")
             )
 
         if rh_is_valid:
