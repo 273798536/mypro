@@ -62,11 +62,37 @@ const PATTERNS: Array<{ regex: RegExp; handler: (m: RegExpMatchArray) => ParsedD
   },
 ];
 
+const DATE_HINT_CHARS = /[.\-\/年月日]/;
+const DATE_HINT_WORDS = /(到期|截止|期限|有效期|前|之前|为止|结束)/;
+
+export function looksLikeDateField(text: string): boolean {
+  if (!text || !text.trim()) return false;
+  const t = text.trim();
+  if (t.length < 5) return false;
+  if (/^\d+$/.test(t) && t.length >= 6 && t.length <= 8) return true;
+  if (DATE_HINT_WORDS.test(t)) return true;
+  const hasDigit = /\d/.test(t);
+  const hasDateChar = DATE_HINT_CHARS.test(t);
+  if (hasDigit && hasDateChar) return true;
+  return false;
+}
+
 export function parseDate(text: string): ParsedDate | null {
   if (!text || !text.trim()) return null;
   for (const p of PATTERNS) {
     const m = text.match(p.regex);
     if (m) return p.handler(m);
+  }
+  return null;
+}
+
+export function parseDateOrInvalid(text: string): ParsedDate | null {
+  const t = (text ?? '').trim();
+  if (!t) return null;
+  const parsed = parseDate(t);
+  if (parsed) return parsed;
+  if (looksLikeDateField(t)) {
+    return { normalized: null, raw: t, formatUnclear: true, isPartial: false };
   }
   return null;
 }

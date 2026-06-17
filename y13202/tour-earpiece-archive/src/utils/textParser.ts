@@ -1,5 +1,5 @@
 import type { DataIssue, EarpieceItem, ImportResult, IssueType } from '../types';
-import { extractDateFromText, parseDate } from './dateParser';
+import { extractDateFromText, parseDate, parseDateOrInvalid, looksLikeDateField } from './dateParser';
 import { generateId, isEmpty, normalizeString, now } from './common';
 
 interface ParseContext {
@@ -87,40 +87,77 @@ function parseSingleLine(ctx: ParseContext): {
   let authDeadlineRaw: string | null = null;
   let authFromNote = false;
   let note = '';
+  let consumedParts = 0;
 
-  if (parts.length >= 3) {
+  if (parts.length >= 1) {
     const songExtract = extractSongAliases(parts[0]);
     songName = songExtract.primary;
     songAliases = songExtract.aliases;
-    artist = parts[1];
-    const maybeDate = parseDate(parts[2]);
-    if (maybeDate) {
-      authDeadline = maybeDate.normalized;
-      authDeadlineRaw = maybeDate.raw;
-      if (maybeDate.formatUnclear || maybeDate.isPartial) {
-        issues.push(makeIssue(ctx, 'date_format_unclear', `授权日期格式不规范，原始值"${maybeDate.raw}"已自动规范化为"${maybeDate.normalized ?? '空'}"，请核对`, 'warning', 'authDeadline'));
-      }
-    }
-    note = parts.slice(3).join('；');
-  } else if (parts.length === 2) {
-    const songExtract = extractSongAliases(parts[0]);
-    songName = songExtract.primary;
-    songAliases = songExtract.aliases;
-    const maybeDate = parseDate(parts[1]);
-    if (maybeDate) {
-      authDeadline = maybeDate.normalized;
-      authDeadlineRaw = maybeDate.raw;
-      if (maybeDate.formatUnclear) {
-        issues.push(makeIssue(ctx, 'date_format_unclear', `授权日期格式不规范：${maybeDate.raw}`, 'warning', 'authDeadline'));
+    consumedParts = 1;
+  }
+
+  if (parts.length >= 2) {
+    const part2 = parts[1];
+    const looksLikeDate = looksLikeDateField(part2);
+    if (looksLikeDate) {
+      const maybeDate = parseDateOrInvalid(part2);
+      if (maybeDate) {
+        authDeadline = maybeDate.normalized;
+        authDeadlineRaw = maybeDate.raw;
+        if (maybeDate.formatUnclear || maybeDate.isPartial || !maybeDate.normalized) {
+          issues.push(makeIssue(
+            ctx,
+            'date_format_unclear',
+            maybeDate.normalized
+              ? `授权日期格式不规范，原始值"${maybeDate.raw}"已自动规范化为"${maybeDate.normalized}"，请核对`
+              : `授权日期格式不规范/非法（原始值"${maybeDate.raw}"），无法解析为有效日期，请人工确认`,
+            maybeDate.normalized ? 'warning' : 'error',
+            'authDeadline',
+          ));
+        }
+        consumedParts = 2;
+      } else {
+        artist = part2;
+        consumedParts = 2;
       }
     } else {
-      artist = parts[1];
+      artist = part2;
+      consumedParts = 2;
     }
-  } else if (parts.length === 1) {
-    const songExtract = extractSongAliases(parts[0]);
-    songName = songExtract.primary;
-    songAliases = songExtract.aliases;
   }
+
+  if (parts.length >= 3 && consumedParts === 2) {
+    const part3 = parts[2];
+    const maybeDate = parseDateOrInvalid(part3);
+    if (maybeDate) {
+      authDeadline = maybeDate.normalized;
+      authDeadlineRaw = maybeDate.raw;
+      if (maybeDate.formatUnclear || maybeDate.isPartial || !maybeDate.normalized) {
+        issues.push(makeIssue(
+          ctx,
+          'date_format_unclear',
+          maybeDate.normalized
+            ? `授权日期格式不规范，原始值"${maybeDate.raw}"已自动规范化为"${maybeDate.normalized}"，请核对`
+            : `授权日期格式不规范/非法（原始值"${maybeDate.raw}"），无法解析为有效日期，请人工确认`,
+          maybeDate.normalized ? 'warning' : 'error',
+          'authDeadline',
+        ));
+      }
+      consumedParts = 3;
+    } else if (looksLikeDateField(part3)) {
+      authDeadlineRaw = part3;
+      issues.push(makeIssue(
+        ctx,
+        'date_format_unclear',
+        `第3字段"${part3}"疑似授权日期但格式无法识别，请人工确认`,
+        'error',
+        'authDeadline',
+      ));
+      consumedParts = 3;
+    }
+  }
+
+  note = parts.slice(consumedParts).join('；');
 
   if (isEmpty(note)) {
     note = raw;
@@ -129,12 +166,14 @@ function parseSingleLine(ctx: ParseContext): {
   if (!authDeadline) {
     const fromNote = extractDateFromText(note);
     if (fromNote) {
-      authDeadline = fromNote.normalized;
-      authDeadlineRaw = fromNote.raw;
+      if (fromNote.normalized) {
+        authDeadline = fromNote.normalized;
+      }
+      authDeadlineRaw = authDeadlineRaw ?? fromNote.raw;
       authFromNote = true;
-      issues.push(makeIssue(ctx, 'hidden_auth_in_note', `授权期限"${fromNote.raw}"是从备注中提取的，原始记录未单独列出`, 'info', 'note'));
-      if (fromNote.formatUnclear) {
-        issues.push(makeIssue(ctx, 'date_format_unclear', `备注中提取的授权日期格式不规范：${fromNote.raw}`, 'warning', 'authDeadline'));
+      issues.push(makeIssue(ctx, 'hidden_auth_in_note', `授权期限"${fromNote.raw}"是从备注中提取的，原始记录未单独列出${fromNote.normalized ? '' : '，且无法解析为有效日期'}`, fromNote.normalized ? 'info' : 'warning', 'note'));
+      if (fromNote.formatUnclear || !fromNote.normalized) {
+        issues.push(makeIssue(ctx, 'date_format_unclear', `备注中提取的授权日期格式不规范：${fromNote.raw}${fromNote.normalized ? '' : '（无法解析）'}`, fromNote.normalized ? 'warning' : 'error', 'authDeadline'));
       }
     }
   }
@@ -145,11 +184,18 @@ function parseSingleLine(ctx: ParseContext): {
   if (isEmpty(artist)) {
     issues.push(makeIssue(ctx, 'missing_field', '缺少艺人字段', 'warning', 'artist'));
   }
+  if (!authDeadline && isEmpty(authDeadlineRaw)) {
+    issues.push(makeIssue(ctx, 'missing_field', '缺少授权期限字段，请人工补录或备注说明', 'warning', 'authDeadline'));
+  } else if (!authDeadline && !isEmpty(authDeadlineRaw)) {
+    if (!issues.some((i) => i.relatedField === 'authDeadline')) {
+      issues.push(makeIssue(ctx, 'missing_field', `提供了授权期限原始值"${authDeadlineRaw}"但无法解析为有效日期`, 'error', 'authDeadline'));
+    }
+  }
+
+  const allEmpty = isEmpty(songName) && isEmpty(artist) && !authDeadline && isEmpty(authDeadlineRaw);
 
   return {
-    fields: isEmpty(songName) && isEmpty(artist) && !authDeadline
-      ? null
-      : { songName, songAliases, artist, authDeadline, authDeadlineRaw, authFromNote, note },
+    fields: allEmpty ? null : { songName, songAliases, artist, authDeadline, authDeadlineRaw, authFromNote, note },
     issues,
     isLateNote,
   };
@@ -215,6 +261,16 @@ export function parseRehearsalText(rawText: string, existingItems: EarpieceItem[
         rawText: line,
         lineNumber,
         reason: issues.length > 0 ? issues[0].message : '无法识别该行为有效记录',
+      });
+      continue;
+    }
+
+    const hasBlockingErrors = issues.some((iss) => iss.severity === 'error');
+    if (hasBlockingErrors && isEmpty(fields.songName) && isEmpty(fields.artist)) {
+      failed.push({
+        rawText: line,
+        lineNumber,
+        reason: issues.find((i) => i.severity === 'error')?.message ?? '曲名与艺人均为空，无法归档',
       });
       continue;
     }
