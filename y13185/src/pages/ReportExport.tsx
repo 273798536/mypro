@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
   FileText,
@@ -10,14 +10,23 @@ import {
   Eye,
   Settings,
   ChevronDown,
+  Calendar,
 } from 'lucide-react';
 import { Card } from '@/components/common/Card';
 import { Button } from '@/components/common/Button';
 import { StatusBadge, ResultStatusBadge } from '@/components/common/StatusBadge';
 import { useExperimentStore } from '@/store/useExperimentStore';
-import { exportToPdf, exportToExcel, generateReportText } from '@/utils/exportGenerator';
+import {
+  exportToPdf,
+  exportBatchToPdf,
+  exportToExcel,
+  generateReportText,
+  generateBatchReportText,
+  buildExportScopeLabel,
+} from '@/utils/exportGenerator';
 import { CalculationResult, ExperimentRecord } from '@/types/experiment';
 import { useNavigate } from 'react-router-dom';
+import { format, startOfDay, endOfDay, parseISO } from 'date-fns';
 
 type ExportFormat = 'pdf' | 'excel';
 type ExportScope = 'selected' | 'all' | 'date-range';
@@ -28,6 +37,8 @@ export default function ReportExport() {
   const [isExporting, setIsExporting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [previewContent, setPreviewContent] = useState<string>('');
+  const [dateStart, setDateStart] = useState<string>(format(startOfDay(Date.now() - 7 * 86400000), 'yyyy-MM-dd'));
+  const [dateEnd, setDateEnd] = useState<string>(format(endOfDay(Date.now()), 'yyyy-MM-dd'));
   const navigate = useNavigate();
 
   const experiments = useExperimentStore(state => state.experiments);
@@ -36,24 +47,72 @@ export default function ReportExport() {
   const selectRecord = useExperimentStore(state => state.selectRecord);
   const getResultsForRecord = useExperimentStore(state => state.getResultsForRecord);
   const getSelectedRecord = useExperimentStore(state => state.getSelectedRecord);
-  const getSuspendRecordsForResult = useExperimentStore(state => state.getSuspendRecordsForResult);
-  const getLogsForResult = useExperimentStore(state => state.getLogsForResult);
 
   const selectedRecord = getSelectedRecord();
   const selectedResults = selectedRecordId ? getResultsForRecord(selectedRecordId) : [];
   const latestResult = selectedResults.length > 0 ? selectedResults[selectedResults.length - 1] : null;
 
+  const scopeData = useMemo(() => {
+    if (exportScope === 'selected') {
+      const list = latestResult ? [latestResult] : [];
+      const label = list.length > 0
+        ? `当前选中（${selectedRecord?.experimentName || selectedRecord?.id.slice(-6)}，v${latestResult?.version}）`
+        : '当前选中（请先选择实验记录）';
+      return { resultList: list, scopeLabel: label };
+    }
+    if (exportScope === 'all') {
+      return {
+        resultList: [...results].sort((a, b) => b.createdAt - a.createdAt),
+        scopeLabel: `全部记录（${results.length} 条结果）`,
+      };
+    }
+    // date-range
+    const startTs = startOfDay(parseISO(dateStart).getTime()).getTime();
+    const endTs = endOfDay(parseISO(dateEnd).getTime()).getTime();
+    const rangeResults = results.filter(r => r.createdAt >= startTs && r.createdAt <= endTs)
+      .sort((a, b) => b.createdAt - a.createdAt);
+    return {
+      resultList: rangeResults,
+      scopeLabel: `日期范围 ${dateStart} ~ ${dateEnd}（${rangeResults.length} 条结果）`,
+    };
+  }, [exportScope, selectedRecord, latestResult, results, dateStart, dateEnd]);
+
+  const canExport = scopeData.resultList.length > 0;
+
+  const experimentsMap = useMemo(
+    () => new Map(experiments.map(e => [e.id, e] as [string, ExperimentRecord])),
+    [experiments]
+  );
+
+  const resultExpMap = useMemo(() => {
+    const m = new Map<string, ExperimentRecord>();
+    scopeData.resultList.forEach(r => {
+      const e = experimentsMap.get(r.recordId) || experimentsMap.get(r.experimentRecordId || '');
+      if (e) m.set(r.id, e);
+    });
+    return m;
+  }, [scopeData.resultList, experimentsMap]);
+
   const handleExport = async () => {
-    if (!latestResult) return;
+    if (!canExport) return;
 
     setIsExporting(true);
     try {
-      const record = experiments.find(e => e.id === latestResult.recordId || e.id === latestResult.experimentRecordId);
+      const scopeLabel = buildExportScopeLabel(
+        exportScope,
+        exportScope === 'date-range' ? parseISO(dateStart).getTime() : undefined,
+        exportScope === 'date-range' ? parseISO(dateEnd).getTime() : undefined
+      );
 
       if (exportFormat === 'pdf') {
-        await exportToPdf(latestResult, record);
+        if (scopeData.resultList.length === 1) {
+          const r = scopeData.resultList[0];
+          await exportToPdf(r, resultExpMap.get(r.id));
+        } else {
+          await exportBatchToPdf(scopeData.resultList, experiments, scopeLabel);
+        }
       } else {
-        exportToExcel([latestResult], experiments);
+        exportToExcel(scopeData.resultList, experiments, scopeLabel);
       }
     } catch (error) {
       console.error('Export failed:', error);
@@ -63,12 +122,14 @@ export default function ReportExport() {
   };
 
   const handlePreview = () => {
-    if (!latestResult) return;
-
-    const record = experiments.find(e => e.id === latestResult.recordId || e.id === latestResult.experimentRecordId);
-
-    const preview = generateReportText(latestResult, record);
-    setPreviewContent(preview);
+    if (!canExport) return;
+    if (scopeData.resultList.length === 1) {
+      const r = scopeData.resultList[0];
+      setPreviewContent(generateReportText(r, resultExpMap.get(r.id)));
+    } else {
+      const expMap = new Map(experiments.map(e => [e.id, e] as [string, ExperimentRecord]));
+      setPreviewContent(generateBatchReportText(scopeData.resultList, expMap, scopeData.scopeLabel));
+    }
     setShowPreview(true);
   };
 
@@ -91,9 +152,11 @@ export default function ReportExport() {
 
   const scopeOptions = [
     { scope: 'selected' as ExportScope, label: '当前选中记录', description: '仅导出当前选择的实验记录' },
-    { scope: 'all' as ExportScope, label: '全部记录', description: '导出所有实验记录的计算结果' },
+    { scope: 'all' as ExportScope, label: '全部记录', description: `导出全部 ${results.length} 条计算结果` },
     { scope: 'date-range' as ExportScope, label: '日期范围', description: '选择日期范围内的记录导出' },
   ];
+
+  const previewSummary = scopeData.resultList.slice(0, 5);
 
   return (
     <div className="space-y-6">
@@ -107,7 +170,7 @@ export default function ReportExport() {
         </Button>
       </div>
 
-      {!selectedRecordId && experiments.length > 0 && (
+      {!canExport && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -115,9 +178,9 @@ export default function ReportExport() {
         >
           <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h3 className="font-medium text-amber-800">请先选择实验记录</h3>
+            <h3 className="font-medium text-amber-800">无可导出数据</h3>
             <p className="text-sm text-amber-700 mt-1">
-              请先在下方选择要导出的实验记录
+              当前范围：{scopeData.scopeLabel}，请调整筛选或前往复算工作台执行计算
             </p>
           </div>
         </motion.div>
@@ -198,6 +261,85 @@ export default function ReportExport() {
                   </motion.button>
                 );
               })}
+
+              {exportScope === 'date-range' && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <Calendar className="w-4 h-4" />
+                    选择日期范围
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">起始日期</label>
+                      <input
+                        type="date"
+                        value={dateStart}
+                        max={dateEnd}
+                        onChange={e => setDateStart(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0F3460]/50 focus:border-[#0F3460] outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-500 mb-1">结束日期</label>
+                      <input
+                        type="date"
+                        value={dateEnd}
+                        min={dateStart}
+                        onChange={e => setDateEnd(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#0F3460]/50 focus:border-[#0F3460] outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-200">
+                    <span className="text-xs text-gray-500">匹配结果数</span>
+                    <StatusBadge status={scopeData.resultList.length > 0 ? 'success' : 'warning'} size="sm">
+                      {scopeData.resultList.length} 条
+                    </StatusBadge>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Card>
+
+          <Card>
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="font-semibold text-gray-900">导出范围摘要</h2>
+              <Settings className="w-4 h-4 text-gray-400" />
+            </div>
+            <div className="p-4 text-sm space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500">范围说明</span>
+                <span className="font-medium text-gray-900 text-right">{scopeData.scopeLabel}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500">输出格式</span>
+                <span className="font-medium text-gray-900">
+                  {exportFormat.toUpperCase()}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500">结果总数</span>
+                <span className="font-bold text-[#0F3460]">{scopeData.resultList.length}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-500">涉及实验</span>
+                <span className="font-medium text-gray-900">
+                  {new Set(scopeData.resultList.map(r => r.recordId)).size} 个
+                </span>
+              </div>
+              <div className="pt-2 mt-2 border-t border-gray-100">
+                {canExport ? (
+                  <div className="flex items-center gap-2 text-green-700">
+                    <CheckCircle className="w-4 h-4" />
+                    数据就绪，可导出
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <AlertTriangle className="w-4 h-4" />
+                    当前范围无可导出数据
+                  </div>
+                )}
+              </div>
             </div>
           </Card>
         </div>
@@ -242,11 +384,11 @@ export default function ReportExport() {
                               {exp.experimentName || `实验 #${exp.id.slice(-6)}`}
                             </div>
                             <div className="text-xs text-gray-500 mt-1">
-                              导入时间: {new Date(exp.importedAt).toLocaleString('zh-CN')}
+                              导入时间: {new Date(exp.importedAt || exp.importTimestamp).toLocaleString('zh-CN')}
                             </div>
                             {latestExpResult && (
                               <div className="flex items-center gap-2 mt-2">
-                                <ResultStatusBadge status={latestExpResult.status} size="sm" />
+                                <ResultStatusBadge status={latestExpResult.status as any} size="sm" />
                                 <span className="text-xs text-gray-500">
                                   升力系数: {latestExpResult.liftCoefficient?.toFixed(4) || '-'}
                                 </span>
@@ -267,98 +409,117 @@ export default function ReportExport() {
             </div>
           </Card>
 
-          {latestResult && (
-            <Card>
-              <div className="p-4 border-b border-gray-100">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-gray-900">报告内容预览</h2>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handlePreview}
-                    className="flex items-center gap-2"
-                  >
-                    <Eye className="w-4 h-4" />
-                    查看详情
-                  </Button>
+          <Card>
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-semibold text-gray-900">待导出内容预览</h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {scopeData.scopeLabel} · 共 {scopeData.resultList.length} 条结果
+                  </p>
                 </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handlePreview}
+                  disabled={!canExport}
+                  className="flex items-center gap-2"
+                >
+                  <Eye className="w-4 h-4" />
+                  查看详情
+                </Button>
               </div>
-              <div className="p-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-xs text-gray-500 mb-1">升力系数</div>
-                    <div className="text-xl font-bold text-gray-900">
-                      {latestResult.liftCoefficient?.toFixed(4) || '-'}
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-xs text-gray-500 mb-1">阻力系数</div>
-                    <div className="text-xl font-bold text-gray-900">
-                      {latestResult.dragCoefficient?.toFixed(4) || '-'}
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-xs text-gray-500 mb-1">雷诺数</div>
-                    <div className="text-xl font-bold text-gray-900">
-                      {latestResult.reynoldsNumber?.toExponential(2) || '-'}
-                    </div>
-                  </div>
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="text-xs text-gray-500 mb-1">参数档位</div>
-                    <div className="text-xl font-bold text-gray-900">
-                      {latestResult.parameterGear}
-                    </div>
-                  </div>
-                </div>
+            </div>
 
-                <div className="bg-blue-50 rounded-lg p-4 mb-6">
-                  <h3 className="font-medium text-blue-900 mb-2">报告将包含以下内容</h3>
-                  <ul className="text-sm text-blue-800 space-y-1">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                      完整的计算公式和变量说明
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                      所有物理量的单位标注
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                      边界样本敏感性分析（说明结果变化原因）
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                      统一的场景标注、侧边说明和截图说明
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                      字段来源和处理状态追踪
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-blue-500" />
-                      异常处理记录和操作历史
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="flex justify-end gap-3">
-                  <Button variant="outline" onClick={handlePreview} className="flex items-center gap-2">
-                    <Eye className="w-4 h-4" />
-                    预览报告
-                  </Button>
-                  <Button
-                    onClick={handleExport}
-                    disabled={!latestResult || isExporting}
-                    isLoading={isExporting}
-                    className="flex items-center gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    导出 {exportFormat.toUpperCase()}
-                  </Button>
-                </div>
+            {!canExport ? (
+              <div className="p-8 text-center text-gray-500">
+                <FileIcon className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+                <p>当前范围无可导出内容</p>
               </div>
-            </Card>
-          )}
+            ) : (
+              <div className="divide-y divide-gray-100">
+                {previewSummary.map(r => {
+                  const exp = resultExpMap.get(r.id);
+                  return (
+                    <div key={r.id} className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <ResultStatusBadge status={r.status as any} size="sm" />
+                          <span className="font-medium text-gray-900">
+                            {exp?.experimentName || `实验 #${r.recordId.slice(-6)}`}
+                          </span>
+                          <span className="text-xs text-gray-500">v{r.version}</span>
+                        </div>
+                        <span className="text-xs text-gray-500">
+                          {new Date(r.createdAt).toLocaleString('zh-CN')}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-1">升力系数</div>
+                          <div className="font-bold font-mono text-gray-900">
+                            {r.liftCoefficient?.toFixed(4) || '-'}
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-1">阻力系数</div>
+                          <div className="font-bold font-mono text-gray-900">
+                            {r.dragCoefficient?.toFixed(4) || '-'}
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-1">雷诺数</div>
+                          <div className="font-bold font-mono text-gray-900">
+                            {r.reynoldsNumber?.toLocaleString() || '-'}
+                          </div>
+                        </div>
+                        <div className="bg-gray-50 rounded-lg p-3">
+                          <div className="text-xs text-gray-500 mb-1">参数档位</div>
+                          <div className="font-bold text-gray-900">
+                            {r.parameterGear ?? '-'}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-3 bg-blue-50 rounded-lg p-3">
+                        <div className="text-xs text-blue-800 font-medium mb-1">导出报告将包含</div>
+                        <div className="grid grid-cols-2 gap-y-1 text-xs text-blue-700">
+                          <div className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> 计算公式与变量</div>
+                          <div className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> 物理量单位标注</div>
+                          <div className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> 边界样本敏感性分析</div>
+                          <div className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> 字段来源与处理状态</div>
+                          <div className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> 统一标注（三处说明）</div>
+                          <div className="flex items-center gap-1"><CheckCircle className="w-3 h-3" /> 维修备注追踪</div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                {scopeData.resultList.length > 5 && (
+                  <div className="p-4 text-center text-sm text-gray-500">
+                    另有 {scopeData.resultList.length - 5} 条结果将一并导出
+                  </div>
+                )}
+              </div>
+            )}
+
+            {canExport && (
+              <div className="p-6 border-t border-gray-100 flex justify-end gap-3">
+                <Button variant="outline" onClick={handlePreview} className="flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  预览完整文本
+                </Button>
+                <Button
+                  onClick={handleExport}
+                  disabled={isExporting}
+                  isLoading={isExporting}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  导出 {scopeData.resultList.length} 条 {exportFormat.toUpperCase()}
+                </Button>
+              </div>
+            )}
+          </Card>
         </div>
       </div>
 
@@ -370,7 +531,10 @@ export default function ReportExport() {
             className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden"
           >
             <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">报告预览</h2>
+              <div>
+                <h2 className="font-semibold text-gray-900">报告预览（纯文本）</h2>
+                <p className="text-xs text-gray-500 mt-0.5">{scopeData.scopeLabel}</p>
+              </div>
               <Button variant="outline" size="sm" onClick={() => setShowPreview(false)}>
                 关闭
               </Button>
