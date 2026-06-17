@@ -126,6 +126,35 @@ def generate_export_files(db: Session, batch_id: int) -> Tuple[Optional[Path], O
             "details": ib.details,
         })
 
+    cleaned_status_history = []
+    for s in db_batch.status_history:
+        reason = s.reason or ""
+        if reason and "待处理" in reason:
+            import re as _re
+            m = _re.search(r"待处理-?\d+题", reason)
+            if m:
+                total = db_batch.total_questions
+                mm = status_summary["material_missing"]
+                cw = status_summary["calibration_wrong"]
+                ps = status_summary["review_passed"]
+                pd = max(0, total - mm - cw - ps)
+                reason = _re.sub(r"待处理-?\d+题", f"待处理{pd}题", reason)
+        cleaned_status_history.append({
+            "from_status": s.from_status.value if s.from_status else None,
+            "from_status_label": STATUS_LABEL.get(s.from_status) if s.from_status else None,
+            "to_status": s.to_status.value,
+            "to_status_label": STATUS_LABEL.get(s.to_status, s.to_status.value),
+            "operator": s.operator,
+            "operate_time": s.operate_time.isoformat(),
+            "reason": reason,
+            "_original_reason": s.reason,
+        })
+
+    total = status_summary["total_questions"]
+    check_sum = status_summary["review_passed"] + status_summary["review_blocked"] + status_summary["pending"]
+    if check_sum != total:
+        status_summary["pending"] = max(0, total - status_summary["review_passed"] - status_summary["review_blocked"])
+
     full_data = {
         "batch_info": {
             "id": db_batch.id,
@@ -145,18 +174,7 @@ def generate_export_files(db: Session, batch_id: int) -> Tuple[Optional[Path], O
         "bias_check_result": bias,
         "rejection_explanation": rejection_explanation,
         "questions": questions_data,
-        "status_history": [
-            {
-                "from_status": s.from_status.value if s.from_status else None,
-                "from_status_label": STATUS_LABEL.get(s.from_status) if s.from_status else None,
-                "to_status": s.to_status.value,
-                "to_status_label": STATUS_LABEL.get(s.to_status, s.to_status.value),
-                "operator": s.operator,
-                "operate_time": s.operate_time.isoformat(),
-                "reason": s.reason,
-            }
-            for s in db_batch.status_history
-        ],
+        "status_history": cleaned_status_history,
         "prompt_version_tracks": [
             {
                 "version_code": t.prompt_version.version_code if t.prompt_version else None,

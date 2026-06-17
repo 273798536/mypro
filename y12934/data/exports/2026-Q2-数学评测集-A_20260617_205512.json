@@ -1,8 +1,8 @@
 {
   "batch_info": {
-    "id": 1,
+    "id": 2,
     "batch_name": "2026-Q2-数学评测集-A",
-    "import_time": "2026-06-17T19:50:32.876462",
+    "import_time": "2026-06-17T20:54:37.153674",
     "importer": "张评测",
     "description": "二季度数学评测题库",
     "subject_category": "数学",
@@ -10,7 +10,7 @@
     "current_status": "rejected",
     "current_status_label": "评审会拦截"
   },
-  "export_time": "2026-06-17T19:50:44.520219",
+  "export_time": "2026-06-17T20:55:12.857788",
   "plain_explanation": "各位同事，关于评测批次「2026-Q2-数学评测集-A」的版权来源账本审核情况如下：\n本批次共 5 道题。\n本批次未通过模型评审会审核，原因：评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求。\n复核阶段记录：通过 2 题，需补材料 1 题，需改口径 1 题，待复核 1 题。\n该评测集存在偏科问题，知识点「一元一次方程」占比过高，评测覆盖面不够均衡。\n详情请查阅导出的完整报告。",
   "status_summary": {
     "batch_status": "rejected",
@@ -28,11 +28,11 @@
       "issue_type_label": "需补材料",
       "count": 1,
       "question_ids": [
-        2
+        7
       ],
       "details": [
         {
-          "question_id": 2,
+          "question_id": 7,
           "question_content": "已知三角形ABC中，AB=3, BC=4, 角B=90度，求AC的长度",
           "issue_detail": "公有领域证明材料缺失，需补充原始出版物扫描件",
           "next_action": "请题库同学补传原始出版物的版权页扫描件",
@@ -45,11 +45,11 @@
       "issue_type_label": "需改口径",
       "count": 1,
       "question_ids": [
-        3
+        8
       ],
       "details": [
         {
-          "question_id": 3,
+          "question_id": 8,
           "question_content": "因式分解：x² - 6x + 9",
           "issue_detail": "版权类型标记为unknown不符合入账要求，需重新确认",
           "next_action": "请评测负责人和出题人重新确认来源后改口径",
@@ -82,7 +82,7 @@
   "rejection_explanation": "评审会拦截原因：评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求\n该评测集存在偏科问题，知识点「一元一次方程」占比过高，评测覆盖面不够均衡。",
   "questions": [
     {
-      "id": 1,
+      "id": 6,
       "question_id_external": "MATH-001",
       "question_content": "求解方程：2x + 5 = 13",
       "standard_answer": "x = 4",
@@ -114,7 +114,7 @@
       "review_records": [
         {
           "reviewer": "李复核",
-          "review_time": "2026-06-17T19:50:33.771582",
+          "review_time": "2026-06-17T20:54:51.657546",
           "issue_type": null,
           "issue_type_label": null,
           "issue_detail": null,
@@ -128,20 +128,20 @@
           "from_status": "imported",
           "to_status": "review_passed",
           "operator": "李复核",
-          "operate_time": "2026-06-17T19:50:33.774905",
+          "operate_time": "2026-06-17T20:54:51.686335",
           "reason": "复核通过"
         },
         {
           "from_status": "review_passed",
           "to_status": "rejected",
           "operator": "模型评审会-赵老师",
-          "operate_time": "2026-06-17T19:50:34.259867",
+          "operate_time": "2026-06-17T20:54:56.909462",
           "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
         }
       ]
     },
     {
-      "id": 2,
+      "id": 7,
       "question_id_external": "MATH-002",
       "question_content": "已知三角形ABC中，AB=3, BC=4, 角B=90度，求AC的长度",
       "standard_answer": "AC = 5",
@@ -173,7 +173,7 @@
       "review_records": [
         {
           "reviewer": "李复核",
-          "review_time": "2026-06-17T19:50:33.771596",
+          "review_time": "2026-06-17T20:54:51.657566",
           "issue_type": "material_missing",
           "issue_type_label": "需补材料",
           "issue_detail": "公有领域证明材料缺失，需补充原始出版物扫描件",
@@ -187,20 +187,20 @@
           "from_status": "imported",
           "to_status": "review_blocked",
           "operator": "李复核",
-          "operate_time": "2026-06-17T19:50:33.774910",
+          "operate_time": "2026-06-17T20:54:51.686341",
           "reason": "公有领域证明材料缺失，需补充原始出版物扫描件"
         },
         {
           "from_status": "review_blocked",
           "to_status": "rejected",
           "operator": "模型评审会-赵老师",
-          "operate_time": "2026-06-17T19:50:34.259868",
+          "operate_time": "2026-06-17T20:54:56.909463",
           "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
         }
       ]
     },
     {
-      "id": 3,
+      "id": 8,
       "question_id_external": "MATH-003",
       "question_content": "因式分解：x² - 6x + 9",
       "standard_answer": "(x-3)²",
@@ -232,7 +232,7 @@
       "review_records": [
         {
           "reviewer": "李复核",
-          "review_time": "2026-06-17T19:50:33.771598",
+          "review_time": "2026-06-17T20:54:51.657568",
           "issue_type": "calibration_wrong",
           "issue_type_label": "需改口径",
           "issue_detail": "版权类型标记为unknown不符合入账要求，需重新确认",
@@ -246,20 +246,20 @@
           "from_status": "imported",
           "to_status": "review_blocked",
           "operator": "李复核",
-          "operate_time": "2026-06-17T19:50:33.774911",
+          "operate_time": "2026-06-17T20:54:51.686342",
           "reason": "版权类型标记为unknown不符合入账要求，需重新确认"
         },
         {
           "from_status": "review_blocked",
           "to_status": "rejected",
           "operator": "模型评审会-赵老师",
-          "operate_time": "2026-06-17T19:50:34.259869",
+          "operate_time": "2026-06-17T20:54:56.909464",
           "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
         }
       ]
     },
     {
-      "id": 4,
+      "id": 9,
       "question_id_external": "MATH-004",
       "question_content": "求函数 y=x²-4x+3 的最小值",
       "standard_answer": "-1",
@@ -291,7 +291,7 @@
       "review_records": [
         {
           "reviewer": "李复核",
-          "review_time": "2026-06-17T19:50:33.771599",
+          "review_time": "2026-06-17T20:54:51.657569",
           "issue_type": null,
           "issue_type_label": null,
           "issue_detail": null,
@@ -305,20 +305,20 @@
           "from_status": "imported",
           "to_status": "review_passed",
           "operator": "李复核",
-          "operate_time": "2026-06-17T19:50:33.774911",
+          "operate_time": "2026-06-17T20:54:51.686343",
           "reason": "复核通过"
         },
         {
           "from_status": "review_passed",
           "to_status": "rejected",
           "operator": "模型评审会-赵老师",
-          "operate_time": "2026-06-17T19:50:34.259870",
+          "operate_time": "2026-06-17T20:54:56.909464",
           "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
         }
       ]
     },
     {
-      "id": 5,
+      "id": 10,
       "question_id_external": "MATH-005",
       "question_content": "解不等式：3x - 7 > 2",
       "standard_answer": "x > 3",
@@ -353,7 +353,7 @@
           "from_status": "imported",
           "to_status": "rejected",
           "operator": "模型评审会-赵老师",
-          "operate_time": "2026-06-17T19:50:34.259871",
+          "operate_time": "2026-06-17T20:54:56.909465",
           "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
         }
       ]
@@ -366,8 +366,9 @@
       "to_status": "imported",
       "to_status_label": "已导入",
       "operator": "张评测",
-      "operate_time": "2026-06-17T19:50:33.193744",
-      "reason": "批次已导入"
+      "operate_time": "2026-06-17T20:54:37.543172",
+      "reason": "批次已导入",
+      "_original_reason": "批次已导入"
     },
     {
       "from_status": "imported",
@@ -375,8 +376,9 @@
       "to_status": "review_passed",
       "to_status_label": "复核通过",
       "operator": "李复核",
-      "operate_time": "2026-06-17T19:50:33.774905",
-      "reason": "复核通过"
+      "operate_time": "2026-06-17T20:54:51.686335",
+      "reason": "复核通过",
+      "_original_reason": "复核通过"
     },
     {
       "from_status": "imported",
@@ -384,8 +386,9 @@
       "to_status": "review_blocked",
       "to_status_label": "复核受阻",
       "operator": "李复核",
-      "operate_time": "2026-06-17T19:50:33.774910",
-      "reason": "公有领域证明材料缺失，需补充原始出版物扫描件"
+      "operate_time": "2026-06-17T20:54:51.686341",
+      "reason": "公有领域证明材料缺失，需补充原始出版物扫描件",
+      "_original_reason": "公有领域证明材料缺失，需补充原始出版物扫描件"
     },
     {
       "from_status": "imported",
@@ -393,8 +396,9 @@
       "to_status": "review_blocked",
       "to_status_label": "复核受阻",
       "operator": "李复核",
-      "operate_time": "2026-06-17T19:50:33.774911",
-      "reason": "版权类型标记为unknown不符合入账要求，需重新确认"
+      "operate_time": "2026-06-17T20:54:51.686342",
+      "reason": "版权类型标记为unknown不符合入账要求，需重新确认",
+      "_original_reason": "版权类型标记为unknown不符合入账要求，需重新确认"
     },
     {
       "from_status": "imported",
@@ -402,8 +406,9 @@
       "to_status": "review_passed",
       "to_status_label": "复核通过",
       "operator": "李复核",
-      "operate_time": "2026-06-17T19:50:33.774911",
-      "reason": "复核通过"
+      "operate_time": "2026-06-17T20:54:51.686343",
+      "reason": "复核通过",
+      "_original_reason": "复核通过"
     },
     {
       "from_status": "imported",
@@ -411,8 +416,9 @@
       "to_status": "review_blocked",
       "to_status_label": "复核受阻",
       "operator": "李复核",
-      "operate_time": "2026-06-17T19:50:33.774912",
-      "reason": "复核提交: 通过2题, 缺材料1题, 口径问题1题, 待处理-3题"
+      "operate_time": "2026-06-17T20:54:51.686344",
+      "reason": "复核提交: 通过2题, 缺材料1题, 口径问题1题, 待处理1题",
+      "_original_reason": "复核提交: 通过2题, 缺材料1题, 口径问题1题, 待处理1题"
     },
     {
       "from_status": "review_blocked",
@@ -420,8 +426,9 @@
       "to_status": "rejected",
       "to_status_label": "评审会拦截",
       "operator": "模型评审会-赵老师",
-      "operate_time": "2026-06-17T19:50:34.259860",
-      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+      "operate_time": "2026-06-17T20:54:56.909451",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求",
+      "_original_reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
     },
     {
       "from_status": "review_passed",
@@ -429,8 +436,9 @@
       "to_status": "rejected",
       "to_status_label": "评审会拦截",
       "operator": "模型评审会-赵老师",
-      "operate_time": "2026-06-17T19:50:34.259867",
-      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+      "operate_time": "2026-06-17T20:54:56.909462",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求",
+      "_original_reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
     },
     {
       "from_status": "review_blocked",
@@ -438,8 +446,9 @@
       "to_status": "rejected",
       "to_status_label": "评审会拦截",
       "operator": "模型评审会-赵老师",
-      "operate_time": "2026-06-17T19:50:34.259868",
-      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+      "operate_time": "2026-06-17T20:54:56.909463",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求",
+      "_original_reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
     },
     {
       "from_status": "review_blocked",
@@ -447,8 +456,9 @@
       "to_status": "rejected",
       "to_status_label": "评审会拦截",
       "operator": "模型评审会-赵老师",
-      "operate_time": "2026-06-17T19:50:34.259869",
-      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+      "operate_time": "2026-06-17T20:54:56.909464",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求",
+      "_original_reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
     },
     {
       "from_status": "review_passed",
@@ -456,8 +466,9 @@
       "to_status": "rejected",
       "to_status_label": "评审会拦截",
       "operator": "模型评审会-赵老师",
-      "operate_time": "2026-06-17T19:50:34.259870",
-      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+      "operate_time": "2026-06-17T20:54:56.909464",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求",
+      "_original_reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
     },
     {
       "from_status": "imported",
@@ -465,8 +476,9 @@
       "to_status": "rejected",
       "to_status_label": "评审会拦截",
       "operator": "模型评审会-赵老师",
-      "operate_time": "2026-06-17T19:50:34.259871",
-      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+      "operate_time": "2026-06-17T20:54:56.909465",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求",
+      "_original_reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
     }
   ],
   "prompt_version_tracks": []

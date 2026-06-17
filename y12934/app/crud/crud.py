@@ -128,8 +128,8 @@ def submit_batch_review(
         db.add(db_status)
 
     total = db_batch.total_questions
-    processed = len(review_submit.items)
-    pending_count = total - processed - passed_count - material_missing - calibration_wrong
+    processed_count = passed_count + material_missing + calibration_wrong
+    pending_count = max(0, total - processed_count)
 
     if material_missing > 0 or calibration_wrong > 0:
         batch_new_status = QuestionStatus.REVIEW_BLOCKED
