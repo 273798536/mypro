@@ -1,0 +1,1504 @@
+[
+  {
+    "record_id": "REC_0001",
+    "tool_name": "web_search",
+    "tool_category": "搜索工具",
+    "params": [
+      {
+        "param_name": "query",
+        "param_type": "string",
+        "required": true,
+        "description": "搜索关键词",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "num_results",
+        "param_type": "integer",
+        "required": false,
+        "description": "返回条数",
+        "enum": [
+          5,
+          10,
+          20
+        ],
+        "default": 10
+      },
+      {
+        "param_name": "lr",
+        "param_type": "string",
+        "required": false,
+        "description": "语言限制",
+        "enum": [
+          "lang_zh",
+          "lang_en"
+        ],
+        "default": null
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002"
+    ],
+    "annotator": "标注员B",
+    "annotated_at": "2026-06-15 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0002",
+    "tool_name": "web_search",
+    "tool_category": "搜索工具",
+    "params": [
+      {
+        "param_name": "query",
+        "param_type": "string",
+        "required": true,
+        "description": "搜索关键词",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "num_results",
+        "param_type": "integer",
+        "required": false,
+        "description": "返回条数",
+        "enum": [
+          5,
+          10,
+          20
+        ],
+        "default": 10
+      },
+      {
+        "param_name": "lr",
+        "param_type": "string",
+        "required": false,
+        "description": "语言限制",
+        "enum": [
+          "lang_zh",
+          "lang_en"
+        ],
+        "default": null
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1004"
+    ],
+    "annotator": "标注员A",
+    "annotated_at": "2026-06-12 22:56:48",
+    "original_audit_status": "待确认",
+    "original_audit_summary": "部分参数描述缺失，待确认",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0003",
+    "tool_name": "file_read",
+    "tool_category": "文件操作",
+    "params": [
+      {
+        "param_name": "file_path",
+        "param_type": "string",
+        "required": true,
+        "description": "文件绝对路径",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "offset",
+        "param_type": "integer",
+        "required": false,
+        "description": "起始行号",
+        "enum": null,
+        "default": 1
+      },
+      {
+        "param_name": "limit",
+        "param_type": "integer",
+        "required": false,
+        "description": "读取行数",
+        "enum": null,
+        "default": 2000
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1005"
+    ],
+    "annotator": "标注员C",
+    "annotated_at": "2026-06-16 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0004",
+    "tool_name": "file_read",
+    "tool_category": "文件操作",
+    "params": [
+      {
+        "param_name": "file_path",
+        "param_type": "string",
+        "required": true,
+        "description": "文件绝对路径",
+        "enum": [],
+        "default": null
+      },
+      {
+        "param_name": "offset",
+        "param_type": "integer",
+        "required": false,
+        "description": "起始行号",
+        "enum": null,
+        "default": 1
+      },
+      {
+        "param_name": "limit",
+        "param_type": "integer",
+        "required": false,
+        "description": "读取行数",
+        "enum": null,
+        "default": 2000
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1001"
+    ],
+    "annotator": "标注员E",
+    "annotated_at": "2026-06-09 22:56:48",
+    "original_audit_status": "未通过",
+    "original_audit_summary": "存在枚举值为空数组的参数",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "枚举值非法"
+    ],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0005",
+    "tool_name": "file_write",
+    "tool_category": "文件操作",
+    "params": [
+      {
+        "param_name": "file_path",
+        "param_type": "string",
+        "required": "必填 注意与PRD v2.3对齐",
+        "description": "写入路径",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "content",
+        "param_type": "string",
+        "required": true,
+        "description": null,
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "append",
+        "param_type": "boolean",
+        "required": false,
+        "description": "是否追加",
+        "enum": null,
+        "default": false
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1006"
+    ],
+    "annotator": "标注员C",
+    "annotated_at": "2026-06-14 22:56:48",
+    "original_audit_status": "待确认",
+    "original_audit_summary": "必填字段混入备注，清洗后再复核",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "备注混写"
+    ],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0006",
+    "tool_name": "file_write",
+    "tool_category": "文件操作",
+    "params": [
+      {
+        "param_name": "file_path",
+        "param_type": "string",
+        "required": true,
+        "description": "写入路径",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "content",
+        "param_type": "string",
+        "required": true,
+        "description": null,
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "append",
+        "param_type": "boolean",
+        "required": false,
+        "description": "是否追加",
+        "enum": null,
+        "default": false
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1001"
+    ],
+    "annotator": "标注员B",
+    "annotated_at": "2026-06-07 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0007",
+    "tool_name": "data_frame_transform",
+    "tool_category": "数据处理",
+    "params": [
+      {
+        "param_name": "input_df",
+        "param_type": "object",
+        "required": true,
+        "description": "输入数据框",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "operation",
+        "param_type": "string",
+        "required": true,
+        "description": "变换操作",
+        "enum": [
+          "pivot",
+          "melt",
+          "groupby",
+          "filter"
+        ],
+        "default": null
+      },
+      {
+        "param_name": "columns",
+        "param_type": "array",
+        "required": false,
+        "description": "列名列表",
+        "enum": null,
+        "default": []
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1001"
+    ],
+    "annotator": "标注员E",
+    "annotated_at": "2026-06-13 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0008",
+    "tool_name": "data_frame_transform",
+    "tool_category": "数据处理",
+    "params": [
+      {
+        "param_name": "input_df",
+        "param_type": "object",
+        "required": true,
+        "description": "输入数据框",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "operation",
+        "param_type": "string",
+        "required": true,
+        "description": "变换操作",
+        "enum": [
+          "pivot",
+          "melt",
+          "groupby",
+          "filter"
+        ],
+        "default": null
+      },
+      {
+        "param_name": "columns",
+        "param_type": "array",
+        "required": false,
+        "description": "列名列表",
+        "enum": null,
+        "default": []
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1006"
+    ],
+    "annotator": "标注员D",
+    "annotated_at": "2026-06-11 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "页面摘要：通过；实际标注记录：待确认，存在description空值",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0009",
+    "tool_name": "code_snippet_extract",
+    "tool_category": "代码分析",
+    "params": [
+      {
+        "param_name": "source_code",
+        "param_type": "string",
+        "required": true,
+        "description": "源代码字符串",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "target_function",
+        "param_type": "string",
+        "required": false,
+        "description": null,
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "lang",
+        "param_type": "string",
+        "required": true,
+        "description": "编程语言",
+        "enum": [
+          "py",
+          "js",
+          "ts",
+          "go"
+        ],
+        "default": "py"
+      }
+    ],
+    "source_material_ids": [],
+    "annotator": "标注员E",
+    "annotated_at": "2026-06-10 22:56:48",
+    "original_audit_status": "待确认",
+    "original_audit_summary": "未关联来源材料，需补充",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "来源不可追溯"
+    ],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0010",
+    "tool_name": "code_snippet_extract",
+    "tool_category": "代码分析",
+    "params": [
+      {
+        "param_name": "source_code",
+        "param_type": "string",
+        "required": true,
+        "description": "源代码字符串",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "target_function",
+        "param_type": "string",
+        "required": false,
+        "description": null,
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "lang",
+        "param_type": "string",
+        "required": true,
+        "description": "编程语言",
+        "enum": [
+          "py",
+          "js",
+          "ts",
+          "go"
+        ],
+        "default": "py"
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1005"
+    ],
+    "annotator": "标注员A",
+    "annotated_at": "2026-06-15 22:56:48",
+    "original_audit_status": "灰度观察",
+    "original_audit_summary": "灰度批次B观察中，未正式通过",
+    "gray_flag": true,
+    "gray_batch": "gray_batch_B",
+    "review_category": "需平台工程师复核",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0011",
+    "tool_name": "http_get",
+    "tool_category": "网络请求",
+    "params": [
+      {
+        "param_name": "url",
+        "param_type": "string",
+        "required": true,
+        "description": "请求URL",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "params",
+        "param_type": "object",
+        "required": false,
+        "description": "查询参数",
+        "enum": null,
+        "default": {}
+      },
+      {
+        "param_name": "timeout",
+        "param_type": "integer",
+        "required": false,
+        "description": "超时秒数",
+        "enum": null,
+        "default": 30
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1003",
+      "MAT_1005"
+    ],
+    "annotator": "标注员A",
+    "annotated_at": "2026-06-08 22:56:48",
+    "original_audit_status": "未通过",
+    "original_audit_summary": "num_results类型应为integer但标注为string",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0012",
+    "tool_name": "http_get",
+    "tool_category": "网络请求",
+    "params": [
+      {
+        "param_name": "url",
+        "param_type": "string",
+        "required": true,
+        "description": "请求URL",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "params",
+        "param_type": "object",
+        "required": false,
+        "description": "查询参数",
+        "enum": null,
+        "default": {}
+      },
+      {
+        "param_name": "timeout",
+        "param_type": "integer",
+        "required": false,
+        "description": "超时秒数",
+        "enum": null,
+        "default": 30
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002",
+      "MAT_1005"
+    ],
+    "annotator": "标注员A",
+    "annotated_at": "2026-06-05 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0013",
+    "tool_name": "http_post",
+    "tool_category": "网络请求",
+    "params": [
+      {
+        "param_name": "url",
+        "param_type": "string",
+        "required": false,
+        "description": "请求URL",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "body",
+        "param_type": "object",
+        "required": true,
+        "description": "请求体",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "content_type",
+        "param_type": "string",
+        "required": false,
+        "description": "内容类型",
+        "enum": [
+          "application/json",
+          "form-data"
+        ],
+        "default": "application/json"
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002",
+      "MAT_1005"
+    ],
+    "annotator": "标注员A",
+    "annotated_at": "2026-06-06 22:56:48",
+    "original_audit_status": "未通过",
+    "original_audit_summary": "核心参数未标记为必填",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "必填缺失"
+    ],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0014",
+    "tool_name": "http_post",
+    "tool_category": "网络请求",
+    "params": [
+      {
+        "param_name": "url",
+        "param_type": "string",
+        "required": true,
+        "description": "请求URL",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "body",
+        "param_type": "object",
+        "required": true,
+        "description": "请求体",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "content_type",
+        "param_type": "string",
+        "required": false,
+        "description": "内容类型",
+        "enum": [
+          "application/json",
+          "form-data"
+        ],
+        "default": "application/json"
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002"
+    ],
+    "annotator": "标注员E",
+    "annotated_at": "2026-06-14 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0015",
+    "tool_name": "grep_search",
+    "tool_category": "代码分析",
+    "params": [
+      {
+        "param_name": "pattern",
+        "param_type": "string",
+        "required": true,
+        "description": "正则模式",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "path",
+        "param_type": "string",
+        "required": false,
+        "description": "搜索目录",
+        "enum": null,
+        "default": "."
+      },
+      {
+        "param_name": "output_mode",
+        "param_type": "string",
+        "required": false,
+        "description": "输出模式",
+        "enum": [
+          "files_with_matches",
+          "content",
+          "count"
+        ],
+        "default": "files_with_matches"
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002",
+      "MAT_1005"
+    ],
+    "annotator": "标注员A",
+    "annotated_at": "2026-06-03 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0016",
+    "tool_name": "grep_search",
+    "tool_category": "代码分析",
+    "params": [
+      {
+        "param_name": "pattern",
+        "param_type": "string",
+        "required": "必填 注意与PRD v2.3对齐",
+        "description": "正则模式",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "path",
+        "param_type": "string",
+        "required": "非必填 待讨论",
+        "description": "搜索目录",
+        "enum": null,
+        "default": "."
+      },
+      {
+        "param_name": "output_mode",
+        "param_type": "string",
+        "required": "非必填 待讨论",
+        "description": "输出模式",
+        "enum": [
+          "files_with_matches",
+          "content",
+          "count"
+        ],
+        "default": "files_with_matches"
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1003"
+    ],
+    "annotator": "标注员A",
+    "annotated_at": "2026-06-16 22:56:48",
+    "original_audit_status": "待确认",
+    "original_audit_summary": "必填字段混入备注，清洗后再复核",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "备注混写"
+    ],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0017",
+    "tool_name": "schema_validate",
+    "tool_category": "数据处理",
+    "params": [
+      {
+        "param_name": "schema",
+        "param_type": "object",
+        "required": true,
+        "description": "schema定义",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "data",
+        "param_type": "object",
+        "required": true,
+        "description": "待校验数据",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "strict",
+        "param_type": "boolean",
+        "required": false,
+        "description": "严格模式",
+        "enum": null,
+        "default": true
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002"
+    ],
+    "annotator": "标注员D",
+    "annotated_at": "2026-06-12 22:56:48",
+    "original_audit_status": "灰度观察",
+    "original_audit_summary": "灰度批次C观察中，未正式通过",
+    "gray_flag": true,
+    "gray_batch": "gray_batch_C",
+    "review_category": "需平台工程师复核",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0018",
+    "tool_name": "schema_validate",
+    "tool_category": "数据处理",
+    "params": [
+      {
+        "param_name": "schema",
+        "param_type": "object",
+        "required": true,
+        "description": "schema定义",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "data",
+        "param_type": "object",
+        "required": true,
+        "description": "待校验数据",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "strict",
+        "param_type": "boolean",
+        "required": false,
+        "description": "严格模式",
+        "enum": null,
+        "default": true
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1005"
+    ],
+    "annotator": "标注员D",
+    "annotated_at": "2026-06-04 22:56:48",
+    "original_audit_status": "待确认",
+    "original_audit_summary": "部分参数描述缺失，待确认",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0019",
+    "tool_name": "document_parse",
+    "tool_category": "搜索工具",
+    "params": [
+      {
+        "param_name": "doc_path",
+        "param_type": "string",
+        "required": true,
+        "description": "文档路径",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "format",
+        "param_type": "string",
+        "required": true,
+        "description": "文档格式",
+        "enum": [
+          "pdf",
+          "md",
+          "docx",
+          "html"
+        ],
+        "default": "md"
+      },
+      {
+        "param_name": "extract_images",
+        "param_type": "boolean",
+        "required": false,
+        "description": "是否抽取图片",
+        "enum": null,
+        "default": false
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1001"
+    ],
+    "annotator": "标注员C",
+    "annotated_at": "2026-06-11 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0020",
+    "tool_name": "document_parse",
+    "tool_category": "搜索工具",
+    "params": [
+      {
+        "param_name": "doc_path",
+        "param_type": "string",
+        "required": true,
+        "description": "文档路径",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "format",
+        "param_type": "string",
+        "required": true,
+        "description": "文档格式",
+        "enum": [
+          "pdf",
+          "md",
+          "docx",
+          "html"
+        ],
+        "default": "md"
+      },
+      {
+        "param_name": "extract_images",
+        "param_type": "boolean",
+        "required": false,
+        "description": "是否抽取图片",
+        "enum": null,
+        "default": false
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1003"
+    ],
+    "annotator": "标注员B",
+    "annotated_at": "2026-06-09 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "页面摘要：通过；实际标注记录：待确认，存在description空值",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0021",
+    "tool_name": "web_search",
+    "tool_category": "搜索工具",
+    "params": [
+      {
+        "param_name": "query",
+        "param_type": "string",
+        "required": true,
+        "description": "搜索关键词",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "num_results",
+        "param_type": "integer",
+        "required": false,
+        "description": "返回条数",
+        "enum": [
+          5,
+          10,
+          20
+        ],
+        "default": 10
+      },
+      {
+        "param_name": "lr",
+        "param_type": "string",
+        "required": false,
+        "description": "语言限制",
+        "enum": [
+          "lang_zh",
+          "lang_en"
+        ],
+        "default": null
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1003",
+      "MAT_1005"
+    ],
+    "annotator": "标注员E",
+    "annotated_at": "2026-06-02 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0022",
+    "tool_name": "file_read",
+    "tool_category": "文件操作",
+    "params": [
+      {
+        "param_name": "file_path",
+        "param_type": "string",
+        "required": true,
+        "description": "文件绝对路径",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "offset",
+        "param_type": "integer",
+        "required": false,
+        "description": "起始行号",
+        "enum": null,
+        "default": 1
+      },
+      {
+        "param_name": "limit",
+        "param_type": "integer",
+        "required": false,
+        "description": "读取行数",
+        "enum": null,
+        "default": 2000
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1004"
+    ],
+    "annotator": "标注员B",
+    "annotated_at": "2026-06-01 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0023",
+    "tool_name": "file_write",
+    "tool_category": "文件操作",
+    "params": [
+      {
+        "param_name": "file_path",
+        "param_type": "string",
+        "required": true,
+        "description": "写入路径",
+        "enum": [],
+        "default": null
+      },
+      {
+        "param_name": "content",
+        "param_type": "string",
+        "required": true,
+        "description": null,
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "append",
+        "param_type": "boolean",
+        "required": false,
+        "description": "是否追加",
+        "enum": null,
+        "default": false
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1001"
+    ],
+    "annotator": "标注员D",
+    "annotated_at": "2026-05-31 22:56:48",
+    "original_audit_status": "未通过",
+    "original_audit_summary": "存在枚举值为空数组的参数",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "枚举值非法"
+    ],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0024",
+    "tool_name": "data_frame_transform",
+    "tool_category": "数据处理",
+    "params": [
+      {
+        "param_name": "input_df",
+        "param_type": "object",
+        "required": true,
+        "description": "输入数据框",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "operation",
+        "param_type": "string",
+        "required": true,
+        "description": "变换操作",
+        "enum": [
+          "pivot",
+          "melt",
+          "groupby",
+          "filter"
+        ],
+        "default": null
+      },
+      {
+        "param_name": "columns",
+        "param_type": "array",
+        "required": false,
+        "description": "列名列表",
+        "enum": null,
+        "default": []
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002",
+      "MAT_1003"
+    ],
+    "annotator": "标注员D",
+    "annotated_at": "2026-05-30 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0025",
+    "tool_name": "code_snippet_extract",
+    "tool_category": "代码分析",
+    "params": [
+      {
+        "param_name": "source_code",
+        "param_type": "string",
+        "required": true,
+        "description": "源代码字符串",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "target_function",
+        "param_type": "string",
+        "required": false,
+        "description": null,
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "lang",
+        "param_type": "string",
+        "required": true,
+        "description": "编程语言",
+        "enum": [
+          "py",
+          "js",
+          "ts",
+          "go"
+        ],
+        "default": "py"
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1005"
+    ],
+    "annotator": "标注员C",
+    "annotated_at": "2026-05-29 22:56:48",
+    "original_audit_status": "未通过",
+    "original_audit_summary": "num_results类型应为integer但标注为string",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0026",
+    "tool_name": "http_get",
+    "tool_category": "网络请求",
+    "params": [
+      {
+        "param_name": "url",
+        "param_type": "string",
+        "required": true,
+        "description": "请求URL",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "params",
+        "param_type": "object",
+        "required": false,
+        "description": "查询参数",
+        "enum": null,
+        "default": {}
+      },
+      {
+        "param_name": "timeout",
+        "param_type": "integer",
+        "required": false,
+        "description": "超时秒数",
+        "enum": null,
+        "default": 30
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002"
+    ],
+    "annotator": "标注员D",
+    "annotated_at": "2026-05-28 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0027",
+    "tool_name": "http_post",
+    "tool_category": "网络请求",
+    "params": [
+      {
+        "param_name": "url",
+        "param_type": "string",
+        "required": true,
+        "description": "请求URL",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "body",
+        "param_type": "object",
+        "required": true,
+        "description": "请求体",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "content_type",
+        "param_type": "string",
+        "required": false,
+        "description": "内容类型",
+        "enum": [
+          "application/json",
+          "form-data"
+        ],
+        "default": "application/json"
+      }
+    ],
+    "source_material_ids": [],
+    "annotator": "标注员E",
+    "annotated_at": "2026-05-27 22:56:48",
+    "original_audit_status": "待确认",
+    "original_audit_summary": "未关联来源材料，需补充",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "来源不可追溯"
+    ],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0028",
+    "tool_name": "grep_search",
+    "tool_category": "代码分析",
+    "params": [
+      {
+        "param_name": "pattern",
+        "param_type": "string",
+        "required": true,
+        "description": "正则模式",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "path",
+        "param_type": "string",
+        "required": false,
+        "description": "搜索目录",
+        "enum": null,
+        "default": "."
+      },
+      {
+        "param_name": "output_mode",
+        "param_type": "string",
+        "required": false,
+        "description": "输出模式",
+        "enum": [
+          "files_with_matches",
+          "content",
+          "count"
+        ],
+        "default": "files_with_matches"
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1001",
+      "MAT_1006"
+    ],
+    "annotator": "标注员E",
+    "annotated_at": "2026-05-26 22:56:48",
+    "original_audit_status": "灰度观察",
+    "original_audit_summary": "灰度批次C观察中，未正式通过",
+    "gray_flag": true,
+    "gray_batch": "gray_batch_C",
+    "review_category": "需平台工程师复核",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0029",
+    "tool_name": "schema_validate",
+    "tool_category": "数据处理",
+    "params": [
+      {
+        "param_name": "schema",
+        "param_type": "object",
+        "required": true,
+        "description": "schema定义",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "data",
+        "param_type": "object",
+        "required": true,
+        "description": "待校验数据",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "strict",
+        "param_type": "boolean",
+        "required": false,
+        "description": "严格模式",
+        "enum": null,
+        "default": true
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002",
+      "MAT_1003"
+    ],
+    "annotator": "标注员E",
+    "annotated_at": "2026-05-25 22:56:48",
+    "original_audit_status": "未通过",
+    "original_audit_summary": "核心参数未标记为必填",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0030",
+    "tool_name": "document_parse",
+    "tool_category": "搜索工具",
+    "params": [
+      {
+        "param_name": "doc_path",
+        "param_type": "string",
+        "required": true,
+        "description": "文档路径",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "format",
+        "param_type": "string",
+        "required": true,
+        "description": "文档格式",
+        "enum": [
+          "pdf",
+          "md",
+          "docx",
+          "html"
+        ],
+        "default": "md"
+      },
+      {
+        "param_name": "extract_images",
+        "param_type": "boolean",
+        "required": false,
+        "description": "是否抽取图片",
+        "enum": null,
+        "default": false
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1004"
+    ],
+    "annotator": "标注员E",
+    "annotated_at": "2026-05-24 22:56:48",
+    "original_audit_status": "通过",
+    "original_audit_summary": "所有参数校验通过",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "直接可用",
+    "risk_tags": [],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0032",
+    "tool_name": "web_search",
+    "tool_category": "搜索工具",
+    "params": [
+      {
+        "param_name": "query",
+        "param_type": "string",
+        "required": true,
+        "description": "搜索关键词",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "num_results",
+        "param_type": "integer",
+        "required": false,
+        "description": "返回条数",
+        "enum": [
+          5,
+          10,
+          20
+        ],
+        "default": 10
+      },
+      {
+        "param_name": "lr",
+        "param_type": "string",
+        "required": false,
+        "description": "语言限制",
+        "enum": [
+          "lang_zh",
+          "lang_en"
+        ],
+        "default": null
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002",
+      "MAT_1005"
+    ],
+    "annotator": "标注员A",
+    "annotated_at": "2026-05-23 22:56:48",
+    "original_audit_status": "待确认",
+    "original_audit_summary": "与REC_0001为同一条，两人同时标注",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "重复标注"
+    ],
+    "correction_history": []
+  },
+  {
+    "record_id": "REC_0034",
+    "tool_name": "web_search",
+    "tool_category": "搜索工具",
+    "params": [
+      {
+        "param_name": "query",
+        "param_type": "string",
+        "required": "必填 请和A的版本对齐",
+        "description": "搜索关键词",
+        "enum": null,
+        "default": null
+      },
+      {
+        "param_name": "num_results",
+        "param_type": "integer",
+        "required": false,
+        "description": "返回条数",
+        "enum": [
+          5,
+          10,
+          20
+        ],
+        "default": 10
+      },
+      {
+        "param_name": "lr",
+        "param_type": "string",
+        "required": false,
+        "description": "语言限制",
+        "enum": [
+          "lang_zh",
+          "lang_en"
+        ],
+        "default": null
+      }
+    ],
+    "source_material_ids": [
+      "MAT_1002",
+      "MAT_1005"
+    ],
+    "annotator": "标注员B",
+    "annotated_at": "2026-05-22 22:56:48",
+    "original_audit_status": "待确认",
+    "original_audit_summary": "同工具同参数，另一份标注，必填字段有备注",
+    "gray_flag": false,
+    "gray_batch": null,
+    "review_category": "需平台工程师复核",
+    "risk_tags": [
+      "重复标注",
+      "备注混写"
+    ],
+    "correction_history": []
+  }
+]

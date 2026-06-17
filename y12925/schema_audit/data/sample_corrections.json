@@ -1,0 +1,95 @@
+[
+  {
+    "correction_id": "COR_001",
+    "record_id": "REC_0002",
+    "field_name": "params[2].description",
+    "old_value": null,
+    "new_value": "语言过滤标签",
+    "corrector": "复核员X",
+    "corrected_at": "2026-06-17 21:56:48",
+    "reason": "清洗空值",
+    "is_cleaned": true
+  },
+  {
+    "correction_id": "COR_002",
+    "record_id": "REC_0005",
+    "field_name": "params[0].required",
+    "old_value": "必填 注意与PRD v2.3对齐",
+    "new_value": true,
+    "corrector": "复核员X",
+    "corrected_at": "2026-06-17 20:56:48",
+    "reason": "剥离备注写入 annotation_remark",
+    "is_cleaned": true
+  },
+  {
+    "correction_id": "COR_003",
+    "record_id": "REC_0007",
+    "field_name": "original_audit_status",
+    "old_value": "通过",
+    "new_value": "待确认",
+    "corrector": "复核员Y",
+    "corrected_at": "2026-06-17 19:56:48",
+    "reason": "存在description空值，修正结论冲突",
+    "is_cleaned": true
+  },
+  {
+    "correction_id": "COR_004",
+    "record_id": "REC_0004",
+    "field_name": "params[1].enum",
+    "old_value": [],
+    "new_value": [
+      1,
+      10,
+      50,
+      200
+    ],
+    "corrector": "复核员Y",
+    "corrected_at": "2026-06-17 18:56:48",
+    "reason": "补充枚举值",
+    "is_cleaned": true
+  },
+  {
+    "correction_id": "COR_005",
+    "record_id": "REC_0010",
+    "field_name": "params[0].param_type",
+    "old_value": "string",
+    "new_value": "integer",
+    "corrector": "平台工程师-Z",
+    "corrected_at": "2026-06-17 17:56:48",
+    "reason": "修正类型不匹配",
+    "is_cleaned": true
+  },
+  {
+    "correction_id": "COR_006",
+    "record_id": "REC_0015",
+    "field_name": "params[0].required",
+    "old_value": "非必填 待讨论",
+    "new_value": false,
+    "corrector": "复核员X",
+    "corrected_at": "2026-06-17 16:56:48",
+    "reason": "剥离备注",
+    "is_cleaned": true
+  },
+  {
+    "correction_id": "COR_007",
+    "record_id": "REC_0018",
+    "field_name": "params[1].description",
+    "old_value": null,
+    "new_value": "变换操作类型",
+    "corrector": "复核员Y",
+    "corrected_at": "2026-06-17 15:56:48",
+    "reason": "清洗空值",
+    "is_cleaned": true
+  },
+  {
+    "correction_id": "COR_008",
+    "record_id": "REC_0031",
+    "field_name": "__action__",
+    "old_value": "独立记录",
+    "new_value": "合并到 REC_0001",
+    "corrector": "平台工程师-Z",
+    "corrected_at": "2026-06-17 14:56:48",
+    "reason": "处理重复标注",
+    "is_cleaned": true
+  }
+]

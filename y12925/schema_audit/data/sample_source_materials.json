@@ -1,0 +1,72 @@
+[
+  {
+    "material_id": "MAT_1001",
+    "title": "MCP 工具协议规范 v3.2",
+    "url": "https://docs.internal/mcp/spec-v3.2",
+    "content_snippet": "工具参数必须声明 type、required、description，enum 必须非空",
+    "linked_record_ids": [
+      "REC_0001",
+      "REC_0002",
+      "REC_0011",
+      "REC_0012"
+    ]
+  },
+  {
+    "material_id": "MAT_1002",
+    "title": "工具参数 Schema 设计指南",
+    "url": "https://docs.internal/tools/schema-guide",
+    "content_snippet": "integer 类型参数禁止写成 string，核心参数 required 必须为 True",
+    "linked_record_ids": [
+      "REC_0010",
+      "REC_0011",
+      "REC_0019",
+      "REC_0025"
+    ]
+  },
+  {
+    "material_id": "MAT_1003",
+    "title": "标注平台操作手册 v2.3",
+    "url": "https://docs.internal/annotation/manual-v2.3",
+    "content_snippet": "required 字段为布尔值，备注请写入 annotation_remark",
+    "linked_record_ids": [
+      "REC_0005",
+      "REC_0015",
+      "REC_0031",
+      "REC_0032"
+    ]
+  },
+  {
+    "material_id": "MAT_1004",
+    "title": "2026-Q2 灰度发布计划",
+    "url": "https://docs.internal/release/2026q2-gray",
+    "content_snippet": "灰度批次 A/B/C 需观察 7 天无问题方可转正",
+    "linked_record_ids": [
+      "REC_0009",
+      "REC_0017",
+      "REC_0028"
+    ]
+  },
+  {
+    "material_id": "MAT_1005",
+    "title": "模型训练数据集接入规范",
+    "url": "https://docs.internal/ml/dataset-spec",
+    "content_snippet": "所有工具参数 schema 需关联来源 PRD，禁止空来源入库",
+    "linked_record_ids": [
+      "REC_0008",
+      "REC_0027",
+      "REC_0029"
+    ]
+  },
+  {
+    "material_id": "MAT_1006",
+    "title": "PRD-搜索工具参数需求",
+    "url": "https://prd.internal/search-tool-params",
+    "content_snippet": "query 必填且为 string，num_results 枚举 [5,10,20]",
+    "linked_record_ids": [
+      "REC_0001",
+      "REC_0002",
+      "REC_0021",
+      "REC_0031"
+    ]
+  }
+]
