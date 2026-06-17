@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prompt-impact"
+version = "0.1.0"
+description = "Prompt 改动影响报告 CLI: 可追溯、幂等、去重的 Prompt 变更影响分析工具"
+requires-python = ">=3.8"
+authors = [{ name = "Model Training Eng" }]
+dependencies = []
+
+[project.scripts]
+prompt-impact = "prompt_impact.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["prompt_impact*"]
