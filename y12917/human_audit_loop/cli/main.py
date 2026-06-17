@@ -45,7 +45,7 @@ def cli():
 @click.option(
     "--trace-id", "-t",
     default=None,
-    help="指定一个记录ID（如 NEW000023、OLD00018），报告和导出里会自动附带这条记录的完整追踪链路。",
+    help="指定一个记录ID或异常编号（如 NEW000023、EXCEP-20260601-001），报告和导出里会自动附带这条记录的完整追踪链路。",
 )
 @click.option(
     "--report-dir", "-r",
@@ -113,9 +113,16 @@ def run_cmd(data_dir, batch_id, trace_id, report_dir, export_dir, skip_excel, pr
         click.echo("[4/4] 已跳过Excel导出。")
 
     if trace_id:
+        import sys
         click.echo("")
-        click.echo(f"【追踪记录 {trace_id} 的完整链路】")
+        click.echo(f"【追踪 {trace_id} 的完整链路】")
         chain = trace_record(batch, trace_id)
+        if not chain.get("找到"):
+            click.echo(click.style(f"✗ 未找到：{chain.get('原因', '')}", fg="red"))
+            sys.exit(1)
+        if chain.get("查询入口"):
+            click.echo(click.style(f"✓  {chain['查询入口']}", fg="yellow", bold=True))
+            click.echo("")
         click.echo(json.dumps(chain, ensure_ascii=False, indent=2))
 
     if print_summary:
@@ -132,9 +139,10 @@ def run_cmd(data_dir, batch_id, trace_id, report_dir, export_dir, skip_excel, pr
         if trace_id:
             click.echo(f"  · 指定追踪 {trace_id}：结果已写在Excel'sheet 6'里")
         click.echo("")
-        click.echo("  验收提示：从异常案例里拿一条记录ID，再运行：")
-        click.echo(f"    human_audit trace --data-dir \"{data_dir}\" --id <记录ID>")
+        click.echo("  验收提示：从异常案例里拿一条异常编号或记录ID，再运行：")
+        click.echo(f"    human_audit trace --data-dir \"{data_dir}\" --id <记录ID或异常编号>")
         click.echo("  可以验证是否能顺着追到标注记录和处理意见。")
+        click.echo("  支持的异常编号示例：EXCEP-20260601-001、EXCEP-20260603-002、EXCEP-20260605-003")
 
     click.echo("")
     click.echo("运行完成。")
@@ -143,7 +151,8 @@ def run_cmd(data_dir, batch_id, trace_id, report_dir, export_dir, skip_excel, pr
 
 @cli.command(
     "trace",
-    help="顺着一条异常/记录ID往回查，完整输出：基本信息、去重信息、标注、处理意见、灰度判定、跨表关联、异常案例。",
+    help="顺着一条异常/记录ID往回查，完整输出：基本信息、去重信息、标注、处理意见、灰度判定、跨表关联、异常案例。"
+         "支持直接传入异常编号（如 EXCEP-20260601-001），会自动关联到对应记录。",
 )
 @click.option(
     "--data-dir", "-d",
@@ -155,7 +164,7 @@ def run_cmd(data_dir, batch_id, trace_id, report_dir, export_dir, skip_excel, pr
 @click.option(
     "--id", "record_id",
     required=True,
-    help="要追踪的记录ID，例如 NEW000023 或 OLD00018。",
+    help="要追踪的ID，支持记录ID（NEW000023、OLD00018等）或异常编号（EXCEP-20260601-001等）。",
 )
 @click.option(
     "--batch-id", "-b",
@@ -163,23 +172,32 @@ def run_cmd(data_dir, batch_id, trace_id, report_dir, export_dir, skip_excel, pr
     help="可选，自定义批处理编号。",
 )
 def trace_cmd(data_dir, record_id, batch_id):
+    import sys
     click.echo(f"加载数据 ...")
     batch = run_batch_process(data_dir, batch_id=batch_id)
-    click.echo(f"追踪记录：{record_id}")
+    click.echo(f"追踪：{record_id}")
     click.echo("")
     chain = trace_record(batch, record_id)
     if not chain.get("找到"):
         click.echo(click.style(f"✗ 未找到：{chain.get('原因', '')}", fg="red"))
-        return 1
-    click.echo(click.style("✓ 找到完整链路，明细如下：", fg="green"))
+        sys.exit(1)
+
+    if chain.get("查询入口"):
+        click.echo(click.style(f"✓  {chain['查询入口']}", fg="yellow", bold=True))
+        click.echo("")
+
+    click.echo(click.style("✓ 找到完整链路，明细如下：", fg="green", bold=True))
+    click.echo("")
+    click.echo(f"记录ID：{chain['记录ID']}")
     click.echo("")
     for section, content in chain.items():
-        if section in ("找到", "记录ID"):
+        if section in ("找到", "记录ID", "查询入口"):
             continue
         click.echo(click.style(f"【{section}】", fg="cyan", bold=True))
         if isinstance(content, dict):
             for k, v in content.items():
-                click.echo(f"  {k:<18} : {v}")
+                val = str(v) if v is not None else "-"
+                click.echo(f"  {k:<18} : {val}")
         elif isinstance(content, list):
             for item in content:
                 click.echo(f"  · {item}")
@@ -191,7 +209,7 @@ def trace_cmd(data_dir, record_id, batch_id):
     click.echo("  上面链路中，'标注与处理链路'里有'标注标签+处理意见+标注人+时间'；")
     click.echo("  '去重信息'里有跨表重复的依据；")
     click.echo("  如果这条记录在异常表里，还会在最下面看到'关联异常案例'及证据路径。")
-    return 0
+    sys.exit(0)
 
 
 @cli.command(

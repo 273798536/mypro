@@ -189,12 +189,45 @@ def run_batch_process(sample_dir: str, batch_id: str = "") -> BatchProcessResult
 def trace_record(
     batch: BatchProcessResult, record_id: str
 ) -> Dict[str, object]:
+    rid = str(record_id).strip()
     rec_map = {r.record_id: r for r in batch.unified_records}
-    if record_id not in rec_map:
-        return {"找到": False, "原因": f"记录ID {record_id} 不在当前批处理中"}
 
-    rec = rec_map[record_id]
-    chain: Dict[str, object] = {"找到": True, "记录ID": record_id}
+    resolved_rid = rid
+    via_exception = None
+
+    if rid.upper().startswith("EXCEP") and rid not in rec_map:
+        excep_match = batch.raw_excep_df[
+            batch.raw_excep_df["excep_id"].astype(str).str.strip() == rid
+        ]
+        if len(excep_match) > 0:
+            er = excep_match.iloc[0]
+            linked_rid = str(er.get("record_id", "")).strip()
+            if linked_rid and linked_rid in rec_map:
+                via_exception = {
+                    "异常ID": rid,
+                    "异常类型": str(er.get("excep_type", "")),
+                    "问题描述": str(er.get("description", "")),
+                    "关联记录ID": linked_rid,
+                }
+                resolved_rid = linked_rid
+
+    if resolved_rid not in rec_map:
+        if via_exception:
+            return {
+                "找到": False,
+                "原因": (
+                    f"已识别到异常ID {rid}，关联到记录ID {resolved_rid}，"
+                    f"但 {resolved_rid} 不在当前批处理中"
+                ),
+            }
+        return {"找到": False, "原因": f"记录ID {rid} 不在当前批处理中"}
+
+    rec = rec_map[resolved_rid]
+    chain: Dict[str, object] = {"找到": True, "记录ID": resolved_rid}
+    if via_exception:
+        chain["查询入口"] = f"异常ID {rid} → 自动关联到记录ID {resolved_rid}"
+        chain["异常基本信息"] = via_exception
+
     chain["基本信息"] = {
         "来源表": rec.source_table,
         "客户": rec.customer_name,
@@ -246,7 +279,7 @@ def trace_record(
         }
 
     excep_rows = batch.raw_excep_df[
-        batch.raw_excep_df["record_id"].astype(str).str.strip() == record_id
+        batch.raw_excep_df["record_id"].astype(str).str.strip() == resolved_rid
     ]
     if len(excep_rows) > 0:
         er = excep_rows.iloc[0]
