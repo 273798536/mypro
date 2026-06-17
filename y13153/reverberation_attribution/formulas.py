@@ -5,6 +5,7 @@ from typing import Any
 
 from .models import (
     AttributedError,
+    DataQuality,
     FormulaStep,
     RoomData,
     SurfaceContribution,
@@ -51,7 +52,7 @@ def sabine_t60(volume_m3: float, total_absorption_m2: float) -> tuple[float, lis
 
 def compute_total_absorption(room: RoomData) -> tuple[float, list[FormulaStep]]:
     steps: list[FormulaStep] = []
-    effective_surfaces = [s for s in room.surfaces if s.quality.value != "bad"]
+    effective_surfaces = [s for s in room.surfaces if s.quality != DataQuality.BAD]
 
     steps.append(FormulaStep(
         name="总吸声量公式",
@@ -89,6 +90,8 @@ def compute_total_absorption(room: RoomData) -> tuple[float, list[FormulaStep]]:
 def attribute_error(room: RoomData) -> AttributedError:
     all_steps: list[FormulaStep] = []
 
+    effective_surfaces = [s for s in room.surfaces if s.quality != DataQuality.BAD]
+
     total_a, abs_steps = compute_total_absorption(room)
     all_steps.extend(abs_steps)
 
@@ -100,44 +103,47 @@ def attribute_error(room: RoomData) -> AttributedError:
 
     all_steps.append(FormulaStep(
         name="绝对误差",
-        expression="ΔT60 = T60_measured - T60_calculated",
+        expression="ΔT60_total = T60_measured - T60_calculated",
         values={"T60_measured": room.measured_t60_s, "T60_calculated": round(calc_t60, 4)},
         result=abs_error,
         unit="s",
+        note="实测值与当前参数计算值的总偏差",
     ))
     all_steps.append(FormulaStep(
         name="相对误差",
-        expression="δT60 = ΔT60 / T60_calculated × 100%",
-        values={"ΔT60": round(abs_error, 4), "T60_calculated": round(calc_t60, 4)},
+        expression="δT60 = ΔT60_total / T60_calculated × 100%",
+        values={"ΔT60_total": round(abs_error, 4), "T60_calculated": round(calc_t60, 4)},
         result=rel_error,
         unit="%",
+        note="相对总误差",
     ))
 
-    effective_surfaces = [s for s in room.surfaces if s.quality.value != "bad"]
-
-    volume_contrib = SABINE_CONSTANT / total_a * (abs_error * 0.3) if total_a != 0 else 0.0
-    volume_contrib_pct = (volume_contrib / abs(abs_error)) * 100.0 if abs_error != 0 else 0.0
+    sens_volume = SABINE_CONSTANT / total_a if total_a != 0 else 0.0
 
     all_steps.append(FormulaStep(
-        name="容积误差贡献",
-        expression="∂T60/∂V × ΔV ≈ (k/A) × ΔV",
-        values={"k": SABINE_CONSTANT, "A": round(total_a, 4), "estimated_delta_V": "按误差30%估算"},
-        result=volume_contrib,
-        unit="s",
-        note="容积误差贡献为近似估计，假设容积偏差占总误差30%",
+        name="容积灵敏度",
+        expression="∂T60/∂V = k / A",
+        values={"k": SABINE_CONSTANT, "A": round(total_a, 4)},
+        result=sens_volume,
+        unit="s/m³",
+        note="容积每增加 1 m³，T60 增加多少秒",
     ))
 
     surface_contributions: list[SurfaceContribution] = []
+    explained_by_surfaces_s = 0.0
+
     for s in effective_surfaces:
         a_i = s.absorption_area
-        partial_t60 = 0.0
-        if total_a == 0 or a_i == 0:
-            contrib_s = 0.0
-            contrib_pct = 0.0
+        if total_a == 0:
+            sens_alpha = 0.0
+            partial_t60 = 0.0
         else:
-            partial_t60 = SABINE_CONSTANT * room.volume_m3 / a_i
-            contrib_s = -(SABINE_CONSTANT * room.volume_m3 * a_i) / (total_a ** 2)
-            contrib_pct = (abs(contrib_s) / abs(abs_error)) * 100.0 if abs_error != 0 else 0.0
+            sens_alpha = -(SABINE_CONSTANT * room.volume_m3 * s.area_m2) / (total_a ** 2)
+            partial_t60 = SABINE_CONSTANT * room.volume_m3 / a_i if a_i != 0 else 0.0
+
+        delta_alpha = s.delta_coeff if s.has_coeff_deviation else 0.0
+        contrib_s = sens_alpha * delta_alpha
+        is_sens_only = not s.has_coeff_deviation
 
         surface_contributions.append(SurfaceContribution(
             material_name=s.material_name,
@@ -146,28 +152,105 @@ def attribute_error(room: RoomData) -> AttributedError:
             absorption_area_m2=a_i,
             partial_t60_s=partial_t60,
             contribution_s=contrib_s,
-            contribution_pct=contrib_pct,
+            contribution_pct=0.0,
+            sensitivity_s_per_alpha=sens_alpha,
+            delta_alpha=delta_alpha,
+            delta_source=s.provenance.source.value if s.has_coeff_deviation else "",
+            is_sensitivity_only=is_sens_only,
             original_row=s.original_row,
         ))
+        if not is_sens_only:
+            explained_by_surfaces_s += contrib_s
+
+    volume_contrib_s = 0.0
+    if room.has_volume_deviation:
+        volume_contrib_s = sens_volume * room.delta_volume
 
     all_steps.append(FormulaStep(
-        name="各面吸声误差贡献",
-        expression="∂T60/∂αi = -k×V×Si / A²",
+        name="容积偏差贡献",
+        expression="ΔT60_V = ∂T60/∂V × ΔV",
         values={
-            "k": SABINE_CONSTANT,
-            "V": room.volume_m3,
-            "A": round(total_a, 4),
+            "∂T60/∂V": round(sens_volume, 6),
+            "ΔV": round(room.delta_volume, 4),
+            "has_deviation": room.has_volume_deviation,
         },
-        result=sum(sc.contribution_s for sc in surface_contributions),
+        result=volume_contrib_s,
         unit="s",
-        note="各面吸声系数偏差对混响时间误差的贡献",
+        note="容积偏差对 T60 计算值变化的贡献（一阶近似）",
+    ))
+    all_steps.append(FormulaStep(
+        name="表面吸声偏差贡献合计",
+        expression="ΔT60_α = Σ(∂T60/∂αi × Δαi)",
+        values={
+            "surface_count_with_deviation": sum(1 for sc in surface_contributions if not sc.is_sensitivity_only),
+            "total_surfaces": len(surface_contributions),
+        },
+        result=explained_by_surfaces_s,
+        unit="s",
+        note="有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）",
     ))
 
-    if surface_contributions:
-        dominant_surface = max(surface_contributions, key=lambda sc: abs(sc.contribution_pct))
-        dominant_source = f"表面 {dominant_surface.material_name} ({dominant_surface.contribution_pct:.1f}%)"
+    explained_error_s = volume_contrib_s + explained_by_surfaces_s
+    unexplained_error_s = abs_error - explained_error_s
+
+    all_steps.append(FormulaStep(
+        name="已解释误差",
+        expression="ΔT60_explained = ΔT60_V + ΔT60_α",
+        values={
+            "ΔT60_V": round(volume_contrib_s, 6),
+            "ΔT60_α": round(explained_by_surfaces_s, 6),
+        },
+        result=explained_error_s,
+        unit="s",
+        note="已知参数偏差可解释的误差量（一阶近似）",
+    ))
+    all_steps.append(FormulaStep(
+        name="未解释残差",
+        expression="ΔT60_unexplained = ΔT60_total - ΔT60_explained",
+        values={
+            "ΔT60_total": round(abs_error, 6),
+            "ΔT60_explained": round(explained_error_s, 6),
+        },
+        result=unexplained_error_s,
+        unit="s",
+        note="来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应",
+    ))
+
+    abs_explained_total = abs(volume_contrib_s) + sum(
+        abs(sc.contribution_s) for sc in surface_contributions if not sc.is_sensitivity_only
+    )
+
+    if abs_explained_total > 1e-9:
+        volume_contrib_pct = (abs(volume_contrib_s) / abs_explained_total) * 100.0
+        for sc in surface_contributions:
+            if not sc.is_sensitivity_only:
+                sc.contribution_pct = (abs(sc.contribution_s) / abs_explained_total) * 100.0
     else:
-        dominant_source = "无法判定"
+        volume_contrib_pct = 0.0
+
+    has_any_deviation = room.has_volume_deviation or any(
+        not sc.is_sensitivity_only for sc in surface_contributions
+    )
+    attribution_mode = "full" if has_any_deviation else "sensitivity_only"
+
+    if has_any_deviation:
+        dominant_candidates = []
+        if room.has_volume_deviation:
+            dominant_candidates.append(("容积", abs(volume_contrib_s), volume_contrib_pct))
+        for sc in surface_contributions:
+            if not sc.is_sensitivity_only:
+                dominant_candidates.append((f"表面 {sc.material_name}", abs(sc.contribution_s), sc.contribution_pct))
+        if dominant_candidates:
+            dominant = max(dominant_candidates, key=lambda x: x[1])
+            dominant_source = f"{dominant[0]} ({dominant[2]:.1f}%)"
+        else:
+            dominant_source = "无已解释贡献"
+    else:
+        if surface_contributions:
+            most_sensitive = max(surface_contributions, key=lambda sc: abs(sc.sensitivity_s_per_alpha))
+            dominant_source = f"灵敏度最高: 表面 {most_sensitive.material_name} ({abs(most_sensitive.sensitivity_s_per_alpha):.4f} s/单位α)"
+        else:
+            dominant_source = "无法判定"
 
     return AttributedError(
         room_id=room.room_id,
@@ -175,9 +258,12 @@ def attribute_error(room: RoomData) -> AttributedError:
         measured_t60_s=room.measured_t60_s,
         absolute_error_s=abs_error,
         relative_error_pct=rel_error,
-        volume_contribution_s=volume_contrib,
+        volume_contribution_s=volume_contrib_s,
         volume_contribution_pct=volume_contrib_pct,
         surface_contributions=surface_contributions,
         dominant_source=dominant_source,
         formula_chain=all_steps,
+        explained_error_s=explained_error_s,
+        unexplained_error_s=unexplained_error_s,
+        attribution_mode=attribution_mode,
     )

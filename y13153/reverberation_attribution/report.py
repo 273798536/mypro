@@ -165,24 +165,95 @@ def _render_formula_chain(steps: list) -> str:
 
 def _render_surface_contributions(contribs: list) -> str:
     rows = ""
-    for sc in contribs:
-        rows += f"""
+    has_sens_only = any(c.is_sensitivity_only for c in contribs)
+    if not has_sens_only:
+        for sc in contribs:
+            rows += f"""
         <tr>
             <td>{_esc(sc.material_name)}</td>
             <td>{_esc(sc.area_m2)} m²</td>
             <td>{_esc(sc.absorption_coeff)}</td>
             <td>{_esc(round(sc.absorption_area_m2, 4))} m²</td>
-            <td>{_esc(round(sc.contribution_s, 4))} s</td>
-            <td>{_esc(round(sc.contribution_pct, 2))} %</td>
+            <td>{_esc(round(sc.delta_alpha, 6)) if sc.delta_alpha else '<span style="color:#95a5a6;">-</span>'}</td>
+            <td>{_esc(sc.delta_source) if sc.delta_source else '<span style="color:#95a5a6;">-</span>'}</td>
+            <td style="color:{'#27ae60' if sc.contribution_s >= 0 else '#e74c3c'}; font-weight:600;">{_esc(round(sc.contribution_s, 4))} s</td>
+            <td style="font-weight:600;">{_esc(round(sc.contribution_pct, 2))} %</td>
             <td>{"第" + str(sc.original_row) + "行" if sc.original_row is not None else "-"}</td>
         </tr>"""
-    return f"""
+        return f"""
+    <h4>误差贡献（按绝对值归一化，合计≈100%）</h4>
     <table class="data-table">
         <thead>
-            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>贡献(s)</th><th>贡献(%)</th><th>原始行</th></tr>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>偏差Δα</th><th>偏差来源</th><th>贡献(s)</th><th>贡献(%)</th><th>原始行</th></tr>
         </thead>
         <tbody>{rows}</tbody>
     </table>"""
+    else:
+        dev_rows = ""
+        sens_rows = ""
+        dev_count = 0
+        sens_count = 0
+        for sc in contribs:
+            if not sc.is_sensitivity_only:
+                dev_count += 1
+                dev_rows += f"""
+        <tr>
+            <td>{_esc(sc.material_name)}</td>
+            <td>{_esc(sc.area_m2)} m²</td>
+            <td>{_esc(sc.absorption_coeff)}</td>
+            <td>{_esc(round(sc.absorption_area_m2, 4))} m²</td>
+            <td>{_esc(round(sc.delta_alpha, 6))}</td>
+            <td>{_esc(sc.delta_source)}</td>
+            <td style="color:{'#27ae60' if sc.contribution_s >= 0 else '#e74c3c'}; font-weight:600;">{_esc(round(sc.contribution_s, 4))} s</td>
+            <td style="font-weight:600;">{_esc(round(sc.contribution_pct, 2))} %</td>
+            <td>{"第" + str(sc.original_row) + "行" if sc.original_row is not None else "-"}</td>
+        </tr>"""
+            else:
+                sens_count += 1
+                sens_rows += f"""
+        <tr class="sens-row">
+            <td>{_esc(sc.material_name)}</td>
+            <td>{_esc(sc.area_m2)} m²</td>
+            <td>{_esc(sc.absorption_coeff)}</td>
+            <td>{_esc(round(sc.absorption_area_m2, 4))} m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>{"第" + str(sc.original_row) + "行" if sc.original_row is not None else "-"}</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>{_esc(round(sc.sensitivity_s_per_alpha, 4))} s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 {_esc(round(abs(sc.sensitivity_s_per_alpha) * 0.01, 4))} s）
+            </td>
+        </tr>"""
+
+        html_parts = []
+        if dev_count > 0:
+            html_parts.append(f"""
+    <h4>已归因贡献（有实际偏差，{dev_count} 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>偏差Δα</th><th>偏差来源</th><th>贡献(s)</th><th>贡献(%)</th><th>原始行</th></tr>
+        </thead>
+        <tbody>{dev_rows}</tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：贡献 = 偏导灵敏度 × 实际偏差；百分比按绝对值归一化（合计≈100%）
+    </p>""")
+        if sens_count > 0:
+            html_parts.append(f"""
+    <h4>灵敏度参考（无实际偏差，{sens_count} 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th colspan="2">偏差状态</th><th>贡献</th><th>占比</th><th>原始行</th></tr>
+        </thead>
+        <tbody>{sens_rows}</tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：无偏差的材料仅展示灵敏度，不参与贡献占比统计
+    </p>""")
+        return "\n".join(html_parts)
 
 
 def _render_room_detail(room: RoomData, ae: AttributedError | None) -> str:
@@ -190,9 +261,17 @@ def _render_room_detail(room: RoomData, ae: AttributedError | None) -> str:
     surface_rows = ""
     for s in room.surfaces:
         sq = _quality_badge(s.quality)
+        delta_info = ""
+        if s.has_coeff_deviation or s.has_area_deviation:
+            parts = []
+            if s.has_coeff_deviation:
+                parts.append(f"Δα={s.delta_coeff:+.4f}")
+            if s.has_area_deviation:
+                parts.append(f"ΔS={s.delta_area:+.2f} m²")
+            delta_info = f" <span style=\"color:#e67e22;font-size:12px;\">({', '.join(parts)})</span>"
         surface_rows += f"""
         <tr class="{'bad-row' if s.quality == DataQuality.BAD else ''}">
-            <td>{_esc(s.material_name)}</td>
+            <td>{_esc(s.material_name)}{delta_info}</td>
             <td>{_esc(s.area_m2)} m²</td>
             <td>{_esc(s.absorption_coeff)}</td>
             <td>{_esc(round(s.absorption_area, 4))} m²</td>
@@ -213,8 +292,14 @@ def _render_room_detail(room: RoomData, ae: AttributedError | None) -> str:
 
     attribution_section = ""
     if ae:
+        mode_badge = ""
+        if ae.attribution_mode == "full":
+            mode_badge = '<span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">完全归因</span>'
+        else:
+            mode_badge = '<span style="background:#95a5a6;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">仅灵敏度</span>'
+
         attribution_section = f"""
-        <h4>计算结果</h4>
+        <h4>计算结果 {mode_badge}</h4>
         <div class="result-grid">
             <div class="result-card">
                 <div class="result-label">计算 T60</div>
@@ -226,40 +311,54 @@ def _render_room_detail(room: RoomData, ae: AttributedError | None) -> str:
             </div>
             <div class="result-card">
                 <div class="result-label">绝对误差</div>
-                <div class="result-value">{_esc(round(ae.absolute_error_s, 4))} s</div>
+                <div class="result-value" style="color:{'#27ae60' if ae.absolute_error_s >= 0 else '#e74c3c'};">{_esc(round(ae.absolute_error_s, 4))} s</div>
             </div>
             <div class="result-card">
                 <div class="result-label">相对误差</div>
-                <div class="result-value">{_esc(round(ae.relative_error_pct, 2))} %</div>
+                <div class="result-value" style="color:{'#27ae60' if ae.relative_error_pct >= 0 else '#e74c3c'};">{_esc(round(ae.relative_error_pct, 2))} %</div>
+            </div>
+            <div class="result-card" style="background:{'#e8f8f0' if ae.explained_error_s >= 0 else '#fdf0f0'};">
+                <div class="result-label">已解释误差</div>
+                <div class="result-value">{_esc(round(ae.explained_error_s, 4))} s</div>
+            </div>
+            <div class="result-card" style="background:#fff8e1;">
+                <div class="result-label">未解释残差</div>
+                <div class="result-value" style="color:#f39c12;">{_esc(round(ae.unexplained_error_s, 4))} s</div>
             </div>
             <div class="result-card">
-                <div class="result-label">容积误差贡献</div>
-                <div class="result-value">{_esc(round(ae.volume_contribution_pct, 2))} %</div>
+                <div class="result-label">容积贡献</div>
+                <div class="result-value">{_esc(round(ae.volume_contribution_pct, 1))} %</div>
             </div>
             <div class="result-card">
                 <div class="result-label">主导误差源</div>
-                <div class="result-value">{_esc(ae.dominant_source)}</div>
+                <div class="result-value" style="font-size:14px;">{_esc(ae.dominant_source)}</div>
             </div>
         </div>
 
         <h4>中间计算过程</h4>
         {_render_formula_chain(ae.formula_chain)}
 
-        <h4>各面误差贡献</h4>
         {_render_surface_contributions(ae.surface_contributions)}
         """
     else:
-        attribution_section = """
+        attribution_section = f"""
         <div class="alert alert-error">
-            该房间数据质量不合格，无法进行误差归因计算
+            该房间数据质量不合格，无法进行误差归因计算。原因：{_esc(room.quality_reason)}
         </div>"""
+
+    volume_delta = ""
+    if room.has_volume_deviation:
+        volume_delta = f' <span style="color:#e67e22;">(原始 {room.original_volume_m3} m³, Δ={room.delta_volume:+.2f})</span>'
+    t60_delta = ""
+    if room.has_t60_deviation:
+        t60_delta = f' <span style="color:#e67e22;">(原始 {room.original_measured_t60_s} s, Δ={room.delta_t60:+.3f})</span>'
 
     return f"""
     <div class="room-section">
         <h3>房间 {_esc(room.room_id)} {quality_badge}</h3>
         <div class="room-meta">
-            <span>容积: <strong>{_esc(room.volume_m3)} m³</strong></span>
-            <span>实测 T60: <strong>{_esc(room.measured_t60_s)} s</strong></span>
+            <span>容积: <strong>{_esc(room.volume_m3)} m³</strong>{volume_delta}</span>
+            <span>实测 T60: <strong>{_esc(room.measured_t60_s)} s</strong>{t60_delta}</span>
             <span>频率: <strong>{_esc(room.frequency_hz) if room.frequency_hz else '未指定'} Hz</strong></span>
             <span>来源: {_esc(room.provenance.source.value)} / {_esc(room.provenance.source_file)}</span>
             <span>版本: v{_esc(room.provenance.version)}</span>
@@ -279,6 +378,8 @@ def _render_summary(result: PipelineResult) -> str:
     suspect_count = sum(1 for r in result.rooms if r.quality == DataQuality.SUSPECT)
     bad_count = sum(1 for r in result.rooms if r.quality == DataQuality.BAD)
     attr_count = len(result.attributed_errors)
+    full_attr_count = sum(1 for ae in result.attributed_errors if ae.attribution_mode == "full")
+    sens_count = sum(1 for ae in result.attributed_errors if ae.attribution_mode == "sensitivity_only")
 
     avg_error = 0.0
     if result.attributed_errors:
@@ -305,6 +406,14 @@ def _render_summary(result: PipelineResult) -> str:
         <div class="summary-card">
             <div class="summary-number">{attr_count}</div>
             <div class="summary-label">已归因</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#27ae60;">{full_attr_count}</div>
+            <div class="summary-label">完全归因</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#95a5a6;">{sens_count}</div>
+            <div class="summary-label">仅灵敏度</div>
         </div>
         <div class="summary-card">
             <div class="summary-number">{_esc(round(avg_error, 2))}%</div>
@@ -339,11 +448,18 @@ def _render_delivery_note(result: PipelineResult) -> str:
     for src, cnt in provenance_summary.items():
         prov_rows += f"<tr><td>{_esc(src)}</td><td>{cnt}</td></tr>"
 
+    full_attr = sum(1 for ae in result.attributed_errors if ae.attribution_mode == "full")
+    sens_attr = sum(1 for ae in result.attributed_errors if ae.attribution_mode == "sensitivity_only")
+
     return f"""
     <h3>交付说明</h3>
     <div class="delivery-note">
         <p><strong>处理对象：</strong>声学混响误差归因</p>
         <p><strong>处理时间：</strong>{_esc(result.timestamp)}</p>
+        <p><strong>处理模式：</strong>
+            完全归因 {full_attr} 间（有实际偏差可分解），
+            仅灵敏度 {sens_attr} 间（无偏差，仅展示灵敏度参考）
+        </p>
         <p><strong>材料构成：</strong></p>
         <table class="data-table">
             <thead><tr><th>来源类型</th><th>数据条数</th></tr></thead>
@@ -352,6 +468,13 @@ def _render_delivery_note(result: PipelineResult) -> str:
         <p><strong>口径变更：</strong>{"有" if conflict_files else "无"}（涉及来源: {', '.join(_esc(f) for f in conflict_files) if conflict_files else '-'}）</p>
         <p><strong>坏数据隔离：</strong>{len(result.bad_data_refs)} 条坏数据已标记并排除出计算，详见"坏数据"章节的原始行引用</p>
         <p><strong>采样缺口：</strong>{len(result.sampling_gaps)} 处，详见"采样缺口"章节</p>
+        <p><strong>归因口径：</strong></p>
+        <ul style="margin-left: 20px; margin-bottom: 10px;">
+            <li>有实际偏差的参数：贡献 = 偏导灵敏度 × 实际偏差，按绝对值归一化（合计≈100%）</li>
+            <li>无实际偏差的参数：仅展示灵敏度（单位参数变化对 T60 的影响量）</li>
+            <li>已解释误差 = 容积偏差贡献 + 表面吸声偏差贡献之和（一阶近似）</li>
+            <li>未解释残差 = 总绝对误差 - 已解释误差（含测量误差、模型假设、非线性交互）</li>
+        </ul>
         <p><strong>对齐方式：</strong>实验记录 → 处理记录 → 页面摘要，三者按 room_id 一一对应；口径变更的房间/表面在溯源表中标注来源和版本号</p>
     </div>"""
 

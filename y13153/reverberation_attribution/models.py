@@ -46,14 +46,28 @@ class SurfaceData:
     material_name: str
     area_m2: float
     absorption_coeff: float
+    original_area_m2: Optional[float] = None
+    original_absorption_coeff: Optional[float] = None
     provenance: ProvenanceEntry = field(default_factory=lambda: ProvenanceEntry(source=MaterialSource.EXPERIMENT_RECORD, source_file=""))
     quality: DataQuality = DataQuality.OK
     quality_reason: str = ""
     original_row: Optional[int] = None
 
+    def __post_init__(self) -> None:
+        if self.original_area_m2 is None:
+            self.original_area_m2 = self.area_m2
+        if self.original_absorption_coeff is None:
+            self.original_absorption_coeff = self.absorption_coeff
+
     @property
     def absorption_area(self) -> float:
         return self.area_m2 * self.absorption_coeff
+
+    @property
+    def original_absorption_area(self) -> float:
+        assert self.original_area_m2 is not None
+        assert self.original_absorption_coeff is not None
+        return self.original_area_m2 * self.original_absorption_coeff
 
     @property
     def area_unit(self) -> str:
@@ -63,12 +77,37 @@ class SurfaceData:
     def coeff_unit(self) -> str:
         return "无量纲"
 
+    @property
+    def has_coeff_deviation(self) -> bool:
+        assert self.original_absorption_coeff is not None
+        return abs(self.absorption_coeff - self.original_absorption_coeff) > 1e-9
+
+    @property
+    def has_area_deviation(self) -> bool:
+        assert self.original_area_m2 is not None
+        return abs(self.area_m2 - self.original_area_m2) > 1e-9
+
+    @property
+    def delta_coeff(self) -> float:
+        assert self.original_absorption_coeff is not None
+        return self.absorption_coeff - self.original_absorption_coeff
+
+    @property
+    def delta_area(self) -> float:
+        assert self.original_area_m2 is not None
+        return self.area_m2 - self.original_area_m2
+
     def to_dict(self) -> dict:
         return {
             "material_name": self.material_name,
             "area_m2": self.area_m2,
             "absorption_coeff": self.absorption_coeff,
+            "original_area_m2": self.original_area_m2,
+            "original_absorption_coeff": self.original_absorption_coeff,
             "absorption_area_m2": self.absorption_area,
+            "delta_coeff": round(self.delta_coeff, 6) if self.has_coeff_deviation else 0.0,
+            "delta_area": round(self.delta_area, 4) if self.has_area_deviation else 0.0,
+            "has_deviation": self.has_coeff_deviation or self.has_area_deviation,
             "source": self.provenance.source.value,
             "source_file": self.provenance.source_file,
             "version": self.provenance.version,
@@ -83,12 +122,20 @@ class RoomData:
     room_id: str
     volume_m3: float
     measured_t60_s: float
+    original_volume_m3: Optional[float] = None
+    original_measured_t60_s: Optional[float] = None
     surfaces: list[SurfaceData] = field(default_factory=list)
     provenance: ProvenanceEntry = field(default_factory=lambda: ProvenanceEntry(source=MaterialSource.EXPERIMENT_RECORD, source_file=""))
     quality: DataQuality = DataQuality.OK
     quality_reason: str = ""
     original_row: Optional[int] = None
     frequency_hz: Optional[int] = None
+
+    def __post_init__(self) -> None:
+        if self.original_volume_m3 is None:
+            self.original_volume_m3 = self.volume_m3
+        if self.original_measured_t60_s is None:
+            self.original_measured_t60_s = self.measured_t60_s
 
     @property
     def volume_unit(self) -> str:
@@ -106,11 +153,37 @@ class RoomData:
     def effective_surface_count(self) -> int:
         return len([s for s in self.surfaces if s.quality != DataQuality.BAD])
 
+    @property
+    def has_volume_deviation(self) -> bool:
+        assert self.original_volume_m3 is not None
+        return abs(self.volume_m3 - self.original_volume_m3) > 1e-9
+
+    @property
+    def has_t60_deviation(self) -> bool:
+        assert self.original_measured_t60_s is not None
+        return abs(self.measured_t60_s - self.original_measured_t60_s) > 1e-9
+
+    @property
+    def delta_volume(self) -> float:
+        assert self.original_volume_m3 is not None
+        return self.volume_m3 - self.original_volume_m3
+
+    @property
+    def delta_t60(self) -> float:
+        assert self.original_measured_t60_s is not None
+        return self.measured_t60_s - self.original_measured_t60_s
+
     def to_dict(self) -> dict:
         return {
             "room_id": self.room_id,
             "volume_m3": self.volume_m3,
             "measured_t60_s": self.measured_t60_s,
+            "original_volume_m3": self.original_volume_m3,
+            "original_measured_t60_s": self.original_measured_t60_s,
+            "delta_volume": round(self.delta_volume, 4) if self.has_volume_deviation else 0.0,
+            "delta_t60": round(self.delta_t60, 4) if self.has_t60_deviation else 0.0,
+            "has_volume_deviation": self.has_volume_deviation,
+            "has_t60_deviation": self.has_t60_deviation,
             "frequency_hz": self.frequency_hz,
             "total_absorption_m2": self.total_absorption,
             "effective_surface_count": self.effective_surface_count,
@@ -126,6 +199,38 @@ class RoomData:
 
 
 @dataclass
+class SurfaceContribution:
+    material_name: str
+    area_m2: float
+    absorption_coeff: float
+    absorption_area_m2: float
+    partial_t60_s: float
+    contribution_s: float
+    contribution_pct: float
+    sensitivity_s_per_alpha: float = 0.0
+    delta_alpha: float = 0.0
+    delta_source: str = ""
+    is_sensitivity_only: bool = False
+    original_row: Optional[int] = None
+
+    def to_dict(self) -> dict:
+        return {
+            "material_name": self.material_name,
+            "area_m2": self.area_m2,
+            "absorption_coeff": self.absorption_coeff,
+            "absorption_area_m2": round(self.absorption_area_m2, 4),
+            "partial_t60_s": round(self.partial_t60_s, 4),
+            "contribution_s": round(self.contribution_s, 4),
+            "contribution_pct": round(self.contribution_pct, 2),
+            "sensitivity_s_per_alpha": round(self.sensitivity_s_per_alpha, 4),
+            "delta_alpha": round(self.delta_alpha, 6),
+            "delta_source": self.delta_source,
+            "is_sensitivity_only": self.is_sensitivity_only,
+            "original_row": self.original_row,
+        }
+
+
+@dataclass
 class AttributedError:
     room_id: str
     calculated_t60_s: float
@@ -137,6 +242,9 @@ class AttributedError:
     surface_contributions: list[SurfaceContribution] = field(default_factory=list)
     dominant_source: str = ""
     formula_chain: list[FormulaStep] = field(default_factory=list)
+    explained_error_s: float = 0.0
+    unexplained_error_s: float = 0.0
+    attribution_mode: str = "sensitivity_only"
 
     def to_dict(self) -> dict:
         return {
@@ -150,30 +258,9 @@ class AttributedError:
             "surface_contributions": [sc.to_dict() for sc in self.surface_contributions],
             "dominant_source": self.dominant_source,
             "formula_chain": [fs.to_dict() for fs in self.formula_chain],
-        }
-
-
-@dataclass
-class SurfaceContribution:
-    material_name: str
-    area_m2: float
-    absorption_coeff: float
-    absorption_area_m2: float
-    partial_t60_s: float
-    contribution_s: float
-    contribution_pct: float
-    original_row: Optional[int] = None
-
-    def to_dict(self) -> dict:
-        return {
-            "material_name": self.material_name,
-            "area_m2": self.area_m2,
-            "absorption_coeff": self.absorption_coeff,
-            "absorption_area_m2": round(self.absorption_area_m2, 4),
-            "partial_t60_s": round(self.partial_t60_s, 4),
-            "contribution_s": round(self.contribution_s, 4),
-            "contribution_pct": round(self.contribution_pct, 2),
-            "original_row": self.original_row,
+            "explained_error_s": round(self.explained_error_s, 4),
+            "unexplained_error_s": round(self.unexplained_error_s, 4),
+            "attribution_mode": self.attribution_mode,
         }
 
 

@@ -1,0 +1,1966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>声学混响误差归因 - 处理报告</title>
+<style>
+:root {
+    --bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --border: #dee2e6;
+    --text: #212529;
+    --muted: #6c757d;
+    --accent: #2c3e50;
+    --accent-light: #3498db;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; }
+.container { max-width: 1200px; margin: 0 auto; }
+h1 { color: var(--accent); border-bottom: 3px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; font-size: 24px; }
+h2 { color: var(--accent); margin: 30px 0 15px; font-size: 20px; border-left: 4px solid var(--accent-light); padding-left: 10px; }
+h3 { color: var(--accent); margin: 20px 0 10px; font-size: 17px; }
+h4 { color: var(--muted); margin: 15px 0 8px; font-size: 15px; }
+.data-table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 6px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; font-size: 13px; }
+.data-table th { background: var(--accent); color: #fff; padding: 10px 8px; text-align: left; font-weight: 600; }
+.data-table td { padding: 8px; border-bottom: 1px solid var(--border); }
+.data-table tr:hover { background: #f0f4f8; }
+.data-table tr.bad-row { background: #fff5f5; }
+.data-table tr.bad-row:hover { background: #ffe8e8; }
+.formula-table td { vertical-align: top; }
+.inner-table { width: 100%; font-size: 12px; margin-top: 5px; }
+.inner-table th { background: #e9ecef; color: var(--text); padding: 4px 6px; }
+.inner-table td { padding: 4px 6px; border-bottom: 1px solid #eee; }
+code { background: #e9ecef; padding: 1px 5px; border-radius: 3px; font-family: "SF Mono", "Fira Code", monospace; font-size: 12px; }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.summary-card { background: var(--card-bg); border-radius: 8px; padding: 15px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.summary-number { font-size: 28px; font-weight: 700; color: var(--accent); }
+.summary-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.result-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 15px; }
+.result-card { background: #f0f4f8; border-radius: 6px; padding: 12px; }
+.result-label { font-size: 12px; color: var(--muted); }
+.result-value { font-size: 18px; font-weight: 600; color: var(--accent); }
+.room-section { background: var(--card-bg); border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.room-meta { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 15px; font-size: 14px; }
+.alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 10px; }
+.alert-error { background: #ffe8e8; color: #c0392b; border-left: 4px solid #e74c3c; }
+.delivery-note { background: #f0f4f8; border-radius: 8px; padding: 20px; }
+.delivery-note p { margin-bottom: 10px; }
+details { margin-top: 5px; }
+details summary { cursor: pointer; color: var(--accent-light); font-size: 12px; }
+@media print { body { padding: 0; } .room-section { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>声学混响误差归因 - 处理报告</h1>
+<p style="color:var(--muted);margin-bottom:20px;">生成时间: 2026-06-17T16:01:20.490597 | Sabine 常数 k = 0.161 s/m</p>
+
+<h2>页面摘要</h2>
+
+    <div class="summary-grid">
+        <div class="summary-card">
+            <div class="summary-number">8</div>
+            <div class="summary-label">总房间数</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#27ae60;">6</div>
+            <div class="summary-label">正常</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#f39c12;">0</div>
+            <div class="summary-label">可疑</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#e74c3c;">2</div>
+            <div class="summary-label">坏数据</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number">6</div>
+            <div class="summary-label">已归因</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#27ae60;">1</div>
+            <div class="summary-label">完全归因</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#95a5a6;">5</div>
+            <div class="summary-label">仅灵敏度</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number">72.77%</div>
+            <div class="summary-label">平均相对误差</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#e74c3c;">6</div>
+            <div class="summary-label">材料冲突</div>
+        </div>
+        <div class="summary-card">
+            <div class="summary-number" style="color:#f39c12;">2</div>
+            <div class="summary-label">采样缺口</div>
+        </div>
+    </div>
+
+<h2>公式与边界值</h2>
+<h3>核心公式</h3>
+<table class="data-table">
+<thead><tr><th>公式名称</th><th>表达式</th><th>变量说明</th><th>单位</th></tr></thead>
+<tbody>
+<tr><td>Sabine 混响时间</td><td><code>T60 = k &times; V / A</code></td><td>k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)</td><td>s</td></tr>
+<tr><td>总吸声量</td><td><code>A = &Sigma;(&alpha;i &times; Si)</code></td><td>&alpha;i=吸声系数(无量纲), Si=面积(m²)</td><td>m²</td></tr>
+<tr><td>绝对误差</td><td><code>&Delta;T60 = T60_measured - T60_calculated</code></td><td>实测值 - 计算值</td><td>s</td></tr>
+<tr><td>相对误差</td><td><code>&delta;T60 = &Delta;T60 / T60_calculated &times; 100%</code></td><td>绝对误差占计算值的百分比</td><td>%</td></tr>
+<tr><td>容积偏导</td><td><code>&part;T60/&part;V = k/A</code></td><td>容积变化对 T60 的灵敏度</td><td>s/m³</td></tr>
+<tr><td>吸声系数偏导</td><td><code>&part;T60/&part;&alpha;i = -k&times;V&times;Si / A&sup2;</code></td><td>第 i 面吸声系数变化对 T60 的灵敏度</td><td>s</td></tr>
+</tbody>
+</table>
+
+<h3>边界值</h3>
+
+    <table class="data-table">
+        <thead>
+            <tr><th>参数</th><th>字段名</th><th>下界</th><th>上界</th><th>单位</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>房间容积</td>
+            <td><code>volume_m3</code></td>
+            <td>1.0</td>
+            <td>100000.0</td>
+            <td>m³</td>
+        </tr>
+        <tr>
+            <td>表面面积</td>
+            <td><code>area_m2</code></td>
+            <td>0.01</td>
+            <td>100000.0</td>
+            <td>m²</td>
+        </tr>
+        <tr>
+            <td>吸声系数</td>
+            <td><code>absorption_coeff</code></td>
+            <td>0.0</td>
+            <td>1.0</td>
+            <td>无量纲</td>
+        </tr>
+        <tr>
+            <td>实测混响时间 T60</td>
+            <td><code>measured_t60_s</code></td>
+            <td>0.05</td>
+            <td>15.0</td>
+            <td>s</td>
+        </tr>
+        <tr>
+            <td>计算混响时间 T60</td>
+            <td><code>calculated_t60_s</code></td>
+            <td>0.05</td>
+            <td>15.0</td>
+            <td>s</td>
+        </tr>
+        <tr>
+            <td>总吸声量 A</td>
+            <td><code>total_absorption_m2</code></td>
+            <td>0.01</td>
+            <td>100000.0</td>
+            <td>m²</td>
+        </tr>
+        <tr>
+            <td>相对误差</td>
+            <td><code>relative_error_pct</code></td>
+            <td>-100.0</td>
+            <td>200.0</td>
+            <td>%</td>
+        </tr></tbody>
+    </table>
+
+<h2>材料冲突（口径变更）</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr><th>房间</th><th>字段</th><th>原值</th><th>冲突值</th><th>来源A</th><th>来源B</th><th>处理</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>B-205</td>
+            <td><code>volume_m3</code></td>
+            <td>250.0</td>
+            <td><span style="color:#e74c3c;">245.0</span></td>
+            <td>experiment_record<br/><small>v1</small></td>
+            <td>late_attachment<br/><small>v1</small></td>
+            <td>保留实验记录原始值，附件值标记为备选</td>
+        </tr>
+        <tr>
+            <td>B-205</td>
+            <td><code>measured_t60_s</code></td>
+            <td>2.4</td>
+            <td><span style="color:#e74c3c;">2.55</span></td>
+            <td>experiment_record<br/><small>v1</small></td>
+            <td>late_attachment<br/><small>v1</small></td>
+            <td>保留实验记录原始值，附件值标记为备选</td>
+        </tr>
+        <tr>
+            <td>B-205</td>
+            <td><code>surfaces.吸声板.absorption_coeff</code></td>
+            <td>0.75</td>
+            <td><span style="color:#e74c3c;">0.65</span></td>
+            <td>experiment_record<br/><small>v1</small></td>
+            <td>late_attachment<br/><small>v1</small></td>
+            <td>保留实验记录原始值，附件值标记为备选</td>
+        </tr>
+        <tr>
+            <td>A-101</td>
+            <td><code>volume_m3</code></td>
+            <td>120.0</td>
+            <td><span style="color:#e74c3c;">125.0</span></td>
+            <td>experiment_record<br/><small>v1</small></td>
+            <td>oral_note<br/><small>v1</small></td>
+            <td>口头说明优先：采用口头修正值</td>
+        </tr>
+        <tr>
+            <td>A-101</td>
+            <td><code>surfaces.混凝土墙.absorption_coeff</code></td>
+            <td>0.02</td>
+            <td><span style="color:#e74c3c;">0.03</span></td>
+            <td>experiment_record<br/><small>v1</small></td>
+            <td>oral_note<br/><small>v1</small></td>
+            <td>口头说明优先：采用口头修正值</td>
+        </tr>
+        <tr>
+            <td>C-312</td>
+            <td><code>measured_t60_s</code></td>
+            <td>0.92</td>
+            <td><span style="color:#e74c3c;">0.98</span></td>
+            <td>experiment_record<br/><small>v1</small></td>
+            <td>oral_note<br/><small>v1</small></td>
+            <td>口头说明优先：采用口头修正值</td>
+        </tr></tbody>
+    </table>
+
+<h2>采样缺口</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr><th>房间</th><th>类型</th><th>说明</th><th>涉及字段</th><th>严重度</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>G-708</td>
+            <td>missing_field</td>
+            <td>房间 G-708 关键字段为零或缺失: measured_t60_s</td>
+            <td>measured_t60_s</td>
+            <td><span style="color:#e74c3c;">error</span></td>
+        </tr>
+        <tr>
+            <td>G-708</td>
+            <td>no_surfaces</td>
+            <td>房间 G-708 无表面数据</td>
+            <td>surfaces</td>
+            <td><span style="color:#e74c3c;">error</span></td>
+        </tr></tbody>
+    </table>
+
+<h2>坏数据</h2>
+
+    <table class="data-table">
+        <thead>
+            <tr><th>房间</th><th>字段</th><th>值</th><th>下界</th><th>上界</th><th>来源</th><th>文件</th><th>原始行</th><th>原因</th></tr>
+        </thead>
+        <tbody>
+        <tr class="bad-row">
+            <td>E-506</td>
+            <td><code>volume_m3</code></td>
+            <td style="color:#e74c3c;">-10.0</td>
+            <td>1.0</td>
+            <td>100000.0</td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>第4行</td>
+            <td>值 -10.0000 超出边界 [1.0, 100000.0]</td>
+        </tr>
+        <tr class="bad-row">
+            <td>F-607</td>
+            <td><code>surfaces.超吸声材料.absorption_coeff</code></td>
+            <td style="color:#e74c3c;">1.55</td>
+            <td>0.0</td>
+            <td>1.0</td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>第5行</td>
+            <td>值 1.5500 超出边界 [0.0, 1.0]</td>
+        </tr>
+        <tr class="bad-row">
+            <td>G-708</td>
+            <td><code>measured_t60_s</code></td>
+            <td style="color:#e74c3c;">0.0</td>
+            <td>0.05</td>
+            <td>15.0</td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>第6行</td>
+            <td>值 0.0000 超出边界 [0.05, 15.0]</td>
+        </tr></tbody>
+    </table>
+
+<h2>逐房间归因</h2>
+
+    <div class="room-section">
+        <h3>房间 A-101 <span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></h3>
+        <div class="room-meta">
+            <span>容积: <strong>125.0 m³</strong> <span style="color:#e67e22;">(原始 120.0 m³, Δ=+5.00)</span></span>
+            <span>实测 T60: <strong>1.85 s</strong></span>
+            <span>频率: <strong>1000 Hz</strong></span>
+            <span>来源: oral_note / oral_notes.json</span>
+            <span>版本: v2</span>
+            
+        </div>
+
+        <h4>表面数据</h4>
+        
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>质量</th><th>来源</th><th>文件</th><th>版本</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="">
+            <td>混凝土墙 <span style="color:#e67e22;font-size:12px;">(Δα=+0.0100)</span></td>
+            <td>80.0 m²</td>
+            <td>0.03</td>
+            <td>2.4 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>oral_note</td>
+            <td>oral_notes.json</td>
+            <td>v2</td>
+            <td>第0行</td>
+        </tr>
+        <tr class="">
+            <td>玻璃窗</td>
+            <td>12.0 m²</td>
+            <td>0.35</td>
+            <td>4.2 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第0行</td>
+        </tr>
+        <tr class="">
+            <td>木地板</td>
+            <td>40.0 m²</td>
+            <td>0.1</td>
+            <td>4.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第0行</td>
+        </tr>
+        <tr class="">
+            <td>石膏天花板</td>
+            <td>40.0 m²</td>
+            <td>0.05</td>
+            <td>2.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第0行</td>
+        </tr></tbody>
+    </table>
+
+        
+        <h4>计算结果 <span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">完全归因</span></h4>
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="result-label">计算 T60</div>
+                <div class="result-value">1.5972 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">实测 T60</div>
+                <div class="result-value">1.85 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">绝对误差</div>
+                <div class="result-value" style="color:#27ae60;">0.2528 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">相对误差</div>
+                <div class="result-value" style="color:#27ae60;">15.83 %</div>
+            </div>
+            <div class="result-card" style="background:#fdf0f0;">
+                <div class="result-label">已解释误差</div>
+                <div class="result-value">-0.0375 s</div>
+            </div>
+            <div class="result-card" style="background:#fff8e1;">
+                <div class="result-label">未解释残差</div>
+                <div class="result-value" style="color:#f39c12;">0.2903 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">容积贡献</div>
+                <div class="result-value">38.7 %</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">主导误差源</div>
+                <div class="result-value" style="font-size:14px;">表面 混凝土墙 (61.3%)</div>
+            </div>
+        </div>
+
+        <h4>中间计算过程</h4>
+        
+    <table class="data-table formula-table">
+        <thead>
+            <tr><th>#</th><th>步骤</th><th>公式</th><th>代入值</th><th>结果</th><th>备注</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>总吸声量公式</strong></td>
+            <td><code>A = Σ(αi × Si)</code></td>
+            <td>surface_count = 4</td>
+            <td><strong>0.0</strong> m²</td>
+            <td>αi=第i面吸声系数(无量纲), Si=第i面面积(m²)</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>逐面计算</strong></td>
+            <td><code>(0.03×80.0) + (0.35×12.0) + (0.1×40.0) + (0.05×40.0)</code></td>
+            <td><br/><details><summary>逐面展开</summary><table class='inner-table'><tr><th>材料</th><th>α</th><th>S (m²)</th><th>α·S (m²)</th></tr><tr><td>混凝土墙</td><td>0.03</td><td>80.0</td><td>2.4</td></tr><tr><td>玻璃窗</td><td>0.35</td><td>12.0</td><td>4.2</td></tr><tr><td>木地板</td><td>0.1</td><td>40.0</td><td>4.0</td></tr><tr><td>石膏天花板</td><td>0.05</td><td>40.0</td><td>2.0</td></tr></table></details></td>
+            <td><strong>12.6</strong> m²</td>
+            <td>总吸声量 A = 12.6000 m²</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>Sabine 公式</strong></td>
+            <td><code>T60 = k × V / A</code></td>
+            <td>k = 0.161<br/>V = 125.0<br/>A = 12.6</td>
+            <td><strong>0.0</strong> s</td>
+            <td>k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>代入计算</strong></td>
+            <td><code>T60 = 0.161 × 125.0 / 12.6</code></td>
+            <td>k = 0.161<br/>V = 125.0<br/>A = 12.6</td>
+            <td><strong>1.5972</strong> s</td>
+            <td>计算结果 T60 = 1.5972 s</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><strong>绝对误差</strong></td>
+            <td><code>ΔT60_total = T60_measured - T60_calculated</code></td>
+            <td>T60_measured = 1.85<br/>T60_calculated = 1.5972</td>
+            <td><strong>0.2528</strong> s</td>
+            <td>实测值与当前参数计算值的总偏差</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td><strong>相对误差</strong></td>
+            <td><code>δT60 = ΔT60_total / T60_calculated × 100%</code></td>
+            <td>ΔT60_total = 0.2528<br/>T60_calculated = 1.5972</td>
+            <td><strong>15.8261</strong> %</td>
+            <td>相对总误差</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td><strong>容积灵敏度</strong></td>
+            <td><code>∂T60/∂V = k / A</code></td>
+            <td>k = 0.161<br/>A = 12.6</td>
+            <td><strong>0.0128</strong> s/m³</td>
+            <td>容积每增加 1 m³，T60 增加多少秒</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td><strong>容积偏差贡献</strong></td>
+            <td><code>ΔT60_V = ∂T60/∂V × ΔV</code></td>
+            <td>∂T60/∂V = 0.012778<br/>ΔV = 5.0<br/>has_deviation = True</td>
+            <td><strong>0.0639</strong> s</td>
+            <td>容积偏差对 T60 计算值变化的贡献（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td><strong>表面吸声偏差贡献合计</strong></td>
+            <td><code>ΔT60_α = Σ(∂T60/∂αi × Δαi)</code></td>
+            <td>surface_count_with_deviation = 1<br/>total_surfaces = 4</td>
+            <td><strong>-0.1014</strong> s</td>
+            <td>有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td><strong>已解释误差</strong></td>
+            <td><code>ΔT60_explained = ΔT60_V + ΔT60_α</code></td>
+            <td>ΔT60_V = 0.063889<br/>ΔT60_α = -0.101411</td>
+            <td><strong>-0.0375</strong> s</td>
+            <td>已知参数偏差可解释的误差量（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td><strong>未解释残差</strong></td>
+            <td><code>ΔT60_unexplained = ΔT60_total - ΔT60_explained</code></td>
+            <td>ΔT60_total = 0.252778<br/>ΔT60_explained = -0.037522</td>
+            <td><strong>0.2903</strong> s</td>
+            <td>来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应</td>
+        </tr></tbody>
+    </table>
+
+        
+    <h4>已归因贡献（有实际偏差，1 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>偏差Δα</th><th>偏差来源</th><th>贡献(s)</th><th>贡献(%)</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>混凝土墙</td>
+            <td>80.0 m²</td>
+            <td>0.03</td>
+            <td>2.4 m²</td>
+            <td>0.01</td>
+            <td>oral_note</td>
+            <td style="color:#e74c3c; font-weight:600;">-0.1014 s</td>
+            <td style="font-weight:600;">61.35 %</td>
+            <td>第0行</td>
+        </tr></tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：贡献 = 偏导灵敏度 × 实际偏差；百分比按绝对值归一化（合计≈100%）
+    </p>
+
+    <h4>灵敏度参考（无实际偏差，3 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th colspan="2">偏差状态</th><th>贡献</th><th>占比</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="sens-row">
+            <td>玻璃窗</td>
+            <td>12.0 m²</td>
+            <td>0.35</td>
+            <td>4.2 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第0行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-1.5212 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0152 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>木地板</td>
+            <td>40.0 m²</td>
+            <td>0.1</td>
+            <td>4.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第0行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-5.0705 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0507 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>石膏天花板</td>
+            <td>40.0 m²</td>
+            <td>0.05</td>
+            <td>2.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第0行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-5.0705 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0507 s）
+            </td>
+        </tr></tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：无偏差的材料仅展示灵敏度，不参与贡献占比统计
+    </p>
+        
+    </div>
+    <div class="room-section">
+        <h3>房间 B-205 <span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></h3>
+        <div class="room-meta">
+            <span>容积: <strong>250.0 m³</strong></span>
+            <span>实测 T60: <strong>2.4 s</strong></span>
+            <span>频率: <strong>1000 Hz</strong></span>
+            <span>来源: experiment_record / experiment_records.json</span>
+            <span>版本: v1</span>
+            
+        </div>
+
+        <h4>表面数据</h4>
+        
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>质量</th><th>来源</th><th>文件</th><th>版本</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="">
+            <td>砖墙</td>
+            <td>100.0 m²</td>
+            <td>0.03</td>
+            <td>3.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="">
+            <td>吸声板</td>
+            <td>60.0 m²</td>
+            <td>0.75</td>
+            <td>45.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="">
+            <td>地毯</td>
+            <td>50.0 m²</td>
+            <td>0.55</td>
+            <td>27.5 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="">
+            <td>石膏天花板</td>
+            <td>50.0 m²</td>
+            <td>0.05</td>
+            <td>2.5 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第1行</td>
+        </tr></tbody>
+    </table>
+
+        
+        <h4>计算结果 <span style="background:#95a5a6;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">仅灵敏度</span></h4>
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="result-label">计算 T60</div>
+                <div class="result-value">0.516 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">实测 T60</div>
+                <div class="result-value">2.4 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">绝对误差</div>
+                <div class="result-value" style="color:#27ae60;">1.884 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">相对误差</div>
+                <div class="result-value" style="color:#27ae60;">365.09 %</div>
+            </div>
+            <div class="result-card" style="background:#e8f8f0;">
+                <div class="result-label">已解释误差</div>
+                <div class="result-value">0.0 s</div>
+            </div>
+            <div class="result-card" style="background:#fff8e1;">
+                <div class="result-label">未解释残差</div>
+                <div class="result-value" style="color:#f39c12;">1.884 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">容积贡献</div>
+                <div class="result-value">0.0 %</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">主导误差源</div>
+                <div class="result-value" style="font-size:14px;">灵敏度最高: 表面 砖墙 (0.6616 s/单位α)</div>
+            </div>
+        </div>
+
+        <h4>中间计算过程</h4>
+        
+    <table class="data-table formula-table">
+        <thead>
+            <tr><th>#</th><th>步骤</th><th>公式</th><th>代入值</th><th>结果</th><th>备注</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>总吸声量公式</strong></td>
+            <td><code>A = Σ(αi × Si)</code></td>
+            <td>surface_count = 4</td>
+            <td><strong>0.0</strong> m²</td>
+            <td>αi=第i面吸声系数(无量纲), Si=第i面面积(m²)</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>逐面计算</strong></td>
+            <td><code>(0.03×100.0) + (0.75×60.0) + (0.55×50.0) + (0.05×50.0)</code></td>
+            <td><br/><details><summary>逐面展开</summary><table class='inner-table'><tr><th>材料</th><th>α</th><th>S (m²)</th><th>α·S (m²)</th></tr><tr><td>砖墙</td><td>0.03</td><td>100.0</td><td>3.0</td></tr><tr><td>吸声板</td><td>0.75</td><td>60.0</td><td>45.0</td></tr><tr><td>地毯</td><td>0.55</td><td>50.0</td><td>27.5</td></tr><tr><td>石膏天花板</td><td>0.05</td><td>50.0</td><td>2.5</td></tr></table></details></td>
+            <td><strong>78.0</strong> m²</td>
+            <td>总吸声量 A = 78.0000 m²</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>Sabine 公式</strong></td>
+            <td><code>T60 = k × V / A</code></td>
+            <td>k = 0.161<br/>V = 250.0<br/>A = 78.0</td>
+            <td><strong>0.0</strong> s</td>
+            <td>k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>代入计算</strong></td>
+            <td><code>T60 = 0.161 × 250.0 / 78.0</code></td>
+            <td>k = 0.161<br/>V = 250.0<br/>A = 78.0</td>
+            <td><strong>0.516</strong> s</td>
+            <td>计算结果 T60 = 0.5160 s</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><strong>绝对误差</strong></td>
+            <td><code>ΔT60_total = T60_measured - T60_calculated</code></td>
+            <td>T60_measured = 2.4<br/>T60_calculated = 0.516</td>
+            <td><strong>1.884</strong> s</td>
+            <td>实测值与当前参数计算值的总偏差</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td><strong>相对误差</strong></td>
+            <td><code>δT60 = ΔT60_total / T60_calculated × 100%</code></td>
+            <td>ΔT60_total = 1.884<br/>T60_calculated = 0.516</td>
+            <td><strong>365.0932</strong> %</td>
+            <td>相对总误差</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td><strong>容积灵敏度</strong></td>
+            <td><code>∂T60/∂V = k / A</code></td>
+            <td>k = 0.161<br/>A = 78.0</td>
+            <td><strong>0.0021</strong> s/m³</td>
+            <td>容积每增加 1 m³，T60 增加多少秒</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td><strong>容积偏差贡献</strong></td>
+            <td><code>ΔT60_V = ∂T60/∂V × ΔV</code></td>
+            <td>∂T60/∂V = 0.002064<br/>ΔV = 0.0<br/>has_deviation = False</td>
+            <td><strong>0.0</strong> s</td>
+            <td>容积偏差对 T60 计算值变化的贡献（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td><strong>表面吸声偏差贡献合计</strong></td>
+            <td><code>ΔT60_α = Σ(∂T60/∂αi × Δαi)</code></td>
+            <td>surface_count_with_deviation = 0<br/>total_surfaces = 4</td>
+            <td><strong>0.0</strong> s</td>
+            <td>有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td><strong>已解释误差</strong></td>
+            <td><code>ΔT60_explained = ΔT60_V + ΔT60_α</code></td>
+            <td>ΔT60_V = 0.0<br/>ΔT60_α = 0.0</td>
+            <td><strong>0.0</strong> s</td>
+            <td>已知参数偏差可解释的误差量（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td><strong>未解释残差</strong></td>
+            <td><code>ΔT60_unexplained = ΔT60_total - ΔT60_explained</code></td>
+            <td>ΔT60_total = 1.883974<br/>ΔT60_explained = 0.0</td>
+            <td><strong>1.884</strong> s</td>
+            <td>来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应</td>
+        </tr></tbody>
+    </table>
+
+        
+    <h4>灵敏度参考（无实际偏差，4 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th colspan="2">偏差状态</th><th>贡献</th><th>占比</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="sens-row">
+            <td>砖墙</td>
+            <td>100.0 m²</td>
+            <td>0.03</td>
+            <td>3.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-0.6616 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0066 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>吸声板</td>
+            <td>60.0 m²</td>
+            <td>0.75</td>
+            <td>45.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-0.3969 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.004 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>地毯</td>
+            <td>50.0 m²</td>
+            <td>0.55</td>
+            <td>27.5 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-0.3308 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0033 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>石膏天花板</td>
+            <td>50.0 m²</td>
+            <td>0.05</td>
+            <td>2.5 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-0.3308 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0033 s）
+            </td>
+        </tr></tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：无偏差的材料仅展示灵敏度，不参与贡献占比统计
+    </p>
+        
+    </div>
+    <div class="room-section">
+        <h3>房间 C-312 <span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></h3>
+        <div class="room-meta">
+            <span>容积: <strong>85.0 m³</strong></span>
+            <span>实测 T60: <strong>0.98 s</strong> <span style="color:#e67e22;">(原始 0.92 s, Δ=+0.060)</span></span>
+            <span>频率: <strong>500 Hz</strong></span>
+            <span>来源: experiment_record / experiment_records.json</span>
+            <span>版本: v1</span>
+            
+        </div>
+
+        <h4>表面数据</h4>
+        
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>质量</th><th>来源</th><th>文件</th><th>版本</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="">
+            <td>混凝土墙</td>
+            <td>55.0 m²</td>
+            <td>0.02</td>
+            <td>1.1 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第2行</td>
+        </tr>
+        <tr class="">
+            <td>布帘</td>
+            <td>20.0 m²</td>
+            <td>0.45</td>
+            <td>9.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第2行</td>
+        </tr>
+        <tr class="">
+            <td>木地板</td>
+            <td>28.0 m²</td>
+            <td>0.1</td>
+            <td>2.8 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第2行</td>
+        </tr></tbody>
+    </table>
+
+        
+        <h4>计算结果 <span style="background:#95a5a6;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">仅灵敏度</span></h4>
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="result-label">计算 T60</div>
+                <div class="result-value">1.0609 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">实测 T60</div>
+                <div class="result-value">0.98 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">绝对误差</div>
+                <div class="result-value" style="color:#e74c3c;">-0.0809 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">相对误差</div>
+                <div class="result-value" style="color:#e74c3c;">-7.62 %</div>
+            </div>
+            <div class="result-card" style="background:#e8f8f0;">
+                <div class="result-label">已解释误差</div>
+                <div class="result-value">0.0 s</div>
+            </div>
+            <div class="result-card" style="background:#fff8e1;">
+                <div class="result-label">未解释残差</div>
+                <div class="result-value" style="color:#f39c12;">-0.0809 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">容积贡献</div>
+                <div class="result-value">0.0 %</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">主导误差源</div>
+                <div class="result-value" style="font-size:14px;">灵敏度最高: 表面 混凝土墙 (4.5230 s/单位α)</div>
+            </div>
+        </div>
+
+        <h4>中间计算过程</h4>
+        
+    <table class="data-table formula-table">
+        <thead>
+            <tr><th>#</th><th>步骤</th><th>公式</th><th>代入值</th><th>结果</th><th>备注</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>总吸声量公式</strong></td>
+            <td><code>A = Σ(αi × Si)</code></td>
+            <td>surface_count = 3</td>
+            <td><strong>0.0</strong> m²</td>
+            <td>αi=第i面吸声系数(无量纲), Si=第i面面积(m²)</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>逐面计算</strong></td>
+            <td><code>(0.02×55.0) + (0.45×20.0) + (0.1×28.0)</code></td>
+            <td><br/><details><summary>逐面展开</summary><table class='inner-table'><tr><th>材料</th><th>α</th><th>S (m²)</th><th>α·S (m²)</th></tr><tr><td>混凝土墙</td><td>0.02</td><td>55.0</td><td>1.1</td></tr><tr><td>布帘</td><td>0.45</td><td>20.0</td><td>9.0</td></tr><tr><td>木地板</td><td>0.1</td><td>28.0</td><td>2.8</td></tr></table></details></td>
+            <td><strong>12.9</strong> m²</td>
+            <td>总吸声量 A = 12.9000 m²</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>Sabine 公式</strong></td>
+            <td><code>T60 = k × V / A</code></td>
+            <td>k = 0.161<br/>V = 85.0<br/>A = 12.9</td>
+            <td><strong>0.0</strong> s</td>
+            <td>k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>代入计算</strong></td>
+            <td><code>T60 = 0.161 × 85.0 / 12.9</code></td>
+            <td>k = 0.161<br/>V = 85.0<br/>A = 12.9</td>
+            <td><strong>1.0609</strong> s</td>
+            <td>计算结果 T60 = 1.0609 s</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><strong>绝对误差</strong></td>
+            <td><code>ΔT60_total = T60_measured - T60_calculated</code></td>
+            <td>T60_measured = 0.98<br/>T60_calculated = 1.0609</td>
+            <td><strong>-0.0809</strong> s</td>
+            <td>实测值与当前参数计算值的总偏差</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td><strong>相对误差</strong></td>
+            <td><code>δT60 = ΔT60_total / T60_calculated × 100%</code></td>
+            <td>ΔT60_total = -0.0809<br/>T60_calculated = 1.0609</td>
+            <td><strong>-7.6215</strong> %</td>
+            <td>相对总误差</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td><strong>容积灵敏度</strong></td>
+            <td><code>∂T60/∂V = k / A</code></td>
+            <td>k = 0.161<br/>A = 12.9</td>
+            <td><strong>0.0125</strong> s/m³</td>
+            <td>容积每增加 1 m³，T60 增加多少秒</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td><strong>容积偏差贡献</strong></td>
+            <td><code>ΔT60_V = ∂T60/∂V × ΔV</code></td>
+            <td>∂T60/∂V = 0.012481<br/>ΔV = 0.0<br/>has_deviation = False</td>
+            <td><strong>0.0</strong> s</td>
+            <td>容积偏差对 T60 计算值变化的贡献（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td><strong>表面吸声偏差贡献合计</strong></td>
+            <td><code>ΔT60_α = Σ(∂T60/∂αi × Δαi)</code></td>
+            <td>surface_count_with_deviation = 0<br/>total_surfaces = 3</td>
+            <td><strong>0.0</strong> s</td>
+            <td>有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td><strong>已解释误差</strong></td>
+            <td><code>ΔT60_explained = ΔT60_V + ΔT60_α</code></td>
+            <td>ΔT60_V = 0.0<br/>ΔT60_α = 0.0</td>
+            <td><strong>0.0</strong> s</td>
+            <td>已知参数偏差可解释的误差量（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td><strong>未解释残差</strong></td>
+            <td><code>ΔT60_unexplained = ΔT60_total - ΔT60_explained</code></td>
+            <td>ΔT60_total = -0.080853<br/>ΔT60_explained = 0.0</td>
+            <td><strong>-0.0809</strong> s</td>
+            <td>来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应</td>
+        </tr></tbody>
+    </table>
+
+        
+    <h4>灵敏度参考（无实际偏差，3 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th colspan="2">偏差状态</th><th>贡献</th><th>占比</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="sens-row">
+            <td>混凝土墙</td>
+            <td>55.0 m²</td>
+            <td>0.02</td>
+            <td>1.1 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第2行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-4.523 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0452 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>布帘</td>
+            <td>20.0 m²</td>
+            <td>0.45</td>
+            <td>9.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第2行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-1.6447 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0164 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>木地板</td>
+            <td>28.0 m²</td>
+            <td>0.1</td>
+            <td>2.8 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第2行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-2.3026 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.023 s）
+            </td>
+        </tr></tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：无偏差的材料仅展示灵敏度，不参与贡献占比统计
+    </p>
+        
+    </div>
+    <div class="room-section">
+        <h3>房间 D-404 <span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></h3>
+        <div class="room-meta">
+            <span>容积: <strong>500.0 m³</strong></span>
+            <span>实测 T60: <strong>3.8 s</strong></span>
+            <span>频率: <strong>1000 Hz</strong></span>
+            <span>来源: experiment_record / experiment_records.json</span>
+            <span>版本: v1</span>
+            
+        </div>
+
+        <h4>表面数据</h4>
+        
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>质量</th><th>来源</th><th>文件</th><th>版本</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="">
+            <td>混凝土墙</td>
+            <td>150.0 m²</td>
+            <td>0.02</td>
+            <td>3.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第3行</td>
+        </tr>
+        <tr class="">
+            <td>玻璃窗</td>
+            <td>30.0 m²</td>
+            <td>0.35</td>
+            <td>10.5 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第3行</td>
+        </tr>
+        <tr class="">
+            <td>木地板</td>
+            <td>100.0 m²</td>
+            <td>0.1</td>
+            <td>10.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第3行</td>
+        </tr>
+        <tr class="">
+            <td>石膏天花板</td>
+            <td>100.0 m²</td>
+            <td>0.05</td>
+            <td>5.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第3行</td>
+        </tr></tbody>
+    </table>
+
+        
+        <h4>计算结果 <span style="background:#95a5a6;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">仅灵敏度</span></h4>
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="result-label">计算 T60</div>
+                <div class="result-value">2.8246 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">实测 T60</div>
+                <div class="result-value">3.8 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">绝对误差</div>
+                <div class="result-value" style="color:#27ae60;">0.9754 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">相对误差</div>
+                <div class="result-value" style="color:#27ae60;">34.53 %</div>
+            </div>
+            <div class="result-card" style="background:#e8f8f0;">
+                <div class="result-label">已解释误差</div>
+                <div class="result-value">0.0 s</div>
+            </div>
+            <div class="result-card" style="background:#fff8e1;">
+                <div class="result-label">未解释残差</div>
+                <div class="result-value" style="color:#f39c12;">0.9754 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">容积贡献</div>
+                <div class="result-value">0.0 %</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">主导误差源</div>
+                <div class="result-value" style="font-size:14px;">灵敏度最高: 表面 混凝土墙 (14.8661 s/单位α)</div>
+            </div>
+        </div>
+
+        <h4>中间计算过程</h4>
+        
+    <table class="data-table formula-table">
+        <thead>
+            <tr><th>#</th><th>步骤</th><th>公式</th><th>代入值</th><th>结果</th><th>备注</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>总吸声量公式</strong></td>
+            <td><code>A = Σ(αi × Si)</code></td>
+            <td>surface_count = 4</td>
+            <td><strong>0.0</strong> m²</td>
+            <td>αi=第i面吸声系数(无量纲), Si=第i面面积(m²)</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>逐面计算</strong></td>
+            <td><code>(0.02×150.0) + (0.35×30.0) + (0.1×100.0) + (0.05×100.0)</code></td>
+            <td><br/><details><summary>逐面展开</summary><table class='inner-table'><tr><th>材料</th><th>α</th><th>S (m²)</th><th>α·S (m²)</th></tr><tr><td>混凝土墙</td><td>0.02</td><td>150.0</td><td>3.0</td></tr><tr><td>玻璃窗</td><td>0.35</td><td>30.0</td><td>10.5</td></tr><tr><td>木地板</td><td>0.1</td><td>100.0</td><td>10.0</td></tr><tr><td>石膏天花板</td><td>0.05</td><td>100.0</td><td>5.0</td></tr></table></details></td>
+            <td><strong>28.5</strong> m²</td>
+            <td>总吸声量 A = 28.5000 m²</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>Sabine 公式</strong></td>
+            <td><code>T60 = k × V / A</code></td>
+            <td>k = 0.161<br/>V = 500.0<br/>A = 28.5</td>
+            <td><strong>0.0</strong> s</td>
+            <td>k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>代入计算</strong></td>
+            <td><code>T60 = 0.161 × 500.0 / 28.5</code></td>
+            <td>k = 0.161<br/>V = 500.0<br/>A = 28.5</td>
+            <td><strong>2.8246</strong> s</td>
+            <td>计算结果 T60 = 2.8246 s</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><strong>绝对误差</strong></td>
+            <td><code>ΔT60_total = T60_measured - T60_calculated</code></td>
+            <td>T60_measured = 3.8<br/>T60_calculated = 2.8246</td>
+            <td><strong>0.9754</strong> s</td>
+            <td>实测值与当前参数计算值的总偏差</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td><strong>相对误差</strong></td>
+            <td><code>δT60 = ΔT60_total / T60_calculated × 100%</code></td>
+            <td>ΔT60_total = 0.9754<br/>T60_calculated = 2.8246</td>
+            <td><strong>34.5342</strong> %</td>
+            <td>相对总误差</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td><strong>容积灵敏度</strong></td>
+            <td><code>∂T60/∂V = k / A</code></td>
+            <td>k = 0.161<br/>A = 28.5</td>
+            <td><strong>0.0056</strong> s/m³</td>
+            <td>容积每增加 1 m³，T60 增加多少秒</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td><strong>容积偏差贡献</strong></td>
+            <td><code>ΔT60_V = ∂T60/∂V × ΔV</code></td>
+            <td>∂T60/∂V = 0.005649<br/>ΔV = 0.0<br/>has_deviation = False</td>
+            <td><strong>0.0</strong> s</td>
+            <td>容积偏差对 T60 计算值变化的贡献（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td><strong>表面吸声偏差贡献合计</strong></td>
+            <td><code>ΔT60_α = Σ(∂T60/∂αi × Δαi)</code></td>
+            <td>surface_count_with_deviation = 0<br/>total_surfaces = 4</td>
+            <td><strong>0.0</strong> s</td>
+            <td>有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td><strong>已解释误差</strong></td>
+            <td><code>ΔT60_explained = ΔT60_V + ΔT60_α</code></td>
+            <td>ΔT60_V = 0.0<br/>ΔT60_α = 0.0</td>
+            <td><strong>0.0</strong> s</td>
+            <td>已知参数偏差可解释的误差量（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td><strong>未解释残差</strong></td>
+            <td><code>ΔT60_unexplained = ΔT60_total - ΔT60_explained</code></td>
+            <td>ΔT60_total = 0.975439<br/>ΔT60_explained = 0.0</td>
+            <td><strong>0.9754</strong> s</td>
+            <td>来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应</td>
+        </tr></tbody>
+    </table>
+
+        
+    <h4>灵敏度参考（无实际偏差，4 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th colspan="2">偏差状态</th><th>贡献</th><th>占比</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="sens-row">
+            <td>混凝土墙</td>
+            <td>150.0 m²</td>
+            <td>0.02</td>
+            <td>3.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第3行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-14.8661 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.1487 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>玻璃窗</td>
+            <td>30.0 m²</td>
+            <td>0.35</td>
+            <td>10.5 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第3行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-2.9732 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0297 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>木地板</td>
+            <td>100.0 m²</td>
+            <td>0.1</td>
+            <td>10.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第3行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-9.9107 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0991 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>石膏天花板</td>
+            <td>100.0 m²</td>
+            <td>0.05</td>
+            <td>5.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第3行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-9.9107 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0991 s）
+            </td>
+        </tr></tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：无偏差的材料仅展示灵敏度，不参与贡献占比统计
+    </p>
+        
+    </div>
+    <div class="room-section">
+        <h3>房间 E-506 <span style="background:#e74c3c;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">坏数据</span></h3>
+        <div class="room-meta">
+            <span>容积: <strong>-10.0 m³</strong></span>
+            <span>实测 T60: <strong>1.2 s</strong></span>
+            <span>频率: <strong>1000 Hz</strong></span>
+            <span>来源: experiment_record / experiment_records.json</span>
+            <span>版本: v1</span>
+            <span style="color:#e74c3c;">值 -10.0000 超出边界 [1.0, 100000.0]</span>
+        </div>
+
+        <h4>表面数据</h4>
+        
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>质量</th><th>来源</th><th>文件</th><th>版本</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="">
+            <td>混凝土墙</td>
+            <td>60.0 m²</td>
+            <td>0.02</td>
+            <td>1.2 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第4行</td>
+        </tr>
+        <tr class="">
+            <td>木地板</td>
+            <td>25.0 m²</td>
+            <td>0.1</td>
+            <td>2.5 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第4行</td>
+        </tr></tbody>
+    </table>
+
+        
+        <div class="alert alert-error">
+            该房间数据质量不合格，无法进行误差归因计算。原因：值 -10.0000 超出边界 [1.0, 100000.0]
+        </div>
+    </div>
+    <div class="room-section">
+        <h3>房间 F-607 <span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></h3>
+        <div class="room-meta">
+            <span>容积: <strong>180.0 m³</strong></span>
+            <span>实测 T60: <strong>1.55 s</strong></span>
+            <span>频率: <strong>2000 Hz</strong></span>
+            <span>来源: experiment_record / experiment_records.json</span>
+            <span>版本: v1</span>
+            
+        </div>
+
+        <h4>表面数据</h4>
+        
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>质量</th><th>来源</th><th>文件</th><th>版本</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="">
+            <td>混凝土墙</td>
+            <td>90.0 m²</td>
+            <td>0.02</td>
+            <td>1.8 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第5行</td>
+        </tr>
+        <tr class="bad-row">
+            <td>超吸声材料</td>
+            <td>30.0 m²</td>
+            <td>1.55</td>
+            <td>46.5 m²</td>
+            <td><span style="background:#e74c3c;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">坏数据</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第5行</td>
+        </tr>
+        <tr class="">
+            <td>木地板</td>
+            <td>50.0 m²</td>
+            <td>0.1</td>
+            <td>5.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>experiment_record</td>
+            <td>experiment_records.json</td>
+            <td>v1</td>
+            <td>第5行</td>
+        </tr></tbody>
+    </table>
+
+        
+        <h4>计算结果 <span style="background:#95a5a6;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">仅灵敏度</span></h4>
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="result-label">计算 T60</div>
+                <div class="result-value">4.2618 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">实测 T60</div>
+                <div class="result-value">1.55 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">绝对误差</div>
+                <div class="result-value" style="color:#e74c3c;">-2.7118 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">相对误差</div>
+                <div class="result-value" style="color:#e74c3c;">-63.63 %</div>
+            </div>
+            <div class="result-card" style="background:#e8f8f0;">
+                <div class="result-label">已解释误差</div>
+                <div class="result-value">0.0 s</div>
+            </div>
+            <div class="result-card" style="background:#fff8e1;">
+                <div class="result-label">未解释残差</div>
+                <div class="result-value" style="color:#f39c12;">-2.7118 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">容积贡献</div>
+                <div class="result-value">0.0 %</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">主导误差源</div>
+                <div class="result-value" style="font-size:14px;">灵敏度最高: 表面 混凝土墙 (56.4057 s/单位α)</div>
+            </div>
+        </div>
+
+        <h4>中间计算过程</h4>
+        
+    <table class="data-table formula-table">
+        <thead>
+            <tr><th>#</th><th>步骤</th><th>公式</th><th>代入值</th><th>结果</th><th>备注</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>总吸声量公式</strong></td>
+            <td><code>A = Σ(αi × Si)</code></td>
+            <td>surface_count = 2</td>
+            <td><strong>0.0</strong> m²</td>
+            <td>αi=第i面吸声系数(无量纲), Si=第i面面积(m²)</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>逐面计算</strong></td>
+            <td><code>(0.02×90.0) + (0.1×50.0)</code></td>
+            <td><br/><details><summary>逐面展开</summary><table class='inner-table'><tr><th>材料</th><th>α</th><th>S (m²)</th><th>α·S (m²)</th></tr><tr><td>混凝土墙</td><td>0.02</td><td>90.0</td><td>1.8</td></tr><tr><td>木地板</td><td>0.1</td><td>50.0</td><td>5.0</td></tr></table></details></td>
+            <td><strong>6.8</strong> m²</td>
+            <td>总吸声量 A = 6.8000 m²</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>Sabine 公式</strong></td>
+            <td><code>T60 = k × V / A</code></td>
+            <td>k = 0.161<br/>V = 180.0<br/>A = 6.8</td>
+            <td><strong>0.0</strong> s</td>
+            <td>k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>代入计算</strong></td>
+            <td><code>T60 = 0.161 × 180.0 / 6.8</code></td>
+            <td>k = 0.161<br/>V = 180.0<br/>A = 6.8</td>
+            <td><strong>4.2618</strong> s</td>
+            <td>计算结果 T60 = 4.2618 s</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><strong>绝对误差</strong></td>
+            <td><code>ΔT60_total = T60_measured - T60_calculated</code></td>
+            <td>T60_measured = 1.55<br/>T60_calculated = 4.2618</td>
+            <td><strong>-2.7118</strong> s</td>
+            <td>实测值与当前参数计算值的总偏差</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td><strong>相对误差</strong></td>
+            <td><code>δT60 = ΔT60_total / T60_calculated × 100%</code></td>
+            <td>ΔT60_total = -2.7118<br/>T60_calculated = 4.2618</td>
+            <td><strong>-63.6301</strong> %</td>
+            <td>相对总误差</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td><strong>容积灵敏度</strong></td>
+            <td><code>∂T60/∂V = k / A</code></td>
+            <td>k = 0.161<br/>A = 6.8</td>
+            <td><strong>0.0237</strong> s/m³</td>
+            <td>容积每增加 1 m³，T60 增加多少秒</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td><strong>容积偏差贡献</strong></td>
+            <td><code>ΔT60_V = ∂T60/∂V × ΔV</code></td>
+            <td>∂T60/∂V = 0.023676<br/>ΔV = 0.0<br/>has_deviation = False</td>
+            <td><strong>0.0</strong> s</td>
+            <td>容积偏差对 T60 计算值变化的贡献（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td><strong>表面吸声偏差贡献合计</strong></td>
+            <td><code>ΔT60_α = Σ(∂T60/∂αi × Δαi)</code></td>
+            <td>surface_count_with_deviation = 0<br/>total_surfaces = 2</td>
+            <td><strong>0.0</strong> s</td>
+            <td>有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td><strong>已解释误差</strong></td>
+            <td><code>ΔT60_explained = ΔT60_V + ΔT60_α</code></td>
+            <td>ΔT60_V = 0.0<br/>ΔT60_α = 0.0</td>
+            <td><strong>0.0</strong> s</td>
+            <td>已知参数偏差可解释的误差量（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td><strong>未解释残差</strong></td>
+            <td><code>ΔT60_unexplained = ΔT60_total - ΔT60_explained</code></td>
+            <td>ΔT60_total = -2.711765<br/>ΔT60_explained = 0.0</td>
+            <td><strong>-2.7118</strong> s</td>
+            <td>来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应</td>
+        </tr></tbody>
+    </table>
+
+        
+    <h4>灵敏度参考（无实际偏差，2 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th colspan="2">偏差状态</th><th>贡献</th><th>占比</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="sens-row">
+            <td>混凝土墙</td>
+            <td>90.0 m²</td>
+            <td>0.02</td>
+            <td>1.8 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第5行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-56.4057 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.5641 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>木地板</td>
+            <td>50.0 m²</td>
+            <td>0.1</td>
+            <td>5.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第5行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-31.3365 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.3134 s）
+            </td>
+        </tr></tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：无偏差的材料仅展示灵敏度，不参与贡献占比统计
+    </p>
+        
+    </div>
+    <div class="room-section">
+        <h3>房间 G-708 <span style="background:#e74c3c;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">坏数据</span></h3>
+        <div class="room-meta">
+            <span>容积: <strong>300.0 m³</strong></span>
+            <span>实测 T60: <strong>0.0 s</strong></span>
+            <span>频率: <strong>1000 Hz</strong></span>
+            <span>来源: experiment_record / experiment_records.json</span>
+            <span>版本: v1</span>
+            <span style="color:#e74c3c;">有效总吸声量为零或负值，无法计算混响时间</span>
+        </div>
+
+        <h4>表面数据</h4>
+        
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>质量</th><th>来源</th><th>文件</th><th>版本</th><th>原始行</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+        
+        <div class="alert alert-error">
+            该房间数据质量不合格，无法进行误差归因计算。原因：有效总吸声量为零或负值，无法计算混响时间
+        </div>
+    </div>
+    <div class="room-section">
+        <h3>房间 H-901 <span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></h3>
+        <div class="room-meta">
+            <span>容积: <strong>60.0 m³</strong></span>
+            <span>实测 T60: <strong>1.1 s</strong></span>
+            <span>频率: <strong>1000 Hz</strong></span>
+            <span>来源: late_attachment / late_attachment.json</span>
+            <span>版本: v1</span>
+            
+        </div>
+
+        <h4>表面数据</h4>
+        
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th>质量</th><th>来源</th><th>文件</th><th>版本</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="">
+            <td>混凝土墙</td>
+            <td>45.0 m²</td>
+            <td>0.02</td>
+            <td>0.9 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>late_attachment</td>
+            <td>late_attachment.json</td>
+            <td>v1</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="">
+            <td>木地板</td>
+            <td>20.0 m²</td>
+            <td>0.1</td>
+            <td>2.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>late_attachment</td>
+            <td>late_attachment.json</td>
+            <td>v1</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="">
+            <td>吸声天花板</td>
+            <td>20.0 m²</td>
+            <td>0.7</td>
+            <td>14.0 m²</td>
+            <td><span style="background:#27ae60;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">正常</span></td>
+            <td>late_attachment</td>
+            <td>late_attachment.json</td>
+            <td>v1</td>
+            <td>第1行</td>
+        </tr></tbody>
+    </table>
+
+        
+        <h4>计算结果 <span style="background:#95a5a6;color:#fff;padding:2px 8px;border-radius:3px;font-size:12px;">仅灵敏度</span></h4>
+        <div class="result-grid">
+            <div class="result-card">
+                <div class="result-label">计算 T60</div>
+                <div class="result-value">0.5716 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">实测 T60</div>
+                <div class="result-value">1.1 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">绝对误差</div>
+                <div class="result-value" style="color:#27ae60;">0.5284 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">相对误差</div>
+                <div class="result-value" style="color:#27ae60;">92.44 %</div>
+            </div>
+            <div class="result-card" style="background:#e8f8f0;">
+                <div class="result-label">已解释误差</div>
+                <div class="result-value">0.0 s</div>
+            </div>
+            <div class="result-card" style="background:#fff8e1;">
+                <div class="result-label">未解释残差</div>
+                <div class="result-value" style="color:#f39c12;">0.5284 s</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">容积贡献</div>
+                <div class="result-value">0.0 %</div>
+            </div>
+            <div class="result-card">
+                <div class="result-label">主导误差源</div>
+                <div class="result-value" style="font-size:14px;">灵敏度最高: 表面 混凝土墙 (1.5220 s/单位α)</div>
+            </div>
+        </div>
+
+        <h4>中间计算过程</h4>
+        
+    <table class="data-table formula-table">
+        <thead>
+            <tr><th>#</th><th>步骤</th><th>公式</th><th>代入值</th><th>结果</th><th>备注</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>1</td>
+            <td><strong>总吸声量公式</strong></td>
+            <td><code>A = Σ(αi × Si)</code></td>
+            <td>surface_count = 3</td>
+            <td><strong>0.0</strong> m²</td>
+            <td>αi=第i面吸声系数(无量纲), Si=第i面面积(m²)</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td><strong>逐面计算</strong></td>
+            <td><code>(0.02×45.0) + (0.1×20.0) + (0.7×20.0)</code></td>
+            <td><br/><details><summary>逐面展开</summary><table class='inner-table'><tr><th>材料</th><th>α</th><th>S (m²)</th><th>α·S (m²)</th></tr><tr><td>混凝土墙</td><td>0.02</td><td>45.0</td><td>0.9</td></tr><tr><td>木地板</td><td>0.1</td><td>20.0</td><td>2.0</td></tr><tr><td>吸声天花板</td><td>0.7</td><td>20.0</td><td>14.0</td></tr></table></details></td>
+            <td><strong>16.9</strong> m²</td>
+            <td>总吸声量 A = 16.9000 m²</td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td><strong>Sabine 公式</strong></td>
+            <td><code>T60 = k × V / A</code></td>
+            <td>k = 0.161<br/>V = 60.0<br/>A = 16.9</td>
+            <td><strong>0.0</strong> s</td>
+            <td>k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td><strong>代入计算</strong></td>
+            <td><code>T60 = 0.161 × 60.0 / 16.9</code></td>
+            <td>k = 0.161<br/>V = 60.0<br/>A = 16.9</td>
+            <td><strong>0.5716</strong> s</td>
+            <td>计算结果 T60 = 0.5716 s</td>
+        </tr>
+        <tr>
+            <td>5</td>
+            <td><strong>绝对误差</strong></td>
+            <td><code>ΔT60_total = T60_measured - T60_calculated</code></td>
+            <td>T60_measured = 1.1<br/>T60_calculated = 0.5716</td>
+            <td><strong>0.5284</strong> s</td>
+            <td>实测值与当前参数计算值的总偏差</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td><strong>相对误差</strong></td>
+            <td><code>δT60 = ΔT60_total / T60_calculated × 100%</code></td>
+            <td>ΔT60_total = 0.5284<br/>T60_calculated = 0.5716</td>
+            <td><strong>92.4431</strong> %</td>
+            <td>相对总误差</td>
+        </tr>
+        <tr>
+            <td>7</td>
+            <td><strong>容积灵敏度</strong></td>
+            <td><code>∂T60/∂V = k / A</code></td>
+            <td>k = 0.161<br/>A = 16.9</td>
+            <td><strong>0.0095</strong> s/m³</td>
+            <td>容积每增加 1 m³，T60 增加多少秒</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td><strong>容积偏差贡献</strong></td>
+            <td><code>ΔT60_V = ∂T60/∂V × ΔV</code></td>
+            <td>∂T60/∂V = 0.009527<br/>ΔV = 0.0<br/>has_deviation = False</td>
+            <td><strong>0.0</strong> s</td>
+            <td>容积偏差对 T60 计算值变化的贡献（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td><strong>表面吸声偏差贡献合计</strong></td>
+            <td><code>ΔT60_α = Σ(∂T60/∂αi × Δαi)</code></td>
+            <td>surface_count_with_deviation = 0<br/>total_surfaces = 3</td>
+            <td><strong>0.0</strong> s</td>
+            <td>有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>10</td>
+            <td><strong>已解释误差</strong></td>
+            <td><code>ΔT60_explained = ΔT60_V + ΔT60_α</code></td>
+            <td>ΔT60_V = 0.0<br/>ΔT60_α = 0.0</td>
+            <td><strong>0.0</strong> s</td>
+            <td>已知参数偏差可解释的误差量（一阶近似）</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td><strong>未解释残差</strong></td>
+            <td><code>ΔT60_unexplained = ΔT60_total - ΔT60_explained</code></td>
+            <td>ΔT60_total = 0.528402<br/>ΔT60_explained = 0.0</td>
+            <td><strong>0.5284</strong> s</td>
+            <td>来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应</td>
+        </tr></tbody>
+    </table>
+
+        
+    <h4>灵敏度参考（无实际偏差，3 项）</h4>
+    <table class="data-table">
+        <thead>
+            <tr><th>材料</th><th>面积</th><th>吸声系数</th><th>吸声量</th><th colspan="2">偏差状态</th><th>贡献</th><th>占比</th><th>原始行</th></tr>
+        </thead>
+        <tbody>
+        <tr class="sens-row">
+            <td>混凝土墙</td>
+            <td>45.0 m²</td>
+            <td>0.02</td>
+            <td>0.9 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-1.522 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0152 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>木地板</td>
+            <td>20.0 m²</td>
+            <td>0.1</td>
+            <td>2.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-0.6764 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0068 s）
+            </td>
+        </tr>
+        <tr class="sens-row">
+            <td>吸声天花板</td>
+            <td>20.0 m²</td>
+            <td>0.7</td>
+            <td>14.0 m²</td>
+            <td colspan="2" style="color:#95a5a6; text-align:center;">无偏差</td>
+            <td style="color:#95a5a6;">—</td>
+            <td style="color:#95a5a6;">—</td>
+            <td>第1行</td>
+        </tr>
+        <tr class="sens-detail">
+            <td colspan="9" style="padding-left: 30px; background: #f8f9fa; font-size: 12px;">
+                灵敏度: <strong>-0.6764 s/单位α</strong>
+                （吸声系数每变 0.01，T60 变 0.0068 s）
+            </td>
+        </tr></tbody>
+    </table>
+    <p style="font-size:12px;color:#6c757d;margin-top:-8px;">
+    注：无偏差的材料仅展示灵敏度，不参与贡献占比统计
+    </p>
+        
+    </div>
+
+
+    <h3>交付说明</h3>
+    <div class="delivery-note">
+        <p><strong>处理对象：</strong>声学混响误差归因</p>
+        <p><strong>处理时间：</strong>2026-06-17T16:01:20.490597</p>
+        <p><strong>处理模式：</strong>
+            完全归因 1 间（有实际偏差可分解），
+            仅灵敏度 5 间（无偏差，仅展示灵敏度参考）
+        </p>
+        <p><strong>材料构成：</strong></p>
+        <table class="data-table">
+            <thead><tr><th>来源类型</th><th>数据条数</th></tr></thead>
+            <tbody><tr><td>oral_note</td><td>2</td></tr><tr><td>experiment_record</td><td>25</td></tr><tr><td>late_attachment</td><td>4</td></tr></tbody>
+        </table>
+        <p><strong>口径变更：</strong>有（涉及来源: late_attachment, experiment_record, oral_note）</p>
+        <p><strong>坏数据隔离：</strong>3 条坏数据已标记并排除出计算，详见"坏数据"章节的原始行引用</p>
+        <p><strong>采样缺口：</strong>2 处，详见"采样缺口"章节</p>
+        <p><strong>归因口径：</strong></p>
+        <ul style="margin-left: 20px; margin-bottom: 10px;">
+            <li>有实际偏差的参数：贡献 = 偏导灵敏度 × 实际偏差，按绝对值归一化（合计≈100%）</li>
+            <li>无实际偏差的参数：仅展示灵敏度（单位参数变化对 T60 的影响量）</li>
+            <li>已解释误差 = 容积偏差贡献 + 表面吸声偏差贡献之和（一阶近似）</li>
+            <li>未解释残差 = 总绝对误差 - 已解释误差（含测量误差、模型假设、非线性交互）</li>
+        </ul>
+        <p><strong>对齐方式：</strong>实验记录 → 处理记录 → 页面摘要，三者按 room_id 一一对应；口径变更的房间/表面在溯源表中标注来源和版本号</p>
+    </div>
+</div>
+</body>
+</html>

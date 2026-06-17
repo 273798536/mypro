@@ -100,7 +100,7 @@ def validate_room(room: RoomData) -> list[BadDataRef]:
     if room.volume_m3 > 0:
         total_a = sum(s.absorption_area for s in room.surfaces if s.quality != DataQuality.BAD)
         if total_a <= 0:
-            room.quality = DataQuality.BAD if room.quality == DataQuality.OK else room.quality
+            room.quality = DataQuality.BAD
             room.quality_reason = "有效总吸声量为零或负值，无法计算混响时间"
 
     return bad_refs

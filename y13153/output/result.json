@@ -1,0 +1,1944 @@
+{
+  "timestamp": "2026-06-17T16:01:20.490597",
+  "rooms": [
+    {
+      "room_id": "A-101",
+      "volume_m3": 125.0,
+      "measured_t60_s": 1.85,
+      "original_volume_m3": 120.0,
+      "original_measured_t60_s": 1.85,
+      "delta_volume": 5.0,
+      "delta_t60": 0.0,
+      "has_volume_deviation": true,
+      "has_t60_deviation": false,
+      "frequency_hz": 1000,
+      "total_absorption_m2": 12.6,
+      "effective_surface_count": 4,
+      "surface_count_total": 4,
+      "source": "oral_note",
+      "source_file": "oral_notes.json",
+      "version": 2,
+      "quality": "ok",
+      "quality_reason": "",
+      "original_row": 0,
+      "surfaces": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 80.0,
+          "absorption_coeff": 0.03,
+          "original_area_m2": 80.0,
+          "original_absorption_coeff": 0.02,
+          "absorption_area_m2": 2.4,
+          "delta_coeff": 0.01,
+          "delta_area": 0.0,
+          "has_deviation": true,
+          "source": "oral_note",
+          "source_file": "oral_notes.json",
+          "version": 2,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 0
+        },
+        {
+          "material_name": "玻璃窗",
+          "area_m2": 12.0,
+          "absorption_coeff": 0.35,
+          "original_area_m2": 12.0,
+          "original_absorption_coeff": 0.35,
+          "absorption_area_m2": 4.199999999999999,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 0
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 40.0,
+          "absorption_coeff": 0.1,
+          "original_area_m2": 40.0,
+          "original_absorption_coeff": 0.1,
+          "absorption_area_m2": 4.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 0
+        },
+        {
+          "material_name": "石膏天花板",
+          "area_m2": 40.0,
+          "absorption_coeff": 0.05,
+          "original_area_m2": 40.0,
+          "original_absorption_coeff": 0.05,
+          "absorption_area_m2": 2.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 0
+        }
+      ]
+    },
+    {
+      "room_id": "B-205",
+      "volume_m3": 250.0,
+      "measured_t60_s": 2.4,
+      "original_volume_m3": 250.0,
+      "original_measured_t60_s": 2.4,
+      "delta_volume": 0.0,
+      "delta_t60": 0.0,
+      "has_volume_deviation": false,
+      "has_t60_deviation": false,
+      "frequency_hz": 1000,
+      "total_absorption_m2": 78.0,
+      "effective_surface_count": 4,
+      "surface_count_total": 4,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "version": 1,
+      "quality": "ok",
+      "quality_reason": "",
+      "original_row": 1,
+      "surfaces": [
+        {
+          "material_name": "砖墙",
+          "area_m2": 100.0,
+          "absorption_coeff": 0.03,
+          "original_area_m2": 100.0,
+          "original_absorption_coeff": 0.03,
+          "absorption_area_m2": 3.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 1
+        },
+        {
+          "material_name": "吸声板",
+          "area_m2": 60.0,
+          "absorption_coeff": 0.75,
+          "original_area_m2": 60.0,
+          "original_absorption_coeff": 0.75,
+          "absorption_area_m2": 45.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 1
+        },
+        {
+          "material_name": "地毯",
+          "area_m2": 50.0,
+          "absorption_coeff": 0.55,
+          "original_area_m2": 50.0,
+          "original_absorption_coeff": 0.55,
+          "absorption_area_m2": 27.500000000000004,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 1
+        },
+        {
+          "material_name": "石膏天花板",
+          "area_m2": 50.0,
+          "absorption_coeff": 0.05,
+          "original_area_m2": 50.0,
+          "original_absorption_coeff": 0.05,
+          "absorption_area_m2": 2.5,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 1
+        }
+      ]
+    },
+    {
+      "room_id": "C-312",
+      "volume_m3": 85.0,
+      "measured_t60_s": 0.98,
+      "original_volume_m3": 85.0,
+      "original_measured_t60_s": 0.92,
+      "delta_volume": 0.0,
+      "delta_t60": 0.06,
+      "has_volume_deviation": false,
+      "has_t60_deviation": true,
+      "frequency_hz": 500,
+      "total_absorption_m2": 12.9,
+      "effective_surface_count": 3,
+      "surface_count_total": 3,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "version": 1,
+      "quality": "ok",
+      "quality_reason": "",
+      "original_row": 2,
+      "surfaces": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 55.0,
+          "absorption_coeff": 0.02,
+          "original_area_m2": 55.0,
+          "original_absorption_coeff": 0.02,
+          "absorption_area_m2": 1.1,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 2
+        },
+        {
+          "material_name": "布帘",
+          "area_m2": 20.0,
+          "absorption_coeff": 0.45,
+          "original_area_m2": 20.0,
+          "original_absorption_coeff": 0.45,
+          "absorption_area_m2": 9.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 2
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 28.0,
+          "absorption_coeff": 0.1,
+          "original_area_m2": 28.0,
+          "original_absorption_coeff": 0.1,
+          "absorption_area_m2": 2.8000000000000003,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 2
+        }
+      ]
+    },
+    {
+      "room_id": "D-404",
+      "volume_m3": 500.0,
+      "measured_t60_s": 3.8,
+      "original_volume_m3": 500.0,
+      "original_measured_t60_s": 3.8,
+      "delta_volume": 0.0,
+      "delta_t60": 0.0,
+      "has_volume_deviation": false,
+      "has_t60_deviation": false,
+      "frequency_hz": 1000,
+      "total_absorption_m2": 28.5,
+      "effective_surface_count": 4,
+      "surface_count_total": 4,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "version": 1,
+      "quality": "ok",
+      "quality_reason": "",
+      "original_row": 3,
+      "surfaces": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 150.0,
+          "absorption_coeff": 0.02,
+          "original_area_m2": 150.0,
+          "original_absorption_coeff": 0.02,
+          "absorption_area_m2": 3.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 3
+        },
+        {
+          "material_name": "玻璃窗",
+          "area_m2": 30.0,
+          "absorption_coeff": 0.35,
+          "original_area_m2": 30.0,
+          "original_absorption_coeff": 0.35,
+          "absorption_area_m2": 10.5,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 3
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 100.0,
+          "absorption_coeff": 0.1,
+          "original_area_m2": 100.0,
+          "original_absorption_coeff": 0.1,
+          "absorption_area_m2": 10.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 3
+        },
+        {
+          "material_name": "石膏天花板",
+          "area_m2": 100.0,
+          "absorption_coeff": 0.05,
+          "original_area_m2": 100.0,
+          "original_absorption_coeff": 0.05,
+          "absorption_area_m2": 5.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 3
+        }
+      ]
+    },
+    {
+      "room_id": "E-506",
+      "volume_m3": -10.0,
+      "measured_t60_s": 1.2,
+      "original_volume_m3": -10.0,
+      "original_measured_t60_s": 1.2,
+      "delta_volume": 0.0,
+      "delta_t60": 0.0,
+      "has_volume_deviation": false,
+      "has_t60_deviation": false,
+      "frequency_hz": 1000,
+      "total_absorption_m2": 3.7,
+      "effective_surface_count": 2,
+      "surface_count_total": 2,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "version": 1,
+      "quality": "bad",
+      "quality_reason": "值 -10.0000 超出边界 [1.0, 100000.0]",
+      "original_row": 4,
+      "surfaces": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 60.0,
+          "absorption_coeff": 0.02,
+          "original_area_m2": 60.0,
+          "original_absorption_coeff": 0.02,
+          "absorption_area_m2": 1.2,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 4
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 25.0,
+          "absorption_coeff": 0.1,
+          "original_area_m2": 25.0,
+          "original_absorption_coeff": 0.1,
+          "absorption_area_m2": 2.5,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 4
+        }
+      ]
+    },
+    {
+      "room_id": "F-607",
+      "volume_m3": 180.0,
+      "measured_t60_s": 1.55,
+      "original_volume_m3": 180.0,
+      "original_measured_t60_s": 1.55,
+      "delta_volume": 0.0,
+      "delta_t60": 0.0,
+      "has_volume_deviation": false,
+      "has_t60_deviation": false,
+      "frequency_hz": 2000,
+      "total_absorption_m2": 6.8,
+      "effective_surface_count": 2,
+      "surface_count_total": 3,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "version": 1,
+      "quality": "ok",
+      "quality_reason": "",
+      "original_row": 5,
+      "surfaces": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 90.0,
+          "absorption_coeff": 0.02,
+          "original_area_m2": 90.0,
+          "original_absorption_coeff": 0.02,
+          "absorption_area_m2": 1.8,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 5
+        },
+        {
+          "material_name": "超吸声材料",
+          "area_m2": 30.0,
+          "absorption_coeff": 1.55,
+          "original_area_m2": 30.0,
+          "original_absorption_coeff": 1.55,
+          "absorption_area_m2": 46.5,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "bad",
+          "quality_reason": "值 1.5500 超出边界 [0.0, 1.0]",
+          "original_row": 5
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 50.0,
+          "absorption_coeff": 0.1,
+          "original_area_m2": 50.0,
+          "original_absorption_coeff": 0.1,
+          "absorption_area_m2": 5.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "experiment_record",
+          "source_file": "experiment_records.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 5
+        }
+      ]
+    },
+    {
+      "room_id": "G-708",
+      "volume_m3": 300.0,
+      "measured_t60_s": 0.0,
+      "original_volume_m3": 300.0,
+      "original_measured_t60_s": 0.0,
+      "delta_volume": 0.0,
+      "delta_t60": 0.0,
+      "has_volume_deviation": false,
+      "has_t60_deviation": false,
+      "frequency_hz": 1000,
+      "total_absorption_m2": 0,
+      "effective_surface_count": 0,
+      "surface_count_total": 0,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "version": 1,
+      "quality": "bad",
+      "quality_reason": "有效总吸声量为零或负值，无法计算混响时间",
+      "original_row": 6,
+      "surfaces": []
+    },
+    {
+      "room_id": "H-901",
+      "volume_m3": 60.0,
+      "measured_t60_s": 1.1,
+      "original_volume_m3": 60.0,
+      "original_measured_t60_s": 1.1,
+      "delta_volume": 0.0,
+      "delta_t60": 0.0,
+      "has_volume_deviation": false,
+      "has_t60_deviation": false,
+      "frequency_hz": 1000,
+      "total_absorption_m2": 16.9,
+      "effective_surface_count": 3,
+      "surface_count_total": 3,
+      "source": "late_attachment",
+      "source_file": "late_attachment.json",
+      "version": 1,
+      "quality": "ok",
+      "quality_reason": "",
+      "original_row": 1,
+      "surfaces": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 45.0,
+          "absorption_coeff": 0.02,
+          "original_area_m2": 45.0,
+          "original_absorption_coeff": 0.02,
+          "absorption_area_m2": 0.9,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "late_attachment",
+          "source_file": "late_attachment.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 1
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 20.0,
+          "absorption_coeff": 0.1,
+          "original_area_m2": 20.0,
+          "original_absorption_coeff": 0.1,
+          "absorption_area_m2": 2.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "late_attachment",
+          "source_file": "late_attachment.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 1
+        },
+        {
+          "material_name": "吸声天花板",
+          "area_m2": 20.0,
+          "absorption_coeff": 0.7,
+          "original_area_m2": 20.0,
+          "original_absorption_coeff": 0.7,
+          "absorption_area_m2": 14.0,
+          "delta_coeff": 0.0,
+          "delta_area": 0.0,
+          "has_deviation": false,
+          "source": "late_attachment",
+          "source_file": "late_attachment.json",
+          "version": 1,
+          "quality": "ok",
+          "quality_reason": "",
+          "original_row": 1
+        }
+      ]
+    }
+  ],
+  "attributed_errors": [
+    {
+      "room_id": "A-101",
+      "calculated_t60_s": 1.5972,
+      "measured_t60_s": 1.85,
+      "absolute_error_s": 0.2528,
+      "relative_error_pct": 15.83,
+      "volume_contribution_s": 0.0639,
+      "volume_contribution_pct": 38.65,
+      "surface_contributions": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 80.0,
+          "absorption_coeff": 0.03,
+          "absorption_area_m2": 2.4,
+          "partial_t60_s": 8.3854,
+          "contribution_s": -0.1014,
+          "contribution_pct": 61.35,
+          "sensitivity_s_per_alpha": -10.1411,
+          "delta_alpha": 0.01,
+          "delta_source": "oral_note",
+          "is_sensitivity_only": false,
+          "original_row": 0
+        },
+        {
+          "material_name": "玻璃窗",
+          "area_m2": 12.0,
+          "absorption_coeff": 0.35,
+          "absorption_area_m2": 4.2,
+          "partial_t60_s": 4.7917,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -1.5212,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 0
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 40.0,
+          "absorption_coeff": 0.1,
+          "absorption_area_m2": 4.0,
+          "partial_t60_s": 5.0312,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -5.0705,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 0
+        },
+        {
+          "material_name": "石膏天花板",
+          "area_m2": 40.0,
+          "absorption_coeff": 0.05,
+          "absorption_area_m2": 2.0,
+          "partial_t60_s": 10.0625,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -5.0705,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 0
+        }
+      ],
+      "dominant_source": "表面 混凝土墙 (61.3%)",
+      "formula_chain": [
+        {
+          "name": "总吸声量公式",
+          "expression": "A = Σ(αi × Si)",
+          "values": {
+            "surface_count": 4
+          },
+          "result": 0.0,
+          "unit": "m²",
+          "note": "αi=第i面吸声系数(无量纲), Si=第i面面积(m²)"
+        },
+        {
+          "name": "逐面计算",
+          "expression": "(0.03×80.0) + (0.35×12.0) + (0.1×40.0) + (0.05×40.0)",
+          "values": {
+            "partials": [
+              {
+                "material": "混凝土墙",
+                "alpha": 0.03,
+                "S": 80.0,
+                "alpha_S": 2.4
+              },
+              {
+                "material": "玻璃窗",
+                "alpha": 0.35,
+                "S": 12.0,
+                "alpha_S": 4.2
+              },
+              {
+                "material": "木地板",
+                "alpha": 0.1,
+                "S": 40.0,
+                "alpha_S": 4.0
+              },
+              {
+                "material": "石膏天花板",
+                "alpha": 0.05,
+                "S": 40.0,
+                "alpha_S": 2.0
+              }
+            ]
+          },
+          "result": 12.6,
+          "unit": "m²",
+          "note": "总吸声量 A = 12.6000 m²"
+        },
+        {
+          "name": "Sabine 公式",
+          "expression": "T60 = k × V / A",
+          "values": {
+            "k": 0.161,
+            "V": 125.0,
+            "A": 12.6
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)"
+        },
+        {
+          "name": "代入计算",
+          "expression": "T60 = 0.161 × 125.0 / 12.6",
+          "values": {
+            "k": 0.161,
+            "V": 125.0,
+            "A": 12.6
+          },
+          "result": 1.5972,
+          "unit": "s",
+          "note": "计算结果 T60 = 1.5972 s"
+        },
+        {
+          "name": "绝对误差",
+          "expression": "ΔT60_total = T60_measured - T60_calculated",
+          "values": {
+            "T60_measured": 1.85,
+            "T60_calculated": 1.5972
+          },
+          "result": 0.2528,
+          "unit": "s",
+          "note": "实测值与当前参数计算值的总偏差"
+        },
+        {
+          "name": "相对误差",
+          "expression": "δT60 = ΔT60_total / T60_calculated × 100%",
+          "values": {
+            "ΔT60_total": 0.2528,
+            "T60_calculated": 1.5972
+          },
+          "result": 15.8261,
+          "unit": "%",
+          "note": "相对总误差"
+        },
+        {
+          "name": "容积灵敏度",
+          "expression": "∂T60/∂V = k / A",
+          "values": {
+            "k": 0.161,
+            "A": 12.6
+          },
+          "result": 0.0128,
+          "unit": "s/m³",
+          "note": "容积每增加 1 m³，T60 增加多少秒"
+        },
+        {
+          "name": "容积偏差贡献",
+          "expression": "ΔT60_V = ∂T60/∂V × ΔV",
+          "values": {
+            "∂T60/∂V": 0.012778,
+            "ΔV": 5.0,
+            "has_deviation": true
+          },
+          "result": 0.0639,
+          "unit": "s",
+          "note": "容积偏差对 T60 计算值变化的贡献（一阶近似）"
+        },
+        {
+          "name": "表面吸声偏差贡献合计",
+          "expression": "ΔT60_α = Σ(∂T60/∂αi × Δαi)",
+          "values": {
+            "surface_count_with_deviation": 1,
+            "total_surfaces": 4
+          },
+          "result": -0.1014,
+          "unit": "s",
+          "note": "有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）"
+        },
+        {
+          "name": "已解释误差",
+          "expression": "ΔT60_explained = ΔT60_V + ΔT60_α",
+          "values": {
+            "ΔT60_V": 0.063889,
+            "ΔT60_α": -0.101411
+          },
+          "result": -0.0375,
+          "unit": "s",
+          "note": "已知参数偏差可解释的误差量（一阶近似）"
+        },
+        {
+          "name": "未解释残差",
+          "expression": "ΔT60_unexplained = ΔT60_total - ΔT60_explained",
+          "values": {
+            "ΔT60_total": 0.252778,
+            "ΔT60_explained": -0.037522
+          },
+          "result": 0.2903,
+          "unit": "s",
+          "note": "来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应"
+        }
+      ],
+      "explained_error_s": -0.0375,
+      "unexplained_error_s": 0.2903,
+      "attribution_mode": "full"
+    },
+    {
+      "room_id": "B-205",
+      "calculated_t60_s": 0.516,
+      "measured_t60_s": 2.4,
+      "absolute_error_s": 1.884,
+      "relative_error_pct": 365.09,
+      "volume_contribution_s": 0.0,
+      "volume_contribution_pct": 0.0,
+      "surface_contributions": [
+        {
+          "material_name": "砖墙",
+          "area_m2": 100.0,
+          "absorption_coeff": 0.03,
+          "absorption_area_m2": 3.0,
+          "partial_t60_s": 13.4167,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -0.6616,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 1
+        },
+        {
+          "material_name": "吸声板",
+          "area_m2": 60.0,
+          "absorption_coeff": 0.75,
+          "absorption_area_m2": 45.0,
+          "partial_t60_s": 0.8944,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -0.3969,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 1
+        },
+        {
+          "material_name": "地毯",
+          "area_m2": 50.0,
+          "absorption_coeff": 0.55,
+          "absorption_area_m2": 27.5,
+          "partial_t60_s": 1.4636,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -0.3308,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 1
+        },
+        {
+          "material_name": "石膏天花板",
+          "area_m2": 50.0,
+          "absorption_coeff": 0.05,
+          "absorption_area_m2": 2.5,
+          "partial_t60_s": 16.1,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -0.3308,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 1
+        }
+      ],
+      "dominant_source": "灵敏度最高: 表面 砖墙 (0.6616 s/单位α)",
+      "formula_chain": [
+        {
+          "name": "总吸声量公式",
+          "expression": "A = Σ(αi × Si)",
+          "values": {
+            "surface_count": 4
+          },
+          "result": 0.0,
+          "unit": "m²",
+          "note": "αi=第i面吸声系数(无量纲), Si=第i面面积(m²)"
+        },
+        {
+          "name": "逐面计算",
+          "expression": "(0.03×100.0) + (0.75×60.0) + (0.55×50.0) + (0.05×50.0)",
+          "values": {
+            "partials": [
+              {
+                "material": "砖墙",
+                "alpha": 0.03,
+                "S": 100.0,
+                "alpha_S": 3.0
+              },
+              {
+                "material": "吸声板",
+                "alpha": 0.75,
+                "S": 60.0,
+                "alpha_S": 45.0
+              },
+              {
+                "material": "地毯",
+                "alpha": 0.55,
+                "S": 50.0,
+                "alpha_S": 27.5
+              },
+              {
+                "material": "石膏天花板",
+                "alpha": 0.05,
+                "S": 50.0,
+                "alpha_S": 2.5
+              }
+            ]
+          },
+          "result": 78.0,
+          "unit": "m²",
+          "note": "总吸声量 A = 78.0000 m²"
+        },
+        {
+          "name": "Sabine 公式",
+          "expression": "T60 = k × V / A",
+          "values": {
+            "k": 0.161,
+            "V": 250.0,
+            "A": 78.0
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)"
+        },
+        {
+          "name": "代入计算",
+          "expression": "T60 = 0.161 × 250.0 / 78.0",
+          "values": {
+            "k": 0.161,
+            "V": 250.0,
+            "A": 78.0
+          },
+          "result": 0.516,
+          "unit": "s",
+          "note": "计算结果 T60 = 0.5160 s"
+        },
+        {
+          "name": "绝对误差",
+          "expression": "ΔT60_total = T60_measured - T60_calculated",
+          "values": {
+            "T60_measured": 2.4,
+            "T60_calculated": 0.516
+          },
+          "result": 1.884,
+          "unit": "s",
+          "note": "实测值与当前参数计算值的总偏差"
+        },
+        {
+          "name": "相对误差",
+          "expression": "δT60 = ΔT60_total / T60_calculated × 100%",
+          "values": {
+            "ΔT60_total": 1.884,
+            "T60_calculated": 0.516
+          },
+          "result": 365.0932,
+          "unit": "%",
+          "note": "相对总误差"
+        },
+        {
+          "name": "容积灵敏度",
+          "expression": "∂T60/∂V = k / A",
+          "values": {
+            "k": 0.161,
+            "A": 78.0
+          },
+          "result": 0.0021,
+          "unit": "s/m³",
+          "note": "容积每增加 1 m³，T60 增加多少秒"
+        },
+        {
+          "name": "容积偏差贡献",
+          "expression": "ΔT60_V = ∂T60/∂V × ΔV",
+          "values": {
+            "∂T60/∂V": 0.002064,
+            "ΔV": 0.0,
+            "has_deviation": false
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "容积偏差对 T60 计算值变化的贡献（一阶近似）"
+        },
+        {
+          "name": "表面吸声偏差贡献合计",
+          "expression": "ΔT60_α = Σ(∂T60/∂αi × Δαi)",
+          "values": {
+            "surface_count_with_deviation": 0,
+            "total_surfaces": 4
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）"
+        },
+        {
+          "name": "已解释误差",
+          "expression": "ΔT60_explained = ΔT60_V + ΔT60_α",
+          "values": {
+            "ΔT60_V": 0.0,
+            "ΔT60_α": 0.0
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "已知参数偏差可解释的误差量（一阶近似）"
+        },
+        {
+          "name": "未解释残差",
+          "expression": "ΔT60_unexplained = ΔT60_total - ΔT60_explained",
+          "values": {
+            "ΔT60_total": 1.883974,
+            "ΔT60_explained": 0.0
+          },
+          "result": 1.884,
+          "unit": "s",
+          "note": "来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应"
+        }
+      ],
+      "explained_error_s": 0.0,
+      "unexplained_error_s": 1.884,
+      "attribution_mode": "sensitivity_only"
+    },
+    {
+      "room_id": "C-312",
+      "calculated_t60_s": 1.0609,
+      "measured_t60_s": 0.98,
+      "absolute_error_s": -0.0809,
+      "relative_error_pct": -7.62,
+      "volume_contribution_s": 0.0,
+      "volume_contribution_pct": 0.0,
+      "surface_contributions": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 55.0,
+          "absorption_coeff": 0.02,
+          "absorption_area_m2": 1.1,
+          "partial_t60_s": 12.4409,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -4.523,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 2
+        },
+        {
+          "material_name": "布帘",
+          "area_m2": 20.0,
+          "absorption_coeff": 0.45,
+          "absorption_area_m2": 9.0,
+          "partial_t60_s": 1.5206,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -1.6447,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 2
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 28.0,
+          "absorption_coeff": 0.1,
+          "absorption_area_m2": 2.8,
+          "partial_t60_s": 4.8875,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -2.3026,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 2
+        }
+      ],
+      "dominant_source": "灵敏度最高: 表面 混凝土墙 (4.5230 s/单位α)",
+      "formula_chain": [
+        {
+          "name": "总吸声量公式",
+          "expression": "A = Σ(αi × Si)",
+          "values": {
+            "surface_count": 3
+          },
+          "result": 0.0,
+          "unit": "m²",
+          "note": "αi=第i面吸声系数(无量纲), Si=第i面面积(m²)"
+        },
+        {
+          "name": "逐面计算",
+          "expression": "(0.02×55.0) + (0.45×20.0) + (0.1×28.0)",
+          "values": {
+            "partials": [
+              {
+                "material": "混凝土墙",
+                "alpha": 0.02,
+                "S": 55.0,
+                "alpha_S": 1.1
+              },
+              {
+                "material": "布帘",
+                "alpha": 0.45,
+                "S": 20.0,
+                "alpha_S": 9.0
+              },
+              {
+                "material": "木地板",
+                "alpha": 0.1,
+                "S": 28.0,
+                "alpha_S": 2.8
+              }
+            ]
+          },
+          "result": 12.9,
+          "unit": "m²",
+          "note": "总吸声量 A = 12.9000 m²"
+        },
+        {
+          "name": "Sabine 公式",
+          "expression": "T60 = k × V / A",
+          "values": {
+            "k": 0.161,
+            "V": 85.0,
+            "A": 12.9
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)"
+        },
+        {
+          "name": "代入计算",
+          "expression": "T60 = 0.161 × 85.0 / 12.9",
+          "values": {
+            "k": 0.161,
+            "V": 85.0,
+            "A": 12.9
+          },
+          "result": 1.0609,
+          "unit": "s",
+          "note": "计算结果 T60 = 1.0609 s"
+        },
+        {
+          "name": "绝对误差",
+          "expression": "ΔT60_total = T60_measured - T60_calculated",
+          "values": {
+            "T60_measured": 0.98,
+            "T60_calculated": 1.0609
+          },
+          "result": -0.0809,
+          "unit": "s",
+          "note": "实测值与当前参数计算值的总偏差"
+        },
+        {
+          "name": "相对误差",
+          "expression": "δT60 = ΔT60_total / T60_calculated × 100%",
+          "values": {
+            "ΔT60_total": -0.0809,
+            "T60_calculated": 1.0609
+          },
+          "result": -7.6215,
+          "unit": "%",
+          "note": "相对总误差"
+        },
+        {
+          "name": "容积灵敏度",
+          "expression": "∂T60/∂V = k / A",
+          "values": {
+            "k": 0.161,
+            "A": 12.9
+          },
+          "result": 0.0125,
+          "unit": "s/m³",
+          "note": "容积每增加 1 m³，T60 增加多少秒"
+        },
+        {
+          "name": "容积偏差贡献",
+          "expression": "ΔT60_V = ∂T60/∂V × ΔV",
+          "values": {
+            "∂T60/∂V": 0.012481,
+            "ΔV": 0.0,
+            "has_deviation": false
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "容积偏差对 T60 计算值变化的贡献（一阶近似）"
+        },
+        {
+          "name": "表面吸声偏差贡献合计",
+          "expression": "ΔT60_α = Σ(∂T60/∂αi × Δαi)",
+          "values": {
+            "surface_count_with_deviation": 0,
+            "total_surfaces": 3
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）"
+        },
+        {
+          "name": "已解释误差",
+          "expression": "ΔT60_explained = ΔT60_V + ΔT60_α",
+          "values": {
+            "ΔT60_V": 0.0,
+            "ΔT60_α": 0.0
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "已知参数偏差可解释的误差量（一阶近似）"
+        },
+        {
+          "name": "未解释残差",
+          "expression": "ΔT60_unexplained = ΔT60_total - ΔT60_explained",
+          "values": {
+            "ΔT60_total": -0.080853,
+            "ΔT60_explained": 0.0
+          },
+          "result": -0.0809,
+          "unit": "s",
+          "note": "来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应"
+        }
+      ],
+      "explained_error_s": 0.0,
+      "unexplained_error_s": -0.0809,
+      "attribution_mode": "sensitivity_only"
+    },
+    {
+      "room_id": "D-404",
+      "calculated_t60_s": 2.8246,
+      "measured_t60_s": 3.8,
+      "absolute_error_s": 0.9754,
+      "relative_error_pct": 34.53,
+      "volume_contribution_s": 0.0,
+      "volume_contribution_pct": 0.0,
+      "surface_contributions": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 150.0,
+          "absorption_coeff": 0.02,
+          "absorption_area_m2": 3.0,
+          "partial_t60_s": 26.8333,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -14.8661,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 3
+        },
+        {
+          "material_name": "玻璃窗",
+          "area_m2": 30.0,
+          "absorption_coeff": 0.35,
+          "absorption_area_m2": 10.5,
+          "partial_t60_s": 7.6667,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -2.9732,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 3
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 100.0,
+          "absorption_coeff": 0.1,
+          "absorption_area_m2": 10.0,
+          "partial_t60_s": 8.05,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -9.9107,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 3
+        },
+        {
+          "material_name": "石膏天花板",
+          "area_m2": 100.0,
+          "absorption_coeff": 0.05,
+          "absorption_area_m2": 5.0,
+          "partial_t60_s": 16.1,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -9.9107,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 3
+        }
+      ],
+      "dominant_source": "灵敏度最高: 表面 混凝土墙 (14.8661 s/单位α)",
+      "formula_chain": [
+        {
+          "name": "总吸声量公式",
+          "expression": "A = Σ(αi × Si)",
+          "values": {
+            "surface_count": 4
+          },
+          "result": 0.0,
+          "unit": "m²",
+          "note": "αi=第i面吸声系数(无量纲), Si=第i面面积(m²)"
+        },
+        {
+          "name": "逐面计算",
+          "expression": "(0.02×150.0) + (0.35×30.0) + (0.1×100.0) + (0.05×100.0)",
+          "values": {
+            "partials": [
+              {
+                "material": "混凝土墙",
+                "alpha": 0.02,
+                "S": 150.0,
+                "alpha_S": 3.0
+              },
+              {
+                "material": "玻璃窗",
+                "alpha": 0.35,
+                "S": 30.0,
+                "alpha_S": 10.5
+              },
+              {
+                "material": "木地板",
+                "alpha": 0.1,
+                "S": 100.0,
+                "alpha_S": 10.0
+              },
+              {
+                "material": "石膏天花板",
+                "alpha": 0.05,
+                "S": 100.0,
+                "alpha_S": 5.0
+              }
+            ]
+          },
+          "result": 28.5,
+          "unit": "m²",
+          "note": "总吸声量 A = 28.5000 m²"
+        },
+        {
+          "name": "Sabine 公式",
+          "expression": "T60 = k × V / A",
+          "values": {
+            "k": 0.161,
+            "V": 500.0,
+            "A": 28.5
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)"
+        },
+        {
+          "name": "代入计算",
+          "expression": "T60 = 0.161 × 500.0 / 28.5",
+          "values": {
+            "k": 0.161,
+            "V": 500.0,
+            "A": 28.5
+          },
+          "result": 2.8246,
+          "unit": "s",
+          "note": "计算结果 T60 = 2.8246 s"
+        },
+        {
+          "name": "绝对误差",
+          "expression": "ΔT60_total = T60_measured - T60_calculated",
+          "values": {
+            "T60_measured": 3.8,
+            "T60_calculated": 2.8246
+          },
+          "result": 0.9754,
+          "unit": "s",
+          "note": "实测值与当前参数计算值的总偏差"
+        },
+        {
+          "name": "相对误差",
+          "expression": "δT60 = ΔT60_total / T60_calculated × 100%",
+          "values": {
+            "ΔT60_total": 0.9754,
+            "T60_calculated": 2.8246
+          },
+          "result": 34.5342,
+          "unit": "%",
+          "note": "相对总误差"
+        },
+        {
+          "name": "容积灵敏度",
+          "expression": "∂T60/∂V = k / A",
+          "values": {
+            "k": 0.161,
+            "A": 28.5
+          },
+          "result": 0.0056,
+          "unit": "s/m³",
+          "note": "容积每增加 1 m³，T60 增加多少秒"
+        },
+        {
+          "name": "容积偏差贡献",
+          "expression": "ΔT60_V = ∂T60/∂V × ΔV",
+          "values": {
+            "∂T60/∂V": 0.005649,
+            "ΔV": 0.0,
+            "has_deviation": false
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "容积偏差对 T60 计算值变化的贡献（一阶近似）"
+        },
+        {
+          "name": "表面吸声偏差贡献合计",
+          "expression": "ΔT60_α = Σ(∂T60/∂αi × Δαi)",
+          "values": {
+            "surface_count_with_deviation": 0,
+            "total_surfaces": 4
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）"
+        },
+        {
+          "name": "已解释误差",
+          "expression": "ΔT60_explained = ΔT60_V + ΔT60_α",
+          "values": {
+            "ΔT60_V": 0.0,
+            "ΔT60_α": 0.0
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "已知参数偏差可解释的误差量（一阶近似）"
+        },
+        {
+          "name": "未解释残差",
+          "expression": "ΔT60_unexplained = ΔT60_total - ΔT60_explained",
+          "values": {
+            "ΔT60_total": 0.975439,
+            "ΔT60_explained": 0.0
+          },
+          "result": 0.9754,
+          "unit": "s",
+          "note": "来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应"
+        }
+      ],
+      "explained_error_s": 0.0,
+      "unexplained_error_s": 0.9754,
+      "attribution_mode": "sensitivity_only"
+    },
+    {
+      "room_id": "F-607",
+      "calculated_t60_s": 4.2618,
+      "measured_t60_s": 1.55,
+      "absolute_error_s": -2.7118,
+      "relative_error_pct": -63.63,
+      "volume_contribution_s": 0.0,
+      "volume_contribution_pct": 0.0,
+      "surface_contributions": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 90.0,
+          "absorption_coeff": 0.02,
+          "absorption_area_m2": 1.8,
+          "partial_t60_s": 16.1,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -56.4057,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 5
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 50.0,
+          "absorption_coeff": 0.1,
+          "absorption_area_m2": 5.0,
+          "partial_t60_s": 5.796,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -31.3365,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 5
+        }
+      ],
+      "dominant_source": "灵敏度最高: 表面 混凝土墙 (56.4057 s/单位α)",
+      "formula_chain": [
+        {
+          "name": "总吸声量公式",
+          "expression": "A = Σ(αi × Si)",
+          "values": {
+            "surface_count": 2
+          },
+          "result": 0.0,
+          "unit": "m²",
+          "note": "αi=第i面吸声系数(无量纲), Si=第i面面积(m²)"
+        },
+        {
+          "name": "逐面计算",
+          "expression": "(0.02×90.0) + (0.1×50.0)",
+          "values": {
+            "partials": [
+              {
+                "material": "混凝土墙",
+                "alpha": 0.02,
+                "S": 90.0,
+                "alpha_S": 1.8
+              },
+              {
+                "material": "木地板",
+                "alpha": 0.1,
+                "S": 50.0,
+                "alpha_S": 5.0
+              }
+            ]
+          },
+          "result": 6.8,
+          "unit": "m²",
+          "note": "总吸声量 A = 6.8000 m²"
+        },
+        {
+          "name": "Sabine 公式",
+          "expression": "T60 = k × V / A",
+          "values": {
+            "k": 0.161,
+            "V": 180.0,
+            "A": 6.8
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)"
+        },
+        {
+          "name": "代入计算",
+          "expression": "T60 = 0.161 × 180.0 / 6.8",
+          "values": {
+            "k": 0.161,
+            "V": 180.0,
+            "A": 6.8
+          },
+          "result": 4.2618,
+          "unit": "s",
+          "note": "计算结果 T60 = 4.2618 s"
+        },
+        {
+          "name": "绝对误差",
+          "expression": "ΔT60_total = T60_measured - T60_calculated",
+          "values": {
+            "T60_measured": 1.55,
+            "T60_calculated": 4.2618
+          },
+          "result": -2.7118,
+          "unit": "s",
+          "note": "实测值与当前参数计算值的总偏差"
+        },
+        {
+          "name": "相对误差",
+          "expression": "δT60 = ΔT60_total / T60_calculated × 100%",
+          "values": {
+            "ΔT60_total": -2.7118,
+            "T60_calculated": 4.2618
+          },
+          "result": -63.6301,
+          "unit": "%",
+          "note": "相对总误差"
+        },
+        {
+          "name": "容积灵敏度",
+          "expression": "∂T60/∂V = k / A",
+          "values": {
+            "k": 0.161,
+            "A": 6.8
+          },
+          "result": 0.0237,
+          "unit": "s/m³",
+          "note": "容积每增加 1 m³，T60 增加多少秒"
+        },
+        {
+          "name": "容积偏差贡献",
+          "expression": "ΔT60_V = ∂T60/∂V × ΔV",
+          "values": {
+            "∂T60/∂V": 0.023676,
+            "ΔV": 0.0,
+            "has_deviation": false
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "容积偏差对 T60 计算值变化的贡献（一阶近似）"
+        },
+        {
+          "name": "表面吸声偏差贡献合计",
+          "expression": "ΔT60_α = Σ(∂T60/∂αi × Δαi)",
+          "values": {
+            "surface_count_with_deviation": 0,
+            "total_surfaces": 2
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）"
+        },
+        {
+          "name": "已解释误差",
+          "expression": "ΔT60_explained = ΔT60_V + ΔT60_α",
+          "values": {
+            "ΔT60_V": 0.0,
+            "ΔT60_α": 0.0
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "已知参数偏差可解释的误差量（一阶近似）"
+        },
+        {
+          "name": "未解释残差",
+          "expression": "ΔT60_unexplained = ΔT60_total - ΔT60_explained",
+          "values": {
+            "ΔT60_total": -2.711765,
+            "ΔT60_explained": 0.0
+          },
+          "result": -2.7118,
+          "unit": "s",
+          "note": "来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应"
+        }
+      ],
+      "explained_error_s": 0.0,
+      "unexplained_error_s": -2.7118,
+      "attribution_mode": "sensitivity_only"
+    },
+    {
+      "room_id": "H-901",
+      "calculated_t60_s": 0.5716,
+      "measured_t60_s": 1.1,
+      "absolute_error_s": 0.5284,
+      "relative_error_pct": 92.44,
+      "volume_contribution_s": 0.0,
+      "volume_contribution_pct": 0.0,
+      "surface_contributions": [
+        {
+          "material_name": "混凝土墙",
+          "area_m2": 45.0,
+          "absorption_coeff": 0.02,
+          "absorption_area_m2": 0.9,
+          "partial_t60_s": 10.7333,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -1.522,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 1
+        },
+        {
+          "material_name": "木地板",
+          "area_m2": 20.0,
+          "absorption_coeff": 0.1,
+          "absorption_area_m2": 2.0,
+          "partial_t60_s": 4.83,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -0.6764,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 1
+        },
+        {
+          "material_name": "吸声天花板",
+          "area_m2": 20.0,
+          "absorption_coeff": 0.7,
+          "absorption_area_m2": 14.0,
+          "partial_t60_s": 0.69,
+          "contribution_s": -0.0,
+          "contribution_pct": 0.0,
+          "sensitivity_s_per_alpha": -0.6764,
+          "delta_alpha": 0.0,
+          "delta_source": "",
+          "is_sensitivity_only": true,
+          "original_row": 1
+        }
+      ],
+      "dominant_source": "灵敏度最高: 表面 混凝土墙 (1.5220 s/单位α)",
+      "formula_chain": [
+        {
+          "name": "总吸声量公式",
+          "expression": "A = Σ(αi × Si)",
+          "values": {
+            "surface_count": 3
+          },
+          "result": 0.0,
+          "unit": "m²",
+          "note": "αi=第i面吸声系数(无量纲), Si=第i面面积(m²)"
+        },
+        {
+          "name": "逐面计算",
+          "expression": "(0.02×45.0) + (0.1×20.0) + (0.7×20.0)",
+          "values": {
+            "partials": [
+              {
+                "material": "混凝土墙",
+                "alpha": 0.02,
+                "S": 45.0,
+                "alpha_S": 0.9
+              },
+              {
+                "material": "木地板",
+                "alpha": 0.1,
+                "S": 20.0,
+                "alpha_S": 2.0
+              },
+              {
+                "material": "吸声天花板",
+                "alpha": 0.7,
+                "S": 20.0,
+                "alpha_S": 14.0
+              }
+            ]
+          },
+          "result": 16.9,
+          "unit": "m²",
+          "note": "总吸声量 A = 16.9000 m²"
+        },
+        {
+          "name": "Sabine 公式",
+          "expression": "T60 = k × V / A",
+          "values": {
+            "k": 0.161,
+            "V": 60.0,
+            "A": 16.9
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "k=0.161 s/m (常数), V=容积(m³), A=总吸声量(m²)"
+        },
+        {
+          "name": "代入计算",
+          "expression": "T60 = 0.161 × 60.0 / 16.9",
+          "values": {
+            "k": 0.161,
+            "V": 60.0,
+            "A": 16.9
+          },
+          "result": 0.5716,
+          "unit": "s",
+          "note": "计算结果 T60 = 0.5716 s"
+        },
+        {
+          "name": "绝对误差",
+          "expression": "ΔT60_total = T60_measured - T60_calculated",
+          "values": {
+            "T60_measured": 1.1,
+            "T60_calculated": 0.5716
+          },
+          "result": 0.5284,
+          "unit": "s",
+          "note": "实测值与当前参数计算值的总偏差"
+        },
+        {
+          "name": "相对误差",
+          "expression": "δT60 = ΔT60_total / T60_calculated × 100%",
+          "values": {
+            "ΔT60_total": 0.5284,
+            "T60_calculated": 0.5716
+          },
+          "result": 92.4431,
+          "unit": "%",
+          "note": "相对总误差"
+        },
+        {
+          "name": "容积灵敏度",
+          "expression": "∂T60/∂V = k / A",
+          "values": {
+            "k": 0.161,
+            "A": 16.9
+          },
+          "result": 0.0095,
+          "unit": "s/m³",
+          "note": "容积每增加 1 m³，T60 增加多少秒"
+        },
+        {
+          "name": "容积偏差贡献",
+          "expression": "ΔT60_V = ∂T60/∂V × ΔV",
+          "values": {
+            "∂T60/∂V": 0.009527,
+            "ΔV": 0.0,
+            "has_deviation": false
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "容积偏差对 T60 计算值变化的贡献（一阶近似）"
+        },
+        {
+          "name": "表面吸声偏差贡献合计",
+          "expression": "ΔT60_α = Σ(∂T60/∂αi × Δαi)",
+          "values": {
+            "surface_count_with_deviation": 0,
+            "total_surfaces": 3
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "有偏差的表面吸声系数对 T60 计算值变化的贡献合计（一阶近似）"
+        },
+        {
+          "name": "已解释误差",
+          "expression": "ΔT60_explained = ΔT60_V + ΔT60_α",
+          "values": {
+            "ΔT60_V": 0.0,
+            "ΔT60_α": 0.0
+          },
+          "result": 0.0,
+          "unit": "s",
+          "note": "已知参数偏差可解释的误差量（一阶近似）"
+        },
+        {
+          "name": "未解释残差",
+          "expression": "ΔT60_unexplained = ΔT60_total - ΔT60_explained",
+          "values": {
+            "ΔT60_total": 0.528402,
+            "ΔT60_explained": 0.0
+          },
+          "result": 0.5284,
+          "unit": "s",
+          "note": "来源包括：测量误差、模型假设偏差、未考虑因素、非线性交互效应"
+        }
+      ],
+      "explained_error_s": 0.0,
+      "unexplained_error_s": 0.5284,
+      "attribution_mode": "sensitivity_only"
+    }
+  ],
+  "conflicts": [
+    {
+      "room_id": "B-205",
+      "field_name": "volume_m3",
+      "value_a": 250.0,
+      "value_b": 245.0,
+      "source_a": "experiment_record",
+      "source_b": "late_attachment",
+      "source_a_version": 1,
+      "source_b_version": 1,
+      "resolution": "保留实验记录原始值，附件值标记为备选"
+    },
+    {
+      "room_id": "B-205",
+      "field_name": "measured_t60_s",
+      "value_a": 2.4,
+      "value_b": 2.55,
+      "source_a": "experiment_record",
+      "source_b": "late_attachment",
+      "source_a_version": 1,
+      "source_b_version": 1,
+      "resolution": "保留实验记录原始值，附件值标记为备选"
+    },
+    {
+      "room_id": "B-205",
+      "field_name": "surfaces.吸声板.absorption_coeff",
+      "value_a": 0.75,
+      "value_b": 0.65,
+      "source_a": "experiment_record",
+      "source_b": "late_attachment",
+      "source_a_version": 1,
+      "source_b_version": 1,
+      "resolution": "保留实验记录原始值，附件值标记为备选"
+    },
+    {
+      "room_id": "A-101",
+      "field_name": "volume_m3",
+      "value_a": 120.0,
+      "value_b": 125.0,
+      "source_a": "experiment_record",
+      "source_b": "oral_note",
+      "source_a_version": 1,
+      "source_b_version": 1,
+      "resolution": "口头说明优先：采用口头修正值"
+    },
+    {
+      "room_id": "A-101",
+      "field_name": "surfaces.混凝土墙.absorption_coeff",
+      "value_a": 0.02,
+      "value_b": 0.03,
+      "source_a": "experiment_record",
+      "source_b": "oral_note",
+      "source_a_version": 1,
+      "source_b_version": 1,
+      "resolution": "口头说明优先：采用口头修正值"
+    },
+    {
+      "room_id": "C-312",
+      "field_name": "measured_t60_s",
+      "value_a": 0.92,
+      "value_b": 0.98,
+      "source_a": "experiment_record",
+      "source_b": "oral_note",
+      "source_a_version": 1,
+      "source_b_version": 1,
+      "resolution": "口头说明优先：采用口头修正值"
+    }
+  ],
+  "sampling_gaps": [
+    {
+      "room_id": "G-708",
+      "gap_type": "missing_field",
+      "description": "房间 G-708 关键字段为零或缺失: measured_t60_s",
+      "affected_fields": [
+        "measured_t60_s"
+      ],
+      "severity": "error"
+    },
+    {
+      "room_id": "G-708",
+      "gap_type": "no_surfaces",
+      "description": "房间 G-708 无表面数据",
+      "affected_fields": [
+        "surfaces"
+      ],
+      "severity": "error"
+    }
+  ],
+  "bad_data_refs": [
+    {
+      "room_id": "E-506",
+      "field_name": "volume_m3",
+      "field_value": -10.0,
+      "boundary_min": 1.0,
+      "boundary_max": 100000.0,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "original_row": 4,
+      "reason": "值 -10.0000 超出边界 [1.0, 100000.0]"
+    },
+    {
+      "room_id": "F-607",
+      "field_name": "surfaces.超吸声材料.absorption_coeff",
+      "field_value": 1.55,
+      "boundary_min": 0.0,
+      "boundary_max": 1.0,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "original_row": 5,
+      "reason": "值 1.5500 超出边界 [0.0, 1.0]"
+    },
+    {
+      "room_id": "G-708",
+      "field_name": "measured_t60_s",
+      "field_value": 0.0,
+      "boundary_min": 0.05,
+      "boundary_max": 15.0,
+      "source": "experiment_record",
+      "source_file": "experiment_records.json",
+      "original_row": 6,
+      "reason": "值 0.0000 超出边界 [0.05, 15.0]"
+    }
+  ]
+}
