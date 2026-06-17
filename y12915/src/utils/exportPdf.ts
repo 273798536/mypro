@@ -109,7 +109,7 @@ export async function generatePdfReport(
   y += 4;
   for (const rule of data.rules) {
     const pageFlag = rule.pageStatus === undefined ? 'PENDING' : rule.pageStatus ? 'PASS' : 'FAIL';
-    const exportFlag = rule.exportStatus === undefined ? 'PENDING' : rule.exportStatus ? 'PASS' : 'EXPORT';
+    const exportFlag = rule.exportStatus === undefined ? 'PENDING' : rule.exportStatus ? 'PASS' : 'FAIL';
     const consistency = rule.isConsistent !== undefined ? (rule.isConsistent ? '[一致]' : '[不一致]') : '';
     const ruleInfo = rule.threshold !== undefined && rule.operator !== undefined
       ? ` (阈值: ${rule.operator} ${rule.threshold})`
