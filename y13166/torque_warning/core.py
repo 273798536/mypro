@@ -1,5 +1,5 @@
 import statistics
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 
 from .models import (
     EquipmentNameplate,
@@ -91,7 +91,7 @@ def process_equipment(
     attachments: List[LateAttachment],
     notes: List[SupplementaryNote],
     config: RunConfig,
-) -> Tuple[ProcessedRecord, ConfirmationRequest | None]:
+) -> Tuple[ProcessedRecord, Optional[ConfirmationRequest]]:
     eid = nameplate.equipment_id
     merged = _merge_readings(base_readings, attachments)
 

@@ -1,7 +1,7 @@
 import os
 import json
 import html
-from typing import List
+from typing import List, Optional
 
 from .models import ProcessedRecord, RunConfig, TerminalSummary, ConfirmationRequest
 
@@ -112,9 +112,9 @@ def export_json_report(
 
 
 def export_param_compare_markdown(
-    prev_records: List[ProcessedRecord] | None,
+    prev_records: Optional[List[ProcessedRecord]],
     curr_records: List[ProcessedRecord],
-    prev_config: RunConfig | None,
+    prev_config: Optional[RunConfig],
     curr_config: RunConfig,
     output_dir: str,
 ) -> str:

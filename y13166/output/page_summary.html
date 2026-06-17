@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>电机扭矩阈值预警 · 页面摘要</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; margin: 0; padding: 24px; background:#f8fafc; color:#0f172a; }
+  h1 { margin:0 0 8px; }
+  .sub { color:#64748b; margin-bottom:24px; }
+  .overview { background:#fff; border-radius:8px; padding:16px 20px; margin-bottom:24px; box-shadow:0 1px 2px rgba(0,0,0,.06); }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:12px; }
+  .stat { padding:10px 14px; border-radius:6px; background:#f1f5f9; }
+  .stat .k { font-size:12px; color:#64748b; }
+  .stat .v { font-size:22px; font-weight:700; }
+  .zone { border-radius:10px; padding:16px 20px; margin-bottom:20px; }
+  .zone h2 { margin:0 0 12px; font-size:18px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(360px,1fr)); gap:14px; }
+  .card { background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .card-header { padding:10px 14px; display:flex; align-items:center; gap:10px; border-bottom:1px solid #f1f5f9; }
+  .badge { color:#fff; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600; }
+  .eq-id { font-weight:700; }
+  .model { color:#64748b; font-size:12px; margin-left:auto; }
+  .card-body { padding:12px 14px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 16px; margin-bottom:10px; }
+  .grid > div { display:flex; justify-content:space-between; font-size:13px; border-bottom:1px dashed #e2e8f0; padding:3px 0; }
+  .grid label { color:#64748b; }
+  .ev, .bs, .dr, .note { background:#f8fafc; border-left:3px solid #f59e0b; padding:8px 10px; margin:6px 0; font-size:13px; border-radius:4px; }
+  .bs { border-left-color:#0ea5e9; }
+  .dr { border-left-color:#ef4444; }
+  .note { border-left-color:#64748b; }
+  .ev ul, .bs ul { margin:4px 0 0 20px; padding:0; }
+  details { margin-top:10px; background:#f8fafc; padding:6px 10px; border-radius:4px; }
+  summary { cursor:pointer; font-weight:600; }
+  .sect { margin:8px 0; }
+  .sect h5 { margin:4px 0; font-size:13px; color:#475569; }
+  .sect code { background:#fff; padding:1px 6px; border-radius:3px; font-size:12px; }
+  .sect table { width:100%; border-collapse:collapse; font-size:13px; }
+  .sect td { border:1px solid #e2e8f0; padding:3px 8px; }
+  .empty { color:#94a3b8; font-style:italic; }
+  .flag { background:#fff7ed; padding:10px 14px; border-radius:6px; margin-top:12px; }
+</style>
+</head>
+<body>
+  <h1>电机扭矩阈值预警 · 页面摘要</h1>
+  <div class="sub">运行时间: 2026-06-17 23:27:50 · 参数档 L2 · 阈值调整 +5.0% · 输入: <code>/Users/mac/pro/solo/workspaces/y13166/sample_input</code> · 输出: <code>/Users/mac/pro/solo/workspaces/y13166/output</code></div>
+
+  <div class="overview">
+    <div class="stats">
+      <div class="stat"><div class="k">设备总数</div><div class="v">6</div></div>
+      <div class="stat" style="background:#dcfce7;"><div class="k">正常</div><div class="v" style="color:#16a34a;">3</div></div>
+      <div class="stat" style="background:#fef9c3;"><div class="k">注意</div><div class="v" style="color:#ca8a04;">2</div></div>
+      <div class="stat" style="background:#ffedd5;"><div class="k">预警</div><div class="v" style="color:#ea580c;">0</div></div>
+      <div class="stat" style="background:#fee2e2;"><div class="k">严重</div><div class="v" style="color:#dc2626;">1</div></div>
+      <div class="stat"><div class="k">方向异常</div><div class="v" style="color:#ef4444;">1</div></div>
+      <div class="stat"><div class="k">保留的极端值</div><div class="v">5</div></div>
+      <div class="stat"><div class="k">边界样本</div><div class="v">0</div></div>
+    </div>
+    <div class="flag"><b>重点关注清单(预警/严重):</b> M-003[峰值145.6N·m]</div>
+  </div>
+
+  
+        <section class="zone" style="background:#e0f2fe; border:2px solid #0ea5e9;">
+          <h2>已处理 (蓝色) · 4台</h2>
+          <div class="cards">
+    <div class="card" style="border-left:4px solid #0ea5e9;">
+      <div class="card-header">
+        <span class="badge" style="background:#22c55e;">正常</span>
+        <span class="eq-id">M-001</span>
+        <span class="model">Y2-132M-4 · 上海电机厂</span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+          <div><label>额定扭矩</label><b>100.0 N·m</b></div>
+          <div><label>峰值扭矩</label><b>62.1 N·m</b> @ 1463rpm</div>
+          <div><label>预警阈值</label>80.0 N·m (80%)</div>
+          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>读数条数</label>8</div>
+          <div><label>出厂</label>2023-05-12</div>
+        </div>
+        <div class="note">材料齐全,处理完成</div>
+        <details>
+          <summary>计算依据 · 公式 · 单位</summary>
+          <div class="sect">
+            <h5>公式</h5>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+          </div>
+          <div class="sect">
+            <h5>单位对照</h5>
+            <table><tr><td>扭矩</td><td>N·m (牛顿·米)</td></tr><tr><td>转速</td><td>rpm (转/分钟)</td></tr><tr><td>温度</td><td>°C (摄氏度)</td></tr><tr><td>阈值</td><td>% (额定扭矩百分比)</td></tr><tr><td>时间</td><td>ISO 8601</td></tr></table>
+          </div>
+        </details>
+      </div>
+    </div>
+    
+    <div class="card" style="border-left:4px solid #0ea5e9;">
+      <div class="card-header">
+        <span class="badge" style="background:#facc15;">注意</span>
+        <span class="eq-id">M-002</span>
+        <span class="model">Y2-132M-4 · 上海电机厂</span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+          <div><label>额定扭矩</label><b>100.0 N·m</b></div>
+          <div><label>峰值扭矩</label><b>81.2 N·m</b> @ 1461rpm</div>
+          <div><label>预警阈值</label>80.0 N·m (80%)</div>
+          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>读数条数</label>8</div>
+          <div><label>出厂</label>2023-03-08</div>
+        </div>
+        <div class="note">材料齐全,处理完成</div>
+        <details>
+          <summary>计算依据 · 公式 · 单位</summary>
+          <div class="sect">
+            <h5>公式</h5>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+          </div>
+          <div class="sect">
+            <h5>单位对照</h5>
+            <table><tr><td>扭矩</td><td>N·m (牛顿·米)</td></tr><tr><td>转速</td><td>rpm (转/分钟)</td></tr><tr><td>温度</td><td>°C (摄氏度)</td></tr><tr><td>阈值</td><td>% (额定扭矩百分比)</td></tr><tr><td>时间</td><td>ISO 8601</td></tr></table>
+          </div>
+        </details>
+      </div>
+    </div>
+    
+    <div class="card" style="border-left:4px solid #0ea5e9;">
+      <div class="card-header">
+        <span class="badge" style="background:#ef4444;">严重</span>
+        <span class="eq-id">M-003</span>
+        <span class="model">YE3-160L-4 · 佳木斯电机</span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+          <div><label>额定扭矩</label><b>100.0 N·m</b></div>
+          <div><label>峰值扭矩</label><b>145.6 N·m</b> @ 820rpm</div>
+          <div><label>预警阈值</label>80.0 N·m (80%)</div>
+          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>读数条数</label>23</div>
+          <div><label>出厂</label>2022-11-20</div>
+        </div>
+        <div class="ev"><b>⚠ 保留的极端值(不参与平均):</b><ul><li>2026-06-12T10:37:52 → <b>145.6 N·m</b> @ 820rpm (CW)</li><li>2026-06-12T10:38:01 → <b>138.2 N·m</b> @ 915rpm (CW)</li><li>2026-06-12T10:42:13 → <b>128.4 N·m</b> @ 1035rpm (CW)</li><li>2026-06-12T10:43:28 → <b>135.9 N·m</b> @ 952rpm (CW)</li><li>2026-06-12T10:44:51 → <b>119.6 N·m</b> @ 1140rpm (CW)</li></ul></div><div class="note">材料齐全,处理完成</div>
+        <details>
+          <summary>计算依据 · 公式 · 单位</summary>
+          <div class="sect">
+            <h5>公式</h5>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+          </div>
+          <div class="sect">
+            <h5>单位对照</h5>
+            <table><tr><td>扭矩</td><td>N·m (牛顿·米)</td></tr><tr><td>转速</td><td>rpm (转/分钟)</td></tr><tr><td>温度</td><td>°C (摄氏度)</td></tr><tr><td>阈值</td><td>% (额定扭矩百分比)</td></tr><tr><td>时间</td><td>ISO 8601</td></tr></table>
+          </div>
+        </details>
+      </div>
+    </div>
+    
+    <div class="card" style="border-left:4px solid #0ea5e9;">
+      <div class="card-header">
+        <span class="badge" style="background:#22c55e;">正常</span>
+        <span class="eq-id">M-004</span>
+        <span class="model">Y2-132S-4 · 湘潭电机</span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+          <div><label>额定扭矩</label><b>100.0 N·m</b></div>
+          <div><label>峰值扭矩</label><b>64.7 N·m</b> @ 1440rpm</div>
+          <div><label>预警阈值</label>80.0 N·m (80%)</div>
+          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>读数条数</label>8</div>
+          <div><label>出厂</label>2024-01-15</div>
+        </div>
+        <div class="dr"><b>⇄ 方向异常:</b> 同一设备读数出现双向(正/反)方向,存在方向符号写反风险</div><div class="note">材料齐全,处理完成</div>
+        <details>
+          <summary>计算依据 · 公式 · 单位</summary>
+          <div class="sect">
+            <h5>公式</h5>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+          </div>
+          <div class="sect">
+            <h5>单位对照</h5>
+            <table><tr><td>扭矩</td><td>N·m (牛顿·米)</td></tr><tr><td>转速</td><td>rpm (转/分钟)</td></tr><tr><td>温度</td><td>°C (摄氏度)</td></tr><tr><td>阈值</td><td>% (额定扭矩百分比)</td></tr><tr><td>时间</td><td>ISO 8601</td></tr></table>
+          </div>
+        </details>
+      </div>
+    </div>
+    </div>
+        </section>
+        
+        <section class="zone" style="background:#fef3c7; border:2px solid #d97706;">
+          <h2>待补材料 (琥珀色) · 1台</h2>
+          <div class="cards">
+    <div class="card" style="border-left:4px solid #d97706;">
+      <div class="card-header">
+        <span class="badge" style="background:#22c55e;">正常</span>
+        <span class="eq-id">M-005</span>
+        <span class="model">YE3-132M-4 · 皖南电机</span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+          <div><label>额定扭矩</label><b>100.0 N·m</b></div>
+          <div><label>峰值扭矩</label><b>0.0 N·m</b> @ 0rpm</div>
+          <div><label>预警阈值</label>80.0 N·m (80%)</div>
+          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>读数条数</label>0</div>
+          <div><label>出厂</label>2023-09-02</div>
+        </div>
+        <div class="note">缺少扭矩读数数据,待补充</div>
+        <details>
+          <summary>计算依据 · 公式 · 单位</summary>
+          <div class="sect">
+            <h5>公式</h5>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+          </div>
+          <div class="sect">
+            <h5>单位对照</h5>
+            <table><tr><td>扭矩</td><td>N·m (牛顿·米)</td></tr><tr><td>转速</td><td>rpm (转/分钟)</td></tr><tr><td>温度</td><td>°C (摄氏度)</td></tr><tr><td>阈值</td><td>% (额定扭矩百分比)</td></tr><tr><td>时间</td><td>ISO 8601</td></tr></table>
+          </div>
+        </details>
+      </div>
+    </div>
+    </div>
+        </section>
+        
+        <section class="zone" style="background:#ede9fe; border:2px solid #7c3aed;">
+          <h2>人工改判 (紫色) · 1台</h2>
+          <div class="cards">
+    <div class="card" style="border-left:4px solid #7c3aed;">
+      <div class="card-header">
+        <span class="badge" style="background:#facc15;">注意</span>
+        <span class="eq-id">M-006</span>
+        <span class="model">Y2-160M-4 · 山东华力</span>
+      </div>
+      <div class="card-body">
+        <div class="grid">
+          <div><label>额定扭矩</label><b>100.0 N·m</b></div>
+          <div><label>峰值扭矩</label><b>86.3 N·m</b> @ 1462rpm</div>
+          <div><label>预警阈值</label>80.0 N·m (80%)</div>
+          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>读数条数</label>8</div>
+          <div><label>出厂</label>2023-07-18</div>
+        </div>
+        <div class="note">人工改判: 车间王主任@2026-06-12 17:30:22 → 预警阈值调至 95.0%</div>
+        <details>
+          <summary>计算依据 · 公式 · 单位</summary>
+          <div class="sect">
+            <h5>公式</h5>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 95.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+          </div>
+          <div class="sect">
+            <h5>单位对照</h5>
+            <table><tr><td>扭矩</td><td>N·m (牛顿·米)</td></tr><tr><td>转速</td><td>rpm (转/分钟)</td></tr><tr><td>温度</td><td>°C (摄氏度)</td></tr><tr><td>阈值</td><td>% (额定扭矩百分比)</td></tr><tr><td>时间</td><td>ISO 8601</td></tr></table>
+          </div>
+        </details>
+      </div>
+    </div>
+    </div>
+        </section>
+        
+</body>
+</html>

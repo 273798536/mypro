@@ -41,7 +41,6 @@ def run(config: RunConfig) -> tuple[List[ProcessedRecord], List[ConfirmationRequ
     print_terminal_summary(summary, records, confirms)
 
     page_path = render_page_summary(records, summary, config, config.output_dir)
-    json_path = export_json_report(records, summary, confirms, config, config.output_dir)
 
     prev_run = os.path.join(config.output_dir, "torque_warning_report.json")
     prev_records = None
@@ -77,6 +76,8 @@ def run(config: RunConfig) -> tuple[List[ProcessedRecord], List[ConfirmationRequ
                 prev_records.append(rec)
         except Exception as e:
             print(f"[INFO] 上次运行数据读取失败,跳过参数对比: {e}")
+
+    json_path = export_json_report(records, summary, confirms, config, config.output_dir)
 
     if config.param_level > 1:
         cmp_path = export_param_compare_markdown(prev_records, records, prev_config, config, config.output_dir)
