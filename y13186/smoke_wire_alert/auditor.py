@@ -50,17 +50,19 @@ class ChangeAuditor:
         reason: str,
         is_temporary: bool = True,
     ) -> WindTunnelSmokeAlert:
-        old_status = alert.status
+        old_value = getattr(alert, field_name, None)
         alert = self.record_change(
             alert, field_name, new_value, operator, reason, is_temporary
         )
-        if old_status != alert.status:
+        new_value_check = getattr(alert, field_name, None)
+        if old_value != new_value_check:
+            old_status_val = alert.status.value
             self.record_change(
                 alert,
                 "status",
                 ProcessingStatus.MANUAL_OVERRIDDEN.value,
                 operator,
-                f"人工介入修改 {field_name}，状态标记为人工覆盖",
+                f"人工介入修改 {field_name} ({old_value} -> {new_value_check})，状态标记为人工覆盖",
                 is_temporary,
             )
             alert.status = ProcessingStatus.MANUAL_OVERRIDDEN

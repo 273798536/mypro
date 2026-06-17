@@ -1,7 +1,7 @@
 {
   "id": "rec004",
   "source": "三号风洞C3传感器",
-  "record_time": "2026-06-14T01:27:18.038990",
+  "record_time": "2026-06-18T02:22:22.254029",
   "raw_fields": {
     "风洞烟线浓度": "30",
     "烟线浓度单位": "mg/m^3",
@@ -26,11 +26,11 @@
   "attachments": [],
   "manual_notes": [
     {
-      "id": "12952e4f",
+      "id": "8caa2b9d",
       "author": "阿岑",
       "content": "风向昨晚设备被踢了一下符号，待确认",
       "judgment": "暂不处理",
-      "timestamp": "2026-06-14T01:37:18.038990",
+      "timestamp": "2026-06-18T02:32:22.254029",
       "aligns_with_alert": null,
       "misalignment_reason": "系统未得出明确结论(可能阻塞在公式/单位/阈值)，无法与人工备注自动对齐，请先解除阻塞后重跑。"
     }

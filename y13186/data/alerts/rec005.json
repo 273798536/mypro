@@ -1,7 +1,7 @@
 {
   "id": "rec005",
   "source": "二号风洞B2传感器",
-  "record_time": "2026-06-14T01:57:18.038990",
+  "record_time": "2026-06-18T02:52:22.254029",
   "raw_fields": {
     "烟浓度": "18",
     "烟浓度单位": "mg/m3",
@@ -16,40 +16,19 @@
   "wind_direction_sign_correct": true,
   "formula": "smoke_density",
   "formula_result": 18.0,
-  "threshold_high": 80.0,
-  "threshold_low": 3.0,
+  "threshold_high": null,
+  "threshold_low": null,
   "threshold_unit": null,
-  "status": "normal",
-  "block_reason": null,
-  "block_detail": null,
+  "status": "blocked",
+  "block_reason": "threshold_missing",
+  "block_detail": "高阈值和低阈值均缺失。下一步处理：检查设备铭牌 'threshold_high' / 'threshold_low' 字段，或从历史配置中补录。",
   "attachments": [],
   "manual_notes": [],
-  "history": [
-    {
-      "id": "c1e17a92",
-      "field_name": "threshold_high",
-      "old_value": null,
-      "new_value": 80.0,
-      "operator": "阿岑",
-      "reason": "现场确认放宽阈值",
-      "timestamp": "2026-06-14T02:12:18.298159",
-      "is_temporary": true
-    },
-    {
-      "id": "7ad5a623",
-      "field_name": "threshold_low",
-      "old_value": null,
-      "new_value": 3.0,
-      "operator": "阿岑",
-      "reason": "现场确认放宽阈值",
-      "timestamp": "2026-06-14T02:12:18.298224",
-      "is_temporary": true
-    }
-  ],
-  "jump_detected": false,
+  "history": [],
+  "jump_detected": true,
   "jump_cause": "unit_changed",
   "jump_detail": "单位发生变更(wind_speed_unit: m/s -> None)，可能导致 30.0 -> 18.0 的数值跳变。建议：核对本次是否真的更换了测量单位，或验证换算系数是否正确。",
-  "previous_result": 18.0,
-  "next_step": null,
-  "final_judgment": "正常：计算值在阈值范围内"
+  "previous_result": null,
+  "next_step": "处理步骤：1) 从设备铭牌或配置文件中补录 threshold_high 和/或 threshold_low；2) 确认阈值单位与计算结果单位一致；3) 重跑处理。",
+  "final_judgment": null
 }

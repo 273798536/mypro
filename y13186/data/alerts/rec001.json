@@ -1,7 +1,7 @@
 {
   "id": "rec001",
   "source": "一号风洞A1传感器",
-  "record_time": "2026-06-14T00:12:18.038990",
+  "record_time": "2026-06-18T01:07:22.254029",
   "raw_fields": {
     "烟线浓度": "25.0",
     "烟浓度单位": "mg/m3",
@@ -21,8 +21,8 @@
   "wind_direction_sign_correct": true,
   "formula": "smoke_density",
   "formula_result": 25.0,
-  "threshold_high": 80.0,
-  "threshold_low": 3.0,
+  "threshold_high": 50.0,
+  "threshold_low": 5.0,
   "threshold_unit": "mg/m^3",
   "status": "normal",
   "block_reason": null,
@@ -30,41 +30,20 @@
   "attachments": [],
   "manual_notes": [
     {
-      "id": "4c96ff84",
+      "id": "b66b08b4",
       "author": "阿岑",
       "content": "巡检时观察到烟色正常，传感器读数偏低，怀疑正常范围",
       "judgment": "正常",
-      "timestamp": "2026-06-14T00:20:18.038990",
+      "timestamp": "2026-06-18T01:15:22.254029",
       "aligns_with_alert": true,
       "misalignment_reason": null
     }
   ],
-  "history": [
-    {
-      "id": "2b283514",
-      "field_name": "threshold_high",
-      "old_value": 50.0,
-      "new_value": 80.0,
-      "operator": "阿岑",
-      "reason": "现场确认放宽阈值",
-      "timestamp": "2026-06-14T02:12:18.295122",
-      "is_temporary": true
-    },
-    {
-      "id": "dedeebc8",
-      "field_name": "threshold_low",
-      "old_value": 5.0,
-      "new_value": 3.0,
-      "operator": "阿岑",
-      "reason": "现场确认放宽阈值",
-      "timestamp": "2026-06-14T02:12:18.295185",
-      "is_temporary": true
-    }
-  ],
+  "history": [],
   "jump_detected": false,
   "jump_cause": null,
   "jump_detail": null,
-  "previous_result": 25.0,
+  "previous_result": null,
   "next_step": null,
   "final_judgment": "正常：计算值在阈值范围内"
 }

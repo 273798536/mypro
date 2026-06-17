@@ -1,7 +1,7 @@
 {
   "id": "rec004",
   "source": "三号风洞C3传感器",
-  "record_time": "2026-06-14T01:27:18.038990",
+  "record_time": "2026-06-18T02:22:22.254029",
   "raw_fields": {
     "风洞烟线浓度": "30",
     "烟线浓度单位": "mg/m^3",
@@ -17,50 +17,29 @@
   "wind_direction_sign_correct": false,
   "formula": "smoke_density",
   "formula_result": 30.0,
-  "threshold_high": 80.0,
-  "threshold_low": 3.0,
+  "threshold_high": null,
+  "threshold_low": null,
   "threshold_unit": null,
-  "status": "normal",
-  "block_reason": null,
-  "block_detail": null,
+  "status": "blocked",
+  "block_reason": "threshold_missing",
+  "block_detail": "高阈值和低阈值均缺失。下一步处理：检查设备铭牌 'threshold_high' / 'threshold_low' 字段，或从历史配置中补录。",
   "attachments": [],
   "manual_notes": [
     {
-      "id": "12952e4f",
+      "id": "8caa2b9d",
       "author": "阿岑",
       "content": "风向昨晚设备被踢了一下符号，待确认",
       "judgment": "暂不处理",
-      "timestamp": "2026-06-14T01:37:18.038990",
+      "timestamp": "2026-06-18T02:32:22.254029",
       "aligns_with_alert": null,
-      "misalignment_reason": null
+      "misalignment_reason": "系统未得出明确结论(可能阻塞在公式/单位/阈值)，无法与人工备注自动对齐，请先解除阻塞后重跑。"
     }
   ],
-  "history": [
-    {
-      "id": "337dcb4e",
-      "field_name": "threshold_high",
-      "old_value": null,
-      "new_value": 80.0,
-      "operator": "阿岑",
-      "reason": "现场确认放宽阈值",
-      "timestamp": "2026-06-14T02:12:18.297648",
-      "is_temporary": true
-    },
-    {
-      "id": "409ac850",
-      "field_name": "threshold_low",
-      "old_value": null,
-      "new_value": 3.0,
-      "operator": "阿岑",
-      "reason": "现场确认放宽阈值",
-      "timestamp": "2026-06-14T02:12:18.297664",
-      "is_temporary": true
-    }
-  ],
+  "history": [],
   "jump_detected": false,
   "jump_cause": null,
   "jump_detail": null,
-  "previous_result": 30.0,
-  "next_step": "风向 -90.0° 为负值，符号疑似写反。下一步处理：加360°修正为 270.0°，或联系交班人确认是否应为正角度。",
-  "final_judgment": "正常：计算值在阈值范围内"
+  "previous_result": null,
+  "next_step": "处理步骤：1) 从设备铭牌或配置文件中补录 threshold_high 和/或 threshold_low；2) 确认阈值单位与计算结果单位一致；3) 重跑处理。",
+  "final_judgment": null
 }

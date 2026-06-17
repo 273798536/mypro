@@ -1,7 +1,7 @@
 {
   "id": "rec002",
   "source": "一号风洞A1传感器",
-  "record_time": "2026-06-14T00:42:18.038990",
+  "record_time": "2026-06-18T01:37:22.254029",
   "raw_fields": {
     "smoke_concentration": "68.5",
     "smoke_density_unit": "mg/m^3",
@@ -24,30 +24,40 @@
   "threshold_high": 65.0,
   "threshold_low": 5.0,
   "threshold_unit": "mg/m^3",
-  "status": "alert",
+  "status": "manual_overridden",
   "block_reason": null,
   "block_detail": null,
   "attachments": [],
   "manual_notes": [
     {
-      "id": "6b8cdeae",
+      "id": "7e132668",
       "author": "阿岑",
       "content": "现场目视烟雾明显，传感器读数偏高",
       "judgment": "报警",
-      "timestamp": "2026-06-14T00:50:18.038990",
-      "aligns_with_alert": true,
-      "misalignment_reason": null
+      "timestamp": "2026-06-18T01:45:22.254029",
+      "aligns_with_alert": null,
+      "misalignment_reason": "系统未得出明确结论(可能阻塞在公式/单位/阈值)，无法与人工备注自动对齐，请先解除阻塞后重跑。"
     }
   ],
   "history": [
     {
-      "id": "c0ece2b0",
+      "id": "eb627fad",
       "field_name": "threshold_high",
       "old_value": null,
       "new_value": 65.0,
       "operator": "阿岑",
       "reason": "现场确认短时烟雾是因为实验启动阶段，临时上调阈值",
-      "timestamp": "2026-06-14T02:12:18.039577",
+      "timestamp": "2026-06-18T03:07:22.255113",
+      "is_temporary": true
+    },
+    {
+      "id": "161e1917",
+      "field_name": "status",
+      "old_value": "pending",
+      "new_value": "manual_overridden",
+      "operator": "阿岑",
+      "reason": "人工介入修改 threshold_high (None -> 65.0)，状态标记为人工覆盖",
+      "timestamp": "2026-06-18T03:07:22.255174",
       "is_temporary": true
     }
   ],

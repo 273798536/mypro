@@ -1,7 +1,7 @@
 {
   "id": "rec001",
   "source": "一号风洞A1传感器",
-  "record_time": "2026-06-14T00:12:18.038990",
+  "record_time": "2026-06-18T01:07:22.254029",
   "raw_fields": {
     "烟线浓度": "25.0",
     "烟浓度单位": "mg/m3",
@@ -30,11 +30,11 @@
   "attachments": [],
   "manual_notes": [
     {
-      "id": "4c96ff84",
+      "id": "b66b08b4",
       "author": "阿岑",
       "content": "巡检时观察到烟色正常，传感器读数偏低，怀疑正常范围",
       "judgment": "正常",
-      "timestamp": "2026-06-14T00:20:18.038990",
+      "timestamp": "2026-06-18T01:15:22.254029",
       "aligns_with_alert": true,
       "misalignment_reason": null
     }

@@ -1,7 +1,7 @@
 {
   "id": "rec003",
   "source": "二号风洞B2传感器",
-  "record_time": "2026-06-14T01:12:18.038990",
+  "record_time": "2026-06-18T02:07:22.254029",
   "raw_fields": {
     "烟浓度": "待校准_公式缺失",
     "烟浓度单位": "不认识的单位",
@@ -16,36 +16,15 @@
   "wind_direction_sign_correct": null,
   "formula": null,
   "formula_result": null,
-  "threshold_high": 80.0,
-  "threshold_low": 3.0,
+  "threshold_high": null,
+  "threshold_low": null,
   "threshold_unit": null,
   "status": "blocked",
   "block_reason": "unit_mismatch",
   "block_detail": "烟浓度单位 '不认识的单位' 不识别。支持: mg/m3, mg/m^3, mg每立方米, μg/m3, μg/m^3, ug/m3, g/m3, g/m^3",
   "attachments": [],
   "manual_notes": [],
-  "history": [
-    {
-      "id": "181214e8",
-      "field_name": "threshold_high",
-      "old_value": null,
-      "new_value": 80.0,
-      "operator": "阿岑",
-      "reason": "现场确认放宽阈值",
-      "timestamp": "2026-06-14T02:12:18.297426",
-      "is_temporary": true
-    },
-    {
-      "id": "dc0fd37a",
-      "field_name": "threshold_low",
-      "old_value": null,
-      "new_value": 3.0,
-      "operator": "阿岑",
-      "reason": "现场确认放宽阈值",
-      "timestamp": "2026-06-14T02:12:18.297476",
-      "is_temporary": true
-    }
-  ],
+  "history": [],
   "jump_detected": false,
   "jump_cause": null,
   "jump_detail": null,

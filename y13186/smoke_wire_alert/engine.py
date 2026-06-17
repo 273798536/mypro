@@ -277,6 +277,9 @@ class ProcessingEngine:
         return True, None
 
     def process(self, alert: WindTunnelSmokeAlert) -> WindTunnelSmokeAlert:
+        original_status = alert.status
+        was_manual = original_status == ProcessingStatus.MANUAL_OVERRIDDEN
+
         alert.status = ProcessingStatus.PROCESSING
         alert.next_step = None
         alert.block_detail = None
@@ -287,10 +290,13 @@ class ProcessingEngine:
 
         unit_ok, unit_err = self.validate_units(alert)
         if not unit_ok:
-            alert.status = ProcessingStatus.BLOCKED
-            alert.block_reason = BlockReason.UNIT_MISMATCH
-            alert.block_detail = unit_err
-            alert.next_step = self._next_step_for_block(alert.block_reason, unit_err)
+            if not was_manual:
+                alert.status = ProcessingStatus.BLOCKED
+                alert.block_reason = BlockReason.UNIT_MISMATCH
+                alert.block_detail = unit_err
+                alert.next_step = self._next_step_for_block(alert.block_reason, unit_err)
+            else:
+                alert.next_step = unit_err + "（记录已被人工覆盖，请先确认是否需要解除覆盖）"
             return alert
 
         dir_ok, dir_err = self.check_wind_direction_sign(alert)
@@ -299,20 +305,31 @@ class ProcessingEngine:
 
         formula_ok, formula_err = self.compute_formula(alert)
         if not formula_ok:
-            alert.status = ProcessingStatus.BLOCKED
-            alert.block_reason = BlockReason.FORMULA_ERROR
-            alert.block_detail = formula_err
-            alert.next_step = self._next_step_for_block(alert.block_reason, formula_err)
+            if not was_manual:
+                alert.status = ProcessingStatus.BLOCKED
+                alert.block_reason = BlockReason.FORMULA_ERROR
+                alert.block_detail = formula_err
+                alert.next_step = self._next_step_for_block(alert.block_reason, formula_err)
+            else:
+                if not alert.next_step:
+                    alert.next_step = formula_err + "（记录已被人工覆盖）"
             return alert
 
         th_ok, th_err = self.check_thresholds(alert)
         if not th_ok:
-            if alert.status == ProcessingStatus.PROCESSING:
-                alert.status = ProcessingStatus.BLOCKED
-            alert.block_reason = BlockReason.THRESHOLD_MISSING
-            alert.block_detail = th_err
-            alert.next_step = self._next_step_for_block(alert.block_reason, th_err)
+            if not was_manual:
+                if alert.status == ProcessingStatus.PROCESSING:
+                    alert.status = ProcessingStatus.BLOCKED
+                alert.block_reason = BlockReason.THRESHOLD_MISSING
+                alert.block_detail = th_err
+                alert.next_step = self._next_step_for_block(alert.block_reason, th_err)
+            else:
+                if not alert.next_step:
+                    alert.next_step = th_err + "（记录已被人工覆盖）"
             return alert
+
+        if was_manual:
+            alert.status = ProcessingStatus.MANUAL_OVERRIDDEN
 
         return alert
 

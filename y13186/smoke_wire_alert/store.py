@@ -31,15 +31,20 @@ class AlertStore:
             return []
 
     def _write_index(self, ids: List[str]) -> None:
-        with open(self.index_path, "w", encoding="utf-8") as f:
+        tmp = self.index_path + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
             json.dump(ids, f, ensure_ascii=False, indent=2)
+        os.replace(tmp, self.index_path)
 
     def save(self, alert: WindTunnelSmokeAlert, backup: bool = True) -> str:
         if backup:
             self._backup(alert)
         path = os.path.join(self.alerts_dir, f"{alert.id}.json")
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(alert.to_json())
+        tmp = path + ".tmp"
+        content = alert.to_json()
+        with open(tmp, "w", encoding="utf-8") as f:
+            f.write(content)
+        os.replace(tmp, path)
         index = self._read_index()
         if alert.id not in index:
             index.append(alert.id)
@@ -47,22 +52,39 @@ class AlertStore:
         return path
 
     def save_batch(self, alerts: List[WindTunnelSmokeAlert]) -> List[str]:
-        return [self.save(a) for a in alerts]
+        paths = []
+        for a in alerts:
+            try:
+                paths.append(self.save(a))
+            except Exception as e:
+                raise RuntimeError(f"保存记录 {a.id} 失败: {e}") from e
+        return paths
 
     def load(self, alert_id: str) -> Optional[WindTunnelSmokeAlert]:
         path = os.path.join(self.alerts_dir, f"{alert_id}.json")
         if not os.path.exists(path):
             return None
-        with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        return WindTunnelSmokeAlert.from_dict(data)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"记录 {alert_id} 的 JSON 损坏: {e}") from e
+        except Exception as e:
+            raise RuntimeError(f"读取记录 {alert_id} 失败: {e}") from e
+        try:
+            return WindTunnelSmokeAlert.from_dict(data)
+        except Exception as e:
+            raise RuntimeError(f"反序列化记录 {alert_id} 失败: {e}") from e
 
     def load_all(self) -> List[WindTunnelSmokeAlert]:
         alerts = []
         for aid in self._read_index():
-            a = self.load(aid)
-            if a:
-                alerts.append(a)
+            try:
+                a = self.load(aid)
+                if a:
+                    alerts.append(a)
+            except Exception as e:
+                raise RuntimeError(f"加载索引中的记录 {aid} 失败: {e}") from e
         return alerts
 
     def _backup(self, alert: WindTunnelSmokeAlert) -> None:
