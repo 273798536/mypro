@@ -13,6 +13,7 @@ const initialState: AppState = {
   abnormalRecords: [],
   parameterSets: [],
   selectedObjectId: null,
+  selectedNoteId: null,
   hoveredObjectId: null,
   currentTime: Date.now(),
   timeRange: { start: Date.now() - 7 * 24 * 60 * 60 * 1000, end: Date.now() },
@@ -52,8 +53,20 @@ export const useAppStore = create<AppState & AppActions>()(
       selectObject: (id: string | null) => {
         set(state => ({
           selectedObjectId: id,
-          summary: updateSummary({ ...state, selectedObjectId: id })
+          selectedNoteId: null,
+          summary: updateSummary({ ...state, selectedObjectId: id, selectedNoteId: null })
         }));
+      },
+
+      selectNote: (id: string | null) => {
+        set(state => {
+          const note = id ? state.notes.find(n => n.id === id) : null;
+          return {
+            selectedNoteId: id,
+            selectedObjectId: note ? note.objectId : state.selectedObjectId,
+            summary: updateSummary({ ...state, selectedNoteId: id, selectedObjectId: note ? note.objectId : state.selectedObjectId })
+          };
+        });
       },
 
       hoverObject: (id: string | null) => {

@@ -88,6 +88,7 @@ export interface AppState {
   abnormalRecords: AbnormalRecord[];
   parameterSets: ParameterSet[];
   selectedObjectId: string | null;
+  selectedNoteId: string | null;
   hoveredObjectId: string | null;
   currentTime: number;
   timeRange: { start: number; end: number };
@@ -98,6 +99,7 @@ export interface AppState {
 
 export interface AppActions {
   selectObject: (id: string | null) => void;
+  selectNote: (id: string | null) => void;
   hoverObject: (id: string | null) => void;
   setCurrentTime: (time: number) => void;
   setTimeRange: (range: { start: number; end: number }) => void;

@@ -15,9 +15,10 @@ const unitFactors: Record<string, Record<string, number>> = {
   'cm³': { 'm³': 1e-6, 'mm³': 1000, 'L': 0.001, 'ft³': 3.53147e-5, 'cm³': 1 },
   'L': { 'm³': 0.001, 'cm³': 1000, 'mm³': 1e6, 'ft³': 0.0353147, 'L': 1 },
   'ft³': { 'm³': 0.0283168, 'cm³': 28316.8, 'L': 28.3168, 'mm³': 2.83168e7, 'ft³': 1 },
-  'm²': { 'cm²': 10000, 'mm²': 1e6, 'ft²': 10.7639, 'm²': 1 },
-  'cm²': { 'm²': 0.0001, 'mm²': 100, 'ft²': 0.00107639, 'cm²': 1 },
-  'ft²': { 'm²': 0.092903, 'cm²': 929.03, 'mm²': 92903, 'ft²': 1 },
+  'm²': { 'cm²': 10000, 'mm²': 1e6, 'ft²': 10.7639, 'dm²': 100, 'm²': 1 },
+  'cm²': { 'm²': 0.0001, 'mm²': 100, 'ft²': 0.00107639, 'dm²': 0.01, 'cm²': 1 },
+  'dm²': { 'm²': 0.01, 'cm²': 100, 'mm²': 10000, 'ft²': 0.107639, 'dm²': 1 },
+  'ft²': { 'm²': 0.092903, 'cm²': 929.03, 'mm²': 92903, 'dm²': 9.2903, 'ft²': 1 },
   'Hz': { 'kHz': 0.001, 'MHz': 1e-6, 'Hz': 1 },
   'kHz': { 'Hz': 1000, 'MHz': 0.001, 'kHz': 1 },
   'MHz': { 'Hz': 1e6, 'kHz': 1000, 'MHz': 1 },
@@ -43,6 +44,7 @@ const unitDisplayNames: Record<string, string> = {
   'ft³': '立方英尺',
   'm²': '平方米',
   'cm²': '平方厘米',
+  'dm²': '平方分米',
   'ft²': '平方英尺',
   'Hz': '赫兹',
   'kHz': '千赫',
@@ -56,8 +58,8 @@ export function detectUnit(rawValue: string): { value: number; unit: string; raw
   const trimmed = rawValue.trim();
   
   const patterns = [
-    /^([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)\s*(s|ms|μs|min|m|cm|mm|km|ft|in|m³|cm³|L|ft³|m²|cm²|ft²|Hz|kHz|MHz|dB|°C|%)?$/i,
-    /^([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)\s*(秒|毫秒|微秒|分钟|米|厘米|毫米|千米|英尺|英寸|立方米|立方厘米|升|立方英尺|平方米|平方厘米|平方英尺|赫兹|千赫|兆赫|分贝|摄氏度|%)?$/,
+    /^([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)\s*(s|ms|μs|min|m|cm|mm|km|ft|in|m³|cm³|dm³|L|ft³|m²|cm²|dm²|ft²|Hz|kHz|MHz|dB|°C|%)?$/i,
+    /^([-+]?\d*\.?\d+(?:[eE][-+]?\d+)?)\s*(秒|毫秒|微秒|分钟|米|厘米|毫米|千米|英尺|英寸|立方米|立方厘米|立方分米|升|立方英尺|平方米|平方厘米|平方分米|平方英尺|赫兹|千赫|兆赫|分贝|摄氏度|%)?$/,
   ];
 
   const unitMap: Record<string, string> = {
@@ -73,10 +75,12 @@ export function detectUnit(rawValue: string): { value: number; unit: string; raw
     '英寸': 'in',
     '立方米': 'm³',
     '立方厘米': 'cm³',
+    '立方分米': 'dm³',
     '升': 'L',
     '立方英尺': 'ft³',
     '平方米': 'm²',
     '平方厘米': 'cm²',
+    '平方分米': 'dm²',
     '平方英尺': 'ft²',
     '赫兹': 'Hz',
     '千赫': 'kHz',
@@ -155,9 +159,11 @@ export function normalizeToSI(value: number, unit: string): { value: number; uni
     'ft': 'm',
     'in': 'm',
     'cm³': 'm³',
+    'dm³': 'm³',
     'L': 'm³',
     'ft³': 'm³',
     'cm²': 'm²',
+    'dm²': 'm²',
     'ft²': 'm²',
     'kHz': 'Hz',
     'MHz': 'Hz',

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Plus, History, AlertTriangle, CheckCircle, Clock, User, Tag, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 import { getUnitDisplayName } from '../utils/unitConverter';
@@ -10,6 +10,9 @@ export function MaintenanceNotesPanel() {
     notes,
     abnormalRecords,
     selectedObjectId,
+    selectedNoteId,
+    timeRange,
+    selectNote,
     addNote,
     calculateReverb,
     confirmAbnormal,
@@ -18,6 +21,13 @@ export function MaintenanceNotesPanel() {
   } = useAppStore();
 
   const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedNoteId) {
+      setExpandedNoteId(selectedNoteId);
+    }
+  }, [selectedNoteId]);
+
   const [showAddForm, setShowAddForm] = useState(false);
   const [newNote, setNewNote] = useState({
     content: '',
@@ -30,8 +40,12 @@ export function MaintenanceNotesPanel() {
     if (selectedObjectId) {
       result = notes.filter(n => n.objectId === selectedObjectId);
     }
+    result = result.filter(n => {
+      const t = new Date(n.timestamp).getTime();
+      return t >= timeRange.start && t <= timeRange.end;
+    });
     return result.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [notes, selectedObjectId]);
+  }, [notes, selectedObjectId, timeRange]);
 
   const selectedObject = objects.find(o => o.id === selectedObjectId);
 
@@ -203,16 +217,26 @@ export function MaintenanceNotesPanel() {
 
               return (
                 <div
-                  key={note.id}
-                  className={`rounded-lg border transition-all ${
-                    abnormal && !abnormal.confirmed
+                key={note.id}
+                className={`rounded-lg border transition-all ${
+                  note.id === selectedNoteId
+                    ? 'border-lab-accent bg-lab-accent/10 shadow-lg shadow-lab-accent/20'
+                    : abnormal && !abnormal.confirmed
                       ? 'border-lab-warning border-glow bg-lab-bg/80'
                       : 'border-lab-border bg-lab-bg/50 hover:border-lab-accent/50'
-                  }`}
-                >
+                }`}
+              >
                   <div
                     className="p-3 cursor-pointer"
-                    onClick={() => setExpandedNoteId(expandedNoteId === note.id ? null : note.id)}
+                    onClick={() => {
+                      const newExpanded = expandedNoteId === note.id ? null : note.id;
+                      setExpandedNoteId(newExpanded);
+                      if (newExpanded) {
+                        selectNote(note.id);
+                      } else {
+                        selectNote(null);
+                      }
+                    }}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">

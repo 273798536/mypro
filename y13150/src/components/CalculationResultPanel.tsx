@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Calculator, ArrowRight, ChevronDown, ChevronUp, RefreshCw, SplitSquareVertical } from 'lucide-react';
 import { useAppStore } from '../store/useAppStore';
 
@@ -142,6 +142,9 @@ export function CalculationResultPanel() {
     results,
     parameterSets,
     selectedObjectId,
+    selectedNoteId,
+    timeRange,
+    selectNote,
     compareMode,
     selectedParamSetIds,
     setSelectedParamSet,
@@ -149,17 +152,27 @@ export function CalculationResultPanel() {
     recalculateAll
   } = useAppStore();
 
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
+  const [selectedNoteIdLocal, setSelectedNoteIdLocal] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (selectedNoteId) {
+      setSelectedNoteIdLocal(selectedNoteId);
+    }
+  }, [selectedNoteId]);
 
   const filteredNotes = useMemo(() => {
     let result = notes;
     if (selectedObjectId) {
       result = notes.filter(n => n.objectId === selectedObjectId);
     }
+    result = result.filter(n => {
+      const t = new Date(n.timestamp).getTime();
+      return t >= timeRange.start && t <= timeRange.end;
+    });
     return result.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-  }, [notes, selectedObjectId]);
+  }, [notes, selectedObjectId, timeRange]);
 
-  const displayNoteId = selectedNoteId || filteredNotes[0]?.id;
+  const displayNoteId = selectedNoteIdLocal || filteredNotes[0]?.id;
 
   return (
     <div className="h-full flex flex-col bg-lab-panel border-l border-lab-border">
@@ -194,7 +207,10 @@ export function CalculationResultPanel() {
               <label className="block text-xs text-gray-400 mb-1">选择备注</label>
               <select
                 value={displayNoteId || ''}
-                onChange={(e) => setSelectedNoteId(e.target.value)}
+                onChange={(e) => {
+                  setSelectedNoteIdLocal(e.target.value || null);
+                  selectNote(e.target.value || null);
+                }}
                 className="w-full px-3 py-2 bg-lab-bg border border-lab-border rounded-lg text-white text-sm focus:outline-none focus:border-lab-accent"
               >
                 {filteredNotes.map((note) => (

@@ -121,9 +121,9 @@ export const mockNotes: MaintenanceNote[] = [
     id: 'note-004',
     objectId: 'obj-003',
     content: '补充：东墙吸音板实际面积 250 平方分米',
-    rawValue: '250 cm²',
-    unit: 'cm²',
-    convertedValue: 0.025,
+    rawValue: '250 dm²',
+    unit: 'dm²',
+    convertedValue: 2.5,
     timestamp: '2026-06-10T14:20:00Z',
     recorder: '小林',
     version: 2,
@@ -211,10 +211,10 @@ export const mockAbnormalRecords: AbnormalRecord[] = [
     id: 'abn-001',
     noteId: 'note-004',
     type: 'unit_mismatch',
-    reason: '数值与历史均值相差 100 倍，疑似单位写错导致数量级错误。历史记录使用单位为 m²，当前使用 cm²，请注意单位换算',
+    reason: '历史记录使用单位为 m²，当前使用 dm²，系统已自动换算为 2.5 m² 与原值一致。请确认单位换算是否正确',
     impactScope: [
       '影响对象 obj-003 的 2 条历史记录',
-      '声学参数计算基准将受到影响'
+      '单位已自动换算，数值保持一致'
     ],
     confirmed: false
   },

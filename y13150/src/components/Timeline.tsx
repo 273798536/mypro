@@ -10,6 +10,8 @@ export function Timeline() {
     currentTime,
     setCurrentTime,
     selectedObjectId,
+    selectedNoteId,
+    selectNote,
     objects
   } = useAppStore();
 
@@ -137,7 +139,17 @@ export function Timeline() {
       .filter(t => t < currentTime)
       .sort((a, b) => b - a);
     if (prevNotes.length > 0) {
-      setCurrentTime(prevNotes[0]);
+      const targetTime = prevNotes[0];
+      setCurrentTime(targetTime);
+      const targetNote = filteredNotes.find(n => new Date(n.timestamp).getTime() === targetTime);
+      if (targetNote) {
+        selectNote(targetNote.id);
+        const windowSize = Math.max(totalDuration / 10, 24 * 60 * 60 * 1000);
+        setTimeRange({
+          start: Math.max(minTime, targetTime - windowSize / 2),
+          end: Math.min(maxTime, targetTime + windowSize / 2)
+        });
+      }
     } else {
       setCurrentTime(minTime);
     }
@@ -149,7 +161,17 @@ export function Timeline() {
       .filter(t => t > currentTime)
       .sort((a, b) => a - b);
     if (nextNotes.length > 0) {
-      setCurrentTime(nextNotes[0]);
+      const targetTime = nextNotes[0];
+      setCurrentTime(targetTime);
+      const targetNote = filteredNotes.find(n => new Date(n.timestamp).getTime() === targetTime);
+      if (targetNote) {
+        selectNote(targetNote.id);
+        const windowSize = Math.max(totalDuration / 10, 24 * 60 * 60 * 1000);
+        setTimeRange({
+          start: Math.max(minTime, targetTime - windowSize / 2),
+          end: Math.min(maxTime, targetTime + windowSize / 2)
+        });
+      }
     } else {
       setCurrentTime(maxTime);
     }
@@ -229,16 +251,33 @@ export function Timeline() {
               key={`${event.note.id}-${index}`}
               className="absolute top-1/2 -translate-y-1/2 group"
               style={{ left: `${event.position}%` }}
+              onClick={(e) => {
+                e.stopPropagation();
+                const noteTime = new Date(event.note.timestamp).getTime();
+                setCurrentTime(noteTime);
+                selectNote(event.note.id);
+                const windowSize = Math.max(totalDuration / 10, 24 * 60 * 60 * 1000);
+                setTimeRange({
+                  start: Math.max(minTime, noteTime - windowSize / 2),
+                  end: Math.min(maxTime, noteTime + windowSize / 2)
+                });
+              }}
             >
               <div
                 className={`w-3 h-3 rounded-full border-2 cursor-pointer transition-transform hover:scale-150 ${
+                  event.note.id === selectedNoteId
+                    ? 'ring-2 ring-lab-accent ring-offset-2 ring-offset-lab-panel scale-125'
+                    : ''
+                } ${
                   event.object
                     ? 'border-white'
                     : 'bg-gray-500 border-gray-300'
                 }`}
                 style={{
                   backgroundColor: event.object?.color || '#6B7280',
-                  boxShadow: '0 0 4px rgba(0,0,0,0.5)'
+                  boxShadow: event.note.id === selectedNoteId 
+                    ? '0 0 12px rgba(6, 182, 212, 0.8)' 
+                    : '0 0 4px rgba(0,0,0,0.5)'
                 }}
               />
               <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
@@ -278,14 +317,18 @@ export function Timeline() {
       </div>
 
       <div className="px-4 py-1 bg-lab-bg/50 border-t border-lab-border/30 flex items-center justify-between">
-        <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="flex items-center gap-2 text-xs text-gray-500 flex-wrap">
           <Filter size={12} />
           <span>{filteredNotes.length} 条记录</span>
+          <span className="text-lab-border">|</span>
+          <span>
+            时间范围: {formatTimeTooltip(timeRange.start)} - {formatTimeTooltip(timeRange.end)}
+          </span>
           {selectedObjectId && (
             <>
               <span className="text-lab-border">|</span>
               <span className="text-lab-accent">
-                已筛选: {objects.find(o => o.id === selectedObjectId)?.name}
+                对象: {objects.find(o => o.id === selectedObjectId)?.name}
               </span>
             </>
           )}
