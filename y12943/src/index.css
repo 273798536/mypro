@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #15130f;
+  background-image:
+    radial-gradient(1200px 600px at 85% -10%, rgba(224, 168, 46, 0.08), transparent 55%),
+    radial-gradient(900px 500px at -10% 110%, rgba(63, 166, 107, 0.06), transparent 55%),
+    linear-gradient(180deg, #15130f 0%, #181410 100%);
+  background-attachment: fixed;
+  color: #e7e0d2;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "ss01", "cv01";
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #3a342b;
+  border-radius: 8px;
+  border: 2px solid #15130f;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #524b3e;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-xl border border-ink-700/70 bg-ink-900/70 backdrop-blur-sm shadow-console;
+  }
+  .panel-pad {
+    @apply p-5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-medium;
+  }
+  .stat-num {
+    @apply font-display font-semibold tabular-nums tracking-tight;
+  }
+  .hairline {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-ink-700 to-transparent;
+  }
+}
+
+.text-balance {
+  text-wrap: balance;
+}
