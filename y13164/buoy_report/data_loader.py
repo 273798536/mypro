@@ -4,7 +4,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 from uuid import uuid4
 
 import pandas as pd
@@ -114,7 +114,7 @@ def load_maintenance_notes(data_dir: str) -> tuple[list[MaintenanceNote], list[C
     return notes, confirmations
 
 
-def load_params(params_path: str | None = None) -> CalculationParams:
+def load_params(params_path: Optional[str] = None) -> CalculationParams:
     """加载计算参数，默认使用标准配置."""
     params = CalculationParams(param_id=uuid4().hex[:8])
 

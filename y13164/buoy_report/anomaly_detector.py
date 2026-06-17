@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+from typing import Optional
 from uuid import uuid4
 
 from .models import AnomalyRecord, BuoyData, CalculationParams, MaintenanceNote, Severity
@@ -165,7 +166,7 @@ def find_boundary_samples(
 
 def _find_linked_note(
     device_id: str, timestamp: pd.Timestamp, notes: list[MaintenanceNote]
-) -> MaintenanceNote | None:
+) -> Optional[MaintenanceNote]:
     """查找时间和设备匹配的维修备注."""
     ts = timestamp.to_pydatetime()
     candidates = [

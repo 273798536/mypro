@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
+import numpy as np
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 
@@ -215,8 +216,22 @@ def _save_api_response(
     }
 
     output_path = Path(output_dir) / f"{report_id}_api_response.json"
-    output_path.write_text(json.dumps(response, indent=2, ensure_ascii=False), encoding="utf-8")
+    output_path.write_text(
+        json.dumps(response, indent=2, ensure_ascii=False, default=_json_default),
+        encoding="utf-8",
+    )
     return str(output_path)
+
+
+def _json_default(obj: object) -> object:
+    """处理 datetime / pd.Timestamp / numpy 标量等 JSON 不可序列化对象."""
+    if isinstance(obj, (datetime, pd.Timestamp)):
+        return obj.isoformat()
+    if isinstance(obj, np.generic):
+        return obj.item()
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    raise TypeError(f"Object of type {type(obj).__name__} is not JSON serializable")
 
 
 def _add_locations_to_anomalies(

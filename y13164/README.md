@@ -4,16 +4,42 @@
 
 ---
 
+## ⚠️ 环境要求（先看这里）
+
+- **Python 3.9 及以上**（macOS 自带 3.9.6 可直接用，无需额外装 3.10+）
+- 安装前先确认版本：
+  ```bash
+  python3 --version
+  # 输出 Python 3.9.x / 3.10+ 都可以
+  ```
+
+---
+
 ## 🚀 快速开始（小宋看这里）
 
-### 第1步：安装依赖
+### 第1步：安装
 ```bash
-pip install -e .
+python3 -m pip install -e .
 ```
+这条命令会装好依赖并注册 `buoy-report` 命令。装完验证一下：
+```bash
+python3 -m buoy_report.cli --help
+```
+能看到 `export / inspect / rerun / sample` 四个子命令即安装成功。
+
+> **关于 `buoy-report` 短命令**：装完脚本在 `~/Library/Python/3.9/bin`，默认不在 PATH，
+> 直接敲 `buoy-report` 会报 `command not found`。想用短命令，一次性加到 PATH：
+> ```bash
+> echo 'export PATH="$HOME/Library/Python/3.9/bin:$PATH"' >> ~/.zshrc
+> source ~/.zshrc
+> buoy-report --help
+> ```
+> 不想改 PATH 也没关系，下面所有命令都能用 `python3 -m buoy_report.cli` 代替 `buoy-report`。
+> 本文后续统一用 `python3 -m buoy_report.cli`，确保任何机器都能跑。
 
 ### 第2步：放样例数据（现场材料包）
 ```bash
-buoy-report sample
+python3 -m buoy_report.cli sample
 ```
 会在 `./data/` 目录生成：
 - 浮标数据CSV（含故意设置的重复数据和极端值）
@@ -23,7 +49,7 @@ buoy-report sample
 
 ### 第3步：导出报告
 ```bash
-buoy-report export
+python3 -m buoy_report.cli export
 ```
 会在 `./output/` 目录生成3个文件：
 | 文件 | 说明 | 小宋看哪个 |
@@ -38,23 +64,23 @@ buoy-report export
 
 ### 查看接口返回
 ```bash
-buoy-report inspect BUOY-20260613-XXXXXX
+python3 -m buoy_report.cli inspect BUOY-YYYYMMDD-XXXXXX
 ```
 加 `--full` 看完整JSON。
 
 ### 参数调一档复算
 ```bash
 # 看所有可调选项
-buoy-report rerun --list
+python3 -m buoy_report.cli rerun --list
 
 # 调低浪高阈值后重跑
-buoy-report rerun --adjustment "浪高阈值 -0.5m"
+python3 -m buoy_report.cli rerun --adjustment "浪高阈值 -0.5m"
 ```
 报告里会显示：公式、单位、边界样本为什么让结果变了。
 
 ### 带自定义参数跑
 ```bash
-buoy-report export --params ./data/params_default.json
+python3 -m buoy_report.cli export --params ./data/params_default.json
 ```
 
 ---

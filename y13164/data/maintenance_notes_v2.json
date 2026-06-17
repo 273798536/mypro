@@ -1,0 +1,18 @@
+[
+  {
+    "note_id": "NOTE-001",
+    "device_id": "BUOY-001",
+    "timestamp": "2026-06-02T10:00:00",
+    "content": "6月1日晚浪高突增，经核实为真实数据，非传感器漂移",
+    "author": "张工",
+    "version": 2,
+    "is_original": false
+  },
+  {
+    "note_id": "NOTE-003",
+    "device_id": "BUOY-003",
+    "timestamp": "2026-06-03T09:15:00",
+    "content": "设备浮体有轻微倾斜，已安排修复计划",
+    "author": "王工"
+  }
+]

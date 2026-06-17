@@ -6,6 +6,7 @@ import shutil
 from datetime import datetime, timedelta
 from pathlib import Path
 from random import uniform
+from typing import Optional
 
 import click
 import numpy as np
@@ -31,7 +32,7 @@ def cli() -> None:
 @click.option("--data-dir", default="./data", help="数据目录")
 @click.option("--params", default=None, help="参数配置文件路径")
 @click.option("--output-dir", default="./output", help="输出目录")
-def export(data_dir: str, params: str | None, output_dir: str) -> None:
+def export(data_dir: str, params: Optional[str], output_dir: str) -> None:
     """导出海浪浮标报告."""
     click.echo("🌊 开始导出海浪浮标报告...")
 
@@ -154,7 +155,7 @@ def inspect(report_id: str, output_dir: str, full: bool) -> None:
 @click.option("--list", "list_adjustments", is_flag=True, help="列出所有可用调档选项")
 def rerun(
     data_dir: str,
-    params: str | None,
+    params: Optional[str],
     adjustment: str,
     output_dir: str,
     list_adjustments: bool,

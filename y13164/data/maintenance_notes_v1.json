@@ -1,0 +1,16 @@
+[
+  {
+    "note_id": "NOTE-001",
+    "device_id": "BUOY-001",
+    "timestamp": "2026-06-02T10:00:00",
+    "content": "6月1日晚浪高突增，疑似传感器漂移，建议校准",
+    "author": "张工"
+  },
+  {
+    "note_id": "NOTE-002",
+    "device_id": "BUOY-002",
+    "timestamp": "2026-06-02T14:30:00",
+    "content": "水温传感器读数偏高，已通知运维",
+    "author": "李工"
+  }
+]

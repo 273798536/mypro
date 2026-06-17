@@ -1,0 +1,10 @@
+{
+  "param_id": "a6e322d2",
+  "wave_height_threshold": 4.0,
+  "wave_period_min": 3.0,
+  "wave_period_max": 25.0,
+  "temp_min": 0.0,
+  "temp_max": 35.0,
+  "wind_speed_threshold": 20.0,
+  "anomaly_sigma": 3.0
+}
