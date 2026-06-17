@@ -177,16 +177,16 @@
     <div class="container">
         <div class="header">
             <h1>长上下文截断审计报告</h1>
-            <div class="subtitle">生成时间：2026年06月16日 09:20:11</div>
+            <div class="subtitle">生成时间：2026年06月17日 16:30:51</div>
         </div>
 
         <div class="stats-row">
             <div class="stat-card">
-                <div class="value">6</div>
+                <div class="value">12</div>
                 <div class="label">总记录数</div>
             </div>
             <div class="stat-card danger">
-                <div class="value">2</div>
+                <div class="value">4</div>
                 <div class="label">截断记录数</div>
             </div>
             <div class="stat-card warning">
@@ -194,7 +194,7 @@
                 <div class="label">截断率</div>
             </div>
             <div class="stat-card">
-                <div class="value">228</div>
+                <div class="value">195</div>
                 <div class="label">平均Token数</div>
             </div>
         </div>
@@ -205,13 +205,23 @@
                 <div class="reason-bar">
                     
                     <div class="reason-item">
-                        <div class="reason-name">人工截断标记</div>
+                        <div class="reason-name">输入本身不完整</div>
                         <div class="reason-bar-bg">
                             <div class="reason-bar-fill" style="width: 100.0%">
-                                2
+                                3
                             </div>
                         </div>
-                        <div class="reason-count">2条</div>
+                        <div class="reason-count">3条</div>
+                    </div>
+                    
+                    <div class="reason-item">
+                        <div class="reason-name">工具调用参数错误</div>
+                        <div class="reason-bar-bg">
+                            <div class="reason-bar-fill" style="width: 33.33333333333333%">
+                                1
+                            </div>
+                        </div>
+                        <div class="reason-count">1条</div>
                     </div>
                     
                 </div>
@@ -235,13 +245,67 @@
                         <tbody>
                             
                             <tr>
+                                <td><strong>REC-001</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-no">正常</span>
+                                    
+                                </td>
+                                <td>未截断</td>
+                                <td>未检测到截断迹象</td>
+                                <td>
+                                    
+                                    <span class="tag tag-low">低</span>
+                                    
+                                </td>
+                                <td>旧表</td>
+                                <td class="preview" title="用户反馈订单系统在大促期间响应变慢，需要排查数据库查询性能。经过初步分析，发现订单表数据量已超过5000万条，部分查询没有走索引。建议：1. 对常用查询字段建立联合索引；2. 考虑分库分表方案；3. ...">用户反馈订单系统在大促期间响应变慢，需要排查数据库查询性能。经过初步分析，发现订单表数据量已超过5000万条，部分查询没有走索引。建议：1. 对常用查询字段建立联合索引；2. 考虑分库分表方案；3. ...</td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>REC-002</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-no">正常</span>
+                                    
+                                </td>
+                                <td>未截断</td>
+                                <td>文本中存在单位不明确的数值，可能影响理解</td>
+                                <td>
+                                    
+                                    <span class="tag tag-low">低</span>
+                                    
+                                </td>
+                                <td>旧表</td>
+                                <td class="preview" title="关于用户增长策略的分析报告：一、当前用户现状：月活用户约500万，日活约200万，留存率30天约35%。二、增长渠道分析：1. 自然流量占比40%，主要来自搜索和口碑传播；2. 付费推广占比35%，包...">关于用户增长策略的分析报告：一、当前用户现状：月活用户约500万，日活约200万，留存率30天约35%。二、增长渠道分析：1. 自然流量占比40%，主要来自搜索和口碑传播；2. 付费推广占比35%，包...</td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>REC-003</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-no">正常</span>
+                                    
+                                </td>
+                                <td>未截断</td>
+                                <td>未检测到截断迹象</td>
+                                <td>
+                                    
+                                    <span class="tag tag-low">低</span>
+                                    
+                                </td>
+                                <td>旧表</td>
+                                <td class="preview" title="技术架构升级方案背景：当前系统采用单体架构，随着业务快速发展，出现以下问题：1. 代码耦合度高，维护成本大；2. 发布效率低，一次全量发布需要2小时；3. 扩展性差，高峰期只能整体扩容。目标：用6个月...">技术架构升级方案背景：当前系统采用单体架构，随着业务快速发展，出现以下问题：1. 代码耦合度高，维护成本大；2. 发布效率低，一次全量发布需要2小时；3. 扩展性差，高峰期只能整体扩容。目标：用6个月...</td>
+                            </tr>
+                            
+                            <tr>
                                 <td><strong>REC-004</strong></td>
                                 <td>
                                     
                                     <span class="tag tag-yes">截断</span>
                                     
                                 </td>
-                                <td>人工截断标记</td>
+                                <td>输入本身不完整</td>
                                 <td>人工复核判断：输入不完整</td>
                                 <td>
                                     
@@ -253,13 +317,31 @@
                             </tr>
                             
                             <tr>
+                                <td><strong>REC-005</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-no">正常</span>
+                                    
+                                </td>
+                                <td>未截断</td>
+                                <td>文本中存在单位不明确的数值，可能影响理解</td>
+                                <td>
+                                    
+                                    <span class="tag tag-low">低</span>
+                                    
+                                </td>
+                                <td>旧表</td>
+                                <td class="preview" title="本周工作汇报：1. 完成用户登录模块的重构，修复了3个历史bug；2. 参与技术方案评审，输出评审意见5条；3. 协助新人熟悉项目，解答问题约10个；4. 处理线上告警2次，都是磁盘空间不足的问题。下...">本周工作汇报：1. 完成用户登录模块的重构，修复了3个历史bug；2. 参与技术方案评审，输出评审意见5条；3. 协助新人熟悉项目，解答问题约10个；4. 处理线上告警2次，都是磁盘空间不足的问题。下...</td>
+                            </tr>
+                            
+                            <tr>
                                 <td><strong>REC-006</strong></td>
                                 <td>
                                     
                                     <span class="tag tag-no">正常</span>
                                     
                                 </td>
-                                <td>人工截断标记</td>
+                                <td>未截断</td>
                                 <td>人工复核判断：不截断</td>
                                 <td>
                                     
@@ -271,13 +353,49 @@
                             </tr>
                             
                             <tr>
+                                <td><strong>REC-007</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-yes">截断</span>
+                                    
+                                </td>
+                                <td>输入本身不完整</td>
+                                <td>输入内容为空或只有空白字符</td>
+                                <td>
+                                    
+                                    <span class="tag tag-high">高</span>
+                                    
+                                </td>
+                                <td>旧表</td>
+                                <td class="preview" title=""></td>
+                            </tr>
+                            
+                            <tr>
+                                <td><strong>REC-008</strong></td>
+                                <td>
+                                    
+                                    <span class="tag tag-yes">截断</span>
+                                    
+                                </td>
+                                <td>输入本身不完整</td>
+                                <td>输入内容为空或只有空白字符</td>
+                                <td>
+                                    
+                                    <span class="tag tag-high">高</span>
+                                    
+                                </td>
+                                <td>旧表</td>
+                                <td class="preview" title="   ">   </td>
+                            </tr>
+                            
+                            <tr>
                                 <td><strong>REC-009</strong></td>
                                 <td>
                                     
                                     <span class="tag tag-no">正常</span>
                                     
                                 </td>
-                                <td>人工截断标记</td>
+                                <td>未截断</td>
                                 <td>人工复核判断：不截断</td>
                                 <td>
                                     
@@ -295,7 +413,7 @@
                                     <span class="tag tag-no">正常</span>
                                     
                                 </td>
-                                <td>单位不明确</td>
+                                <td>未截断</td>
                                 <td>人工复核判断：不截断</td>
                                 <td>
                                     
@@ -313,7 +431,7 @@
                                     <span class="tag tag-yes">截断</span>
                                     
                                 </td>
-                                <td>人工截断标记</td>
+                                <td>工具调用参数错误</td>
                                 <td>人工复核判断：截断-工具调用错误</td>
                                 <td>
                                     
@@ -331,7 +449,7 @@
                                     <span class="tag tag-no">正常</span>
                                     
                                 </td>
-                                <td>人工截断标记</td>
+                                <td>未截断</td>
                                 <td>人工复核判断：不截断-特殊场景</td>
                                 <td>
                                     

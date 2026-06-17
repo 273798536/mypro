@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
 
-from context_truncation_audit.core import TruncationAuditor
+from context_truncation_audit.core import TruncationAuditor, TruncationReason
 from context_truncation_audit.versioning import VersionTracker
 from context_truncation_audit.exporters import ExcelExporter, HtmlExporter
 
@@ -230,16 +230,17 @@ def merge(old_data, new_data, output, id_column):
     changed = tracker.get_changed_records()
     click.echo(f"📝 人工修正改变判断的有 {len(changed)} 条")
     
-    latest_records = tracker.get_all_records_latest()
-    results_dicts = [r.to_dict() for r in results]
+    corrected_results = _apply_manual_correction(results, tracker)
     
     excel_exporter = ExcelExporter()
+    _ensure_parent_dir(output)
     excel_exporter.export_version_comparison(tracker, output)
     click.echo(f"🎉 版本对比报告已生成: {output}")
     
     html_output = os.path.splitext(output)[0] + "_detail.html"
+    _ensure_parent_dir(html_output)
     html_exporter = HtmlExporter()
-    html_exporter.export_audit_results(results, html_output, tracker=tracker)
+    html_exporter.export_audit_results(corrected_results, html_output, tracker=tracker)
     click.echo(f"📄 详细HTML报告已生成: {html_output}")
 
 
@@ -256,6 +257,9 @@ def run_demo():
     if not old_file.exists():
         click.echo(f"❌ 找不到样例文件: {old_file}")
         return
+    if not new_file.exists():
+        click.echo(f"❌ 找不到样例文件: {new_file}")
+        return
     
     output_dir = Path.cwd() / "demo_output"
     output_dir.mkdir(exist_ok=True)
@@ -265,12 +269,8 @@ def run_demo():
     click.echo(f"   人工反馈: {new_file}")
     click.echo("")
     
-    from context_truncation_audit.core import TruncationAuditor
-    from context_truncation_audit.versioning import VersionTracker
-    from context_truncation_audit.exporters import ExcelExporter, HtmlExporter
-    
-    df_old = pd.read_csv(old_file)
-    df_new = pd.read_csv(new_file)
+    df_old = pd.read_csv(old_file).fillna("")
+    df_new = pd.read_csv(new_file).fillna("")
     
     auditor = TruncationAuditor(max_tokens=200, context_window=500)
     tracker = VersionTracker()
@@ -283,6 +283,8 @@ def run_demo():
     for rid in all_ids:
         old_row = df_old[df_old["记录编号"].astype(str) == rid]
         new_row = df_new[df_new["记录编号"].astype(str) == rid]
+        
+        current_result = None
         
         if len(old_row) > 0:
             row = old_row.iloc[0]
@@ -303,6 +305,7 @@ def run_demo():
                 change_summary="初始版本（旧表自动审计）",
                 data={"original_preview": result.to_dict()["原始内容预览"]},
             )
+            current_result = result
         
         if len(new_row) > 0:
             row = new_row.iloc[0]
@@ -330,23 +333,16 @@ def run_demo():
                     change_summary=f"人工修正：{manual_judgment}",
                     data={"original_preview": result.to_dict()["原始内容预览"]},
                 )
-            
-            results.append(result)
+            current_result = result
+        
+        if current_result is not None:
+            results.append(current_result)
     
-    stats = auditor.get_statistics(results)
+    wb_results = _apply_manual_correction(results, tracker)
+    stats = auditor.get_statistics(wb_results)
     
     excel_output = output_dir / "审计报告.xlsx"
     excel_exporter = ExcelExporter()
-    
-    wb_results = []
-    for r in results:
-        latest = tracker.get_latest(r.record_id)
-        if latest:
-            r.is_truncated = latest.is_truncated
-            r.reason_detail = latest.reason_detail
-            r.manual_note = latest.manual_note
-        wb_results.append(r)
-    
     excel_exporter.export_audit_results(wb_results, str(excel_output), stats)
     
     version_output = output_dir / "版本对比.xlsx"
@@ -376,14 +372,22 @@ def run_demo():
 def _read_input_file(filepath):
     ext = Path(filepath).suffix.lower()
     if ext == ".csv":
-        return pd.read_csv(filepath)
+        df = pd.read_csv(filepath)
     elif ext in [".xlsx", ".xls"]:
-        return pd.read_excel(filepath)
+        df = pd.read_excel(filepath)
     else:
         raise click.BadParameter(f"不支持的文件格式: {ext}，请使用CSV或Excel文件")
+    return df.fillna("")
+
+
+def _ensure_parent_dir(output_path):
+    parent = Path(output_path).parent
+    if str(parent) and not parent.exists():
+        parent.mkdir(parents=True, exist_ok=True)
 
 
 def _export_results(results, output_path, stats, with_explanation):
+    _ensure_parent_dir(output_path)
     exporter = ExcelExporter()
     ext = Path(output_path).suffix.lower()
     
@@ -392,6 +396,20 @@ def _export_results(results, output_path, stats, with_explanation):
         html_exporter.export_audit_results(results, output_path, stats)
     else:
         exporter.export_audit_results(results, output_path, stats, include_details=with_explanation)
+
+
+def _apply_manual_correction(results, tracker):
+    corrected = []
+    for r in results:
+        latest = tracker.get_latest(r.record_id)
+        if latest:
+            r.is_truncated = latest.is_truncated
+            r.reason = TruncationReason.from_manual_judgment(latest.reason, latest.is_truncated)
+            r.reason_detail = latest.reason_detail
+            r.severity = latest.severity
+            r.manual_note = latest.manual_note
+        corrected.append(r)
+    return corrected
 
 
 if __name__ == "__main__":

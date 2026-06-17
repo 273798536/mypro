@@ -12,6 +12,7 @@ class TruncationReason(Enum):
     INCOMPLETE_INPUT = "输入本身不完整"
     FIELD_MISSING = "关键字段缺失"
     UNIT_AMBIGUOUS = "单位不明确"
+    NOT_TRUNCATED = "未截断"
     UNKNOWN = "未知原因"
 
     @classmethod
@@ -24,8 +25,30 @@ class TruncationReason(Enum):
             "incomplete": cls.INCOMPLETE_INPUT,
             "field_missing": cls.FIELD_MISSING,
             "unit_ambiguous": cls.UNIT_AMBIGUOUS,
+            "not_truncated": cls.NOT_TRUNCATED,
         }
         return mapping.get(code.lower(), cls.UNKNOWN)
+
+    @classmethod
+    def from_manual_judgment(cls, judgment: str, is_truncated: bool) -> "TruncationReason":
+        if not is_truncated:
+            return cls.NOT_TRUNCATED
+        text = judgment or ""
+        if "工具调用" in text or "参数" in text:
+            return cls.TOOL_CALL_ERROR
+        if "不完整" in text:
+            return cls.INCOMPLETE_INPUT
+        if "字段" in text and "缺" in text:
+            return cls.FIELD_MISSING
+        if "单位" in text:
+            return cls.UNIT_AMBIGUOUS
+        if "token" in text.lower() or "超限" in text:
+            return cls.TOKEN_LIMIT
+        if "上下文" in text or "窗口" in text:
+            return cls.CONTEXT_WINDOW
+        if "人工" in text or "截断" in text:
+            return cls.MANUAL_TRUNCATION
+        return cls.UNKNOWN
 
 
 @dataclass
@@ -181,7 +204,7 @@ class TruncationAuditor:
         if self._check_unit_ambiguous(original_text):
             return False, TruncationReason.UNIT_AMBIGUOUS, "文本中存在单位不明确的数值，可能影响理解", "low"
 
-        return False, TruncationReason.UNKNOWN, "未检测到截断迹象", "low"
+        return False, TruncationReason.NOT_TRUNCATED, "未检测到截断迹象", "low"
 
     def _has_manual_truncation_marker(self, note: str) -> bool:
         markers = ["截断", "省略", "未完", "待续", "部分", "节选", "摘抄", "截断了", "被截断"]
