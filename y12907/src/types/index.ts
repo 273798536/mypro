@@ -167,7 +167,7 @@ export interface AppState {
   setLoading: (loading: boolean, text?: string) => void;
   
   loadSampleData: (count?: number) => Promise<void>;
-  importSamples: (file: File) => Promise<void>;
+  importSamples: (file: File) => Promise<{ total: number; issues: Array<{ type: string; count: number }> }>;
   bindPromptVersion: (version: Omit<PromptVersion, 'versionId'>) => void;
   runAnalysis: () => Promise<AnalysisResult | void>;
   resolveAnomaly: (anomalyId: string, opinion: string, handledBy: string) => void;

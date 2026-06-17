@@ -8,13 +8,15 @@ import {
   AlertCircle,
   Plus,
   ChevronRight,
-  FileText
+  FileText,
+  Download
 } from 'lucide-react';
 import dayjs from 'dayjs';
 
 import { useAppStore } from '../store/useAppStore';
 import { Alert } from '../components/ui/Alert';
 import { versionManager } from '../services/versionManager';
+import { downloadTemplate } from '../services/fileParser';
 import { PromptVersion } from '../types';
 
 // 数据导入页
@@ -64,21 +66,11 @@ export const ImportPage: React.FC = () => {
     }
 
     try {
-      await importSamples(file);
-      
-      // 模拟导入结果校验
-      const mockIssues = [
-        { type: '漏填单位', count: 8 },
-        { type: '旧表导入', count: 12 },
-        { type: '补录备注', count: 6 }
-      ];
-      
-      setImportResult({
-        total: 50,
-        issues: mockIssues
-      });
+      const result = await importSamples(file);
+      setImportResult(result);
     } catch (error) {
       console.error('导入失败:', error);
+      alert(error instanceof Error ? error.message : '导入失败');
     }
   };
 
@@ -167,6 +159,19 @@ export const ImportPage: React.FC = () => {
                   选择文件
                 </span>
               </label>
+            </div>
+
+            <div className="mt-4 flex items-center justify-between">
+              <p className="text-xs text-gray-500">
+                建议使用标准模板格式，包含「内容、单位、标注标签、安全标签、备注」列
+              </p>
+              <button
+                onClick={downloadTemplate}
+                className="text-sm text-navy-600 hover:text-navy-700 flex items-center gap-1"
+              >
+                <Download className="w-4 h-4" />
+                下载导入模板
+              </button>
             </div>
 
             {/* 导入结果 */}

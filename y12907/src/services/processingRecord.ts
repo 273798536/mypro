@@ -22,13 +22,17 @@ export class ProcessingRecordService {
     this.recordResults = new Map();
   }
 
+  generateRecordId(): string {
+    return generateId('REC');
+  }
+
   // 创建处理记录（关键：快照当前所有配置）
   createRecord(
     samples: Sample[],
     promptVersion: PromptVersion,
     processedBy: string = '当前用户'
   ): ProcessingRecord {
-    const recordId = generateId('REC');
+    const recordId = this.generateRecordId();
 
     // 快照当前分析配置
     const analysisConfig: ProcessingRecord['analysisConfig'] = {

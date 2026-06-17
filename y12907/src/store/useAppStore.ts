@@ -7,6 +7,7 @@ import {
   Anomaly
 } from '../types';
 import { generateRealisticSamples, generateDemoScenario } from '../services/sampleGenerator';
+import { parseFile } from '../services/fileParser';
 import { attributionAnalyzer } from '../services/attributionAnalyzer';
 import { processingRecordService } from '../services/processingRecord';
 import { versionManager } from '../services/versionManager';
@@ -96,21 +97,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
-  importSamples: async (_file: File) => {
+  importSamples: async (file: File) => {
     const { setLoading } = get();
-    setLoading(true, '正在导入并校验数据...');
+    setLoading(true, '正在解析Excel/CSV文件...');
 
     try {
-      // 这里简化处理，实际项目中会解析Excel/CSV
-      // 模拟导入过程
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // 使用样例数据作为导入结果
-      const samples = generateRealisticSamples(50, 'REC-IMPORT-001');
       const currentVersion = versionManager.getCurrentVersion();
-
       if (!currentVersion) {
         throw new Error('请先绑定提示词版本');
+      }
+
+      const recordId = processingRecordService.generateRecordId();
+
+      const { samples, stats } = await parseFile(file, recordId);
+
+      if (samples.length === 0) {
+        throw new Error('文件中未找到有效样本数据');
       }
 
       const record = processingRecordService.createRecord(samples, currentVersion);
@@ -121,6 +123,14 @@ export const useAppStore = create<AppState>((set, get) => ({
         currentRecordId: record.recordId,
         processingRecords: processingRecordService.getAllRecords()
       });
+
+      const issues = [
+        ...(stats.oldTable > 0 ? [{ type: '旧表导入', count: stats.oldTable }] : []),
+        ...(stats.supplement > 0 ? [{ type: '补录备注', count: stats.supplement }] : []),
+        ...(stats.missingUnit > 0 ? [{ type: '漏填单位', count: stats.missingUnit }] : [])
+      ];
+
+      return { total: stats.total, issues };
     } finally {
       setLoading(false);
     }
