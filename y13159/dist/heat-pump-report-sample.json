@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "report_date": "2026-06-15",
+    "withdraw_count": 0,
+    "symbol_error_count": 0,
+    "bad_data_count": 0,
+    "remark_match_rate": 0
+  },
+  "nameplate": [
+    {
+      "row_no": 1,
+      "device_id": "HP-007-A",
+      "param_name": "蒸发温度 Te",
+      "param_value": -6.1,
+      "unit": "°C",
+      "alarm_flag": "none",
+      "remark": "周一早班抄表，运行稳定",
+      "remark_status": "matched",
+      "bad_data_flag": false
+    },
+    {
+      "row_no": 2,
+      "device_id": "HP-007-A",
+      "param_name": "冷凝温度 Tc",
+      "param_value": 44.3,
+      "unit": "°C",
+      "alarm_flag": "high",
+      "remark": "午后环境温度偏高",
+      "remark_status": "matched",
+      "bad_data_flag": false
+    },
+    {
+      "row_no": 3,
+      "device_id": "HP-007-A",
+      "param_name": "蒸发压力 Pe",
+      "param_value": 0.308,
+      "unit": "MPa",
+      "alarm_flag": "none",
+      "remark": "",
+      "remark_status": "missing",
+      "bad_data_flag": false
+    },
+    {
+      "row_no": 4,
+      "device_id": "HP-007-A",
+      "param_name": "冷凝压力 Pc",
+      "param_value": 1.642,
+      "unit": "MPa",
+      "alarm_flag": "none",
+      "remark": "现场老唐确认，受配电柜电磁干扰，待复核",
+      "remark_status": "mismatched",
+      "bad_data_flag": false
+    },
+    {
+      "row_no": 5,
+      "device_id": "HP-007-B",
+      "param_name": "压缩机功率 W",
+      "param_value": 128.5,
+      "unit": "kW",
+      "alarm_flag": "high",
+      "remark": "高负载运行，持续观察",
+      "remark_status": "matched",
+      "bad_data_flag": false
+    },
+    {
+      "row_no": 6,
+      "device_id": "HP-007-B",
+      "param_name": "过热度 ΔTsh",
+      "param_value": 9.1,
+      "unit": "K",
+      "alarm_flag": "none",
+      "remark": "",
+      "remark_status": "missing",
+      "bad_data_flag": false
+    },
+    {
+      "row_no": 7,
+      "device_id": "HP-007-B",
+      "param_name": "过冷度 ΔTsc",
+      "param_value": 3.8,
+      "unit": "K",
+      "alarm_flag": "none",
+      "remark": "夜班记录，正常范围",
+      "remark_status": "matched",
+      "bad_data_flag": false
+    },
+    {
+      "row_no": 8,
+      "device_id": "HP-007-C",
+      "param_name": "循环水流量",
+      "param_value": 8888888,
+      "unit": "m³/h",
+      "alarm_flag": "error",
+      "remark": "传感器故障，读数异常",
+      "remark_status": "matched",
+      "bad_data_flag": true,
+      "bad_data_reason": "数值超出量程(0~1200)，判定为通信故障"
+    }
+  ],
+  "symbol_errors": [
+    {
+      "id": 1,
+      "nameplate_row": 4,
+      "param_name": "冷凝压力 Pc 变化率",
+      "original_value": -0.18,
+      "corrected_value": 0.18,
+      "direction": "应为上升趋势，原记录写为下降",
+      "impact_scope": "影响COP计算偏差约5.6%"
+    },
+    {
+      "id": 2,
+      "nameplate_row": 3,
+      "param_name": "蒸发压力 Pe 压差",
+      "original_value": 0.06,
+      "corrected_value": -0.06,
+      "direction": "应为负压差(低于设定值)，原写为正",
+      "impact_scope": "影响膨胀阀开度判断"
+    },
+    {
+      "id": 3,
+      "nameplate_row": 5,
+      "param_name": "功率增量 ΔW",
+      "original_value": -12.4,
+      "corrected_value": 12.4,
+      "direction": "应为增长(启动压缩机2号)，原写为下降",
+      "impact_scope": "影响能效分级，实际应为二级而非三级"
+    }
+  ],
+  "withdraw_records": [
+    {
+      "id": 1,
+      "timestamp": "2026-06-15 08:42:11",
+      "operator": "算法值班-王磊",
+      "reason": "HP-007-C 循环水流量测点(#8) 传感器离线，该时段数据需撤回",
+      "supplementary_note": "已与现场老唐确认，6月14日夜间雷暴后该测点读数一直异常；铭牌第8行已自动标记为坏数据。",
+      "related_device": "HP-007-C"
+    }
+  ],
+  "calculation_steps": [
+    {
+      "step_no": 1,
+      "description": "蒸发温度转绝对温度",
+      "formula": "T(K) = t(°C) + 273.15",
+      "param_a": -6.1,
+      "param_b": -5.2,
+      "from_unit": "°C",
+      "to_unit": "K",
+      "result_a": 267.05,
+      "result_b": 267.95
+    },
+    {
+      "step_no": 2,
+      "description": "冷凝温度转绝对温度",
+      "formula": "T(K) = t(°C) + 273.15",
+      "param_a": 44.3,
+      "param_b": 42.8,
+      "from_unit": "°C",
+      "to_unit": "K",
+      "result_a": 317.45,
+      "result_b": 315.95
+    },
+    {
+      "step_no": 3,
+      "description": "蒸发压力 MPa → kPa",
+      "formula": "P(kPa) = P(MPa) × 1000",
+      "param_a": 0.308,
+      "param_b": 0.321,
+      "from_unit": "MPa",
+      "to_unit": "kPa",
+      "result_a": 308,
+      "result_b": 321
+    },
+    {
+      "step_no": 4,
+      "description": "冷凝压力 MPa → kPa",
+      "formula": "P(kPa) = P(MPa) × 1000",
+      "param_a": 1.642,
+      "param_b": 1.587,
+      "from_unit": "MPa",
+      "to_unit": "kPa",
+      "result_a": 1642,
+      "result_b": 1587
+    },
+    {
+      "step_no": 5,
+      "description": "卡诺逆循环制冷系数",
+      "formula": "COP_carnot = Te / (Tc - Te)",
+      "param_a": 267.05,
+      "param_b": 267.95,
+      "from_unit": "K",
+      "to_unit": "-",
+      "result_a": 5.29,
+      "result_b": 5.56
+    },
+    {
+      "step_no": 6,
+      "description": "实际制冷系数(×0.55修正)",
+      "formula": "COP_actual = COP_carnot × 0.55",
+      "param_a": 5.29,
+      "param_b": 5.56,
+      "from_unit": "-",
+      "to_unit": "-",
+      "result_a": 2.91,
+      "result_b": 3.06
+    }
+  ]
+}
