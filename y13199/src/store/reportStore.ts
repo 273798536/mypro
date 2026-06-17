@@ -63,11 +63,10 @@ export const useReportStore = create<ReportStore>()(
           input.supplementaryNote
         )
 
-        const isDuplicateForStatus = mode === 'new' ? false : false
         const status = determineReportStatus(
           boundaryStatus,
           input.supplementaryNote,
-          isDuplicateForStatus
+          false
         )
 
         const report: TensionReport = {

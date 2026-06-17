@@ -1,9 +1,10 @@
-import { useMemo } from 'react'
-import { CheckCircle2, FileQuestion, UserCheck, BarChart3 } from 'lucide-react'
+import { useMemo, useState, useCallback } from 'react'
+import { CheckCircle2, FileQuestion, UserCheck, BarChart3, Download } from 'lucide-react'
 import { useReportStore } from '../store/reportStore'
 import ReportCard from '../components/ReportCard'
 import type { ReportStatus } from '../types'
 import { REPORT_STATUS_LABELS } from '../types'
+import { exportAllAsJson } from '../utils/exportReport'
 
 const STATUS_CONFIG: Record<ReportStatus, { icon: typeof CheckCircle2; color: string; bgColor: string; borderColor: string }> = {
   processed: { icon: CheckCircle2, color: 'text-[#2D9B83]', bgColor: 'bg-[#2D9B83]/5', borderColor: 'border-[#2D9B83]/20' },
@@ -13,6 +14,22 @@ const STATUS_CONFIG: Record<ReportStatus, { icon: typeof CheckCircle2; color: st
 
 export default function ShiftSummary() {
   const { reports } = useReportStore()
+  const [exportMsg, setExportMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+
+  const handleExportAll = useCallback(() => {
+    if (reports.length === 0) {
+      setExportMsg({ type: 'error', text: '当前没有任何报告可导出' })
+      window.setTimeout(() => setExportMsg(null), 3000)
+      return
+    }
+    try {
+      exportAllAsJson(reports)
+      setExportMsg({ type: 'success', text: `已导出 ${reports.length} 份报告为 JSON 文件` })
+    } catch (err) {
+      setExportMsg({ type: 'error', text: `导出失败：${err instanceof Error ? err.message : String(err)}` })
+    }
+    window.setTimeout(() => setExportMsg(null), 3000)
+  }, [reports])
 
   const grouped = useMemo(() => {
     const processed = reports.filter((r) => r.status === 'processed')
@@ -25,10 +42,38 @@ export default function ShiftSummary() {
 
   return (
     <div className="min-h-screen bg-[#F4F7FA]">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-[#1B3A5C]">排班摘要</h2>
-        <p className="mt-1 text-sm text-[#5A7A9A]">按状态分类查看所有滑轮组张力报告</p>
+      <div className="mb-6 flex items-start justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-[#1B3A5C]">排班摘要</h2>
+          <p className="mt-1 text-sm text-[#5A7A9A]">按状态分类查看所有滑轮组张力报告</p>
+        </div>
+        <button
+          onClick={handleExportAll}
+          disabled={reports.length === 0}
+          className="flex items-center gap-2 rounded-lg border border-[#1B3A5C]/15 bg-white px-4 py-2 text-sm font-medium text-[#1B3A5C] transition-all hover:bg-[#F8FAFB] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Download className="h-4 w-4" />
+          导出全部报告
+        </button>
       </div>
+
+      {exportMsg && (
+        <div
+          className={`mb-4 flex items-center gap-2 rounded-lg border px-4 py-2.5 text-sm ${
+            exportMsg.type === 'success'
+              ? 'border-[#2D9B83]/30 bg-[#2D9B83]/10 text-[#2D9B83]'
+              : 'border-[#C44D3F]/30 bg-[#C44D3F]/10 text-[#C44D3F]'
+          }`}
+          role="status"
+        >
+          {exportMsg.type === 'success' ? (
+            <CheckCircle2 className="h-4 w-4" />
+          ) : (
+            <UserCheck className="h-4 w-4" />
+          )}
+          {exportMsg.text}
+        </div>
+      )}
 
       <div className="mb-6 grid grid-cols-3 gap-4">
         {(['processed', 'pending_material', 'manual_override'] as ReportStatus[]).map((status) => {

@@ -58,7 +58,7 @@ export default function ReportGeneration() {
   const validationErrors = useMemo(() => {
     const errors: string[] = []
     if (equipmentId.trim()) {
-      if (!/^[A-Za-z0-9_\-\/]+$/.test(equipmentId.trim())) {
+      if (!/^[A-Za-z0-9_/-]+$/.test(equipmentId.trim())) {
         errors.push('设备编号只允许字母、数字、下划线、短横线和斜杠')
       }
     } else {
@@ -459,7 +459,13 @@ export default function ReportGeneration() {
                 )}
               </button>
               {showExportMenu && savedReport && (
-                <div className="absolute left-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-lg border border-[#1B3A5C]/10 bg-white py-1 shadow-lg animate-fadeIn">
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setShowExportMenu(false)}
+                    aria-hidden="true"
+                  />
+                  <div className="absolute left-0 top-full z-20 mt-1 w-48 overflow-hidden rounded-lg border border-[#1B3A5C]/10 bg-white py-1 shadow-lg animate-fadeIn">
                   <button
                     onClick={handlePrint}
                     className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-[#1B3A5C] transition-colors hover:bg-[#F8FAFB]"
@@ -488,7 +494,8 @@ export default function ReportGeneration() {
                     <FileText className="h-3.5 w-3.5" />
                     复制文本到剪贴板
                   </button>
-                </div>
+                  </div>
+                </>
               )}
             </div>
 
