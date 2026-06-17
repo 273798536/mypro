@@ -1,5 +1,11 @@
 import type { ProcessRecord } from '@/types';
 
+const BASELINE = '2026-06-18T09:00:00.000Z';
+
+function hoursAgo(hours: number): string {
+  return new Date(new Date(BASELINE).getTime() - hours * 3600000).toISOString();
+}
+
 export const processRecords: ProcessRecord[] = [
   {
     id: 'REC-001',
@@ -7,7 +13,7 @@ export const processRecords: ProcessRecord[] = [
     action: '数据入库',
     operator: '系统',
     remark: '自动采集入库',
-    timestamp: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+    timestamp: hoursAgo(48),
   },
   {
     id: 'REC-002',
@@ -15,7 +21,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记疑似噪声',
     operator: '系统',
     remark: '偏离度超过100%，自动标记',
-    timestamp: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+    timestamp: hoursAgo(48),
   },
   {
     id: 'REC-003',
@@ -23,7 +29,7 @@ export const processRecords: ProcessRecord[] = [
     action: '提交复核',
     operator: '李工',
     remark: '初步判断为噪声，待进一步核实',
-    timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
+    timestamp: hoursAgo(24),
   },
   {
     id: 'REC-004',
@@ -31,7 +37,7 @@ export const processRecords: ProcessRecord[] = [
     action: '人工改判',
     operator: '张工',
     remark: '经核实为传感器瞬时波动，已恢复正常，改判为正常',
-    timestamp: new Date(Date.now() - 3600000 * 5).toISOString(),
+    timestamp: hoursAgo(5),
   },
   {
     id: 'REC-005',
@@ -39,7 +45,7 @@ export const processRecords: ProcessRecord[] = [
     action: '数据入库',
     operator: '系统',
     remark: '自动采集入库',
-    timestamp: new Date(Date.now() - 3600000 * 24 * 3).toISOString(),
+    timestamp: hoursAgo(72),
   },
   {
     id: 'REC-006',
@@ -47,7 +53,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记旧版备注',
     operator: '系统',
     remark: '检测到关联历史版本维修备注',
-    timestamp: new Date(Date.now() - 3600000 * 72).toISOString(),
+    timestamp: hoursAgo(72),
   },
   {
     id: 'REC-007',
@@ -55,7 +61,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记待补材料',
     operator: '王工',
     remark: '需要补充维修材料清单',
-    timestamp: new Date(Date.now() - 3600000 * 8).toISOString(),
+    timestamp: hoursAgo(8),
   },
   {
     id: 'REC-008',
@@ -63,7 +69,7 @@ export const processRecords: ProcessRecord[] = [
     action: '数据入库',
     operator: '系统',
     remark: '自动采集入库',
-    timestamp: new Date(Date.now() - 3600000 * 48).toISOString(),
+    timestamp: hoursAgo(48),
   },
   {
     id: 'REC-009',
@@ -71,7 +77,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记名称不一致',
     operator: '系统',
     remark: '材料名称与标准库不匹配',
-    timestamp: new Date(Date.now() - 3600000 * 48).toISOString(),
+    timestamp: hoursAgo(48),
   },
   {
     id: 'REC-010',
@@ -79,7 +85,7 @@ export const processRecords: ProcessRecord[] = [
     action: '数据入库',
     operator: '系统',
     remark: '自动采集入库',
-    timestamp: new Date(Date.now() - 3600000 * 18).toISOString(),
+    timestamp: hoursAgo(18),
   },
   {
     id: 'REC-011',
@@ -87,7 +93,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记疑似噪声',
     operator: '系统',
     remark: '偏离度超过150%，自动标记',
-    timestamp: new Date(Date.now() - 3600000 * 18).toISOString(),
+    timestamp: hoursAgo(18),
   },
   {
     id: 'REC-012',
@@ -95,7 +101,7 @@ export const processRecords: ProcessRecord[] = [
     action: '人工改判',
     operator: '李工',
     remark: '确认是噪声，与现场实际情况不符',
-    timestamp: new Date(Date.now() - 3600000 * 3).toISOString(),
+    timestamp: hoursAgo(3),
   },
   {
     id: 'REC-013',
@@ -103,7 +109,7 @@ export const processRecords: ProcessRecord[] = [
     action: '数据入库',
     operator: '系统',
     remark: '自动采集入库',
-    timestamp: new Date(Date.now() - 3600000 * 96).toISOString(),
+    timestamp: hoursAgo(96),
   },
   {
     id: 'REC-014',
@@ -111,7 +117,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记旧版备注',
     operator: '系统',
     remark: '检测到关联历史版本维修备注',
-    timestamp: new Date(Date.now() - 3600000 * 96).toISOString(),
+    timestamp: hoursAgo(96),
   },
   {
     id: 'REC-015',
@@ -119,7 +125,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记待核实',
     operator: '赵工',
     remark: '型号待核实，新旧系统编号不匹配',
-    timestamp: new Date(Date.now() - 3600000 * 12).toISOString(),
+    timestamp: hoursAgo(12),
   },
   {
     id: 'REC-016',
@@ -127,7 +133,7 @@ export const processRecords: ProcessRecord[] = [
     action: '数据入库',
     operator: '系统',
     remark: '自动采集入库',
-    timestamp: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+    timestamp: hoursAgo(48),
   },
   {
     id: 'REC-017',
@@ -135,7 +141,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记疑似噪声',
     operator: '系统',
     remark: '偏离度超过120%，自动标记',
-    timestamp: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
+    timestamp: hoursAgo(48),
   },
   {
     id: 'REC-018',
@@ -143,7 +149,7 @@ export const processRecords: ProcessRecord[] = [
     action: '数据入库',
     operator: '系统',
     remark: '自动采集入库',
-    timestamp: new Date(Date.now() - 3600000 * 36).toISOString(),
+    timestamp: hoursAgo(36),
   },
   {
     id: 'REC-019',
@@ -151,7 +157,7 @@ export const processRecords: ProcessRecord[] = [
     action: '标记名称不一致',
     operator: '系统',
     remark: '材料名称与标准库不匹配',
-    timestamp: new Date(Date.now() - 3600000 * 36).toISOString(),
+    timestamp: hoursAgo(36),
   },
   {
     id: 'REC-020',
@@ -159,7 +165,7 @@ export const processRecords: ProcessRecord[] = [
     action: '添口头备注',
     operator: '小宋',
     remark: '值班师傅口述：气温变化大，数据可能有波动',
-    timestamp: new Date(Date.now() - 3600000 * 10).toISOString(),
+    timestamp: hoursAgo(10),
   },
   {
     id: 'REC-021',
@@ -167,7 +173,7 @@ export const processRecords: ProcessRecord[] = [
     action: '添口头备注',
     operator: '小宋',
     remark: '李师傅现场确认设备运行正常',
-    timestamp: new Date(Date.now() - 3600000 * 14).toISOString(),
+    timestamp: hoursAgo(14),
   },
   {
     id: 'REC-022',
@@ -175,6 +181,6 @@ export const processRecords: ProcessRecord[] = [
     action: '添口头备注',
     operator: '小宋',
     remark: '王工电话反馈该时段在做设备维护',
-    timestamp: new Date(Date.now() - 3600000 * 20).toISOString(),
+    timestamp: hoursAgo(20),
   },
 ];

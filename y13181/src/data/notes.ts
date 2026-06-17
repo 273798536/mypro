@@ -1,5 +1,11 @@
 import type { MaintenanceNote } from '@/types';
 
+const BASELINE = '2026-06-18T09:00:00.000Z';
+
+function hoursAgo(hours: number): string {
+  return new Date(new Date(BASELINE).getTime() - hours * 3600000).toISOString();
+}
+
 export const maintenanceNotes: MaintenanceNote[] = [
   {
     id: 'NOTE-001',
@@ -8,7 +14,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v2.0',
     isCurrent: true,
     author: '张工',
-    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+    createdAt: hoursAgo(5),
   },
   {
     id: 'NOTE-002',
@@ -17,7 +23,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: false,
     author: '李工',
-    createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+    createdAt: hoursAgo(24),
   },
   {
     id: 'NOTE-003',
@@ -26,7 +32,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.5',
     isCurrent: true,
     author: '王工',
-    createdAt: new Date(Date.now() - 3600000 * 8).toISOString(),
+    createdAt: hoursAgo(8),
   },
   {
     id: 'NOTE-004',
@@ -35,7 +41,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: false,
     author: '赵工',
-    createdAt: new Date(Date.now() - 3600000 * 72).toISOString(),
+    createdAt: hoursAgo(72),
   },
   {
     id: 'NOTE-005',
@@ -44,7 +50,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: true,
     author: '材料科',
-    createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
+    createdAt: hoursAgo(48),
   },
   {
     id: 'NOTE-006',
@@ -53,7 +59,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: true,
     author: '李工',
-    createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+    createdAt: hoursAgo(3),
   },
   {
     id: 'NOTE-007',
@@ -62,7 +68,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v2.0',
     isCurrent: true,
     author: '赵工',
-    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+    createdAt: hoursAgo(12),
   },
   {
     id: 'NOTE-008',
@@ -71,7 +77,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: false,
     author: '孙工',
-    createdAt: new Date(Date.now() - 3600000 * 96).toISOString(),
+    createdAt: hoursAgo(96),
   },
   {
     id: 'NOTE-009',
@@ -80,7 +86,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: true,
     author: '材料科',
-    createdAt: new Date(Date.now() - 3600000 * 36).toISOString(),
+    createdAt: hoursAgo(36),
   },
   {
     id: 'NOTE-010',
@@ -89,7 +95,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: true,
     author: '算法组',
-    createdAt: new Date(Date.now() - 3600000 * 6).toISOString(),
+    createdAt: hoursAgo(6),
   },
   {
     id: 'NOTE-011',
@@ -98,7 +104,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: true,
     author: '小宋（口述记录）',
-    createdAt: new Date(Date.now() - 3600000 * 10).toISOString(),
+    createdAt: hoursAgo(10),
   },
   {
     id: 'NOTE-012',
@@ -107,7 +113,7 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: true,
     author: '小宋（口述记录）',
-    createdAt: new Date(Date.now() - 3600000 * 14).toISOString(),
+    createdAt: hoursAgo(14),
   },
   {
     id: 'NOTE-013',
@@ -116,6 +122,6 @@ export const maintenanceNotes: MaintenanceNote[] = [
     version: 'v1.0',
     isCurrent: true,
     author: '小宋（口述记录）',
-    createdAt: new Date(Date.now() - 3600000 * 20).toISOString(),
+    createdAt: hoursAgo(20),
   },
 ];

@@ -1,6 +1,20 @@
 import type { TowerData } from '@/types';
 import { formatDateTime, formatPercent, getStatusText, getJudgeText, downloadCSV } from './format';
 
+const EXPORT_BASELINE = '2026-06-18T09:00:00.000Z';
+
+function csvEscape(value: string | number): string {
+  const str = String(value ?? '');
+  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+export function getExportBaselineTime(): string {
+  return formatDateTime(EXPORT_BASELINE);
+}
+
 export function exportToCSV(data: TowerData[], includeMarks: boolean = true): string {
   const headers = [
     '数据ID',
@@ -16,7 +30,7 @@ export function exportToCSV(data: TowerData[], includeMarks: boolean = true): st
     '判定人',
     '判定时间',
   ];
-  
+
   if (includeMarks) {
     headers.push(
       '疑似噪声标记',
@@ -25,7 +39,7 @@ export function exportToCSV(data: TowerData[], includeMarks: boolean = true): st
       '口头备注标记'
     );
   }
-  
+
   const rows = data.map((item) => {
     const row = [
       item.id,
@@ -41,7 +55,7 @@ export function exportToCSV(data: TowerData[], includeMarks: boolean = true): st
       item.judgeOperator || '',
       item.judgeTime ? formatDateTime(item.judgeTime) : '',
     ];
-    
+
     if (includeMarks) {
       row.push(
         item.isNoiseSuspected ? '是' : '否',
@@ -50,11 +64,12 @@ export function exportToCSV(data: TowerData[], includeMarks: boolean = true): st
         item.isVerbalNote ? '是' : '否'
       );
     }
-    
-    return row.join(',');
+
+    return row.map(csvEscape).join(',');
   });
-  
-  return [headers.join(','), ...rows].join('\n');
+
+  const headerLine = headers.map(csvEscape).join(',');
+  return [headerLine, ...rows].join('\n');
 }
 
 export function downloadDataExport(data: TowerData[], filename: string, includeMarks: boolean = true) {
@@ -86,11 +101,11 @@ export function generateExportSummary(data: TowerData[]): string {
   const nameMismatch = data.filter((d) => d.isNameMismatch).length;
   const oldNote = data.filter((d) => d.isOldNote).length;
   const verbalNote = data.filter((d) => d.isVerbalNote).length;
-  
+
   return `
 冷却塔水滴阈值预警 - 复核说明
 ═══════════════════════════════════════
-生成时间：${formatDateTime(new Date().toISOString())}
+生成时间：${getExportBaselineTime()}
 数据总量：${total} 条
 
 【处理统计】

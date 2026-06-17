@@ -4,7 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useDataStore } from '@/stores/useDataStore';
 import { StatusBadge } from '@/components/StatusBadge';
 import { MarkTag } from '@/components/MarkTag';
-import { recalculateData, compareData, generateTrendData } from '@/utils/recalc';
+import { recalculateData, compareData, generateTrendData, generateRecalcTrendData } from '@/utils/recalc';
 import { formatPercent } from '@/utils/format';
 import { cn } from '@/lib/utils';
 import type { TowerData } from '@/types';
@@ -35,8 +35,7 @@ export const RecalcCompare: React.FC = () => {
     
     const baseValue = selectedData[0].dropletValue;
     const originalTrend = generateTrendData(baseValue, 7);
-    const recalcValue = recalculatedData[0]?.dropletValue || baseValue;
-    const recalculatedTrend = generateTrendData(recalcValue, 7);
+    const recalculatedTrend = generateRecalcTrendData(baseValue, 7);
     
     return {
       original: originalTrend,
