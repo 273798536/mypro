@@ -50,53 +50,57 @@ const Handover = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-      <div>
-        <h2 className="text-xl font-serif font-semibold text-primary flex items-center gap-2">
-          <Share2 size={20} /> 交付视图
-        </h2>
-        <div className="text-sm text-gray-500 mt-1">
-          三栏联动：点击任意一行可联动高亮其余两栏。筛选器三栏共享。
+        <div>
+          <h2 className="text-xl font-serif font-semibold text-primary flex items-center gap-2">
+            <Share2 size={20} /> 交付视图
+          </h2>
+          <div className="text-sm text-gray-500 mt-1">
+            三栏联动：点击任意一行可联动高亮其余两栏。筛选器三栏共享。
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="flex p-1 bg-gray-100 rounded-md">
+            <button
+              className={
+                'btn btn-sm ' +
+                (exportMode === 'csv' ? 'btn-primary' : 'btn-ghost')
+              }
+              onClick={() => {
+                setExportMode('csv')
+                handleExportCsv()
+                setTimeout(() => setExportMode(null), 500)
+              }}
+            >
+              <FileSpreadsheet size={13} /> 导出 CSV
+            </button>
+            <button
+              className={
+                'btn btn-sm ' +
+                (exportMode === 'json' ? 'btn-primary' : 'btn-ghost')
+              }
+              onClick={() => {
+                setExportMode('json')
+                handleExportJson()
+                setTimeout(() => setExportMode(null), 500)
+              }}
+            >
+              <FileJson size={13} /> 导出 JSON
+            </button>
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <div className="flex p-1 bg-gray-100 rounded-md">
-          <button
-            className={
-              'btn btn-sm ' +
-              (exportMode === 'csv' ? 'btn-primary' : 'btn-ghost')
-            }
-            onClick={() => {
-              setExportMode('csv')
-              handleExportCsv()
-              setTimeout(() => setExportMode(null), 500)
-            }}
-          >
-            <FileSpreadsheet size={13} /> 导出 CSV
-          </button>
-          <button
-            className={
-              'btn btn-sm ' +
-              (exportMode === 'json' ? 'btn-primary' : 'btn-ghost')
-            }
-            onClick={() => {
-              setExportMode('json')
-              handleExportJson()
-              setTimeout(() => setExportMode(null), 500)
-            }}
-          >
-            <FileJson size={13} /> 导出 JSON
-          </button>
-        </div>
-      </div>
+
       <LinkedTriplePanel onRowClick={handleRowClick} />
+
       <div className="mt-5 card p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-          <h3 className="text-lg font-serif font-semibold text-primary flex items-center gap-2">
-            <Download size={18} /> 交付快照导出
-          </h3>
-          <div className="text-sm text-gray-500 mt-1">
-            完整交付包，包含批次信息、原始日志、计算记录、异常队列及备注，可用于归档或转交。
+            <h3 className="text-lg font-serif font-semibold text-primary flex items-center gap-2">
+              <Download size={18} /> 交付快照导出
+            </h3>
+            <div className="text-sm text-gray-500 mt-1">
+              完整交付包，包含批次信息、原始日志、计算记录、异常队列及备注，可用于归档或转交。
+            </div>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-4 mb-4">
@@ -169,6 +173,7 @@ const Handover = () => {
           </div>
         </div>
       </div>
+
       <EventDrawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}

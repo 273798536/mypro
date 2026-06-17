@@ -528,7 +528,7 @@ export const useStore = create<StoreState>()(
           .map((x) => x.c)
 
         const jumpInfo = detectJump(existingSorted, 0.3)
-        const finalComputes = existingComputes.map((c) => {
+        const finalComputes = existingSorted.map((c) => {
           const j = jumpInfo.get(c.id)
           if (!j) return c
           return { ...c, jumpCause: j.cause, jumpNote: j.note }
