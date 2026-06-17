@@ -34,9 +34,19 @@ export default function ReportCard({ report, onClick }: Props) {
       className={`cursor-pointer rounded-lg border border-[#1B3A5C]/10 border-l-4 ${STATUS_BORDER[report.status]} bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5`}
     >
       <div className="mb-2 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5">
           <Icon className="h-4 w-4 text-[#5A7A9A]" />
           <span className="font-mono text-sm font-bold text-[#1B3A5C]">{report.equipmentId}</span>
+          {report.origin === 'subreport' && (
+            <span className="rounded bg-[#7C8CF8]/10 px-1.5 py-0.5 text-[9px] font-semibold text-[#5B6BC6]">
+              子报告 #{report.subIndex}
+            </span>
+          )}
+          {report.origin === 'override' && (
+            <span className="rounded bg-[#E8A838]/10 px-1.5 py-0.5 text-[9px] font-semibold text-[#B07B1C]">
+              覆盖记录
+            </span>
+          )}
         </div>
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${BOUNDARY_COLOR[report.boundaryStatus]}`}>
           {BOUNDARY_STATUS_LABELS[report.boundaryStatus]}

@@ -1,5 +1,7 @@
 export type BoundaryStatus = 'normal' | 'critical' | 'exceeded'
 export type ReportStatus = 'processed' | 'pending_material' | 'manual_override'
+export type ReportOrigin = 'new' | 'override' | 'subreport'
+export type DuplicateMode = 'override' | 'subreport' | null
 
 export interface TensionReport {
   id: string
@@ -16,6 +18,18 @@ export interface TensionReport {
   status: ReportStatus
   createdAt: string
   updatedAt: string
+  origin: ReportOrigin
+  parentId?: string
+  subIndex?: number
+  overriddenId?: string
+}
+
+export interface DuplicateDecision {
+  isDuplicate: boolean
+  existingReports: TensionReport[]
+  mode: DuplicateMode
+  overrideTargetId?: string
+  parentId?: string
 }
 
 export interface BoundaryConfig {

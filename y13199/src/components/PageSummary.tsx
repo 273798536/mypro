@@ -44,7 +44,19 @@ export default function PageSummary({ report }: Props) {
       <div className="mt-4 grid grid-cols-2 gap-3">
         <div className="rounded-lg bg-[#F8FAFB] p-3">
           <p className="text-[10px] text-[#8BA3BF]">设备编号</p>
-          <p className="font-mono text-sm font-bold text-[#1B3A5C]">{report.equipmentId}</p>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <p className="font-mono text-sm font-bold text-[#1B3A5C]">{report.equipmentId}</p>
+            {report.origin === 'subreport' && (
+              <span className="rounded bg-[#7C8CF8]/15 px-1.5 py-0.5 text-[9px] font-semibold text-[#5B6BC6]">
+                子报告 #{report.subIndex}
+              </span>
+            )}
+            {report.origin === 'override' && (
+              <span className="rounded bg-[#E8A838]/15 px-1.5 py-0.5 text-[9px] font-semibold text-[#B07B1C]">
+                覆盖记录
+              </span>
+            )}
+          </div>
         </div>
         <div className="rounded-lg bg-[#F8FAFB] p-3">
           <p className="text-[10px] text-[#8BA3BF]">张力值</p>
@@ -64,6 +76,14 @@ export default function PageSummary({ report }: Props) {
           </div>
         </div>
       </div>
+
+      {(report.origin === 'subreport' || report.origin === 'override') && (
+        <div className="mt-3 rounded-md bg-[#0F2640]/5 px-3 py-2 text-[11px] text-[#3A5A7A]">
+          {report.origin === 'subreport'
+            ? `子报告数据，父报告 ID：${report.parentId ?? '未知'}`
+            : `本报告覆盖了历史报告，被覆盖 ID：${report.overriddenId ?? '未知'}`}
+        </div>
+      )}
     </div>
   )
 }
