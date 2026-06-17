@@ -12,13 +12,14 @@ interface PhPoint {
   anomaly?: boolean
   anomaly_type?: 'symbol' | 'bad' | 'mismatch'
   description?: string
+  anomaly_note?: string
 }
 
 const points: PhPoint[] = [
   { id: 1, h: 400, p: 150, label: '1', nameplate_row: 1, formula: 'Te = -5.2°C → h1', description: '蒸发器出口（压缩机吸气）' },
-  { id: 2, h: 475, p: 1600, label: '2', nameplate_row: 3, formula: 'Pe = 0.321 MPa → 等熵压缩', description: '压缩机出口（冷凝器入口）', anomaly: true, anomaly_type: 'symbol', description: '压力变化率方向写反' },
-  { id: 3, h: 260, p: 1587, label: '3', nameplate_row: 4, formula: 'Pc = 1.587 MPa → Tc=42.8°C', description: '冷凝器出口（节流阀前）', anomaly: true, anomaly_type: 'mismatch', description: '备注与报警未对齐' },
-  { id: 4, h: 260, p: 321, label: '4', nameplate_row: 5, formula: '等焓节流 h3 = h4', description: '节流阀出口（蒸发器入口）', anomaly: true, anomaly_type: 'bad', description: '关联压缩机功率数据异常' },
+  { id: 2, h: 475, p: 1600, label: '2', nameplate_row: 3, formula: 'Pe = 0.321 MPa → 等熵压缩', description: '压缩机出口（冷凝器入口）', anomaly: true, anomaly_type: 'symbol', anomaly_note: '压力变化率方向写反' },
+  { id: 3, h: 260, p: 1587, label: '3', nameplate_row: 4, formula: 'Pc = 1.587 MPa → Tc=42.8°C', description: '冷凝器出口（节流阀前）', anomaly: true, anomaly_type: 'mismatch', anomaly_note: '备注与报警未对齐' },
+  { id: 4, h: 260, p: 321, label: '4', nameplate_row: 5, formula: '等焓节流 h3 = h4', description: '节流阀出口（蒸发器入口）', anomaly: true, anomaly_type: 'bad', anomaly_note: '关联压缩机功率数据异常' },
 ]
 
 const curvePath = () => {
@@ -226,6 +227,12 @@ export default function ChartPage() {
 
                 <div className="space-y-3">
                   <InfoRow label="过程描述" value={selectedPoint.description || '-'} />
+                  {selectedPoint.anomaly_note && (
+                    <InfoRow
+                      label="异常说明"
+                      value={selectedPoint.anomaly_note}
+                    />
+                  )}
                   <InfoRow label="焓值 h" value={`${selectedPoint.h} kJ/kg`} />
                   <InfoRow label="压力 P" value={`${selectedPoint.p} kPa`} />
                   {selectedPoint.formula && (
@@ -334,7 +341,7 @@ export default function ChartPage() {
                   pt.anomaly_type === 'bad' ? 'bg-status-red' : 'bg-warning-500'
                 }`} />
               </div>
-              <p className="font-mono text-xs text-industrial-600">{pt.description}</p>
+              <p className="font-mono text-xs text-industrial-600">{pt.anomaly_note || pt.description}</p>
             </button>
           ))}
         </div>
