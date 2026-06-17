@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}{{ sample.case_id }} - 样本详情{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">首页</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('task_detail', task_id=results[0].task_id) if results else '#' }}">任务详情</a></li>
+        <li class="breadcrumb-item active" aria-current="page">样本 {{ sample.case_id }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h2 class="mb-1">
+            <i class="bi bi-file-earmark-text"></i> 样本详情 - {{ sample.case_id }}
+            {% if sample.is_duplicate_evaluation %}
+            <span class="badge badge-duplicate ms-2">
+                <i class="bi bi-arrow-repeat"></i> 重复评测样本
+            </span>
+            {% endif %}
+            {% if sample.dirty_data_flag %}
+            <span class="badge badge-dirty ms-2">
+                <i class="bi bi-exclamation-triangle"></i> 脏数据 - {{ sample.dirty_data_note or '原始数据有疑问' }}
+            </span>
+            {% endif %}
+        </h2>
+        <div class="text-muted small">
+            <span class="me-3"><i class="bi bi-gear"></i> 来源系统: {{ sample.original_system or '未知' }}</span>
+            <span class="me-3"><i class="bi bi-calendar"></i> 对话时间: {{ sample.conversation_date.strftime('%Y-%m-%d %H:%M') if sample.conversation_date else '未知' }}</span>
+            <span class="me-3"><i class="bi bi-person-badge"></i> 客服ID: {{ sample.customer_service_id or '未知' }}</span>
+            <span class="me-3"><i class="bi bi-person"></i> 用户ID: {{ sample.customer_id or '未知' }}</span>
+        </div>
+    </div>
+    {% if sample.original_source_url %}
+    <a href="{{ sample.original_source_url }}" target="_blank" class="btn btn-outline-primary">
+        <i class="bi bi-box-arrow-up-right"></i> 打开原始来源
+    </a>
+    {% endif %}
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-chat-left-text"></i> 客服摘要（当前版本）</h5>
+            </div>
+            <div class="card-body">
+                <p class="lead mb-0" style="line-height:1.8">{{ sample.original_summary }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-link-45deg"></i> 证据链接（点回样本证据）</h5>
+            </div>
+            <div class="card-body">
+                {% if evidence_links %}
+                <div class="list-group list-group-flush">
+                    {% for label, url in evidence_links.items() %}
+                    <a href="{{ url }}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="bi bi-link-45deg text-primary"></i> {{ label }}</span>
+                        <i class="bi bi-box-arrow-up-right text-muted"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-muted text-center py-3">暂无证据链接</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-journal-text text-orange"></i>
+            原始来源保留（脏数据痕迹不丢失）
+        </h5>
+        {% if sample.dirty_data_flag %}
+        <span class="badge badge-dirty">⚠️ 本样本有脏数据标记，原始内容未覆盖</span>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if raw_data %}
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <div class="snapshot-box" style="border-left-color:#fd7e14">
+                    <div class="mb-2"><strong><i class="bi bi-journal-richtext"></i> 原始工单/对话记录:</strong></div>
+                    {{ raw_data.get('original_ticket', '无记录') }}
+                </div>
+            </div>
+            {% if raw_data.get('tags') %}
+            <div class="col-md-6">
+                <div class="snapshot-box">
+                    <div class="mb-2"><strong><i class="bi bi-tags"></i> 原始标签:</strong></div>
+                    {% for tag in raw_data.tags %}
+                    <span class="badge bg-secondary me-1">{{ tag }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            {% if raw_data.get('dirty_fields') and raw_data.dirty_fields %}
+            <div class="col-md-6">
+                <div class="snapshot-box" style="border-left-color:#dc3545;background:#fdf0ef">
+                    <div class="mb-2"><strong><i class="bi bi-exclamation-triangle text-danger"></i> 脏数据痕迹（被修改过的字段）:</strong></div>
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            {% for field, note in raw_data.dirty_fields.items() %}
+                            <tr>
+                                <td><code>{{ field }}</code></td>
+                                <td class="text-danger">{{ note }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="text-muted text-center py-3">无原始来源数据</div>
+        {% endif %}
+    </div>
+</div>
+
+{% if evidence_details %}
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-search"></i> 证据明细（不是只看分数，直接点回证据）</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for label, detail in evidence_details.items() %}
+            <div class="col-md-6 mb-3">
+                <div class="card border-primary h-100">
+                    <div class="card-header bg-primary text-white py-2">
+                        <strong><i class="bi bi-fingerprint"></i> {{ label }}</strong>
+                    </div>
+                    <div class="card-body py-3">
+                        <p class="mb-0 small">{{ detail }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-clock-history"></i> 评测历史（本样本在各任务中的结果）</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>任务ID</th>
+                    <th>任务名称</th>
+                    <th>版本</th>
+                    <th>自动评分</th>
+                    <th>自动结论</th>
+                    <th>最终结论</th>
+                    <th>影响力</th>
+                    <th>修正</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in results %}
+                <tr>
+                    <td><code>#{{ r.task_id }}</code></td>
+                    <td>
+                        {{ r.task.task_name }}
+                        {% if r.task.rerun_of_task_id %}<span class="badge badge-duplicate ms-1">重复</span>{% endif %}
+                    </td>
+                    <td><span class="badge bg-secondary">v{{ r.version }}</span></td>
+                    <td class="{% if r.auto_score >= 60 %}text-danger fw-bold{% elif r.auto_score >= 30 %}text-warning{% else %}text-success{% endif %}">{{ r.auto_score }}</td>
+                    <td><span class="badge bg-secondary">{{ r.auto_judgment }}</span></td>
+                    <td>
+                        {% if r.final_judgment == '严重问题' %}<span class="badge bg-danger">{{ r.final_judgment }}</span>
+                        {% elif r.final_judgment == '一般问题' %}<span class="badge bg-warning text-dark">{{ r.final_judgment }}</span>
+                        {% elif r.final_judgment == '轻微问题' %}<span class="badge bg-info text-dark">{{ r.final_judgment }}</span>
+                        {% else %}<span class="badge bg-success">{{ r.final_judgment }}</span>{% endif %}
+                    </td>
+                    <td>{{ '%.1f%%'|format(r.influence_score*100) }}</td>
+                    <td>
+                        {% if r.corrections %}<span class="badge badge-corrected">{{ r.corrections|length }}条</span>{% else %}无{% endif %}
+                    </td>
+                    <td><a href="{{ url_for('result_detail', result_id=r.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if corrections %}
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-pencil-square"></i> 本样本的人工修正记录（保留原始说法）</h5>
+    </div>
+    <div class="card-body">
+        {% for c in corrections %}
+        <div class="card mb-3 border-0 bg-light">
+            <div class="card-body py-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <div>
+                        <strong>修正 #{{ c.id }}</strong>
+                        <small class="text-muted ms-2">所属任务 <a href="{{ url_for('task_detail', task_id=c.task_id) }}">#{{ c.task_id }}</a></small>
+                    </div>
+                    <small class="text-muted">{{ c.corrected_by }} · {{ c.corrected_at.strftime('%m-%d %H:%M') }}</small>
+                </div>
+                <div class="mb-2">
+                    <span class="badge bg-secondary">{{ c.before_judgment }} ({{ c.before_score }}分)</span>
+                    <i class="bi bi-arrow-right mx-1"></i>
+                    <span class="badge bg-primary">{{ c.after_judgment }} ({{ c.after_score }}分)</span>
+                </div>
+                <div class="small mb-2"><strong>修正理由:</strong> {{ c.correction_reason }}</div>
+                <div class="verbal-quote small mb-2"><i class="bi bi-chat-quote"></i> {{ c.original_verbal_statement }}</div>
+                <div class="small"><strong>原始溯源:</strong> <span class="trace-highlight">{{ c.source_trace_note }}</span></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if remarks %}
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-chat-square-text"></i> 本样本的备注</h5>
+    </div>
+    <div class="card-body">
+        {% for r in remarks %}
+        <div class="card mb-2 border-0 bg-light">
+            <div class="card-body py-2 px-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <div>
+                        <strong>{{ r.author }}</strong>
+                        <span class="badge bg-secondary ms-1">v{{ r.version }}</span>
+                    </div>
+                    <small class="text-muted">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+                <div>{{ r.content }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

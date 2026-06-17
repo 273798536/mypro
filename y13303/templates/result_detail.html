@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}评测结果 #{{ result.id }}{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">首页</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('task_detail', task_id=task.id) }}">任务 #{{ task.id }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">结果 #{{ result.id }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h2 class="mb-1">
+            <i class="bi bi-clipboard-data"></i> 评测结果 #{{ result.id }}
+            <small class="text-muted">- {{ sample.case_id }}</small>
+        </h2>
+        <div class="text-muted small">
+            <span class="me-3">任务: <a href="{{ url_for('task_detail', task_id=task.id) }}">{{ task.task_name }}</a></span>
+            <span class="me-3"><span class="badge bg-secondary">v{{ result.version }}</span></span>
+            {% if sample.is_duplicate_evaluation %}<span class="badge badge-duplicate me-3">重复评测</span>{% endif %}
+            {% if sample.dirty_data_flag %}<span class="badge badge-dirty">脏数据</span>{% endif %}
+        </div>
+    </div>
+    <a href="{{ url_for('sample_detail', sample_id=sample.id) }}" class="btn btn-outline-secondary">
+        <i class="bi bi-box-arrow-up-right"></i> 跳转到样本（证据回源）
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary text-center">
+            <div class="card-body py-4">
+                <div class="small opacity-75 mb-1">自动评分</div>
+                <h1 class="display-4 mb-0">{{ result.auto_score }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body py-4">
+                <div class="small text-muted mb-1">自动结论</div>
+                <h3 class="mb-0">
+                    {% if result.auto_judgment == '严重问题' %}<span class="badge bg-danger">{{ result.auto_judgment }}</span>
+                    {% elif result.auto_judgment == '一般问题' %}<span class="badge bg-warning text-dark">{{ result.auto_judgment }}</span>
+                    {% elif result.auto_judgment == '轻微问题' %}<span class="badge bg-info text-dark">{{ result.auto_judgment }}</span>
+                    {% else %}<span class="badge bg-success">{{ result.auto_judgment }}</span>{% endif %}
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body py-4">
+                <div class="small text-muted mb-1">最终结论</div>
+                <h3 class="mb-0">
+                    {% if result.final_judgment == '严重问题' %}<span class="badge bg-danger">{{ result.final_judgment }}</span>
+                    {% elif result.final_judgment == '一般问题' %}<span class="badge bg-warning text-dark">{{ result.final_judgment }}</span>
+                    {% elif result.final_judgment == '轻微问题' %}<span class="badge bg-info text-dark">{{ result.final_judgment }}</span>
+                    {% else %}<span class="badge bg-success">{{ result.final_judgment }}</span>{% endif %}
+                </h3>
+                {% if result.final_judgment != result.auto_judgment %}
+                <div class="small mt-2 text-primary"><i class="bi bi-arrow-repeat"></i> 与自动结论不同，存在人工修正</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger text-center">
+            <div class="card-body py-4">
+                <div class="small opacity-75 mb-1">影响力权重</div>
+                <h1 class="display-4 mb-0">{{ '%.0f%%'|format(result.influence_score*100) }}</h1>
+                <small>{{ '拉高风险' if result.final_judgment in ['严重问题','一般问题'] else '拉低向好' }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-chat-left-text"></i> 客服摘要</h5>
+    </div>
+    <div class="card-body">
+        <p class="lead mb-0">{{ sample.original_summary }}</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-link-45deg"></i> 证据链接（点回样本证据，非仅分数）</h5>
+            </div>
+            <div class="card-body">
+                {% if result.evidence_links %}
+                <div class="list-group list-group-flush">
+                    {% for label, url in result.evidence_links.items() %}
+                    <a href="{{ url }}" target="_blank" class="list-group-item list-group-item-action evidence-link d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-folder-symlink text-primary me-2"></i>
+                            <strong>{{ label }}</strong>
+                        </div>
+                        <i class="bi bi-box-arrow-up-right text-muted"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-muted text-center py-3">暂无证据链接</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="bi bi-search"></i> 证据明细</h5>
+            </div>
+            <div class="card-body">
+                {% if result.evidence_details %}
+                    {% for label, detail in result.evidence_details.items() %}
+                    <div class="card mb-2 border-0 bg-light">
+                        <div class="card-body py-2 px-3">
+                            <strong class="d-block mb-1"><i class="bi bi-fingerprint text-primary"></i> {{ label }}</strong>
+                            <p class="small mb-0">{{ detail }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-muted text-center py-3">暂无证据明细</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-pencil-square"></i> 人工修正记录</h5>
+    </div>
+    <div class="card-body">
+        {% if corrections %}
+            {% for c in corrections %}
+            <div class="card mb-3 border-primary">
+                <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+                    <strong>修正 #{{ c.id }}</strong>
+                    <small>{{ c.corrected_by }} · {{ c.corrected_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-5">
+                            <div class="snapshot-box">
+                                <div class="mb-1"><strong>修正前:</strong></div>
+                                <div>结论: <span class="badge bg-secondary">{{ c.before_judgment }}</span></div>
+                                <div>分数: {{ c.before_score }}分</div>
+                                <div class="mt-2 small text-muted">原始来源: {{ c.raw_snapshot_before.source if c.raw_snapshot_before else '未知' }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center justify-content-center">
+                            <i class="bi bi-arrow-right-circle fs-1 text-primary"></i>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="snapshot-box" style="border-left-color:#198754;background:#e8f5e9">
+                                <div class="mb-1"><strong>修正后:</strong></div>
+                                <div>结论: <span class="badge bg-success">{{ c.after_judgment }}</span></div>
+                                <div>分数: {{ c.after_score }}分</div>
+                                <div class="mt-2 small text-muted">操作来源: {{ c.raw_snapshot_after.source if c.raw_snapshot_after else '未知' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-2"><strong>修正理由:</strong> {{ c.correction_reason }}</div>
+                    <div class="verbal-quote mb-2">
+                        <i class="bi bi-chat-quote"></i>
+                        <strong>{{ c.corrected_by }}原话:</strong> {{ c.original_verbal_statement }}
+                    </div>
+                    <div class="mb-3">
+                        <strong>原始溯源说明:</strong>
+                        <span class="trace-highlight">{{ c.source_trace_note }}</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-dark" onclick="showRawSnapshot({{ c.id }}, 'before')">
+                            <i class="bi bi-braces"></i> 修前JSON快照
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="showRawSnapshot({{ c.id }}, 'after')">
+                            <i class="bi bi-braces"></i> 修后JSON快照
+                        </button>
+                    </div>
+                    <div id="raw-snap-{{ c.id }}" class="mt-2 d-none"></div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="text-muted text-center py-3">本结果无人工修正</div>
+        {% endif %}
+    </div>
+</div>
+
+<div id="relations" class="relation-ambiguous card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-diagram-3"></i> 说不清的结论关系（因修正/阈值改动导致旧结论说不清）</h5>
+    </div>
+    <div class="card-body">
+        {% if relations %}
+            {% for rel in relations %}
+            <div class="card mb-3 border-warning">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge {% if rel.relation_type == 'correction' %}badge-corrected{% else %}bg-warning text-dark{% endif %}">
+                            {% if rel.relation_type == 'correction' %}人工修正关系{% else %}阈值变更关系{% endif %}
+                        </span>
+                        <small class="text-muted">创建: {{ rel.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    <div class="mb-2">
+                        <span class="badge bg-secondary">{{ rel.old_conclusion[:50] }}</span>
+                        <i class="bi bi-arrow-right mx-2"></i>
+                        <span class="badge bg-primary">{{ rel.new_conclusion[:50] }}</span>
+                    </div>
+                    <div class="alert alert-warning py-2 mb-2">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>说不清的说明:</strong> {{ rel.ambiguous_note }}
+                    </div>
+                    {% if rel.related_sample_ids %}
+                    <div class="small">
+                        <strong>关联样本:</strong>
+                        {% for sid in rel.related_sample_ids %}
+                        <a href="{{ url_for('sample_detail', sample_id=sid) }}" class="badge bg-light text-dark border me-1">#{{ sid }}</a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="text-muted text-center py-3">本结果无说不清的结论关系</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-white">
+        <h5 class="mb-0"><i class="bi bi-chat-square-text"></i> 历史备注（带状态快照）</h5>
+    </div>
+    <div class="card-body">
+        {% if remarks %}
+            {% for r in remarks %}
+            <div class="card mb-2 border-0 bg-light">
+                <div class="card-body py-2 px-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <div>
+                            <strong>{{ r.author }}</strong>
+                            <span class="badge bg-secondary ms-1">v{{ r.version }}</span>
+                        </div>
+                        <small class="text-muted">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    <div class="mb-1">{{ r.content }}</div>
+                    {% if r.status_snapshot %}
+                    <div class="small text-muted">
+                        <i class="bi bi-camera"></i> 状态快照:
+                        {% for k,v in r.status_snapshot.items() %}
+                        <code class="bg-white px-1">{{ k }}={{ v }}</code>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="text-muted text-center py-3">暂无备注</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showRawSnapshot(correctionId, type) {
+    const container = document.getElementById('raw-snap-' + correctionId);
+    if (!container.classList.contains('d-none') && container.dataset.type === type) {
+        container.classList.add('d-none');
+        return;
+    }
+    fetch(`/api/correction/${correctionId}/trace`)
+        .then(res => res.json())
+        .then(data => {
+            const snap = type === 'before' ? data.raw_snapshot_before : data.raw_snapshot_after;
+            container.classList.remove('d-none');
+            container.dataset.type = type;
+            container.innerHTML = `
+                <div class="snapshot-box">
+                    <div class="mb-2"><strong>${type === 'before' ? '修正前' : '修正后'} JSON快照（原始数据不丢失）:</strong></div>
+                    <pre class="mb-0" style="font-size:0.8em">${JSON.stringify(snap, null, 2)}</pre>
+                </div>
+            `;
+        });
+}
+</script>
+{% endblock %}

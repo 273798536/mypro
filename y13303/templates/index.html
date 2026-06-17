@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}回放任务列表 - 客服摘要误判回放系统{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">
+        <i class="bi bi-list-check"></i> 客服摘要误判回放任务
+    </h2>
+    <div class="d-flex gap-2">
+        <span class="tag-legend align-self-center">
+            <span class="badge-duplicate">重复评测</span>
+            <span class="badge-dirty">脏数据</span>
+            <span class="badge-corrected">已修正</span>
+        </span>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">总任务数</h6>
+                        <h3 class="mb-0">{{ tasks|length }}</h3>
+                    </div>
+                    <i class="bi bi-collection fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% set ns = namespace(total_samples=0, total_corrections=0, total_relations=0) %}
+    {% for t in tasks %}
+        {% set ns.total_samples = ns.total_samples + t.total_samples %}
+        {% set ns.total_corrections = ns.total_corrections + t.corrections|length %}
+    {% endfor %}
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">总评测样本</h6>
+                        <h3 class="mb-0">{{ ns.total_samples }}</h3>
+                    </div>
+                    <i class="bi bi-file-earmark-text fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">人工修正记录</h6>
+                        <h3 class="mb-0">{{ ns.total_corrections }}</h3>
+                    </div>
+                    <i class="bi bi-pencil-square fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title mb-1">说不清的关系</h6>
+                        <h3 class="mb-0">{{ tasks|length * 2 if tasks else 0 }}</h3>
+                    </div>
+                    <i class="bi bi-diagram-3 fs-1 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-clock-history"></i> 历史任务</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>任务ID</th>
+                    <th>任务名称</th>
+                    <th>版本</th>
+                    <th>状态</th>
+                    <th>样本数</th>
+                    <th>问题数</th>
+                    <th>综合评分</th>
+                    <th>整体结论</th>
+                    <th>人工修正</th>
+                    <th>创建人</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for task in tasks %}
+                <tr>
+                    <td><code>#{{ task.id }}</code></td>
+                    <td>
+                        <strong>{{ task.task_name }}</strong>
+                        {% if task.rerun_of_task_id %}
+                        <span class="badge badge-duplicate ms-1">重复评测</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge bg-secondary">v{{ task.version }}</span></td>
+                    <td>
+                        {% if task.status == 'completed' %}
+                            <span class="badge status-completed">已完成</span>
+                        {% elif task.status == 'running' %}
+                            <span class="badge status-running">进行中</span>
+                        {% else %}
+                            <span class="badge status-pending">待处理</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ task.total_samples }}</td>
+                    <td>
+                        <span class="{% if task.misjudged_count > 3 %}text-danger fw-bold{% else %}text-warning{% endif %}">
+                            {{ task.misjudged_count }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="{% if task.overall_score >= 60 %}text-danger fw-bold{% elif task.overall_score >= 30 %}text-warning{% else %}text-success{% endif %}">
+                            {{ task.overall_score }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if task.overall_judgment == '严重问题' %}
+                            <span class="badge bg-danger">{{ task.overall_judgment }}</span>
+                        {% elif task.overall_judgment == '一般问题' %}
+                            <span class="badge bg-warning text-dark">{{ task.overall_judgment }}</span>
+                        {% elif task.overall_judgment == '轻微问题' %}
+                            <span class="badge bg-info text-dark">{{ task.overall_judgment }}</span>
+                        {% else %}
+                            <span class="badge bg-success">{{ task.overall_judgment }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if task.corrections %}
+                            <span class="badge badge-corrected">{{ task.corrections|length }}条修正</span>
+                        {% else %}
+                            <span class="text-muted">无</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ task.created_by }}</td>
+                    <td><small>{{ task.created_at.strftime('%m-%d %H:%M') }}</small></td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ url_for('task_detail', task_id=task.id) }}" class="btn btn-outline-primary" title="查看详情">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            {% if task.reports %}
+                            <a href="{{ url_for('view_report', report_id=task.reports[0].id) }}" class="btn btn-outline-success" title="查看报告">
+                                <i class="bi bi-file-earmark-markdown"></i>
+                            </a>
+                            {% endif %}
+                            <a href="{{ url_for('handover_view', task_id=task.id) }}" class="btn btn-outline-warning" title="交接视图">
+                                <i class="bi bi-arrow-left-right"></i>
+                            </a>
+                            <a href="{{ url_for('export_task', task_id=task.id) }}" class="btn btn-outline-secondary" title="导出CSV">
+                                <i class="bi bi-download"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="bi bi-info-circle"></i> 使用说明</h6>
+            </div>
+            <div class="card-body small">
+                <ul class="mb-0 ps-3">
+                    <li class="mb-2"><strong>人工修正溯源</strong>：任务详情页的"人工修正记录"板块，每条修正都保留<strong>原始说法</strong>和<strong>前后快照</strong></li>
+                    <li class="mb-2"><strong>样本证据回源</strong>：点击样本详情，可看到证据链接（录音、工单、截图），而非仅分数</li>
+                    <li class="mb-2"><strong>脏数据保留</strong>：有橙色<span class="badge badge-dirty">脏数据</span>标记的样本，原始内容未被覆盖</li>
+                    <li class="mb-2"><strong>重复评测标记</strong>：紫色<span class="badge badge-duplicate">重复评测</span>标记在筛选、详情、导出中均保留</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="bi bi-lightbulb"></i> 交接提醒</h6>
+            </div>
+            <div class="card-body small">
+                <ul class="mb-0 ps-3">
+                    <li class="mb-2">点击任务列表中的 <i class="bi bi-arrow-left-right"></i> 进入<strong>交接视图</strong>，可按步骤验证：从修正→原始说法→报告</li>
+                    <li class="mb-2">报告第五节专门记录了<strong>说不清的结论关系</strong>，交接时无需口头解释</li>
+                    <li class="mb-2">重启重跑后，注意<strong>一致性校验</strong>（任务详情页顶部），确保备注、状态、报告三方对齐</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

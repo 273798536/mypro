@@ -1,0 +1,596 @@
+{% extends "base.html" %}
+
+{% block title %}{{ task.task_name }} - 客服摘要误判回放系统{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb small">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">首页</a></li>
+        <li class="breadcrumb-item active" aria-current="page">任务 #{{ task.id }}</li>
+    </ol>
+</nav>
+
+<div class="d-flex justify-content-between align-items-start mb-4">
+    <div>
+        <h2 class="mb-1">
+            <i class="bi bi-clipboard-check"></i> {{ task.task_name }}
+            {% if task.rerun_of_task_id %}
+            <span class="badge badge-duplicate ms-2">
+                <i class="bi bi-arrow-repeat"></i> 重复评测（基于任务#{{ task.rerun_of_task_id }}）
+            </span>
+            {% endif %}
+        </h2>
+        <div class="text-muted small">
+            <span class="me-3"><i class="bi bi-person"></i> 执行人: {{ task.created_by }}</span>
+            <span class="me-3"><i class="bi bi-clock"></i> 创建: {{ task.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            {% if task.completed_at %}
+            <span class="me-3"><i class="bi bi-check2-circle"></i> 完成: {{ task.completed_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            {% endif %}
+            <span class="me-3"><span class="badge bg-secondary">v{{ task.version }}</span></span>
+        </div>
+    </div>
+    <div class="btn-group">
+        {% if reports %}
+        <a href="{{ url_for('view_report', report_id=reports[0].id) }}" class="btn btn-success">
+            <i class="bi bi-file-earmark-markdown"></i> 查看报告
+        </a>
+        {% endif %}
+        <a href="{{ url_for('export_task', task_id=task.id) }}" class="btn btn-outline-primary">
+            <i class="bi bi-download"></i> 导出CSV
+        </a>
+        <a href="{{ url_for('export_corrections', task_id=task.id) }}" class="btn btn-outline-info">
+            <i class="bi bi-pencil-square"></i> 导出修正
+        </a>
+        <a href="{{ url_for('handover_view', task_id=task.id) }}" class="btn btn-warning text-dark">
+            <i class="bi bi-arrow-left-right"></i> 交接视图
+        </a>
+    </div>
+</div>
+
+<div class="consistency-{{ 'good' if consistency.all_good else 'bad' }} card mb-4 shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h6 class="mb-2">
+                    <i class="bi bi-{{ 'shield-check text-success' if consistency.all_good else 'shield-exclamation text-danger' }}"></i>
+                    一致性校验
+                    {% if consistency.all_good %}
+                    <span class="badge bg-success ms-2">全部对齐</span>
+                    {% else %}
+                    <span class="badge bg-danger ms-2">{{ consistency.issues|length }}处不一致</span>
+                    {% endif %}
+                </h6>
+                <div class="row small">
+                    <div class="col-md-3">
+                        <i class="bi bi-chat-square-text"></i> 历史备注: {{ consistency.checks.total_remarks }} 条
+                        {% if consistency.checks.total_remarks %}<span class="text-success ms-1">✓已带快照</span>{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-file-earmark-markdown"></i> Markdown报告: {{ consistency.checks.total_reports }} 份
+                        {% if consistency.checks.report_count_matches %}<span class="text-success ms-1">✓已生成</span>{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-pencil-square"></i> 人工修正: {{ consistency.checks.total_corrections }} 条
+                        {% if consistency.checks.correction_snapshots %}<span class="text-success ms-1">✓快照完整</span>{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-bar-chart"></i> 数量校验:
+                        {% if consistency.checks.task_count_matches %}<span class="text-success">✓一致</span>{% else %}<span class="text-danger">✗不符</span>{% endif %}
+                    </div>
+                </div>
+                {% if consistency.issues %}
+                <div class="mt-3 p-3 bg-light rounded small">
+                    <strong class="text-danger">不一致详情:</strong>
+                    <ul class="mb-0 mt-1">
+                        {% for issue in consistency.issues %}
+                        <li class="text-danger">{{ issue }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            <button class="btn btn-sm btn-outline-secondary" onclick="refreshConsistency()">
+                <i class="bi bi-arrow-clockwise"></i> 重新校验
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-2">
+        <div class="card border-0 bg-light text-center">
+            <div class="card-body py-3">
+                <div class="small text-muted mb-1">样本总数</div>
+                <h4 class="mb-0 text-primary">{{ task.total_samples }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-0 bg-light text-center">
+            <div class="card-body py-3">
+                <div class="small text-muted mb-1">问题数量</div>
+                <h4 class="mb-0 text-danger">{{ task.misjudged_count }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-0 bg-light text-center">
+            <div class="card-body py-3">
+                <div class="small text-muted mb-1">综合评分</div>
+                <h4 class="mb-0 {% if task.overall_score >= 60 %}text-danger{% elif task.overall_score >= 30 %}text-warning{% else %}text-success{% endif %}">{{ task.overall_score }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-0 bg-light text-center">
+            <div class="card-body py-3">
+                <div class="small text-muted mb-1">整体结论</div>
+                <h6 class="mb-0 mt-2">
+                    {% if task.overall_judgment == '严重问题' %}<span class="badge bg-danger">严重</span>
+                    {% elif task.overall_judgment == '一般问题' %}<span class="badge bg-warning text-dark">一般</span>
+                    {% elif task.overall_judgment == '轻微问题' %}<span class="badge bg-info text-dark">轻微</span>
+                    {% else %}<span class="badge bg-success">无</span>{% endif %}
+                </h6>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-0 bg-light text-center">
+            <div class="card-body py-3">
+                <div class="small text-muted mb-1">重复评测</div>
+                <h4 class="mb-0 text-purple">{{ total_duplicate }}</h4>
+                <style>.text-purple{color:#6f42c1}</style>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card border-0 bg-light text-center">
+            <div class="card-body py-3">
+                <div class="small text-muted mb-1">脏数据</div>
+                <h4 class="mb-0 text-orange">{{ total_dirty }}</h4>
+                <style>.text-orange{color:#fd7e14}</style>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pull-card card mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-exclamation-triangle text-danger"></i> 拉偏结论的关键样本 (按影响力排序)</h5>
+        <button class="btn btn-sm btn-outline-danger" onclick="loadMoreInfluential()">
+            <i class="bi bi-list-ul"></i> 查看全部Top{{ results|length }}
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm mb-0" id="influential-table">
+                <thead>
+                    <tr class="table-danger">
+                        <th style="width:60px">排名</th>
+                        <th>案例ID</th>
+                        <th>摘要</th>
+                        <th style="width:100px">影响力</th>
+                        <th style="width:100px">评分</th>
+                        <th style="width:120px">最终结论</th>
+                        <th style="width:120px">拉偏方向</th>
+                        <th style="width:80px">标记</th>
+                        <th style="width:80px">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in top_influential %}
+                    <tr>
+                        <td><strong class="text-danger">{{ loop.index }}</strong></td>
+                        <td><code>{{ r.sample.case_id }}</code></td>
+                        <td><small>{{ r.sample.original_summary[:70] }}{% if r.sample.original_summary|length > 70 %}...{% endif %}</small></td>
+                        <td>
+                            <div class="progress" style="height:20px">
+                                <div class="progress-bar bg-danger" style="width:{{ (r.influence_score*100)|int }}%">
+                                    {{ '%.1f%%'|format(r.influence_score*100) }}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="{% if r.auto_score >= 60 %}text-danger fw-bold{% elif r.auto_score >= 30 %}text-warning{% else %}text-success{% endif %}">{{ r.auto_score }}</td>
+                        <td>
+                            {% if r.final_judgment == '严重问题' %}<span class="badge bg-danger">{{ r.final_judgment }}</span>
+                            {% elif r.final_judgment == '一般问题' %}<span class="badge bg-warning text-dark">{{ r.final_judgment }}</span>
+                            {% elif r.final_judgment == '轻微问题' %}<span class="badge bg-info text-dark">{{ r.final_judgment }}</span>
+                            {% else %}<span class="badge bg-success">{{ r.final_judgment }}</span>{% endif %}
+                        </td>
+                        <td><small class="{% if r.final_judgment in ['严重问题','一般问题'] %}text-danger{% else %}text-success{% endif %}">
+                            {% if r.final_judgment in ['严重问题','一般问题'] %}<i class="bi bi-arrow-up"></i> 拉高风险{% else %}<i class="bi bi-arrow-down"></i> 拉低向好{% endif %}
+                        </small></td>
+                        <td>
+                            {% if r.sample.is_duplicate_evaluation %}<span class="badge badge-duplicate me-1" title="重复评测">重</span>{% endif %}
+                            {% if r.sample.dirty_data_flag %}<span class="badge badge-dirty me-1" title="脏数据">脏</span>{% endif %}
+                            {% if r.corrections %}<span class="badge badge-corrected" title="已人工修正">修</span>{% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('result_detail', result_id=r.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-muted small mt-2">
+            <i class="bi bi-info-circle"></i> 运营主管追问"哪几条拉偏结论"时，直接查看本表。影响力越大，对整体评分的贡献越大。
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-pencil-square text-primary"></i> 人工修正记录（保留原始来源）</h5>
+                <span class="badge badge-corrected">{{ corrections|length }}条</span>
+            </div>
+            <div class="card-body">
+                {% if corrections %}
+                    {% for c in corrections %}
+                    <div class="card mb-3 border-0 bg-light">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <div>
+                                    <strong>修正 #{{ c.id }}</strong>
+                                    <small class="text-muted ms-2">案例 <a href="{{ url_for('sample_detail', sample_id=c.result.sample.id) }}"><code>{{ c.result.sample.case_id }}</code></a></small>
+                                    {% if c.result.sample.dirty_data_flag %}
+                                    <span class="badge badge-dirty ms-1">脏数据</span>
+                                    {% endif %}
+                                </div>
+                                <small class="text-muted">{{ c.corrected_by }} · {{ c.corrected_at.strftime('%m-%d %H:%M') }}</small>
+                            </div>
+                            <div class="mb-2">
+                                <span class="badge bg-secondary">{{ c.before_judgment }} ({{ c.before_score }}分)</span>
+                                <i class="bi bi-arrow-right mx-1"></i>
+                                <span class="badge bg-primary">{{ c.after_judgment }} ({{ c.after_score }}分)</span>
+                            </div>
+                            <div class="small mb-2"><strong>修正理由:</strong> {{ c.correction_reason }}</div>
+                            <div class="verbal-quote small mb-2"><i class="bi bi-chat-quote"></i> {{ c.original_verbal_statement }}</div>
+                            <div class="small mb-2"><strong>原始溯源:</strong> <span class="trace-highlight">{{ c.source_trace_note }}</span></div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-dark" onclick="showSnapshot({{ c.id }}, 'before')">
+                                    <i class="bi bi-camera"></i> 修前快照
+                                </button>
+                                <button class="btn btn-sm btn-outline-primary" onclick="showSnapshot({{ c.id }}, 'after')">
+                                    <i class="bi bi-camera2"></i> 修后快照
+                                </button>
+                                <a class="btn btn-sm btn-outline-info" href="{{ url_for('result_detail', result_id=c.result_id) }}#relations">
+                                    <i class="bi bi-diagram-3"></i> 说不清的关系
+                                </a>
+                            </div>
+                            <div id="snapshot-{{ c.id }}" class="mt-2 d-none"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-muted text-center py-4">本期无人工修正</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="bi bi-sliders text-warning"></i> 阈值变更记录</h5>
+                <span class="badge bg-warning text-dark">{{ threshold_changes|length }}次</span>
+            </div>
+            <div class="card-body">
+                {% if threshold_changes %}
+                    {% for tc in threshold_changes %}
+                    <div class="card mb-3 border-0 bg-light">
+                        <div class="card-body py-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>阈值变更 #{{ tc.id }}</strong>
+                                <small class="text-muted">{{ tc.changed_by }} · {{ tc.changed_at.strftime('%m-%d %H:%M') }}</small>
+                            </div>
+                            <div class="small mb-2"><strong>变更原因:</strong> {{ tc.change_reason }}</div>
+                            <div class="small mb-2">
+                                <strong>影响样本数:</strong>
+                                <span class="badge bg-danger ms-1">{{ tc.affected_sample_count }}条</span>
+                            </div>
+                            <div class="row small">
+                                <div class="col-md-6">
+                                    <div class="snapshot-box" style="font-size:0.75em">
+<strong>旧阈值:</strong>
+无问题: 0-{{ tc.old_threshold.misjudgment_severity.normal.max }}分
+轻微: {{ tc.old_threshold.misjudgment_severity.mild.min }}-{{ tc.old_threshold.misjudgment_severity.mild.max }}分
+一般: {{ tc.old_threshold.misjudgment_severity.moderate.min }}-{{ tc.old_threshold.misjudgment_severity.moderate.max }}分
+严重: {{ tc.old_threshold.misjudgment_severity.severe.min }}-{{ tc.old_threshold.misjudgment_severity.severe.max }}分
+态度权重: {{ '%.0f%%'|format(tc.old_threshold.influence_weight.attitude*100) }}</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="snapshot-box" style="font-size:0.75em;background:#e8f5e9;border-left-color:#198754">
+<strong>新阈值:</strong>
+无问题: 0-{{ tc.new_threshold.misjudgment_severity.normal.max }}分
+轻微: {{ tc.new_threshold.misjudgment_severity.mild.min }}-{{ tc.new_threshold.misjudgment_severity.mild.max }}分
+一般: {{ tc.new_threshold.misjudgment_severity.moderate.min }}-{{ tc.new_threshold.misjudgment_severity.moderate.max }}分
+严重: {{ tc.new_threshold.misjudgment_severity.severe.min }}-{{ tc.new_threshold.misjudgment_severity.severe.max }}分
+态度权重: {{ '%.0f%%'|format(tc.new_threshold.influence_weight.attitude*100) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-muted text-center py-4">本期无阈值变更</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="relation-ambiguous card mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">
+            <i class="bi bi-diagram-3 text-warning"></i> 说不清的结论关系
+            <small class="text-muted ms-2">（人工修正 + 阈值改动后，旧结论说不清的地方都在这里）</small>
+        </h5>
+        <span class="badge bg-warning text-dark">{{ task_relations|length }}条</span>
+    </div>
+    <div class="card-body">
+        {% if task_relations %}
+        <div class="table-responsive">
+            <table class="table table-sm mb-0">
+                <thead class="table-warning">
+                    <tr>
+                        <th>类型</th>
+                        <th>旧结论</th>
+                        <th>新结论</th>
+                        <th>说不清的说明</th>
+                        <th>关联样本</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rel in task_relations %}
+                    <tr>
+                        <td>
+                            {% if rel.relation_type == 'correction' %}
+                            <span class="badge badge-corrected">人工修正</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">阈值变更</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge bg-secondary">{{ rel.old_conclusion[:40] }}{% if rel.old_conclusion|length > 40 %}...{% endif %}</span></td>
+                        <td><span class="badge bg-primary">{{ rel.new_conclusion[:40] }}{% if rel.new_conclusion|length > 40 %}...{% endif %}</span></td>
+                        <td><small>{{ rel.ambiguous_note }}</small></td>
+                        <td>
+                            {% if rel.related_sample_ids %}
+                            {% for sid in rel.related_sample_ids %}
+                            <a href="{{ url_for('sample_detail', sample_id=sid) }}" class="badge bg-light text-dark border">{{ sid }}</a>
+                            {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-muted text-center py-3">本期无说不清的结论关系</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-table"></i> 评测结果明细
+            <small class="text-muted">（支持筛选，重复评测/脏数据标记保留）</small>
+        </h5>
+        <div class="d-flex gap-2">
+            <select id="filter-select" class="form-select form-select-sm" style="width:auto" onchange="filterResults()">
+                <option value="all">全部样本</option>
+                <option value="duplicate">仅重复评测</option>
+                <option value="non_duplicate">仅非重复</option>
+                <option value="dirty">仅脏数据</option>
+                <option value="corrected">仅已修正</option>
+                <option value="influential">影响力≥10%</option>
+                <option value="problem">仅一般/严重问题</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="results-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>案例ID</th>
+                        <th>摘要</th>
+                        <th>自动评分</th>
+                        <th>自动结论</th>
+                        <th>最终结论</th>
+                        <th>影响力</th>
+                        <th>标记</th>
+                        <th>证据数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="results-tbody">
+                    {% for r in results %}
+                    <tr class="result-row" data-id="{{ r.id }}">
+                        <td><code>{{ r.sample.case_id }}</code></td>
+                        <td>
+                            <small>{{ r.sample.original_summary[:80] }}{% if r.sample.original_summary|length > 80 %}...{% endif %}</small>
+                        </td>
+                        <td class="{% if r.auto_score >= 60 %}text-danger fw-bold{% elif r.auto_score >= 30 %}text-warning{% else %}text-success{% endif %}">{{ r.auto_score }}</td>
+                        <td>
+                            {% if r.auto_judgment == '严重问题' %}<span class="badge bg-danger">{{ r.auto_judgment }}</span>
+                            {% elif r.auto_judgment == '一般问题' %}<span class="badge bg-warning text-dark">{{ r.auto_judgment }}</span>
+                            {% elif r.auto_judgment == '轻微问题' %}<span class="badge bg-info text-dark">{{ r.auto_judgment }}</span>
+                            {% else %}<span class="badge bg-success">{{ r.auto_judgment }}</span>{% endif %}
+                        </td>
+                        <td>
+                            {% if r.final_judgment != r.auto_judgment %}<i class="bi bi-arrow-repeat text-primary"></i> {% endif %}
+                            {% if r.final_judgment == '严重问题' %}<span class="badge bg-danger">{{ r.final_judgment }}</span>
+                            {% elif r.final_judgment == '一般问题' %}<span class="badge bg-warning text-dark">{{ r.final_judgment }}</span>
+                            {% elif r.final_judgment == '轻微问题' %}<span class="badge bg-info text-dark">{{ r.final_judgment }}</span>
+                            {% else %}<span class="badge bg-success">{{ r.final_judgment }}</span>{% endif %}
+                        </td>
+                        <td>{{ '%.1f%%'|format(r.influence_score*100) }}</td>
+                        <td>
+                            {% if r.sample.is_duplicate_evaluation %}<span class="badge badge-duplicate me-1" title="重复评测样本">重复评测</span>{% endif %}
+                            {% if r.sample.dirty_data_flag %}<span class="badge badge-dirty me-1" title="脏数据，保留原始来源">{{ r.sample.dirty_data_note or '脏数据' }}</span>{% endif %}
+                            {% if r.corrections %}<span class="badge badge-corrected" title="已人工修正">已修正({{ r.corrections|length }})</span>{% endif %}
+                        </td>
+                        <td>
+                            {% if r.evidence_links %}
+                            <span class="badge bg-primary" data-bs-toggle="popover" data-bs-html="true"
+                                data-bs-content="{% for k,v in r.evidence_links.items() %}<a href='{{ v }}' target='_blank' class='evidence-link'>{{ k }}</a><br>{% endfor %}">
+                                {{ r.evidence_links|length }}个 <i class="bi bi-link-45deg"></i>
+                            </span>
+                            {% else %}<span class="text-muted">0</span>{% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('result_detail', result_id=r.id) }}" class="btn btn-outline-primary" title="结果详情">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a href="{{ url_for('sample_detail', sample_id=r.sample_id) }}" class="btn btn-outline-secondary" title="样本详情(回源)">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer bg-white small text-muted" id="results-footer">
+        共 {{ results|length }} 条记录
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-chat-square-text"></i> 历史备注（带状态快照，重启后仍对齐）</h5>
+        <span class="badge bg-secondary">{{ remarks|length }}条</span>
+    </div>
+    <div class="card-body">
+        {% if remarks %}
+            {% for r in remarks %}
+            <div class="card mb-2 border-0 bg-light">
+                <div class="card-body py-2 px-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <div>
+                            <strong>{{ r.author }}</strong>
+                            <span class="badge bg-secondary ms-1">v{{ r.version }}</span>
+                        </div>
+                        <small class="text-muted">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    <div class="mb-1">{{ r.content }}</div>
+                    {% if r.status_snapshot %}
+                    <div class="small text-muted">
+                        <i class="bi bi-camera"></i>
+                        状态快照:
+                        {% for k,v in r.status_snapshot.items() %}
+                        <code class="bg-white px-1">{{ k }}={{ v }}</code>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="text-muted text-center py-3">暂无备注</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const TASK_ID = {{ task.id }};
+
+function showSnapshot(correctionId, type) {
+    const container = document.getElementById('snapshot-' + correctionId);
+    if (!container.classList.contains('d-none') && container.dataset.type === type) {
+        container.classList.add('d-none');
+        return;
+    }
+    fetch(`/api/correction/${correctionId}/trace`)
+        .then(res => res.json())
+        .then(data => {
+            const snapshot = type === 'before' ? data.raw_snapshot_before : data.raw_snapshot_after;
+            const title = type === 'before' ? '修正前快照' : '修正后快照';
+            const color = type === 'before' ? '#6c757d' : '#0d6efd';
+            container.classList.remove('d-none');
+            container.dataset.type = type;
+            container.innerHTML = `
+                <div class="snapshot-box" style="border-left-color:${color}">
+                    <div class="mb-2"><strong>${title}:</strong></div>
+                    ${JSON.stringify(snapshot, null, 2)}
+                </div>
+            `;
+        });
+}
+
+function filterResults() {
+    const val = document.getElementById('filter-select').value;
+    fetch(`/api/task/${TASK_ID}/filter?filter=${val}`)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('results-tbody');
+            tbody.innerHTML = '';
+            data.results.forEach(r => {
+                const tr = document.createElement('tr');
+                let badges = '';
+                if (r.is_duplicate) badges += '<span class="badge badge-duplicate me-1">重复评测</span>';
+                if (r.is_dirty) badges += '<span class="badge badge-dirty me-1">脏数据</span>';
+                if (r.has_correction) badges += `<span class="badge badge-corrected">已修正(${r.correction_count})</span>`;
+                tr.innerHTML = `
+                    <td><code>CASE${r.case_id.slice(-3)}</code></td>
+                    <td><small>${r.summary}</small></td>
+                    <td class="${r.score >= 60 ? 'text-danger fw-bold' : r.score >= 30 ? 'text-warning' : 'text-success'}">${r.score}</td>
+                    <td><span class="badge bg-secondary">${r.judgment}</span></td>
+                    <td>${badges || '<span class="text-muted">-</span>'}</td>
+                    <td>${r.influence}</td>
+                    <td><a href="/result/${r.result_id}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            document.getElementById('results-footer').textContent = `筛选结果: ${data.count} 条记录`;
+        });
+}
+
+function loadMoreInfluential() {
+    fetch(`/api/task/${TASK_ID}/influential_samples?top=50`)
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.querySelector('#influential-table tbody');
+            tbody.innerHTML = '';
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                let badges = '';
+                if (item.is_duplicate) badges += '<span class="badge badge-duplicate me-1">重</span>';
+                if (item.is_dirty) badges += '<span class="badge badge-dirty me-1">脏</span>';
+                tr.innerHTML = `
+                    <td><strong class="text-danger">${item.rank}</strong></td>
+                    <td><code>CASE${item.case_id.slice(-3)}</code></td>
+                    <td><small>${item.summary}${item.summary.length > 70 ? '...' : ''}</small></td>
+                    <td><div class="progress" style="height:20px"><div class="progress-bar bg-danger" style="width:${Math.round(item.influence_score*100)}%">${item.influence_pct}</div></div></td>
+                    <td>${item.final_judgment}</td>
+                    <td><small class="${item.pulled_direction.includes('拉高') ? 'text-danger' : 'text-success'}">${item.pulled_direction}</small></td>
+                    <td>${badges || '-'}</td>
+                    <td><a href="/sample/${item.sample_id}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+}
+
+function refreshConsistency() {
+    fetch(`/api/task/${TASK_ID}/consistency`)
+        .then(res => res.json())
+        .then(data => {
+            location.reload();
+        });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+    [...popoverTriggerList].map(el => new bootstrap.Popover(el, { placement: 'top', trigger: 'hover click' }));
+});
+</script>
+{% endblock %}
