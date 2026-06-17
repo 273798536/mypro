@@ -84,39 +84,16 @@ const UploadPage: React.FC = () => {
       try {
         const response = await trackApi.findAll({ limit: 1000 });
         if (response.data.length === 0) {
-          generateMockTracks();
+          message.warning('暂无曲目数据，请先在曲目列表页面添加曲目');
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to fetch tracks:', error);
+        const errMsg = error?.response?.data?.message || error.message || '网络错误';
+        message.error(`加载曲目列表失败: ${errMsg}，请确认后端服务是否启动`);
       }
     };
     fetchTracks();
   }, []);
-
-  const generateMockTracks = () => {
-    const mockTracks: Track[] = [];
-    const artists = ['周杰伦', '林俊杰', '陈奕迅', '邓紫棋', '薛之谦'];
-    const titles = [
-      '晴天', '七里香', '稻香', '江南', '修炼爱情',
-      '富士山下', '十年', '光年之外', '演员', '刚刚好',
-    ];
-
-    for (let i = 0; i < 15; i++) {
-      mockTracks.push({
-        id: `track-${i + 1}`,
-        showId: 'show-1',
-        trackNo: i + 1,
-        title: titles[i % titles.length],
-        artist: artists[i % artists.length],
-        expectedDuration: 180 + Math.random() * 120,
-        status: 'pending',
-        currentVersion: 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
-    }
-    useAppStore.getState().setTracks(mockTracks);
-  };
 
   const trackCandidates: MatchCandidate[] = useMemo(() => {
     return tracks.map((track) => ({
@@ -138,71 +115,6 @@ const UploadPage: React.FC = () => {
     return { trackNo, duration, parsedTitle };
   };
 
-  const mockMatchAnalysis = (
-    item: MatchingPreviewItem,
-    candidates: MatchCandidate[]
-  ): MatchResult => {
-    const anomalies: string[] = [];
-    let confidence = 0;
-    let matchedTrackId: string | null = null;
-    let matchType: 'auto' | 'suggest' | 'manual' | 'none' = 'none';
-
-    const parsed = analyzeFileName(item.fileName);
-
-    const trackNoMatch = candidates.find(
-      (c) => parsed.trackNo && c.trackNo === parsed.trackNo
-    );
-
-    if (trackNoMatch) {
-      confidence = 0.7;
-      matchedTrackId = trackNoMatch.trackId;
-      matchType = 'auto';
-
-      if (parsed.duration) {
-        const durationDiff = Math.abs(parsed.duration - trackNoMatch.expectedDuration);
-        if (durationDiff > 10) {
-          anomalies.push(`时长差异过大 (${durationDiff.toFixed(0)}s)`);
-          confidence -= 0.2;
-        }
-      }
-
-      if (parsed.parsedTitle) {
-        const titleSimilarity =
-          parsed.parsedTitle.toLowerCase() === trackNoMatch.title.toLowerCase() ? 1 : 0.5;
-        confidence *= titleSimilarity;
-        if (titleSimilarity < 1) {
-          anomalies.push('曲目名称可能不匹配');
-        }
-      }
-    } else {
-      anomalies.push('无法从文件名识别曲目编号');
-      confidence = 0.3;
-
-      const fuzzyMatch = candidates[Math.floor(Math.random() * candidates.length)];
-      if (fuzzyMatch && Math.random() > 0.5) {
-        matchedTrackId = fuzzyMatch.trackId;
-        matchType = 'suggest';
-        anomalies.push('基于内容的模糊匹配，建议人工确认');
-      } else {
-        matchType = 'none';
-        anomalies.push('未找到匹配曲目，需要手动匹配');
-      }
-    }
-
-    if (Math.random() > 0.7) {
-      anomalies.push('文件名格式不符合规范');
-    }
-
-    return {
-      materialId: item.fileId,
-      trackId: matchedTrackId,
-      confidence: Math.max(0, Math.min(1, confidence)),
-      matchType,
-      anomalies,
-      parsed,
-    };
-  };
-
   const handleBatchMatch = async () => {
     if (matchingItems.filter((item) => item.uploadStatus === 'success').length === 0) {
       message.warning('请先上传文件');
@@ -222,28 +134,10 @@ const UploadPage: React.FC = () => {
         }));
 
       if (batchItems.length > 0) {
-        let batchResult: BatchMatchResult;
-
-        try {
-          batchResult = await matchingApi.batchMatch({
-            items: batchItems,
-            candidates: trackCandidates,
-          });
-        } catch {
-          batchResult = {
-            results: batchItems.map((item) => {
-              const previewItem = matchingItems.find((i) => i.fileId === item.materialId)!;
-              return mockMatchAnalysis(previewItem, trackCandidates);
-            }),
-            summary: {
-              total: batchItems.length,
-              autoMatched: Math.floor(batchItems.length * 0.4),
-              suggested: Math.floor(batchItems.length * 0.3),
-              manualRequired: Math.floor(batchItems.length * 0.2),
-              unmatched: Math.floor(batchItems.length * 0.1),
-            },
-          };
-        }
+        const batchResult = await matchingApi.batchMatch({
+          items: batchItems,
+          candidates: trackCandidates,
+        });
 
         setMatchingItems((prev) =>
           prev.map((item) => {
@@ -328,38 +222,12 @@ const UploadPage: React.FC = () => {
       }, 200);
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 800));
 
-        let uploadResponse;
-        try {
-          uploadResponse = await fileApi.upload([fileObj], {
-            sourceBatch,
-            submittedBy: 'current-user',
-          });
-        } catch {
-          uploadResponse = {
-            files: [
-              {
-                id: newItem.fileId,
-                originalName: fileObj.name,
-                fileName: fileObj.name,
-                filePath: `/uploads/${newItem.fileId}`,
-                fileSize: fileObj.size,
-                mimeType: fileObj.type,
-                fileType: 'audio',
-                extension: fileObj.name.split('.').pop() || 'mp3',
-                version: 1,
-                sourceBatch,
-                submittedBy: 'current-user',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-              },
-            ],
-            total: 1,
-            success: 1,
-            failed: 0,
-          };
-        }
+        const uploadResponse = await fileApi.upload([fileObj], {
+          sourceBatch,
+          submittedBy: 'current-user',
+        });
 
         clearInterval(progressInterval);
 
@@ -447,17 +315,13 @@ const UploadPage: React.FC = () => {
       for (const item of selectedItems) {
         const trackId = item.manualTrackId || item.suggestedTrackId;
         if (trackId) {
-          try {
-            await matchingApi.confirm({
-              materialId: item.fileId,
-              trackId,
-              matchType: item.manualTrackId ? 'manual' : 'auto',
-              confidence: item.matchConfidence,
-              confirmedBy: 'current-user',
-            });
-          } catch {
-            console.log(`Mock confirmed match for ${item.fileName}`);
-          }
+          await matchingApi.confirm({
+            materialId: item.fileId,
+            trackId,
+            matchType: item.manualTrackId ? 'manual' : 'auto',
+            confidence: item.matchConfidence,
+            confirmedBy: 'current-user',
+          });
         }
       }
 

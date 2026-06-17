@@ -29,7 +29,8 @@ export class MaterialService {
       : 1;
 
     const hasActiveVersion = existingMaterials.some(m => m.isActive);
-    
+    let previousActive: any = null;
+
     if (hasActiveVersion && !overrideReason) {
       throw new BadRequestException(
         `该曲目已有活跃版本，如需覆盖请提供覆盖原因`
@@ -47,19 +48,19 @@ export class MaterialService {
       ...materialData,
     };
 
+    let updatedMaterials = [...existingMaterials];
+
     if (hasActiveVersion) {
-      const previousActive = existingMaterials.find(m => m.isActive);
+      previousActive = existingMaterials.find(m => m.isActive);
       if (previousActive) {
-        previousActive.isActive = false;
         this.recordVersionHistory(previousActive.id, previousActive, newMaterial, 'override', overrideReason!);
+        updatedMaterials = existingMaterials.map(m => 
+          m.id === previousActive.id ? { ...m, isActive: false } : m
+        );
       }
     }
 
-    const updatedMaterials = hasActiveVersion
-      ? existingMaterials.map(m => m.id === (existingMaterials.find(x => x.isActive)?.id) ? { ...existingMaterials.find(x => x.isActive)!, isActive: false } : m)
-      : existingMaterials;
-
-    this.materials.set(trackId, [...updatedMaterials.filter(m => m.isActive !== false || m.id !== previousActive?.id), newMaterial]);
+    this.materials.set(trackId, [...updatedMaterials, newMaterial]);
 
     if (!hasActiveVersion) {
       this.recordVersionHistory(newMaterial.id, null, newMaterial, 'create', '初始版本创建');
