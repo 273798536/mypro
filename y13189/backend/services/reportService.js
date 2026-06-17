@@ -89,6 +89,35 @@ function normalizeMaterialName(name) {
   };
 }
 
+function normalizeSampleUnits(samples) {
+  return samples.map(sample => {
+    const speedUnit = sample.windSpeedUnit || 'm/s';
+    const normalized = normalizeUnit(sample.windSpeed, speedUnit, 'speed');
+
+    let hasUnitIssue = sample.hasUnitIssue || false;
+    let unitIssueNote = sample.unitIssueNote || '';
+
+    if (!normalized.isNormalized) {
+      return sample;
+    }
+
+    if (speedUnit !== 'm/s' && !sample.hasUnitIssue) {
+      hasUnitIssue = true;
+      unitIssueNote = `原始录入单位为 ${speedUnit}，与标准单位 m/s 不一致，已自动换算`;
+    }
+
+    return {
+      ...sample,
+      windSpeed: Math.round(normalized.value * 100) / 100,
+      windSpeedUnit: 'm/s',
+      originalWindSpeed: sample.windSpeed,
+      originalWindSpeedUnit: speedUnit,
+      hasUnitIssue,
+      unitIssueNote
+    };
+  });
+}
+
 function checkAnomalies(samples) {
   const anomalies = [];
 
@@ -194,7 +223,9 @@ function recalculateWithNewParams(reportId, newParams) {
   const speedFactor = newBaseWindSpeed / oldBaseWindSpeed;
   const angleOffset = newBaseAngle - oldBaseAngle;
 
-  const recalculatedSamples = report.samples.map(sample => {
+  const normalizedSamples = normalizeSampleUnits(report.samples);
+
+  const recalculatedSamples = normalizedSamples.map(sample => {
     const sampleOldAngle = sample.attackAngle;
     const sampleNewAngle = sampleOldAngle + angleOffset;
     const sampleOldSpeed = sample.windSpeed;
@@ -210,7 +241,7 @@ function recalculateWithNewParams(reportId, newParams) {
     return {
       ...sample,
       attackAngle: Math.round(sampleNewAngle * 10) / 10,
-      windSpeed: Math.round(sampleNewSpeed * 10) / 10,
+      windSpeed: Math.round(sampleNewSpeed * 100) / 100,
       windSpeedUnit: 'm/s',
       separationPoint: newSeparationPoint,
       flowStatus: classifyFlow(newSeparationPoint),
@@ -278,11 +309,15 @@ function isNearBoundary(angle) {
 function generateChangeReason(sample, newWindSpeed, newAngle, speedFactor, angleDiff) {
   const reasons = [];
 
+  if (sample.hasUnitIssue && sample.originalWindSpeed !== undefined) {
+    reasons.push(`原始录入 ${sample.originalWindSpeed} ${sample.originalWindSpeedUnit || 'km/h'}，已统一为 ${sample.windSpeed} m/s`);
+  }
+
   if (angleDiff !== 0) {
-    reasons.push(`攻角从 ${sample.attackAngle}° 调整到 ${newAngle}°，变化 ${angleDiff > 0 ? '+' : ''}${angleDiff}°`);
+    reasons.push(`攻角从 ${sample.attackAngle}° 调整到 ${Math.round(newAngle * 10) / 10}°，变化 ${angleDiff > 0 ? '+' : ''}${angleDiff}°`);
   }
   if (speedFactor !== 1) {
-    reasons.push(`流速变化因子 ${speedFactor.toFixed(3)}，影响分离点位置`);
+    reasons.push(`流速变化因子 ${speedFactor.toFixed(3)}（${sample.windSpeed} → ${Math.round(newWindSpeed * 100) / 100} m/s），影响分离点位置`);
   }
 
   reasons.push('基于分离点经验公式：分离点前移量与攻角增量正相关，与流速负相关');
@@ -316,10 +351,11 @@ function getReportById(reportId) {
   const report = mockReports.find(r => r.id === reportId);
   if (!report) return null;
 
-  const unitIssues = checkUnitConsistency(report.samples);
-  const anomalies = checkAnomalies(report.samples);
+  const normalizedSamples = normalizeSampleUnits(report.samples);
+  const unitIssues = checkUnitConsistency(normalizedSamples);
+  const anomalies = checkAnomalies(normalizedSamples);
   const materialInfo = normalizeMaterialName(report.basicInfo.specimenMaterial);
-  const unifiedSamples = unifySampleNotes(report.samples);
+  const unifiedSamples = unifySampleNotes(normalizedSamples);
 
   return {
     ...report,
@@ -355,12 +391,17 @@ function generateExportHtml(reportData) {
     unitIssues
   } = reportData;
 
-  const samplesHtml = samples.map(s => `
+  const samplesHtml = samples.map(s => {
+    const speedDisplay = s.hasUnitIssue && s.originalWindSpeed !== undefined
+      ? `${s.windSpeed} ${s.windSpeedUnit} <span style="color:#718096;font-size:12px;">(原始: ${s.originalWindSpeed} ${s.originalWindSpeedUnit || 'km/h'})</span>`
+      : `${s.windSpeed} ${s.windSpeedUnit}`;
+
+    return `
     <div class="sample-card ${s.isNormal ? '' : 'anomaly'} ${s.isBoundary ? 'boundary' : ''}">
       <h4>${s.name} ${s.anomalyType === 'direction' ? '<span class="badge warning">方向异常</span>' : ''} ${s.isBoundary ? '<span class="badge info">边界样本</span>' : ''} ${s.hasUnitIssue ? '<span class="badge info">单位换算</span>' : ''}</h4>
       <div class="sample-grid">
         <div><strong>攻角：</strong>${s.attackAngle}°</div>
-        <div><strong>流速：</strong>${s.windSpeed} ${s.windSpeedUnit}</div>
+        <div><strong>流速：</strong>${speedDisplay}</div>
         <div><strong>分离点：</strong>${s.separationPoint ? (s.separationPoint * 100).toFixed(0) + '% 弦长' : '无分离'}</div>
         <div><strong>流动状态：</strong>${s.flowStatus}</div>
       </div>
@@ -376,7 +417,7 @@ function generateExportHtml(reportData) {
         <p><strong>处理记录：</strong>${s.processingRecord || '-'}</p>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 
   const anomaliesHtml = anomalies.length > 0 ? `
     <h3>异常与问题清单</h3>
