@@ -69,7 +69,6 @@ export const mockNotes: Note[] = [
     addedTimestamp: BASE_TIME + 8 * TEN_MIN,
     affectedParameters: ['dropletDiameter'],
     conclusionChange: '水滴直径从1.55mm修正为1.40mm，结论由"接近阈值"变更为"正常范围"',
-    versionScreenshotUrl: 'screenshot-snap4-v1.png',
   },
   {
     id: 'note-4',
@@ -80,7 +79,6 @@ export const mockNotes: Note[] = [
     addedTimestamp: BASE_TIME + 10 * TEN_MIN,
     affectedParameters: ['temperature'],
     conclusionChange: '温度从32.5°C修正为31.3°C，结论由"超过调整后阈值"变更为"低于阈值0.7°C"',
-    versionScreenshotUrl: 'screenshot-snap8-v1.png',
   },
   {
     id: 'note-5',

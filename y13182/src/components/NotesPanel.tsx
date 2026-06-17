@@ -84,7 +84,7 @@ export default function NotesPanel() {
         )}
 
         {notes.map((note) => {
-          const oldScreenshot = note.versionScreenshotUrl ? mockOldVersionScreenshot(note.snapshotId, note.id) : null
+          const oldScreenshot = note.isRetrospective ? mockOldVersionScreenshot(note.snapshotId, note.id) : null
 
           return (
             <div
