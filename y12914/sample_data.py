@@ -182,14 +182,14 @@ def create_supplementary_samples() -> List[MultimodalSample]:
 
     samples.append(
         MultimodalSample(
-            sample_id="SAMPLE_002_V2",
+            sample_id="SAMPLE_002",
             text_content="这是一张城市夜景照片，高楼大厦灯火通明。",
             image_paths=["/images/city/city_night_002.jpg"],
             category="风景-城市",
             source="业务方提交",
             created_at="2026-06-15T11:00:00",
             manual_note="运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。",
-            metadata={"quality_score": 80, "updated": True},
+            metadata={"quality_score": 80, "updated": True, "补录说明": "已补图，路径已修正"},
         )
     )
 

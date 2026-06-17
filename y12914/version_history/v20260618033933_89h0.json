@@ -1,9 +1,8 @@
 {
-  "version_id": "v20260618031438_zjvg",
+  "version_id": "v20260618033933_89h0",
   "parent_version_id": null,
-  "timestamp": "2026-06-18T03:14:38.283314",
+  "timestamp": "2026-06-18T03:39:33.691856",
   "sample_ids": [
-    "",
     "SAMPLE_001",
     "SAMPLE_002",
     "SAMPLE_004",
@@ -34,7 +33,7 @@
           }
         }
       ],
-      "checked_at": "2026-06-18T03:14:38.283049",
+      "checked_at": "2026-06-18T03:39:33.691642",
       "manual_note": null
     },
     "SAMPLE_002": {
@@ -51,7 +50,7 @@
           }
         }
       ],
-      "checked_at": "2026-06-18T03:14:38.283101",
+      "checked_at": "2026-06-18T03:39:33.691665",
       "manual_note": "运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。"
     },
     "": {
@@ -70,21 +69,21 @@
           }
         }
       ],
-      "checked_at": "2026-06-18T03:14:38.283128",
+      "checked_at": "2026-06-18T03:39:33.691676",
       "manual_note": "这条数据明显有问题，谁导入的脏数据？"
     },
     "SAMPLE_004": {
       "sample_id": "SAMPLE_004",
       "status": "通过",
       "issues": [],
-      "checked_at": "2026-06-18T03:14:38.283134",
+      "checked_at": "2026-06-18T03:39:33.691682",
       "manual_note": null
     },
     "SAMPLE_005": {
       "sample_id": "SAMPLE_005",
       "status": "通过",
       "issues": [],
-      "checked_at": "2026-06-18T03:14:38.283139",
+      "checked_at": "2026-06-18T03:39:33.691687",
       "manual_note": null
     },
     "SAMPLE_006": {
@@ -106,7 +105,7 @@
           }
         }
       ],
-      "checked_at": "2026-06-18T03:14:38.283145",
+      "checked_at": "2026-06-18T03:39:33.691692",
       "manual_note": null
     },
     "SAMPLE_007": {
@@ -128,7 +127,7 @@
           }
         }
       ],
-      "checked_at": "2026-06-18T03:14:38.283149",
+      "checked_at": "2026-06-18T03:39:33.691697",
       "manual_note": null
     },
     "SAMPLE_008": {
@@ -150,7 +149,7 @@
           }
         }
       ],
-      "checked_at": "2026-06-18T03:14:38.283155",
+      "checked_at": "2026-06-18T03:39:33.691702",
       "manual_note": null
     },
     "SAMPLE_009": {
@@ -172,16 +171,142 @@
           }
         }
       ],
-      "checked_at": "2026-06-18T03:14:38.283159",
+      "checked_at": "2026-06-18T03:39:33.691706",
       "manual_note": null
     },
     "SAMPLE_010": {
       "sample_id": "SAMPLE_010",
       "status": "通过",
       "issues": [],
-      "checked_at": "2026-06-18T03:14:38.283164",
+      "checked_at": "2026-06-18T03:39:33.691710",
       "manual_note": null
     }
   },
-  "description": "V1-初始评测集"
+  "samples": {
+    "SAMPLE_001": {
+      "sample_id": "SAMPLE_001",
+      "text_content": "这是一只可爱的金毛犬，正坐在草地上晒太阳。",
+      "image_paths": [
+        "/images/dog/golden_retriever_001.jpg"
+      ],
+      "category": "动物-犬类",
+      "source": "公开数据集A",
+      "created_at": "2026-06-15T10:30:00",
+      "manual_note": null,
+      "metadata": {
+        "quality_score": 95
+      }
+    },
+    "SAMPLE_002": {
+      "sample_id": "SAMPLE_002",
+      "text_content": "这是一张城市夜景照片，高楼大厦灯火通明。",
+      "image_paths": [],
+      "category": "风景-城市",
+      "source": "业务方提交",
+      "created_at": "2026-06-15T11:00:00",
+      "manual_note": "运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。",
+      "metadata": {
+        "quality_score": 80
+      }
+    },
+    "SAMPLE_004": {
+      "sample_id": "SAMPLE_004",
+      "text_content": "汽车行驶在高速公路上。",
+      "image_paths": [
+        "/images/car/sedan_004.jpg"
+      ],
+      "category": "交通工具-汽车",
+      "source": "公开数据集A",
+      "created_at": "2026-06-15T09:00:00",
+      "manual_note": null,
+      "metadata": {
+        "quality_score": 90
+      }
+    },
+    "SAMPLE_005": {
+      "sample_id": "SAMPLE_005",
+      "text_content": "一只橘猫在窗台上睡觉。",
+      "image_paths": [
+        "/images/cat/orange_005.jpg"
+      ],
+      "category": "动物-猫类",
+      "source": "公开数据集A",
+      "created_at": "2026-06-15T09:30:00",
+      "manual_note": null,
+      "metadata": {
+        "quality_score": 92
+      }
+    },
+    "SAMPLE_006": {
+      "sample_id": "SAMPLE_006",
+      "text_content": "一只哈士奇在雪地里奔跑。",
+      "image_paths": [
+        "/images/dog/husky_006.jpg"
+      ],
+      "category": "动物-犬类",
+      "source": "公开数据集B",
+      "created_at": "2026-06-15T10:00:00",
+      "manual_note": null,
+      "metadata": {
+        "quality_score": 88
+      }
+    },
+    "SAMPLE_007": {
+      "sample_id": "SAMPLE_007",
+      "text_content": "一只边牧在接飞盘。",
+      "image_paths": [
+        "/images/dog/border_collie_007.jpg"
+      ],
+      "category": "动物-犬类",
+      "source": "公开数据集A",
+      "created_at": "2026-06-15T10:15:00",
+      "manual_note": null,
+      "metadata": {
+        "quality_score": 91
+      }
+    },
+    "SAMPLE_008": {
+      "sample_id": "SAMPLE_008",
+      "text_content": "一只柴犬在公园里散步。",
+      "image_paths": [
+        "/images/dog/shiba_008.jpg"
+      ],
+      "category": "动物-犬类",
+      "source": "业务方提交",
+      "created_at": "2026-06-15T10:45:00",
+      "manual_note": null,
+      "metadata": {
+        "quality_score": 87
+      }
+    },
+    "SAMPLE_009": {
+      "sample_id": "SAMPLE_009",
+      "text_content": "一只德牧在执行任务。",
+      "image_paths": [
+        "/images/dog/german_shepherd_009.jpg"
+      ],
+      "category": "动物-犬类",
+      "source": "公开数据集B",
+      "created_at": "2026-06-15T11:30:00",
+      "manual_note": null,
+      "metadata": {
+        "quality_score": 93
+      }
+    },
+    "SAMPLE_010": {
+      "sample_id": "SAMPLE_010",
+      "text_content": "一辆公交车在站台停靠。",
+      "image_paths": [
+        "/images/car/bus_010.jpg"
+      ],
+      "category": "交通工具-汽车",
+      "source": "公开数据集A",
+      "created_at": "2026-06-15T11:45:00",
+      "manual_note": null,
+      "metadata": {
+        "quality_score": 89
+      }
+    }
+  },
+  "description": "V1-初始评测集（含缺图+偏科+坏数据）"
 }

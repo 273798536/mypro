@@ -81,9 +81,22 @@ class VersionRecord:
     timestamp: str
     sample_ids: List[str]
     check_results: Dict[str, CheckResult]
+    samples: Dict[str, "MultimodalSample"] = field(default_factory=dict)
     description: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
+        samples_dict = {}
+        for sid, s in self.samples.items():
+            samples_dict[sid] = {
+                "sample_id": s.sample_id,
+                "text_content": s.text_content,
+                "image_paths": s.image_paths,
+                "category": s.category,
+                "source": s.source,
+                "created_at": s.created_at,
+                "manual_note": s.manual_note,
+                "metadata": s.metadata,
+            }
         return {
             "version_id": self.version_id,
             "parent_version_id": self.parent_version_id,
@@ -92,6 +105,7 @@ class VersionRecord:
             "check_results": {
                 sid: res.to_dict() for sid, res in self.check_results.items()
             },
+            "samples": samples_dict,
             "description": self.description,
         }
 

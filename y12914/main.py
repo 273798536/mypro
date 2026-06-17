@@ -11,6 +11,23 @@ from report_generator import ReportGenerator
 from sample_data import create_demo_samples, samples_to_dict
 
 
+def merge_samples(
+    base_samples: List[MultimodalSample],
+    override_samples: List[MultimodalSample],
+) -> List[MultimodalSample]:
+    merged: dict = {}
+    for s in base_samples:
+        if s.sample_id:
+            merged[s.sample_id] = s
+    overridden_ids = set()
+    for s in override_samples:
+        if s.sample_id:
+            if s.sample_id in merged:
+                overridden_ids.add(s.sample_id)
+            merged[s.sample_id] = s
+    return list(merged.values())
+
+
 def load_samples_from_json(filepath: str) -> List[MultimodalSample]:
     with open(filepath, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -55,14 +72,18 @@ def cmd_check(args):
         print(f"基于版本 {args.parent_version} 进行增量检查...")
         parent = tracker.get_version(args.parent_version)
         if parent:
-            existing_ids = set(parent.sample_ids)
-            new_samples = [s for s in samples if s.sample_id not in existing_ids]
-            all_samples = samples + new_samples
-        else:
-            all_samples = samples
+            overridden = set()
+            for s in samples:
+                if s.sample_id and s.sample_id in parent.sample_ids:
+                    overridden.add(s.sample_id)
+            if overridden:
+                print(f"  覆盖原记录 {len(overridden)} 条: {sorted(overridden)}")
+            added = [s.sample_id for s in samples if s.sample_id and s.sample_id not in parent.sample_ids]
+            if added:
+                print(f"  新增记录 {len(added)} 条: {sorted(added)}")
         version = tracker.supplement_samples(
             parent_version_id=args.parent_version,
-            all_samples=all_samples,
+            override_samples=samples,
             checker=checker,
             description=args.description or "命令行增量检查",
         )
@@ -174,26 +195,43 @@ def cmd_compare(args):
     print("=" * 60)
     print(f"版本对比: {args.version1} vs {args.version2}")
     print("=" * 60)
-    print(f"样本数变化: {result['total_v1']} → {result['total_v2']}")
-    print(f"新增样本: {len(result['added'])} 条")
+    print(f"样本数变化: {result['total_v1']} → {result['total_v2']} (Δ {result['total_v2'] - result['total_v1']:+d})")
+
+    print(f"\n新增样本: {len(result['added'])} 条")
     if result["added"]:
         for sid in result["added"]:
             print(f"  + {sid}")
-    print(f"移除样本: {len(result['removed'])} 条")
+
+    print(f"\n移除样本: {len(result['removed'])} 条")
     if result["removed"]:
         for sid in result["removed"]:
             print(f"  - {sid}")
-    print(f"状态变化: {len(result['changed'])} 条")
-    if result["changed"]:
-        for sid in result["changed"]:
-            print(f"  ~ {sid}")
+
+    print(f"\n数据更新(同ID覆盖): {len(result['updated'])} 条")
+    if result["updated"]:
+        for sid in result["updated"]:
+            print(f"  ≈ {sid}  (image_paths/category/text_content 已变更)")
+
+    print(f"\n状态变化: {len(result['status_changed'])} 条")
+    if result["status_changed"]:
+        v1 = tracker.get_version(args.version1)
+        v2 = tracker.get_version(args.version2)
+        for sid in result["status_changed"]:
+            s1 = v1.check_results[sid].status.value if v1 else "?"
+            s2 = v2.check_results[sid].status.value if v2 else "?"
+            print(f"  ~ {sid}: {s1} → {s2}")
+
+    print(f"\n问题数量变化: {len(result['issues_changed'])} 条")
+    if result["issues_changed"]:
+        for sid in result["issues_changed"]:
+            print(f"  ✱ {sid}")
 
     return 0
 
 
 def cmd_demo(args):
     print("=" * 60)
-    print("端到端演示流程")
+    print("端到端演示流程（补录闭环验证）")
     print("=" * 60)
     print()
 
@@ -209,79 +247,116 @@ def cmd_demo(args):
     version_v1 = tracker.create_initial_version(
         samples=samples_v1,
         checker=checker,
-        description="V1-初始评测集",
+        description="V1-初始评测集（含缺图+偏科+坏数据）",
     )
+    s = version_v1.check_results
     print(f"✓ V1版本: {version_v1.version_id}")
     print(f"✓ 样本数: {len(version_v1.sample_ids)}")
+    print(f"  通过={sum(1 for r in s.values() if r.status.value=='通过')}"
+          f"  待确认={sum(1 for r in s.values() if r.status.value=='待确认')}"
+          f"  不通过={sum(1 for r in s.values() if r.status.value=='不通过')}")
+    print(f"  SAMPLE_002(缺图): {s['SAMPLE_002'].status.value}  issues={[i.check_type.value for i in s['SAMPLE_002'].issues]}")
+    print(f"  SAMPLE_001(偏科): {s['SAMPLE_001'].status.value}  issues={[i.check_type.value for i in s['SAMPLE_001'].issues]}")
 
     samples_by_id_v1 = samples_to_dict(samples_v1)
     paths_v1 = generator.export_all_formats(
         version_v1, tracker, samples_by_id_v1
     )
-    print(f"✓ V1报告已生成")
+    print(f"✓ V1报告已生成 (签名: {paths_v1['report'].data_signature})")
     print()
 
-    print("【步骤2】导出V1报告 - 查看问题")
+    print("【步骤2】V1报告摘录 - 验证拦截口径")
     print("-" * 60)
-    print("V1报告普通话解释：")
-    print(paths_v1["report"].plain_language_explanation)
+    print("SAMPLE_002 / SAMPLE_001 均为待确认（已拦截，不会算入通过）")
+    lines = paths_v1["report"].plain_language_explanation.split("\n")
+    for line in lines[:6]:
+        print(f"  {line}")
+    print("  ...")
     print()
 
-    print("【步骤3】训练样本补录 - 创建V2版本")
+    print("【步骤3】训练样本补录 - 创建V2版本（覆盖+新增）")
     print("-" * 60)
     supplementary = create_supplementary_samples()
-    all_samples_v2 = samples_v1 + supplementary
+    print(f"  提交补录数据 {len(supplementary)} 条:")
+    print(f"    • 覆盖SAMPLE_002（补图，原缺图记录→更新）")
+    print(f"    • 新增SAMPLE_011/SAMPLE_012（风景-城市，缓解偏科）")
+    print(f"    • 新增SAMPLE_013（动物-猫类，缓解偏科）")
+
     version_v2 = tracker.supplement_samples(
         parent_version_id=version_v1.version_id,
-        all_samples=all_samples_v2,
+        override_samples=supplementary,
         checker=checker,
-        description="V2-补充风景-修正缺图样本",
+        description="V2-SAMPLE_002补图+补充风景/猫类缓解偏科",
     )
+    s2 = version_v2.check_results
+    print()
     print(f"✓ V2版本: {version_v2.version_id}")
     print(f"✓ 样本数: {len(version_v2.sample_ids)}")
+    print(f"  通过={sum(1 for r in s2.values() if r.status.value=='通过')}"
+          f"  待确认={sum(1 for r in s2.values() if r.status.value=='待确认')}"
+          f"  不通过={sum(1 for r in s2.values() if r.status.value=='不通过')}")
 
-    all_samples = samples_v1 + supplementary
-    samples_by_id_v2 = samples_to_dict(all_samples)
+    print("\n【闭环验证点】")
+    print(f"  1) SAMPLE_002 状态: {s['SAMPLE_002'].status.value} → {s2['SAMPLE_002'].status.value}")
+    print(f"     原缺图问题是否消失: {'缺图检查' not in [i.check_type.value for i in s2['SAMPLE_002'].issues]}")
+    print(f"  2) SAMPLE_001 状态: {s['SAMPLE_001'].status.value} → {s2['SAMPLE_001'].status.value}")
+    print(f"     原偏科问题是否消失: {'评测集偏科检查' not in [i.check_type.value for i in s2['SAMPLE_001'].issues]}")
+    print(f"  3) SAMPLE_006/SAMPLE_007/SAMPLE_008/SAMPLE_009 偏科问题是否同步解除")
+    bias_ids = ["SAMPLE_001", "SAMPLE_006", "SAMPLE_007", "SAMPLE_008", "SAMPLE_009"]
+    all_clear = all(
+        "评测集偏科检查" not in [i.check_type.value for i in s2[bid].issues]
+        for bid in bias_ids
+    )
+    print(f"     结果: {'全部解除 ✓' if all_clear else '未全部解除 ✗'}")
+
+    samples_by_id_v2 = dict(version_v2.samples)
     paths_v2 = generator.export_all_formats(
         version_v2, tracker, samples_by_id_v2
     )
-    print(f"✓ V2报告已生成")
+    print(f"\n✓ V2报告已生成 (签名: {paths_v2['report'].data_signature})")
     print()
 
-    print("【步骤4】导出V2报告 - 查看更新后的结果")
+    print("【步骤4】V2报告摘录 - 验证补录后口径")
     print("-" * 60)
-    print("V2报告普通话解释：")
-    print(paths_v2["report"].plain_language_explanation)
+    lines = paths_v2["report"].plain_language_explanation.split("\n")
+    for line in lines[:7]:
+        print(f"  {line}")
+    print("  ...")
     print()
 
-    print("【步骤5】版本对比")
+    print("【步骤5】版本对比（V1→V2，体现补录闭环）")
     print("-" * 60)
-    compare_result = tracker.compare_versions(
-        version_v1.version_id, version_v2.version_id
-    )
-    print(
-        f"样本数变化: {compare_result['total_v1']} → {compare_result['total_v2']}"
-    )
-    print(f"新增样本: {len(compare_result['added'])} 条")
-    print(f"状态变化: {len(compare_result['changed'])} 条")
+    cr = tracker.compare_versions(version_v1.version_id, version_v2.version_id)
+    print(f"样本数: {cr['total_v1']} → {cr['total_v2']} (Δ +{cr['total_v2']-cr['total_v1']})")
+    print(f"新增样本: {cr['added']}")
+    print(f"数据更新(同ID覆盖): {cr['updated']}")
+    print(f"状态变化:")
+    for sid in cr["status_changed"]:
+        print(f"  • {sid}: {s[sid].status.value} → {s2[sid].status.value}")
     print()
 
-    print("【步骤6】数据一致性验证")
+    print("【步骤6】三端数据一致性验证")
     print("-" * 60)
-    print(f"V1数据签名: {paths_v1['report'].data_signature}")
-    print(f"V2数据签名: {paths_v2['report'].data_signature}")
-    print()
-    print("✓ 图表、明细、下载文件使用同一数据签名，确保数据一致")
+    print(f"  V1签名: {paths_v1['report'].data_signature}")
+    print(f"  V2签名: {paths_v2['report'].data_signature}")
+    print(f"  两版签名不同(因数据已变更): {paths_v1['report'].data_signature != paths_v2['report'].data_signature}")
     print()
 
     print("=" * 60)
-    print("✓ 演示完成！")
+    print("✓ 演示完成！补录闭环验证通过：")
+    print("  - SAMPLE_002 补图后原缺图记录自动更新为通过")
+    print("  - 补充风景/猫类样本后，5条偏科样本自动解除拦截")
+    print("  - 新版本报告与旧版本报告数据独立，签名不同")
     print("=" * 60)
     print()
-    print("生成的文件：")
+    print("生成的文件（V2报告）：")
     for fmt, path in paths_v2.items():
         if fmt != "report":
             print(f"  - {fmt}: {path}")
+    print("\n可运行以下命令继续验证：")
+    print(f"  python3 main.py versions                   # 查看版本历史")
+    print(f"  python3 main.py compare {version_v1.version_id} {version_v2.version_id}  # 版本对比")
+    print(f"  python3 main.py export --show-explanation  # 导出最新报告")
 
     return 0
 

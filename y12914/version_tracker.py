@@ -3,7 +3,7 @@ import hashlib
 import os
 import random
 import string
-from typing import List, Dict, Optional, Tuple, Any
+from typing import List, Dict, Optional, Any
 from datetime import datetime
 from models import MultimodalSample, CheckResult, VersionRecord
 from checker import MultimodalChecker
@@ -18,45 +18,59 @@ class VersionTracker:
 
     def _load_history(self):
         for filename in os.listdir(self.storage_path):
-            if filename.endswith(".json"):
-                filepath = os.path.join(self.storage_path, filename)
-                try:
-                    with open(filepath, "r", encoding="utf-8") as f:
-                        data = json.load(f)
-                        version_id = data["version_id"]
-                        self.versions[version_id] = self._dict_to_version(data)
-                except Exception:
-                    pass
+            if not filename.endswith(".json"):
+                continue
+            filepath = os.path.join(self.storage_path, filename)
+            try:
+                with open(filepath, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                self.versions[data["version_id"]] = self._dict_to_version(data)
+            except Exception:
+                pass
 
     def _dict_to_version(self, data: Dict) -> VersionRecord:
-        check_results = {}
-        for sid, res_data in data["check_results"].items():
-            from models import CheckIssue, SampleStatus, CheckType
+        from models import CheckIssue, SampleStatus, CheckType
 
+        check_results: Dict[str, CheckResult] = {}
+        for sid, res_data in data.get("check_results", {}).items():
             issues = []
-            for issue_data in res_data["issues"]:
+            for issue_data in res_data.get("issues", []):
                 issues.append(
                     CheckIssue(
                         check_type=CheckType(issue_data["check_type"]),
                         severity=issue_data["severity"],
                         message=issue_data["message"],
-                        details=issue_data["details"],
+                        details=issue_data.get("details", {}),
                     )
                 )
             check_results[sid] = CheckResult(
                 sample_id=res_data["sample_id"],
                 status=SampleStatus(res_data["status"]),
                 issues=issues,
-                checked_at=res_data["checked_at"],
+                checked_at=res_data.get("checked_at", ""),
                 manual_note=res_data.get("manual_note"),
+            )
+
+        samples: Dict[str, MultimodalSample] = {}
+        for sid, s_data in data.get("samples", {}).items():
+            samples[sid] = MultimodalSample(
+                sample_id=s_data.get("sample_id", sid),
+                text_content=s_data.get("text_content", ""),
+                image_paths=s_data.get("image_paths", []),
+                category=s_data.get("category", ""),
+                source=s_data.get("source", ""),
+                created_at=s_data.get("created_at", ""),
+                manual_note=s_data.get("manual_note"),
+                metadata=s_data.get("metadata", {}),
             )
 
         return VersionRecord(
             version_id=data["version_id"],
             parent_version_id=data.get("parent_version_id"),
-            timestamp=data["timestamp"],
-            sample_ids=data["sample_ids"],
+            timestamp=data.get("timestamp", ""),
+            sample_ids=data.get("sample_ids", []),
             check_results=check_results,
+            samples=samples,
             description=data.get("description", ""),
         )
 
@@ -70,8 +84,19 @@ class VersionTracker:
 
     def _generate_version_id(self) -> str:
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-        random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
+        random_suffix = "".join(
+            random.choices(string.ascii_lowercase + string.digits, k=4)
+        )
         return f"v{timestamp}_{random_suffix}"
+
+    def _build_samples_dict(
+        self, samples: List[MultimodalSample]
+    ) -> Dict[str, MultimodalSample]:
+        d: Dict[str, MultimodalSample] = {}
+        for s in samples:
+            if s.sample_id:
+                d[s.sample_id] = s
+        return d
 
     def create_initial_version(
         self,
@@ -81,7 +106,8 @@ class VersionTracker:
     ) -> VersionRecord:
         version_id = self._generate_version_id()
         check_results = checker.check_all(samples)
-        sample_ids = sorted([s.sample_id for s in samples])
+        sample_ids = sorted([sid for sid in check_results.keys() if sid])
+        samples_dict = self._build_samples_dict(samples)
 
         version = VersionRecord(
             version_id=version_id,
@@ -89,6 +115,7 @@ class VersionTracker:
             timestamp=datetime.now().isoformat(),
             sample_ids=sample_ids,
             check_results=check_results,
+            samples=samples_dict,
             description=description,
         )
 
@@ -107,7 +134,8 @@ class VersionTracker:
 
         version_id = self._generate_version_id()
         check_results = checker.check_all(all_samples)
-        sample_ids = sorted(list(check_results.keys()))
+        sample_ids = sorted([sid for sid in check_results.keys() if sid])
+        samples_dict = self._build_samples_dict(all_samples)
 
         version = VersionRecord(
             version_id=version_id,
@@ -115,6 +143,7 @@ class VersionTracker:
             timestamp=datetime.now().isoformat(),
             sample_ids=sample_ids,
             check_results=check_results,
+            samples=samples_dict,
             description=description,
         )
 
@@ -124,13 +153,27 @@ class VersionTracker:
     def supplement_samples(
         self,
         parent_version_id: str,
-        all_samples: List[MultimodalSample],
+        override_samples: List[MultimodalSample],
         checker: MultimodalChecker,
         description: str = "",
     ) -> Optional[VersionRecord]:
+        parent = self.versions.get(parent_version_id)
+        if not parent:
+            return None
+
+        base_samples = list(parent.samples.values())
+        merged_map: Dict[str, MultimodalSample] = {}
+        for s in base_samples:
+            if s.sample_id:
+                merged_map[s.sample_id] = s
+        for s in override_samples:
+            if s.sample_id:
+                merged_map[s.sample_id] = s
+
+        merged_list = list(merged_map.values())
         return self.create_new_version(
             parent_version_id=parent_version_id,
-            all_samples=all_samples,
+            all_samples=merged_list,
             checker=checker,
             description=description or "训练样本补录",
         )
@@ -141,10 +184,7 @@ class VersionTracker:
     def get_latest_version(self) -> Optional[VersionRecord]:
         if not self.versions:
             return None
-        return max(
-            self.versions.values(),
-            key=lambda v: v.timestamp,
-        )
+        return max(self.versions.values(), key=lambda v: v.timestamp)
 
     def get_version_chain(self, version_id: str) -> List[VersionRecord]:
         chain = []
@@ -163,28 +203,48 @@ class VersionTracker:
     ) -> Dict[str, Any]:
         v1 = self.versions.get(version_id_1)
         v2 = self.versions.get(version_id_2)
-
         if not v1 or not v2:
             return {}
 
-        s1 = set(v1.sample_ids)
-        s2 = set(v2.sample_ids)
+        s1 = set(sid for sid in v1.sample_ids if sid)
+        s2 = set(sid for sid in v2.sample_ids if sid)
 
-        added = s2 - s1
-        removed = s1 - s2
+        added = sorted(s2 - s1)
+        removed = sorted(s1 - s2)
         common = s1 & s2
 
-        changed = []
-        for sid in common:
+        updated: List[str] = []
+        status_changed: List[str] = []
+        issues_changed: List[str] = []
+
+        for sid in sorted(common):
             r1 = v1.check_results[sid]
             r2 = v2.check_results[sid]
-            if r1.status != r2.status or len(r1.issues) != len(r2.issues):
-                changed.append(sid)
+            s1_data = v1.samples.get(sid)
+            s2_data = v2.samples.get(sid)
+
+            data_changed = False
+            if s1_data and s2_data:
+                if (
+                    len(s1_data.image_paths) != len(s2_data.image_paths)
+                    or s1_data.category != s2_data.category
+                    or s1_data.text_content != s2_data.text_content
+                ):
+                    data_changed = True
+
+            if data_changed:
+                updated.append(sid)
+            if r1.status != r2.status:
+                status_changed.append(sid)
+            if len(r1.issues) != len(r2.issues):
+                issues_changed.append(sid)
 
         return {
-            "added": list(added),
-            "removed": list(removed),
-            "changed": changed,
+            "added": added,
+            "removed": removed,
+            "updated": updated,
+            "status_changed": status_changed,
+            "issues_changed": issues_changed,
             "total_v1": len(s1),
             "total_v2": len(s2),
         }

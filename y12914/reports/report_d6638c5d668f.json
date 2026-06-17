@@ -1,23 +1,17 @@
 {
-  "report_id": "report_2eeb46ed58af",
-  "generated_at": "2026-06-18T03:14:38.292980",
-  "version_id": "v20260618031438_opjl",
+  "report_id": "report_d6638c5d668f",
+  "generated_at": "2026-06-18T03:39:33.697219",
+  "version_id": "v20260618033933_hbtw",
   "summary": {
-    "total": 14,
+    "total": 12,
     "by_status": {
       "通过": 12,
-      "待确认": 1,
-      "不通过": 1
+      "待确认": 0,
+      "不通过": 0
     },
-    "by_issue_type": {
-      "缺图检查": 1,
-      "坏数据检查": 1
-    },
-    "by_severity": {
-      "中": 1,
-      "高": 1
-    },
-    "pass_rate": 85.71428571428571,
+    "by_issue_type": {},
+    "by_severity": {},
+    "pass_rate": 100.0,
     "charts": {
       "status_distribution": {
         "type": "pie",
@@ -26,34 +20,19 @@
           {
             "name": "通过",
             "value": 12
-          },
-          {
-            "name": "待确认",
-            "value": 1
-          },
-          {
-            "name": "不通过",
-            "value": 1
           }
         ]
       },
       "issue_type_distribution": {
         "type": "bar",
         "title": "问题类型分布",
-        "categories": [
-          "缺图检查",
-          "坏数据检查"
-        ],
-        "values": [
-          1,
-          1
-        ]
+        "categories": [],
+        "values": []
       },
       "category_distribution": {
         "type": "bar",
         "title": "各类别问题分布",
         "categories": [
-          "未分类",
           "动物-犬类",
           "风景-城市",
           "交通工具-汽车",
@@ -63,9 +42,8 @@
           {
             "name": "样本总数",
             "data": [
-              1,
               5,
-              4,
+              3,
               2,
               2
             ]
@@ -73,9 +51,8 @@
           {
             "name": "有问题数",
             "data": [
-              1,
               0,
-              1,
+              0,
               0,
               0
             ]
@@ -86,28 +63,9 @@
   },
   "details": [
     {
-      "sample_id": "",
-      "status": "不通过",
-      "checked_at": "2026-06-18T03:14:38.288375",
-      "manual_note": "这条数据明显有问题，谁导入的脏数据？",
-      "issues": [
-        {
-          "check_type": "坏数据检查",
-          "severity": "高",
-          "message": "样本关键字段缺失或格式错误",
-          "details": {
-            "has_sample_id": false,
-            "has_text": false,
-            "has_category": false,
-            "has_source": false
-          }
-        }
-      ]
-    },
-    {
       "sample_id": "SAMPLE_001",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288343",
+      "checked_at": "2026-06-18T03:39:33.696101",
       "manual_note": null,
       "issues": [],
       "text_content": "这是一只可爱的金毛犬，正坐在草地上晒太阳。",
@@ -120,30 +78,8 @@
     },
     {
       "sample_id": "SAMPLE_002",
-      "status": "待确认",
-      "checked_at": "2026-06-18T03:14:38.288364",
-      "manual_note": "运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。",
-      "issues": [
-        {
-          "check_type": "缺图检查",
-          "severity": "中",
-          "message": "多模态样本缺少图片资源",
-          "details": {
-            "image_count": 0,
-            "image_paths": []
-          }
-        }
-      ],
-      "text_content": "这是一张城市夜景照片，高楼大厦灯火通明。",
-      "category": "风景-城市",
-      "source": "业务方提交",
-      "image_count": 0,
-      "image_paths": []
-    },
-    {
-      "sample_id": "SAMPLE_002_V2",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288431",
+      "checked_at": "2026-06-18T03:39:33.696109",
       "manual_note": "运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。",
       "issues": [],
       "text_content": "这是一张城市夜景照片，高楼大厦灯火通明。",
@@ -157,7 +93,7 @@
     {
       "sample_id": "SAMPLE_004",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288381",
+      "checked_at": "2026-06-18T03:39:33.696115",
       "manual_note": null,
       "issues": [],
       "text_content": "汽车行驶在高速公路上。",
@@ -171,7 +107,7 @@
     {
       "sample_id": "SAMPLE_005",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288386",
+      "checked_at": "2026-06-18T03:39:33.696120",
       "manual_note": null,
       "issues": [],
       "text_content": "一只橘猫在窗台上睡觉。",
@@ -185,7 +121,7 @@
     {
       "sample_id": "SAMPLE_006",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288391",
+      "checked_at": "2026-06-18T03:39:33.696124",
       "manual_note": null,
       "issues": [],
       "text_content": "一只哈士奇在雪地里奔跑。",
@@ -199,7 +135,7 @@
     {
       "sample_id": "SAMPLE_007",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288397",
+      "checked_at": "2026-06-18T03:39:33.696128",
       "manual_note": null,
       "issues": [],
       "text_content": "一只边牧在接飞盘。",
@@ -213,7 +149,7 @@
     {
       "sample_id": "SAMPLE_008",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288402",
+      "checked_at": "2026-06-18T03:39:33.696133",
       "manual_note": null,
       "issues": [],
       "text_content": "一只柴犬在公园里散步。",
@@ -227,7 +163,7 @@
     {
       "sample_id": "SAMPLE_009",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288407",
+      "checked_at": "2026-06-18T03:39:33.696137",
       "manual_note": null,
       "issues": [],
       "text_content": "一只德牧在执行任务。",
@@ -241,7 +177,7 @@
     {
       "sample_id": "SAMPLE_010",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288413",
+      "checked_at": "2026-06-18T03:39:33.696141",
       "manual_note": null,
       "issues": [],
       "text_content": "一辆公交车在站台停靠。",
@@ -255,7 +191,7 @@
     {
       "sample_id": "SAMPLE_011",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288417",
+      "checked_at": "2026-06-18T03:39:33.696145",
       "manual_note": null,
       "issues": [],
       "text_content": "上海外滩的夜景非常漂亮。",
@@ -269,7 +205,7 @@
     {
       "sample_id": "SAMPLE_012",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288422",
+      "checked_at": "2026-06-18T03:39:33.696149",
       "manual_note": null,
       "issues": [],
       "text_content": "北京故宫的雪景。",
@@ -283,7 +219,7 @@
     {
       "sample_id": "SAMPLE_013",
       "status": "通过",
-      "checked_at": "2026-06-18T03:14:38.288427",
+      "checked_at": "2026-06-18T03:39:33.696154",
       "manual_note": null,
       "issues": [],
       "text_content": "一只布偶猫在沙发上打盹。",
@@ -295,6 +231,6 @@
       ]
     }
   ],
-  "plain_language_explanation": "【多模态样本缺图检查结果说明】\n\n本次共检查 14 条多模态样本，检查时间：2026-06-18T03:14:38.288499\n版本号：v20260618031438_opjl\n版本说明：V2-补充风景-修正缺图样本\n\n一、整体情况：\n  ✅ 通过检查（可放行）：12 条（85.7%）\n  ⚠️  待确认（已拦截，暂不放行）：1 条（7.1%）\n  ❌ 不通过（必须处理）：1 条（7.1%）\n  说明：“待确认”和“不通过”的样本都已被拦截，不能直接进入下一步流程，必须先处理对应问题。\n\n二、被拦截的样本清单及原因：\n  • SAMPLE_002：缺图检查（中）\n  • （无样本ID）：坏数据检查（高）\n\n三、问题分类说明：\n  • 缺图问题：1 条。多模态样本需要图文配对，这些样本缺少对应的图片资源，已被标记为待确认，需要补充图片后才能放行。\n  • 坏数据：1 条。这些样本的关键字段缺失或格式错误，例如没有样本ID、没有文本内容、类别或来源为空等，无法用于模型训练，已被标记为不通过，需要修正或删除。\n\n四、建议处理方式：\n  1. 先处理 1 条不通过的坏数据，修正或删除这些样本。\n  2. 为 1 条缺图样本补充对应的图片资源，补充后重新检查。\n  3. 1 条待确认的记录需要人工复核，确认问题是否属实以及如何处理。\n\n五、人工备注说明：\n  以下记录包含人工备注，已原样保留（未做任何修改）：\n  - 样本 SAMPLE_002：运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。\n  - 样本 （无样本ID）：这条数据明显有问题，谁导入的脏数据？\n  - 样本 SAMPLE_002_V2：运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。\n\n—— 以上内容可直接复制转发给同事参考 ——",
-  "data_signature": "99661d377cdf1916"
+  "plain_language_explanation": "【多模态样本缺图检查结果说明】\n\n本次共检查 12 条多模态样本，检查时间：2026-06-18T03:39:33.696190\n版本号：v20260618033933_hbtw\n版本说明：V2-SAMPLE_002补图+补充风景/猫类缓解偏科\n\n一、整体情况：\n  ✅ 通过检查（可放行）：12 条（100.0%）\n  说明：“待确认”和“不通过”的样本都已被拦截，不能直接进入下一步流程，必须先处理对应问题。\n\n二、被拦截的样本清单及原因：\n  无被拦截样本。\n\n三、问题分类说明：\n  • 本次检查未发现问题，所有样本均符合要求。\n\n四、建议处理方式：\n  所有样本均通过检查，可以进入下一步流程。\n\n五、人工备注说明：\n  以下记录包含人工备注，已原样保留（未做任何修改）：\n  - 样本 SAMPLE_002：运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。\n\n—— 以上内容可直接复制转发给同事参考 ——",
+  "data_signature": "475ec7557b660a83"
 }
