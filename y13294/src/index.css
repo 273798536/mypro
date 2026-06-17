@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Hanken Grotesk", "PingFang SC", "Noto Sans SC", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #1c1b17;
+  background-color: #f5f2ec;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  border-color: #e0dacd;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #f5f2ec;
+}
+
+/* technical drawing grid texture */
+.bg-blueprint {
+  background-image: linear-gradient(to right, rgba(28, 27, 23, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(28, 27, 23, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* thin scrollbar for data panels */
+.scroll-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: rgba(28, 27, 23, 0.18);
+  border-radius: 9999px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@layer components {
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium;
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-md border border-ink/15 bg-surface px-3 py-2 text-sm font-medium text-ink transition-colors hover:bg-paper disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    border-color: #0f4c5c;
+    background-color: #0f4c5c;
+    color: #fff;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: rgba(15, 76, 92, 0.9);
+  }
+  .btn-signal {
+    border-color: #c44536;
+    background-color: #c44536;
+    color: #fff;
+  }
+  .btn-signal:hover:not(:disabled) {
+    background-color: rgba(196, 69, 54, 0.9);
+  }
+  .field {
+    @apply w-full rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink outline-none focus:border-accent focus:ring-1 focus:ring-accent;
+  }
+}
