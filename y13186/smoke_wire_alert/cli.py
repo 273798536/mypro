@@ -65,8 +65,7 @@ def cmd_start(args):
     auditor = ChangeAuditor(default_operator="系统")
     jump_detector = JumpDetector()
 
-    for i, alert in enumerate(alerts):
-        previous = alerts[i - 1] if i > 0 else None
+    for alert in alerts:
         if args.include_manual and alert.id == "rec002":
             auditor.record_manual_override(
                 alert,
@@ -78,7 +77,7 @@ def cmd_start(args):
             )
             print(f"  * [演示] 已为 {alert.id} 插入阿岑的临时阈值修改历史")
         processor.process_alert(alert)
-        jump_detector.detect(alert, previous, alert.history)
+        jump_detector.detect(alert, alert.history)
 
     try:
         store.save_batch(alerts)
@@ -164,10 +163,6 @@ def cmd_rerun(args):
     auditor = ChangeAuditor(default_operator="系统")
     jump_detector = JumpDetector()
 
-    previous_map = {}
-    for i, a in enumerate(alerts):
-        previous_map[a.id] = alerts[i - 1] if i > 0 else None
-
     reran_ids = []
     for alert in alerts:
         is_target = (target_ids is None) or (alert.id in target_ids)
@@ -217,12 +212,10 @@ def cmd_rerun(args):
 
         alert.previous_result = prev_result
         processor.reprocess(alert, snap)
-        jump_detector.detect(alert, previous_map.get(alert.id), alert.history)
+        jump_detector.detect(alert, alert.history)
 
     non_target_alerts = [a for a in alerts if a.id not in reran_ids]
     for a in non_target_alerts:
-        old_history_len = len(a.history)
-        old_status = a.status
         if a.status == ProcessingStatus.MANUAL_OVERRIDDEN:
             manual_changes = [
                 h for h in a.history
@@ -234,7 +227,10 @@ def cmd_rerun(args):
                     f"  [保留] {a.id} 已存在人工覆盖状态，将保持原样，不参与本次重跑的阈值/附件修改"
                 )
 
-    store.save_batch(alerts)
+    target_alerts = [a for a in alerts if a.id in reran_ids]
+    if target_alerts:
+        for a in target_alerts:
+            store.save(a)
 
     reporter = MarkdownReporter()
     suffix = "_重跑"
