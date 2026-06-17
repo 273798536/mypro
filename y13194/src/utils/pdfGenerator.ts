@@ -55,7 +55,7 @@ export async function generateReportPDF(opts: GenerateReportOptions): Promise<Bl
     }
   };
 
-  const drawHeader = (d: jsPDF, pw: number, pno: number, title: string) => {
+  const drawHeader = (d: jsPDF, pw: number, _pno: number, title: string) => {
     d.setFillColor(...COLORS.primary);
     d.rect(0, 0, pw, 6, "F");
     d.setFont("helvetica", "bold");
@@ -306,6 +306,31 @@ export async function generateReportPDF(opts: GenerateReportOptions): Promise<Bl
     doc.setTextColor(...COLORS.white);
     doc.text(`⚠ 异常记录（已隔离，不参与统计）共 ${anomalyLogs.length} 条`, marginL + 2, y + 4.6);
     y += 9;
+
+    // 跳变原因统计（使用 jumps 数据）
+    const relevantJumps = jumps.filter((j) =>
+      report.batteryIds.includes(j.batteryId) &&
+      j.timestamp >= report.timeRange.start &&
+      j.timestamp <= report.timeRange.end,
+    );
+    if (relevantJumps.length > 0) {
+      checkPage(10);
+      doc.setFillColor(255, 248, 235);
+      doc.rect(marginL, y, colW, 8, "F");
+      doc.setDrawColor(...COLORS.amber);
+      doc.setLineWidth(0.1);
+      doc.rect(marginL, y, colW, 8);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8);
+      doc.setTextColor(...COLORS.amber);
+      const byReason: Record<string, number> = {};
+      relevantJumps.forEach((j) => { byReason[j.reason] = (byReason[j.reason] ?? 0) + 1; });
+      const summary = Object.entries(byReason)
+        .map(([r, c]) => `${r === "unit-change" ? "单位切换" : r === "threshold-change" ? "阈值调整" : r === "late-data" ? "晚到附件" : "未知"}×${c}`)
+        .join(" / ");
+      doc.text(`跳变检测统计（共 ${relevantJumps.length} 条）：${summary}`, marginL + 2, y + 5);
+      y += 10;
+    }
 
     anomalyLogs.slice(0, 20).forEach((l) => {
       checkPage(12);
