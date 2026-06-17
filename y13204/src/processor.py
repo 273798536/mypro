@@ -216,27 +216,39 @@ class MaterialProcessor:
             if not content:
                 continue
 
+            lines = content.replace('\r\n', '\n').split('\n')
+
             for student in student_names:
                 if student not in content:
                     continue
 
-                improvements = []
-                for skill in keywords["技巧"]:
-                    if skill in content:
+                improvements_set = set()
+                evidence_lines = []
+
+                for line in lines:
+                    if student not in line:
+                        continue
+                    for skill in keywords["技巧"]:
+                        if skill not in line:
+                            continue
                         for prog in keywords["进步"]:
-                            if prog in content:
-                                improvements.append(f"{skill}{prog}")
+                            if prog in line:
+                                improvements_set.add(f"{skill}{prog}")
+                                evidence_lines.append(line.strip()[:80])
                                 break
 
-                if improvements:
-                    sp = StudentProgress(
-                        student_name=student,
-                        improvements=improvements,
-                        evidence_material_ids=[mat.id]
-                    )
-                    mat.student_progress.append(sp)
-                    mat.tags.append(f"含{student}进步分析")
-                    self.store.update_material(mat)
+                if not improvements_set:
+                    continue
+
+                sp = StudentProgress(
+                    student_name=student,
+                    improvements=sorted(list(improvements_set)),
+                    evidence_material_ids=[mat.id],
+                    evidence_snippets=evidence_lines[:3],
+                )
+                mat.student_progress.append(sp)
+                mat.tags.append(f"含{student}进步分析")
+                self.store.update_material(mat)
 
     def _update_processing_states(self, materials: List[Material]) -> None:
         for mat in materials:
@@ -306,7 +318,75 @@ class MaterialProcessor:
             "versions": mat.versions
         }
 
+    def _auto_match_materials(self, content: str, note_type: NoteType) -> List[str]:
+        matches = []
+        seen_ids = set()
+
+        mats = self.store.get_all_materials()
+
+        if note_type == NoteType.AUTHORIZATION:
+            for m in mats:
+                if (m.material_type == MaterialType.AUTH_DOC or '授权' in m.file_name) and m.id not in seen_ids:
+                    matches.append(m.id)
+                    seen_ids.add(m.id)
+
+        if note_type == NoteType.REHEARSAL:
+            for m in mats:
+                if (m.material_type == MaterialType.SCREENSHOT or '排练' in m.file_name) and m.id not in seen_ids:
+                    matches.append(m.id)
+                    seen_ids.add(m.id)
+
+        student_patterns = []
+        for ch in '甲乙丙丁戊己庚辛':
+            if f'学生{ch}' in content:
+                student_patterns.append(f'学生{ch}')
+        for i in range(1, 10):
+            if f'学生{i}' in content or f'学生{chr(64+i)}' in content:
+                student_patterns.append(f'学生{i}')
+        for ch in ['A', 'B', 'C', 'D', 'E']:
+            if f'学生{ch}' in content:
+                student_patterns.append(f'学生{ch}')
+
+        if student_patterns:
+            for m in mats:
+                if m.id in seen_ids:
+                    continue
+                content_lower = (m.content + m.file_name)
+                for sp in student_patterns:
+                    if sp in content_lower:
+                        matches.append(m.id)
+                        seen_ids.add(m.id)
+                        break
+
+        keywords = []
+        type_keywords = {
+            '分账': '分账',
+            '耳返': '耳返',
+            '结论': '结论',
+            '奖励': '奖励',
+            '补充': '补充',
+            '截图': '截图',
+            '附件': '附件',
+        }
+        for kw in type_keywords:
+            if kw in content:
+                keywords.append(type_keywords[kw])
+
+        if keywords:
+            for m in mats:
+                if m.id in seen_ids:
+                    continue
+                for kw in keywords:
+                    if kw in m.file_name:
+                        matches.append(m.id)
+                        seen_ids.add(m.id)
+                        break
+
+        return matches
+
     def add_rehearsal_note(self, content: str, material_ids: Optional[List[str]] = None) -> Note:
+        if not material_ids:
+            material_ids = self._auto_match_materials(content, NoteType.REHEARSAL)
         note = Note.create(content, NoteType.REHEARSAL, material_ids=material_ids)
         self.store.add_note(note)
 
@@ -325,6 +405,8 @@ class MaterialProcessor:
         return note
 
     def add_authorization_note(self, content: str, material_ids: Optional[List[str]] = None) -> Note:
+        if not material_ids:
+            material_ids = self._auto_match_materials(content, NoteType.AUTHORIZATION)
         note = Note.create(content, NoteType.AUTHORIZATION, material_ids=material_ids)
         self.store.add_note(note)
 
@@ -344,6 +426,8 @@ class MaterialProcessor:
         return note
 
     def add_general_note(self, content: str, material_ids: Optional[List[str]] = None) -> Note:
+        if not material_ids:
+            material_ids = self._auto_match_materials(content, NoteType.GENERAL)
         note = Note.create(content, NoteType.GENERAL, material_ids=material_ids)
         self.store.add_note(note)
 
@@ -357,7 +441,7 @@ class MaterialProcessor:
             if mat:
                 if note.id not in mat.note_ids:
                     mat.note_ids.append(note.id)
-                self.store.update_material(mat)
+                    self.store.update_material(mat)
 
         return note
 
@@ -366,26 +450,44 @@ class MaterialProcessor:
         notes = self.store.get_all_notes()
 
         aligned_count = 0
+        strict_aligned_count = 0
         unaligned_count = 0
         alignment_issues = []
+        aligned_materials = []
 
         for mat in materials:
             notes_for_mat = self.store.get_notes_for_material(mat.id)
-            has_version_notes = any(n for n in notes_for_mat if n.material_ids and mat.id in n.material_ids)
+            has_bidirectional = any(
+                n for n in notes_for_mat
+                if n.material_ids and mat.id in n.material_ids
+            )
 
-            if mat.versions and notes_for_mat and has_version_notes:
+            has_any_notes = len(notes_for_mat) > 0
+            has_versions = len(mat.versions) > 0
+
+            aligned = has_versions and has_any_notes
+            strict_aligned = aligned and has_bidirectional
+
+            if aligned:
                 aligned_count += 1
-            elif mat.versions or notes_for_mat:
-                unaligned_count += 1
-                if not mat.versions:
+                aligned_materials.append(mat.file_name)
+                if strict_aligned:
+                    strict_aligned_count += 1
+            else:
+                if not has_versions:
+                    unaligned_count += 1
                     alignment_issues.append(f"{mat.file_name}: 缺少版本记录")
-                if not notes_for_mat:
-                    alignment_issues.append(f"{mat.file_name}: 缺少备注")
+                if not has_any_notes:
+                    unaligned_count += 1
+                    alignment_issues.append(f"{mat.file_name}: 缺少人工批注")
 
         return {
             "total_materials": len(materials),
             "aligned": aligned_count,
+            "strict_aligned": strict_aligned_count,
             "unaligned": unaligned_count,
             "alignment_rate": f"{aligned_count / len(materials) * 100:.1f}%" if materials else "0%",
+            "strict_alignment_rate": f"{strict_aligned_count / len(materials) * 100:.1f}%" if materials else "0%",
+            "aligned_materials": aligned_materials,
             "issues": alignment_issues
         }

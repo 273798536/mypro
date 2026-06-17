@@ -68,6 +68,7 @@ class StudentProgress:
     previous_level: Optional[str] = None
     current_level: Optional[str] = None
     evidence_material_ids: List[str] = field(default_factory=list)
+    evidence_snippets: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -75,7 +76,8 @@ class StudentProgress:
             "improvements": self.improvements,
             "previous_level": self.previous_level,
             "current_level": self.current_level,
-            "evidence_material_ids": self.evidence_material_ids
+            "evidence_material_ids": self.evidence_material_ids,
+            "evidence_snippets": self.evidence_snippets,
         }
 
     @classmethod
@@ -85,7 +87,8 @@ class StudentProgress:
             improvements=data.get("improvements", []),
             previous_level=data.get("previous_level"),
             current_level=data.get("current_level"),
-            evidence_material_ids=data.get("evidence_material_ids", [])
+            evidence_material_ids=data.get("evidence_material_ids", []),
+            evidence_snippets=data.get("evidence_snippets", []),
         )
 
 

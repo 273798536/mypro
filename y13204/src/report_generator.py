@@ -113,12 +113,17 @@ class MarkdownReportGenerator:
                 f.write("> 所有材料均为单一版本\n\n")
 
             f.write("## 六、对齐状态\n\n")
-            f.write(f"- 已对齐: {alignment['aligned']} 份\n")
-            f.write(f"- 未对齐: {alignment['unaligned']} 份\n")
+            f.write(f"- 对齐率: {alignment['alignment_rate']} ({alignment['aligned']}/{alignment['total_materials']} 份)\n")
+            f.write(f"- 严格对齐率（双向引用）: {alignment['strict_alignment_rate']} ({alignment['strict_aligned']} 份)\n")
+            f.write(f"- 待处理: {alignment['unaligned']} 项\n")
+            if alignment.get('aligned_materials'):
+                f.write("\n**已对齐材料:**\n\n")
+                for name in alignment['aligned_materials']:
+                    f.write(f"- ✅ {name}\n")
             if alignment['issues']:
                 f.write("\n**存在的问题:**\n\n")
                 for issue in alignment['issues']:
-                    f.write(f"- {issue}\n")
+                    f.write(f"- ⚠️ {issue}\n")
             f.write("\n")
 
             f.write("## 七、历史备注\n\n")
@@ -163,22 +168,34 @@ class MarkdownReportGenerator:
                     if sp.current_level:
                         f.write(f"- **当前水平**: {sp.current_level}\n")
 
-                    f.write(f"\n**进步点**: \n\n")
-                    for imp in sp.improvements:
+                    unique_improvements = list(dict.fromkeys(sp.improvements))
+                    f.write(f"\n**进步点** ({len(unique_improvements)}项): \n\n")
+                    for imp in unique_improvements:
                         f.write(f"- ✅ {imp}\n")
 
+                    if sp.evidence_snippets:
+                        unique_snippets = list(dict.fromkeys(sp.evidence_snippets))
+                        f.write(f"\n**证据原文** ({len(unique_snippets)}条):\n\n")
+                        for i, snippet in enumerate(unique_snippets, 1):
+                            f.write(f"> {i}. {snippet}\n\n")
+
                     if sp.evidence_material_ids:
-                        f.write(f"\n**证据材料**: \n\n")
-                        for mid in sp.evidence_material_ids:
+                        unique_mids = list(dict.fromkeys(sp.evidence_material_ids))
+                        f.write(f"\n**证据材料** ({len(unique_mids)}份): \n\n")
+                        for mid in unique_mids:
                             mat = self.store.get_material(mid)
                             if mat:
-                                f.write(f"- [{mat.file_name}]({mat.file_path}) - {mat.received_at}\n")
+                                f.write(f"- 📄 [{mat.get_display_name()}]({mat.file_path}) — 接收时间: {mat.received_at}\n")
 
                     related_notes = [n for n in notes if sp.student_name in n.content]
                     if related_notes:
-                        f.write(f"\n**相关备注**: \n\n")
-                        for note in related_notes[:5]:
-                            f.write(f"- [{note.note_type.value}] {note.timestamp}: {note.content[:50]}...\n")
+                        seen_notes = []
+                        for n in related_notes:
+                            if n.id not in [x.id for x in seen_notes]:
+                                seen_notes.append(n)
+                        f.write(f"\n**相关备注** ({len(seen_notes)}条): \n\n")
+                        for note in seen_notes[:8]:
+                            f.write(f"- 📝 [{note.note_type.value}] {note.timestamp}: {note.content[:100]}\n")
 
                     f.write("\n---\n\n")
             else:
@@ -205,30 +222,45 @@ class MarkdownReportGenerator:
         notes = self.store.get_all_notes()
 
         aligned_count = 0
+        strict_aligned_count = 0
         unaligned_count = 0
         alignment_issues = []
+        aligned_materials = []
 
         for mat in materials:
             notes_for_mat = self.store.get_notes_for_material(mat.id)
-            has_version_notes = any(
+            has_bidirectional = any(
                 n for n in notes_for_mat
                 if n.material_ids and mat.id in n.material_ids
             )
 
-            if mat.versions and notes_for_mat and has_version_notes:
+            has_any_notes = len(notes_for_mat) > 0
+            has_versions = len(mat.versions) > 0
+
+            aligned = has_versions and has_any_notes
+            strict_aligned = aligned and has_bidirectional
+
+            if aligned:
                 aligned_count += 1
-            elif mat.versions or notes_for_mat:
-                unaligned_count += 1
-                if not mat.versions:
+                aligned_materials.append(mat.file_name)
+                if strict_aligned:
+                    strict_aligned_count += 1
+            else:
+                if not has_versions:
+                    unaligned_count += 1
                     alignment_issues.append(f"{mat.file_name}: 缺少版本记录")
-                if not notes_for_mat:
-                    alignment_issues.append(f"{mat.file_name}: 缺少备注")
+                if not has_any_notes:
+                    unaligned_count += 1
+                    alignment_issues.append(f"{mat.file_name}: 缺少人工批注")
 
         return {
             "total_materials": len(materials),
             "aligned": aligned_count,
+            "strict_aligned": strict_aligned_count,
             "unaligned": unaligned_count,
             "alignment_rate": f"{aligned_count / len(materials) * 100:.1f}%" if materials else "0%",
+            "strict_alignment_rate": f"{strict_aligned_count / len(materials) * 100:.1f}%" if materials else "0%",
+            "aligned_materials": aligned_materials,
             "issues": alignment_issues
         }
 

@@ -200,38 +200,52 @@ def cmd_note(args) -> int:
         "general": NoteType.GENERAL
     }
     note_type = note_type_map.get(args.type, NoteType.GENERAL)
-    material_ids = args.material or []
+    explicit_material_ids = list(args.material or [])
 
     materials = store.get_all_materials()
-    if material_ids:
+    if not materials:
+        print("⚠️  还没有扫描任何材料，先运行 'scan' 再添加备注。")
+        return 1
+
+    if explicit_material_ids:
         valid_ids = []
-        for mid in material_ids:
+        for mid in explicit_material_ids:
             mat = store.get_material(mid)
             if mat:
                 valid_ids.append(mid)
             else:
                 print(f"⚠️  跳过无效材料ID: {mid}")
-        material_ids = valid_ids
+        explicit_material_ids = valid_ids
 
     if note_type == NoteType.REHEARSAL:
-        note = processor.add_rehearsal_note(args.content, material_ids)
+        note = processor.add_rehearsal_note(args.content, explicit_material_ids or None)
         type_label = "排练备注"
     elif note_type == NoteType.AUTHORIZATION:
-        note = processor.add_authorization_note(args.content, material_ids)
+        note = processor.add_authorization_note(args.content, explicit_material_ids or None)
         type_label = "授权备注"
     else:
-        note = processor.add_general_note(args.content, material_ids)
+        note = processor.add_general_note(args.content, explicit_material_ids or None)
         type_label = "普通备注"
 
     print(f"✅ 已添加{type_label}:")
     print(f"   ID: {note.id}")
     print(f"   时间: {note.timestamp}")
     print(f"   内容: {note.content}")
-    if material_ids:
-        mat_names = [store.get_material(mid).file_name for mid in material_ids]
-        print(f"   关联: {', '.join(mat_names)}")
+    if note.material_ids:
+        mat_names = [
+            (store.get_material(mid).file_name if store.get_material(mid) else mid)
+            for mid in note.material_ids
+        ]
+        if explicit_material_ids:
+            print(f"   关联材料（指定）: {', '.join(mat_names)}")
+        else:
+            print(f"   关联材料（智能匹配）: {', '.join(mat_names)}")
+            print(f"   ⚠️  如需指定其他材料，使用: --material <材料ID> [--material ...]")
+    else:
+        print("   ⚠️  未关联任何材料。备注仅会出现在历史备注区。")
+        print("      建议用 --material 指定，或备注内容含关键词（如 学生A、授权、排练、分账）。")
 
-    print("\n💡 运行 'scan --rescan' 更新报告")
+    print("\n💡 运行 'scan --rescan' 重扫并更新报告中的对齐状态")
     return 0
 
 
@@ -281,8 +295,9 @@ def cmd_status(args) -> int:
     print(f"   材料总数: {state['total_materials']}")
     print(f"   备注总数: {state['total_notes']}")
     print(f"   会话次数: {state['total_sessions']}")
-    print(f"   对齐率: {alignment['alignment_rate']}")
-    print(f"   已对齐: {alignment['aligned']} / 未对齐: {alignment['unaligned']}")
+    print(f"   对齐率: {alignment['alignment_rate']} ({alignment['aligned']}/{alignment['total_materials']})")
+    print(f"   严格对齐（双向引用）: {alignment['strict_alignment_rate']} ({alignment['strict_aligned']})")
+    print(f"   待对齐项: {alignment['unaligned']}")
 
     print(f"\n🏷️  材料类型分布:")
     for mtype, count in state.get('materials_by_type', {}).items():
@@ -296,11 +311,17 @@ def cmd_status(args) -> int:
     print(f"   最后扫描: {state.get('last_scan_at', '从未扫描')}")
     print(f"   最后报告: {state.get('last_report_at', '未生成报告')}")
 
+    if alignment.get('aligned_materials'):
+        print(f"\n✅ 已对齐 ({len(alignment['aligned_materials'])}):")
+        for name in alignment['aligned_materials']:
+            print(f"   - {name}")
+
     if alignment.get('issues'):
         print(f"\n⚠️  对齐问题 ({len(alignment['issues'])}个):")
         for issue in alignment['issues']:
             print(f"   - {issue}")
 
+    print(f"\n💡 提示: 对缺少人工批注的材料，运行 'note --type rehearsal \"备注内容\"' 可自动匹配关联。")
     return 0
 
 

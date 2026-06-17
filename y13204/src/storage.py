@@ -162,18 +162,33 @@ class StateStore:
         return self._state.get("last_report_at")
 
     def get_student_progress_all(self) -> List[StudentProgress]:
-        all_progress = []
         seen_students = {}
         for mat in self.get_all_materials():
             for sp in mat.student_progress:
                 if sp.student_name in seen_students:
                     existing = seen_students[sp.student_name]
-                    existing.improvements.extend(sp.improvements)
-                    existing.evidence_material_ids.extend(sp.evidence_material_ids)
+                    for imp in sp.improvements:
+                        if imp and imp not in existing.improvements:
+                            existing.improvements.append(imp)
+                    for eid in sp.evidence_material_ids:
+                        if eid and eid not in existing.evidence_material_ids:
+                            existing.evidence_material_ids.append(eid)
+                    for snippet in sp.evidence_snippets:
+                        if snippet and snippet not in existing.evidence_snippets:
+                            existing.evidence_snippets.append(snippet)
                     if sp.current_level:
                         existing.current_level = sp.current_level
+                    if sp.previous_level and not existing.previous_level:
+                        existing.previous_level = sp.previous_level
                 else:
-                    seen_students[sp.student_name] = sp
+                    seen_students[sp.student_name] = StudentProgress(
+                        student_name=sp.student_name,
+                        improvements=list(dict.fromkeys(sp.improvements)),
+                        previous_level=sp.previous_level,
+                        current_level=sp.current_level,
+                        evidence_material_ids=list(dict.fromkeys(sp.evidence_material_ids)),
+                        evidence_snippets=list(dict.fromkeys(sp.evidence_snippets)),
+                    )
         return list(seen_students.values())
 
     def clear_all(self) -> None:

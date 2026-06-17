@@ -1,0 +1,32 @@
+{
+  "current_session_id": "session-uuid-placeholder",
+  "last_scan_at": "2026-06-18T12:00:00.000000",
+  "last_report_at": "2026-06-18T12:00:30.000000",
+  "total_materials": 5,
+  "total_notes": 3,
+  "total_sessions": 2,
+  "materials_by_state": {
+    "scanned": 0,
+    "analyzed": 2,
+    "reviewed": 2,
+    "concluded": 1
+  },
+  "materials_by_type": {
+    "screenshot": 2,
+    "auth_doc": 1,
+    "conclusion": 1,
+    "attachment": 1
+  },
+  "auth_marked_count": 1,
+  "late_attachment_count": 1,
+  "current_session": {
+    "session_id": "session-uuid-placeholder",
+    "started_at": "2026-06-18T11:59:00.000000",
+    "finished_at": "2026-06-18T12:00:00.000000",
+    "material_ids": [],
+    "note_ids": [],
+    "final_conclusion_material_id": null,
+    "late_attachment_ids": [],
+    "reports_generated": []
+  }
+}
