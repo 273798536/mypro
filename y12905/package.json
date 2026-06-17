@@ -1,0 +1,20 @@
+{
+  "name": "prompt-gray-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MLOps 提示词版本灰度看板",
+  "scripts": {
+    "setup:all": "npm run setup:backend && npm run setup:frontend",
+    "setup:backend": "cd backend && python3 -m venv .venv && source .venv/bin/activate && pip install --upgrade pip && pip install -r requirements.txt",
+    "setup:frontend": "cd frontend && npm install",
+    "seed": "cd backend && source .venv/bin/activate && python -m app.seed",
+    "dev:backend": "cd backend && source .venv/bin/activate && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "concurrently -n BACKEND,FRONTEND -c blue,magenta -k \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "demo": "bash scripts/demo-flow.sh",
+    "test:api": "bash scripts/test-api.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

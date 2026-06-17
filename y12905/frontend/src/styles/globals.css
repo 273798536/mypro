@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #0b0f17;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1f2937;
+  --status-approved: #10b981;
+  --status-review: #f59e0b;
+  --status-rerun: #ef4444;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --accent: #3b82f6;
+  --mono-font: "JetBrains Mono", "SF Mono", "Fira Code", Consolas, "Liberation Mono", monospace;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+
+/* Diff 样式 */
+.diff-equal { color: var(--text-primary); }
+.diff-insert { background: rgba(16, 185, 129, 0.15); color: #34d399; border-radius: 2px; padding: 0 2px; }
+.diff-delete { background: rgba(239, 68, 68, 0.15); color: #f87171; border-radius: 2px; padding: 0 2px; text-decoration: line-through; }
+
+/* 动画 */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fade-in-up 0.35s ease-out both; }
+
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+}
+.pulse-border { animation: pulse-border 2s infinite; }
+
+/* 表格行 hover */
+.row-hover:hover { background: rgba(59, 130, 246, 0.06); }
+
+/* 状态发光效果 */
+.glow-approved { box-shadow: 0 0 0 1px rgba(16,185,129,.4), 0 0 12px rgba(16,185,129,.15); }
+.glow-review { box-shadow: 0 0 0 1px rgba(245,158,11,.4), 0 0 12px rgba(245,158,11,.15); }
+.glow-rerun { box-shadow: 0 0 0 1px rgba(239,68,68,.4), 0 0 12px rgba(239,68,68,.15); }
