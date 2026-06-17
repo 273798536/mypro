@@ -1,0 +1,23 @@
+[project]
+name = "fewshot-sampler"
+version = "0.1.0"
+description = "少样本评测抽样器 - MLOps 人工评测与追溯工具"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "openpyxl>=3.1.0",
+    "xlsxwriter>=3.1.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+fewshot-sampler = "fewshot_sampler.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
