@@ -1,13 +1,14 @@
 import { useStore } from '@/store'
 import { Link } from 'react-router-dom'
-import { Play, RotateCcw, CheckCircle2, FileQuestion, UserCheck } from 'lucide-react'
+import { Play, RotateCcw, CheckCircle2, FileQuestion, UserCheck, Trash2 } from 'lucide-react'
 
 export default function Dashboard() {
   const records = useStore((s) => s.records)
   const isRunning = useStore((s) => s.isRunning)
   const lastRunAt = useStore((s) => s.lastRunAt)
-  const startRun = useStore((s) => s.startRun)
-  const finishRun = useStore((s) => s.finishRun)
+  const runAttribution = useStore((s) => s.runAttribution)
+  const clearAllData = useStore((s) => s.clearAllData)
+  const attributionLogs = useStore((s) => s.attributionLogs)
 
   const processed = records.filter((r) => r.status === 'processed')
   const pendingMaterial = records.filter((r) => r.status === 'pending_material')
@@ -15,21 +16,24 @@ export default function Dashboard() {
   const extremeCount = records.filter((r) => r.isExtreme).length
   const samplingGapCount = records.filter((r) => r.hasSamplingGap).length
 
-  const handleStart = () => {
-    startRun()
-    setTimeout(() => finishRun(), 2000)
-  }
-
-  const handleRerun = () => {
-    startRun()
-    setTimeout(() => finishRun(), 2000)
-  }
-
   return (
     <div className="min-h-screen">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-iron-50 mb-1">热泵循环误差归因</h1>
-        <p className="text-iron-400 text-sm">启动归因计算 · 重跑参数 · 查看摘要</p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-iron-50 mb-1">热泵循环误差归因</h1>
+          <p className="text-iron-400 text-sm">启动归因计算 · 重跑参数 · 查看摘要</p>
+        </div>
+        <button
+          onClick={() => {
+            if (confirm('确定要重置所有数据到初始状态？这将清除所有本地保存的材料、改判和计算结果。')) {
+              clearAllData()
+            }
+          }}
+          className="text-xs text-iron-500 hover:text-danger-500 transition-colors flex items-center gap-1"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          重置数据
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
@@ -86,7 +90,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-8">
         <button
-          onClick={handleStart}
+          onClick={runAttribution}
           disabled={isRunning}
           className="group relative overflow-hidden rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-amber-600/5 p-6 transition-all duration-300 hover:border-amber-500/60 hover:shadow-[0_0_40px_-5px_rgba(245,158,11,0.2)] disabled:opacity-50 disabled:cursor-not-allowed text-left"
         >
@@ -102,53 +106,76 @@ export default function Dashboard() {
               <div className="text-lg font-bold text-iron-50">
                 {isRunning ? '计算中…' : '启动归因'}
               </div>
-              <div className="text-xs text-iron-400 mt-0.5">基于当前参数版本全量计算</div>
+              <div className="text-xs text-iron-400 mt-0.5">基于当前设备铭牌、后补备注、口头说明全量计算</div>
             </div>
           </div>
         </button>
 
         <button
-          onClick={handleRerun}
+          onClick={runAttribution}
           disabled={isRunning}
           className="group relative overflow-hidden rounded-xl border border-iron-600 bg-iron-900 p-6 transition-all duration-300 hover:border-iron-500 hover:shadow-[0_0_40px_-5px_rgba(107,114,128,0.1)] disabled:opacity-50 disabled:cursor-not-allowed text-left"
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-xl bg-iron-700/50 flex items-center justify-center group-hover:bg-iron-700 transition-colors">
-              <RotateCcw className="w-5 h-5 text-iron-300" />
+              {isRunning ? (
+                <div className="w-5 h-5 border-2 border-iron-300 border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <RotateCcw className="w-5 h-5 text-iron-300" />
+              )}
             </div>
             <div>
               <div className="text-lg font-bold text-iron-50">
                 {isRunning ? '重跑中…' : '重跑归因'}
               </div>
               <div className="text-xs text-iron-400 mt-0.5">
-                {lastRunAt ? `上次完成: ${new Date(lastRunAt).toLocaleString('zh-CN')}` : '使用更新后的参数重新计算'}
+                {lastRunAt
+                  ? `上次完成: ${new Date(lastRunAt).toLocaleString('zh-CN')}`
+                  : '使用更新后的材料与参数重新计算'}
               </div>
             </div>
           </div>
         </button>
       </div>
 
-      <div className="rounded-xl border border-iron-700 bg-iron-900 p-5">
-        <h2 className="text-sm font-semibold text-iron-300 mb-4">快速统计</h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="text-center p-3 rounded-lg bg-iron-800/50">
-            <div className="text-2xl font-bold font-mono text-iron-50">{records.length}</div>
-            <div className="text-xs text-iron-400 mt-1">总记录</div>
-          </div>
-          <div className="text-center p-3 rounded-lg bg-iron-800/50">
-            <div className="text-2xl font-bold font-mono text-danger-500">{extremeCount}</div>
-            <div className="text-xs text-iron-400 mt-1">极端值</div>
-          </div>
-          <div className="text-center p-3 rounded-lg bg-iron-800/50">
-            <div className="text-2xl font-bold font-mono text-amber-500">{samplingGapCount}</div>
-            <div className="text-xs text-iron-400 mt-1">采样缺口</div>
-          </div>
-          <div className="text-center p-3 rounded-lg bg-iron-800/50">
-            <div className="text-2xl font-bold font-mono text-iron-300">
-              {records.filter((r) => r.anomalyLevel === 'high').length}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-iron-700 bg-iron-900 p-5">
+          <h2 className="text-sm font-semibold text-iron-300 mb-4">快速统计</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-3 rounded-lg bg-iron-800/50">
+              <div className="text-2xl font-bold font-mono text-iron-50">{records.length}</div>
+              <div className="text-xs text-iron-400 mt-1">总记录</div>
             </div>
-            <div className="text-xs text-iron-400 mt-1">高异常</div>
+            <div className="text-center p-3 rounded-lg bg-iron-800/50">
+              <div className="text-2xl font-bold font-mono text-danger-500">{extremeCount}</div>
+              <div className="text-xs text-iron-400 mt-1">极端值</div>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-iron-800/50">
+              <div className="text-2xl font-bold font-mono text-amber-500">{samplingGapCount}</div>
+              <div className="text-xs text-iron-400 mt-1">采样缺口</div>
+            </div>
+            <div className="text-center p-3 rounded-lg bg-iron-800/50">
+              <div className="text-2xl font-bold font-mono text-iron-300">
+                {records.filter((r) => r.anomalyLevel === 'high').length}
+              </div>
+              <div className="text-xs text-iron-400 mt-1">高异常</div>
+            </div>
           </div>
+        </div>
+
+        <div className="rounded-xl border border-iron-700 bg-iron-900 p-5">
+          <h2 className="text-sm font-semibold text-iron-300 mb-4">最近归因日志</h2>
+          {attributionLogs.length === 0 ? (
+            <p className="text-xs text-iron-500">暂无日志，点击「启动归因」开始</p>
+          ) : (
+            <div className="space-y-1 max-h-40 overflow-auto font-mono text-[11px]">
+              {attributionLogs.slice().reverse().slice(0, 10).map((log, idx) => (
+                <div key={idx} className="text-iron-400">
+                  {log}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

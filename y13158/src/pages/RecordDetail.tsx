@@ -1,5 +1,5 @@
 import { useStore } from '@/store'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useState, type ReactNode } from 'react'
 import {
   ArrowLeft,
@@ -10,6 +10,8 @@ import {
   UserCheck,
   Tag,
   Clock,
+  Plus,
+  Play,
 } from 'lucide-react'
 import type { MaterialType } from '@/types'
 
@@ -31,15 +33,24 @@ const materialTypeColors: Record<MaterialType, string> = {
   verbal_note: 'text-purple-400 bg-purple-500/10',
 }
 
+const materialTypeButtonColors: Record<MaterialType, string> = {
+  nameplate: 'border-blue-500/30 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20',
+  supplementary_note: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20',
+  verbal_note: 'border-purple-500/30 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20',
+}
+
 export default function RecordDetail() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const records = useStore((s) => s.records)
   const parameterVersions = useStore((s) => s.parameterVersions)
   const materialChanges = useStore((s) => s.materialChanges)
   const manualOverrides = useStore((s) => s.manualOverrides)
   const anomalyPoints = useStore((s) => s.anomalyPoints)
   const addManualOverride = useStore((s) => s.addManualOverride)
-  const updateRecordStatus = useStore((s) => s.updateRecordStatus)
+  const addMaterialChange = useStore((s) => s.addMaterialChange)
+  const runAttribution = useStore((s) => s.runAttribution)
+  const isRunning = useStore((s) => s.isRunning)
 
   const record = records.find((r) => r.id === id)
   const versions = parameterVersions.filter((pv) => pv.recordId === id)
@@ -50,6 +61,12 @@ export default function RecordDetail() {
   const [overrideReason, setOverrideReason] = useState('')
   const [overrideConclusion, setOverrideConclusion] = useState('')
   const [showOverrideForm, setShowOverrideForm] = useState(false)
+
+  const [newMaterialType, setNewMaterialType] = useState<MaterialType>('nameplate')
+  const [newMaterialContent, setNewMaterialContent] = useState('')
+  const [newMaterialIsCaliberChanged, setNewMaterialIsCaliberChanged] = useState(false)
+  const [newMaterialCaliberNote, setNewMaterialCaliberNote] = useState('')
+  const [showMaterialForm, setShowMaterialForm] = useState(false)
 
   if (!record) {
     return (
@@ -66,37 +83,81 @@ export default function RecordDetail() {
 
   const handleOverride = () => {
     if (!overrideReason.trim() || !overrideConclusion.trim()) return
-    const newOverride = {
-      id: `MO${String(manualOverrides.length + 1).padStart(3, '0')}`,
+    addManualOverride({
       recordId: record.id,
       originalConclusion: record.conclusion,
       overrideConclusion: overrideConclusion,
       reason: overrideReason,
       operator: '小林',
-      createdAt: new Date().toISOString(),
-    }
-    addManualOverride(newOverride)
-    updateRecordStatus(record.id, 'manual_override')
+    })
     setShowOverrideForm(false)
     setOverrideReason('')
     setOverrideConclusion('')
   }
 
+  const handleAddMaterial = () => {
+    if (!newMaterialContent.trim()) return
+    addMaterialChange({
+      recordId: record.id,
+      materialType: newMaterialType,
+      content: newMaterialContent.trim(),
+      isCaliberChanged: newMaterialIsCaliberChanged,
+      caliberChangeNote: newMaterialCaliberNote.trim() || undefined,
+    })
+    setNewMaterialContent('')
+    setNewMaterialCaliberNote('')
+    setNewMaterialIsCaliberChanged(false)
+    setShowMaterialForm(false)
+  }
+
   const paramKeys = versions.length > 0 ? Object.keys(versions[0].parameters) : []
+
+  const statusLabel =
+    record.status === 'processed'
+      ? '已处理'
+      : record.status === 'pending_material'
+      ? '待补材料'
+      : '人工改判'
+  const statusColor =
+    record.status === 'processed'
+      ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+      : record.status === 'pending_material'
+      ? 'bg-iron-500/10 text-iron-300 border-iron-500/20'
+      : 'bg-danger-500/10 text-danger-500 border-danger-500/20'
 
   return (
     <div className="min-h-screen">
       <div className="mb-6">
-        <Link
-          to="/records"
+        <button
+          onClick={() => navigate(-1)}
           className="inline-flex items-center gap-1.5 text-sm text-iron-400 hover:text-iron-200 transition-colors mb-3"
         >
           <ArrowLeft className="w-4 h-4" />
-          返回记录列表
-        </Link>
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-iron-50">{record.cycleName}</h1>
-          <span className="font-mono text-xs text-iron-500">{record.id}</span>
+          返回
+        </button>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-2xl font-bold text-iron-50">{record.cycleName}</h1>
+              <span className="font-mono text-xs text-iron-500">{record.id}</span>
+              <span className={`px-2 py-0.5 rounded-full text-xs border ${statusColor}`}>
+                {statusLabel}
+              </span>
+            </div>
+            <p className="text-sm text-iron-400">{record.conclusion}</p>
+          </div>
+          <button
+            onClick={runAttribution}
+            disabled={isRunning}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs hover:bg-amber-500/20 transition-colors disabled:opacity-50"
+          >
+            {isRunning ? (
+              <div className="w-3.5 h-3.5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Play className="w-3.5 h-3.5" />
+            )}
+            基于现有材料重算
+          </button>
         </div>
       </div>
 
@@ -110,7 +171,9 @@ export default function RecordDetail() {
                 <div key={v.id} className="rounded-lg border border-iron-700 bg-iron-800/50 p-4">
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-semibold text-iron-200">{v.version}</span>
-                    <span className="text-xs text-iron-500">{new Date(v.changedAt).toLocaleString('zh-CN')}</span>
+                    <span className="text-xs text-iron-500">
+                      {new Date(v.changedAt).toLocaleString('zh-CN')}
+                    </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     {paramKeys.map((key) => {
@@ -127,9 +190,7 @@ export default function RecordDetail() {
                           <div className="text-iron-500 mb-0.5">{key}</div>
                           <div className={`font-mono ${isChanged ? 'text-amber-400' : 'text-iron-300'}`}>
                             {String(v.parameters[key])}
-                            {isChanged && (
-                              <span className="ml-1.5 text-amber-500">← 已变更</span>
-                            )}
+                            {isChanged && <span className="ml-1.5 text-amber-500">← 已变更</span>}
                           </div>
                         </div>
                       )
@@ -154,11 +215,11 @@ export default function RecordDetail() {
                       {new Date(ap.timestamp).toLocaleString('zh-CN')}
                     </span>
                   </div>
-                  <div className="flex gap-4 mb-2 text-xs font-mono">
+                  <div className="flex flex-wrap gap-4 mb-2 text-xs font-mono">
                     <span className="text-danger-400">实测: {ap.measuredValue}</span>
                     <span className="text-iron-500">期望: {ap.expectedValue}</span>
                     <span className="text-amber-500">
-                      偏差: {((ap.measuredValue - ap.expectedValue) / ap.expectedValue * 100).toFixed(2)}%
+                      偏差: {(((ap.measuredValue - ap.expectedValue) / ap.expectedValue) * 100).toFixed(2)}%
                     </span>
                   </div>
                   <p className="text-sm text-iron-300 leading-relaxed">{ap.explanation}</p>
@@ -170,9 +231,101 @@ export default function RecordDetail() {
       </div>
 
       <div className="mt-6">
-        <Section icon={<FileText className="w-4 h-4" />} title="材料口径时间线">
+        <Section
+          icon={<FileText className="w-4 h-4" />}
+          title="材料口径时间线"
+          action={
+            !showMaterialForm ? (
+              <button
+                onClick={() => setShowMaterialForm(true)}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-iron-800 border border-iron-700 text-iron-300 text-xs hover:border-iron-600 transition-colors ml-auto"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                补录材料
+              </button>
+            ) : null
+          }
+        >
+          {showMaterialForm && (
+            <div className="mb-5 rounded-lg border border-iron-700 bg-iron-800/50 p-4 space-y-3">
+              <div className="flex flex-wrap gap-2">
+                {(Object.keys(materialTypeLabels) as MaterialType[]).map((t) => (
+                  <button
+                    key={t}
+                    onClick={() => setNewMaterialType(t)}
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border text-xs transition-colors ${
+                      newMaterialType === t
+                        ? materialTypeButtonColors[t]
+                        : 'bg-iron-800 border-iron-700 text-iron-400 hover:border-iron-600'
+                    }`}
+                  >
+                    {(() => {
+                      const Icon = materialTypeIcons[t]
+                      return <Icon className="w-3.5 h-3.5" />
+                    })()}
+                    {materialTypeLabels[t]}
+                  </button>
+                ))}
+              </div>
+              <div>
+                <label className="block text-xs text-iron-400 mb-1.5">材料内容</label>
+                <textarea
+                  value={newMaterialContent}
+                  onChange={(e) => setNewMaterialContent(e.target.value)}
+                  placeholder={`输入${materialTypeLabels[newMaterialType]}内容，例如"铭牌流量 55 GPM，额定压力 2.5 MPa"`}
+                  rows={2}
+                  className="w-full rounded-lg bg-iron-900 border border-iron-700 px-3 py-2 text-sm text-iron-200 placeholder:text-iron-600 focus:border-amber-500/50 focus:outline-none transition-colors resize-none"
+                />
+                <p className="text-[11px] text-iron-500 mt-1">
+                  提示：内容包含「采样/缺失/堵塞」将自动标记采样缺口；包含「公式/单位/阈值」自动标注卡点
+                </p>
+              </div>
+              <label className="flex items-center gap-2 text-xs text-iron-400">
+                <input
+                  type="checkbox"
+                  checked={newMaterialIsCaliberChanged}
+                  onChange={(e) => setNewMaterialIsCaliberChanged(e.target.checked)}
+                  className="rounded bg-iron-800 border-iron-700 text-amber-500 focus:ring-amber-500/30"
+                />
+                这份材料改过口径
+              </label>
+              {newMaterialIsCaliberChanged && (
+                <div>
+                  <label className="block text-xs text-iron-400 mb-1.5">口径变更说明</label>
+                  <input
+                    type="text"
+                    value={newMaterialCaliberNote}
+                    onChange={(e) => setNewMaterialCaliberNote(e.target.value)}
+                    placeholder="例如：流量单位从 GPM 改为 m³/h"
+                    className="w-full rounded-lg bg-iron-900 border border-iron-700 px-3 py-2 text-sm text-iron-200 placeholder:text-iron-600 focus:border-amber-500/50 focus:outline-none transition-colors"
+                  />
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleAddMaterial}
+                  disabled={!newMaterialContent.trim()}
+                  className="px-3 py-1.5 rounded-md bg-amber-500 text-iron-950 text-xs font-medium hover:bg-amber-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  提交
+                </button>
+                <button
+                  onClick={() => {
+                    setShowMaterialForm(false)
+                    setNewMaterialContent('')
+                    setNewMaterialCaliberNote('')
+                    setNewMaterialIsCaliberChanged(false)
+                  }}
+                  className="px-3 py-1.5 rounded-md bg-iron-800 border border-iron-700 text-iron-300 text-xs hover:border-iron-600 transition-colors"
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          )}
+
           {materials.length === 0 ? (
-            <p className="text-iron-500 text-sm">无材料记录</p>
+            <p className="text-iron-500 text-sm">无材料记录，点击右上角「补录材料」添加</p>
           ) : (
             <div className="relative pl-6">
               <div className="absolute left-2.5 top-0 bottom-0 w-px bg-iron-700" />
@@ -321,12 +474,23 @@ export default function RecordDetail() {
   )
 }
 
-function Section({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
+function Section({
+  icon,
+  title,
+  children,
+  action,
+}: {
+  icon: ReactNode
+  title: string
+  children: ReactNode
+  action?: ReactNode
+}) {
   return (
     <div className="rounded-xl border border-iron-700 bg-iron-900 p-5">
       <div className="flex items-center gap-2 mb-4">
         <span className="text-amber-500">{icon}</span>
         <h2 className="text-sm font-semibold text-iron-200">{title}</h2>
+        {action}
       </div>
       {children}
     </div>
