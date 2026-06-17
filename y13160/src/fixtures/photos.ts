@@ -22,7 +22,7 @@ export const DEFAULT_PHOTOS: Photo[] = [
       {
         id: 'ann-1-2',
         photoId: 'photo-1',
-        stepId: 'step-6',
+        stepId: 'step-2',
         bbox: [0.55, 0.55, 0.32, 0.25],
         originalReading: '笔记本：Tz = 8200 ms，墨水迹清晰，圆珠笔记录',
         processedNote: '换算到秒：8200 ms ÷ 1000 = 8.2 s，A组链路中已正确换算',
@@ -48,10 +48,10 @@ export const DEFAULT_PHOTOS: Photo[] = [
       {
         id: 'ann-2-2',
         photoId: 'photo-2',
-        stepId: 'step-5',
+        stepId: 'step-6',
         bbox: [0.05, 0.1, 0.15, 0.8],
         originalReading: '屏幕边缘贴纸条：λ≈104.8 m，深水波长估算值',
-        processedNote: '步骤5 λ=g·Tz²/(2π)≈9.81×67.24/6.28≈104.8m，截图数值已在截图说明里与步骤6对应',
+        processedNote: '步骤6 λ=g·Tz²/(2π)≈9.81×67.24/6.28≈104.8m，与截图数值一致',
       },
     ],
   },
@@ -84,7 +84,7 @@ export const DEFAULT_PHOTOS: Photo[] = [
       {
         id: 'ann-4-1',
         photoId: 'photo-4',
-        stepId: 'step-7',
+        stepId: 'step-5',
         bbox: [0.3, 0.3, 0.45, 0.35],
         originalReading: '水深断面图标注 38 m，换算 0.038 km',
         processedNote: 'A组水深 38 m、B组水深 0.038 km，一致；d/λ 比值≈0.363，处于过渡水深区域',
@@ -92,10 +92,10 @@ export const DEFAULT_PHOTOS: Photo[] = [
       {
         id: 'ann-4-2',
         photoId: 'photo-4',
-        stepId: 'step-6',
+        stepId: 'step-7',
         bbox: [0.05, 0.75, 0.25, 0.2],
         originalReading: '图边注：有效波功率 P ≈ 86 kW/m',
-        processedNote: '复算链路第6步 P=⅛·ρ·g·Hs²·Tz≈86.2 kW/m，与截图手写估算一致',
+        processedNote: '复算链路第7步 P=⅛·ρ·g·Hs²·Tz≈86.2 kW/m，与截图手写估算一致',
       },
     ],
   },

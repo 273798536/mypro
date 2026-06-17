@@ -30,6 +30,24 @@ export default function PhotoAnnotation() {
   const [zoom, setZoom] = useState(1);
   const [activeAnnId, setActiveAnnId] = useState<string | undefined>();
 
+  const extractStepIndex = (id?: string): number | null => {
+    if (!id) return null;
+    const m = id.match(/step[-_](\d+)/);
+    return m ? parseInt(m[1], 10) : null;
+  };
+
+  const findStep = (stepIdOrIdx?: string | number) => {
+    if (stepIdOrIdx == null) return null;
+    let targetIdx: number | null;
+    if (typeof stepIdOrIdx === 'number') {
+      targetIdx = stepIdOrIdx;
+    } else {
+      targetIdx = extractStepIndex(stepIdOrIdx);
+    }
+    if (targetIdx == null) return null;
+    return chain.find((s) => s.index === targetIdx) ?? null;
+  };
+
   useEffect(() => {
     if (showAnnotation && annotationPhotoId) {
       const i = photos.findIndex((p) => p.id === annotationPhotoId);
@@ -39,15 +57,20 @@ export default function PhotoAnnotation() {
 
   useEffect(() => {
     if (showAnnotation && annotationStepId) {
+      const targetIdx = extractStepIndex(annotationStepId);
       const match = photos.find((p) =>
-        p.annotations.some((a) => a.stepId?.slice(0, 8) === annotationStepId?.slice(0, 8) || a.stepId === annotationStepId)
+        p.annotations.some((a) => {
+          const annIdx = extractStepIndex(a.stepId);
+          return annIdx != null && targetIdx != null && annIdx === targetIdx;
+        })
       );
       if (match) {
         const i = photos.indexOf(match);
         setIdx(i);
-        const ann = match.annotations.find(
-          (a) => a.stepId?.slice(0, 8) === annotationStepId?.slice(0, 8) || a.stepId === annotationStepId
-        );
+        const ann = match.annotations.find((a) => {
+          const annIdx = extractStepIndex(a.stepId);
+          return annIdx != null && targetIdx != null && annIdx === targetIdx;
+        });
         setActiveAnnId(ann?.id);
       }
     }
@@ -63,20 +86,14 @@ export default function PhotoAnnotation() {
   const photo = photos[idx];
 
   const stepTitleForAnn = (stepId?: string) => {
-    if (!stepId) return '（未关联链路步骤）';
-    const s = chain.find(
-      (x) => x.id === stepId || x.id.slice(0, 8) === stepId.slice(0, 8)
-    );
+    const s = findStep(stepId);
     return s
       ? `S${s.index.toString().padStart(2, '0')} · ${s.title}`
-      : `步骤ID: ${stepId.slice(0, 10)}…`;
+      : '（未关联链路步骤）';
   };
 
   const scrollToStep = (stepId?: string) => {
-    if (!stepId) return;
-    const s = chain.find(
-      (x) => x.id === stepId || x.id.slice(0, 8) === stepId.slice(0, 8)
-    );
+    const s = findStep(stepId);
     if (!s) return;
     const el = document.getElementById(`step-card-${s.index}`);
     if (el) {
