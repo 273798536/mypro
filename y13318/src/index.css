@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #0a0c0f;
+  background-image:
+    linear-gradient(rgba(77, 122, 168, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 122, 168, 0.045) 1px, transparent 1px);
+  background-size: 34px 34px;
+  color: #cdd6e3;
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.012) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2d3744 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2d3744;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+table.replay td,
+table.replay th {
+  border-bottom: 1px solid #1c222b;
+}
+table.replay tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+@layer components {
+  .panel {
+    @apply border border-graphite-700 bg-graphite-850/80 backdrop-blur-sm;
+  }
+  .field {
+    @apply border border-graphite-700 bg-graphite-800 px-2.5 py-1.5 text-sm text-zinc-200 font-mono outline-none transition-colors focus:border-steel-500;
+  }
+  .btn {
+    @apply inline-flex items-center gap-1.5 border border-graphite-600 px-3 py-1.5 text-sm text-zinc-300 transition-colors hover:bg-graphite-700 hover:text-white;
+  }
+  .btn-amber {
+    @apply border-amberx-500/60 text-amberx-400 hover:bg-amberx-500/10 hover:text-amberx-400;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 border px-1.5 py-0.5 text-[11px] font-mono;
+  }
+}
