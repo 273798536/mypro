@@ -6,7 +6,7 @@ const DEFAULT_THRESHOLD = 5
 const DEFAULT_COEFF = 1.0
 
 export default function Report() {
-  const { parameterSet, recalcResults, consistencyCheck, updateParameterSet, recalculateAll, runConsistencyCheck, exportCSV } = useAttributionStore()
+  const { parameterSet, recalcResults, consistencyCheck, updateParameterSet, recalculateAll, runConsistencyCheck, exportCSVWithBOM, getFilteredRecords, filteredRecords } = useAttributionStore()
   const [localThreshold, setLocalThreshold] = useState(parameterSet.safetyThreshold)
   const [localCoeff, setLocalCoeff] = useState(parameterSet.calculationCoeff)
 
@@ -26,13 +26,15 @@ export default function Report() {
   }
 
   const handleExport = () => {
-    const csv = exportCSV()
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const blob = exportCSVWithBOM()
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `report_${Date.now()}.csv`
+    const ts = new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-')
+    a.download = `扭矩误差明细_${ts}.csv`
+    document.body.appendChild(a)
     a.click()
+    document.body.removeChild(a)
     URL.revokeObjectURL(url)
   }
 
@@ -177,6 +179,15 @@ export default function Report() {
           <Download className="w-5 h-5 text-[#FF6B35]" />
           CSV 导出
         </h2>
+
+        <div className="rounded-lg p-3 text-xs space-y-1.5" style={{ background: '#0F1724', border: '1px solid #2A3F6A' }}>
+          <p className="text-gray-400">
+            当前筛选将导出 <span className="text-white font-mono font-semibold">{getFilteredRecords().length}</span> 条（页面状态 <span className="text-white font-mono">{filteredRecords.length}</span> 条）
+          </p>
+          <p className="text-gray-500">
+            若两数不一致请先点"一致性校验"；导出文件包含：零部件名称 / 类型 / 实测扭矩 / 误差 / 严重等级 / 时间戳，字段用双引号包裹、UTF-8 BOM，Excel/WPS 双击正常打开中文。
+          </p>
+        </div>
 
         <button onClick={runConsistencyCheck}
           className="px-4 py-2 rounded-lg font-semibold text-white flex items-center gap-2 hover:opacity-90 transition border"
