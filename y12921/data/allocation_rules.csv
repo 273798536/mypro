@@ -1,0 +1,7 @@
+rule_id,scope,target,unit_price_override,currency,effective_from,arrived_late,gpu_card,note
+R-01,card,A100,12.5,CNY,2026-06-01,False,A100,A100 默认单价
+R-02,team,算法组,15.0,CNY,2026-06-14,True,A100,安全规则晚到 算法组6/14起 A100 单价上调到15 含安全审计附加费
+R-03,team,语音组,18.0,CNY,2026-06-01,False,V100,语音组 V100 默认单价
+R-04,team,视觉组,12.5,CNY,2026-06-01,False,A100,视觉组 A100 默认单价
+R-05,team,推荐组,6.0,USD,2026-06-01,False,A10,推荐组 A10 按美元结算
+R-06,project,ASR-v4,20.0,CNY,2026-06-13,True,V100,安全规则晚到 ASR 项目6/13起 V100 单价上调到20 GPU紧张附加

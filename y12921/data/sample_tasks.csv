@@ -1,0 +1,12 @@
+task_id,task_name,owner,team,project,gpu_card,gpu_hours,unit_price,currency,cost_raw,remark,source,run_date,status
+T-1001,图文多模态预训练,alice,算法组,MM-v3,A100,48,12.5,CNY,,6/15 跑完,新表,2026-06-15,success
+T-1003,召回模型微调,bob,推荐组,Recall-v2,A10,8h,6.0,USD,"1,234.5 美元",旧表2024Q4 金额里带逗号和币种,2026-06-14,success
+T-1004,排序模型训练,carol,算法组,Rank-v1,A10,6,6.0,CNY,,正常,新表,2026-06-13,success
+T-1005,语音ASR训练,dave,语音组,ASR-v4,V100,72,18.0,CNY,,6/14 完成,新表,2026-06-14,success
+T-1006,语音TTS训练,dave,语音组,TTS-v2,V100,3,18.0,,"560.0",旧表2024Q4 只填了金额漏填币种,2026-06-11,success
+T-1007,视觉自监督训练,eve,视觉组,SSL-v1,A100,120,12.5,CNY,,一次大任务,新表,2026-06-10,success
+T-1008,视觉分类微调,eve,视觉组,Cls-v1,A100,4,12.5,CNY,,正常,新表,2026-06-10,success
+T-1009,多模态对齐训练,frank,算法组,Align-v1,A100,200,12.5,CNY,,6/15 异常长跑 待人工核对 初步排查是数据加载阶段卡住导致计时重复 已和david确认实际只跑了20h 其余80h为空转,新表,2026-06-15,success
+T-1010,小模型基线训练,grace,算法组,Base-v1,A10,2,6.0,CNY,,正常,新表,2026-06-09,success
+T-1011,旧版召回模型,bob,推荐组,Recall-v1,A10,10,6.0,USD,,旧表迁移过来的记录 已回滚但保留可查,旧表2024Q4,2026-05-20,rolled_back
+T-1012,实验性训练已回滚,hank,视觉组,Exp-v0,A100,90,12.5,CNY,,配置错误跑废了已回滚 记录不删,新表,2026-06-08,rolled_back

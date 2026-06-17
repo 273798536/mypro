@@ -1,0 +1,6 @@
+fb_id,task_id,action,reviewer,value_raw,unit_raw,remark,ts
+FB-01,T-1009,correct,david,20h,CNY,人工核对 监控显示实际只跑了20小时 200小时是日志重复计数导致,2026-06-16 10:20
+FB-02,T-1007,confirm,erin,120h,CNY,确认无误,2026-06-16 11:00
+FB-03,T-1013,confirm,leo,约2.3万,,补录确认 这是6/3漏登的一次重跑 金额大约2.3万但没写币种,2026-06-16 09:05
+FB-04,T-1006,supplement,mia,560.0,CNY,补录 旧表里这条只填了金额没填时长 按560元入账,2026-06-15 18:40
+FB-05,T-1001,supplement,alice,12h,CNY,补录 6/16 又跑了一轮续训 12h,2026-06-16 08:30
