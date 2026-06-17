@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" style="background:#2a2a2a;">
+<style>
+  .label { font-family: monospace; font-size: 14px; fill: #aaa; }
+  .title { font-family: sans-serif; font-size: 18px; fill: #fff; font-weight: bold; }
+  .timestamp { font-family: monospace; font-size: 12px; fill: #6f6; }
+  .grid { stroke: #3a3a3a; stroke-width: 1; }
+</style>
+<rect x="100" y="80" width="600" height="440" fill="#222" stroke="#666" stroke-width="3"/><text x="400" y="120" class="label" text-anchor="middle" fill="#888">风洞试验段 (截面0.8m × 0.6m)</text><circle cx="130" cy="300" r="4" fill="#ff9933"/><text x="130" y="270" class="label" text-anchor="middle" fill="#fa0">发烟点</text><polyline points="130,300.0 141,302.5641616532907 152,304.91713978716024 163,306.8666152770199 174,308.2563126877378 185,308.9799598928324 196,308.99078104702556 207,308.30567493319097 218,307.0037054444092 229,305.21903904187064 240,303.1289600644789 251,300.938034446854 262,298.85983645364115 273,297.09787072652824 284,295.8273938206913 295,295.1797590586792 306,295.23068312931326 317,295.9934825413781 328,297.4178840995521 339,299.39451565921894 350,301.76467601440856 361,304.3345112038748 372,306.892330908107 383,309.2275181151056 394,311.1493429107932 405,312.5039998141979 416,313.18834676299684 427,313.1591184867607 438,312.43679126470624 449,311.1037538406575 460,309.29694788193405 471,307.1956353880565 482,305.00538575021613 493,302.93971284979744 504,301.2010024992517 515,299.96243392022666 526,299.35251015946807 537,299.4435792943681 548,300.2453717946826 559,301.70413132864775 570,303.7074166559965 581,306.09414566907355 592,308.66898437776905 603,311.2197955131016 614,313.5365881176578 625,315.430275412413 636,316.7495653555528 647,317.3944751099833 658,317.32526221239425 669,316.56597464914347" fill="none" stroke="#ddd" stroke-width="3" opacity="0.7"/><rect x="680" y="500" width="60" height="40" fill="#444"/><text x="710" y="555" class="label" text-anchor="middle">相机</text><line x1="60" y1="300" x2="100" y2="300" stroke="#5af" stroke-width="2"/><polygon points="100,300 90,295 90,305" fill="#5af"/><text x="60" y="285" class="label" fill="#5af">U∞</text>
+<text x="20" y="30" class="title">【002】风洞试验段全景 - 烟线发烟中</text>
+<text x="20" y="55" class="timestamp">2026-06-14 14:11:26</text>
+<text x="20" y="580" class="timestamp">IMG_20260614_002_ORG.jpg  |  WindTunnel-A / Run07</text>
+
+  <!-- 补备注 - 后添加，非原始照片内容 -->
+  <g id="handwritten-note" style="opacity:0.9;">
+    <!-- 便签纸 -->
+    <rect x="500" y="70" width="240" height="80" fill="#fff9cc" stroke="#cc6" stroke-width="2" transform="rotate(-2, 620, 110)"/>
+    <text x="515" y="95" style="font-family:cursive; font-size:14px; fill:#c00; transform:rotate(-2, 620, 110);">📝 补注 2026.06.14</text>
+    <text x="515" y="120" style="font-family:cursive; font-size:13px; fill:#333; transform:rotate(-2, 620, 110);">工况Run07，风速12.5m/s，准备开始</text>
+    <text x="515" y="140" style="font-family:cursive; font-size:13px; fill:#333; transform:rotate(-2, 620, 110);">采样</text>
+  </g>
+  <!-- 红色印章 "补" -->
+  <circle cx="730" cy="70" r="20" fill="none" stroke="#33ff33" stroke-width="3"/>
+  <text x="730" y="77" style="font-size:22px; font-weight:bold; fill:#33ff33; text-anchor:middle;">补</text>
+  <!-- 编号关联 -->
+  <text x="730" y="105" style="font-size:10px; fill:#33ff33; text-anchor:middle;">→ #002</text>
+</svg>

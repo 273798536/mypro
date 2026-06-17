@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>风洞烟线误差归因 · 工作仪表盘</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: #f0f2f5;
+  color: #333;
+}
+
+/* 顶部导航 */
+.topbar {
+  background: linear-gradient(135deg, #1a237e, #283593);
+  color: white;
+  padding: 0 24px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar h1 { font-size: 18px; font-weight: 600; }
+.topbar .subtitle { font-size: 12px; opacity: 0.8; margin-left: 12px; }
+
+/* Tab导航 */
+.tabs {
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  padding: 0 24px;
+}
+.tab {
+  padding: 14px 24px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  font-size: 14px;
+  color: #666;
+  transition: all 0.2s;
+}
+.tab:hover { color: #1a237e; background: #f5f5f5; }
+.tab.active {
+  color: #1a237e;
+  border-bottom-color: #1a237e;
+  font-weight: 600;
+}
+
+/* 主内容区 */
+.content {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.page { display: none; }
+.page.active { display: block; }
+
+/* 卡片通用 */
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
+.card h2 {
+  font-size: 16px;
+  margin-bottom: 16px;
+  color: #1a237e;
+  border-left: 4px solid #1a237e;
+  padding-left: 12px;
+}
+
+/* 状态看板 - 数字卡片 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.stat-card .num {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.stat-card .label {
+  font-size: 13px;
+  color: #666;
+}
+.stat-card.green .num { color: #2e7d32; }
+.stat-card.blue .num { color: #1565c0; }
+.stat-card.red .num { color: #c62828; }
+.stat-card.orange .num { color: #e65100; }
+.stat-card.purple .num { color: #6a1b9a; }
+.stat-card.grey .num { color: #616161; }
+
+/* 报告表格 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #555;
+}
+tr:hover { background: #f9f9f9; }
+.status-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.status-done { background: #e8f5e9; color: #2e7d32; }
+.status-progress { background: #e3f2fd; color: #1565c0; }
+.status-gab { background: #fff3e0; color: #e65100; }
+.status-extreme { background: #ffebee; color: #c62828; }
+.status-review { background: #f3e5f5; color: #6a1b9a; }
+.status-invalid { background: #f5f5f5; color: #616161; }
+
+/* 待办清单 */
+.todo-item {
+  padding: 12px;
+  border-left: 3px solid #e0e0e0;
+  margin-bottom: 8px;
+  background: #fafafa;
+  border-radius: 0 4px 4px 0;
+}
+.todo-item.high { border-left-color: #c62828; }
+.todo-item.medium { border-left-color: #e65100; }
+.todo-item h4 {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.todo-item p {
+  font-size: 12px;
+  color: #666;
+}
+
+/* 照片浏览 */
+.photo-filter {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.filter-btn {
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.filter-btn:hover { border-color: #1a237e; color: #1a237e; }
+.filter-btn.active {
+  background: #1a237e;
+  color: white;
+  border-color: #1a237e;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.photo-card {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.photo-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.photo-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  background: #2a2a2a;
+}
+.photo-card .info {
+  padding: 8px 12px;
+  font-size: 12px;
+}
+.photo-card .info .name {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.photo-card .info .desc {
+  color: #888;
+  font-size: 11px;
+}
+
+/* 灯箱 */
+.lightbox {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.9);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.lightbox.show { display: flex; }
+.lightbox img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+.lightbox .caption {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  font-size: 14px;
+  background: rgba(0,0,0,0.5);
+  padding: 8px 16px;
+  border-radius: 4px;
+}
+.lightbox .close {
+  position: absolute;
+  top: 20px; right: 30px;
+  color: white;
+  font-size: 40px;
+  cursor: pointer;
+}
+
+/* 报告查看 */
+.report-selector {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.report-selector label { font-size: 13px; color: #666; }
+.report-selector select {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+}
+.report-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  line-height: 1.8;
+}
+.report-content h1, .report-content h2, .report-content h3 {
+  color: #1a237e;
+  margin-top: 20px;
+  margin-bottom: 12px;
+}
+.report-content h1 { font-size: 22px; border-bottom: 2px solid #1a237e; padding-bottom: 8px; }
+.report-content h2 { font-size: 18px; border-left: 4px solid #1a237e; padding-left: 10px; }
+.report-content table {
+  margin: 12px 0;
+  font-size: 13px;
+}
+.report-content th {
+  background: #f0f4ff;
+  border: 1px solid #d0d8ff;
+}
+.report-content td {
+  border: 1px solid #e0e0e0;
+}
+.report-content code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+.report-content blockquote {
+  border-left: 4px solid #ffc107;
+  padding-left: 16px;
+  margin: 12px 0;
+  color: #666;
+  background: #fffde7;
+  padding: 8px 16px;
+  border-radius: 0 4px 4px 0;
+}
+
+/* 交接验证 */
+.handoff-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.handoff-step {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s;
+}
+.handoff-step:hover { border-color: #1a237e; }
+.handoff-step.active {
+  border-color: #1a237e;
+  background: #f0f4ff;
+}
+.handoff-step .num {
+  font-size: 24px;
+  font-weight: 700;
+  color: #999;
+  margin-bottom: 4px;
+}
+.handoff-step.active .num { color: #1a237e; }
+.handoff-step .title {
+  font-size: 13px;
+  font-weight: 600;
+}
+.handoff-step .desc {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.handoff-content {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  min-height: 400px;
+}
+.handoff-content h3 {
+  color: #1a237e;
+  margin-bottom: 16px;
+  font-size: 18px;
+}
+
+.checklist-item {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-item input {
+  margin-top: 3px;
+}
+.checklist-item .check-text {
+  flex: 1;
+}
+.checklist-item .check-text h4 {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.checklist-item .check-text p {
+  font-size: 12px;
+  color: #666;
+}
+
+.result-box {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 6px;
+  padding: 16px;
+  margin-top: 16px;
+  text-align: center;
+}
+.result-box h4 {
+  color: #2e7d32;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.result-box p {
+  font-size: 13px;
+  color: #388e3c;
+}
+
+/* 加载状态 */
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+}
+
+/* 版本标签 */
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-new { background: #c62828; color: white; }
+.badge-info { background: #1565c0; color: white; }
+.badge-warn { background: #e65100; color: white; }
+
+@media (max-width: 768px) {
+  .content { padding: 12px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .photo-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部导航 -->
+<div class="topbar">
+  <h1>🌬️ 风洞烟线误差归因工作仪表盘</h1>
+  <span class="subtitle">v1.0 · 2026-06-14 批次</span>
+</div>
+
+<!-- Tab导航 -->
+<div class="tabs">
+  <div class="tab active" data-page="dashboard">📊 状态看板</div>
+  <div class="tab" data-page="photos">📷 照片归档</div>
+  <div class="tab" data-page="reports">📄 报告查看</div>
+  <div class="tab" data-page="handoff">✅ 交接验证</div>
+</div>
+
+<!-- 主内容 -->
+<div class="content">
+
+  <!-- 第1页：状态看板 -->
+  <div class="page active" id="page-dashboard">
+    <h2 style="font-size:20px; margin-bottom:16px;">📊 总览仪表盘</h2>
+
+    <div class="stats-grid">
+      <div class="stat-card blue">
+        <div class="num">1</div>
+        <div class="label">🔵 进行中</div>
+      </div>
+      <div class="stat-card green">
+        <div class="num">1</div>
+        <div class="label">🟢 已完成</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="num">1</div>
+        <div class="label">⚠️ 含缺口</div>
+      </div>
+      <div class="stat-card red">
+        <div class="num">1</div>
+        <div class="label">🔴 极端值待确认</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="num">0</div>
+        <div class="label">🟡 待复核</div>
+      </div>
+      <div class="stat-card grey">
+        <div class="num">0</div>
+        <div class="label">⚫ 已无效</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📋 报告列表（逐条追踪）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>报告编号</th>
+            <th>工况</th>
+            <th>负责人</th>
+            <th>状态</th>
+            <th>已处理</th>
+            <th>待补事项</th>
+            <th>最后更新</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="cursor:pointer" onclick="switchToReport('ERR-20260614-003')">
+            <td><b>ERR-20260614-001</b></td>
+            <td>#A-03</td>
+            <td>小林</td>
+            <td><span class="status-tag status-done">🟢 已完成</span></td>
+            <td>全部完成</td>
+            <td>—</td>
+            <td>06-14 09:30</td>
+          </tr>
+          <tr>
+            <td><b>ERR-20260614-002</b></td>
+            <td>#B-01</td>
+            <td>小王</td>
+            <td><span class="status-tag status-extreme">🔴 极端值待确认</span></td>
+            <td>标定✅ 扩散✅ 风速✅ 边界层✅</td>
+            <td>EV-002确认</td>
+            <td>06-14 14:20</td>
+          </tr>
+          <tr style="cursor:pointer" onclick="switchToReport('ERR-20260614-003')">
+            <td><b>ERR-20260614-003</b> <span class="badge badge-warn">样例</span></td>
+            <td>#A-05</td>
+            <td>小王</td>
+            <td><span class="status-tag status-gap">⚠️ 含缺口（已评估）</span></td>
+            <td>标定✅ 扩散✅ 风速✅ EV-001✅ GAP-001评估✅ 复核✅</td>
+            <td>GAP-001补测（可选）</td>
+            <td>06-14 18:00</td>
+          </tr>
+          <tr>
+            <td><b>ERR-20260614-004</b></td>
+            <td>#B-02</td>
+            <td>小张</td>
+            <td><span class="status-tag status-progress">🔵 进行中</span></td>
+            <td>标定✅ 扩散一半</td>
+            <td>风速脉动、照片整理</td>
+            <td>06-14 16:10</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+      <div class="card">
+        <h2>🚩 未关闭的采样缺口</h2>
+        <div class="todo-item high">
+          <h4>GAP-20260614-001 · ERR-003</h4>
+          <p>y=30mm处1个测点缺失（对焦失败）→ 已评估影响±1.1%，未补数据</p>
+          <p style="margin-top:4px; color:#c62828;">负责人：小王 · 预计06-15上午（可选）</p>
+        </div>
+        <div class="todo-item high">
+          <h4>GAP-20260614-002 · ERR-004</h4>
+          <p>风速数据后半段丢失（DAQ掉线）→ 刚发现，还没评估</p>
+          <p style="margin-top:4px; color:#c62828;">负责人：小张 · 预计06-15</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🚩 未确认的极端值</h2>
+        <div class="todo-item high">
+          <h4>EV-002 · ERR-002</h4>
+          <p>位移比均值大3.8σ → 是尾涡还是对焦？需看原图+查尾迹</p>
+          <p style="margin-top:4px; color:#c62828;">负责人：小林 · 死线 06-15 12:00</p>
+        </div>
+        <div class="todo-item medium">
+          <h4>EV-001 · ERR-003 <span style="color:#2e7d32;">✅ 已确认</span></h4>
+          <p>Δy=12.3mm（4.2σ）→ 25%真实猝发 + 75%测量误差</p>
+          <p style="margin-top:4px; color:#2e7d32;">确认人：小林 · 06-14 17:30</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📝 最新交班记录（6月14日白班→夜班）</h2>
+      <p style="font-size:13px; line-height:1.8;">
+        <b>交班人：</b>小王 &nbsp;&nbsp;
+        <b>接班人：</b>（待签） &nbsp;&nbsp;
+        <b>时间：</b>2026-06-14 18:00
+      </p>
+      <p style="font-size:13px; margin-top:8px;"><b>✅ 本班完成：</b></p>
+      <ul style="font-size:13px; margin-left:20px; line-height:1.8;">
+        <li>ERR-003：从进行中 → 含缺口已评估，EV-001确认，GAP-001评估，复核签字</li>
+        <li>ERR-002：从进行中 → 极端值待确认，差EV-002</li>
+        <li>参数日志PCH-005更新：标定误差修正</li>
+        <li>照片归档：ERR-003全部完成</li>
+      </ul>
+      <p style="font-size:13px; margin-top:8px;"><b>🚩 下一班优先：</b></p>
+      <ul style="font-size:13px; margin-left:20px; line-height:1.8; color:#c62828;">
+        <li>最急：催小林确认ERR-002的EV-002</li>
+        <li>次急：ERR-004的DAQ数据恢复</li>
+        <li>可缓：ERR-003的GAP-001补测</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 第2页：照片归档 -->
+  <div class="page" id="page-photos">
+    <h2 style="font-size:20px; margin-bottom:16px;">📷 现场照片归档</h2>
+
+    <div class="photo-filter">
+      <button class="filter-btn active" data-filter="all">全部照片 (29)</button>
+      <button class="filter-btn" data-filter="org">原始照片 (12)</button>
+      <button class="filter-btn" data-filter="note">补备注照片 (12)</button>
+      <button class="filter-btn" data-filter="old">旧版本截图 (5)</button>
+    </div>
+
+    <div class="card">
+      <div class="photo-grid" id="photoGrid">
+        <div class="loading">加载中...</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2>📁 归档规则速览</h2>
+      <ul style="font-size:13px; line-height:2; margin-left:20px;">
+        <li><b>原始照片</b>：相机直接导出，一个像素都不许改</li>
+        <li><b>补备注照片</b>：和原始照片编号严格一一对应，不允许加标注</li>
+        <li><b>旧版本截图</b>：保留每一步的分析过程，不许只留最终版</li>
+        <li><b>编号规则</b>：IMG_日期_序号_类别.svg</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 第3页：报告查看 -->
+  <div class="page" id="page-reports">
+    <h2 style="font-size:20px; margin-bottom:16px;">📄 误差归因报告</h2>
+
+    <div class="report-selector">
+      <label>选择报告：</label>
+      <select id="reportSelect" onchange="loadReport()">
+        <option value="ERR-20260614-003">ERR-20260614-003（定稿 R-v1.0）</option>
+        <option value="ERR-20260614-003-v0.3">ERR-20260614-003（历史 R-v0.3 新增缺口）</option>
+        <option value="ERR-20260614-003-v0.2">ERR-20260614-003（历史 R-v0.2 修正标定）</option>
+        <option value="ERR-20260614-003-v0.1">ERR-20260614-003（历史 R-v0.1 初稿有错误）</option>
+      </select>
+      <span id="reportMeta" style="font-size:12px; color:#888;"></span>
+    </div>
+
+    <div class="report-content" id="reportContent">
+      <div class="loading">加载报告中...</div>
+    </div>
+  </div>
+
+  <!-- 第4页：交接验证 -->
+  <div class="page" id="page-handoff">
+    <h2 style="font-size:20px; margin-bottom:16px;">✅ 交接验证（小林老师流程）</h2>
+
+    <div class="handoff-tabs">
+      <div class="handoff-step active" data-step="1" onclick="switchHandoffStep(1)">
+        <div class="num">1</div>
+        <div class="title">准备</div>
+        <div class="desc">打开项目资料就绪</div>
+      </div>
+      <div class="handoff-step" data-step="2" onclick="switchHandoffStep(2)">
+        <div class="num">2</div>
+        <div class="title">第一关</div>
+        <div class="desc">照片找原始说法</div>
+      </div>
+      <div class="handoff-step" data-step="3" onclick="switchHandoffStep(3)">
+        <div class="num">3</div>
+        <div class="title">第二关</div>
+        <div class="desc">报告讲清结果</div>
+      </div>
+      <div class="handoff-step" data-step="4" onclick="switchHandoffStep(4)">
+        <div class="num">4</div>
+        <div class="title">第三关</div>
+        <div class="desc">交叉验证一致</div>
+      </div>
+      <div class="handoff-step" data-step="5" onclick="switchHandoffStep(5)">
+        <div class="num">5</div>
+        <div class="title">结论</div>
+        <div class="desc">通过/整改</div>
+      </div>
+    </div>
+
+    <div class="handoff-content" id="handoffContent">
+      <!-- 动态加载 -->
+    </div>
+  </div>
+
+</div>
+
+<!-- 灯箱 -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <span class="close">&times;</span>
+  <img id="lightboxImg" src="" alt="">
+  <div class="caption" id="lightboxCaption"></div>
+</div>
+
+<script>
+// ========== Tab切换 ==========
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('page-' + tab.dataset.page).classList.add('active');
+    
+    if (tab.dataset.page === 'photos' && !window.photosLoaded) {
+      loadPhotos();
+    }
+    if (tab.dataset.page === 'reports' && !window.reportLoaded) {
+      loadReport();
+    }
+    if (tab.dataset.page === 'handoff' && !window.handoffLoaded) {
+      loadHandoff();
+    }
+  });
+});
+
+// ========== 照片浏览 ==========
+const photoData = {
+  org: [
+    { file: 'IMG_20260614_001_ORG.svg', name: '001 标定物全景', desc: '标准钢直尺 1.000m', type: 'org' },
+    { file: 'IMG_20260614_002_ORG.svg', name: '002 风洞试验段全景', desc: '烟线发烟中', type: 'org' },
+    { file: 'IMG_20260614_003_ORG.svg', name: '003 仪器读数', desc: '皮托管+温湿度+DAQ', type: 'org' },
+    { file: 'IMG_20260614_004_ORG.svg', name: '004 烟线特写 y=5mm', desc: '近壁面', type: 'org' },
+    { file: 'IMG_20260614_005_ORG.svg', name: '005 烟线特写 y=10mm', desc: '边界层内层', type: 'org' },
+    { file: 'IMG_20260614_006_ORG.svg', name: '006 烟线特写 y=20mm', desc: '边界层中层', type: 'org' },
+    { file: 'IMG_20260614_007_ORG.svg', name: '007 烟线特写 y=40mm', desc: '边界层外缘', type: 'org' },
+    { file: 'IMG_20260614_008_ORG.svg', name: '008 烟线特写 y=60mm', desc: '⚠️ 异常点 EV-001', type: 'org' },
+    { file: 'IMG_20260614_009_ORG.svg', name: '009 烟线特写 y=80mm', desc: '自由流区', type: 'org' },
+    { file: 'IMG_20260614_010_ORG.svg', name: '010 烟线特写 y=100mm', desc: '自由流核心区', type: 'org' },
+    { file: 'IMG_20260614_011_ORG.svg', name: '011 失效帧 y=30mm', desc: '❌ GAP-001 对焦失败', type: 'org' },
+    { file: 'IMG_20260614_012_ORG.svg', name: '012 DAQ采集界面', desc: '数据采集系统', type: 'org' },
+  ],
+  note: [
+    { file: 'IMG_20260614_001_NOTE.svg', name: '001 标定物（补备注）', desc: '标注：此张为标定基准', type: 'note' },
+    { file: 'IMG_20260614_002_NOTE.svg', name: '002 全景（补备注）', desc: '标注：Run07 12.5m/s', type: 'note' },
+    { file: 'IMG_20260614_003_NOTE.svg', name: '003 仪器（补备注）', desc: '标注：读数正常', type: 'note' },
+    { file: 'IMG_20260614_004_NOTE.svg', name: '004 y=5mm（补备注）', desc: '标注：数据可靠', type: 'note' },
+    { file: 'IMG_20260614_005_NOTE.svg', name: '005 y=10mm（补备注）', desc: '标注：梯度明显', type: 'note' },
+    { file: 'IMG_20260614_006_NOTE.svg', name: '006 y=20mm（补备注）', desc: '标注：注意扩散', type: 'note' },
+    { file: 'IMG_20260614_007_NOTE.svg', name: '007 y=40mm（补备注）', desc: '标注：过渡区', type: 'note' },
+    { file: 'IMG_20260614_008_NOTE.svg', name: '008 y=60mm（补备注）', desc: '🔴 标注：EV-001待确认', type: 'note' },
+    { file: 'IMG_20260614_009_NOTE.svg', name: '009 y=80mm（补备注）', desc: '标注：自由流平稳', type: 'note' },
+    { file: 'IMG_20260614_010_NOTE.svg', name: '010 y=100mm（补备注）', desc: '标注：扰动最小', type: 'note' },
+    { file: 'IMG_20260614_011_NOTE.svg', name: '011 失效帧（补备注）', desc: '🔴 标注：此帧作废', type: 'note' },
+    { file: 'IMG_20260614_012_NOTE.svg', name: '012 DAQ（补备注）', desc: '标注：参数确认 P-v1.0', type: 'note' },
+  ],
+  old: [
+    { file: 'OLD_001_初版Excel计算_v0.1.svg', name: 'OLD-001 初版Excel', desc: 'v0.1 标定公式写反了', type: 'old' },
+    { file: 'OLD_002_Matlab边界层图_v0.2.svg', name: 'OLD-002 Matlab边界层图', desc: 'v0.2 修正标定错误', type: 'old' },
+    { file: 'OLD_003_误差分配饼图_v0.3.svg', name: 'OLD-003 误差分配饼图', desc: 'v0.3 新增缺口分析', type: 'old' },
+    { file: 'OLD_004_邮件讨论_EV001.svg', name: 'OLD-004 邮件讨论', desc: 'EV-001确认过程', type: 'old' },
+    { file: 'OLD_005_进度看板草稿.svg', name: 'OLD-005 进度看板草稿', desc: '早期Excel看板草稿', type: 'old' },
+  ]
+};
+
+function getPhotoPath(photo) {
+  const base = '01现场照片归档';
+  if (photo.type === 'org') return `${base}/原始照片/${photo.file}`;
+  if (photo.type === 'note') return `${base}/补备注照片/${photo.file}`;
+  if (photo.type === 'old') return `${base}/旧版本截图/${photo.file}`;
+  return '';
+}
+
+function loadPhotos() {
+  const filter = document.querySelector('.filter-btn.active').dataset.filter;
+  const grid = document.getElementById('photoGrid');
+  
+  let photos = [];
+  if (filter === 'all') {
+    // 按顺序排列：原始+备注配对
+    for (let i = 0; i < photoData.org.length; i++) {
+      photos.push(photoData.org[i]);
+      photos.push(photoData.note[i]);
+    }
+    photos = photos.concat(photoData.old);
+  } else {
+    photos = photoData[filter];
+  }
+  
+  grid.innerHTML = photos.map(p => `
+    <div class="photo-card" onclick="openLightbox('${getPhotoPath(p)}', '${p.name} — ${p.desc}')">
+      <img src="${getPhotoPath(p)}" alt="${p.name}" loading="lazy">
+      <div class="info">
+        <div class="name">${p.name}</div>
+        <div class="desc">${p.desc}</div>
+      </div>
+    </div>
+  `).join('');
+  
+  window.photosLoaded = true;
+}
+
+// 筛选按钮
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadPhotos();
+  });
+});
+
+// 灯箱
+function openLightbox(src, caption) {
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightboxCaption').textContent = caption;
+  document.getElementById('lightbox').classList.add('show');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('show');
+}
+
+// ========== 报告查看 ==========
+const reportFiles = {
+  'ERR-20260614-003': {
+    file: '02历史版本/处理过程/ERR-20260614-003_R-v1.0_定稿.md',
+    meta: 'R-v1.0 · 2026-06-14 · 已复核 · 含EV-001+GAP-001',
+  },
+  'ERR-20260614-003-v0.3': {
+    file: '02历史版本/处理过程/ERR-20260614-003_R-v0.3_新增缺口分析.md',
+    meta: 'R-v0.3 · 2026-06-14 16:20 · 新增缺口分析，EV-001待确认',
+  },
+  'ERR-20260614-003-v0.2': {
+    file: '02历史版本/处理过程/ERR-20260614-003_R-v0.2_修正标定待确认异常.md',
+    meta: 'R-v0.2 · 2026-06-14 14:05 · 修正标定错误，异常点待确认',
+  },
+  'ERR-20260614-003-v0.1': {
+    file: '02历史版本/处理过程/ERR-20260614-003_R-v0.1_初稿有错误.md',
+    meta: 'R-v0.1 · 2026-06-14 10:23 · 初稿，标定公式写反了',
+  },
+};
+
+function loadReport() {
+  const key = document.getElementById('reportSelect').value;
+  const info = reportFiles[key];
+  document.getElementById('reportMeta').textContent = info.meta;
+  
+  fetch(info.file)
+    .then(r => r.text())
+    .then(text => {
+      document.getElementById('reportContent').innerHTML = marked.parse(text);
+      window.reportLoaded = true;
+    })
+    .catch(err => {
+      document.getElementById('reportContent').innerHTML =
+        '<p style="color:#c62828;">加载失败：' + err.message + '</p>';
+    });
+}
+
+function switchToReport(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelector('.tab[data-page="reports"]').classList.add('active');
+  document.getElementById('page-reports').classList.add('active');
+  
+  // 选默认那份
+  if (id === 'ERR-20260614-003') {
+    document.getElementById('reportSelect').value = 'ERR-20260614-003';
+  }
+  loadReport();
+}
+
+// ========== 交接验证 ==========
+const handoffSteps = {
+  1: {
+    title: '第0步：交接准备',
+    content: `
+      <h3>🎯 交接准备检查</h3>
+      <p style="font-size:14px; margin-bottom:16px;">
+        在开始验证之前，请确认以下资料都已准备好。这一步确保后面三关的验证对象是同一份报告。
+      </p>
+      
+      <div class="checklist-item">
+        <input type="checkbox" id="h1-1">
+        <div class="check-text">
+          <h4>电脑上打开"风洞烟线误差归因/"项目目录</h4>
+          <p>确认所有子目录都在：01现场照片归档、02历史版本、03报告模板... 等8个目录齐全</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h1-2">
+        <div class="check-text">
+          <h4>选定一份已完成报告（如ERR-20260614-003）</h4>
+          <p>状态应为🟢已完成或⚠️含缺口但已评估</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h1-3">
+        <div class="check-text">
+          <h4>对应现场照片已归档</h4>
+          <p>原始照片、补备注照片、旧版本截图三类齐全</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h1-4">
+        <div class="check-text">
+          <h4>状态追踪看板已更新</h4>
+          <p>报告状态、缺口/极端值状态都已登记</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h1-5">
+        <div class="check-text">
+          <h4>复核清单已签字</h4>
+          <p>（如果已完成复核的话</p>
+        </div>
+      </div>
+      
+      <p style="margin-top:20px; font-size:13px; color:#666;">
+        💡 <b>提示</b>：你可以用 ERR-20260614-003 作为验证对象，它有完整的EV-001极端值和GAP-001缺口，最适合练手。
+      </p>
+    `
+  },
+  2: {
+    title: '第一关：从现场照片找到原始说法',
+    content: `
+      <h3>📷 验证：只看照片，不看报告</h3>
+      <p style="font-size:14px; margin-bottom:16px;">
+        假装你是刚拿到现场照片的新同事，只看「照片归档目录，回答以下问题。
+      </p>
+      
+      <div class="checklist-item">
+        <input type="checkbox" id="h2-1" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>照片编号是否连续？（#001到#012，无跳号）</h4>
+          <p>去"照片归档"页看原始照片目录，数一数是不是12张连续编号</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h2-2" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>能否看出实验流程顺序？</h4>
+          <p>标定→全景→仪器→各测点烟线→失效帧→采集界面，能顺下来吗</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h2-3" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>补备注照片和原始照片编号一一对应吗？</h4>
+          <p>原始有008，补备注也有008，对得上吗</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h2-4" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>能不能从补备注里看到当时标注的疑问点？</h4>
+          <p>比如#008上有"待确认EV-001"，#011上有"此帧作废"等</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h2-5" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>旧版本截图里能看到之前的分析过程吗？</h4>
+          <p>比如Excel初版、Matlab图、邮件讨论、看板草稿，至少3张以上</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h2-6" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>随机抽3张：#003、#008、#011，报告中能找到引用吗？</h4>
+          <p>切换到"报告查看"页，搜索这些照片编号在报告里出现过吗</p>
+        </div>
+      </div>
+      
+      <div class="result-box" id="h2-result" style="display:none;">
+        <h4>📊 第一关结果</h4>
+        <p>已完成 <span id="h2-count">0</span>/6 项 &nbsp;→&nbsp;
+          <span id="h2-status">继续勾选查看结果</span></p>
+      </div>
+      
+      <p style="margin-top:16px; font-size:12px; color:#888;">
+        💡 通关标准：不通过项 ≤ 2 个。超过的话，照片归档环节要加强。
+      </p>
+    `
+  },
+  3: {
+    title: '第二关：从Markdown报告讲清处理结果',
+    content: `
+      <h3>📄 验证：只看报告，不看照片</h3>
+      <p style="font-size:14px; margin-bottom:16px;">
+        切换到"报告查看"页，选ERR-20260614-003定稿版，假装给不懂风洞的同事讲清楚。
+      </p>
+      
+      <div class="checklist-item">
+        <input type="checkbox" id="h3-1" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>30秒速答：总误差是多少？</h4>
+          <p>看第1页速览卡，不含极端值8.7%，含极端值12.8%</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h3-2" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>最大的误差来源是哪一项？</h4>
+          <p>边界层测量不确定度，占45.8%</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h3-3" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>有几个极端值？确认完了吗？</h4>
+          <p>1个（EV-001），已确认是复合型异常</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h3-4" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>参数版本和公式版本号是多少？</h4>
+          <p>参数P-v1.0，公式F-v1.0</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h3-5" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>采样缺口有没有？影响多大？</h4>
+          <p>GAP-001，y=30mm，影响±1.1个百分点</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h3-6" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>每个误差项都有公式+代入+过程+结果吗？</h4>
+          <p>看§三，每个分项是不是都写了四要素</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h3-7" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>极端值EV-001能给外行讲明白吗？</h4>
+          <p>为什么极端、原因是什么、证据在哪、影响多大</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h3-8" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>有没有被平均掉的风险？（两套结果都有吗）</h4>
+          <p>含极端值/不含极端值，两套数字都在</p>
+        </div>
+      </div>
+      
+      <div class="result-box" id="h3-result" style="display:none;">
+        <h4>📊 第二关结果</h4>
+        <p>已完成 <span id="h3-count">0</span>/8 项 &nbsp;→&nbsp;
+          <span id="h3-status">继续勾选查看结果</span></p>
+      </div>
+      
+      <p style="margin-top:16px; font-size:12px; color:#888;">
+        💡 通关标准：速答5题全对 + 过程3项全部清楚。任何一点含糊都要重写。
+      </p>
+    `
+  },
+  4: {
+    title: '第三关：照片说法 vs 报告说法 交叉验证',
+    content: `
+      <h3>🔍 验证：照片和报告放在一起对照</h3>
+      <p style="font-size:14px; margin-bottom:16px;">
+        模拟有人质疑："报告上这么写，照片上真的有吗？逐条对照。
+      </p>
+      
+      <div class="checklist-item">
+        <input type="checkbox" id="h4-1" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>标定物长度：报告说1.000m，照片#001上真的有吗？</h4>
+          <p>报告§2.1 vs 照片#001 标准钢直尺</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h4-2" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>风速12.47m/s：报告说的，照片#003皮托管读数对得上吗？</h4>
+          <p>报告§2.1 vs 照片#003 仪器读数</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h4-3" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>EV-001怀疑原因：报告说的和补备注照片#008上的标注一致吗？</h4>
+          <p>报告§四EV-001 vs 补备注照片#008</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h4-4" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>GAP-001位置：报告说y=30mm缺，原始照片#011确实是失效帧吗？</h4>
+          <p>报告§六GAP-001 vs 照片#011 对焦失败</p>
+        </div>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" id="h4-5" onchange="updateHandoffResult()">
+        <div class="check-text">
+          <h4>历史版本：报告§五列的版本演变，旧版本截图里能对上吗？</h4>
+          <p>v0.1标定错误→v0.2修正→v0.3缺口→v1.0定稿，和OLD_001~005对得上</p>
+        </div>
+      </div>
+      
+      <div class="result-box" id="h4-result" style="display:none;">
+        <h4>📊 第三关结果</h4>
+        <p>已完成 <span id="h4-count">0</span>/5 项 &nbsp;→&nbsp;
+          <span id="h4-status">继续勾选查看结果</span></p>
+      </div>
+      
+      <p style="margin-top:16px; font-size:12px; color:#888;">
+        💡 通关标准：全部一致。任何一条不一致 → 改报告或补照片说明。
+      </p>
+    `
+  },
+  5: {
+    title: '最终判定：交接是否通过？',
+    content: `
+      <h3>✅ 三关汇总结果</h3>
+      <p style="font-size:14px; margin-bottom:20px;">
+        根据前面三关的勾选结果，自动计算总体结论。
+      </p>
+      
+      <div style="background:#f5f5f5; border-radius:8px; padding:20px; margin-bottom:20px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+          <span>第一关（照片找原始说法）</span>
+          <span id="sum1">0/6 项</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+          <span>第二关（报告讲清结果）</span>
+          <span id="sum2">0/8 项</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+          <span>第三关（交叉验证一致）</span>
+          <span id="sum3">0/5 项</span>
+        </div>
+        <div style="border-top: 2px solid #ddd; padding-top:12px; display:flex; justify-content:space-between; font-weight:font-weight:600;">
+          <span>总计</span>
+          <span id="sumTotal">0/19 项</span>
+        </div>
+      </div>
+      
+      <div class="result-box" id="finalResult">
+        <h4>📝 总体结论</h4>
+        <p>请完成前面三关的勾选后查看结果</p>
+      </div>
+      
+      <div style="margin-top:20px;">
+        <h4 style="font-size:14px; margin-bottom:12px;">📋 整改项（如未通过时填写）</h4>
+        <textarea id="fixList" style="width:100%; height:100px; padding:8px; border:1px solid #ddd; border-radius:4px; font-size:13px;" placeholder="如果有哪些问题，怎么改，什么时候改完..."></textarea>
+      </div>
+      
+      <div style="margin-top:16px; display:flex; gap:12px;">
+        <button onclick="resetHandoff()" style="padding:8px 20px; background:#1a237e; color:white; border:none; border-radius:4px; cursor:pointer;">🔄 重新开始验证</button>
+        <button onclick="exportHandoff()" style="padding:8px 20px; background:#2e7d32; color:white; border:none; border-radius:4px; cursor:pointer;">📥 导出验证结果</button>
+      </div>
+    `
+  }
+};
+
+function switchHandoffStep(n) {
+  document.querySelectorAll('.handoff-step').forEach(s => s.classList.remove('active'));
+  document.querySelector('.handoff-step[data-step="' + n + '"]').classList.add('active');
+  document.getElementById('handoffContent').innerHTML = handoffSteps[n].title + ' — ' + handoffSteps[n].content;
+  updateHandoffResult();
+}
+
+function loadHandoff() {
+  switchHandoffStep(1);
+  window.handoffLoaded = true;
+}
+
+function updateHandoffResult() {
+  // 统计各关
+  const countChecked = (prefix, n) => {
+    let count = 0;
+    for (let i = 1; i <= n; i++) {
+      const el = document.getElementById(prefix + i);
+      if (el && el.checked) count++;
+    }
+    return count;
+  };
+  
+  const c2 = countChecked('h2-', 6);
+  const c3 = countChecked('h3-', 8);
+  const c4 = countChecked('h4-', 5);
+  
+  // 更新各关结果
+  if (document.getElementById('h2-count')) {
+    document.getElementById('h2-count').textContent = c2;
+    document.getElementById('h2-status').textContent = c2 >= 4 ? '✅ 通过' : '⚠️ 还需努力';
+    document.getElementById('h2-result').style.display = c2 > 0 ? 'block' : 'none';
+  }
+  if (document.getElementById('h3-count')) {
+    document.getElementById('h3-count').textContent = c3;
+    document.getElementById('h3-status').textContent = c3 >= 6 ? '✅ 通过' : '⚠️ 还需努力';
+    document.getElementById('h3-result').style.display = c3 > 0 ? 'block' : 'none';
+  }
+  if (document.getElementById('h4-count')) {
+    document.getElementById('h4-count').textContent = c4;
+    document.getElementById('h4-status').textContent = c4 >= 4 ? '✅ 通过' : '⚠️ 还需努力';
+    document.getElementById('h4-result').style.display = c4 > 0 ? 'block' : 'none';
+  }
+  
+  // 第5关汇总
+  const total = c2 + c3 + c4;
+  if (document.getElementById('sum1')) {
+    document.getElementById('sum1').textContent = c2 + '/6 项' + (c2 >= 4 ? ' ✅' : ' ❌');
+    document.getElementById('sum2').textContent = c3 + '/8 项' + (c3 >= 6 ? ' ✅' : ' ❌');
+    document.getElementById('sum3').textContent = c4 + '/5 项' + (c4 >= 4 ? ' ✅' : ' ❌');
+    document.getElementById('sumTotal').textContent = total + '/19 项';
+    
+    const pass1 = c2 >= 4;
+    const pass2 = c3 >= 6;
+    const pass3 = c4 >= 4;
+    const allPass = pass1 && pass2 && pass3;
+    
+    const finalBox = document.getElementById('finalResult');
+    if (finalBox) {
+      if (total === 0) {
+        finalBox.innerHTML = '<h4>📝 总体结论</h4><p>请完成前面三关的勾选后查看结果</p>';
+      } else if (allPass) {
+        finalBox.style.background = '#e8f5e9';
+        finalBox.style.borderColor = '#a5d6a7';
+        finalBox.innerHTML = '<h4>🎉 交接通过！</h4><p>三关全部通过！这份报告可以归档，后续任何人接手都能复原过程。</p>';
+      } else {
+        finalBox.style.background = '#fff3e0';
+        finalBox.style.borderColor = '#ffcc80';
+        finalBox.innerHTML = '<h4>🟡 整改后再试</h4><p>还有 ' + (19 - total) + ' 项未通过，需要整改。整改项写在下面。</p>';
+      }
+    }
+  }
+}
+
+function resetHandoff() {
+  document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  switchHandoffStep(1);
+}
+
+function exportHandoff() {
+  alert('验证结果已导出（模拟）：交接验证报告_ERR-003_20260614.pdf');
+}
+
+// 初始化：默认加载照片
+window.addEventListener('DOMContentLoaded', () => {
+  // 先加载默认页面不用主动加载，切到对应页再加载
+});
+
+// 键盘ESC关灯箱
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
+
+</body>
+</html>

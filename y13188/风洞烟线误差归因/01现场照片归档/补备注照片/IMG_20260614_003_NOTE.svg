@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" style="background:#2a2a2a;">
+<style>
+  .label { font-family: monospace; font-size: 14px; fill: #aaa; }
+  .title { font-family: sans-serif; font-size: 18px; fill: #fff; font-weight: bold; }
+  .timestamp { font-family: monospace; font-size: 12px; fill: #6f6; }
+  .grid { stroke: #3a3a3a; stroke-width: 1; }
+</style>
+<rect x="50" y="80" width="300" height="200" fill="#1a1a1a" stroke="#555"/><text x="200" y="115" class="label" text-anchor="middle">皮托管 - 来流风速</text><text x="200" y="180" style="font-size:48px; font-family:monospace; fill:#6f6;">12.47</text><text x="200" y="210" class="label" text-anchor="middle">m/s  (采样中...)</text><rect x="400" y="80" width="350" height="200" fill="#1a1a1a" stroke="#555"/><text x="575" y="115" class="label" text-anchor="middle">环境监测仪</text><text x="460" y="160" class="label">温度: 23.4°C</text><text x="460" y="190" class="label">湿度: 45.2% RH</text><text x="460" y="220" class="label">气压: 101.32 kPa</text><text x="460" y="250" class="label">空气密度: 1.201 kg/m³</text><rect x="50" y="320" width="700" height="220" fill="#1a1a1a" stroke="#555"/><text x="400" y="355" class="label" text-anchor="middle">数据采集系统 DAQ - 通道状态</text><rect x="80" y="375" width="10" height="10" fill="#6f6"/><text x="100" y="385" class="label">CH1 热线风速  OK</text><rect x="80" y="400" width="10" height="10" fill="#6f6"/><text x="100" y="410" class="label">CH2 静压  OK</text><rect x="80" y="425" width="10" height="10" fill="#6f6"/><text x="100" y="435" class="label">CH3 总压  OK</text><rect x="80" y="450" width="10" height="10" fill="#6f6"/><text x="100" y="460" class="label">CH4 温度  OK</text><rect x="80" y="475" width="10" height="10" fill="#6f6"/><text x="100" y="485" class="label">CH5 烟线触发  OK</text><rect x="80" y="500" width="10" height="10" fill="#6f6"/><text x="100" y="510" class="label">CH6 快门同步  OK</text>
+<text x="20" y="30" class="title">【003】仪器读数 - 皮托管+温湿度+DAQ</text>
+<text x="20" y="55" class="timestamp">2026-06-14 14:14:33</text>
+<text x="20" y="580" class="timestamp">IMG_20260614_003_ORG.jpg  |  WindTunnel-A / Run07</text>
+
+  <!-- 补备注 - 后添加，非原始照片内容 -->
+  <g id="handwritten-note" style="opacity:0.9;">
+    <!-- 便签纸 -->
+    <rect x="500" y="70" width="240" height="80" fill="#fff9cc" stroke="#cc6" stroke-width="2" transform="rotate(-2, 620, 110)"/>
+    <text x="515" y="95" style="font-family:cursive; font-size:14px; fill:#c00; transform:rotate(-2, 620, 110);">📝 补注 2026.06.14</text>
+    <text x="515" y="120" style="font-family:cursive; font-size:13px; fill:#333; transform:rotate(-2, 620, 110);">仪器读数正常，开始采集前确认</text>
+    <text x="515" y="140" style="font-family:cursive; font-size:13px; fill:#333; transform:rotate(-2, 620, 110);"></text>
+  </g>
+  <!-- 红色印章 "补" -->
+  <circle cx="730" cy="70" r="20" fill="none" stroke="#33ff33" stroke-width="3"/>
+  <text x="730" y="77" style="font-size:22px; font-weight:bold; fill:#33ff33; text-anchor:middle;">补</text>
+  <!-- 编号关联 -->
+  <text x="730" y="105" style="font-size:10px; fill:#33ff33; text-anchor:middle;">→ #003</text>
+</svg>
