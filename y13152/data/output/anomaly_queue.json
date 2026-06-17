@@ -1,0 +1,39 @@
+{
+  "generatedAt": "2026-06-17T06:46:27.564Z",
+  "status": "pending_review",
+  "displayStatus": "待负责人确认",
+  "totalItems": 1,
+  "summary": {
+    "anomalies": 0,
+    "samplingGaps": 1
+  },
+  "items": [
+    {
+      "type": "sampling_gap",
+      "status": "suspended",
+      "displayStatus": "已挂起-待补测确认",
+      "recordId": "REC-20260612-002",
+      "sourceFile": "gap_record_REC-20260612-002.json",
+      "venue": "训练馆A区-3号场地",
+      "recordedAt": "2026-06-12T15:10:00+08:00",
+      "missingBands": [
+        "rt60_500hz",
+        "rt60_2khz",
+        "c50_500hz",
+        "c50_2khz",
+        "d50_500hz",
+        "d50_2khz",
+        "clarity_500hz",
+        "definition"
+      ],
+      "remark": "更换高频单元后首次复测，中间频段数据缺失，待补测。",
+      "source": {
+        "type": "manual",
+        "logFile": "measurement_log_20260612_1510.xlsx",
+        "sheet": "Sheet1",
+        "rows": "B12:B28",
+        "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-06-17T06:45:56.992Z",
+  "materialType": "acoustic_reverb_playback_package",
+  "packageVersion": "1.0",
+  "contents": [
+    {
+      "type": "normal_record",
+      "file": "normal_record_REC-20260612-001.json",
+      "recordId": "REC-20260612-001"
+    },
+    {
+      "type": "repair_note",
+      "file": "repair_note_REP-20260611-003.json",
+      "noteId": "REP-20260611-003"
+    },
+    {
+      "type": "gap_record",
+      "file": "gap_record_REC-20260612-002.json",
+      "recordId": "REC-20260612-002"
+    },
+    {
+      "type": "supplementary_note",
+      "file": "supplementary_note_SUP-20260612-001.json",
+      "noteId": "SUP-20260612-001"
+    }
+  ],
+  "responsible": "老唐",
+  "description": "训练馆A区3号场地混响参数回放材料包（含维修后复测缺口场景）"
+}

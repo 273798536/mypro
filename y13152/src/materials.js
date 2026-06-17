@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const chalk = require('chalk');
+const chalk = require('./_colors');
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) {

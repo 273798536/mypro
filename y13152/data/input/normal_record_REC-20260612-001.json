@@ -1,0 +1,37 @@
+{
+  "recordId": "REC-20260612-001",
+  "version": "v2.3.1",
+  "recordedAt": "2026-06-12T09:30:00+08:00",
+  "recordedBy": "老唐",
+  "venue": "训练馆A区-3号场地",
+  "equipment": {
+    "microphone": "Shure SM58 #A023",
+    "speaker": "JBL EON615 #S117",
+    "analyzer": "NTi Audio XL2 #AN042"
+  },
+  "parameters": {
+    "rt60_125hz": 1.42,
+    "rt60_250hz": 1.28,
+    "rt60_500hz": 1.15,
+    "rt60_1khz": 1.08,
+    "rt60_2khz": 0.97,
+    "rt60_4khz": 0.89,
+    "rt60_8khz": 0.76,
+    "c50_500hz": 3.2,
+    "c50_1khz": 4.5,
+    "c50_2khz": 5.8,
+    "d50_500hz": 0.56,
+    "d50_1khz": 0.63,
+    "d50_2khz": 0.71,
+    "clarity_500hz": 2.1,
+    "clarity_1khz": 3.8,
+    "definition": 0.68
+  },
+  "source": {
+    "type": "manual",
+    "logFile": "measurement_log_20260612_0930.xlsx",
+    "sheet": "Sheet1",
+    "rows": "B12:B28"
+  },
+  "remark": "正常训练前校准，室温24℃，湿度58%"
+}

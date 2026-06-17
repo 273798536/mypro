@@ -1,0 +1,49 @@
+{
+  "recordId": "REC-20260612-002",
+  "version": "v2.3.2-pending",
+  "recordedAt": "2026-06-12T15:10:00+08:00",
+  "recordedBy": "老唐",
+  "venue": "训练馆A区-3号场地",
+  "equipment": {
+    "microphone": "Shure SM58 #A023",
+    "speaker": "JBL EON615 #S117 (已换高频单元)",
+    "analyzer": "NTi Audio XL2 #AN042"
+  },
+  "parameters": {
+    "rt60_125hz": 1.45,
+    "rt60_250hz": 1.31,
+    "rt60_500hz": null,
+    "rt60_1khz": 1.12,
+    "rt60_2khz": null,
+    "rt60_4khz": 0.91,
+    "rt60_8khz": 0.78,
+    "c50_500hz": null,
+    "c50_1khz": 4.7,
+    "c50_2khz": null,
+    "d50_500hz": null,
+    "d50_1khz": 0.64,
+    "d50_2khz": null,
+    "clarity_500hz": null,
+    "clarity_1khz": 4,
+    "definition": null
+  },
+  "source": {
+    "type": "manual",
+    "logFile": "measurement_log_20260612_1510.xlsx",
+    "sheet": "Sheet1",
+    "rows": "B12:B28",
+    "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+  },
+  "remark": "更换高频单元后首次复测，中间频段数据缺失，待补测。",
+  "hasGap": true,
+  "gapBands": [
+    "rt60_500hz",
+    "rt60_2khz",
+    "c50_500hz",
+    "c50_2khz",
+    "d50_500hz",
+    "d50_2khz",
+    "clarity_500hz",
+    "definition"
+  ]
+}

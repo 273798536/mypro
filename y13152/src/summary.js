@@ -1,4 +1,4 @@
-const chalk = require('chalk');
+const chalk = require('./_colors');
 
 function printSummary(result) {
   console.log(chalk.cyan('\n---------- 终端摘要 ----------\n'));

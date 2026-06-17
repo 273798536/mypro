@@ -1,0 +1,667 @@
+{
+  "generatedAt": "2026-06-17T06:46:27.563Z",
+  "materialsSummary": {
+    "normalRecords": 1,
+    "gapRecords": 1,
+    "repairNotes": 1,
+    "supplementaryNotes": 1
+  },
+  "records": [
+    {
+      "recordId": "REC-20260612-001",
+      "version": "v2.3.1",
+      "venue": "训练馆A区-3号场地",
+      "recordedAt": "2026-06-12T09:30:00+08:00",
+      "recordedBy": "老唐",
+      "hasGap": false,
+      "traceability": [
+        {
+          "recordId": "REC-20260612-001",
+          "version": "v2.3.1",
+          "recordedBy": "老唐",
+          "recordedAt": "2026-06-12T09:30:00+08:00",
+          "venue": "训练馆A区-3号场地"
+        },
+        {
+          "equipment": {
+            "microphone": "Shure SM58 #A023",
+            "speaker": "JBL EON615 #S117",
+            "analyzer": "NTi Audio XL2 #AN042"
+          }
+        },
+        {
+          "dataSource": {
+            "type": "manual",
+            "logFile": "measurement_log_20260612_0930.xlsx",
+            "sheet": "Sheet1",
+            "rows": "B12:B28"
+          }
+        },
+        {
+          "sourceFile": "normal_record_REC-20260612-001.json"
+        }
+      ],
+      "parametersWithTrace": {
+        "rt60_125hz": {
+          "value": 1.42,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "rt60_250hz": {
+          "value": 1.28,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "rt60_500hz": {
+          "value": 1.15,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "rt60_1khz": {
+          "value": 1.08,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "rt60_2khz": {
+          "value": 0.97,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "rt60_4khz": {
+          "value": 0.89,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "rt60_8khz": {
+          "value": 0.76,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "c50_500hz": {
+          "value": 3.2,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "c50_1khz": {
+          "value": 4.5,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "c50_2khz": {
+          "value": 5.8,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "d50_500hz": {
+          "value": 0.56,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "d50_1khz": {
+          "value": 0.63,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "d50_2khz": {
+          "value": 0.71,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "clarity_500hz": {
+          "value": 2.1,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "clarity_1khz": {
+          "value": 3.8,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        },
+        "definition": {
+          "value": 0.68,
+          "trace": {
+            "recordId": "REC-20260612-001",
+            "version": "v2.3.1",
+            "sourceFile": "normal_record_REC-20260612-001.json",
+            "recordedAt": "2026-06-12T09:30:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_0930.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28"
+            }
+          }
+        }
+      }
+    },
+    {
+      "recordId": "REC-20260612-002",
+      "version": "v2.3.2-pending",
+      "venue": "训练馆A区-3号场地",
+      "recordedAt": "2026-06-12T15:10:00+08:00",
+      "recordedBy": "老唐",
+      "hasGap": true,
+      "traceability": [
+        {
+          "recordId": "REC-20260612-002",
+          "version": "v2.3.2-pending",
+          "recordedBy": "老唐",
+          "recordedAt": "2026-06-12T15:10:00+08:00",
+          "venue": "训练馆A区-3号场地"
+        },
+        {
+          "equipment": {
+            "microphone": "Shure SM58 #A023",
+            "speaker": "JBL EON615 #S117 (已换高频单元)",
+            "analyzer": "NTi Audio XL2 #AN042"
+          }
+        },
+        {
+          "dataSource": {
+            "type": "manual",
+            "logFile": "measurement_log_20260612_1510.xlsx",
+            "sheet": "Sheet1",
+            "rows": "B12:B28",
+            "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+          }
+        },
+        {
+          "sourceFile": "gap_record_REC-20260612-002.json"
+        }
+      ],
+      "parametersWithTrace": {
+        "rt60_125hz": {
+          "value": 1.45,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "rt60_250hz": {
+          "value": 1.31,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "rt60_500hz": {
+          "value": null,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "rt60_1khz": {
+          "value": 1.12,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "rt60_2khz": {
+          "value": null,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "rt60_4khz": {
+          "value": 0.91,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "rt60_8khz": {
+          "value": 0.78,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "c50_500hz": {
+          "value": null,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "c50_1khz": {
+          "value": 4.7,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "c50_2khz": {
+          "value": null,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "d50_500hz": {
+          "value": null,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "d50_1khz": {
+          "value": 0.64,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "d50_2khz": {
+          "value": null,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "clarity_500hz": {
+          "value": null,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "clarity_1khz": {
+          "value": 4,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        },
+        "definition": {
+          "value": null,
+          "trace": {
+            "recordId": "REC-20260612-002",
+            "version": "v2.3.2-pending",
+            "sourceFile": "gap_record_REC-20260612-002.json",
+            "recordedAt": "2026-06-12T15:10:00+08:00",
+            "recordedBy": "老唐",
+            "venue": "训练馆A区-3号场地",
+            "dataSource": {
+              "type": "manual",
+              "logFile": "measurement_log_20260612_1510.xlsx",
+              "sheet": "Sheet1",
+              "rows": "B12:B28",
+              "note": "500Hz和2kHz频段测量时分析仪突发告警，数据未能稳定采集"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "repairNotes": [
+    {
+      "noteId": "REP-20260611-003",
+      "venue": "训练馆A区-3号场地",
+      "equipment": "JBL EON615 #S117",
+      "issueType": "高频单元异响",
+      "versionTag": "参数基线变更：更换扬声器单元后需重新校准，原v2.3.0作废",
+      "status": "待次日验证"
+    }
+  ],
+  "supplementaryNotes": [
+    {
+      "noteId": "SUP-20260612-001",
+      "relatedRecords": [
+        "REC-20260612-002",
+        "REP-20260611-003"
+      ],
+      "content": "6月12日下午3点复测3号场地混响参数，中途NTi分析仪500Hz和2kHz频段持续告警，怀疑是新换高频单元与分频器匹配问题。已预约厂家技术支持下周二（6月16日）到场联合调试。此期间3号场地不安排正式训练，仅用于基础发声练习。参数版本暂以v2.3.1为准，但需备注高频单元已更换。",
+      "nextAction": "等待厂家6月16日到场联合调试后重新做完整参数测量"
+    }
+  ]
+}
