@@ -87,6 +87,7 @@ def detect_annotation_conflicts(records: list[dict]) -> list[dict]:
             for idx, r in group:
                 entry = {
                     "source_index": idx,
+                    "record_hash": record_hash(r),
                     "chosen_preview": r.get("chosen", "")[:100],
                     "rejected_preview": r.get("rejected", "")[:100],
                     "human_remark": r.get("human_remark", ""),
@@ -135,6 +136,7 @@ def detect_truncation_conflicts(records: list[dict], max_len: int) -> list[dict]
             conflict = {
                 "conflict_type": "truncation_conflict",
                 "source_index": idx,
+                "record_hash": record_hash(r),
                 "prompt_preview": prompt[:200],
                 "truncated_fields": truncated_fields,
                 "max_len": max_len,
@@ -200,6 +202,7 @@ def cmd_merge(args: argparse.Namespace) -> None:
 
     skip_indices = set(truncation_indices)
     merge_log = []
+    idx_to_rh = {i: record_hash(r) for i, r in enumerate(records)}
 
     if strategy == "majority":
         for ph, conflict_list in annotation_conflict_groups.items():
@@ -229,6 +232,7 @@ def cmd_merge(args: argparse.Namespace) -> None:
                     merge_log.append({
                         "action": "skip_minority_annotation",
                         "source_index": entry["source_index"],
+                        "record_hash": idx_to_rh.get(entry["source_index"], ""),
                         "reason": f"少数标注（{annotation_counter[sig]}票 vs 多数{majority_count}票），保留原人工备注",
                         "human_remark": entry.get("human_remark", ""),
                     })
@@ -247,8 +251,10 @@ def cmd_merge(args: argparse.Namespace) -> None:
     merged = []
     unusable = []
     for idx, r in enumerate(records):
+        rh = record_hash(r)
         if idx in skip_indices:
             r_copy = copy.deepcopy(r)
+            r_copy["record_hash"] = rh
             r_copy["_merge_status"] = "skipped"
             r_copy["_skip_reason"] = "truncation_conflict" if idx in truncation_indices else "annotation_conflict_minority"
             if r.get("human_remark"):
@@ -256,6 +262,7 @@ def cmd_merge(args: argparse.Namespace) -> None:
             unusable.append(r_copy)
         else:
             r_copy = copy.deepcopy(r)
+            r_copy["record_hash"] = rh
             r_copy["_merge_status"] = "kept"
             merged.append(r_copy)
 
@@ -281,11 +288,54 @@ def cmd_replay(args: argparse.Namespace) -> None:
     model_log = load_jsonl(args.log)
     print(f"[INFO] 加载 {len(records)} 条原始记录, {len(conflicts)} 条冲突, {len(model_log)} 条模型日志")
 
-    log_by_record = {}
-    for ml in model_log:
-        rh = ml.get("record_hash") or ml.get("source_index")
-        if rh is not None:
-            log_by_record[rh] = ml
+    idx_to_rh = {i: record_hash(r) for i, r in enumerate(records)}
+
+    log_by_rh = {}
+    log_by_idx = {}
+    invalid_log_entries = []
+    for lineno, ml in enumerate(model_log, 1):
+        rh = ml.get("record_hash")
+        si = ml.get("source_index")
+
+        if rh is None and si is None:
+            invalid_log_entries.append((lineno, "缺少 record_hash 和 source_index，无法建立关联"))
+            continue
+
+        rh_is_valid = isinstance(rh, str) and len(rh) >= 8 and any(c.isalpha() for c in rh)
+        if rh is not None and not rh_is_valid:
+            invalid_log_entries.append(
+                (lineno, f"record_hash={rh!r} 看起来不是合法哈希（应为16位十六进制字符串），若用数字索引请改为 source_index 字段")
+            )
+
+        if rh_is_valid:
+            log_by_rh[str(rh)] = ml
+        if si is not None:
+            log_by_idx[int(si)] = ml
+
+    if invalid_log_entries:
+        print(f"[WARN] 模型日志中有 {len(invalid_log_entries)} 条格式异常：")
+        for lineno, msg in invalid_log_entries:
+            print(f"       - 行{lineno}: {msg}")
+
+    def lookup_log(entry_rh, entry_si):
+        matched_by = None
+        ml = None
+        if entry_rh and entry_rh in log_by_rh:
+            ml = log_by_rh[entry_rh]
+            matched_by = "record_hash"
+        elif entry_si is not None and entry_si in log_by_idx:
+            ml = log_by_idx[entry_si]
+            matched_by = "source_index(fallback)"
+            if ml.get("record_hash") and entry_rh and str(ml.get("record_hash")) != entry_rh:
+                print(
+                    f"[WARN] 通过 source_index={entry_si} 匹配到日志，但日志 record_hash={ml.get('record_hash')} "
+                    f"与冲突记录 record_hash={entry_rh} 不一致，数据可能已错位"
+                )
+        return ml, matched_by
+
+    matched_by_hash = 0
+    matched_by_idx = 0
+    unmatched = 0
 
     updated_conflicts = []
     for c in conflicts:
@@ -293,26 +343,42 @@ def cmd_replay(args: argparse.Namespace) -> None:
 
         if c["conflict_type"] == "annotation_conflict":
             for entry in c_copy.get("records", []):
-                idx = entry.get("source_index")
-                if idx in log_by_record:
-                    ml = log_by_record[idx]
+                entry_rh = entry.get("record_hash")
+                entry_si = entry.get("source_index")
+                ml, matched_by = lookup_log(entry_rh, entry_si)
+                if ml:
                     entry["model_score_chosen"] = ml.get("score_chosen")
                     entry["model_score_rejected"] = ml.get("score_rejected")
                     entry["model_verdict"] = ml.get("verdict", "")
                     entry["log_supplemented"] = True
+                    entry["log_matched_by"] = matched_by
                     if ml.get("human_remark"):
                         entry["human_remark"] = ml["human_remark"]
+                    if matched_by == "record_hash":
+                        matched_by_hash += 1
+                    else:
+                        matched_by_idx += 1
+                else:
+                    unmatched += 1
 
         elif c["conflict_type"] == "truncation_conflict":
-            idx = c.get("source_index")
-            if idx in log_by_record:
-                ml = log_by_record[idx]
+            entry_rh = c_copy.get("record_hash")
+            entry_si = c_copy.get("source_index")
+            ml, matched_by = lookup_log(entry_rh, entry_si)
+            if ml:
                 c_copy["model_score_chosen"] = ml.get("score_chosen")
                 c_copy["model_score_rejected"] = ml.get("score_rejected")
                 c_copy["model_verdict"] = ml.get("verdict", "")
                 c_copy["log_supplemented"] = True
+                c_copy["log_matched_by"] = matched_by
                 if ml.get("human_remark"):
                     c_copy["human_remark"] = ml["human_remark"]
+                if matched_by == "record_hash":
+                    matched_by_hash += 1
+                else:
+                    matched_by_idx += 1
+            else:
+                unmatched += 1
 
         updated_conflicts.append(c_copy)
 
@@ -339,6 +405,12 @@ def cmd_replay(args: argparse.Namespace) -> None:
                     "still_blocked": c.get("annotation_reversed", False) or c.get("critical_info_lost", False),
                     "updated_at": time.strftime("%Y-%m-%dT%H:%M:%S"),
                 }
+
+    print(f"[INFO] 日志匹配统计：record_hash命中 {matched_by_hash} 条，source_index兜底命中 {matched_by_idx} 条，未匹配 {unmatched} 条")
+    if unmatched > 0:
+        print(f"[WARN] 有 {unmatched} 条冲突记录未匹配到任何模型日志，请检查日志文件是否完整")
+    if matched_by_idx > 0 and matched_by_hash == 0:
+        print(f"[WARN] 全部命中都通过 source_index 兜底，强烈建议在模型日志中写入真实 record_hash 以避免数据错位")
 
     output_path = args.output or "replay_result.jsonl"
     save_jsonl(output_path, updated_conflicts)
@@ -478,6 +550,7 @@ def cmd_report(args: argparse.Namespace) -> None:
             unusable_items.append({
                 "type": "标注冲突",
                 "source_index": entry.get("source_index"),
+                "record_hash": entry.get("record_hash", ""),
                 "prompt_preview": c.get("prompt_preview", "")[:80],
                 "remark": entry.get("human_remark", ""),
             })
@@ -485,16 +558,19 @@ def cmd_report(args: argparse.Namespace) -> None:
         unusable_items.append({
             "type": "截断冲突",
             "source_index": c.get("source_index"),
+            "record_hash": c.get("record_hash", ""),
             "prompt_preview": c.get("prompt_preview", "")[:80],
             "remark": c.get("human_remark", ""),
         })
 
     if unusable_items:
-        lines.append(f"| # | 类型 | 索引 | Prompt预览 | 人工备注（原话） |")
-        lines.append(f"|---|------|------|-----------|----------------|")
+        lines.append(f"| # | 类型 | 索引 | record_hash | Prompt预览 | 人工备注（原话） |")
+        lines.append(f"|---|------|------|-------------|-----------|----------------|")
         for j, item in enumerate(unusable_items, 1):
             remark_display = f'「{item["remark"]}」' if item["remark"] else "（无）"
-            lines.append(f"| {j} | {item['type']} | {item['source_index']} | {item['prompt_preview'][:40]} | {remark_display} |")
+            lines.append(
+                f"| {j} | {item['type']} | {item['source_index']} | {item['record_hash'][:12]} | {item['prompt_preview'][:40]} | {remark_display} |"
+            )
     else:
         lines.append(f"所有记录均可用，无不可用记录。")
 
