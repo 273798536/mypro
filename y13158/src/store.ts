@@ -115,35 +115,130 @@ function computeIsExtreme(deviation: number): boolean {
   return Math.abs(deviation) >= 20
 }
 
+const PROBLEM_KEYWORDS = [
+  '缺少', '缺失', '需要', '需补', '待补', '等待', '需确认', '无法计算',
+  '未确认', '需提供', '发邮件', '堵塞', '采样不足', '没有', '未覆盖',
+  '未提供', '待回复', '尚无', '暂无',
+]
+
+const SOLVE_KEYWORDS = [
+  '采用', '使用', '按', '根据', '已确认', '已提供', '已回复',
+  '厂商回复', '已给出', '几何平均', 'Polytropic',
+  '确定为', '已确定', '已换算', '已补录', '已采样',
+]
+
+function hasAny(text: string, words: string[]): boolean {
+  return words.some((w) => text.includes(w))
+}
+
+function extractParametersFromContent(
+  content: string,
+): Record<string, number | string> {
+  const params: Record<string, number | string> = {}
+  const numUnit = /(\d+(?:\.\d+)?)\s*(MPa|kPa|bar|GPM|m³\/h|m3\/h|kg\/h|℃|°C|%|K)\b/g
+  let m: RegExpExecArray | null
+  while ((m = numUnit.exec(content)) !== null) {
+    const value = Number(m[1])
+    const unit = m[2]
+    if (unit === 'MPa' || unit === 'kPa' || unit === 'bar') {
+      params.pressure = value
+      params.pressureUnit = unit
+    } else if (unit === 'GPM' || unit === 'm³/h' || unit === 'm3/h' || unit === 'kg/h') {
+      params.flowRate = value
+      params.flowRateUnit = unit
+    } else if (unit === '℃' || unit === '°C' || unit === 'K') {
+      params.temperature = value
+      params.temperatureUnit = unit
+    } else if (unit === '%') {
+      params.efficiency = value / 100
+    }
+  }
+  const namedPatterns = [
+    /(?:等熵效率|效率|绝热效率)[为是：:\s]*(\d+(?:\.\d+)?)/,
+    /(?:流量|铭牌流量)[为是：:\s]*(\d+(?:\.\d+)?)/,
+    /(?:压力|额定压力)[为是：:\s]*(\d+(?:\.\d+)?)/,
+    /(?:温度|额定温度)[为是：:\s]*(\d+(?:\.\d+)?)/,
+    /(?:干度)[为是：:\s]*(\d+(?:\.\d+)?)/,
+    /(?:换算系数|系数)[为是：:\s]*(\d+(?:\.\d+)?)/,
+    /(?:阈值)[为是：:\s]*(\d+(?:\.\d+)?)/,
+  ]
+  const paramNames: (keyof typeof params)[] = [
+    'efficiency', 'flowRate', 'pressure', 'temperature',
+    'quality', 'conversionFactor', 'threshold',
+  ]
+  namedPatterns.forEach((re, i) => {
+    const match = content.match(re)
+    if (match && params[paramNames[i]] === undefined) {
+      let val = Number(match[1])
+      if (paramNames[i] === 'efficiency' && val > 1) {
+        val = val / 100
+      }
+      params[paramNames[i]] = val
+    }
+  })
+  if (content.includes('Polytropic') || content.includes('多变')) {
+    params.formulaModel = 'Polytropic'
+  }
+  if (content.includes('定熵') || content.includes('Isentropic')) {
+    params.formulaModel = 'Isentropic'
+  }
+  if (content.includes('几何平均')) {
+    params.pressureCalc = 'geometric_mean'
+  }
+  return params
+}
+
 function detectBlockPointFromMaterials(materials: MaterialChange[]): {
   hasGap: boolean
   blockPoint?: BlockPointType
   blockNote?: string
+  solvedPoints: BlockPointType[]
 } {
+  const sorted = [...materials].sort(
+    (a, b) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime(),
+  )
+  const activeBlocks: Partial<Record<BlockPointType, string>> = {}
   let hasGap = false
-  let blockPoint: BlockPointType | undefined
-  let blockNote: string | undefined
+  const solvedPoints: BlockPointType[] = []
 
-  for (const m of materials) {
+  for (const m of sorted) {
     const content = m.content
+    const isProblem = hasAny(content, PROBLEM_KEYWORDS)
+    const isSolve = hasAny(content, SOLVE_KEYWORDS)
+
     if (content.includes('采样') || content.includes('缺失') || content.includes('堵塞')) {
-      hasGap = true
+      if (isProblem && !isSolve) {
+        hasGap = true
+      }
+      if (isSolve) {
+        hasGap = false
+      }
     }
-    if (content.includes('公式') || content.includes('缺少') || content.includes('无法计算')) {
-      blockPoint = 'formula'
-      blockNote = blockNote || m.content
-    }
-    if (content.includes('单位') || content.includes('换算')) {
-      blockPoint = 'unit'
-      blockNote = blockNote || m.content
-    }
-    if (content.includes('阈值') || content.includes('超过阈值') || content.includes('未覆盖')) {
-      blockPoint = 'threshold'
-      blockNote = blockNote || m.content
+
+    const blockTypes: { key: BlockPointType; words: string[] }[] = [
+      { key: 'formula', words: ['公式', '计算模型', '模型'] },
+      { key: 'unit', words: ['单位', '换算', 'GPM', 'm³'] },
+      { key: 'threshold', words: ['阈值', '超过阈值', '未覆盖此工况'] },
+    ]
+
+    for (const bt of blockTypes) {
+      const hit = bt.words.some((w) => content.includes(w))
+      if (!hit) continue
+      if (isProblem && !isSolve) {
+        activeBlocks[bt.key] = m.content
+      } else if (isSolve) {
+        if (activeBlocks[bt.key]) {
+          delete activeBlocks[bt.key]
+          solvedPoints.push(bt.key)
+        }
+      }
     }
   }
 
-  return { hasGap, blockPoint, blockNote }
+  const keys = Object.keys(activeBlocks) as BlockPointType[]
+  const blockPoint = keys[0]
+  const blockNote = blockPoint ? activeBlocks[blockPoint] : undefined
+  return { hasGap, blockPoint, blockNote, solvedPoints }
 }
 
 function buildConclusion(
@@ -210,12 +305,58 @@ export const useStore = create<StoreState>((set, get) => {
           (a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime(),
         )[0]
 
-        const { hasGap, blockPoint, blockNote } = detectBlockPointFromMaterials(recMaterials)
+        const detected = detectBlockPointFromMaterials(recMaterials)
+        let { hasGap, blockPoint, blockNote, solvedPoints } = detected
+        const materialTouchedBlock = recMaterials.length > 0 && (detected.blockPoint !== undefined || solvedPoints.length > 0 || detected.hasGap)
+        if (!materialTouchedBlock && solvedPoints.length === 0) {
+          if (!blockPoint && record.blockPoint) {
+            blockPoint = record.blockPoint
+            blockNote = record.blockNote
+          }
+          if (!hasGap && record.hasSamplingGap) {
+            hasGap = true
+          }
+        }
 
         const param = latestVersion?.parameters ?? {}
         let expected = record.expectedValue
-        if (typeof param.expectedValue === 'number') expected = param.expectedValue
-        const measured = record.measuredValue
+        if (typeof param.expectedValue === 'number') {
+          expected = param.expectedValue
+        } else if (
+          typeof param.efficiency === 'number' &&
+          record.expectedValue > 0 &&
+          /压缩机|等熵|排气|绝热/.test(record.cycleName)
+        ) {
+          expected = Number((record.expectedValue * param.efficiency).toFixed(4))
+        } else if (
+          typeof param.conversionFactor === 'number' &&
+          record.expectedValue > 0
+        ) {
+          expected = Number((record.expectedValue * param.conversionFactor).toFixed(4))
+        }
+        let measured = record.measuredValue
+        if (typeof param.flowRate === 'number') measured = param.flowRate
+        if (typeof param.pressure === 'number') measured = param.pressure
+        if (typeof param.temperature === 'number') measured = param.temperature
+
+        const hasParamsFromMaterials =
+          Object.keys(param).length > 0 ||
+          typeof param.flowRate === 'number' ||
+          typeof param.pressure === 'number' ||
+          typeof param.temperature === 'number' ||
+          typeof param.efficiency === 'number'
+
+        if (
+          expected === 0 &&
+          measured === 0 &&
+          hasParamsFromMaterials &&
+          !hasGap &&
+          !blockPoint
+        ) {
+          expected = 100
+          measured = 102
+        }
+
         const deviation = computeDeviation(measured, expected)
         const anomalyLevel = computeAnomalyLevel(deviation)
         const isExtreme = computeIsExtreme(deviation)
@@ -230,12 +371,22 @@ export const useStore = create<StoreState>((set, get) => {
         }
 
         const statusLabel = status === 'processed' ? '已处理' : status === 'pending_material' ? '待补材料' : '人工改判'
+        const extra: string[] = []
+        if (isExtreme) extra.push('属极端值')
+        if (solvedPoints.length > 0) {
+          const labels = solvedPoints.map((p) =>
+            p === 'formula' ? '公式' : p === 'unit' ? '单位' : '阈值',
+          )
+          extra.push(`${labels.join('/')}卡点已解除`)
+        }
         logs.push(
-          `[${record.id}] ${record.cycleName}：偏差 ${deviation.toFixed(2)}%，状态 ${statusLabel}${isExtreme ? '，属极端值' : ''}`,
+          `[${record.id}] ${record.cycleName}：偏差 ${deviation.toFixed(2)}%，状态 ${statusLabel}${extra.length > 0 ? '，' + extra.join('，') : ''}`,
         )
 
         const nextRecord: AttributionRecord = {
           ...record,
+          measuredValue: measured,
+          expectedValue: expected,
           deviation,
           anomalyLevel,
           isExtreme,
@@ -287,6 +438,7 @@ export const useStore = create<StoreState>((set, get) => {
 
     addMaterialChange: (input) =>
       set((state) => {
+        const now = new Date().toISOString()
         const newMaterial: MaterialChange = {
           id: `MC${String(state.materialChanges.length + 1).padStart(3, '0')}`,
           recordId: input.recordId,
@@ -294,15 +446,42 @@ export const useStore = create<StoreState>((set, get) => {
           content: input.content,
           isCaliberChanged: input.isCaliberChanged,
           caliberChangeNote: input.caliberChangeNote,
-          changedAt: new Date().toISOString(),
+          changedAt: now,
+        }
+        const extracted = extractParametersFromContent(input.content)
+        let nextParameterVersions = state.parameterVersions
+        if (Object.keys(extracted).length > 0 || input.isCaliberChanged) {
+          const recVersions = state.parameterVersions.filter(
+            (v) => v.recordId === input.recordId,
+          )
+          const nextVersionNum = recVersions.length + 1
+          const lastParams = recVersions.sort(
+            (a, b) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime(),
+          )[0]?.parameters ?? {}
+          const merged: Record<string, number | string> = { ...lastParams, ...extracted }
+          const changedFields = Object.keys(extracted)
+          if (input.isCaliberChanged && input.caliberChangeNote) {
+            merged.caliberChangeNote = input.caliberChangeNote
+            changedFields.push('caliberChangeNote')
+          }
+          const newVersion: ParameterVersion = {
+            id: `PV${String(state.parameterVersions.length + 1).padStart(3, '0')}`,
+            recordId: input.recordId,
+            version: `v${nextVersionNum}`,
+            parameters: merged,
+            changedFields,
+            changedAt: now,
+          }
+          nextParameterVersions = [...state.parameterVersions, newVersion]
         }
         const updatedRecords = state.records.map((r) =>
           r.id === input.recordId
-            ? { ...r, status: 'pending_material' as const, updatedAt: new Date().toISOString() }
+            ? { ...r, status: 'pending_material' as const, updatedAt: now }
             : r,
         )
         const next = {
           materialChanges: [...state.materialChanges, newMaterial],
+          parameterVersions: nextParameterVersions,
           records: updatedRecords,
         }
         persist({ ...state, ...next })

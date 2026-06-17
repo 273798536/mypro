@@ -110,7 +110,9 @@ export default function RecordDetail() {
     setShowMaterialForm(false)
   }
 
-  const paramKeys = versions.length > 0 ? Object.keys(versions[0].parameters) : []
+  const paramKeySet = new Set<string>()
+  versions.forEach((v) => Object.keys(v.parameters).forEach((k) => paramKeySet.add(k)))
+  const paramKeys = Array.from(paramKeySet)
 
   const statusLabel =
     record.status === 'processed'
