@@ -1,0 +1,118 @@
+[
+  {
+    "timestamp": "2026-06-17T23:58:43.571529",
+    "rules_snapshot": [
+      {
+        "rule_id": "RULE-001",
+        "name": "长文本截断拦截",
+        "description": "样本文本超过最大长度阈值时进入人工审核，避免截断导致语义丢失",
+        "rule_type": "length",
+        "pattern": "500",
+        "weight": -0.5,
+        "block_truncation": true,
+        "active": true,
+        "created_at": "2026-06-17T23:54:48.171851",
+        "updated_at": "2026-06-17T23:54:48.171873"
+      },
+      {
+        "rule_id": "RULE-002",
+        "name": "敏感词初筛",
+        "description": "命中敏感词列表的样本降低灰度评分",
+        "rule_type": "keyword",
+        "pattern": "违规,赌博,色情",
+        "weight": -0.3,
+        "block_truncation": false,
+        "active": true,
+        "created_at": "2026-06-17T23:54:48.171883",
+        "updated_at": "2026-06-17T23:54:48.171885"
+      },
+      {
+        "rule_id": "RULE-003",
+        "name": "来源可信度加权",
+        "description": "高可信来源样本自动提升灰度评分",
+        "rule_type": "source",
+        "pattern": "verified_partner,internal_tagging",
+        "weight": 0.2,
+        "block_truncation": false,
+        "active": true,
+        "created_at": "2026-06-17T23:54:48.171889",
+        "updated_at": "2026-06-17T23:54:48.171891"
+      },
+      {
+        "rule_id": "RULE-AC50C5",
+        "name": "未知来源降权",
+        "description": "未登记来源的抓取样本一律降权",
+        "rule_type": "source",
+        "pattern": "unknown_crawler",
+        "weight": -0.2,
+        "block_truncation": false,
+        "active": true,
+        "created_at": "2026-06-17T23:58:43.569905",
+        "updated_at": "2026-06-17T23:58:43.569905"
+      }
+    ],
+    "results": [
+      {
+        "sample_id": "SMPL-20260617-001",
+        "before_score": 0.7,
+        "after_score": 0.7,
+        "score_delta": 0.0,
+        "before_status": "passed",
+        "new_hits": [
+          {
+            "rule_id": "RULE-003",
+            "rule_name": "来源可信度加权",
+            "weight": 0.2,
+            "detail": "来源 internal_tagging 属于可信白名单"
+          }
+        ],
+        "new_evidence": [
+          "[RULE-003] 来源可信度加权: 来源 internal_tagging 属于可信白名单 (权重 +0.20)"
+        ]
+      },
+      {
+        "sample_id": "SMPL-20260617-002",
+        "before_score": 0.0,
+        "after_score": 0.0,
+        "score_delta": 0.0,
+        "before_status": "needs_review",
+        "new_hits": [
+          {
+            "rule_id": "RULE-001",
+            "rule_name": "长文本截断拦截",
+            "weight": -0.5,
+            "detail": "文本长度 701 超过阈值 500"
+          }
+        ],
+        "new_evidence": [
+          "[RULE-001] 长文本截断拦截: 文本长度 701 超过阈值 500 (权重 -0.50)"
+        ]
+      },
+      {
+        "sample_id": "SMPL-20260617-003",
+        "before_score": 0.2,
+        "after_score": 0.0,
+        "score_delta": -0.2,
+        "before_status": "rejected",
+        "new_hits": [
+          {
+            "rule_id": "RULE-002",
+            "rule_name": "敏感词初筛",
+            "weight": -0.3,
+            "detail": "命中敏感词: 违规, 赌博, 色情"
+          },
+          {
+            "rule_id": "RULE-AC50C5",
+            "rule_name": "未知来源降权",
+            "weight": -0.2,
+            "detail": "来源 unknown_crawler 属于可信白名单"
+          }
+        ],
+        "new_evidence": [
+          "[RULE-002] 敏感词初筛: 命中敏感词: 违规, 赌博, 色情 (权重 -0.30)",
+          "[RULE-AC50C5] 未知来源降权: 来源 unknown_crawler 属于可信白名单 (权重 -0.20)"
+        ]
+      }
+    ]
+  }
+]
