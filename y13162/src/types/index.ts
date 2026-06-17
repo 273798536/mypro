@@ -34,6 +34,7 @@ export interface ManualOverride {
   newValue: number
   reason: string
   operator: string
+  sourceNoteId?: string
   sourceNoteLine: string
   sourceNoteObject: string
 }
@@ -45,6 +46,7 @@ export interface RepairNote {
   content: string
   lineNumber: string
   relatedObject: string
+  relatedParameterIds: string[]
 }
 
 export interface CausalLink {

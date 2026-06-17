@@ -1,6 +1,7 @@
 import { useReplayStore } from '@/store/replayStore'
 import { parameterLabels, parameterUnits, type ParameterKey } from '@/types'
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { findNotesForParameter } from '@/utils/linkage'
 
 interface ManualOverrideLite {
   oldValue: number
@@ -77,7 +78,7 @@ export default function ParameterTable() {
               if (isNoise) rowClass = 'text-amber-300/70 line-through'
               else if (hasOverride) rowClass = 'text-green-300'
 
-              const relatedNote = repairNotes.find((n) => n.timestamp === param.timestamp)
+              const relatedNotes = findNotesForParameter(repairNotes, param)
 
               return (
                 <tr
@@ -114,9 +115,12 @@ export default function ParameterTable() {
                     )
                   })}
                   <td className="px-3 py-1.5 text-slate-500 max-w-xs truncate">
-                    {relatedNote ? (
-                      <span className="text-amber-400/80" title={relatedNote.content}>
-                        📝 {relatedNote.content}
+                    {relatedNotes.length > 0 ? (
+                      <span
+                        className="text-amber-400/80"
+                        title={relatedNotes.map((n) => `[${n.lineNumber}] ${n.content}`).join('\n')}
+                      >
+                        📝 {relatedNotes.map((n) => n.lineNumber).join('、')}
                       </span>
                     ) : (
                       ''

@@ -1,9 +1,10 @@
 import { useReplayStore } from '@/store/replayStore'
 import { parameterLabels, type ParameterKey } from '@/types'
-import { ArrowRight, CircleDot, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { ArrowRight, CircleDot, AlertTriangle, CheckCircle2, FileText } from 'lucide-react'
+import { findNotesForOverride } from '@/utils/linkage'
 
 export default function CausalChainPage() {
-  const { overrides, causalLinks, selectedOverrideId, selectOverride, isRecalculated, runRecalculation } =
+  const { overrides, causalLinks, selectedOverrideId, selectOverride, isRecalculated, runRecalculation, repairNotes } =
     useReplayStore()
 
   const selectedLinks = causalLinks.filter((l) => l.overrideId === selectedOverrideId)
@@ -170,6 +171,25 @@ export default function CausalChainPage() {
                   </div>
                 </div>
               </div>
+
+              {findNotesForOverride(repairNotes, selectedOverride).length > 0 && (
+                <div className="mt-3 bg-amber-500/5 border border-amber-500/20 rounded-sm p-3">
+                  <div className="flex items-center gap-1.5 text-xs font-medium text-amber-300 mb-2">
+                    <FileText className="w-3.5 h-3.5" />
+                    来源维修备注原文（{findNotesForOverride(repairNotes, selectedOverride).length} 条）
+                  </div>
+                  <div className="space-y-2">
+                    {findNotesForOverride(repairNotes, selectedOverride).map((note) => (
+                      <div key={note.id} className="text-[11px] text-slate-300">
+                        <div className="text-amber-400/80 mb-0.5">
+                          [{note.lineNumber}] {note.relatedObject} · {formatTime(note.timestamp)}
+                        </div>
+                        <div className="text-slate-400">{note.content}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
