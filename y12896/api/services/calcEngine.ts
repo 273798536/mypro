@@ -81,7 +81,17 @@ export function calculate(
 
   let gates: GateStrategyPoint[];
   if (strategy === "custom" && customGates) {
-    gates = customGates;
+    const baseGates = gateService.getGateStrategy(scenarioId, "correct", timezone)!;
+    const baseMap = new Map(baseGates.map((g) => [g.time, g.openingPercent]));
+    const overrideMap = new Map(customGates.map((g) => [g.time, g.openingPercent]));
+    const baseTimes = new Set(baseMap.keys());
+    const merged: GateStrategyPoint[] = baseGates.map((base) =>
+      overrideMap.has(base.time) ? { ...base, openingPercent: overrideMap.get(base.time)! } : base
+    );
+    for (const ov of customGates) {
+      if (!baseTimes.has(ov.time)) merged.push(ov);
+    }
+    gates = merged;
   } else {
     gates = gateService.getGateStrategy(scenarioId, strategy === "wrong" ? "wrong" : "correct", timezone)!;
   }

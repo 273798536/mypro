@@ -27,6 +27,7 @@ router.get("/:id/tides", (req: Request, res: Response): void => {
       scenarioId: id,
       timezone: result.timezone,
       timezoneOffset: result.timezoneOffset,
+      shiftHours: result.shiftHours,
       ...(result.timezoneWarning && { timezoneWarning: result.timezoneWarning }),
       data: result.data,
     });

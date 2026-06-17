@@ -116,11 +116,17 @@ npm run build
 ```
 
 后端 API 前缀：`/api`
+- `GET /api/health` — 健康检查
 - `GET /api/scenarios` — 场景列表
-- `GET /api/scenarios/:id/tides?timezone=xxx` — 潮汐数据（含时区警告）
-- `POST /api/calculate` — 计算发电量 `{ scenarioId, strategy: correct|wrong|custom, customGates?, timezone }`
-- `POST /api/scenarios/gate-override` — 人工覆写闸门
+- `GET /api/scenarios/:id/tides?timezone=xxx` — 潮汐数据（含 `shiftHours` / `timezoneWarning` 字段）
+- `GET /api/scenarios/:id/strategy/:type?timezone=xxx` — 获取正确/错误闸门策略（按时区平移后返回）
+- `POST /api/calculate` — 计算发电量
+  请求体：`{ scenarioId, strategy: correct|wrong|custom, customGates?, timezone }`
+- `POST /api/scenarios/:id/gate-override` — 人工覆写闸门（⚠️ 需要 `:id`）
+  请求体：`{ time, openingPercent, reason?, timezone }`
+  响应新增：`canonicalTime / shiftedTime / matchedTide`（用于确认时间匹配无误）
 - `POST /api/report` — 生成课堂报告
+  请求体：同 calculate
 - `GET /api/scenarios/:id/protection-records` — 保护停机记录
 
 ---

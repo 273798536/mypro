@@ -6,13 +6,14 @@ const OVERRIDES: Record<string, GateStrategyPoint[]> = {};
 export function getGateStrategy(
   scenarioId: string,
   type: "correct" | "wrong",
-  requestedTimezone?: string
+  requestedTimezone?: string,
+  applyOverrides = false,
 ): GateStrategyPoint[] | null {
   const scenario = scenarios[scenarioId];
   if (!scenario) return null;
 
   const base = type === "correct" ? scenario.correctStrategy : scenario.wrongStrategy;
-  const overrides = OVERRIDES[scenarioId] || [];
+  const overrides = applyOverrides ? (OVERRIDES[scenarioId] || []) : [];
 
   const withOverrides: GateStrategyPoint[] =
     overrides.length === 0
