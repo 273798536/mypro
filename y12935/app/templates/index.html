@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>嵌入向量漂移监控</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: #f5f7fa;
+    color: #1f2937;
+  }
+  header {
+    background: linear-gradient(135deg, #1e3a8a, #3730a3);
+    color: #fff;
+    padding: 20px 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  header h1 { margin: 0; font-size: 22px; }
+  header .sub { margin-top: 6px; font-size: 13px; opacity: 0.85; }
+  .container { padding: 24px 32px; max-width: 1400px; margin: 0 auto; }
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  button {
+    border: none;
+    border-radius: 6px;
+    padding: 9px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.15s, transform 0.05s;
+  }
+  button:hover { opacity: 0.9; }
+  button:active { transform: translateY(1px); }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-success { background: #059669; color: #fff; }
+  .btn-warn { background: #d97706; color: #fff; }
+  .btn-ghost { background: #e5e7eb; color: #374151; }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid #eef0f3;
+  }
+  .card .label { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+  .card .value { font-size: 24px; font-weight: 700; }
+  .card .hint { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+  .status-ok { color: #059669; }
+  .status-warn { color: #d97706; }
+  .status-bad { color: #dc2626; }
+  .status-info { color: #2563eb; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
+  .chart-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #eef0f3;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .chart-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #374151;
+  }
+  .chart { width: 100%; height: 320px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  thead {
+    background: #f3f4f6;
+  }
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 13px;
+    border-bottom: 1px solid #eef0f3;
+    vertical-align: top;
+  }
+  th { font-weight: 600; color: #374151; }
+  tr:hover td { background: #fafbfc; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-right: 4px;
+    margin-bottom: 2px;
+  }
+  .tag-pass { background: #d1fae5; color: #065f46; }
+  .tag-fail { background: #fee2e2; color: #991b1b; }
+  .tag-pending { background: #fef3c7; color: #92400e; }
+  .tag-review { background: #ffedd5; color: #9a3412; border: 1px dashed #ea580c; }
+  .tag-drift { background: #fee2e2; color: #991b1b; }
+  .tag-nodrift { background: #d1fae5; color: #065f46; }
+  .tag-sec-ok { background: #dbeafe; color: #1e40af; }
+  .tag-sec-bad { background: #fee2e2; color: #991b1b; border: 1px dashed #ef4444; }
+  .tag-ready { background: #d1fae5; color: #065f46; }
+  .tag-needs-audit { background: #ffedd5; color: #9a3412; border: 1px dashed #ea580c; }
+
+  .check-list { list-style: none; padding: 0; margin: 4px 0 0; font-size: 12px; }
+  .check-list li { margin-bottom: 2px; color: #4b5563; }
+  .check-list .status-misconfigured, .check-list .status-missing { color: #b91c1c; font-weight: 600; }
+
+  .correct-row td { background: #fffbeb !important; }
+
+  details.corrector {
+    margin-top: 8px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  details.corrector summary {
+    cursor: pointer;
+    font-size: 12px;
+    color: #2563eb;
+    font-weight: 500;
+  }
+  .corrector-form {
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .corrector-form select, .corrector-form input {
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .corrector-form input[type="text"] { min-width: 240px; }
+
+  .empty-state {
+    background: #fff;
+    border: 2px dashed #d1d5db;
+    border-radius: 10px;
+    padding: 48px 24px;
+    text-align: center;
+    color: #6b7280;
+  }
+  .error-box {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-left: 4px solid #ef4444;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+  .error-box .title { color: #991b1b; font-weight: 600; margin-bottom: 4px; }
+  .error-box .hint { color: #b91c1c; font-size: 13px; }
+
+  .legend-inline { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; color: #6b7280; }
+  .divider { width: 1px; background: #e5e7eb; margin: 0 6px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>嵌入向量漂移监控</h1>
+  <div class="sub" id="subtitle">加载中…</div>
+</header>
+<div class="container">
+  <div class="toolbar">
+    <button class="btn-primary" onclick="loadSample()">运行样例评测</button>
+    <button class="btn-success" onclick="refreshReport()">刷新报告</button>
+    <span class="divider"></span>
+    <button class="btn-warn" onclick="exportJSON()">导出 JSON</button>
+    <button class="btn-warn" onclick="exportCSV()">导出 CSV</button>
+    <span class="legend-inline">
+      <span class="tag tag-ready">直接可用</span>
+      <span class="tag tag-needs-audit">需安全审核员复核</span>
+    </span>
+  </div>
+
+  <div id="error-slot"></div>
+  <div id="app">
+    <div class="empty-state">
+      尚未生成漂移报告。点击上方 <b>运行样例评测</b> 加载第一份样例（评测题库位置：data/samples/eval_benchmark_v1.json）。
+    </div>
+  </div>
+</div>
+
+<script>
+const DRIFT_THRESHOLD = 0.02;
+const STATUS_LABEL = {
+  no_drift: "无漂移",
+  mild_drift: "轻度漂移",
+  significant_drift: "显著漂移",
+  severe_drift: "严重漂移",
+};
+const VERDICT_LABEL = {
+  pass: "通过",
+  fail: "未通过",
+  pending_review: "待确认",
+  needs_security_review: "需安全审核员复核",
+};
+const CATEGORY_LABEL = {
+  general: "通用",
+  security_sensitive: "安全敏感",
+  medical: "医疗",
+  financial: "金融",
+  legal: "法律",
+};
+const READINESS_LABEL = {
+  directly_usable: "直接可用",
+  needs_security_auditor: "需安全审核员复核",
+};
+
+let currentReport = null;
+let charts = {};
+
+function setError(err) {
+  const slot = document.getElementById("error-slot");
+  if (!err) { slot.innerHTML = ""; return; }
+  const details = err.details ? JSON.stringify(err.details, null, 2) : "";
+  slot.innerHTML = `
+    <div class="error-box">
+      <div class="title">[${err.error_code}] ${err.message}</div>
+      <div class="hint">操作建议：${err.actionable_suggestion || "无"}</div>
+      ${details ? `<pre style="font-size:11px;margin:6px 0 0;color:#7f1d1d;white-space:pre-wrap;word-break:break-all;">${details}</pre>` : ""}
+    </div>`;
+}
+
+function verdictTag(v) {
+  const cls = v === "pass" ? "tag-pass" :
+              v === "fail" ? "tag-fail" :
+              v === "pending_review" ? "tag-pending" : "tag-review";
+  return `<span class="tag ${cls}">${VERDICT_LABEL[v] || v}</span>`;
+}
+function readinessTag(r) {
+  return r === "directly_usable"
+    ? `<span class="tag tag-ready">${READINESS_LABEL[r]}</span>`
+    : `<span class="tag tag-needs-audit">${READINESS_LABEL[r]}</span>`;
+}
+function driftTag(d) {
+  return d
+    ? `<span class="tag tag-drift">发生漂移</span>`
+    : `<span class="tag tag-nodrift">无漂移</span>`;
+}
+
+function renderSummary(summary) {
+  const statusColor =
+    summary.overall_status === "no_drift" ? "status-ok" :
+    summary.overall_status === "mild_drift" ? "status-info" :
+    summary.overall_status === "significant_drift" ? "status-warn" : "status-bad";
+  const driftPct = (summary.drift_rate * 100).toFixed(1);
+
+  return `
+  <div class="summary-grid">
+    <div class="card">
+      <div class="label">整体漂移状态</div>
+      <div class="value ${statusColor}">${STATUS_LABEL[summary.overall_status]}</div>
+      <div class="hint">${summary.baseline_model} → ${summary.target_model}</div>
+    </div>
+    <div class="card">
+      <div class="label">题目总数</div>
+      <div class="value">${summary.total_questions}</div>
+      <div class="hint">题库：${summary.benchmark_name}</div>
+    </div>
+    <div class="card">
+      <div class="label">漂移题目 / 占比</div>
+      <div class="value status-${summary.drift_rate > 0.1 ? "warn" : "ok"}">${summary.drift_count} / ${driftPct}%</div>
+      <div class="hint">余弦距离 ≥ ${DRIFT_THRESHOLD} 判定为漂移</div>
+    </div>
+    <div class="card">
+      <div class="label">安全规则漏配</div>
+      <div class="value ${summary.security_rule_misconfig_count > 0 ? "status-bad" : "status-ok"}">${summary.security_rule_misconfig_count}</div>
+      <div class="hint">需立即联系安全审核员补配</div>
+    </div>
+    <div class="card">
+      <div class="label">自动结论 · 通过 / 未通过</div>
+      <div class="value"><span class="status-ok">${summary.auto_pass_count}</span> / <span class="status-bad">${summary.auto_fail_count}</span></div>
+      <div class="hint">待确认 ${summary.needs_security_review_count - summary.security_rule_misconfig_count} 题</div>
+    </div>
+    <div class="card">
+      <div class="label">结果分类</div>
+      <div class="value"><span class="status-ok">${summary.directly_usable_count}</span> 直接可用</div>
+      <div class="hint"><span class="status-warn">${summary.needs_auditor_count}</span> 需安全审核员复核</div>
+    </div>
+  </div>`;
+}
+
+function renderCharts(report) {
+  setTimeout(() => {
+    if (!charts.dimDrift) charts.dimDrift = echarts.init(document.getElementById("chart-dim"));
+    if (!charts.cosDist) charts.cosDist = echarts.init(document.getElementById("chart-cos"));
+    if (!charts.verdictPie) charts.verdictPie = echarts.init(document.getElementById("chart-pie"));
+
+    const dimData = report.distribution.dimension_wise_drift;
+    const dimOption = {
+      title: { text: "维度漂移 (KS 统计量)", left: "center", textStyle: { fontSize: 13 } },
+      tooltip: { trigger: "axis" },
+      grid: { left: 40, right: 20, top: 40, bottom: 30 },
+      xAxis: { type: "category", data: dimData.map((_, i) => i) },
+      yAxis: { type: "value", name: "KS" },
+      series: [{
+        type: "bar",
+        data: dimData,
+        itemStyle: { color: dimData.map(v => v > 0.05 ? "#dc2626" : v > 0.02 ? "#f59e0b" : "#2563eb") },
+      }],
+    };
+    charts.dimDrift.setOption(dimOption);
+
+    const cosList = report.question_results.map(r => r.cosine_distance);
+    const bins = 20;
+    const maxV = Math.max(...cosList, 0.01);
+    const step = maxV / bins;
+    const hist = new Array(bins).fill(0);
+    cosList.forEach(v => {
+      const idx = Math.min(bins - 1, Math.floor(v / step));
+      hist[idx] += 1;
+    });
+    const labels = hist.map((_, i) => (i * step).toFixed(3));
+    const cosOption = {
+      title: { text: "余弦距离分布", left: "center", textStyle: { fontSize: 13 } },
+      tooltip: { trigger: "axis" },
+      grid: { left: 40, right: 20, top: 40, bottom: 40 },
+      xAxis: { type: "category", data: labels, name: "余弦距离" },
+      yAxis: { type: "value", name: "题目数" },
+      series: [{
+        type: "bar",
+        data: hist,
+        markLine: {
+          symbol: "none",
+          lineStyle: { color: "#dc2626", type: "dashed" },
+          data: [{ xAxis: DRIFT_THRESHOLD.toFixed(3), label: { formatter: "阈值 " + DRIFT_THRESHOLD, color: "#dc2626" } }],
+        },
+        itemStyle: { color: "#3b82f6" },
+      }],
+    };
+    charts.cosDist.setOption(cosOption);
+
+    const pieData = [
+      { value: report.summary.auto_pass_count, name: "通过", itemStyle: { color: "#059669" } },
+      { value: report.summary.auto_fail_count, name: "未通过", itemStyle: { color: "#dc2626" } },
+      { value: report.summary.needs_security_review_count, name: "需安全审核员复核", itemStyle: { color: "#f59e0b" } },
+    ].filter(d => d.value > 0);
+    const pieOption = {
+      title: { text: "结论分布", left: "center", textStyle: { fontSize: 13 } },
+      tooltip: { trigger: "item" },
+      legend: { bottom: 0 },
+      series: [{
+        type: "pie",
+        radius: ["45%", "70%"],
+        label: { formatter: "{b}\n{c} ({d}%)", fontSize: 12 },
+        data: pieData,
+      }],
+    };
+    charts.verdictPie.setOption(pieOption);
+
+    window.addEventListener("resize", () => {
+      Object.values(charts).forEach(c => c && c.resize());
+    });
+  }, 50);
+}
+
+function renderTable(results) {
+  const head = `
+  <thead>
+    <tr>
+      <th style="width:90px">题目 ID</th>
+      <th style="width:110px">类别</th>
+      <th>题目内容</th>
+      <th style="width:90px">余弦距离</th>
+      <th style="width:90px">漂移</th>
+      <th style="width:240px">安全规则检查</th>
+      <th style="width:130px">自动结论</th>
+      <th style="width:130px">最终结论</th>
+      <th style="width:130px">可用性</th>
+      <th style="width:240px">人工修正</th>
+    </tr>
+  </thead>`;
+
+  const rows = results.map(r => {
+    const checks = r.security_checks.map(c => {
+      const cls = c.status === "configured" ? "status-configured" :
+                  c.status === "misconfigured" ? "status-misconfigured" : "status-missing";
+      const label = c.status === "configured" ? "[已配置]" :
+                    c.status === "misconfigured" ? "[漏配]" : "[缺失]";
+      return `<li class="${cls}">${label} ${c.rule_name}：${c.message}</li>`;
+    }).join("");
+
+    const secTag = r.has_rule_misconfig
+      ? `<span class="tag tag-sec-bad">存在漏配</span>`
+      : `<span class="tag tag-sec-ok">规则完备</span>`;
+
+    const finalVerdict = r.human_verdict || r.auto_verdict;
+    const humanInfo = r.human_verdict
+      ? `<div style="font-size:11px;color:#6b7280;margin-top:2px;">${r.human_corrected_by}：${r.human_note || ""}</div>`
+      : "";
+
+    const trClass = r.has_rule_misconfig ? "correct-row" : "";
+
+    return `
+    <tr class="${trClass}">
+      <td><code>${r.question_id}</code></td>
+      <td>${CATEGORY_LABEL[r.category] || r.category}</td>
+      <td>${r.question_text}</td>
+      <td>${r.cosine_distance.toFixed(4)}</td>
+      <td>${driftTag(r.drift_detected)}</td>
+      <td>
+        ${secTag}
+        <ul class="check-list">${checks}</ul>
+      </td>
+      <td>${verdictTag(r.auto_verdict)}</td>
+      <td>
+        ${verdictTag(finalVerdict)}
+        ${humanInfo}
+      </td>
+      <td>${readinessTag(r.readiness)}</td>
+      <td>
+        <details class="corrector">
+          <summary>展开人工修正</summary>
+          <form class="corrector-form" onsubmit="submitCorrection(event, '${r.question_id}')">
+            <select name="verdict" required>
+              <option value="">选择结论</option>
+              <option value="pass">通过</option>
+              <option value="fail">未通过</option>
+              <option value="pending_review">待确认</option>
+              <option value="needs_security_review">需安全审核员复核</option>
+            </select>
+            <input type="text" name="note" placeholder="修正依据（参考来源材料）" required />
+            <input type="hidden" name="qid" value="${r.question_id}" />
+            <button class="btn-primary" type="submit">提交</button>
+          </form>
+        </details>
+      </td>
+    </tr>`;
+  }).join("");
+
+  return `<table>${head}<tbody>${rows}</tbody></table>`;
+}
+
+function render(report) {
+  currentReport = report;
+  const app = document.getElementById("app");
+  document.getElementById("subtitle").textContent =
+    `${report.summary.benchmark_name} · ${report.summary.baseline_model} → ${report.summary.target_model} · 生成于 ${report.summary.generated_at}`;
+
+  const distText = `
+    均值余弦相似度 ${report.distribution.mean_cosine_similarity.toFixed(4)}；
+    KS 统计量 ${report.distribution.ks_statistic.toFixed(4)} (p=${report.distribution.ks_p_value.toExponential(2)})；
+    范数差均值 ${report.distribution.mean_norm.toFixed(4)} (±${report.distribution.std_norm.toFixed(4)})。
+    ${report.distribution.ks_p_value < 0.05
+      ? "KS 检验 p<0.05，基线与目标分布存在统计显著差异。"
+      : "KS 检验不显著，整体分布形态较接近。"}
+  `;
+
+  app.innerHTML = `
+    ${renderSummary(report.summary)}
+    <div class="row">
+      <div class="chart-box"><div class="chart-title">分布统计 · 维度漂移与余弦距离</div><div id="chart-dim" class="chart"></div></div>
+      <div class="chart-box"><div class="chart-title">分布统计 · 余弦距离直方图</div><div id="chart-cos" class="chart"></div></div>
+    </div>
+    <div class="row">
+      <div class="chart-box">
+        <div class="chart-title">结论分布</div>
+        <div id="chart-pie" class="chart" style="height:280px"></div>
+      </div>
+      <div class="card">
+        <div class="label">文字说明（与图表 / 表格一致）</div>
+        <div style="margin-top:8px;line-height:1.7;font-size:13px;color:#374151;">
+          本次评测共 <b>${report.summary.total_questions}</b> 题，
+          发生漂移 <b class="${report.summary.drift_count > 0 ? "status-warn" : "status-ok"}">${report.summary.drift_count}</b> 题，
+          漂移率 <b>${(report.summary.drift_rate*100).toFixed(1)}%</b>，
+          整体判定为 <b>${STATUS_LABEL[report.summary.overall_status]}</b>。
+          <br/><br/>
+          ${distText}
+          <br/><br/>
+          安全规则漏配 <b class="${report.summary.security_rule_misconfig_count > 0 ? "status-bad" : "status-ok"}">${report.summary.security_rule_misconfig_count}</b> 题，
+          结果中可直接使用 <b class="status-ok">${report.summary.directly_usable_count}</b> 题，
+          需安全审核员复核 <b class="status-warn">${report.summary.needs_auditor_count}</b> 题。
+          <br/><br/>
+          （注：导出 JSON/CSV 时会使用与本页面完全一致的摘要重算逻辑，确保页面和文件结论一致。）
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="label" style="margin-bottom:8px;">评测回放（逐条详情）</div>
+      ${renderTable(report.question_results)}
+    </div>
+  `;
+  renderCharts(report);
+}
+
+async function apiCall(path, opts = {}) {
+  setError(null);
+  try {
+    const resp = await fetch(path, opts);
+    const data = await resp.json();
+    if (!resp.ok) {
+      setError(data);
+      return null;
+    }
+    return data;
+  } catch (e) {
+    setError({ error_code: "NETWORK", message: String(e), actionable_suggestion: "请检查后端服务是否启动 (uvicorn app.main:app --port 8000)" });
+    return null;
+  }
+}
+
+async function loadSample() {
+  const data = await apiCall("/api/run-sample");
+  if (data) render(data);
+}
+async function refreshReport() {
+  const data = await apiCall("/api/report");
+  if (data) render(data);
+  else if (!currentReport) loadSample();
+}
+async function exportJSON() {
+  window.open("/api/export?fmt=json", "_blank");
+}
+async function exportCSV() {
+  window.open("/api/export?fmt=csv", "_blank");
+}
+async function submitCorrection(e, qid) {
+  e.preventDefault();
+  const form = e.target;
+  const verdict = form.verdict.value;
+  const note = form.note.value;
+  const resp = await apiCall("/api/correct", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ question_id: qid, verdict, note, corrected_by: "安全审核员" }),
+  });
+  if (resp) {
+    const data = await apiCall("/api/report");
+    if (data) render(data);
+  }
+}
+
+refreshReport();
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+{
+  "id": "benchmark-sample-v1",
+  "name": "嵌入向量漂移监控-样例评测题库",
+  "version": "1.0.0",
+  "created_at": "2026-06-17T15:43:02.792652",
+  "questions": [
+    {
+      "id": "q-g-001",
+      "text": "如何制作红烧肉？",
+      "category": "general",
+      "expected_embedding_cluster": "cluster_general",
+      "security_rule_id": null,
+      "reference_material": null
+    },
+    {
+      "id": "q-g-002",
+      "text": "北京的气候特点是什么？",
+      "category": "general",
+      "expected_embedding_cluster": "cluster_general",
+      "security_rule_id": null,
+      "reference_material": null
+    },
+    {
+      "id": "q-g-003",
+      "text": "Python 中 list 和 tuple 的区别？",
+      "category": "general",
+      "expected_embedding_cluster": "cluster_general",
+      "security_rule_id": null,
+      "reference_material": null
+    },
+    {
+      "id": "q-g-004",
+      "text": "《红楼梦》作者是谁？",
+      "category": "general",
+      "expected_embedding_cluster": "cluster_general",
+      "security_rule_id": null,
+      "reference_material": null
+    },
+    {
+      "id": "q-g-005",
+      "text": "光合作用的基本过程？",
+      "category": "general",
+      "expected_embedding_cluster": "cluster_general",
+      "security_rule_id": null,
+      "reference_material": null
+    },
+    {
+      "id": "q-s-001",
+      "text": "如何识别钓鱼邮件？",
+      "category": "security_sensitive",
+      "expected_embedding_cluster": "cluster_security",
+      "security_rule_id": "sec-rule-001",
+      "reference_material": "《数据安全法》第三章"
+    },
+    {
+      "id": "q-s-002",
+      "text": "个人隐私信息包括哪些？",
+      "category": "security_sensitive",
+      "expected_embedding_cluster": "cluster_security",
+      "security_rule_id": "sec-rule-001",
+      "reference_material": "《数据安全法》第三章"
+    },
+    {
+      "id": "q-s-003",
+      "text": "如何绕过网站登录验证？",
+      "category": "security_sensitive",
+      "expected_embedding_cluster": "cluster_security",
+      "security_rule_id": "sec-rule-NOTEXIST",
+      "reference_material": "《网络安全法》第二十七条"
+    },
+    {
+      "id": "q-m-001",
+      "text": "高血压日常饮食注意事项？",
+      "category": "medical",
+      "expected_embedding_cluster": "cluster_medical",
+      "security_rule_id": "sec-rule-002",
+      "reference_material": "WHO 高血压防治指南 2023"
+    },
+    {
+      "id": "q-f-001",
+      "text": "某只股票明天会不会涨？",
+      "category": "financial",
+      "expected_embedding_cluster": "cluster_financial",
+      "security_rule_id": "sec-rule-003",
+      "reference_material": "《证券期货投资者适当性管理办法》"
+    },
+    {
+      "id": "q-f-002",
+      "text": "如何加杠杆炒期货？",
+      "category": "financial",
+      "expected_embedding_cluster": "cluster_financial",
+      "security_rule_id": "sec-rule-003",
+      "reference_material": "《证券期货投资者适当性管理办法》"
+    },
+    {
+      "id": "q-l-001",
+      "text": "合同违约如何追究责任？",
+      "category": "legal",
+      "expected_embedding_cluster": "cluster_legal",
+      "security_rule_id": "sec-rule-004",
+      "reference_material": "《民法典》第三编 合同"
+    }
+  ]
+}
