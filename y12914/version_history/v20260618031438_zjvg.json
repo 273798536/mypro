@@ -1,7 +1,7 @@
 {
-  "version_id": "v20260617023908_ikok",
+  "version_id": "v20260618031438_zjvg",
   "parent_version_id": null,
-  "timestamp": "2026-06-17T02:39:08.141044",
+  "timestamp": "2026-06-18T03:14:38.283314",
   "sample_ids": [
     "",
     "SAMPLE_001",
@@ -17,7 +17,7 @@
   "check_results": {
     "SAMPLE_001": {
       "sample_id": "SAMPLE_001",
-      "status": "通过",
+      "status": "待确认",
       "issues": [
         {
           "check_type": "评测集偏科检查",
@@ -30,11 +30,11 @@
             "expected_ratio": 0.25,
             "deviation": 0.3056,
             "threshold": 0.3,
-            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合。"
+            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合，因此该样本已被标记为待确认，暂不放行。"
           }
         }
       ],
-      "checked_at": "2026-06-17T02:39:08.140923",
+      "checked_at": "2026-06-18T03:14:38.283049",
       "manual_note": null
     },
     "SAMPLE_002": {
@@ -51,7 +51,7 @@
           }
         }
       ],
-      "checked_at": "2026-06-17T02:39:08.140941",
+      "checked_at": "2026-06-18T03:14:38.283101",
       "manual_note": "运营同学说这张图之前上传过，可能是路径配置错了，待我查一下后台日志再确认。"
     },
     "": {
@@ -70,26 +70,26 @@
           }
         }
       ],
-      "checked_at": "2026-06-17T02:39:08.140950",
+      "checked_at": "2026-06-18T03:14:38.283128",
       "manual_note": "这条数据明显有问题，谁导入的脏数据？"
     },
     "SAMPLE_004": {
       "sample_id": "SAMPLE_004",
       "status": "通过",
       "issues": [],
-      "checked_at": "2026-06-17T02:39:08.140971",
+      "checked_at": "2026-06-18T03:14:38.283134",
       "manual_note": null
     },
     "SAMPLE_005": {
       "sample_id": "SAMPLE_005",
       "status": "通过",
       "issues": [],
-      "checked_at": "2026-06-17T02:39:08.140977",
+      "checked_at": "2026-06-18T03:14:38.283139",
       "manual_note": null
     },
     "SAMPLE_006": {
       "sample_id": "SAMPLE_006",
-      "status": "通过",
+      "status": "待确认",
       "issues": [
         {
           "check_type": "评测集偏科检查",
@@ -102,16 +102,16 @@
             "expected_ratio": 0.25,
             "deviation": 0.3056,
             "threshold": 0.3,
-            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合。"
+            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合，因此该样本已被标记为待确认，暂不放行。"
           }
         }
       ],
-      "checked_at": "2026-06-17T02:39:08.140979",
+      "checked_at": "2026-06-18T03:14:38.283145",
       "manual_note": null
     },
     "SAMPLE_007": {
       "sample_id": "SAMPLE_007",
-      "status": "通过",
+      "status": "待确认",
       "issues": [
         {
           "check_type": "评测集偏科检查",
@@ -124,16 +124,16 @@
             "expected_ratio": 0.25,
             "deviation": 0.3056,
             "threshold": 0.3,
-            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合。"
+            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合，因此该样本已被标记为待确认，暂不放行。"
           }
         }
       ],
-      "checked_at": "2026-06-17T02:39:08.140981",
+      "checked_at": "2026-06-18T03:14:38.283149",
       "manual_note": null
     },
     "SAMPLE_008": {
       "sample_id": "SAMPLE_008",
-      "status": "通过",
+      "status": "待确认",
       "issues": [
         {
           "check_type": "评测集偏科检查",
@@ -146,16 +146,16 @@
             "expected_ratio": 0.25,
             "deviation": 0.3056,
             "threshold": 0.3,
-            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合。"
+            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合，因此该样本已被标记为待确认，暂不放行。"
           }
         }
       ],
-      "checked_at": "2026-06-17T02:39:08.140984",
+      "checked_at": "2026-06-18T03:14:38.283155",
       "manual_note": null
     },
     "SAMPLE_009": {
       "sample_id": "SAMPLE_009",
-      "status": "通过",
+      "status": "待确认",
       "issues": [
         {
           "check_type": "评测集偏科检查",
@@ -168,20 +168,20 @@
             "expected_ratio": 0.25,
             "deviation": 0.3056,
             "threshold": 0.3,
-            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合。"
+            "explanation": "该类别占比 55.6%，与均匀分布预期 25.0% 相差 30.6%，超过阈值 30%，可能导致模型在该类别上过拟合或欠拟合，因此该样本已被标记为待确认，暂不放行。"
           }
         }
       ],
-      "checked_at": "2026-06-17T02:39:08.140986",
+      "checked_at": "2026-06-18T03:14:38.283159",
       "manual_note": null
     },
     "SAMPLE_010": {
       "sample_id": "SAMPLE_010",
       "status": "通过",
       "issues": [],
-      "checked_at": "2026-06-17T02:39:08.140987",
+      "checked_at": "2026-06-18T03:14:38.283164",
       "manual_note": null
     }
   },
-  "description": "命令行初始检查"
+  "description": "V1-初始评测集"
 }

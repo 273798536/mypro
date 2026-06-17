@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from collections import Counter
 from models import (
     MultimodalSample,
@@ -17,6 +17,14 @@ class MultimodalChecker:
     ):
         self.bias_threshold = bias_threshold
         self.min_category_count = min_category_count
+
+    def _compute_status(self, issues: List[CheckIssue]) -> SampleStatus:
+        if not issues:
+            return SampleStatus.PASS
+        severities = [i.severity for i in issues]
+        if "高" in severities:
+            return SampleStatus.FAIL
+        return SampleStatus.PENDING
 
     def check_single_sample(
         self, sample: MultimodalSample
@@ -46,19 +54,12 @@ class MultimodalChecker:
                     message="多模态样本缺少图片资源",
                     details={
                         "image_count": len(sample.image_paths),
-                        "image_paths": sample.image_paths,
+                        "image_paths": list(sample.image_paths),
                     },
                 )
             )
 
-        if issues:
-            severities = [i.severity for i in issues]
-            if "高" in severities:
-                status = SampleStatus.FAIL
-            else:
-                status = SampleStatus.PENDING
-        else:
-            status = SampleStatus.PASS
+        status = self._compute_status(issues)
 
         return CheckResult(
             sample_id=sample.sample_id,
@@ -87,31 +88,36 @@ class MultimodalChecker:
             deviation = abs(actual_ratio - expected_ratio)
 
             if deviation > self.bias_threshold:
-                issue = CheckIssue(
-                    check_type=CheckType.DATASET_BIAS,
-                    severity="高" if deviation > self.bias_threshold * 2 else "中",
-                    message="评测集类别分布偏科",
-                    details={
-                        "category": category,
-                        "count": count,
-                        "actual_ratio": round(actual_ratio, 4),
-                        "expected_ratio": round(expected_ratio, 4),
-                        "deviation": round(deviation, 4),
-                        "threshold": self.bias_threshold,
-                        "explanation": (
-                            f"该类别占比 {actual_ratio:.1%}，"
-                            f"与均匀分布预期 {expected_ratio:.1%} 相差 {deviation:.1%}，"
-                            f"超过阈值 {self.bias_threshold:.0%}，"
-                            "可能导致模型在该类别上过拟合或欠拟合。"
-                        ),
-                    },
+                severity = (
+                    "高" if deviation > self.bias_threshold * 2 else "中"
                 )
-
                 for sample in samples:
-                    if sample.category == category:
-                        if sample.sample_id not in bias_issues:
-                            bias_issues[sample.sample_id] = []
-                        bias_issues[sample.sample_id].append(issue)
+                    if sample.category != category:
+                        continue
+                    if sample.sample_id not in bias_issues:
+                        bias_issues[sample.sample_id] = []
+                    bias_issues[sample.sample_id].append(
+                        CheckIssue(
+                            check_type=CheckType.DATASET_BIAS,
+                            severity=severity,
+                            message="评测集类别分布偏科",
+                            details={
+                                "category": category,
+                                "count": count,
+                                "actual_ratio": round(actual_ratio, 4),
+                                "expected_ratio": round(expected_ratio, 4),
+                                "deviation": round(deviation, 4),
+                                "threshold": self.bias_threshold,
+                                "explanation": (
+                                    f"该类别占比 {actual_ratio:.1%}，"
+                                    f"与均匀分布预期 {expected_ratio:.1%} 相差 {deviation:.1%}，"
+                                    f"超过阈值 {self.bias_threshold:.0%}，"
+                                    "可能导致模型在该类别上过拟合或欠拟合，"
+                                    "因此该样本已被标记为待确认，暂不放行。"
+                                ),
+                            },
+                        )
+                    )
 
         return bias_issues
 
@@ -127,8 +133,8 @@ class MultimodalChecker:
         for sample_id, issues in bias_issues.items():
             if sample_id in results:
                 results[sample_id].issues.extend(issues)
-                severities = [i.severity for i in results[sample_id].issues]
-                if "高" in severities and results[sample_id].status != SampleStatus.FAIL:
-                    results[sample_id].status = SampleStatus.PENDING
+
+        for result in results.values():
+            result.status = self._compute_status(result.issues)
 
         return results

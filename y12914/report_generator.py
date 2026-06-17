@@ -30,6 +30,9 @@ class ReportGenerator:
         pending_count = summary["by_status"]["待确认"]
         fail_count = summary["by_status"]["不通过"]
 
+        def _pct(n):
+            return f"{n/total*100:.1f}%" if total > 0 else "0.0%"
+
         by_issue_type = summary["by_issue_type"]
         missing_image = by_issue_type.get("缺图检查", 0)
         dataset_bias = by_issue_type.get("评测集偏科检查", 0)
@@ -48,72 +51,109 @@ class ReportGenerator:
 
         lines.append("一、整体情况：")
         lines.append(
-            f"  ✅ 通过检查：{pass_count} 条（{pass_count/total*100:.1f}%）"
+            f"  ✅ 通过检查（可放行）：{pass_count} 条（{_pct(pass_count)}）"
         )
         if pending_count > 0:
             lines.append(
-                f"  ⚠️  待确认：{pending_count} 条（{pending_count/total*100:.1f}%）"
+                f"  ⚠️  待确认（已拦截，暂不放行）：{pending_count} 条（{_pct(pending_count)}）"
             )
         if fail_count > 0:
             lines.append(
-                f"  ❌ 不通过：{fail_count} 条（{fail_count/total*100:.1f}%）"
+                f"  ❌ 不通过（必须处理）：{fail_count} 条（{_pct(fail_count)}）"
             )
+        lines.append(
+            "  说明：“待确认”和“不通过”的样本都已被拦截，"
+            "不能直接进入下一步流程，必须先处理对应问题。"
+        )
         lines.append("")
 
-        lines.append("二、问题分类说明：")
+        lines.append("二、被拦截的样本清单及原因：")
+        blocked_samples = []
+        for res in version.check_results.values():
+            if res.status.value == "通过":
+                continue
+            issue_descs = []
+            for issue in res.issues:
+                issue_descs.append(
+                    f"{issue.check_type.value}（{issue.severity}）"
+                )
+            sid = res.sample_id if res.sample_id else "（无样本ID）"
+            blocked_samples.append(
+                f"  • {sid}：{'、'.join(issue_descs) if issue_descs else '未知原因'}"
+            )
+        if blocked_samples:
+            lines.extend(blocked_samples)
+        else:
+            lines.append("  无被拦截样本。")
+        lines.append("")
+
+        lines.append("三、问题分类说明：")
         if missing_image > 0:
             lines.append(
                 f"  • 缺图问题：{missing_image} 条。多模态样本需要图文配对，"
-                "这些样本缺少对应的图片资源，需要补充图片后才能用于训练。"
+                "这些样本缺少对应的图片资源，已被标记为待确认，"
+                "需要补充图片后才能放行。"
             )
         if dataset_bias > 0:
             lines.append(
-                f"  • 评测集偏科：{dataset_bias} 条。这是指评测集中某些类别的样本"
-                "数量过多或过少，分布不均匀。如果用偏科的评测集来测试模型，"
-                "测试结果会不准确，模型可能在数量多的类别上表现好，"
-                "在数量少的类别上表现差，但我们无法真实判断模型的整体能力。"
-                "需要补充数量少的类别的样本，让各类别分布更均匀。"
+                f"  • 评测集偏科：{dataset_bias} 条已被拦截。"
+                "这是指评测集中某些类别的样本数量过多或过少，分布不均匀。"
+                "如果用偏科的评测集来测试模型，测试结果会不准确——"
+                "模型可能在数量多的类别上表现好、在数量少的类别上表现差，"
+                "但我们无法真实判断模型的整体能力。"
+                "因此这些样本已被标记为待确认，暂不放行，"
+                "需要补充数量少的类别的样本，让各类别分布更均匀后重新检查。"
             )
         if bad_data > 0:
             lines.append(
                 f"  • 坏数据：{bad_data} 条。这些样本的关键字段缺失或格式错误，"
                 "例如没有样本ID、没有文本内容、类别或来源为空等，"
-                "无法用于模型训练，需要修正或删除。"
+                "无法用于模型训练，已被标记为不通过，需要修正或删除。"
             )
         if missing_image == 0 and dataset_bias == 0 and bad_data == 0:
             lines.append("  • 本次检查未发现问题，所有样本均符合要求。")
         lines.append("")
 
-        lines.append("三、建议处理方式：")
+        lines.append("四、建议处理方式：")
+        step = 1
         if fail_count > 0:
-            lines.append(f"  1. 先处理 {fail_count} 条不通过的坏数据，" "修正或删除这些样本。")
+            lines.append(
+                f"  {step}. 先处理 {fail_count} 条不通过的坏数据，修正或删除这些样本。"
+            )
+            step += 1
         if missing_image > 0:
-            lines.append(f"  2. 为 {missing_image} 条缺图样本补充对应的图片资源。")
+            lines.append(
+                f"  {step}. 为 {missing_image} 条缺图样本补充对应的图片资源，补充后重新检查。"
+            )
+            step += 1
         if dataset_bias > 0:
             lines.append(
-                f"  3. 针对评测集偏科问题，查看各类别分布情况，"
-                "为样本量少的类别补充数据，使各类别占比尽量均衡。"
+                f"  {step}. 针对评测集偏科问题，查看上面被拦截样本的类别分布，"
+                "为样本量少的类别补充数据，使各类别占比尽量均衡后重新检查。"
             )
+            step += 1
         if pending_count > 0:
             lines.append(
-                f"  4. {pending_count} 条待确认的记录需要人工复核，"
+                f"  {step}. {pending_count} 条待确认的记录需要人工复核，"
                 "确认问题是否属实以及如何处理。"
             )
+            step += 1
         if pass_count == total:
             lines.append("  所有样本均通过检查，可以进入下一步流程。")
         lines.append("")
 
-        lines.append("四、人工备注说明：")
+        lines.append("五、人工备注说明：")
         has_notes = False
         for res in version.check_results.values():
             if res.manual_note:
                 has_notes = True
                 break
         if has_notes:
-            lines.append("  以下记录包含人工备注，已原样保留：")
+            lines.append("  以下记录包含人工备注，已原样保留（未做任何修改）：")
             for sample_id, res in version.check_results.items():
                 if res.manual_note:
-                    lines.append(f"  - 样本 {sample_id}：{res.manual_note}")
+                    sid = sample_id if sample_id else "（无样本ID）"
+                    lines.append(f"  - 样本 {sid}：{res.manual_note}")
         else:
             lines.append("  本次检查的样本暂无人工备注。")
         lines.append("")
@@ -374,9 +414,8 @@ class ReportGenerator:
                         )
 
             writer.writerow([])
-            writer.writerow(["【普通话解释】"])
-            for line in report.plain_language_explanation.split("\n"):
-                writer.writerow([line])
+            writer.writerow(["【普通话解释（整段在一个单元格内，可直接复制）】"])
+            writer.writerow([report.plain_language_explanation])
 
         return filepath
 
