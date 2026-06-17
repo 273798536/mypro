@@ -1,0 +1,167 @@
+[
+  {
+    "record_id": "REC_001_CLEAN",
+    "input_query": "北京是哪一年成为中华人民共和国首都的？",
+    "model_output": "北京于1949年10月1日中华人民共和国成立时正式成为首都。在此之前，北京也曾是明清两代的都城，有着悠久的历史文化底蕴。",
+    "expected_output": "1949年10月1日，中华人民共和国成立，北京成为首都。",
+    "prompt_version_id": "V202401_PROD",
+    "source_materials": [
+      {
+        "material_id": "SRC_001",
+        "source_type": "wikipedia",
+        "content": "1949年10月1日，中华人民共和国中央人民政府在北京宣告成立。北京是中华人民共和国的首都，是全国的政治中心、文化中心。",
+        "metadata": {"url": "https://zh.wikipedia.org/wiki/北京", "retrieved_date": "2024-01-15"}
+      },
+      {
+        "material_id": "SRC_002",
+        "source_type": "government_doc",
+        "content": "中华人民共和国（1949年至今）首都：北京。1949年9月27日中国人民政治协商会议第一届全体会议通过《关于中华人民共和国国都、纪年、国歌、国旗的决议》，北平更名为北京。",
+        "metadata": {"document_id": "GOV_1949_001"}
+      }
+    ],
+    "status": "confirmed_clean",
+    "hallucination_types": [],
+    "confidence_score": 98.5,
+    "corrections": [],
+    "safety_checks": [
+      {
+        "check_name": "train_val_leakage",
+        "passed": true,
+        "severity": "low",
+        "message": "样本不在训练集或验证集中，无泄漏",
+        "details": {"sample_hash": "a1b2c3d4e5f6", "in_train": false, "in_val": false}
+      },
+      {
+        "check_name": "source_authenticity",
+        "passed": true,
+        "severity": "low",
+        "message": "来源材料完整，输出内容可追溯",
+        "details": {"source_count": 2, "verified_entities_count": 5}
+      }
+    ],
+    "group_tags": ["地理常识", "历史事实", "高置信度"],
+    "created_at": "2024-06-15T10:30:00",
+    "updated_at": "2024-06-15T14:20:00",
+    "notes": "业务方已审核通过，可直接用于生产环境问答系统",
+    "metadata": {"model_name": "GPT-4", "temperature": 0.7}
+  },
+  {
+    "record_id": "REC_002_PENDING",
+    "input_query": "爱因斯坦在哪一年发表了相对论？",
+    "model_output": "阿尔伯特·爱因斯坦在1915年发表了著名的相对论，包括狭义相对论和广义相对论，这一理论彻底改变了物理学的发展方向。",
+    "expected_output": "爱因斯坦1905年发表狭义相对论，1915年发表广义相对论。",
+    "prompt_version_id": "V202401_PROD",
+    "source_materials": [
+      {
+        "material_id": "SRC_003",
+        "source_type": "encyclopedia",
+        "content": "狭义相对论（Special Theory of Relativity）是阿尔伯特·爱因斯坦在1905年发表的理论。广义相对论（General Theory of Relativity）是爱因斯坦在1915年发表的引力理论。",
+        "metadata": {"source": "大英百科全书", "edition": "2023"}
+      }
+    ],
+    "status": "pending_review",
+    "hallucination_types": ["date_confusion"],
+    "confidence_score": 62.0,
+    "corrections": [
+      {
+        "correction_id": "CORR_001",
+        "record_id": "REC_002_PENDING",
+        "corrected_content": "爱因斯坦1905年发表狭义相对论，1915年发表广义相对论。",
+        "correction_note": "模型混淆了狭义和广义相对论的发表时间，需要拆分说明",
+        "corrected_by": "标注员_A",
+        "corrected_at": "2024-06-16T09:15:00",
+        "is_approved": false,
+        "approver": null,
+        "approved_at": null
+      }
+    ],
+    "safety_checks": [
+      {
+        "check_name": "train_val_leakage",
+        "passed": false,
+        "severity": "high",
+        "message": "无法完成训练验证泄漏检测：缺失 2 份模型日志文件",
+        "actionable_guidance": "请按以下步骤操作：\n1. 导出模型训练集样本日志，保存为: data/model_logs/default_train_samples.log\n2. 导出模型验证集样本日志，保存为: data/model_logs/default_val_samples.log\n3. 日志格式要求：每行一个样本的JSON，包含 input_query 字段\n4. 重新运行安全检测",
+        "missing_resources": [
+          "data/model_logs/default_train_samples.log",
+          "data/model_logs/default_val_samples.log"
+        ],
+        "details": {
+          "required_files": [
+            {"type": "train_log", "path": "data/model_logs/default_train_samples.log"},
+            {"type": "val_log", "path": "data/model_logs/default_val_samples.log"}
+          ]
+        }
+      },
+      {
+        "check_name": "source_authenticity",
+        "passed": true,
+        "severity": "low",
+        "message": "来源材料完整，输出内容可追溯",
+        "details": {"source_count": 1, "verified_entities_count": 3}
+      }
+    ],
+    "group_tags": ["科学史", "物理学", "待复核"],
+    "created_at": "2024-06-16T08:00:00",
+    "updated_at": "2024-06-16T09:15:00",
+    "notes": "时间表述有问题，但模型只是混淆了狭义和广义，不是完全错误，需要工程师确认是否算作幻觉",
+    "metadata": {"model_name": "GPT-4", "temperature": 0.8}
+  },
+  {
+    "record_id": "REC_003_BAD",
+    "input_query": "《红楼梦》的作者是谁？主要讲述了什么故事？",
+    "model_output": "《红楼梦》是明代著名小说家罗贯中的代表作，主要讲述了三国时期刘备、关羽、张飞桃园三结义，以及魏蜀吴三国争霸的故事。书中塑造了诸葛亮、曹操等众多经典人物形象。",
+    "expected_output": "《红楼梦》是清代作家曹雪芹创作的章回体长篇小说，以贾、史、王、薛四大家族的兴衰为背景，以贾宝玉和林黛玉的爱情悲剧为主线，展现了封建社会的全景图。",
+    "prompt_version_id": "V202401_PROD",
+    "source_materials": [
+      {
+        "material_id": "SRC_004",
+        "source_type": "literature_db",
+        "content": "《红楼梦》，中国古代章回体长篇小说，中国古典四大名著之一，一般认为是清代作家曹雪芹所著。小说以贾、史、王、薛四大家族的兴衰为背景，以富贵公子贾宝玉为视角，以贾宝玉与林黛玉、薛宝钗的爱情婚姻悲剧为主线。",
+        "metadata": {"book_id": "LIT_001", "chapter": "前言"}
+      }
+    ],
+    "status": "hallucination",
+    "hallucination_types": ["factual_invention", "entity_hallucination", "attribute_mismatch"],
+    "confidence_score": 12.5,
+    "corrections": [
+      {
+        "correction_id": "CORR_002",
+        "record_id": "REC_003_BAD",
+        "corrected_content": "《红楼梦》是清代作家曹雪芹创作的章回体长篇小说，中国古典四大名著之一。小说以贾、史、王、薛四大家族的兴衰为背景，以贾宝玉和林黛玉的爱情悲剧为主线，描绘了封建社会的众生相。",
+        "correction_note": "严重幻觉：作者、朝代、故事情节全部错误，与《三国演义》混淆",
+        "corrected_by": "标注员_B",
+        "corrected_at": "2024-06-16T11:30:00",
+        "is_approved": true,
+        "approver": "质检组长",
+        "approved_at": "2024-06-16T14:00:00"
+      }
+    ],
+    "safety_checks": [
+      {
+        "check_name": "train_val_leakage",
+        "passed": true,
+        "severity": "low",
+        "message": "样本不在训练集或验证集中，无泄漏",
+        "details": {"sample_hash": "x9y8z7w6v5u4", "in_train": false, "in_val": false}
+      },
+      {
+        "check_name": "source_authenticity",
+        "passed": false,
+        "severity": "high",
+        "message": "模型输出中有 4 个实体在来源材料中找不到依据",
+        "actionable_guidance": "请检查：\n1. 这些实体是否为模型幻觉产物\n2. 是否遗漏了相关的来源材料\n3. 缺失的实体包括：罗贯中, 明代, 三国时期, 刘备",
+        "details": {
+          "missing_entities": ["罗贯中", "明代", "三国时期", "刘备", "关羽", "张飞", "诸葛亮", "曹操"],
+          "output_entities": ["红楼梦", "罗贯中", "明代", "三国时期", "刘备", "关羽", "张飞", "诸葛亮", "曹操"],
+          "source_entities": ["红楼梦", "曹雪芹", "清代", "贾宝玉", "林黛玉", "薛宝钗"]
+        }
+      }
+    ],
+    "group_tags": ["古典文学", "严重幻觉", "需重训"],
+    "created_at": "2024-06-16T10:00:00",
+    "updated_at": "2024-06-16T14:00:00",
+    "notes": "严重的幻觉案例，模型将《红楼梦》与《三国演义》完全混淆，作者、朝代、内容全错。建议加入训练数据中的难例样本。",
+    "metadata": {"model_name": "GPT-4", "temperature": 0.9, "is_hard_example": true}
+  }
+]

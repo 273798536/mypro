@@ -1,0 +1,20 @@
+[
+  {
+    "version_id": "V202312_BASE",
+    "version_name": "V1 - 基础版本",
+    "prompt_template": "请回答以下问题：{{question}}",
+    "system_prompt": "你是一个问答助手，请准确回答用户的问题。",
+    "created_by": "模型训练工程师-张三",
+    "description": "初始版本，简单直接的问答提示词",
+    "metadata": {"release_date": "2023-12-01", "model": "GPT-3.5"}
+  },
+  {
+    "version_id": "V202401_PROD",
+    "version_name": "V2 - 生产版本（带来源追溯）",
+    "prompt_template": "你是一个专业的知识问答助手。请基于提供的参考材料回答用户问题。\n\n【参考材料】\n{{context}}\n\n【用户问题】\n{{question}}\n\n【回答要求】\n1. 只使用参考材料中包含的信息回答\n2. 如果参考材料中没有答案，请明确说明\n3. 回答要准确、简洁\n4. 请在回答末尾标注信息来源编号",
+    "system_prompt": "你是一个严谨的知识问答助手，必须基于提供的参考材料回答，不得编造信息。",
+    "created_by": "模型训练工程师-李四",
+    "description": "增加了参考材料约束和来源标注要求，显著降低幻觉率",
+    "metadata": {"release_date": "2024-01-15", "model": "GPT-4", "hallucination_rate_before": "15.3%", "hallucination_rate_after": "4.8%"}
+  }
+]
