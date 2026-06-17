@@ -1,0 +1,86 @@
+# Time: 2024-06-18T08:00:01.000000Z
+# User@Host: warehouse_app[warehouse_app] @ 10.0.1.23 []  Id:    1001
+# Query_time: 15.324567  Lock_time: 0.000123 Rows_sent: 50  Rows_examined: 1250000
+SET timestamp=1718707201;
+SELECT * FROM orders WHERE customer_name LIKE '%张三%' AND status = 'pending' ORDER BY created_at DESC LIMIT 50;
+
+# Time: 2024-06-18T08:05:12.000000Z
+# User@Host: warehouse_app[warehouse_app] @ 10.0.1.24 []  Id:    1002
+# Query_time: 8.765432  Lock_time: 0.000456 Rows_sent: 120  Rows_examined: 890000
+SET timestamp=1718707512;
+SELECT id, order_no, total_amount FROM orders WHERE DATE(created_at) = '2024-06-17' AND warehouse_id = 3;
+
+# Time: 2024-06-18T08:10:03.000000Z
+# User@Host: report_user[report_user] @ 10.0.2.15 []  Id:    2001
+# Query_time: 25.123456  Lock_time: 0.000789 Rows_sent: 1  Rows_examined: 2500000
+SET timestamp=1718707803;
+SELECT COUNT(*) FROM inventory WHERE status != 'deleted' AND category_id NOT IN (1, 2, 3, 5, 8, 13);
+
+# Time: 2024-06-18T08:15:30.000000Z
+# User@Host: warehouse_app[warehouse_app] @ 10.0.1.25 []  Id:    1003
+# Query_time: 3.456789  Lock_time: 0.000234 Rows_sent: 500  Rows_examined: 45000
+SET timestamp=1718708130;
+SELECT * FROM products WHERE warehouse_id = 5 AND status = 'active' ORDER BY price DESC LIMIT 500;
+
+# Time: 2024-06-18T08:20:45.000000Z
+# User@Host: api_user[api_user] @ 10.0.3.10 []  Id:    3001
+# Query_time: 12.987654  Lock_time: 0.001234 Rows_sent: 200  Rows_examined: 780000
+SET timestamp=1718708445;
+SELECT o.id, o.order_no, c.name as customer_name, o.total_amount
+FROM orders o
+LEFT JOIN customers c ON o.customer_id = c.id
+WHERE o.status = 'shipped' OR o.priority = 'high'
+ORDER BY o.created_at DESC
+LIMIT 200;
+
+# Time: 2024-06-18T08:25:00.000000Z
+# User@Host: warehouse_app[warehouse_app] @ 10.0.1.26 []  Id:    1004
+# Query_time: 1.234567  Lock_time: 0.000056 Rows_sent: 1  Rows_examined: 1
+use warehouse_db;
+SELECT * FROM warehouses WHERE id = 10;
+
+# Time: 2024-06-18T08:30:15.000000Z
+# User@Host: report_user[report_user] @ 10.0.2.16 []  Id:    2002
+# Query_time: 6.543210  Lock_time: 0.000345 Rows_sent: 1000  Rows_examined: 320000
+SET timestamp=1718709015;
+SELECT product_id, SUM(quantity) as total_qty FROM order_items
+WHERE created_at >= '2024-06-01'
+GROUP BY product_id
+ORDER BY total_qty DESC
+LIMIT 1000;
+
+# Time: 2024-06-18T08:35:20.000000Z
+# User@Host: warehouse_app[warehouse_app] @ 10.0.1.27 []  Id:    1005
+# Query_time: 2.890123  Lock_time: 0.000178 Rows_sent: 25  Rows_examined: 12500
+SET timestamp=1718709320;
+SELECT * FROM suppliers WHERE region = 'north' AND is_active = 1 ORDER BY name;
+
+# Time: 2024-06-18T08:40:00.000000Z
+# User@Host: data_sync[data_sync] @ 10.0.4.5 []  Id:    4001
+# Query_time: 18.456789  Lock_time: 0.002345 Rows_sent: 50000  Rows_examined: 50000
+SET timestamp=1718709600;
+SELECT * FROM orders;
+
+# Time: 2024-06-18T08:45:30.000000Z
+# User@Host: warehouse_app[warehouse_app] @ 10.0.1.28 []  Id:    1006
+# Query_time: 0.876543  Lock_time: 0.000045 Rows_sent: 10  Rows_examined: 10
+SET timestamp=1718709930;
+SELECT * FROM product_categories WHERE parent_id = 5;
+
+# Time: 2024-06-18T08:50:10.000000Z
+# User@Host: report_user[report_user] @ 10.0.2.17 []  Id:    2003
+# Query_time: 9.234567  Lock_time: 0.000567 Rows_sent: 100  Rows_examined: 560000
+SET timestamp=1718710210;
+SELECT o.order_no, o.total_amount, s.name as supplier_name
+FROM orders o
+JOIN suppliers s ON o.supplier_id = s.id
+WHERE MONTH(o.created_at) = 6 AND YEAR(o.created_at) = 2024
+  AND o.warehouse_id = 2
+ORDER BY o.total_amount DESC
+LIMIT 100;
+
+# Time: 2024-06-18T08:55:45.000000Z
+# User@Host: warehouse_app[warehouse_app] @ 10.0.1.29 []  Id:    1007
+# Query_time: 1.567890  Lock_time: 0.000089 Rows_sent: 300  Rows_examined: 300
+SET timestamp=1718710545;
+SELECT * FROM products WHERE category_id IN (SELECT id FROM categories WHERE parent_id = 3);
