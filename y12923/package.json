@@ -1,0 +1,30 @@
+{
+  "name": "sensitive-word-regression-test",
+  "version": "1.0.0",
+  "description": "敏感词规则回归测试工具 - 支持历史追踪、人工修正、幂等导入",
+  "main": "server/index.js",
+  "scripts": {
+    "install:all": "npm install && cd client && npm install",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "nodemon server/index.js",
+    "dev:client": "cd client && npm run dev",
+    "build:client": "cd client && npm run build",
+    "start": "node server/index.js",
+    "seed": "node server/seed.js"
+  },
+  "keywords": ["sensitive-word", "regression-test", "content-security"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "better-sqlite3": "^11.3.0",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "papaparse": "^5.4.1",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.4"
+  }
+}

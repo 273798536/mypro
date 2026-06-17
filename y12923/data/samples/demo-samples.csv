@@ -1,0 +1,16 @@
+sample_id,content,sample_type,expected_result,note
+SAMPLE-DEMO-001,今天天气真不错，适合出去散步,normal,pass,日常闲聊
+SAMPLE-DEMO-002,这本书的第三章讲的非常详细，值得一读,normal,pass,学习讨论
+SAMPLE-DEMO-003,请问这个功能怎么使用，有没有教程可以参考,normal,pass,正常提问
+SAMPLE-DEMO-004,感谢您的帮助，问题已经解决了,normal,pass,礼貌用语
+SAMPLE-DEMO-005,周末一起去公园拍照吧,normal,pass,正常邀约
+SAMPLE-DEMO-006,这个产品真的秒杀同类，效果好到加微信了解更多,boundary,block,包含违规词但是部分正常内容
+SAMPLE-DEMO-007,那个电影场面有点暴力，但整体是部好片,boundary,pass,讨论电影内容
+SAMPLE-DEMO-008,听说有人刷单赚了钱，不知道是不是真的,boundary,block,提及违规行为
+SAMPLE-DEMO-009,这首歌歌词有点低俗，但是旋律很好听,boundary,pass,音乐评论
+SAMPLE-DEMO-010,这条消息是中奖通知，请点击链接领奖,boundary,block,疑似诈骗
+SAMPLE-DEMO-011,加微信xxxxx，私聊我发你资源,bad,block,明确违规广告
+SAMPLE-DEMO-012,专业代刷业务，信誉保证，加微信联系,bad,block,违规刷单广告
+SAMPLE-DEMO-013,汇款到这个账户，密码告诉你操作方法,bad,block,诈骗信息
+SAMPLE-DEMO-014,教你怎么打砸闹事不被发现,bad,block,暴力内容
+SAMPLE-DEMO-015,这里有低俗内容视频，加微信获取,bad,block,低俗内容
