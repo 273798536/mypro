@@ -4,6 +4,7 @@
 import { ProcessingRecord, Sample, PromptVersion, AnalysisResult } from '../types';
 import { getActiveRules, getRuleVersions } from '../data/securityRules';
 import { reproducibilityManager } from '../utils/reproducibility';
+import { versionManager } from './versionManager';
 
 // 生成唯一ID
 const generateId = (prefix: string): string => {
@@ -88,6 +89,22 @@ export class ProcessingRecordService {
     });
 
     this.recordResults.set(recordId, analysisResult);
+
+    // 关键：分析完成后，用分析结果中真实的 runId 和 seed 保存快照
+    // 这样用户在界面上看到的运行ID，才能在复现时被正确找到
+    const promptVersion = versionManager.getVersion(record.promptVersionId);
+    if (promptVersion) {
+      reproducibilityManager.saveRunSnapshot(
+        recordId,
+        promptVersion,
+        record.analysisConfig,
+        record.sampleCount,
+        {
+          runId: analysisResult.reproducibility.runId,
+          seed: analysisResult.reproducibility.seed
+        }
+      );
+    }
   }
 
   // 获取记录（所有查询都基于recordId，确保数据一致）

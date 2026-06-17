@@ -3,6 +3,8 @@
 import { ReproducibilitySnapshot, ProcessingRecord, PromptVersion } from '../types';
 import { getRuleVersions } from '../data/securityRules';
 
+const STORAGE_KEY = 'security_refusal_snapshots_v1';
+
 // 带种子的随机数生成器
 class SeededRandom {
   private seed: number;
@@ -30,6 +32,31 @@ class SeededRandom {
   }
 }
 
+const loadSnapshotsFromStorage = (): Map<string, ReproducibilitySnapshot> => {
+  try {
+    if (typeof localStorage === 'undefined') {
+      return new Map();
+    }
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return new Map();
+    const arr = JSON.parse(raw) as ReproducibilitySnapshot[];
+    return new Map(arr.map(s => [s.runId, s]));
+  } catch (e) {
+    console.warn('加载快照失败:', e);
+    return new Map();
+  }
+};
+
+const persistSnapshots = (snapshots: Map<string, ReproducibilitySnapshot>): void => {
+  try {
+    if (typeof localStorage === 'undefined') return;
+    const arr = Array.from(snapshots.values());
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+  } catch (e) {
+    console.warn('保存快照失败:', e);
+  }
+};
+
 // 可复现性管理器
 export class ReproducibilityManager {
   private currentSeed: number;
@@ -37,7 +64,7 @@ export class ReproducibilityManager {
 
   constructor() {
     this.currentSeed = Date.now();
-    this.snapshots = new Map();
+    this.snapshots = loadSnapshotsFromStorage();
   }
 
   // 生成唯一运行ID
@@ -67,12 +94,15 @@ export class ReproducibilityManager {
     _recordId: string,
     promptVersion: PromptVersion,
     analysisConfig: ProcessingRecord['analysisConfig'],
-    sampleCount: number
+    sampleCount: number,
+    existingRunInfo?: { runId: string; seed: number }
   ): ReproducibilitySnapshot {
-    const runId = this.generateRunId();
+    const runId = existingRunInfo?.runId ?? this.generateRunId();
+    const seed = existingRunInfo?.seed ?? this.currentSeed;
+
     const snapshot: ReproducibilitySnapshot = {
       runId,
-      seed: this.currentSeed,
+      seed,
       timestamp: new Date().toISOString(),
       analysisConfig: JSON.parse(JSON.stringify(analysisConfig)),
       ruleVersions: getRuleVersions(),
@@ -81,6 +111,7 @@ export class ReproducibilityManager {
     };
 
     this.snapshots.set(runId, snapshot);
+    persistSnapshots(this.snapshots);
     return snapshot;
   }
 
@@ -161,6 +192,7 @@ export const saveSnapshot = (
   recordId: string,
   promptVersion: PromptVersion,
   analysisConfig: ProcessingRecord['analysisConfig'],
-  sampleCount: number
-) => reproducibilityManager.saveRunSnapshot(recordId, promptVersion, analysisConfig, sampleCount);
+  sampleCount: number,
+  existingRunInfo?: { runId: string; seed: number }
+) => reproducibilityManager.saveRunSnapshot(recordId, promptVersion, analysisConfig, sampleCount, existingRunInfo);
 export const reproduceByRunId = (runId: string) => reproducibilityManager.reproduceByRunId(runId);
