@@ -4,6 +4,17 @@ import json
 
 class TestAPI:
 
+    def test_root_route_redirects_to_frontend(self, client):
+        response = client.get('/')
+        assert response.status_code in (301, 302)
+        assert 'static' in response.headers.get('Location', '')
+        assert 'index.html' in response.headers.get('Location', '')
+
+    def test_static_index_html_accessible(self, client):
+        response = client.get('/static/index.html')
+        assert response.status_code == 200
+        assert 'text/html' in response.content_type
+
     def test_health_check(self, client):
         response = client.get('/api/health')
         assert response.status_code == 200
@@ -46,6 +57,22 @@ class TestAPI:
         data = response.get_json()
         assert data['total'] == 2
         assert len(data['items']) == 2
+
+    def test_list_samples_filter_by_status_pending(self, client, sample_test_data):
+        client.post('/api/samples/import', json=sample_test_data)
+        response = client.get('/api/samples?status=PENDING')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['total'] == 2
+        for item in data['items']:
+            assert item['status'] == 'PENDING'
+
+    def test_list_samples_filter_by_status_invalid_returns_all(self, client, sample_test_data):
+        client.post('/api/samples/import', json=sample_test_data)
+        response = client.get('/api/samples?status=INVALID_STATUS')
+        assert response.status_code == 200
+        data = response.get_json()
+        assert data['total'] == 2
 
     def test_get_sample_api(self, client, sample_test_data):
         import_resp = client.post('/api/samples/import', json=sample_test_data)

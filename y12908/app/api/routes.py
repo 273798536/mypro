@@ -6,6 +6,7 @@ from app.models.models import (
     EvaluationBank,
     DiagnosisResult,
     SecurityRule,
+    SAMPLE_STATUS,
 )
 from app.services import (
     DeduplicationService,
@@ -80,7 +81,13 @@ def list_samples():
     if batch_id:
         query = query.filter_by(batch_id=batch_id)
     if status:
-        query = query.filter(Sample.status.has_key(status))
+        status_values = [s.strip() for s in status.split(',')]
+        status_enums = []
+        for sv in status_values:
+            if hasattr(SAMPLE_STATUS, sv):
+                status_enums.append(getattr(SAMPLE_STATUS, sv))
+        if status_enums:
+            query = query.filter(Sample.status.in_(status_enums))
 
     pagination = query.order_by(Sample.id.desc()).paginate(
         page=page, per_page=per_page, error_out=False

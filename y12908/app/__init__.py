@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from config import Config
@@ -18,6 +18,10 @@ def create_app(config_class=Config):
     app.register_blueprint(api_bp, url_prefix='/api')
 
     from app.models import models  # noqa: F401
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('static', filename='index.html'))
 
     with app.app_context():
         db.create_all()
