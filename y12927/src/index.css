@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: '"Noto Sans SC"', -apple-system, BlinkMacSystemFont, '"PingFang SC"', '"Microsoft YaHei"', sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #374151;
+  background-color: #fafaf7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+  font-family: '"Noto Serif SC"', '"Source Han Serif SC"', Georgia, serif;
+  letter-spacing: 0.01em;
+  color: #1e3a5f;
+}
+
+.card {
+  @apply bg-white rounded-xl shadow-soft hover:shadow-soft-hover transition-all duration-200 border border-sand-200;
+}
+
+.btn {
+  @apply inline-flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-medium transition-all duration-150 border border-transparent;
+}
+
+.btn-primary {
+  @apply btn bg-brand-500 text-white hover:bg-brand-600 hover:-translate-y-px hover:shadow-md;
+}
+
+.btn-secondary {
+  @apply btn bg-sand-100 text-brand-600 border border-sand-200 hover:bg-sand-200;
+}
+
+.btn-ghost {
+  @apply btn text-brand-600 hover:bg-sand-100;
+}
+
+.tag {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+}
+
+.input {
+  @apply w-full px-3 py-2 rounded-md border border-sand-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-400 transition;
+}
+
+.textarea {
+  @apply input resize-y min-h-[80px];
+}
+
+.select {
+  @apply input appearance-none bg-no-repeat bg-right pr-9;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-position: right 10px center;
+}
+
+.badge-dot {
+  @apply w-2 h-2 rounded-full inline-block;
+}
+
+.timeline-line {
+  position: relative;
+}
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 24px;
+  bottom: -8px;
+  width: 2px;
+  background: linear-gradient(to bottom, #b7d0ea, transparent);
+}
+.timeline-line:last-child::before {
+  display: none;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f4f3ed;
+}
+::-webkit-scrollbar-thumb {
+  background: #b7d0ea;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7ea8d6;
+}
