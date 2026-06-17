@@ -20,7 +20,7 @@ import { useDataStore } from '@/store/useDataStore';
 import { cn } from '@/lib/utils';
 
 export default function Settings() {
-  const { clearAllData, exportData, importData, loadRecords, loadStats, stats } = useDataStore();
+  const { clearAllData, exportData, importDataFromFile, loadRecords, loadStats, stats } = useDataStore();
   const [activeTab, setActiveTab] = useState<'data' | 'quality' | 'appearance' | 'about'>('data');
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [salinityUnit, setSalinityUnit] = useState<'PSU' | 'ppt' | 'auto'>('auto');

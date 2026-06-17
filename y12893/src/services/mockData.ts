@@ -180,8 +180,34 @@ export function generateMockDataset(count: number = 30): {
   return { shipTracks, aquacultureLogs, salinityData };
 }
 
-export function generateAllRecords(count: number = 30): DataRecord[] {
-  const { shipTracks, aquacultureLogs, salinityData } = generateMockDataset(count);
+export function generateAllRecords(
+  shipCount?: number,
+  aquaCount?: number,
+  saltCount?: number
+): DataRecord[] {
+  const baseTime = Date.now() - 7 * 24 * 3600000;
+  const shipTracks: ShipTrack[] = [];
+  const aquacultureLogs: AquacultureLog[] = [];
+  const salinityData: SalinityData[] = [];
+
+  if (shipCount !== undefined && aquaCount !== undefined && saltCount !== undefined) {
+    for (let i = 0; i < shipCount; i++) {
+      shipTracks.push(generateShipTrack(baseTime, i, i < Math.floor(shipCount * 0.3)));
+    }
+    for (let i = 0; i < aquaCount; i++) {
+      aquacultureLogs.push(generateAquacultureLog(baseTime, i, i < Math.floor(aquaCount * 0.25)));
+    }
+    for (let i = 0; i < saltCount; i++) {
+      salinityData.push(generateSalinityData(baseTime, i, i < Math.floor(saltCount * 0.35)));
+    }
+  } else {
+    const count = shipCount ?? 30;
+    const { shipTracks: s, aquacultureLogs: a, salinityData: sa } = generateMockDataset(count);
+    shipTracks.push(...s);
+    aquacultureLogs.push(...a);
+    salinityData.push(...sa);
+  }
+
   return [...shipTracks, ...aquacultureLogs, ...salinityData];
 }
 

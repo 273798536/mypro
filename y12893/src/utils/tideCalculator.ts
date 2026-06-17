@@ -28,7 +28,17 @@ export function calculateTideCorrelation(
     return {
       correlation: 0,
       explanation: '数据量不足，无法计算潮汐与供电负荷的相关性。',
-      anomalies: []
+      anomalies: [],
+      avgTideHeight: 0,
+      avgLoad: 0,
+      tideRange: { min: 0, max: 0 },
+      peakTideHour: 12,
+      lowTideHour: 0,
+      hourlyCorrelation: Array.from({ length: 24 }, (_, h) => ({
+        hour: h,
+        avgLoad: 0,
+        avgTideHeight: 0
+      }))
     };
   }
 
