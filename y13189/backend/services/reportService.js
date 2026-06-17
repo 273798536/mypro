@@ -254,7 +254,12 @@ function recalculateWithNewParams(reportId, newParams) {
 
   const unitIssues = checkUnitConsistency(recalculatedSamples);
   const anomalies = checkAnomalies(recalculatedSamples);
-  const materialInfo = normalizeMaterialName(report.basicInfo.specimenMaterial);
+
+  const recordMaterialName = report.materialConclusion?.materialNameInRecord 
+    || report.basicInfo?.materialAlias 
+    || report.basicInfo?.specimenMaterial;
+  const materialInfo = normalizeMaterialName(recordMaterialName);
+
   const unifiedSamples = unifySampleNotes(recalculatedSamples);
 
   return {
@@ -354,7 +359,12 @@ function getReportById(reportId) {
   const normalizedSamples = normalizeSampleUnits(report.samples);
   const unitIssues = checkUnitConsistency(normalizedSamples);
   const anomalies = checkAnomalies(normalizedSamples);
-  const materialInfo = normalizeMaterialName(report.basicInfo.specimenMaterial);
+
+  const recordMaterialName = report.materialConclusion?.materialNameInRecord 
+    || report.basicInfo?.materialAlias 
+    || report.basicInfo?.specimenMaterial;
+  const materialInfo = normalizeMaterialName(recordMaterialName);
+
   const unifiedSamples = unifySampleNotes(normalizedSamples);
 
   return {
