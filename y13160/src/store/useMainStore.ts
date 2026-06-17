@@ -81,9 +81,9 @@ const initialChain = (() => {
   return { chainA: cA, chainB: cB };
 })();
 
-const initialState: Omit<
+const initialState: Pick<
   MainState,
-  keyof Snapshot | 'photos' | 'history' | 'historyIndex' | 'gapGroupId' | 'showAnnotation' | 'loadSample' | 'rerun' | 'toggleAnnotation' | 'setActiveGroup' | 'updateParam' | 'undo' | 'redo' | 'jumpToHistory' | 'reset' | '_pushHistory' | '_applySnapshot'
+  'photos' | 'history' | 'historyIndex' | 'gapGroupId' | 'showAnnotation'
 > = {
   photos: [],
   history: [],
@@ -143,7 +143,7 @@ export const useMainStore = create<MainState>((set, get) => ({
 
   toggleAnnotation: (photoId, stepId) =>
     set((s) => ({
-      showAnnotation: !(photoId || stepId ? true : !s.showAnnotation),
+      showAnnotation: photoId || stepId ? true : !s.showAnnotation,
       annotationPhotoId: photoId ?? s.annotationPhotoId,
       annotationStepId: stepId ?? s.annotationStepId,
     })),

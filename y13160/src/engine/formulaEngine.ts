@@ -162,6 +162,12 @@ export function buildChain(group: ParamGroup, opts: EngineOptions = {}): ChainSt
         finalSteps[opts.injectGap.stepIndex]
       );
     }
+    finalSteps = finalSteps.map((s, idx) => {
+      const prev = idx > 0 ? finalSteps[idx - 1] : null;
+      if (!prev) return s;
+      const md = magnitudeDelta(prev.result.value, s.result.value);
+      return { ...s, magnitudeDelta: md };
+    });
   }
 
   return injectBoundaries(finalSteps, (v, from, to) => {
@@ -179,16 +185,32 @@ export function buildChainsForGroups(groups: ParamGroup[], gapGroupId: 'A' | 'B'
           stepIndex: 0,
           reason:
             '现场照片 photo-1 读数单位混写：Hs_raw 登记为 cm 但实际读数为 mm，数量级偏移 +2（×100），缺口来源：老唐现场记录涂改痕迹。',
-          modify: (s) => ({
-            ...s,
-            inputValues: s.inputValues.map((iv) =>
+          modify: (s) => {
+            const newInputValues = s.inputValues.map((iv) =>
               iv.label === 'Hs_raw' ? { ...iv, value: iv.value, unit: 'mm' } : iv
-            ),
-            unitConverts: s.unitConverts.map((uc) => ({
-              ...uc,
-              factor: uc.factor,
-            })),
-          }),
+            );
+            const newUnitConverts = s.unitConverts.map((uc, i) => {
+              const iv = newInputValues[i];
+              if (!iv) return uc;
+              const reconv = convertWrap(iv.value, iv.unit, uc.to);
+              return {
+                ...uc,
+                from: iv.unit,
+                factor: reconv.factor,
+                intermediate: reconv.intermediate,
+              };
+            });
+            const newResult = {
+              ...s.result,
+              value: newUnitConverts[0]?.intermediate ?? s.result.value,
+            };
+            return {
+              ...s,
+              inputValues: newInputValues,
+              unitConverts: newUnitConverts,
+              result: newResult,
+            };
+          },
         },
       });
     }

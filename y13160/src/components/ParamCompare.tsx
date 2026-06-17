@@ -115,12 +115,14 @@ export default function ParamCompare() {
                 <ParamCell
                   value={a.value}
                   unit={a.unit}
+                  paramKey={k}
                   tone="cyan"
                   onChange={(v, u) => updateParam('A', k, v, u)}
                 />
                 <ParamCell
                   value={b.value}
                   unit={b.unit}
+                  paramKey={k}
                   tone="amber"
                   onChange={(v, u) => updateParam('B', k, v, u)}
                   highlight={hasDiff}
@@ -187,12 +189,14 @@ const UNIT_OPTIONS: Record<string, string[]> = {
 function ParamCell({
   value,
   unit,
+  paramKey,
   tone,
   onChange,
   highlight,
 }: {
   value: number;
   unit: string;
+  paramKey: string;
   tone: 'cyan' | 'amber';
   onChange: (v: number, u: string) => void;
   highlight?: boolean;
@@ -203,7 +207,7 @@ function ParamCell({
       'text-neon-amber border-neon-amber/30 focus:border-neon-amber focus:shadow-neon-amber',
   } as const;
 
-  const opts = UNIT_OPTIONS[unit] ?? [unit];
+  const opts = UNIT_OPTIONS[paramKey] ?? [unit];
 
   return (
     <div className={`px-2.5 py-2 flex items-center gap-1.5 ${highlight ? 'bg-neon-magenta/5' : ''} ${tone === 'amber' ? 'border-l border-neon-cyan/10' : ''}`}>
