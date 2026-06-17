@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useStore } from "@/store/useStore"
-import type { TrajectoryInput } from "@/types"
+import type { TrajectoryInput, ResultStatus } from "@/types"
 import {
   Navigation,
   MessageSquare,
@@ -20,6 +20,9 @@ import {
   Target,
   Waves,
   Wind,
+  Sparkles,
+  ExternalLink,
+  XCircle,
 } from "lucide-react"
 
 const inputFields: { key: keyof TrajectoryInput; label: string; unit: string }[] = [
@@ -42,6 +45,17 @@ const defaultInput: TrajectoryInput = {
   vesselSpeed: 0,
   currentSpeed: 0,
   windSpeed: 0,
+}
+
+const sampleInput: TrajectoryInput = {
+  startLat: 29.9525,
+  startLng: 122.2075,
+  endLat: 29.9975,
+  endLng: 122.2430,
+  timeElapsed: 27,
+  vesselSpeed: 8.5,
+  currentSpeed: 0.5,
+  windSpeed: 3.0,
 }
 
 const whyReviewItems = [
@@ -80,6 +94,7 @@ export default function Trajectory() {
   const [noteAuthor, setNoteAuthor] = useState("")
   const [noteContent, setNoteContent] = useState("")
   const [showWhyReview, setShowWhyReview] = useState(true)
+  const [lastResult, setLastResult] = useState<{ status: ResultStatus; reason: string; resultId: string } | null>(null)
 
   const latestCalc = trajectoryCalcs[trajectoryCalcs.length - 1]
   const currentBatch = batches.find((b) => b.id === selectedBatchId)
@@ -93,7 +108,19 @@ export default function Trajectory() {
   }
 
   const handleCalculate = () => {
-    calculateDrift(formInput)
+    const result = calculateDrift(formInput)
+    if (result) {
+      setLastResult({
+        status: result.result.status,
+        reason: result.result.statusReason,
+        resultId: result.result.id,
+      })
+    }
+  }
+
+  const handleUseSample = () => {
+    setFormInput(sampleInput)
+    setLastResult(null)
   }
 
   const handleAddNote = () => {
@@ -206,15 +233,77 @@ export default function Trajectory() {
                 <span className="text-xs text-slate-500 w-8">{unit}</span>
               </div>
             ))}
-            <button className="btn-primary w-full mt-4 flex items-center justify-center gap-2" onClick={handleCalculate}>
-              <Calculator className="w-4 h-4" />
-              计算
-            </button>
+            <div className="flex gap-2 mt-4">
+              <button
+                className="btn-secondary flex-1 flex items-center justify-center gap-2"
+                onClick={handleUseSample}
+                type="button"
+              >
+                <Sparkles className="w-4 h-4" />
+                使用样例参数
+              </button>
+              <button
+                className="btn-primary flex-1 flex items-center justify-center gap-2"
+                onClick={handleCalculate}
+                type="button"
+              >
+                <Calculator className="w-4 h-4" />
+                计算
+              </button>
+            </div>
+            <p className="text-[11px] text-slate-600 mt-2 text-center">
+              样例参数可复现漂移距离 0.87nm、漂移指数 0.23 的标准结果
+            </p>
           </div>
 
           <div className="space-y-4">
             {latestCalc && latestCalc.batchId === selectedBatchId ? (
               <>
+                {lastResult && (
+                  <div
+                    className={`rounded-lg p-4 border ${
+                      lastResult.status === "可用"
+                        ? "bg-reef/10 border-reef/30"
+                        : lastResult.status === "暂缓"
+                        ? "bg-amber/10 border-amber/30"
+                        : "bg-coral/10 border-coral/30"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-2.5">
+                        {lastResult.status === "可用" ? (
+                          <CheckCircle2 className="w-5 h-5 text-reef shrink-0 mt-0.5" />
+                        ) : lastResult.status === "暂缓" ? (
+                          <AlertTriangle className="w-5 h-5 text-amber shrink-0 mt-0.5" />
+                        ) : (
+                          <XCircle className="w-5 h-5 text-coral shrink-0 mt-0.5" />
+                        )}
+                        <div>
+                          <div
+                            className={`font-bold text-sm ${
+                              lastResult.status === "可用"
+                                ? "text-reef-light"
+                                : lastResult.status === "暂缓"
+                                ? "text-amber-light"
+                                : "text-coral-light"
+                            }`}
+                          >
+                            计算结果状态：{lastResult.status}
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1 leading-relaxed">{lastResult.reason}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => (window.location.hash = "/results")}
+                        className="flex items-center gap-1 text-xs text-ice hover:text-ice-light transition-colors shrink-0"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        查看结果
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div className="bg-ocean-950 border border-ocean-700/50 rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-xs text-slate-500">计算结果</div>
