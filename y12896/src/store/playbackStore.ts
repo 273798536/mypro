@@ -162,13 +162,15 @@ export const usePlaybackStore = create<PlaybackState & PlaybackActions>((set, ge
         time,
         openingPercent,
         reason,
+        timezone: state.timezone,
       });
       set({ latestOverride: res });
       if (res.success) {
-        const existing = state.customGates.findIndex((g) => g.time === time);
+        const storageTime = res.shiftedTime ?? time;
+        const existing = state.customGates.findIndex((g) => g.time === storageTime);
         const nextGates = [...state.customGates];
-        if (existing >= 0) nextGates[existing] = { time, openingPercent };
-        else nextGates.push({ time, openingPercent });
+        if (existing >= 0) nextGates[existing] = { time: storageTime, openingPercent };
+        else nextGates.push({ time: storageTime, openingPercent });
         set({ customGates: nextGates, strategy: "custom" });
         await get().runCalculation();
       }

@@ -1,32 +1,63 @@
 import { scenarios, type GateStrategyPoint } from "../data/scenarios.js";
+import * as tideService from "./tideService.js";
 
 const OVERRIDES: Record<string, GateStrategyPoint[]> = {};
 
-export function getGateStrategy(scenarioId: string, type: "correct" | "wrong") {
+export function getGateStrategy(
+  scenarioId: string,
+  type: "correct" | "wrong",
+  requestedTimezone?: string
+): GateStrategyPoint[] | null {
   const scenario = scenarios[scenarioId];
   if (!scenario) return null;
+
   const base = type === "correct" ? scenario.correctStrategy : scenario.wrongStrategy;
   const overrides = OVERRIDES[scenarioId] || [];
-  if (overrides.length === 0) return base;
 
-  const overrideMap = new Map(overrides.map((o) => [o.time, o.openingPercent]));
-  return base.map((p) =>
-    overrideMap.has(p.time) ? { ...p, openingPercent: overrideMap.get(p.time)! } : p
-  );
+  const withOverrides: GateStrategyPoint[] =
+    overrides.length === 0
+      ? base
+      : (() => {
+          const overrideMap = new Map(overrides.map((o) => [o.time, o.openingPercent]));
+          return base.map((p) =>
+            overrideMap.has(p.time) ? { ...p, openingPercent: overrideMap.get(p.time)! } : p
+          );
+        })();
+
+  const shiftHours = tideService.getShiftHours(scenarioId, requestedTimezone);
+  return tideService.shiftTimes(withOverrides, shiftHours);
 }
 
 export function applyOverride(
   scenarioId: string,
   time: string,
   openingPercent: number,
-  reason?: string
+  reason?: string,
+  requestedTimezone?: string
 ) {
   if (!scenarios[scenarioId]) return null;
   const scenario = scenarios[scenarioId];
 
+  const shiftHours = tideService.getShiftHours(scenarioId, requestedTimezone);
+  const canonicalTime = tideService.shiftTime(time, -shiftHours);
+
   const tides = scenario.tides;
-  const matchIdx = tides.findIndex((t) => t.time === time);
-  const tidePoint = matchIdx >= 0 ? tides[matchIdx] : null;
+  let tidePoint = tides.find((t) => t.time === canonicalTime);
+  if (!tidePoint) {
+    let minDiff = Infinity;
+    let closest: (typeof tides)[number] | null = null;
+    const target = new Date(canonicalTime).getTime();
+    for (const t of tides) {
+      const diff = Math.abs(new Date(t.time).getTime() - target);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = t;
+      }
+    }
+    if (closest && minDiff < 30 * 60 * 1000) {
+      tidePoint = closest;
+    }
+  }
 
   let warning: string | undefined;
   let alert:
@@ -73,26 +104,49 @@ export function applyOverride(
       riskLevel = "low";
       energyDelta = -5;
     }
+  } else {
+    warning = "未找到对应时间的潮位数据，本次修改作为自由覆盖项存储。";
+    riskLevel = "low";
+    energyDelta = 0;
   }
 
   if (!OVERRIDES[scenarioId]) OVERRIDES[scenarioId] = [];
-  const existing = OVERRIDES[scenarioId].findIndex((o) => o.time === time);
-  const record = { time, openingPercent };
+  const existing = OVERRIDES[scenarioId].findIndex((o) => o.time === canonicalTime);
+  const record = { time: canonicalTime, openingPercent };
   if (existing >= 0) OVERRIDES[scenarioId][existing] = record;
   else OVERRIDES[scenarioId].push(record);
 
   return {
     success: true,
+    canonicalTime,
+    shiftedTime: tideService.shiftTime(canonicalTime, shiftHours),
     warning,
     impact: {
       energyDelta: Math.round(energyDelta),
       riskLevel,
     },
     alert,
+    matchedTide: tidePoint
+      ? {
+          time: tidePoint.time,
+          phase: tidePoint.phase,
+          tideLevel: tidePoint.tideLevel,
+          shiftedTime: tideService.shiftTime(tidePoint.time, shiftHours),
+        }
+      : null,
   };
 }
 
 export function clearOverrides(scenarioId: string) {
   if (OVERRIDES[scenarioId]) OVERRIDES[scenarioId] = [];
   return { success: true };
+}
+
+export function listOverrides(
+  scenarioId: string,
+  requestedTimezone?: string
+): GateStrategyPoint[] {
+  const items = OVERRIDES[scenarioId] || [];
+  const shiftHours = tideService.getShiftHours(scenarioId, requestedTimezone);
+  return tideService.shiftTimes(items, shiftHours);
 }

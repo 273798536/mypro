@@ -95,10 +95,13 @@ export interface GateOverrideRequest {
   time: string;
   openingPercent: number;
   reason?: string;
+  timezone?: string;
 }
 
 export interface GateOverrideResponse {
   success: boolean;
+  canonicalTime?: string;
+  shiftedTime?: string;
   warning?: string;
   impact: {
     energyDelta: number;
@@ -108,6 +111,12 @@ export interface GateOverrideResponse {
     level: AlertLevel;
     message: string;
     teachingNote: string;
+  };
+  matchedTide?: {
+    time: string;
+    shiftedTime: string;
+    phase: string;
+    tideLevel: number;
   };
 }
 

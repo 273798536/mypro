@@ -77,12 +77,13 @@ export function calculate(
   const tideResult = tideService.getTideData(scenarioId, timezone);
   if (!tideResult) return null;
   const tides: TidePoint[] = tideResult.data;
+  const shiftHours = tideResult.shiftHours ?? 0;
 
   let gates: GateStrategyPoint[];
   if (strategy === "custom" && customGates) {
     gates = customGates;
   } else {
-    gates = gateService.getGateStrategy(scenarioId, strategy === "wrong" ? "wrong" : "correct")!;
+    gates = gateService.getGateStrategy(scenarioId, strategy === "wrong" ? "wrong" : "correct", timezone)!;
   }
 
   const gateMap = new Map(gates.map((g) => [g.time, g.openingPercent]));
