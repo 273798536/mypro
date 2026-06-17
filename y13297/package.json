@@ -1,0 +1,15 @@
+{
+  "name": "pocket-park-seat-complaint-playback",
+  "version": "1.0.0",
+  "description": "口袋公园座椅投诉回放 - GIS点位历史时间线系统",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "init-db": "node src/init-db.js",
+    "sample": "node src/load-sample.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^9.4.3"
+  }
+}
