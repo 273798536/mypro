@@ -1,0 +1,24 @@
+{
+  "total_records": 15,
+  "processed_count": 14,
+  "pending_count": 0,
+  "need_evidence_count": 1,
+  "error_count": 0,
+  "extreme_count": 1,
+  "sampling_gap_count": 0,
+  "by_category": {
+    "待归因": 11,
+    "材料因素": 1,
+    "施工因素": 3
+  },
+  "by_risk": {
+    "低风险": 13,
+    "高风险": 1,
+    "中风险": 1
+  },
+  "avg_deflection_ratio": 1.0340666666666667,
+  "max_deflection_ratio": 1.1861,
+  "evidence_todo": [
+    "V2-002-跨中: 极端值复核IQR法偏高(上界1.1847, 下界0.8701); Z-score偏高(z=2.14, 阈值±2.0)"
+  ]
+}

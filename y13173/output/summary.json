@@ -1,0 +1,29 @@
+{
+  "total_records": 36,
+  "processed_count": 31,
+  "pending_count": 0,
+  "need_evidence_count": 5,
+  "error_count": 0,
+  "extreme_count": 3,
+  "sampling_gap_count": 2,
+  "by_category": {
+    "待归因": 23,
+    "施工因素": 8,
+    "测量因素": 2,
+    "材料因素": 3
+  },
+  "by_risk": {
+    "低风险": 31,
+    "中风险": 2,
+    "高风险": 3
+  },
+  "avg_deflection_ratio": 1.0684970588235294,
+  "max_deflection_ratio": 1.3763,
+  "evidence_todo": [
+    "G001-3/4跨: 采样缺口补测",
+    "E002-3/4跨: 极端值复核IQR法偏低(上界1.3211, 下界0.8168); Z-score偏低(z=-2.71, 阈值±2.0)",
+    "E001-1/4跨: 极端值复核IQR法偏高(上界1.3211, 下界0.8168); Z-score偏高(z=2.37, 阈值±2.0)",
+    "G002-1/4跨: 采样缺口补测",
+    "E003-1/4跨: 极端值复核IQR法偏高(上界1.3211, 下界0.8168); Z-score偏高(z=2.79, 阈值±2.0)"
+  ]
+}

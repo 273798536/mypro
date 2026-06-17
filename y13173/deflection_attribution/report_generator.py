@@ -46,11 +46,15 @@ def generate_text_report(
 
     lines.append("一、处理进度概览")
     lines.append("-" * 40)
-    lines.append(f"  已处理: {summary.processed_count} 条 ({_format_percent(summary.processed_count, summary.total_records)")
+    lines.append(f"  已处理: {summary.processed_count} 条 ({_format_percent(summary.processed_count, summary.total_records)})")
     lines.append(f"  待处理: {summary.pending_count} 条")
     lines.append(f"  待补证据: {summary.need_evidence_count} 条 (重点关注)")
     lines.append(f"  处理异常: {summary.error_count} 条")
-    lines.append(f"  处理率: {(summary.processed_count / summary.total_records * 100:.1f}%" if summary.total_records else "  处理率: 0.0%")
+    if summary.total_records > 0:
+        processed_ratio = summary.processed_count / summary.total_records * 100
+        lines.append(f"  处理率: {processed_ratio:.1f}%")
+    else:
+        lines.append("  处理率: 0.0%")
     lines.append("")
 
     lines.append("二、风险分布")

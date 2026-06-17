@@ -17,7 +17,8 @@ STANDARD_FIELD_MAP: Dict[str, List[str]] = {
     ],
     "measure_point": [
         "measure_point", "测点", "测量点", "测点编号", "截面位置",
-        "位置", "position", "point", "measuring_point"
+        "位置", "position", "point", "measuring_point",
+        "测量截面", "截面", "测站",
     ],
     "measure_time": [
         "measure_time", "测量时间", "时间", "检测日期", "日期",
@@ -25,15 +26,15 @@ STANDARD_FIELD_MAP: Dict[str, List[str]] = {
     ],
     "design_value": [
         "design_value", "设计值", "设计挠度", "理论值", "计算值",
-        "design", "theoretical_value"
+        "design", "theoretical_value", "design_deflection",
     ],
     "measured_value": [
         "measured_value", "实测值", "测量值", "实测挠度", "观测值",
-        "measured", "measurement", "actual_value"
+        "measured", "measurement", "actual_value", "measured_deflection",
     ],
     "deflection_value": [
         "deflection_value", "挠度值", "挠度", "变形值", "扰度",
-        "deflection", "deformation"
+        "deflection", "deformation",
     ],
     "deflection_ratio": [
         "deflection_ratio", "挠度比", "挠度系数", "相对挠度",
@@ -55,9 +56,11 @@ STANDARD_FIELD_MAP: Dict[str, List[str]] = {
 
 
 def _normalize_name(name: str) -> str:
-    """归一化字段名：去空格、转小写、统一标点。"""
+    """归一化字段名：去空格、转小写、统一标点、去括号内容。"""
     name = name.strip().lower()
     name = re.sub(r"[\s_\-]+", "", name)
+    name = re.sub(r"[\(（].*?[\)）]", "", name)
+    name = re.sub(r"[^\w\u4e00-\u9fff]", "", name)
     return name
 
 

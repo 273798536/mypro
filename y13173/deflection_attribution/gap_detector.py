@@ -11,11 +11,33 @@ from .models import DeflectionRecord, ProcessStatus
 from .field_mapper import safe_float
 
 
-GAP_PATTERNS = [
-    "缺口", "缺测", "漏测", "未测", "缺失", "缺", "无数据",
-    "gap", "missing", "n/a", "na", "null", "none", "--", "-",
-    "异常", "可疑", "无效", "坏点", "弃用",
+GAP_PATTERNS_EXACT = {
+    "--", "-", "n/a", "na", "null", "none",
+    "无", "缺", "空", "",
+    "缺测", "漏测", "未测",
+}
+
+GAP_PATTERNS_CONTAIN = [
+    "缺口", "缺测", "漏测", "未测", "缺失", "无数据",
+    "gap", "missing",
+    "仪器故障", "补测",
 ]
+
+
+def _value_is_gap(value: str) -> bool:
+    """判断单个值是否为缺口标记（精确匹配）。"""
+    if value is None:
+        return True
+    s = str(value).strip().lower()
+    return s in GAP_PATTERNS_EXACT
+
+
+def _value_contains_gap(value: str) -> bool:
+    """判断值是否包含缺口关键词（包含匹配）。"""
+    if value is None:
+        return False
+    s = str(value).lower()
+    return any(p in s for p in GAP_PATTERNS_CONTAIN)
 
 
 def detect_sampling_gap(record: DeflectionRecord) -> Tuple[bool, str]:
@@ -26,31 +48,43 @@ def detect_sampling_gap(record: DeflectionRecord) -> Tuple[bool, str]:
     """
     reasons = []
 
-    if record.deflection_value is None and record.measured_value is None:
-        reasons.append("挠度值和实测值均为空")
+    has_deflection = (
+        record.deflection_value is not None
+        or record.measured_value is not None
+        or record.deflection_ratio is not None
+    )
+    if not has_deflection:
+        reasons.append("挠度相关数据全部为空")
 
     if record.deflection_value is not None and record.deflection_value == 0:
-        reasons.append("挠度值为0，疑似缺测")
+        if record.deflection_ratio is None or record.deflection_ratio == 0:
+            reasons.append("挠度值为0，疑似缺测")
 
-    if record.measure_time and any(p in str(record.measure_time).lower() for p in GAP_PATTERNS):
-        reasons.append("测量时间字段含缺口标记")
+    if _value_is_gap(record.measured_value):
+        reasons.append("实测值为缺口标记")
 
-    material_str = str(record.material_name).lower()
-    if any(p in material_str for p in ["缺口", "缺测", "缺失", "gap", "missing"]):
+    if _value_contains_gap(str(record.measured_value)) and not _value_is_gap(record.measured_value):
+        if str(record.measured_value).strip():
+            reasons.append("实测值含缺口关键词")
+
+    if _value_is_gap(record.deflection_value):
+        reasons.append("挠度值为缺口标记")
+
+    if _value_is_gap(record.deflection_ratio):
+        reasons.append("挠度比为缺口标记")
+
+    material_str = str(record.material_name)
+    if _value_contains_gap(material_str):
         reasons.append("材料名称含缺口标记")
 
-    raw_str = " ".join(str(v) for v in record.raw_data.values()).lower()
-    for pattern in GAP_PATTERNS:
-        if pattern in raw_str and pattern not in ["-", "null"]:
-            reasons.append(f"原始数据含关键词[{pattern}]")
-            break
-
-    if "_extra" in record.raw_data:
-        extra = record.raw_data["_extra"]
-        if isinstance(extra, dict):
-            for key, val in extra.items():
-                if any(p in str(key).lower() for p in ["备注", "note", "remark", "说明"]):
-                    if any(p in str(val).lower() for p in GAP_PATTERNS):
+    if "original_row" in record.raw_data:
+        orig = record.raw_data["original_row"]
+        if isinstance(orig, dict):
+            for key, val in orig.items():
+                key_lower = str(key).lower()
+                if any(k in key_lower for k in ["备注", "说明", "note", "remark", "comment"]):
+                    val_str = str(val).strip()
+                    if val_str and (_value_contains_gap(val_str) or _value_is_gap(val_str)):
                         reasons.append(f"备注字段[{key}]标注缺口")
                         break
 
