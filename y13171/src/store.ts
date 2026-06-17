@@ -7,7 +7,7 @@ interface AppState {
   records: WarningRecord[]
   initialized: boolean
 
-  addRecord: (record: Omit<WarningRecord, 'id' | 'lastModified'>) => string
+  addRecord: (record: Omit<WarningRecord, 'id' | 'lastModified' | 'status'>) => string
   updateRecord: (id: string, updates: Partial<WarningRecord>) => void
   confirmSuspended: (id: string) => void
   rejectSuspended: (id: string) => void
