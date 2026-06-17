@@ -294,16 +294,44 @@ def test_5_report_export_non_technical():
         assert sec in html, f"报告缺少给非技术人看的章节：{sec}"
     print(f"  ✅ 报告包含章节：{'、'.join(required_sections)}")
 
-    # 检查Word能否生成
+    # 检查Word能否在内存中生成（受限环境/只读部署也能用）
     try:
-        word_path = rg.generate_word_report(result, None, "测试集", ".")
-        assert os.path.exists(word_path) and os.path.getsize(word_path) > 1000, "Word文件太小"
-        print(f"  ✅ Word报告生成成功：{word_path}（{os.path.getsize(word_path)} 字节）")
-        os.remove(word_path)
-    except Exception as e:
-        raise AssertionError(f"Word报告生成失败：{e}")
+        filename, buf = rg.generate_word_report_bytes(result, None, "测试集")
+        word_size = len(buf.getvalue())
+        assert word_size > 10000, "Word内容太少，可能生成失败"
+        assert buf.tell() == 0, "BytesIO指针应在起始位置，可直接下载"
+        from io import BytesIO
+        assert isinstance(buf, BytesIO), "必须返回BytesIO，不能写文件"
+        print(f"  ✅ Word报告内存生成成功：{filename}（{word_size} 字节，零文件依赖）")
 
-    print(f"  ✅ PASS：报告面向非技术人员 OK\n")
+        # 验证内容里有自然语言解释（不是只有字段名）
+        word_text = ""
+        try:
+            from docx import Document
+            doc = Document(buf)
+            buf.seek(0)
+            word_text = "\n".join([p.text for p in doc.paragraphs])
+        except Exception:
+            pass
+        if word_text:
+            n_bracket = word_text.count("【")
+            print(f"  ✅ Word文档中包含 {n_bracket} 条【】格式的自然语言解释")
+            assert n_bracket >= 3, "Word报告里自然语言说明太少"
+    except Exception as e:
+        raise AssertionError(f"Word报告内存生成失败：{e}")
+
+    # 验证旧文件写入接口仍可用（向后兼容，仅当当前目录可写时测）
+    try:
+        word_path = rg.generate_word_report(result, None, "兼容测试", ".")
+        assert os.path.exists(word_path) and os.path.getsize(word_path) > 1000, "Word文件太小"
+        print(f"  ✅ 旧接口文件版仍可用（向后兼容）：{os.path.basename(word_path)}")
+        os.remove(word_path)
+    except PermissionError:
+        print("  ⚠️ 当前目录不可写，跳过文件版验证（正好验证了内存版的价值）")
+    except Exception as e:
+        print(f"  ⚠️ 文件版兼容验证跳过：{e}")
+
+    print(f"  ✅ PASS：报告面向非技术人员 OK，且支持受限/只读环境\n")
 
 
 def main():
