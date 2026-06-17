@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-06-14T10:34:20.799628",
+  "generated_at": "2026-06-18T03:45:48.065136",
   "source_file": "examples/nameplate_normal.json",
-  "overall_status": "正常",
+  "overall_status": "接近预警阈值（注意）",
   "overall_level": "注意",
   "direction_suspended": false,
   "max_tension_display": "78.90",
@@ -28,8 +28,8 @@
   "data_quality_note": "数据质量正常",
   "conclusions_block": [
     {
-      "tag": "正常",
-      "text": "本次铭牌数据未检出超限点，张力水平处于可控范围"
+      "tag": "注意",
+      "text": "最高张力 78.90 已达到预警阈值 80.00 的 99%，暂未超限，建议关注"
     }
   ],
   "evidence_lines": [

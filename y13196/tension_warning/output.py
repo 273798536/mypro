@@ -9,6 +9,8 @@ from .config import (
     ProcessStatus,
     WarningLevel,
     FAILURE_REASONS,
+    determine_overall_level,
+    DEFAULT_THRESHOLD,
 )
 from .loader import LoadResult
 from .direction import DirectionCheckResult
@@ -280,36 +282,20 @@ class OutputExporter:
             continuity_summary = "—"
             data_note = "无连续性数据"
 
-        conclusions = []
-        raw_marker = analysis_result.overall_level.value
-
-        if analysis_result.direction_suspended:
-            conclusions.append({
-                "tag": "挂起",
-                "text": "方向符号疑似写反，已挂起待算法值班人确认；未输出假稳定结论，请人工复核后再提交",
-            })
-            raw_marker = "挂起待确认"
-        else:
-            if analysis_result.danger_count > 0:
-                conclusions.append({
-                    "tag": "危险",
-                    "text": f"检测到 {analysis_result.danger_count} 个危险点，请立即核查设备状态和对应时间段",
-                })
-            if analysis_result.warning_count > 0:
-                conclusions.append({
-                    "tag": "预警",
-                    "text": f"检测到 {analysis_result.warning_count} 个预警点，其中收尾段 {analysis_result.tail_warning_count} 个",
-                })
-            if analysis_result.has_hidden_tail_risk:
-                conclusions.append({
-                    "tag": "收尾风险",
-                    "text": "整体平均可能掩盖收尾段的升高趋势，请重点关注最后15%数据段",
-                })
-            if not conclusions:
-                conclusions.append({
-                    "tag": "正常",
-                    "text": "本次铭牌数据未检出超限点，张力水平处于可控范围",
-                })
+        verdict = determine_overall_level(
+            direction_suspended=analysis_result.direction_suspended,
+            danger_count=analysis_result.danger_count,
+            warning_count=analysis_result.warning_count,
+            tail_warning_count=analysis_result.tail_warning_count,
+            has_hidden_tail_risk=analysis_result.has_hidden_tail_risk,
+            max_tension=analysis_result.max_tension,
+            warning_threshold=analysis_result.raw_stats.get(
+                "warning_threshold", DEFAULT_THRESHOLD.warning_threshold
+            ),
+        )
+        conclusions = verdict.conclusions
+        raw_marker = verdict.level.value
+        overall_status_str = verdict.display_status
 
         evidence = []
         evidence.append(
@@ -342,21 +328,11 @@ class OutputExporter:
         elif load_result.failure_reason:
             failure_for_summary = load_result.failure_reason
 
-        overall_status_str = analysis_result.status.value
-        if analysis_result.direction_suspended:
-            overall_status_str = "挂起待确认（方向存疑）"
-        elif analysis_result.danger_count > 0:
-            overall_status_str = "已检出危险点"
-        elif analysis_result.warning_count > 0 or analysis_result.has_hidden_tail_risk:
-            overall_status_str = "已检出预警点"
-        else:
-            overall_status_str = "正常"
-
         return PageSummary(
             generated_at=datetime.now().isoformat(),
             source_file=load_result.source_file,
             overall_status=overall_status_str,
-            overall_level=analysis_result.overall_level.value,
+            overall_level=verdict.level.value,
             direction_suspended=analysis_result.direction_suspended,
             max_tension_display=max_t_disp,
             max_tension_at=analysis_result.max_tension_at,
@@ -378,6 +354,35 @@ class OutputExporter:
             raw_status_marker=raw_marker,
         )
 
+    def _safe_json_dump(self, obj: Any, path: str) -> None:
+        try:
+            serialized = json.dumps(
+                obj, ensure_ascii=False, indent=2, sort_keys=False, default=str
+            )
+        except (TypeError, ValueError) as e:
+            raise RuntimeError(f"导出失败: {path} JSON 序列化错误: {e}") from e
+        tmp_path = f"{path}.tmp"
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                f.write(serialized)
+            os.replace(tmp_path, path)
+        except OSError as e:
+            if os.path.exists(tmp_path):
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
+            raise RuntimeError(f"导出失败: 写入 {path} 出错: {e}") from e
+
+    def _validate_json_readable(self, path: str) -> Any:
+        if not os.path.exists(path):
+            raise RuntimeError(f"导出校验失败: 文件不存在 {path}")
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"导出校验失败: {path} 不是合法 JSON: {e}") from e
+
     def export_all(
         self,
         load_result: LoadResult,
@@ -393,6 +398,23 @@ class OutputExporter:
         records_path = os.path.join(self.output_dir, f"{prefix}_process_records.json")
         full_path = os.path.join(self.output_dir, f"{prefix}_full_report.json")
 
+        status_match = (
+            page_summary.raw_status_marker == analysis_result.overall_level.value
+            == page_summary.overall_level
+        )
+        conclusions_match_status = True
+        if page_summary.conclusions_block:
+            first_tag = page_summary.conclusions_block[0].get("tag", "")
+            expected_tags_by_level = {
+                "正常": {"正常"},
+                "注意": {"注意", "正常"},
+                "预警": {"预警", "收尾风险"},
+                "危险": {"危险", "预警", "收尾风险"},
+                "挂起待确认": {"挂起"},
+            }
+            allowed = expected_tags_by_level.get(page_summary.raw_status_marker, set())
+            conclusions_match_status = bool(allowed & {c.get("tag", "") for c in page_summary.conclusions_block})
+
         full_report = {
             "page_summary": page_summary.to_dict(),
             "process_records": [r.to_dict() for r in process_records],
@@ -400,27 +422,34 @@ class OutputExporter:
             "load_detail": load_result.to_dict(),
             "direction_detail": direction_result.to_dict(),
             "consistency_check": {
-                "status_match": (
-                    page_summary.raw_status_marker == analysis_result.overall_level.value
-                ),
-                "page_status": page_summary.raw_status_marker,
-                "analysis_status": analysis_result.overall_level.value,
-                "page_overall_status": page_summary.overall_status,
+                "status_match": status_match,
+                "conclusions_match_status": conclusions_match_status,
+                "page_raw_status_marker": page_summary.raw_status_marker,
+                "page_overall_level": page_summary.overall_level,
+                "analysis_overall_level": analysis_result.overall_level.value,
+                "page_display_status": page_summary.overall_status,
+                "conclusions_tags": [c.get("tag", "") for c in page_summary.conclusions_block],
                 "export_time": datetime.now().isoformat(),
             },
         }
 
-        with open(summary_path, "w", encoding="utf-8") as f:
-            json.dump(page_summary.to_dict(), f, ensure_ascii=False, indent=2)
+        self._safe_json_dump(page_summary.to_dict(), summary_path)
+        self._safe_json_dump([r.to_dict() for r in process_records], records_path)
+        self._safe_json_dump(full_report, full_path)
 
-        with open(records_path, "w", encoding="utf-8") as f:
-            json.dump([r.to_dict() for r in process_records], f, ensure_ascii=False, indent=2)
+        for p in (summary_path, records_path, full_path):
+            self._validate_json_readable(p)
 
-        with open(full_path, "w", encoding="utf-8") as f:
-            json.dump(full_report, f, ensure_ascii=False, indent=2)
+        if not status_match or not conclusions_match_status:
+            full_report["consistency_check"]["error"] = (
+                "状态不一致已记录，但文件仍已导出以便排查"
+            )
+            self._safe_json_dump(full_report, full_path)
 
         return {
             "page_summary": summary_path,
             "process_records": records_path,
             "full_report": full_path,
+            "consistency_status_match": status_match,
+            "consistency_conclusions_match": conclusions_match_status,
         }

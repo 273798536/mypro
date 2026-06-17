@@ -1,6 +1,6 @@
 {
   "page_summary": {
-    "generated_at": "2026-06-14T10:34:30.977496",
+    "generated_at": "2026-06-18T03:45:48.070864",
     "source_file": "examples/nameplate_gappy_english.csv",
     "overall_status": "已检出预警点",
     "overall_level": "预警",
@@ -44,7 +44,7 @@
     {
       "stage": "数据加载与标准化",
       "status": "已标准化",
-      "timestamp": "2026-06-14T10:34:30.976552",
+      "timestamp": "2026-06-18T03:45:48.070614",
       "inputs_hash": "2ea15316",
       "parameters": {
         "source_file": "examples/nameplate_gappy_english.csv",
@@ -68,7 +68,7 @@
     {
       "stage": "方向符号校验",
       "status": "方向已校验",
-      "timestamp": "2026-06-14T10:34:30.977320",
+      "timestamp": "2026-06-18T03:45:48.070816",
       "inputs_hash": "72645e72",
       "parameters": {
         "direction_field_found": "dir"
@@ -84,7 +84,7 @@
     {
       "stage": "张力极值预警分析",
       "status": "已分析",
-      "timestamp": "2026-06-14T10:34:30.977285",
+      "timestamp": "2026-06-18T03:45:48.070810",
       "inputs_hash": "b2cb1164",
       "parameters": {
         "warning_threshold": 80.0,
@@ -107,7 +107,7 @@
     {
       "stage": "结果导出",
       "status": "已导出",
-      "timestamp": "2026-06-14T10:34:30.977320",
+      "timestamp": "2026-06-18T03:45:48.070816",
       "inputs_hash": "8cd0eaa2",
       "parameters": {},
       "outputs_summary": {
@@ -231,7 +231,7 @@
       "danger_threshold": 95.0
     },
     "source_file": "examples/nameplate_gappy_english.csv",
-    "analysis_time": "2026-06-14T10:34:30.977285"
+    "analysis_time": "2026-06-18T03:45:48.070810"
   },
   "load_detail": {
     "success": true,
@@ -395,7 +395,7 @@
       }
     ],
     "failure_reason": null,
-    "load_time": "2026-06-14T10:34:30.976552"
+    "load_time": "2026-06-18T03:45:48.070614"
   },
   "direction_detail": {
     "is_consistent": true,
@@ -427,9 +427,14 @@
   },
   "consistency_check": {
     "status_match": true,
-    "page_status": "预警",
-    "analysis_status": "预警",
-    "page_overall_status": "已检出预警点",
-    "export_time": "2026-06-14T10:34:30.977734"
+    "conclusions_match_status": true,
+    "page_raw_status_marker": "预警",
+    "page_overall_level": "预警",
+    "analysis_overall_level": "预警",
+    "page_display_status": "已检出预警点",
+    "conclusions_tags": [
+      "预警"
+    ],
+    "export_time": "2026-06-18T03:45:48.070889"
   }
 }

@@ -12,6 +12,7 @@ from .config import (
     DEFAULT_FIELD_MAPPINGS,
     ProcessStatus,
     WarningLevel,
+    level_rank,
 )
 from .loader import NameplateLoader, LoadResult
 from .direction import DirectionChecker, DirectionCheckResult
@@ -107,15 +108,18 @@ def run_analysis(
     page_summary = exporter.build_page_summary(load_result, direction_result, analysis_result)
     process_records = exporter.build_process_records(load_result, direction_result, analysis_result)
 
+    verdict_level = analysis_result.overall_level
     exit_code = 0
-    if analysis_result.overall_level == WarningLevel.DANGER:
-        exit_code = 10
-    elif analysis_result.overall_level == WarningLevel.WARNING:
-        exit_code = 5
-    elif analysis_result.overall_level == WarningLevel.SUSPENDED or analysis_result.direction_suspended:
-        exit_code = 3
-    elif not load_result.success:
+    if not load_result.success:
         exit_code = 2
+    elif verdict_level == WarningLevel.SUSPENDED:
+        exit_code = 3
+    elif verdict_level == WarningLevel.CAUTION:
+        exit_code = 1
+    elif verdict_level == WarningLevel.WARNING:
+        exit_code = 5
+    elif verdict_level == WarningLevel.DANGER:
+        exit_code = 10
 
     combined = {
         "success": load_result.success or True,

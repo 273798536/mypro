@@ -9,6 +9,8 @@ from .config import (
     WarningLevel,
     ThresholdConfig,
     DEFAULT_THRESHOLD,
+    determine_overall_level,
+    level_rank,
 )
 from .loader import StandardRecord, LoadResult
 from .direction import DirectionCheckResult
@@ -301,8 +303,7 @@ class TensionAnalyzer:
         tensions = [p.tension for p in pts]
         max_t = max(tensions)
         mean_t = sum(tensions) / len(tensions)
-        level_order = [WarningLevel.NORMAL, WarningLevel.CAUTION, WarningLevel.WARNING, WarningLevel.DANGER]
-        max_level = max((p.level for p in pts), key=lambda l: level_order.index(l))
+        max_level = max((p.level for p in pts), key=level_rank)
         is_tail = any(p.index >= tail_start_idx for p in pts)
         return ExtremeCluster(
             cluster_id=cluster_id,
@@ -424,18 +425,18 @@ class TensionAnalyzer:
 
         continuity = self._build_continuity_report(records)
         tail_risk = self._build_tail_risk(records, tail_start_idx, mean_all)
-
-        overall_level = WarningLevel.NORMAL
-        if suspended:
-            overall_level = WarningLevel.SUSPENDED
-        elif danger_count > 0:
-            overall_level = WarningLevel.DANGER
-        elif warn_count > 0 or (tail_risk and tail_risk.hidden_risk_flag):
-            overall_level = WarningLevel.WARNING
-        elif max_t is not None and max_t >= self.config.warning_threshold * 0.85:
-            overall_level = WarningLevel.CAUTION
-
         hidden_tail_risk = bool(tail_risk and tail_risk.hidden_risk_flag)
+
+        verdict = determine_overall_level(
+            direction_suspended=suspended,
+            danger_count=danger_count,
+            warning_count=warn_count,
+            tail_warning_count=tail_warn,
+            has_hidden_tail_risk=hidden_tail_risk,
+            max_tension=max_t,
+            warning_threshold=self.config.warning_threshold,
+        )
+        overall_level = verdict.level
 
         raw_stats = {}
         if valid_records:

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 
 
 class ProcessStatus(str, Enum):
@@ -27,6 +27,102 @@ class WarningLevel(str, Enum):
     WARNING = "预警"
     DANGER = "危险"
     SUSPENDED = "挂起待确认"
+
+
+WARNING_LEVEL_ORDER = [
+    WarningLevel.NORMAL,
+    WarningLevel.CAUTION,
+    WarningLevel.WARNING,
+    WarningLevel.DANGER,
+    WarningLevel.SUSPENDED,
+]
+
+
+def level_rank(level: WarningLevel) -> int:
+    return WARNING_LEVEL_ORDER.index(level) if level in WARNING_LEVEL_ORDER else -1
+
+
+@dataclass
+class LevelVerdict:
+    level: WarningLevel
+    display_status: str
+    conclusions: List[Dict[str, str]]
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "level": self.level.value,
+            "display_status": self.display_status,
+            "conclusions": self.conclusions,
+        }
+
+
+def determine_overall_level(
+    direction_suspended: bool,
+    danger_count: int,
+    warning_count: int,
+    tail_warning_count: int,
+    has_hidden_tail_risk: bool,
+    max_tension: Optional[float],
+    warning_threshold: float,
+) -> LevelVerdict:
+    conclusions: List[Dict[str, str]] = []
+
+    if direction_suspended:
+        conclusions.append({
+            "tag": "挂起",
+            "text": "方向符号疑似写反，已挂起待算法值班人确认；未输出假稳定结论，请人工复核后再提交",
+        })
+        return LevelVerdict(
+            level=WarningLevel.SUSPENDED,
+            display_status="挂起待确认（方向存疑）",
+            conclusions=conclusions,
+        )
+
+    if danger_count > 0:
+        conclusions.append({
+            "tag": "危险",
+            "text": f"检测到 {danger_count} 个危险点，请立即核查设备状态和对应时间段",
+        })
+    if warning_count > 0:
+        conclusions.append({
+            "tag": "预警",
+            "text": f"检测到 {warning_count} 个预警点，其中收尾段 {tail_warning_count} 个",
+        })
+    if has_hidden_tail_risk:
+        conclusions.append({
+            "tag": "收尾风险",
+            "text": "整体平均可能掩盖收尾段的升高趋势，请重点关注最后15%数据段",
+        })
+
+    if danger_count > 0:
+        level = WarningLevel.DANGER
+        display_status = "已检出危险点"
+    elif warning_count > 0 or has_hidden_tail_risk:
+        level = WarningLevel.WARNING
+        display_status = "已检出预警点"
+    elif max_tension is not None and max_tension >= warning_threshold * 0.85:
+        level = WarningLevel.CAUTION
+        display_status = "接近预警阈值（注意）"
+        conclusions.append({
+            "tag": "注意",
+            "text": (
+                f"最高张力 {max_tension:.2f} 已达到预警阈值 {warning_threshold:.2f} 的 "
+                f"{(max_tension / warning_threshold) * 100:.0f}%，暂未超限，建议关注"
+            ),
+        })
+    else:
+        level = WarningLevel.NORMAL
+        display_status = "正常"
+        conclusions.append({
+            "tag": "正常",
+            "text": "本次铭牌数据未检出超限点，张力水平处于可控范围",
+        })
+
+    return LevelVerdict(
+        level=level,
+        display_status=display_status,
+        conclusions=conclusions,
+    )
 
 
 @dataclass

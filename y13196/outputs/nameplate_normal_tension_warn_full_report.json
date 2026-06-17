@@ -1,8 +1,8 @@
 {
   "page_summary": {
-    "generated_at": "2026-06-14T10:34:20.799628",
+    "generated_at": "2026-06-18T03:45:48.065136",
     "source_file": "examples/nameplate_normal.json",
-    "overall_status": "正常",
+    "overall_status": "接近预警阈值（注意）",
     "overall_level": "注意",
     "direction_suspended": false,
     "max_tension_display": "78.90",
@@ -29,8 +29,8 @@
     "data_quality_note": "数据质量正常",
     "conclusions_block": [
       {
-        "tag": "正常",
-        "text": "本次铭牌数据未检出超限点，张力水平处于可控范围"
+        "tag": "注意",
+        "text": "最高张力 78.90 已达到预警阈值 80.00 的 99%，暂未超限，建议关注"
       }
     ],
     "evidence_lines": [
@@ -43,7 +43,7 @@
     {
       "stage": "数据加载与标准化",
       "status": "已标准化",
-      "timestamp": "2026-06-14T10:34:20.798863",
+      "timestamp": "2026-06-18T03:45:48.064867",
       "inputs_hash": "04b375e1",
       "parameters": {
         "source_file": "examples/nameplate_normal.json",
@@ -67,7 +67,7 @@
     {
       "stage": "方向符号校验",
       "status": "方向已校验",
-      "timestamp": "2026-06-14T10:34:20.799487",
+      "timestamp": "2026-06-18T03:45:48.065083",
       "inputs_hash": "bdfd935b",
       "parameters": {
         "direction_field_found": "受力方向"
@@ -83,7 +83,7 @@
     {
       "stage": "张力极值预警分析",
       "status": "已分析",
-      "timestamp": "2026-06-14T10:34:20.799452",
+      "timestamp": "2026-06-18T03:45:48.065077",
       "inputs_hash": "b2cb126a",
       "parameters": {
         "warning_threshold": 80.0,
@@ -104,7 +104,7 @@
     {
       "stage": "结果导出",
       "status": "已导出",
-      "timestamp": "2026-06-14T10:34:20.799487",
+      "timestamp": "2026-06-18T03:45:48.065083",
       "inputs_hash": "b136ca11",
       "parameters": {},
       "outputs_summary": {
@@ -173,7 +173,7 @@
       "danger_threshold": 95.0
     },
     "source_file": "examples/nameplate_normal.json",
-    "analysis_time": "2026-06-14T10:34:20.799452"
+    "analysis_time": "2026-06-18T03:45:48.065077"
   },
   "load_detail": {
     "success": true,
@@ -357,7 +357,7 @@
       }
     ],
     "failure_reason": null,
-    "load_time": "2026-06-14T10:34:20.798863"
+    "load_time": "2026-06-18T03:45:48.064867"
   },
   "direction_detail": {
     "is_consistent": true,
@@ -389,9 +389,14 @@
   },
   "consistency_check": {
     "status_match": true,
-    "page_status": "注意",
-    "analysis_status": "注意",
-    "page_overall_status": "正常",
-    "export_time": "2026-06-14T10:34:20.799729"
+    "conclusions_match_status": true,
+    "page_raw_status_marker": "注意",
+    "page_overall_level": "注意",
+    "analysis_overall_level": "注意",
+    "page_display_status": "接近预警阈值（注意）",
+    "conclusions_tags": [
+      "注意"
+    ],
+    "export_time": "2026-06-18T03:45:48.065160"
   }
 }
