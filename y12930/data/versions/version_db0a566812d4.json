@@ -1,0 +1,16 @@
+{
+  "version_id": "db0a566812d4",
+  "version_name": "v1.1",
+  "description": "修正了样本2的答案",
+  "sample_count": 3,
+  "parent_version": null,
+  "created_by": "system",
+  "created_at": "2026-06-18T00:10:01.653256",
+  "sample_ids": [
+    "4c3bce0ad1fd",
+    "20e88fb6cb4f",
+    "5d644e39fbaf"
+  ],
+  "tags": [],
+  "metadata": {}
+}

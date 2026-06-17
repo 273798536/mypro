@@ -1,0 +1,26 @@
+{
+  "sample_id": "20e88fb6cb4f",
+  "sample_version": "v1.0",
+  "validation_status": "blocked",
+  "safety_check": {
+    "passed": false,
+    "blocked_reasons": [
+      "置信度过低: 0.12 (阈值: 0.6)",
+      "答案/问题长度比例异常: 10.0 (阈值: 3.0)",
+      "包含敏感关键词: 色情"
+    ],
+    "risk_level": "high",
+    "checks": {
+      "confidence": false,
+      "question_length": true,
+      "answer_length": true,
+      "empty_answer": true,
+      "length_ratio": false,
+      "forbidden_keywords": false,
+      "gibberish": true
+    }
+  },
+  "metrics": {},
+  "annotation": null,
+  "validated_at": "2026-06-18T00:10:02.410249"
+}

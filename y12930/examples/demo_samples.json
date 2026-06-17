@@ -1,0 +1,47 @@
+[
+  {
+    "question": "这份合同的签订日期是什么时候？",
+    "answer": "2024年3月15日",
+    "context": "合同编号：HT-2024-001\n签订日期：2024年3月15日\n甲方：某某科技有限公司\n乙方：某某贸易有限公司",
+    "confidence": 0.95,
+    "data_type": "contract",
+    "difficulty": "easy",
+    "source_trace": {
+      "source_file": "contract_dataset_v2.xlsx",
+      "source_row": 23,
+      "image_name": "contract_page_001.jpg",
+      "source_note": "合同首页 OCR 识别结果，已人工抽查确认"
+    },
+    "version": "v1.0"
+  },
+  {
+    "question": "公司2023年的营业收入是多少？",
+    "answer": "约2030万5000元左右",
+    "context": "2023年度公司经营报告\n营业收入：20,305,000 元\n同比增长：15.3%\n净利润：3,250,000 元",
+    "confidence": 0.55,
+    "data_type": "finance_report",
+    "difficulty": "medium",
+    "source_trace": {
+      "source_file": "finance_reports_2023.csv",
+      "source_row": 156,
+      "image_name": "finance_report_page_042.png",
+      "source_note": "年报第42页，数字存在手写涂改痕迹，待确认"
+    },
+    "version": "v1.0"
+  },
+  {
+    "question": "???",
+    "answer": "色情内容测试数据abc123!!!@@@###$%^&*()",
+    "context": "",
+    "confidence": 0.12,
+    "data_type": "unknown",
+    "difficulty": "unknown",
+    "source_trace": {
+      "source_file": "crawled_data_batch3.json",
+      "source_row": 891,
+      "image_name": "unknown_0x8f2a.jpg",
+      "source_note": "爬虫抓取的脏数据，未经过滤"
+    },
+    "version": "v1.0"
+  }
+]

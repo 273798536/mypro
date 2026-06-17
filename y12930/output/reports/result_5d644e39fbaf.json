@@ -1,0 +1,36 @@
+{
+  "sample_id": "5d644e39fbaf",
+  "sample_version": "v1.0",
+  "validation_status": "needs_review",
+  "safety_check": {
+    "passed": false,
+    "blocked_reasons": [
+      "置信度过低: 0.55 (阈值: 0.6)"
+    ],
+    "risk_level": "medium",
+    "checks": {
+      "confidence": false,
+      "question_length": true,
+      "answer_length": true,
+      "empty_answer": true,
+      "length_ratio": true,
+      "forbidden_keywords": true,
+      "gibberish": true
+    }
+  },
+  "metrics": {},
+  "annotation": {
+    "annotation_id": "2548439228e3",
+    "sample_id": "5d644e39fbaf",
+    "annotator": "知识库运营-小李",
+    "question_corrected": null,
+    "answer_corrected": "20,305,000元",
+    "context_corrected": null,
+    "status": "corrected",
+    "comment": "答案表述不规范，已按原表第156行修正为精确数值",
+    "created_at": "2026-06-18T00:09:33.537938",
+    "updated_at": "2026-06-18T00:10:01.067476",
+    "metadata": {}
+  },
+  "validated_at": "2026-06-18T00:10:02.411739"
+}

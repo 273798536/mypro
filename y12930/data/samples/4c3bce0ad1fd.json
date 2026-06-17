@@ -1,0 +1,18 @@
+{
+  "sample_id": "4c3bce0ad1fd",
+  "question": "这份合同的签订日期是什么时候？",
+  "answer": "2024年3月15日",
+  "context": "合同编号：HT-2024-001\n签订日期：2024年3月15日\n甲方：某某科技有限公司\n乙方：某某贸易有限公司",
+  "confidence": 0.95,
+  "data_type": "contract",
+  "difficulty": "easy",
+  "source_trace": {
+    "source_file": "contract_dataset_v2.xlsx",
+    "source_row": 23,
+    "image_name": "contract_page_001.jpg",
+    "source_note": "合同首页 OCR 识别结果，已人工抽查确认"
+  },
+  "metadata": {},
+  "created_at": "2026-06-18T00:08:25.318171",
+  "version": "v1.0"
+}

@@ -1,0 +1,34 @@
+project:
+  name: "OCR 文档问答校验工具"
+  version: "1.0.0"
+
+paths:
+  data_dir: "./data"
+  samples_dir: "./data/samples"
+  annotations_dir: "./data/annotations"
+  versions_dir: "./data/versions"
+  reports_dir: "./output/reports"
+  examples_dir: "./examples"
+
+safety_filter:
+  min_confidence: 0.6
+  max_text_length_ratio: 3.0
+  min_question_length: 2
+  max_answer_length: 2000
+  forbidden_keywords:
+    - "色情"
+    - "赌博"
+    - "暴力"
+  empty_answer_blocked: true
+  gibberish_threshold: 0.3
+
+report:
+  include_raw_sample: true
+  include_source_trace: true
+  format: "html"
+
+metrics:
+  group_by:
+    - "source_file"
+    - "difficulty"
+    - "data_type"

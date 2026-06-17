@@ -1,0 +1,13 @@
+{
+  "annotation_id": "2548439228e3",
+  "sample_id": "5d644e39fbaf",
+  "annotator": "知识库运营-小李",
+  "question_corrected": null,
+  "answer_corrected": "20,305,000元",
+  "context_corrected": null,
+  "status": "corrected",
+  "comment": "答案表述不规范，已按原表第156行修正为精确数值",
+  "created_at": "2026-06-18T00:09:33.537938",
+  "updated_at": "2026-06-18T00:10:01.067476",
+  "metadata": {}
+}

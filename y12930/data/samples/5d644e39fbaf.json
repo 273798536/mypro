@@ -1,0 +1,18 @@
+{
+  "sample_id": "5d644e39fbaf",
+  "question": "公司2023年的营业收入是多少？",
+  "answer": "20,305,000元",
+  "context": "2023年度公司经营报告\n营业收入：20,305,000 元\n同比增长：15.3%\n净利润：3,250,000 元",
+  "confidence": 0.55,
+  "data_type": "finance_report",
+  "difficulty": "medium",
+  "source_trace": {
+    "source_file": "finance_reports_2023.csv",
+    "source_row": 156,
+    "image_name": "finance_report_page_042.png",
+    "source_note": "年报第42页，数字存在手写涂改痕迹，待确认"
+  },
+  "metadata": {},
+  "created_at": "2026-06-18T00:08:25.318215",
+  "version": "v1.0"
+}

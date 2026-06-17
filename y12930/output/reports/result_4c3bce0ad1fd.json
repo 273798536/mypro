@@ -1,0 +1,22 @@
+{
+  "sample_id": "4c3bce0ad1fd",
+  "sample_version": "v1.0",
+  "validation_status": "passed",
+  "safety_check": {
+    "passed": true,
+    "blocked_reasons": [],
+    "risk_level": "low",
+    "checks": {
+      "confidence": true,
+      "question_length": true,
+      "answer_length": true,
+      "empty_answer": true,
+      "length_ratio": true,
+      "forbidden_keywords": true,
+      "gibberish": true
+    }
+  },
+  "metrics": {},
+  "annotation": null,
+  "validated_at": "2026-06-18T00:10:02.408901"
+}
