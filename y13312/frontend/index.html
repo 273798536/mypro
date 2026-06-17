@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信贷评分人工改判系统</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>信贷评分人工改判</h2>
+                <p class="subtitle">AI产品阿宁</p>
+            </div>
+            <nav class="menu">
+                <div class="menu-item active" data-view="review">
+                    <span class="icon">📊</span>
+                    <span>评审看板</span>
+                </div>
+                <div class="menu-item" data-view="samples">
+                    <span class="icon">📋</span>
+                    <span>样本管理</span>
+                </div>
+                <div class="menu-item" data-view="anomalies">
+                    <span class="icon">⚠️</span>
+                    <span>异常样本</span>
+                </div>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="topbar">
+                <h1 id="page-title">评审看板</h1>
+                <div class="user-info">
+                    <span class="user-name">评审员-陈老师</span>
+                </div>
+            </header>
+
+            <div class="content">
+                <div id="review-view" class="view active">
+                    <div class="stats-grid">
+                        <div class="stat-card total">
+                            <div class="stat-label">样本总数</div>
+                            <div class="stat-value" id="stat-total">0</div>
+                        </div>
+                        <div class="stat-card processed">
+                            <div class="stat-label">已处理</div>
+                            <div class="stat-value" id="stat-processed">0</div>
+                        </div>
+                        <div class="stat-card material-missing">
+                            <div class="stat-label">待补材料</div>
+                            <div class="stat-value" id="stat-missing">0</div>
+                        </div>
+                        <div class="stat-card manual-adjusted">
+                            <div class="stat-label">人工改判</div>
+                            <div class="stat-value" id="stat-adjusted">0</div>
+                        </div>
+                        <div class="stat-card pending">
+                            <div class="stat-label">待评审</div>
+                            <div class="stat-value" id="stat-pending">0</div>
+                        </div>
+                        <div class="stat-card conflict">
+                            <div class="stat-label">标签冲突</div>
+                            <div class="stat-value" id="stat-conflict">0</div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>影响结论的异常样本</h3>
+                            <button class="btn btn-small" onclick="switchView('anomalies')">查看全部</button>
+                        </div>
+                        <div class="panel-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>样本编号</th>
+                                        <th>客户姓名</th>
+                                        <th>初始评分</th>
+                                        <th>当前评分</th>
+                                        <th>变动</th>
+                                        <th>异常类型</th>
+                                        <th>原因</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="anomaly-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>各状态样本分布</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="status-bars">
+                                <div class="status-bar-item">
+                                    <div class="bar-label">已处理</div>
+                                    <div class="bar-track">
+                                        <div class="bar-fill processed" id="bar-processed"></div>
+                                    </div>
+                                    <div class="bar-value" id="bar-processed-value">0</div>
+                                </div>
+                                <div class="status-bar-item">
+                                    <div class="bar-label">人工改判</div>
+                                    <div class="bar-track">
+                                        <div class="bar-fill manual" id="bar-adjusted"></div>
+                                    </div>
+                                    <div class="bar-value" id="bar-adjusted-value">0</div>
+                                </div>
+                                <div class="status-bar-item">
+                                    <div class="bar-label">待补材料</div>
+                                    <div class="bar-track">
+                                        <div class="bar-fill missing" id="bar-missing"></div>
+                                    </div>
+                                    <div class="bar-value" id="bar-missing-value">0</div>
+                                </div>
+                                <div class="status-bar-item">
+                                    <div class="bar-label">待评审</div>
+                                    <div class="bar-track">
+                                        <div class="bar-fill pending" id="bar-pending"></div>
+                                    </div>
+                                    <div class="bar-value" id="bar-pending-value">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="samples-view" class="view">
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label>状态筛选</label>
+                            <select id="filter-status">
+                                <option value="">全部状态</option>
+                                <option value="pending_review">待评审</option>
+                                <option value="processed">已处理</option>
+                                <option value="material_missing">待补材料</option>
+                                <option value="manual_adjusted">人工改判</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>标签冲突</label>
+                            <select id="filter-conflict">
+                                <option value="">全部</option>
+                                <option value="true">有冲突</option>
+                                <option value="false">无冲突</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>名称不一致</label>
+                            <select id="filter-name-mismatch">
+                                <option value="">全部</option>
+                                <option value="true">有不一致</option>
+                                <option value="false">一致</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>关键词</label>
+                            <input type="text" id="filter-keyword" placeholder="搜索编号/姓名/身份证">
+                        </div>
+                        <button class="btn btn-primary" onclick="loadSamples()">搜索</button>
+                        <button class="btn" onclick="exportSamples()">导出</button>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>样本编号</th>
+                                        <th>客户姓名</th>
+                                        <th>初始评分</th>
+                                        <th>当前评分</th>
+                                        <th>状态</th>
+                                        <th>风险等级</th>
+                                        <th>标签冲突</th>
+                                        <th>名称不一致</th>
+                                        <th>改判次数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="samples-table-body">
+                                </tbody>
+                            </table>
+                            <div class="pagination">
+                                <span id="total-info">共 0 条</span>
+                                <button class="btn btn-small" onclick="prevPage()">上一页</button>
+                                <span id="page-info">第 1 页</span>
+                                <button class="btn btn-small" onclick="nextPage()">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="anomalies-view" class="view">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>异常样本分析</h3>
+                            <span class="tip">这些样本可能拉偏整体结论，需要重点关注</span>
+                        </div>
+                        <div class="panel-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>样本编号</th>
+                                        <th>客户姓名</th>
+                                        <th>初始评分</th>
+                                        <th>当前评分</th>
+                                        <th>评分变动</th>
+                                        <th>改判次数</th>
+                                        <th>异常类型</th>
+                                        <th>异常原因</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="anomalies-full-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="detail-view" class="view">
+                    <button class="btn" onclick="goBack()">← 返回列表</button>
+                    <div class="detail-header">
+                        <div>
+                            <h2 id="detail-sample-no">-</h2>
+                            <p id="detail-customer">-</p>
+                        </div>
+                        <div class="detail-actions">
+                            <span class="status-badge" id="detail-status">-</span>
+                            <button class="btn btn-primary" onclick="showAdjustModal()">人工改判</button>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3>基本信息</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="info-row">
+                                    <span class="info-label">样本编号</span>
+                                    <span class="info-value" id="info-sample-no">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">客户姓名</span>
+                                    <span class="info-value" id="info-customer-name">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">身份证号</span>
+                                    <span class="info-value" id="info-id-card">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">初始评分</span>
+                                    <span class="info-value" id="info-original-score">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">当前评分</span>
+                                    <span class="info-value" id="info-current-score">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">风险等级</span>
+                                    <span class="info-value" id="info-risk-level">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">状态</span>
+                                    <span class="info-value" id="info-status">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">改判次数</span>
+                                    <span class="info-value" id="info-adjust-count">-</span>
+                                </div>
+                                <div class="info-row">
+                                    <span class="info-label">评测次数</span>
+                                    <span class="info-value" id="info-review-count">-</span>
+                                </div>
+                                <div class="info-row warning">
+                                    <span class="info-label">标签冲突</span>
+                                    <span class="info-value" id="info-label-conflict">-</span>
+                                </div>
+                                <div class="info-row warning">
+                                    <span class="info-label">名称不一致</span>
+                                    <span class="info-value" id="info-name-mismatch">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h3>材料清单</h3>
+                                <span class="tip">保留原始数据，脏数据可追溯</span>
+                            </div>
+                            <div class="panel-body" id="materials-list">
+                            </div>
+                        </div>
+
+                        <div class="panel full-width">
+                            <div class="panel-header">
+                                <h3>标签冲突</h3>
+                                <span class="tip">混在正常材料旁边的冲突项会被高亮标记</span>
+                            </div>
+                            <div class="panel-body" id="conflicts-list">
+                            </div>
+                        </div>
+
+                        <div class="panel full-width">
+                            <div class="panel-header">
+                                <h3>改判历史溯源</h3>
+                                <span class="tip">每次改判都记录来源和前后状态</span>
+                            </div>
+                            <div class="panel-body" id="adjustments-list">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="adjust-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>人工改判</h3>
+                <button class="close-btn" onclick="hideAdjustModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>改判后评分</label>
+                    <input type="number" id="adj-score" step="0.1">
+                </div>
+                <div class="form-group">
+                    <label>改判后状态</label>
+                    <select id="adj-status">
+                        <option value="manual_adjusted">人工改判</option>
+                        <option value="processed">已处理</option>
+                        <option value="material_missing">待补材料</option>
+                        <option value="pending_review">待评审</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>改判后风险等级</label>
+                    <select id="adj-risk">
+                        <option value="低风险">低风险</option>
+                        <option value="中风险">中风险</option>
+                        <option value="高风险">高风险</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>改判原因</label>
+                    <textarea id="adj-reason" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>改判来源</label>
+                    <select id="adj-source">
+                        <option value="manual_review">人工评审</option>
+                        <option value="batch_correction">批量修正</option>
+                        <option value="external_import">外部导入</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>改判人</label>
+                    <input type="text" id="adj-adjuster" value="评审员-陈老师">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" onclick="hideAdjustModal()">取消</button>
+                <button class="btn btn-primary" onclick="submitAdjustment()">确认改判</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
