@@ -1,0 +1,14 @@
+{
+  "ticket_id": "DB-2024-0617-003",
+  "title": "订单支付字段迁移锁等待问题反馈",
+  "description": "迁移 005 号迁移在生产环境执行时出现锁等待过长，执行时间超过 15 秒。",
+  "created_by": "DBA-老张",
+  "created_at": "2024-06-17 09:00:00",
+  "related_migrations": ["005_add_order_payment"],
+  "affected_tables": ["orders"],
+  "lock_wait_seconds": 15.2,
+  "slow_query_cause_initial": "缺少索引",
+  "slow_query_cause_updated": "元数据锁等待",
+  "remarks": "orders 表并发查询量大，DDL 等待元数据锁。建议低峰期执行。",
+  "page_order_unstable": false
+}
