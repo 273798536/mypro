@@ -1,0 +1,12 @@
+{
+  "name": "industrial-vision-dashboard",
+  "version": "1.0.0",
+  "description": "工业视觉指标看板 - 串起样本/版本/人工修正/异常队列/历史",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "seed": "cd backend && npm run seed",
+    "backend": "cd backend && npm start",
+    "frontend": "cd frontend && npm run dev",
+    "start": "node scripts/start.js"
+  }
+}
