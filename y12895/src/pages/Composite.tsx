@@ -6,7 +6,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Anchor,
-  Wind,
   Ship,
   MapPin,
   Calendar,
