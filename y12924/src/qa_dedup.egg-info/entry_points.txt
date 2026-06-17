@@ -1,0 +1,2 @@
+[console_scripts]
+qa-dedup = qa_dedup.cli:main

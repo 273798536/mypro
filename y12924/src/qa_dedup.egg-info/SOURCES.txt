@@ -1,0 +1,15 @@
+pyproject.toml
+src/qa_dedup/__init__.py
+src/qa_dedup/cli.py
+src/qa_dedup/deduper.py
+src/qa_dedup/demo_data.py
+src/qa_dedup/detemplatizer.py
+src/qa_dedup/leak_detector.py
+src/qa_dedup/models.py
+src/qa_dedup/report_exporter.py
+src/qa_dedup/workflow.py
+src/qa_dedup.egg-info/PKG-INFO
+src/qa_dedup.egg-info/SOURCES.txt
+src/qa_dedup.egg-info/dependency_links.txt
+src/qa_dedup.egg-info/entry_points.txt
+src/qa_dedup.egg-info/top_level.txt
