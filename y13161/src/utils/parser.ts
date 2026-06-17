@@ -126,12 +126,52 @@ function parseTimestamp(value: string): Date | null {
   return null;
 }
 
+function createLogEntry(
+  timestamp: Date,
+  rawValue: string,
+  rawUnit: string,
+  rawDirection: string | undefined,
+  source: string,
+  lineNumber: number,
+  sensorType: 'wave_height' | 'wave_speed' | 'wave_direction' | 'temperature'
+): RawSensorLog {
+  return {
+    id: generateId(),
+    timestamp,
+    rawValue,
+    rawUnit,
+    rawDirection,
+    source,
+    lineNumber,
+    sensorType,
+  };
+}
+
+const SENSOR_FIELD_PATTERNS: { type: 'wave_height' | 'wave_speed' | 'wave_direction' | 'temperature'; patterns: RegExp[] }[] = [
+  { type: 'wave_height', patterns: [/高度|height|浪高|wave.*height|h(\d|_)?$/i] },
+  { type: 'wave_speed', patterns: [/速度|speed|流速|wave.*speed|current|v(\d|_)?$/i] },
+  { type: 'wave_direction', patterns: [/方向|direction|流向|wave.*direction|dir(\d|_)?$/i] },
+  { type: 'temperature', patterns: [/温度|temp|水温|temperature|t(\d|_)?$/i] },
+];
+
+function detectSensorTypeFromField(fieldName: string): 'wave_height' | 'wave_speed' | 'wave_direction' | 'temperature' | null {
+  const lower = fieldName.toLowerCase();
+  for (const { type, patterns } of SENSOR_FIELD_PATTERNS) {
+    for (const pattern of patterns) {
+      if (pattern.test(lower)) {
+        return type;
+      }
+    }
+  }
+  return null;
+}
+
 export function parseCSV(content: string, options: ParseOptions = {}): ParseResult {
   const delimiter = options.delimiter || detectDelimiter(content);
   const lines = content.trim().split('\n');
   const logs: RawSensorLog[] = [];
   const errors: string[] = [];
-  
+
   if (lines.length === 0) {
     return { logs, errors: ['文件为空'], format: 'csv' };
   }
@@ -142,17 +182,12 @@ export function parseCSV(content: string, options: ParseOptions = {}): ParseResu
 
   const fields = headerLine
     ? headerLine.split(delimiter).map((f) => f.trim())
-    : ['timestamp', 'value', 'unit', 'direction'];
+    : ['timestamp', 'wave_height', 'wave_speed', 'wave_direction', 'temperature'];
 
-  let timestampIndex = fields.findIndex((f) => /时间|timestamp|time|date/i.test(f));
-  let valueIndex = fields.findIndex((f) => /数值|value|数据|val/i.test(f));
-  let unitIndex = fields.findIndex((f) => /单位|unit/i.test(f));
-  let directionIndex = fields.findIndex((f) => /方向|direction/i.test(f));
+  const columnSensorTypes: ('wave_height' | 'wave_speed' | 'wave_direction' | 'temperature' | null)[] =
+    fields.map((f) => detectSensorTypeFromField(f));
 
-  if (timestampIndex === -1) timestampIndex = 0;
-  if (valueIndex === -1) valueIndex = 1;
-  if (unitIndex === -1) unitIndex = 2;
-  if (directionIndex === -1) directionIndex = 3;
+  const timestampIndex = fields.findIndex((f) => /时间|timestamp|time|date/i.test(f));
 
   dataLines.forEach((line, lineNum) => {
     try {
@@ -162,23 +197,45 @@ export function parseCSV(content: string, options: ParseOptions = {}): ParseResu
         return;
       }
 
-      const timestamp = parseTimestamp(values[timestampIndex]) || new Date();
-      const rawValue = values[valueIndex] || '';
-      const { unit } = parseValueAndUnit(rawValue);
-      const rawUnit = unit || values[unitIndex] || '';
-      const rawDirection = values[directionIndex] || parseDirection(rawValue) || undefined;
-      
-      const sensorType = detectSensorType(fields, values);
+      const actualLineNum = lineNum + (hasHeader ? 2 : 1);
+      const timestamp = timestampIndex >= 0 && values[timestampIndex]
+        ? parseTimestamp(values[timestampIndex]) || new Date()
+        : new Date();
 
-      logs.push({
-        id: generateId(),
-        timestamp,
-        rawValue,
-        rawUnit,
-        rawDirection,
-        source: `csv_line_${lineNum + (hasHeader ? 2 : 1)}`,
-        lineNumber: lineNum + (hasHeader ? 2 : 1),
-        sensorType,
+      columnSensorTypes.forEach((sensorType, colIndex) => {
+        if (!sensorType || colIndex === timestampIndex) return;
+
+        const rawValue = values[colIndex] || '';
+        if (!rawValue) return;
+
+        const { value: parsedValue, unit } = parseValueAndUnit(rawValue);
+
+        if (sensorType === 'wave_direction') {
+          const direction = parseDirection(rawValue);
+          if (direction) {
+            logs.push(createLogEntry(
+              timestamp,
+              rawValue,
+              '',
+              direction,
+              `csv_line_${actualLineNum}_${fields[colIndex]}`,
+              actualLineNum,
+              sensorType
+            ));
+          }
+        } else {
+          if (!isNaN(parsedValue)) {
+            logs.push(createLogEntry(
+              timestamp,
+              rawValue,
+              unit || '',
+              undefined,
+              `csv_line_${actualLineNum}_${fields[colIndex]}`,
+              actualLineNum,
+              sensorType
+            ));
+          }
+        }
       });
     } catch (e) {
       errors.push(`第${lineNum + (hasHeader ? 2 : 1)}行: 解析失败 - ${e}`);
@@ -199,19 +256,80 @@ export function parseJSON(content: string): ParseResult {
     entries.forEach((entry, index) => {
       try {
         const timestamp = parseTimestamp(entry.timestamp || entry.time || entry.date) || new Date();
-        const rawValue = entry.value?.toString() || entry.data?.toString() || '';
-        const { unit } = parseValueAndUnit(rawValue);
-        
-        logs.push({
-          id: generateId(),
-          timestamp,
-          rawValue,
-          rawUnit: unit || entry.unit || '',
-          rawDirection: entry.direction || parseDirection(rawValue) || undefined,
-          source: `json_entry_${index}`,
-          lineNumber: index + 1,
-          sensorType: entry.type || detectSensorType(Object.keys(entry), Object.values(entry).map((v) => String(v))),
-        });
+        const entryNum = index + 1;
+
+        const entryKeys = Object.keys(entry);
+        const hasMultiFields = entryKeys.some((k) => detectSensorTypeFromField(k) !== null);
+
+        if (hasMultiFields) {
+          for (const key of entryKeys) {
+            const sensorType = detectSensorTypeFromField(key);
+            if (!sensorType) continue;
+
+            const rawValue = entry[key]?.toString() || '';
+            if (!rawValue) continue;
+
+            const { value: parsedValue, unit } = parseValueAndUnit(rawValue);
+
+            if (sensorType === 'wave_direction') {
+              const direction = parseDirection(rawValue);
+              if (direction) {
+                logs.push(createLogEntry(
+                  timestamp,
+                  rawValue,
+                  '',
+                  direction,
+                  `json_entry_${entryNum}_${key}`,
+                  entryNum,
+                  sensorType
+                ));
+              }
+            } else {
+              if (!isNaN(parsedValue)) {
+                logs.push(createLogEntry(
+                  timestamp,
+                  rawValue,
+                  unit || entry.unit || '',
+                  undefined,
+                  `json_entry_${entryNum}_${key}`,
+                  entryNum,
+                  sensorType
+                ));
+              }
+            }
+          }
+        } else {
+          const rawValue = entry.value?.toString() || entry.data?.toString() || '';
+          const { value: parsedValue, unit } = parseValueAndUnit(rawValue);
+          const direction = entry.direction || parseDirection(rawValue) || undefined;
+          const sensorType = entry.type || detectSensorType(entryKeys, Object.values(entry).map((v) => String(v))) || 'wave_height';
+
+          if (sensorType === 'wave_direction') {
+            if (direction) {
+              logs.push(createLogEntry(
+                timestamp,
+                rawValue,
+                '',
+                direction,
+                `json_entry_${entryNum}`,
+                entryNum,
+                sensorType
+              ));
+            }
+          } else {
+            if (!isNaN(parsedValue) || direction) {
+              logs.push(createLogEntry(
+                timestamp,
+                rawValue,
+                unit || entry.unit || '',
+                direction,
+                `json_entry_${entryNum}`,
+                entryNum,
+                sensorType
+              ));
+            }
+          }
+        }
       } catch (e) {
         errors.push(`第${index + 1}条记录: 解析失败 - ${e}`);
       }
@@ -223,6 +341,35 @@ export function parseJSON(content: string): ParseResult {
   return { logs, errors, format: 'json' };
 }
 
+const TEXT_KEYWORD_PATTERNS: { type: 'wave_height' | 'wave_speed' | 'wave_direction' | 'temperature'; keywords: string[] }[] = [
+  { type: 'wave_height', keywords: ['波高', '浪高', 'height', 'wave_height'] },
+  { type: 'wave_speed', keywords: ['流速', '速度', 'speed', 'current', 'wave_speed'] },
+  { type: 'wave_direction', keywords: ['方向', '流向', 'direction', 'wave_direction'] },
+  { type: 'temperature', keywords: ['水温', '温度', 'temp', 'temperature'] },
+];
+
+function parseTextLineSegments(line: string): { sensorType: 'wave_height' | 'wave_speed' | 'wave_direction' | 'temperature'; rawValue: string }[] {
+  const segments: { sensorType: 'wave_height' | 'wave_speed' | 'wave_direction' | 'temperature'; rawValue: string }[] = [];
+  const lowerLine = line.toLowerCase();
+
+  for (const { type, keywords } of TEXT_KEYWORD_PATTERNS) {
+    for (const keyword of keywords) {
+      const keywordLower = keyword.toLowerCase();
+      const idx = lowerLine.indexOf(keywordLower);
+      if (idx !== -1) {
+        const afterKeyword = line.slice(idx + keyword.length).trim();
+        const match = afterKeyword.match(/^([^\s]+(?:\s+[^\s]+)?)/);
+        if (match) {
+          segments.push({ sensorType: type, rawValue: match[1].trim() });
+        }
+        break;
+      }
+    }
+  }
+
+  return segments;
+}
+
 export function parseText(content: string): ParseResult {
   const lines = content.trim().split('\n');
   const logs: RawSensorLog[] = [];
@@ -232,26 +379,61 @@ export function parseText(content: string): ParseResult {
     try {
       if (!line.trim()) return;
 
+      const actualLineNum = lineNum + 1;
       const timestampMatch = line.match(/(\d{4}[-/\d\s:]+)/);
       const timestamp = (timestampMatch && parseTimestamp(timestampMatch[1])) || new Date();
 
-      const { value, unit } = parseValueAndUnit(line);
-      const direction = parseDirection(line);
+      const segments = parseTextLineSegments(line);
 
-      if (!isNaN(value) || direction) {
-        const fields = line.split(/\s+/);
-        const sensorType = detectSensorType(fields, fields);
+      if (segments.length > 0) {
+        segments.forEach((seg, segIdx) => {
+          const { value: parsedValue, unit } = parseValueAndUnit(seg.rawValue);
 
-        logs.push({
-          id: generateId(),
-          timestamp,
-          rawValue: line,
-          rawUnit: unit || '',
-          rawDirection: direction || undefined,
-          source: `text_line_${lineNum + 1}`,
-          lineNumber: lineNum + 1,
-          sensorType,
+          if (seg.sensorType === 'wave_direction') {
+            const direction = parseDirection(seg.rawValue);
+            if (direction) {
+              logs.push(createLogEntry(
+                timestamp,
+                seg.rawValue,
+                '',
+                direction,
+                `text_line_${actualLineNum}_${segIdx}`,
+                actualLineNum,
+                seg.sensorType
+              ));
+            }
+          } else {
+            if (!isNaN(parsedValue)) {
+              logs.push(createLogEntry(
+                timestamp,
+                seg.rawValue,
+                unit || '',
+                undefined,
+                `text_line_${actualLineNum}_${segIdx}`,
+                actualLineNum,
+                seg.sensorType
+              ));
+            }
+          }
         });
+      } else {
+        const { value, unit } = parseValueAndUnit(line);
+        const direction = parseDirection(line);
+
+        if (!isNaN(value) || direction) {
+          const fields = line.split(/\s+/);
+          const sensorType = detectSensorType(fields, fields);
+
+          logs.push(createLogEntry(
+            timestamp,
+            line,
+            unit || '',
+            direction || undefined,
+            `text_line_${actualLineNum}`,
+            actualLineNum,
+            sensorType
+          ));
+        }
       }
     } catch (e) {
       errors.push(`第${lineNum + 1}行: 解析失败 - ${e}`);

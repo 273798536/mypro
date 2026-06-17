@@ -98,14 +98,14 @@ export function getUnitRule(category: string): UnitConversionRule | undefined {
 
 export function parseUnitFromString(text: string): string | null {
   const unitPatterns: { [key: string]: RegExp } = {
-    m: /\b(m|meter|meters)\b/i,
+    'm/s': /\b(m\/s|meters?\/s|meters? per second)\b/i,
+    'km/h': /\b(km\/h|kmh|kilometers? per hour)\b/i,
+    'km/s': /\b(km\/s|kilometers? per second)\b/i,
     km: /\b(km|kilometer|kilometers)\b/i,
     cm: /\b(cm|centimeter|centimeters)\b/i,
     mm: /\b(mm|millimeter|millimeters)\b/i,
     ft: /\b(ft|foot|feet)\b/i,
-    'm/s': /\b(m\/s|meters?\/s|meters? per second)\b/i,
-    'km/h': /\b(km\/h|kmh|kilometers? per hour)\b/i,
-    'km/s': /\b(km\/s|kilometers? per second)\b/i,
+    m: /\b(m|meter|meters)\b/i,
     knot: /\b(knot|knots|kt)\b/i,
     mph: /\b(mph|miles per hour)\b/i,
     C: /\b(C|celsius|degrees? C)\b/i,

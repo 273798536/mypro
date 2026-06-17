@@ -127,11 +127,13 @@ export const AnomalyList: React.FC<AnomalyListProps> = ({ onSelectAnomaly }) => 
                       {anomaly.explanation}
                     </p>
                     <div className="mt-2 text-xs text-deep-sea-400">
-                      <span className="font-mono">
-                        {anomaly.data.value.toFixed(2)} {anomaly.data.unit}
-                      </span>
+                      {anomaly.type !== 'direction_reversal' && (
+                        <span className="font-mono">
+                          {anomaly.data.value.toFixed(2)} {anomaly.data.unit}
+                        </span>
+                      )}
                       {anomaly.data.direction && (
-                        <span className="ml-2">方向: {anomaly.data.direction}</span>
+                        <span className={anomaly.type !== 'direction_reversal' ? 'ml-2' : ''}>方向: {anomaly.data.direction}</span>
                       )}
                     </div>
                   </button>

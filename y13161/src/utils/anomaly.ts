@@ -45,6 +45,7 @@ export function standardizeLogs(
   const groupedByType: { [key: string]: Array<{ value: number; unit: string; timestamp: Date; index: number }> } = {};
 
   logs.forEach((log, index) => {
+    if (log.sensorType === 'wave_direction') return;
     if (!groupedByType[log.sensorType]) {
       groupedByType[log.sensorType] = [];
     }
@@ -71,6 +72,20 @@ export function standardizeLogs(
     let value = parsedValue;
     let unit = log.rawUnit || standardUnit;
     let unitConversion;
+
+    if (log.sensorType === 'wave_direction') {
+      const standardized: StandardizedData = {
+        id: `std_${log.id}`,
+        timestamp: log.timestamp,
+        value: 0,
+        unit: '',
+        direction: log.rawDirection,
+        rawLog: log,
+        sensorType: log.sensorType,
+      };
+      standardizedData.push(standardized);
+      return;
+    }
 
     const typeMismatches = detectedMismatches[log.sensorType] || [];
     const mismatchInfo = typeMismatches.find((m) => m.index === index);
@@ -217,6 +232,10 @@ export function detectThresholdAnomalies(
 
   standardizedData.forEach((data, index) => {
     if (data.sensorType === 'wave_direction') return;
+    if (isNaN(data.value)) return;
+
+    const standardUnit = getStandardUnit(data.sensorType);
+    if (data.unit !== standardUnit) return;
 
     const thresholdResult = checkThreshold(data.value, data.sensorType);
     if (thresholdResult.isAnomaly) {
