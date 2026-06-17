@@ -8,8 +8,8 @@
     "weight": -0.5,
     "block_truncation": true,
     "active": true,
-    "created_at": "2026-06-17T23:54:48.171851",
-    "updated_at": "2026-06-17T23:54:48.171873"
+    "created_at": "2026-06-18T03:38:15.185151",
+    "updated_at": "2026-06-18T03:38:15.185177"
   },
   {
     "rule_id": "RULE-002",
@@ -20,8 +20,8 @@
     "weight": -0.3,
     "block_truncation": false,
     "active": true,
-    "created_at": "2026-06-17T23:54:48.171883",
-    "updated_at": "2026-06-17T23:54:48.171885"
+    "created_at": "2026-06-18T03:38:15.185188",
+    "updated_at": "2026-06-18T03:38:15.185190"
   },
   {
     "rule_id": "RULE-003",
@@ -32,11 +32,11 @@
     "weight": 0.2,
     "block_truncation": false,
     "active": true,
-    "created_at": "2026-06-17T23:54:48.171889",
-    "updated_at": "2026-06-17T23:54:48.171891"
+    "created_at": "2026-06-18T03:38:15.185194",
+    "updated_at": "2026-06-18T03:38:15.185196"
   },
   {
-    "rule_id": "RULE-AC50C5",
+    "rule_id": "RULE-BF7274",
     "name": "未知来源降权",
     "description": "未登记来源的抓取样本一律降权",
     "rule_type": "source",
@@ -44,7 +44,7 @@
     "weight": -0.2,
     "block_truncation": false,
     "active": true,
-    "created_at": "2026-06-17T23:58:43.569905",
-    "updated_at": "2026-06-17T23:58:43.569905"
+    "created_at": "2026-06-18T03:39:40.477144",
+    "updated_at": "2026-06-18T03:39:40.477144"
   }
 ]

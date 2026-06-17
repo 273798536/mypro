@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": "2026-06-17T23:58:43.571529",
+    "timestamp": "2026-06-18T03:39:40.479082",
     "rules_snapshot": [
       {
         "rule_id": "RULE-001",
@@ -11,8 +11,8 @@
         "weight": -0.5,
         "block_truncation": true,
         "active": true,
-        "created_at": "2026-06-17T23:54:48.171851",
-        "updated_at": "2026-06-17T23:54:48.171873"
+        "created_at": "2026-06-18T03:38:15.185151",
+        "updated_at": "2026-06-18T03:38:15.185177"
       },
       {
         "rule_id": "RULE-002",
@@ -23,8 +23,8 @@
         "weight": -0.3,
         "block_truncation": false,
         "active": true,
-        "created_at": "2026-06-17T23:54:48.171883",
-        "updated_at": "2026-06-17T23:54:48.171885"
+        "created_at": "2026-06-18T03:38:15.185188",
+        "updated_at": "2026-06-18T03:38:15.185190"
       },
       {
         "rule_id": "RULE-003",
@@ -35,11 +35,11 @@
         "weight": 0.2,
         "block_truncation": false,
         "active": true,
-        "created_at": "2026-06-17T23:54:48.171889",
-        "updated_at": "2026-06-17T23:54:48.171891"
+        "created_at": "2026-06-18T03:38:15.185194",
+        "updated_at": "2026-06-18T03:38:15.185196"
       },
       {
-        "rule_id": "RULE-AC50C5",
+        "rule_id": "RULE-BF7274",
         "name": "未知来源降权",
         "description": "未登记来源的抓取样本一律降权",
         "rule_type": "source",
@@ -47,8 +47,8 @@
         "weight": -0.2,
         "block_truncation": false,
         "active": true,
-        "created_at": "2026-06-17T23:58:43.569905",
-        "updated_at": "2026-06-17T23:58:43.569905"
+        "created_at": "2026-06-18T03:39:40.477144",
+        "updated_at": "2026-06-18T03:39:40.477144"
       }
     ],
     "results": [
@@ -75,7 +75,7 @@
         "before_score": 0.0,
         "after_score": 0.0,
         "score_delta": 0.0,
-        "before_status": "needs_review",
+        "before_status": "confirmed",
         "new_hits": [
           {
             "rule_id": "RULE-001",
@@ -102,7 +102,7 @@
             "detail": "命中敏感词: 违规, 赌博, 色情"
           },
           {
-            "rule_id": "RULE-AC50C5",
+            "rule_id": "RULE-BF7274",
             "rule_name": "未知来源降权",
             "weight": -0.2,
             "detail": "来源 unknown_crawler 属于可信白名单"
@@ -110,7 +110,7 @@
         ],
         "new_evidence": [
           "[RULE-002] 敏感词初筛: 命中敏感词: 违规, 赌博, 色情 (权重 -0.30)",
-          "[RULE-AC50C5] 未知来源降权: 来源 unknown_crawler 属于可信白名单 (权重 -0.20)"
+          "[RULE-BF7274] 未知来源降权: 来源 unknown_crawler 属于可信白名单 (权重 -0.20)"
         ]
       }
     ]

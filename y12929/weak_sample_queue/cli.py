@@ -17,10 +17,15 @@ def _pretty(obj) -> str:
 
 def cmd_init(args) -> int:
     store = SampleStore()
+    existed = bool(store.list_all())
     seed_samples(store)
     engine = RuleEngine()
-    print("✅ 初始化完成，样例数据与默认安全规则已就绪。")
-    print(f"   - 样例样本数: {len(store.list_all())}")
+    if existed:
+        print("ℹ️  检测到已有样本数据，样例初始化已跳过（不会覆盖现有样本）。")
+        print(f"   - 当前样本数: {len(store.list_all())}")
+    else:
+        print("✅ 初始化完成，样例数据与默认安全规则已就绪。")
+        print(f"   - 样例样本数: {len(store.list_all())}")
     print(f"   - 默认规则数: {len(engine.list_rules())}")
     return 0
 
@@ -36,22 +41,38 @@ def cmd_process(args) -> int:
         if not sample:
             print(f"❌ 找不到样本 {args.sample_id}")
             return 1
+        if sample.status != SAMPLE_STATUS["PENDING"]:
+            print(
+                f"⚠️  样本 {args.sample_id} 当前状态为 {sample.status}，"
+                f"非 pending 状态不会重新处理。如需重跑请先将状态重置为 pending。"
+            )
+            return 0
         result = processor.process_sample(sample)
-        queue.enqueue(result)
-        if result.status == SAMPLE_STATUS["REVIEW"]:
-            queue.promote_to_review(result.sample_id)
+        bucket = queue.enqueue(result)
+        label_map = {
+            "pending": "已入待处理队列",
+            "review": "已转人工审核队列",
+            "cleared": "已处理完毕（passed/rejected/confirmed）",
+        }
+        print(f"✅ 处理完成：{result.sample_id} → {result.status} ({label_map.get(bucket, bucket)})")
         print(_pretty(result.to_dict()))
         return 0
 
     samples = store.list_by_status(SAMPLE_STATUS["PENDING"])
-    count = 0
+    if not samples:
+        print("ℹ️  没有待处理（pending）样本，跳过。")
+        return 0
+
+    summary = {"pending": 0, "review": 0, "cleared": 0}
     for s in samples:
         result = processor.process_sample(s)
-        queue.enqueue(result)
-        if result.status == SAMPLE_STATUS["REVIEW"]:
-            queue.promote_to_review(result.sample_id)
-        count += 1
-    print(f"✅ 已处理 {count} 条待处理样本。")
+        bucket = queue.enqueue(result)
+        summary[bucket] += 1
+
+    print(f"✅ 已处理 {len(samples)} 条待处理样本：")
+    print(f"   - 转人工审核（needs_review）: {summary['review']}")
+    print(f"   - 直接出队（passed/rejected）: {summary['cleared']}")
+    print(f"   - 仍留待处理: {summary['pending']}")
     return 0
 
 
@@ -83,13 +104,20 @@ def cmd_queue(args) -> int:
     store = SampleStore()
     queue = WeakSampleQueue(store)
     if args.action == "stats":
-        print(_pretty(queue.stats()))
+        stats = queue.stats()
+        print(_pretty(stats))
     elif args.action == "pending":
         samples = queue.list_pending(limit=args.limit)
+        if not samples:
+            print("（待处理队列为空）")
+            return 0
         for s in samples:
             print(f"  - {s.sample_id}  {s.status}  {s.source}")
     elif args.action == "review":
         samples = queue.list_review(limit=args.limit)
+        if not samples:
+            print("（人工审核队列为空）")
+            return 0
         for s in samples:
             truncated = " ⚠️截断" if s.truncation_info.get("is_truncated") else ""
             print(f"  - {s.sample_id}  {s.status}{truncated}  {s.source}")
@@ -154,6 +182,9 @@ def cmd_rules(args) -> int:
     engine = RuleEngine()
     if args.action == "list":
         rules = engine.list_rules()
+        if not rules:
+            print("（暂无安全规则）")
+            return 0
         print(f"{'ID':<10} {'名称':<18} {'类型':<10} {'权重':>7}  描述")
         print("-" * 70)
         for r in rules:
@@ -201,6 +232,9 @@ def cmd_rules(args) -> int:
                 )
     elif args.action == "log":
         logs = engine.list_replay_logs(limit=args.limit)
+        if not logs:
+            print("（暂无回放日志，请先执行 rules replay 或 rules add --replay）")
+            return 0
         for log in logs:
             print(f"🕒 {log['timestamp']}  规则版本包含 {len(log['rules_snapshot'])} 条规则")
             print(f"   覆盖样本 {len(log['results'])} 条")
@@ -216,6 +250,10 @@ def cmd_export(args) -> int:
     else:
         samples = store.list_all()
 
+    if not samples:
+        print("⚠️  没有符合条件的样本，未生成报告。")
+        return 0
+
     fmt = args.format
     if fmt == "json":
         path = exporter.export_json(samples)
@@ -224,7 +262,7 @@ def cmd_export(args) -> int:
     else:
         path = exporter.export_business_markdown(samples)
 
-    print(f"📄 报告已导出: {path}")
+    print(f"📄 报告已导出（{len(samples)} 条样本）: {path}")
     return 0
 
 

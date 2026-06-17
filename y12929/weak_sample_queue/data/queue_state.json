@@ -1,12 +1,7 @@
 {
-  "pending_ids": [
-    "SMPL-20260617-001",
-    "SMPL-20260617-003"
-  ],
-  "review_ids": [
-    "SMPL-20260617-002"
-  ],
+  "pending_ids": [],
+  "review_ids": [],
   "last_grayrun_at": "",
   "grayrun_version": 0,
-  "updated_at": "2026-06-17T23:54:48.538543"
+  "updated_at": "2026-06-18T03:39:22.995338"
 }
