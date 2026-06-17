@@ -5,7 +5,9 @@ import { ParamCompare } from '../components/ParamCompare';
 import { HistoryTimeline } from '../components/HistoryTimeline';
 import { GapSection } from '../components/GapSection';
 import { BoundaryDetailModal } from '../components/BoundaryDetailModal';
-import { AlertTriangle, Clock, User } from 'lucide-react';
+import { ImportDialog } from '../components/ImportDialog';
+import { ExportPanel } from '../components/ExportPanel';
+import { AlertTriangle, Clock, User, Upload, Download, Play } from 'lucide-react';
 
 export function AnalysisPage() {
   const {
@@ -14,11 +16,20 @@ export function AnalysisPage() {
     currentResult,
     compareMode,
     compareResult,
-    actions: { toggleBoundaryDetail }
+    actions: { toggleBoundaryDetail, setImportDialogVisible, setExportPanelVisible, addBoundarySample }
   } = useAppStore();
 
   const selectedSample = samples.find(s => s.id === selectedSampleId);
   const isBoundary = selectedSample?.type === 'boundary';
+  const hasBoundarySample = samples.some(s => s.type === 'boundary');
+  const gapCount = samples.filter(s => s.type === 'gap').length;
+  const boundaryCount = samples.filter(s => s.type === 'boundary').length;
+
+  const walkthroughSteps = [
+    { label: '1. 导入旧材料', done: samples.filter(s => s.type !== 'gap').length >= 4, action: () => setImportDialogVisible(true) },
+    { label: '2. 补边界样本', done: hasBoundarySample, action: () => !hasBoundarySample && addBoundarySample() },
+    { label: '3. 导出复盘截图', done: false, action: () => setExportPanelVisible(true) }
+  ];
 
   return (
     <div className="h-screen w-screen flex bg-slate-950 text-slate-100 overflow-hidden">
@@ -27,7 +38,7 @@ export function AnalysisPage() {
       </div>
 
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="px-6 py-4 border-b border-slate-800/50 bg-slate-900/30 backdrop-blur flex items-center justify-between">
+        <header className="px-6 py-3 border-b border-slate-800/50 bg-slate-900/30 backdrop-blur flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center">
               <svg className="w-5 h-5 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -36,12 +47,57 @@ export function AnalysisPage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-slate-100">电池内阻误差归因</h1>
-              <p className="text-xs text-slate-500">现场样本分析 · 参数版本可追溯</p>
+              <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                <span>样本 {samples.length} 组</span>
+                <span>·</span>
+                <span className="text-orange-400/80">边界 {boundaryCount}</span>
+                <span>·</span>
+                <span className="text-yellow-400/80">缺口 {gapCount}</span>
+                <span>·</span>
+                <span>参数版本可追溯</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
+          <div className="hidden xl:flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/40 border border-slate-700/40">
+            {walkthroughSteps.map((s, i) => (
+              <button
+                key={i}
+                onClick={s.action}
+                className={`px-2.5 py-1 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
+                  s.done
+                    ? 'bg-emerald-500/15 text-emerald-300'
+                    : i === 1 && !hasBoundarySample
+                    ? 'bg-orange-500/15 text-orange-300 hover:bg-orange-500/25 animate-pulse-slow'
+                    : 'hover:bg-slate-700/50 text-slate-400'
+                }`}
+              >
+                {s.done ? <Play className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3" />}
+                {s.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setImportDialogVisible(true)}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-cyan-500/15 text-cyan-300
+                border border-cyan-500/30 hover:bg-cyan-500/25 transition-colors
+                flex items-center gap-1.5"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              导入
+            </button>
+            <button
+              onClick={() => setExportPanelVisible(true)}
+              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-500/15 text-emerald-300
+                border border-emerald-500/30 hover:bg-emerald-500/25 transition-colors
+                flex items-center gap-1.5"
+            >
+              <Download className="w-3.5 h-3.5" />
+              导出报告
+            </button>
+            <div className="flex items-center gap-2 text-xs text-slate-400 ml-1">
               <Clock className="w-3.5 h-3.5" />
               <span>{new Date().toLocaleDateString('zh-CN')}</span>
             </div>
@@ -139,6 +195,8 @@ export function AnalysisPage() {
       </div>
 
       <BoundaryDetailModal />
+      <ImportDialog />
+      <ExportPanel />
     </div>
   );
 }

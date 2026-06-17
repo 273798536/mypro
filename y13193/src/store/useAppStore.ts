@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { BatterySample, ParameterSet, AttributionResult, HistoryRecord } from '../types';
+import type { BatterySample, ParameterSet, AttributionResult, HistoryRecord, ImportWarning } from '../types';
 import { mockSamples, mockParameterSets, mockHistory, boundarySample } from '../data/mockData';
 import { calculateAttribution } from '../utils/calculator';
 
@@ -16,10 +16,16 @@ interface AppState {
   boundaryDetailVisible: boolean;
   gapSectionVisible: boolean;
   newlyAddedSampleId: string | null;
+  importDialogVisible: boolean;
+  exportPanelVisible: boolean;
+  lastImportWarnings: ImportWarning[];
+  operatorName: string;
 
   actions: {
     selectSample: (id: string) => void;
     addBoundarySample: () => void;
+    addSamples: (samples: BatterySample[], sourceLabel: string) => void;
+    importParameterSets: (sets: ParameterSet[], sourceLabel: string) => void;
     setCompareMode: (enabled: boolean) => void;
     setCompareParamSet: (id: string | null) => void;
     switchParamSet: (id: string) => void;
@@ -28,6 +34,11 @@ interface AppState {
     toggleBoundaryDetail: () => void;
     toggleGapSection: () => void;
     clearNewlyAdded: () => void;
+    setImportDialogVisible: (v: boolean) => void;
+    setExportPanelVisible: (v: boolean) => void;
+    setLastImportWarnings: (w: ImportWarning[]) => void;
+    recordExport: (description: string) => void;
+    setOperatorName: (name: string) => void;
   };
 }
 
@@ -59,6 +70,10 @@ export const useAppStore = create<AppState>((set, get) => {
     boundaryDetailVisible: false,
     gapSectionVisible: true,
     newlyAddedSampleId: null,
+    importDialogVisible: false,
+    exportPanelVisible: false,
+    lastImportWarnings: [],
+    operatorName: '阿岑',
 
     actions: {
       selectSample: (id: string) => {
@@ -87,26 +102,66 @@ export const useAppStore = create<AppState>((set, get) => {
       addBoundarySample: () => {
         const state = get();
         if (state.samples.find(s => s.id === boundarySample.id)) return;
+        state.actions.addSamples([boundarySample], '补充边界样本按钮');
+      },
+
+      addSamples: (newSamples, sourceLabel) => {
+        const state = get();
+        if (!newSamples.length) return;
+
+        const existingIds = new Set(state.samples.map(s => s.id));
+        const deduped = newSamples.filter(s => {
+          if (existingIds.has(s.id)) {
+            return false;
+          }
+          existingIds.add(s.id);
+          return true;
+        });
+        if (!deduped.length) return;
 
         const activeParamSet = state.parameterSets.find(p => p.id === state.activeParamSetId)!;
-        const newResult = calculateAttribution(boundarySample, activeParamSet);
+        const firstNewSample = deduped[0];
+        const newResult = calculateAttribution(firstNewSample, activeParamSet);
 
         const historyRecord: HistoryRecord = {
           id: generateId(),
           timestamp: new Date().toLocaleString('zh-CN'),
-          type: 'add_sample',
-          description: `补充边界样本：${boundarySample.name}`,
+          type: newSamples.length === 1 && firstNewSample.type === 'boundary' ? 'add_sample' : 'import',
+          description: `${sourceLabel}：导入 ${deduped.length} 组样本${newSamples.length > deduped.length ? `（跳过 ${newSamples.length - deduped.length} 条重复ID）` : ''}`,
           beforeSnapshot: state.currentResult,
           afterSnapshot: newResult,
-          operator: '阿岑'
+          operator: state.operatorName
         };
 
         set({
-          samples: [...state.samples, boundarySample],
-          selectedSampleId: boundarySample.id,
+          samples: [...state.samples, ...deduped],
+          selectedSampleId: firstNewSample.id,
           currentResult: newResult,
           history: [...state.history, historyRecord],
-          newlyAddedSampleId: boundarySample.id
+          newlyAddedSampleId: firstNewSample.id
+        });
+      },
+
+      importParameterSets: (sets, sourceLabel) => {
+        const state = get();
+        if (!sets.length) return;
+        const existingIds = new Set(state.parameterSets.map(p => p.id));
+        const deduped = sets.filter(p => !existingIds.has(p.id));
+        if (!deduped.length) return;
+
+        const historyRecord: HistoryRecord = {
+          id: generateId(),
+          timestamp: new Date().toLocaleString('zh-CN'),
+          type: 'import',
+          description: `${sourceLabel}：导入 ${deduped.length} 组参数配置`,
+          beforeSnapshot: null,
+          afterSnapshot: null,
+          operator: state.operatorName
+        };
+
+        set({
+          parameterSets: [...state.parameterSets, ...deduped],
+          history: [...state.history, historyRecord]
         });
       },
 
@@ -133,7 +188,7 @@ export const useAppStore = create<AppState>((set, get) => {
           description: '开启双参数组对照模式',
           beforeSnapshot: state.currentResult,
           afterSnapshot: compareResult,
-          operator: '排班同事'
+          operator: state.operatorName
         };
 
         set({
@@ -187,7 +242,7 @@ export const useAppStore = create<AppState>((set, get) => {
           description: `切换参数组：${paramSet.name} (${paramSet.version})`,
           beforeSnapshot: beforeResult,
           afterSnapshot: newResult,
-          operator: '排班同事'
+          operator: state.operatorName
         };
 
         set({
@@ -207,7 +262,7 @@ export const useAppStore = create<AppState>((set, get) => {
           description: description || '人工确认当前版本',
           beforeSnapshot: null,
           afterSnapshot: state.currentResult,
-          operator: '阿岑'
+          operator: state.operatorName
         };
 
         set({ history: [...state.history, historyRecord] });
@@ -225,7 +280,7 @@ export const useAppStore = create<AppState>((set, get) => {
           description: `回退到历史版本：${record.description}`,
           beforeSnapshot: state.currentResult,
           afterSnapshot: record.afterSnapshot,
-          operator: '排班同事'
+          operator: state.operatorName
         };
 
         set({
@@ -244,6 +299,36 @@ export const useAppStore = create<AppState>((set, get) => {
 
       clearNewlyAdded: () => {
         set({ newlyAddedSampleId: null });
+      },
+
+      setImportDialogVisible: (v) => {
+        set({ importDialogVisible: v });
+      },
+
+      setExportPanelVisible: (v) => {
+        set({ exportPanelVisible: v });
+      },
+
+      setLastImportWarnings: (w) => {
+        set({ lastImportWarnings: w });
+      },
+
+      recordExport: (description) => {
+        const state = get();
+        const historyRecord: HistoryRecord = {
+          id: generateId(),
+          timestamp: new Date().toLocaleString('zh-CN'),
+          type: 'export',
+          description,
+          beforeSnapshot: state.currentResult,
+          afterSnapshot: state.currentResult,
+          operator: state.operatorName
+        };
+        set({ history: [...state.history, historyRecord] });
+      },
+
+      setOperatorName: (name) => {
+        set({ operatorName: name || '阿岑' });
       }
     }
   };

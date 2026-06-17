@@ -1,4 +1,34 @@
 export type SampleType = 'normal' | 'boundary' | 'gap';
+export type HistoryType = 'import' | 'add_sample' | 'param_change' | 'confirm' | 'revert' | 'compare' | 'export';
+
+export interface ImportWarning {
+  level: 'error' | 'warning';
+  message: string;
+  sampleName?: string;
+}
+
+export interface ImportResult {
+  samples: BatterySample[];
+  warnings: ImportWarning[];
+  source: string;
+}
+
+export interface ReportSnapshot {
+  generatedAt: string;
+  operator: string;
+  samples: BatterySample[];
+  parameterSets: ParameterSet[];
+  activeParamSet: ParameterSet;
+  compareParamSet: ParameterSet | null;
+  compareMode: boolean;
+  selectedSample: BatterySample | null;
+  result: AttributionResult | null;
+  compareResult: AttributionResult | null;
+  history: HistoryRecord[];
+  gapCount: number;
+  boundaryCount: number;
+  summary: string;
+}
 
 export interface BatterySample {
   id: string;
@@ -47,8 +77,6 @@ export interface AttributionResult {
   boundaryImpact?: string;
   isWithinTolerance: boolean;
 }
-
-export type HistoryType = 'import' | 'add_sample' | 'param_change' | 'confirm' | 'revert' | 'compare';
 
 export interface HistoryRecord {
   id: string;

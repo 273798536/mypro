@@ -1,5 +1,5 @@
 import { useAppStore } from '../store/useAppStore';
-import { History, CheckCircle, Plus, Settings, RotateCcw, Upload, GitCompare } from 'lucide-react';
+import { History, CheckCircle, Plus, Settings, RotateCcw, Upload, GitCompare, Download } from 'lucide-react';
 
 export function HistoryTimeline() {
   const { history, actions: { confirmVersion, revertToHistory } } = useAppStore();
@@ -12,6 +12,7 @@ export function HistoryTimeline() {
       case 'confirm': return <CheckCircle className="w-3.5 h-3.5" />;
       case 'revert': return <RotateCcw className="w-3.5 h-3.5" />;
       case 'compare': return <GitCompare className="w-3.5 h-3.5" />;
+      case 'export': return <Download className="w-3.5 h-3.5" />;
       default: return <History className="w-3.5 h-3.5" />;
     }
   };
@@ -24,6 +25,7 @@ export function HistoryTimeline() {
       case 'confirm': return 'bg-emerald-500 text-emerald-100';
       case 'revert': return 'bg-amber-500 text-amber-100';
       case 'compare': return 'bg-violet-500 text-violet-100';
+      case 'export': return 'bg-pink-500 text-pink-100';
       default: return 'bg-slate-500 text-slate-100';
     }
   };

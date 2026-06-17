@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { Thermometer, Battery, AlertTriangle, AlertCircle, Plus } from 'lucide-react';
+import { Thermometer, Battery, AlertTriangle, AlertCircle, Plus, Upload } from 'lucide-react';
 
 export function SampleList() {
   const {
     samples,
     selectedSampleId,
     newlyAddedSampleId,
-    actions: { selectSample, addBoundarySample, clearNewlyAdded }
+    actions: { selectSample, addBoundarySample, clearNewlyAdded, setImportDialogVisible }
   } = useAppStore();
 
   const normalSamples = samples.filter(s => s.type !== 'gap');
@@ -34,11 +34,21 @@ export function SampleList() {
   return (
     <div className="h-full flex flex-col bg-slate-900/50 backdrop-blur border-r border-slate-700/50">
       <div className="p-4 border-b border-slate-700/50">
-        <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
-          <Battery className="w-5 h-5 text-cyan-400" />
-          现场样本
-        </h2>
-        <p className="text-xs text-slate-400 mt-1">共 {normalSamples.length} 组有效样本</p>
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-lg font-semibold text-slate-100 flex items-center gap-2">
+            <Battery className="w-5 h-5 text-cyan-400" />
+            现场样本
+          </h2>
+          <button
+            onClick={() => setImportDialogVisible(true)}
+            className="p-1.5 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30
+              hover:bg-cyan-500/25 transition-colors"
+            title="导入旧材料 / 现场照片"
+          >
+            <Upload className="w-4 h-4" />
+          </button>
+        </div>
+        <p className="text-xs text-slate-400">共 {normalSamples.length} 组有效样本</p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
