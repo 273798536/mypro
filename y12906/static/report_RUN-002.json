@@ -1,0 +1,196 @@
+{
+  "generated_at": "2026-06-17 23:18:27",
+  "batch_id": "RUN-002",
+  "statistics": {
+    "summary": {
+      "total": 6,
+      "success": 3,
+      "fail": 1,
+      "blocked": 1,
+      "lost": 1,
+      "success_rate": 50.0
+    },
+    "fail_by_type": {
+      "参数错误": 1
+    },
+    "by_material": {
+      "产品知识库V3.2切分_财务模块": {
+        "total": 1,
+        "success": 0,
+        "fail": 1,
+        "blocked": 0,
+        "lost": 0
+      },
+      "客服话术标准回复库": {
+        "total": 1,
+        "success": 1,
+        "fail": 0,
+        "blocked": 0,
+        "lost": 0
+      },
+      "技术文档_API接口说明": {
+        "total": 1,
+        "success": 1,
+        "fail": 0,
+        "blocked": 0,
+        "lost": 0
+      },
+      "合规审查条款2024版": {
+        "total": 2,
+        "success": 1,
+        "fail": 0,
+        "blocked": 1,
+        "lost": 0
+      },
+      "产品知识库V3.2切分_人事模块": {
+        "total": 1,
+        "success": 0,
+        "fail": 0,
+        "blocked": 0,
+        "lost": 1
+      }
+    },
+    "by_unit": {
+      "财务": 1,
+      "客服": 1,
+      "技术": 1,
+      "合规": 2,
+      "人事": 1
+    }
+  },
+  "details": [
+    {
+      "call_id": "CALL-0013",
+      "question_id": "Q-2024-1003",
+      "question_text": "月度结账日期是几号？",
+      "tool_name": "knowledge_query",
+      "status": "失败",
+      "fail_type": "参数错误",
+      "error_msg": "切分单位字段缺失",
+      "material_id": "MAT-2024-001",
+      "material_name": "产品知识库V3.2切分_财务模块",
+      "unit": "财务",
+      "batch": "RUN-002",
+      "version": "v2.3",
+      "retry_count": "1",
+      "has_feedback": true,
+      "feedback_count": 1,
+      "is_supplement": false,
+      "is_old_table": false,
+      "is_missing_unit": false
+    },
+    {
+      "call_id": "CALL-0014",
+      "question_id": "Q-2024-1010",
+      "question_text": "客服首次响应时间要求？",
+      "tool_name": "knowledge_query",
+      "status": "成功",
+      "fail_type": "成功",
+      "error_msg": "补录后字段已修复",
+      "material_id": "MAT-2024-003",
+      "material_name": "客服话术标准回复库",
+      "unit": "客服",
+      "batch": "RUN-002",
+      "version": "v2.3",
+      "retry_count": "0",
+      "has_feedback": true,
+      "feedback_count": 1,
+      "is_supplement": false,
+      "is_old_table": true,
+      "is_missing_unit": false
+    },
+    {
+      "call_id": "CALL-0015",
+      "question_id": "Q-2024-1014",
+      "question_text": "API接口返回码200表示什么？",
+      "tool_name": "knowledge_query",
+      "status": "成功",
+      "fail_type": "成功",
+      "error_msg": "补录单位后正常",
+      "material_id": "MAT-2024-005",
+      "material_name": "技术文档_API接口说明",
+      "unit": "技术",
+      "batch": "RUN-002",
+      "version": "v2.3",
+      "retry_count": "0",
+      "has_feedback": true,
+      "feedback_count": 1,
+      "is_supplement": false,
+      "is_old_table": false,
+      "is_missing_unit": false
+    },
+    {
+      "call_id": "CALL-0016",
+      "question_id": "Q-2024-1012",
+      "question_text": "合规审查的第一责任人是？",
+      "tool_name": "safety_check",
+      "status": "成功",
+      "fail_type": "成功",
+      "error_msg": "安全策略v2.2调整后放行",
+      "material_id": "MAT-2024-004",
+      "material_name": "合规审查条款2024版",
+      "unit": "合规",
+      "batch": "RUN-002",
+      "version": "v2.3",
+      "retry_count": "0",
+      "has_feedback": true,
+      "feedback_count": 1,
+      "is_supplement": false,
+      "is_old_table": false,
+      "is_missing_unit": false
+    },
+    {
+      "call_id": "CALL-0017",
+      "question_id": "Q-2024-1013",
+      "question_text": "内幕信息知情人可以建议他人买卖证券",
+      "tool_name": "safety_check",
+      "status": "拦截",
+      "fail_type": "安全拦截",
+      "error_msg": "仍触发敏感内容规则第8条",
+      "material_id": "MAT-2024-004",
+      "material_name": "合规审查条款2024版",
+      "unit": "合规",
+      "batch": "RUN-002",
+      "version": "v2.3",
+      "retry_count": "0",
+      "has_feedback": true,
+      "feedback_count": 1,
+      "is_supplement": false,
+      "is_old_table": false,
+      "is_missing_unit": false
+    },
+    {
+      "call_id": "CALL-0018",
+      "question_id": "Q-2024-1009",
+      "question_text": "以下哪些是法定节假日？",
+      "tool_name": "knowledge_query",
+      "status": "丢失",
+      "fail_type": "回滚丢失",
+      "error_msg": "版本回滚后记录丢失",
+      "material_id": "MAT-2024-002",
+      "material_name": "产品知识库V3.2切分_人事模块",
+      "unit": "人事",
+      "batch": "RUN-002",
+      "version": "v2.3",
+      "retry_count": "0",
+      "has_feedback": true,
+      "feedback_count": 1,
+      "is_supplement": false,
+      "is_old_table": false,
+      "is_missing_unit": false
+    }
+  ],
+  "lost_records": [
+    {
+      "question_id": "Q-2024-1009",
+      "question_text": "以下哪些是法定节假日？",
+      "material_id": "MAT-2024-002",
+      "material_name": "产品知识库V3.2切分_人事模块",
+      "batch": "BATCH-042",
+      "call_batch": "RUN-002",
+      "version": "v2.3",
+      "remark": "卡在MAT-2024-002材料",
+      "error_msg": "版本回滚后记录丢失"
+    }
+  ]
+}

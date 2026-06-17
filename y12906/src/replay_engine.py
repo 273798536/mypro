@@ -254,24 +254,40 @@ class ReplayEngine:
             'diff': diff
         }
 
-    def find_lost_records(self):
-        all_qids = set(self.question_by_id.keys())
-        latest_batch = sorted(self.runs.keys())[-1]
-        latest_qids = set(c['题目ID'] for c in self.runs[latest_batch])
-        lost_qids = all_qids - latest_qids
+    def find_lost_records(self, batch_id=None):
+        if batch_id:
+            calls = self.runs.get(batch_id, [])
+        else:
+            calls = self.tool_calls
+
+        lost_calls = [c for c in calls if c['状态'] == '丢失']
 
         result = []
-        for qid in lost_qids:
-            q = self.question_by_id[qid]
+        seen = set()
+        for call in lost_calls:
+            qid = call['题目ID']
+            if qid in seen:
+                continue
+            seen.add(qid)
+            q = self.question_by_id.get(qid, {})
             mid = q.get('关联材料', '')
             m = self.material_by_id.get(mid, {})
+            feedbacks = self.feedback_by_qid.get(qid, [])
+            feedback_remark = ''
+            for fb in feedbacks:
+                if '回滚' in fb.get('反馈内容', '') or '回滚' in fb.get('备注', ''):
+                    feedback_remark = fb.get('备注', fb.get('反馈内容', ''))
+                    break
             result.append({
                 'question_id': qid,
                 'question_text': q.get('题干', ''),
                 'material_id': mid,
                 'material_name': m.get('材料名称', '未知'),
                 'batch': m.get('切分批次', ''),
-                'remark': m.get('备注', '')
+                'call_batch': call.get('运行批次', ''),
+                'version': call.get('版本号', ''),
+                'remark': feedback_remark or m.get('备注', ''),
+                'error_msg': call.get('错误信息', '')
             })
         return result
 
@@ -310,17 +326,19 @@ class ReplayEngine:
             })
         return details
 
-    def export_report(self, batch_id=None, format='csv'):
+    def export_report(self, batch_id=None, format='json'):
         details = self.get_failure_details(batch_id)
         stats = self.get_statistics(batch_id)
-        lost = self.find_lost_records()
+        lost = self.find_lost_records(batch_id)
 
         if batch_id:
             filename = f'report_{batch_id}.{format}'
         else:
             filename = f'report_full.{format}'
 
-        filepath = os.path.join(BASE_DIR, 'static', filename)
+        static_dir = os.path.join(BASE_DIR, 'static')
+        os.makedirs(static_dir, exist_ok=True)
+        filepath = os.path.join(static_dir, filename)
 
         if format == 'json':
             report = {
@@ -332,6 +350,66 @@ class ReplayEngine:
             }
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(report, f, ensure_ascii=False, indent=2)
+
+        elif format == 'csv':
+            with open(filepath, 'w', encoding='utf-8-sig', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(['工具调用失败回放 - 报告导出'])
+                writer.writerow(['导出时间', datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
+                writer.writerow(['批次范围', batch_id or '全部批次'])
+                writer.writerow([])
+
+                writer.writerow(['=== 统计摘要 ==='])
+                writer.writerow(['总调用数', stats['summary']['total']])
+                writer.writerow(['成功数', stats['summary']['success']])
+                writer.writerow(['失败数', stats['summary']['fail']])
+                writer.writerow(['拦截数', stats['summary']['blocked']])
+                writer.writerow(['丢失数', stats['summary']['lost']])
+                writer.writerow(['成功率', f"{stats['summary']['success_rate']}%"])
+                writer.writerow([])
+
+                writer.writerow(['=== 版本回滚丢失记录 ==='])
+                if lost:
+                    writer.writerow([
+                        '题目ID', '题干', '材料编号', '材料名称',
+                        '切分批次', '调用批次', '版本号', '备注', '错误信息'
+                    ])
+                    for r in lost:
+                        writer.writerow([
+                            r['question_id'], r['question_text'],
+                            r['material_id'], r['material_name'],
+                            r['batch'], r['call_batch'], r['version'],
+                            r['remark'], r['error_msg']
+                        ])
+                else:
+                    writer.writerow(['暂无丢失记录'])
+                writer.writerow([])
+
+                writer.writerow(['=== 调用明细 ==='])
+                writer.writerow([
+                    '调用ID', '题目ID', '题干', '工具名称', '状态',
+                    '失败类型', '错误信息', '材料编号', '材料名称',
+                    '单位', '运行批次', '版本号', '重试次数',
+                    '有反馈', '反馈数', '补录标记', '旧表标记', '漏填单位'
+                ])
+                for d in details:
+                    writer.writerow([
+                        d['call_id'], d['question_id'], d['question_text'],
+                        d['tool_name'], d['status'], d['fail_type'],
+                        d['error_msg'], d['material_id'], d['material_name'],
+                        d['unit'], d['batch'], d['version'], d['retry_count'],
+                        '是' if d['has_feedback'] else '否', d['feedback_count'],
+                        '是' if d['is_supplement'] else '否',
+                        '是' if d['is_old_table'] else '否',
+                        '是' if d['is_missing_unit'] else '否'
+                    ])
+
+        if not os.path.exists(filepath):
+            raise IOError(f"导出失败：文件未生成 {filepath}")
+
+        file_size = os.path.getsize(filepath)
+        if file_size == 0:
+            raise IOError(f"导出失败：文件为空 {filepath}")
 
         return filename, filepath
 

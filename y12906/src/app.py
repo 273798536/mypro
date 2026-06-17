@@ -47,7 +47,8 @@ def get_details():
 
 @app.route('/api/lost')
 def get_lost_records():
-    records = engine.find_lost_records()
+    batch_id = request.args.get('batch_id')
+    records = engine.find_lost_records(batch_id)
     return jsonify(records)
 
 
