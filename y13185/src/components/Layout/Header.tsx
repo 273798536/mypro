@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Bell, User, Settings, Menu, X, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/common/Button';
 import { StatusBadge } from '@/components/common/StatusBadge';
@@ -13,7 +13,11 @@ interface HeaderProps {
 export const Header = ({ onToggleSidebar, sidebarCollapsed }: HeaderProps) => {
   const [currentUser, setCurrentUser] = useState('维修师傅');
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const pendingSuspends = useExperimentStore(state => state.getPendingSuspends());
+  const suspendRecords = useExperimentStore(state => state.suspendRecords);
+  const pendingSuspends = useMemo(
+    () => suspendRecords.filter(s => s.status === 'pending'),
+    [suspendRecords]
+  );
   const error = useExperimentStore(state => state.error);
   const clearError = useExperimentStore(state => state.clearError);
   

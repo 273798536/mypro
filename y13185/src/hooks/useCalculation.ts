@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { CalculationParameters, CalculationOutput, CalculationResult } from '@/types/experiment';
 import { DEFAULT_PARAMETERS, PARAMETER_LEVELS, PARAMETER_RANGES, LEVEL_LABELS } from '@/constants/parameters';
-import { performCalculation, performBoundaryAnalysis, getFormulaForResult } from '@/utils/calculationEngine';
+import { performCalculation as calculateOutput, performBoundaryAnalysis, getFormulaForResult } from '@/utils/calculationEngine';
 import { useExperimentStore } from '@/store/useExperimentStore';
 
 export const useCalculation = (recordId?: string | null, initialParameters?: CalculationParameters) => {
@@ -71,20 +71,20 @@ export const useCalculation = (recordId?: string | null, initialParameters?: Cal
   
   const performCalculationHandler = useCallback(async (params: CalculationParameters) => {
     if (!recordId) return null;
-    
+
     setIsCalculating(true);
-    
+
     try {
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       const beforeParams = { ...parameters };
       const result = performCalculationForRecord(recordId, params);
-      
+
       if (result) {
         setCurrentResult(result);
         selectResult(result.id);
         setResultHistory(prev => [result.result, ...prev].slice(0, 10));
-        
+
         addOperationLog(
           result.id,
           'parameter_change',
@@ -93,31 +93,31 @@ export const useCalculation = (recordId?: string | null, initialParameters?: Cal
           `参数调节：${LEVEL_LABELS[params.parameterLevel] || '自定义'}`
         );
       }
-      
+
       return result;
     } finally {
       setIsCalculating(false);
     }
   }, [recordId, parameters, performCalculationForRecord, selectResult, addOperationLog]);
 
-  const performCalculation = performCalculationHandler;
-  
+  const executeCalculation = performCalculationHandler;
+
   const getPreviewResult = useMemo(() => {
-    return performCalculation(parameters);
+    return calculateOutput(parameters);
   }, [parameters]);
-  
+
   const getFormula = useCallback((resultKey: keyof CalculationOutput, result: number) => {
     return getFormulaForResult(resultKey, parameters, result);
   }, [parameters]);
-  
+
   const getBoundaryAnalysis = useCallback((baseResult: CalculationOutput) => {
     return performBoundaryAnalysis(parameters, baseResult);
   }, [parameters]);
-  
+
   const compareWithLevel = useCallback((level: 'level1' | 'level2' | 'level3') => {
     const levelParams = { ...DEFAULT_PARAMETERS, ...PARAMETER_LEVELS[level], parameterLevel: level } as CalculationParameters;
-    const currentResult = performCalculation(parameters);
-    const levelResult = performCalculation(levelParams);
+    const currentResult = calculateOutput(parameters);
+    const levelResult = calculateOutput(levelParams);
     
     const diff: Record<string, { current: number; level: number; diff: number; diffPercent: number }> = {};
     
@@ -170,8 +170,8 @@ export const useCalculation = (recordId?: string | null, initialParameters?: Cal
     updateParameter,
     resetToDefault,
     resetToDefaults,
-    executeCalculation: performCalculationHandler,
-    performCalculation,
+    executeCalculation,
+    performCalculation: executeCalculation,
     getPreviewResult,
     getFormula,
     getBoundaryAnalysis,

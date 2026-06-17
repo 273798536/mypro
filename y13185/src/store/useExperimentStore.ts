@@ -190,24 +190,21 @@ export const useExperimentStore = create<ExperimentState>((set, get) => ({
       set({ error: '未找到对应的实验记录' });
       return null;
     }
-    
-    if (record.directionSignCheck.hasAnomaly) {
-      const hasConfirmed = state.suspendRecords.some(s => 
-        s.resultId.startsWith(recordId) && s.status !== 'pending'
-      );
-      if (!hasConfirmed) {
-        set({ error: '存在方向符号异常，需要项目经理确认后才能继续复算' });
-        return null;
-      }
-    }
-    
+
+    const hasDirectionAnomaly = record.directionSignCheck.hasAnomaly;
+    const recordResultIds = new Set(state.results.filter(r => r.recordId === recordId).map(r => r.id));
+    const hasConfirmed = hasDirectionAnomaly && state.suspendRecords.some(s =>
+      recordResultIds.has(s.resultId) && s.status !== 'pending'
+    );
+    const shouldSuspend = hasDirectionAnomaly && !hasConfirmed;
+
     const currentUser = getCurrentUser();
     const existingVersions = state.results.filter(r => r.recordId === recordId).length;
-    
+
     const calcResult = performCalculation(parameters);
     const formula = getFormulaForResult('liftCoefficient', parameters, calcResult.liftCoefficient);
     const boundaryAnalysis = performBoundaryAnalysis(parameters, calcResult);
-    
+
     const annotations: Annotation = {
       sceneNote: '',
       sideNote: '',
@@ -215,7 +212,7 @@ export const useExperimentStore = create<ExperimentState>((set, get) => ({
       lastSyncedAt: 0,
       syncMode: 'synchronized',
     };
-    
+
     const now = Date.now();
     const parameterGear = parameters.parameterLevel === 'level1' ? 1 : parameters.parameterLevel === 'level2' ? 2 : parameters.parameterLevel === 'level3' ? 3 : 'custom';
     const result: CalculationResult = {
@@ -227,7 +224,7 @@ export const useExperimentStore = create<ExperimentState>((set, get) => ({
       result: calcResult,
       formula,
       boundaryAnalysis,
-      status: 'normal',
+      status: shouldSuspend ? 'suspended' : 'normal',
       annotations,
       parameterGear,
       calculatedAt: now,
@@ -238,30 +235,34 @@ export const useExperimentStore = create<ExperimentState>((set, get) => ({
       dragCoefficient: calcResult.dragCoefficient,
       reynoldsNumber: calcResult.reynoldsNumber,
     };
-    
+
     set(state => {
       const updated = [...state.results, result];
       saveResults(updated);
       return { results: updated, selectedResultId: result.id };
     });
-    
+
     get().addOperationLog(
       result.id,
       'calculate',
       null,
       result,
-      `使用${parameters.parameterLevel === 'custom' ? '自定义' : ''}参数完成复算`
+      shouldSuspend
+        ? `复算因方向符号异常已挂起，等待项目经理确认（异常字段: ${record.directionSignCheck.anomalousFields.join(', ')}）`
+        : `使用${parameters.parameterLevel === 'custom' ? '自定义' : ''}参数完成复算`
     );
-    
-    if (record.directionSignCheck.hasAnomaly) {
+
+    if (shouldSuspend) {
       get().createSuspendRecord(
         result.id,
         'direction_sign_reversed',
-        `方向符号异常字段: ${record.directionSignCheck.anomalousFields.join(', ')}`,
+        `方向符号异常字段: ${record.directionSignCheck.anomalousFields.join(', ')}（预期${record.directionSignCheck.expectedDirection === 'positive' ? '正值' : '负值'}）`,
         record.directionSignCheck.detectedValues
       );
+      set({ error: '存在方向符号异常，已自动挂起等待项目经理确认，请前往「异常处理」页面处理' });
+      return null;
     }
-    
+
     return result;
   },
   
