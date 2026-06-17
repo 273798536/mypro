@@ -1,0 +1,68 @@
+[
+  {
+    "cluster_id": "C001",
+    "title": "某平台数据泄露事件",
+    "content": "用户信息大规模泄露，涉及数百万账号",
+    "sentiment": "negative",
+    "confidence": 0.92,
+    "source": "新闻网",
+    "publish_time": "2024-01-15",
+    "has_citation": true,
+    "citation_note": "引用自官方通报"
+  },
+  {
+    "cluster_id": "C002",
+    "title": "新产品上线好评如潮",
+    "content": "用户反馈积极，市场反响热烈",
+    "sentiment": "positive",
+    "confidence": 0.85,
+    "source": "社交媒体",
+    "publish_time": "2024-01-16",
+    "has_citation": true,
+    "citation_note": "引用用户评测"
+  },
+  {
+    "cluster_id": "C003",
+    "title": "行业政策调整分析",
+    "content": "监管政策变化对行业影响的分析",
+    "sentiment": "neutral",
+    "confidence": 0.70,
+    "source": "财经媒体",
+    "publish_time": "2024-01-17",
+    "has_citation": true,
+    "citation_note": "引用政策文件"
+  },
+  {
+    "cluster_id": "C004",
+    "title": "无引用但高置信舆情",
+    "content": "这条记录没有引用来源但置信度很高",
+    "sentiment": "negative",
+    "confidence": 0.88,
+    "source": "未知",
+    "publish_time": "2024-01-18",
+    "has_citation": false,
+    "citation_note": null
+  },
+  {
+    "cluster_id": "C005",
+    "title": "客服服务质量提升",
+    "content": "客户满意度调查显示服务质量有所提升",
+    "sentiment": "positive",
+    "confidence": 0.65,
+    "source": "内部报告",
+    "publish_time": "2024-01-19",
+    "has_citation": true,
+    "citation_note": "引用内部调研数据"
+  },
+  {
+    "cluster_id": "C006",
+    "title": "低置信度中性新闻",
+    "content": "一条信息不太确定的中性新闻",
+    "sentiment": "neutral",
+    "confidence": 0.45,
+    "source": "论坛",
+    "publish_time": "2024-01-20",
+    "has_citation": true,
+    "citation_note": "引用论坛帖子"
+  }
+]

@@ -1,0 +1,43 @@
+[
+  {
+    "cluster_id": "G001",
+    "title": "正常记录一",
+    "content": "这是一条正常的记录",
+    "sentiment": "positive",
+    "confidence": 0.8,
+    "source": "测试",
+    "publish_time": "2024-01-01",
+    "has_citation": true
+  },
+  {
+    "title": "缺少cluster_id的坏行",
+    "content": "这条记录没有cluster_id",
+    "sentiment": "negative",
+    "confidence": 0.7
+  },
+  {
+    "cluster_id": "G002",
+    "title": "confidence格式错误",
+    "sentiment": "neutral",
+    "confidence": "不是数字",
+    "source": "测试",
+    "publish_time": "2024-01-02"
+  },
+  {
+    "cluster_id": "G003",
+    "title": "confidence超出范围",
+    "sentiment": "positive",
+    "confidence": 1.5,
+    "source": "测试",
+    "publish_time": "2024-01-03"
+  },
+  {
+    "cluster_id": "G004",
+    "title": "正常记录二",
+    "sentiment": "negative",
+    "confidence": 0.6,
+    "source": "测试",
+    "publish_time": "2024-01-04",
+    "has_citation": false
+  }
+]
