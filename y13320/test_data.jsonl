@@ -1,0 +1,13 @@
+{"essay_id": "essay_001", "model_version": "gpt-4-v2.1", "score": 85.5, "feedback": "本文论点明确，第2段举例论证充分，原文第3句的数据支撑有力。文中提到的社会调查数据增强了说服力。", "citations": ["第2段", "原文第3句"], "evidence_points": ["第2段的调查数据", "文中提到的案例分析"]}
+
+# 注释行：这是一条人工改判样本，周姐特别标注
+{"essay_id": "essay_002", "model_version": "gpt-4-v2.1", "score": 72.0, "feedback": "本文结构完整，但论据稍显不足", "is_human_override": true, "override_reason": "人工改判：原文第5段有隐藏的反证材料，模型未识别，实际应得88分", "citations": [], "evidence_points": []}
+
+{"essay_id": "essay_003_old", "model_version": "gpt-3.5-v1.0", "score": 65.0, "feedback": "本文论证不够充分，缺乏具体例证", "citations": ["第1段"], "evidence_points": ["开头点明主题"]}
+
+{"essay_id": "essay_004", "model_version": "gpt-4-v2.1", "score": 91.0, "feedback": "本文论证严密，逻辑清晰。根据第3段所述，作者运用了对比论证手法，如第5句所言，数据来源可靠。", "citations": ["第3段", "第5句"], "evidence_points": ["第3段对比论证", "第5句数据支撑", "文中提到的权威来源"]}
+
+这不是合法的JSON格式，是一条坏行用来测试错误处理
+{"essay_id": "essay_005", "model_version": "gpt-4-v2.1", "score": 78.5, "feedback": "本文观点明确，语言流畅，但缺少具体的原文引用支撑", "citations": [], "evidence_points": []}
+
+{"essay_id": "essay_004", "model_version": "gpt-4-v2.2", "score": 93.0, "feedback": "本文论证严密，逻辑清晰。根据第3段所述，作者运用了对比论证手法，如第5句所言，数据来源可靠。结构安排更为合理。", "citations": ["第3段", "第5句"], "evidence_points": ["第3段对比论证", "第5句数据支撑"]}
