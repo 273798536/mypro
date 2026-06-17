@@ -1,0 +1,84 @@
+{
+  "summary": {
+    "run_id": "fe3a514c",
+    "ts": "2026-06-18T02:30:20+09:00",
+    "counts": {
+      "samples": 5,
+      "old_version": 4,
+      "manual_overrides": 1,
+      "verbal_notes": 2,
+      "model_misjudgments": 1,
+      "conflicts": 3,
+      "stuck": 3
+    },
+    "sources_loaded": {
+      "sample_table": "data/sample_table.csv",
+      "sample_table_old": "data/sample_table_old.csv",
+      "manual_overrides": "data/manual_overrides.json",
+      "verbal_notes": "data/verbal_notes.json",
+      "model_misjudgment": "data/model_misjudgment.json"
+    }
+  },
+  "conflicts": [
+    {
+      "sample_id": "MR-002",
+      "kinds": [
+        "unresolved_version_drift"
+      ],
+      "sources": [
+        "样本表(当前):驳回",
+        "旧版样本表(v1.0):支持",
+        "口头备注:心内科医生口述这条问诊逻辑不对,先别用"
+      ],
+      "reason": "旧版样本表(支持)与当前样本表(驳回)不一致,无人工改判佐证",
+      "impact": "1条样本,直接影响训练集纳入结论",
+      "stuck": true
+    },
+    {
+      "sample_id": "MR-003",
+      "kinds": [
+        "version_drift_with_manual",
+        "manual_override_pending"
+      ],
+      "sources": [
+        "样本表(当前):待复核",
+        "旧版样本表(v1.0):支持",
+        "人工改判:待复核->支持(已确认:否)"
+      ],
+      "reason": "旧版(支持)与当前(待复核)不一致,人工改判指向支持;人工改判(待复核->支持)尚未确认,不计入结论",
+      "impact": "1条样本,改判未确认前不计入结论",
+      "stuck": true
+    },
+    {
+      "sample_id": "MR-004",
+      "kinds": [
+        "unresolved_version_drift"
+      ],
+      "sources": [
+        "样本表(当前):支持",
+        "旧版样本表(v1.0):驳回"
+      ],
+      "reason": "旧版样本表(驳回)与当前样本表(支持)不一致,无人工改判佐证",
+      "impact": "1条样本,直接影响训练集纳入结论",
+      "stuck": true
+    }
+  ],
+  "model_reconciliation": [
+    {
+      "sample_id": "MR-006",
+      "question": "患者否认发热,但查体体温38.5℃,诊断急性上呼吸道感染",
+      "answer": "该问答可作为训练样本",
+      "old_model_label": "驳回",
+      "new_model_label": "支持",
+      "ground_truth": "支持",
+      "explanation": "旧模型未识别'否认+查体阳性'的否定转移语义,把'否认发热'当作无发热而误判为驳回;新模型引入医学NLU否定消解后,结合查体体温38.5℃正确判为支持",
+      "ts": "2026-06-17T14:00:00+08:00"
+    }
+  ],
+  "artifacts": {
+    "样本表(当前)": "data/sample_table.csv",
+    "旧版样本表": "data/sample_table_old.csv",
+    "处理记录": "out/processing_records.json",
+    "历史时间线": "out/history.jsonl"
+  }
+}
