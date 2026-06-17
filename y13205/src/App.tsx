@@ -44,7 +44,12 @@ export default function App() {
         changedAt: new Date().toLocaleString('zh-CN'),
       }
       setNoteChanges(pc => [...pc, change])
-      return prev.map(r => r.id === recordId ? { ...r, note: newNote } : r)
+      const updatedRecords = prev.map(r => r.id === recordId ? { ...r, note: newNote } : r)
+      setResult(prevResult => ({
+        ...prevResult,
+        records: prevResult.records.map(r => r.id === recordId ? { ...r, note: newNote } : r),
+      }))
+      return updatedRecords
     })
   }, [])
 
@@ -108,7 +113,7 @@ export default function App() {
       )}
 
       {tab === 'delivery' && (
-        <DeliveryPanel result={result} catalog={catalog} records={records} />
+        <DeliveryPanel result={result} catalog={catalog} noteChanges={noteChanges} />
       )}
     </div>
   )
