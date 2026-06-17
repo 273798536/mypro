@@ -4,38 +4,90 @@ import ParameterTable from '@/components/ParameterTable'
 import NoiseBanner from '@/components/NoiseBanner'
 import BadDataTraceCard from '@/components/BadDataTraceCard'
 import { Play, Plus, RotateCcw } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { ParameterKey } from '@/types'
 import { parameterLabels, parameterUnits } from '@/types'
 
+function formatTime(ts: string): string {
+  const d = new Date(ts)
+  return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`
+}
+
 export default function ReplayPage() {
-  const { appliedParameters, overrides, runRecalculation, isRecalculated, applyOverride, resetToOriginal } =
-    useReplayStore()
+  const {
+    rawParameters,
+    appliedParameters,
+    repairNotes,
+    overrides,
+    runRecalculation,
+    isRecalculated,
+    applyOverride,
+    resetToOriginal,
+  } = useReplayStore()
+
   const [showAddForm, setShowAddForm] = useState(false)
-  const [newOverride, setNewOverride] = useState({
-    parameterName: 'waveHeight' as ParameterKey,
-    timestamp: appliedParameters[12]?.timestamp || '',
-    oldValue: 15.2,
-    newValue: 3.8,
-    reason: '确认噪声，按前后插值修正',
-    operator: '阿岑',
-    sourceNoteLine: '维修备注第12行',
-    sourceNoteObject: '波高传感器 A-07',
-  })
+
+  const defaultIdx = rawParameters.findIndex((p) => p.id === 'p7') // 08:12，波高15.2的那条
+  const fallbackIdx = Math.min(6, rawParameters.length - 1)
+  const startIdx = defaultIdx >= 0 ? defaultIdx : fallbackIdx
+
+  const [selectedParam, setSelectedParam] = useState<ParameterKey>('waveHeight')
+  const [selectedTimestamp, setSelectedTimestamp] = useState<string>(
+    rawParameters[startIdx]?.timestamp || '',
+  )
+  const [sourceNoteId, setSourceNoteId] = useState<string>('n3') // 默认关联到最终确认那条备注
+  const [newValue, setNewValue] = useState<number>(3.8)
+  const [reason, setReason] = useState<string>('确认噪声，按前后插值修正')
+  const [operator, setOperator] = useState<string>('阿岑')
+
+  const selectedParamRecord = useMemo(() => {
+    return rawParameters.find((p) => p.timestamp === selectedTimestamp) || null
+  }, [rawParameters, selectedTimestamp])
+
+  const autoOldValue = useMemo(() => {
+    if (!selectedParamRecord) return 0
+    return (selectedParamRecord as any)[selectedParam] as number
+  }, [selectedParamRecord, selectedParam])
+
+  const selectedNote = useMemo(() => {
+    return repairNotes.find((n) => n.id === sourceNoteId) || null
+  }, [repairNotes, sourceNoteId])
+
+  useEffect(() => {
+    if (showAddForm && selectedParamRecord) {
+      const interpolatedVal = autoOldValue > 10 ? autoOldValue * 0.25 : autoOldValue * 0.8
+      setNewValue(Math.round(interpolatedVal * 10) / 10)
+    }
+  }, [showAddForm, selectedParam, selectedTimestamp, autoOldValue, selectedParamRecord])
 
   const handleAddOverride = () => {
+    if (!selectedParamRecord) return
+
     applyOverride({
       buoyId: 'BUOY-001',
-      timestamp: newOverride.timestamp,
-      parameterName: newOverride.parameterName,
-      oldValue: newOverride.oldValue,
-      newValue: newOverride.newValue,
-      reason: newOverride.reason,
-      operator: newOverride.operator,
-      sourceNoteLine: newOverride.sourceNoteLine,
-      sourceNoteObject: newOverride.sourceNoteObject,
+      timestamp: selectedTimestamp,
+      parameterName: selectedParam,
+      oldValue: autoOldValue,
+      newValue: newValue,
+      reason: reason,
+      operator: operator,
+      sourceNoteId: sourceNoteId || undefined,
+      sourceNoteLine: selectedNote?.lineNumber || '维修备注',
+      sourceNoteObject: selectedNote?.relatedObject || '未指定',
     })
     setShowAddForm(false)
+  }
+
+  const handleNoteChange = (noteId: string) => {
+    setSourceNoteId(noteId)
+    const note = repairNotes.find((n) => n.id === noteId)
+    if (note && note.relatedParameterIds.length > 0) {
+      const firstParamId = note.relatedParameterIds[0]
+      const param = rawParameters.find((p) => p.id === firstParamId)
+      if (param) {
+        setSelectedTimestamp(param.timestamp)
+      }
+    }
   }
 
   return (
@@ -74,13 +126,40 @@ export default function ReplayPage() {
         <div className="bg-slate-800 border border-slate-700 rounded-sm p-4">
           <h3 className="text-sm font-medium text-slate-200 mb-3">录入人工改判</h3>
           <div className="grid grid-cols-2 gap-3 text-xs">
+            <div className="col-span-2">
+              <label className="block text-slate-400 mb-1">来源维修备注</label>
+              <select
+                value={sourceNoteId}
+                onChange={(e) => handleNoteChange(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
+              >
+                <option value="">-- 选择维修备注（可选）--</option>
+                {repairNotes.map((note) => (
+                  <option key={note.id} value={note.id}>
+                    [{note.lineNumber}] {formatTime(note.timestamp)} {note.relatedObject} -{' '}
+                    {note.content.substring(0, 30)}
+                    {note.content.length > 30 ? '…' : ''}
+                  </option>
+                ))}
+              </select>
+              {selectedNote && (
+                <div className="mt-1.5 text-[11px] text-amber-400/80 bg-amber-500/5 rounded-sm px-2 py-1.5 border border-amber-500/20">
+                  <span className="text-amber-300 font-medium">备注原文：</span>
+                  {selectedNote.content}
+                  {selectedNote.relatedParameterIds.length > 0 && (
+                    <span className="block mt-1 text-amber-300/80">
+                      自动匹配：{formatTime(selectedTimestamp)} {parameterLabels[selectedParam]}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
             <div>
               <label className="block text-slate-400 mb-1">参数</label>
               <select
-                value={newOverride.parameterName}
-                onChange={(e) =>
-                  setNewOverride({ ...newOverride, parameterName: e.target.value as ParameterKey })
-                }
+                value={selectedParam}
+                onChange={(e) => setSelectedParam(e.target.value as ParameterKey)}
                 className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
               >
                 {(['waveHeight', 'wavePeriod', 'waterTemp', 'windSpeed', 'pressure'] as ParameterKey[]).map(
@@ -92,77 +171,92 @@ export default function ReplayPage() {
                 )}
               </select>
             </div>
+
             <div>
               <label className="block text-slate-400 mb-1">时间点</label>
               <select
-                value={newOverride.timestamp}
-                onChange={(e) => setNewOverride({ ...newOverride, timestamp: e.target.value })}
+                value={selectedTimestamp}
+                onChange={(e) => setSelectedTimestamp(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
               >
                 {appliedParameters.map((p) => {
                   const d = new Date(p.timestamp)
+                  const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`
+                  const isP7 = p.id === 'p7'
+                  const hasNoise = p.id === 'p7' || p.id === 'p17'
                   return (
                     <option key={p.id} value={p.timestamp}>
-                      {d.getHours().toString().padStart(2, '0')}:{d.getMinutes().toString().padStart(2, '0')}
+                      {timeStr} {isP7 ? '⚠️ ' : ''}
+                      {parameterLabels[selectedParam]}: {(p as any)[selectedParam].toFixed(1)}
+                      {parameterUnits[selectedParam]}
+                      {hasNoise && !isP7 ? ' ⚠️' : ''}
                     </option>
                   )
                 })}
               </select>
             </div>
+
             <div>
-              <label className="block text-slate-400 mb-1">原值</label>
+              <label className="block text-slate-400 mb-1">
+                原值（自动读取，不可修改）
+              </label>
               <input
                 type="number"
                 step="0.1"
-                value={newOverride.oldValue}
-                onChange={(e) => setNewOverride({ ...newOverride, oldValue: +e.target.value })}
-                className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
+                value={autoOldValue}
+                readOnly
+                className="w-full bg-slate-700/50 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-400 cursor-not-allowed"
               />
             </div>
+
             <div>
               <label className="block text-slate-400 mb-1">改判值</label>
               <input
                 type="number"
                 step="0.1"
-                value={newOverride.newValue}
-                onChange={(e) => setNewOverride({ ...newOverride, newValue: +e.target.value })}
+                value={newValue}
+                onChange={(e) => setNewValue(+e.target.value)}
                 className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
               />
             </div>
+
             <div>
               <label className="block text-slate-400 mb-1">改判原因</label>
               <input
                 type="text"
-                value={newOverride.reason}
-                onChange={(e) => setNewOverride({ ...newOverride, reason: e.target.value })}
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
               />
             </div>
+
             <div>
               <label className="block text-slate-400 mb-1">操作员</label>
               <input
                 type="text"
-                value={newOverride.operator}
-                onChange={(e) => setNewOverride({ ...newOverride, operator: e.target.value })}
+                value={operator}
+                onChange={(e) => setOperator(e.target.value)}
                 className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
               />
             </div>
+
             <div>
-              <label className="block text-slate-400 mb-1">来源备注行</label>
+              <label className="block text-slate-400 mb-1">来源行（自动）</label>
               <input
                 type="text"
-                value={newOverride.sourceNoteLine}
-                onChange={(e) => setNewOverride({ ...newOverride, sourceNoteLine: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
+                value={selectedNote?.lineNumber || ''}
+                readOnly
+                className="w-full bg-slate-700/50 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-400 cursor-not-allowed"
               />
             </div>
+
             <div>
-              <label className="block text-slate-400 mb-1">来源对象</label>
+              <label className="block text-slate-400 mb-1">来源对象（自动）</label>
               <input
                 type="text"
-                value={newOverride.sourceNoteObject}
-                onChange={(e) => setNewOverride({ ...newOverride, sourceNoteObject: e.target.value })}
-                className="w-full bg-slate-900 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-200"
+                value={selectedNote?.relatedObject || ''}
+                readOnly
+                className="w-full bg-slate-700/50 border border-slate-600 rounded-sm px-2 py-1.5 text-slate-400 cursor-not-allowed"
               />
             </div>
           </div>
@@ -175,7 +269,8 @@ export default function ReplayPage() {
             </button>
             <button
               onClick={handleAddOverride}
-              className="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-white rounded-sm text-xs transition-colors"
+              disabled={!selectedParamRecord}
+              className="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 disabled:bg-slate-600 disabled:cursor-not-allowed text-white rounded-sm text-xs transition-colors"
             >
               确认添加
             </button>
@@ -198,8 +293,9 @@ export default function ReplayPage() {
                 key={ov.id}
                 className="bg-green-500/10 border border-green-500/30 rounded-sm px-2 py-1 text-xs text-green-300"
               >
-                {new Date(ov.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })} ·{' '}
-                {parameterLabels[ov.parameterName as ParameterKey]} {ov.oldValue} → {ov.newValue}
+                {formatTime(ov.timestamp)} · {parameterLabels[ov.parameterName as ParameterKey]}{' '}
+                <span className="line-through text-slate-500">{ov.oldValue}</span> →{' '}
+                <span className="font-medium">{ov.newValue}</span>
               </div>
             ))}
           </div>
