@@ -72,8 +72,6 @@ class MotorTorqueReportExporter:
         return self
 
     def fix_direction(self, record_id: str, reason: str = "") -> "MotorTorqueReportExporter":
-        from .models import JudgmentAction
-
         for r in self._records:
             if r.record_id == record_id:
                 old_dir = r.direction.value

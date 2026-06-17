@@ -14,10 +14,9 @@ from .models import (
     JudgmentEntry,
     RecalcImpact,
     StatisticResult,
-    convert_torque,
 )
 from .engine import compute_statistics
-from .parser import normalize_unit
+from .parser import convert_torque, normalize_unit
 
 
 def recalc_with_parameter_change(
@@ -117,7 +116,7 @@ def _describe_formula(parameter_name: str, old_value: Any, new_value: Any, outpu
     if parameter_name == "torque_unit":
         return f"单位换算: {old_value} → {new_value}, 换算因子 = {convert_torque(1.0, str(old_value), str(new_value))}"
     elif parameter_name == "boundary_sigma":
-        return f"边界判定: mean ± σ×k, k: {old_value} → {new_value}"
+        return f"边界判定 (boundary_sigma): mean ± σ×k, k: {old_value} → {new_value}"
     elif parameter_name == "direction_correction":
         return f"方向修正: 受影响记录 {new_value}, CW ↔ CCW 互换"
     elif parameter_name == "torque_override":

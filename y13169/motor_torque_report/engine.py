@@ -9,8 +9,8 @@ from .models import (
     ExperimentalRecord,
     FilterCriteria,
     StatisticResult,
-    convert_torque,
 )
+from .parser import convert_torque
 
 
 def apply_filter(

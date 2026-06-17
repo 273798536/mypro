@@ -10,7 +10,6 @@ from .models import (
     RecalcImpact,
     ReportBundle,
     StatisticResult,
-    convert_torque,
 )
 from .anomaly import run_all_anomaly_checks
 from .audit import AuditTrail
