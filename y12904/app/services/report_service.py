@@ -324,18 +324,17 @@ def export_report(db: Session, task_id: int, fmt: str = "markdown") -> str:
             raise ValueError(f"任务当前状态为「{task.status.value}」，还未进入复核阶段，请先推进到「reviewing」后再导出")
         raise ValueError(f"任务当前状态为「{task.status.value}」，不满足导出条件（需处于复核中、已通过或已导出报告）")
 
-    if task.status in (TaskStatus.REVIEWING, TaskStatus.REPORTED):
-        blocking_results = get_unresolved_blocking_results(db, task_id)
-        if blocking_results:
-            detail_items = []
-            for r in blocking_results:
-                qid = r.question_id or "全局"
-                detail_items.append(f"[{r.check_type.value}] {qid}: {r.detail[:60]}")
-            raise ValueError(
-                f"存在 {len(blocking_results)} 条未解决的阻断项，不能导出报告。"
-                f"未解决项：{'; '.join(detail_items)}。"
-                f"请先在「results/resolve」接口标记为已解决后再导出。"
-            )
+    blocking_results = get_unresolved_blocking_results(db, task_id)
+    if blocking_results:
+        detail_items = []
+        for r in blocking_results:
+            qid = r.question_id or "全局"
+            detail_items.append(f"[{r.check_type.value}] {qid}: {r.detail[:60]}")
+        raise ValueError(
+            f"存在 {len(blocking_results)} 条未解决的阻断项，不能导出报告。"
+            f"未解决项：{'; '.join(detail_items)}。"
+            f"请先在「results/resolve」接口标记为已解决后再导出。"
+        )
 
     if fmt == "html":
         content = generate_html_report(db, task_id)
