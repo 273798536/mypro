@@ -40,10 +40,13 @@ export interface UIConversation extends Omit<Conversation, 'customerText' | 'rob
   isReviewed: boolean;
   currentIntent: Intent;
   remark?: string;
+  promptVersionId?: string;
+  trainingSampleId?: string;
 }
 
 export interface UIVersionRecord extends Omit<VersionRecord, 'remark'> {
   changeRemark?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface UITruncationInfo extends Omit<TruncationInfo, 'reason'> {
@@ -64,6 +67,13 @@ export interface UIMaterialBatch extends MaterialBatch {
   importedAt: string;
 }
 
+export interface UIConversationListResult {
+  items: UIConversation[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 export function adaptDashboardStats(stats: DashboardStats, conversations: Conversation[]): UIDashboardStats {
   const reviewed = stats.totalConversations - stats.pendingReview;
   const recentDrifts = conversations
@@ -80,7 +90,7 @@ export function adaptDashboardStats(stats: DashboardStats, conversations: Conver
       high: (stats as any).highRisk || 0,
       medium: (stats as any).mediumRisk || 0,
       low: (stats as any).lowRisk || 0,
-      none: (stats as any).normalRisk || 0
+      normal: (stats as any).normalRisk || 0
     },
     bySource: stats.sourceDistribution as Record<MaterialSource, number>,
     byIntent: stats.intentDistribution as Record<Intent, number>,
@@ -102,6 +112,8 @@ export function adaptDriftItem(conv: Conversation): UIDriftItem {
 
 export function adaptConversation(conv: Conversation, versions: VersionRecord[]): UIConversation {
   const annotationVersion = versions.find(v => v.versionType === 'annotation');
+  const aiVersion = versions.find(v => v.versionType === 'prediction');
+  const latestVersion = versions[versions.length - 1];
   const isReviewed = versions.some(v => v.versionType === 'manual');
 
   return {
@@ -115,7 +127,9 @@ export function adaptConversation(conv: Conversation, versions: VersionRecord[])
     hasDrift: conv.driftScore > 0,
     isReviewed,
     currentIntent: conv.aiPrediction,
-    remark: (conv as any).remark
+    remark: (conv as any).remark,
+    promptVersionId: latestVersion?.promptVersionId || aiVersion?.promptVersionId,
+    trainingSampleId: latestVersion?.trainingSampleId || annotationVersion?.trainingSampleId
   };
 }
 

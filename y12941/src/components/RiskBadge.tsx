@@ -11,7 +11,7 @@ export const RiskBadge: React.FC<RiskBadgeProps> = ({ level }) => {
     high: 'bg-red-100 text-red-700 border-red-200',
     medium: 'bg-amber-100 text-amber-700 border-amber-200',
     low: 'bg-green-100 text-green-700 border-green-200',
-    none: 'bg-gray-100 text-gray-600 border-gray-200'
+    normal: 'bg-gray-100 text-gray-600 border-gray-200'
   };
 
   return (

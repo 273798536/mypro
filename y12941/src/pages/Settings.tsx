@@ -44,7 +44,8 @@ export const Settings: React.FC = () => {
         content: newContent,
         description: newDescription,
         createdBy: '王工程师',
-        isActive: false
+        isActive: false,
+        effectiveFrom: new Date().toISOString().split('T')[0]
       });
       await fetchPromptVersions();
       setShowNewPrompt(false);

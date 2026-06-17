@@ -28,7 +28,9 @@ import type {
   UIConversation,
   UITruncationInfo,
   UIToolCallError,
-  UIMaterialBatch
+  UIMaterialBatch,
+  UIVersionRecord,
+  UIConversationListResult
 } from './adapters';
 
 const API_BASE = '/api';
@@ -55,17 +57,19 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
 }
 
 export const conversationApi = {
-  getConversations: async (options: ConversationQueryOptions = {}): Promise<ConversationListResult & { items: UIConversation[] }> => {
+  getConversations: async (options: ConversationQueryOptions = {}): Promise<UIConversationListResult> => {
     const params = new URLSearchParams();
     Object.entries(options).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         params.append(key, String(value));
       }
     });
-    const result = await request<ConversationListResult & { items: Conversation[] }>(`/conversations?${params.toString()}`);
+    const result = await request<ConversationListResult>(`/conversations?${params.toString()}`);
     return {
-      ...result,
-      items: result.items.map(c => adaptConversation(c, []))
+      items: result.items.map(c => adaptConversation(c, [])),
+      total: result.total,
+      page: result.page,
+      pageSize: result.pageSize
     };
   },
 
@@ -74,7 +78,7 @@ export const conversationApi = {
     return adaptConversation(conv, []);
   },
 
-  getVersions: async (conversationId: string): Promise<VersionRecord[]> => {
+  getVersions: async (conversationId: string): Promise<UIVersionRecord[]> => {
     const versions = await request<VersionRecord[]>(`/conversations/${conversationId}/versions`);
     return versions.map(v => adaptVersionRecord(v));
   },
@@ -82,11 +86,7 @@ export const conversationApi = {
   review: async (id: string, data: ReviewRequest): Promise<ReviewResponse & { conversation: UIConversation }> => {
     const result = await request<any>(`/conversations/${id}/review`, {
       method: 'PUT',
-      body: JSON.stringify({
-        correctedIntent: data.correctedIntent,
-        changeReason: data.reviewRemark,
-        reviewer: data.operator
-      })
+      body: JSON.stringify(data)
     });
     return {
       ...result,
@@ -94,7 +94,7 @@ export const conversationApi = {
     };
   },
 
-  rollback: async (conversationId: string, versionId: string, operator: string): Promise<VersionRecord> => {
+  rollback: async (conversationId: string, versionId: string, operator: string): Promise<UIVersionRecord> => {
     const version = await request<VersionRecord>(`/conversations/${conversationId}/rollback`, {
       method: 'POST',
       body: JSON.stringify({ versionId, operator })

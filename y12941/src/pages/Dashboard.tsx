@@ -120,7 +120,7 @@ export const Dashboard: React.FC = () => {
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <h3 className="font-semibold text-gray-900 mb-4">风险分布</h3>
           <div className="space-y-4">
-            {(['high', 'medium', 'low', 'none'] as const).map((level) => (
+            {(['high', 'medium', 'low', 'normal'] as const).map((level) => (
               <div key={level} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <RiskBadge level={level} />

@@ -55,6 +55,7 @@ export const Reports: React.FC = () => {
         endDate: endDate || undefined,
         includeRawData,
         includeVersions,
+        includeTechnicalDetails: includeRawData,
         generatedBy
       });
 

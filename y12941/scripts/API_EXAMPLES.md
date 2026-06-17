@@ -58,19 +58,19 @@ curl -X GET "http://localhost:3001/api/stats/dashboard" \
       "high": 3,
       "medium": 7,
       "low": 8,
-      "none": 2
+      "normal": 2
     },
     "bySource": {
-      "annotation": 8,
-      "segmentation": 7,
-      "training": 5
+      "annotation_record": 8,
+      "segmentation_list": 7,
+      "training_sample": 5
     },
     "byIntent": {
       "refund": 5,
       "inquiry": 6,
       "complaint": 3,
-      "praise": 2,
-      "suggestion": 2,
+      "exchange": 2,
+      "technical_support": 2,
       "other": 2
     },
     "recentDrifts": [...]
@@ -96,7 +96,7 @@ curl -X GET "http://localhost:3001/api/conversations?riskLevel=high" \
   -H "Content-Type: application/json"
 
 # 按来源筛选
-curl -X GET "http://localhost:3001/api/conversations?sourceType=segmentation" \
+curl -X GET "http://localhost:3001/api/conversations?sourceType=segmentation_list" \
   -H "Content-Type: application/json"
 
 # 关键词搜索
@@ -104,7 +104,7 @@ curl -X GET "http://localhost:3001/api/conversations?search=退款" \
   -H "Content-Type: application/json"
 
 # 组合筛选：高风险 + 有漂移 + 切分清单来源
-curl -X GET "http://localhost:3001/api/conversations?riskLevel=high&hasDrift=true&sourceType=segmentation" \
+curl -X GET "http://localhost:3001/api/conversations?riskLevel=high&hasDrift=true&sourceType=segmentation_list" \
   -H "Content-Type: application/json"
 ```
 
@@ -154,8 +154,8 @@ curl -X PUT "http://localhost:3001/api/conversations/{CONVERSATION_ID}/review" \
   -H "Content-Type: application/json" \
   -d '{
     "correctedIntent": "inquiry",
-    "reviewRemark": "用户只是询问退款流程，没有明确的退款请求，应该归为咨询类",
-    "operator": "张工程师"
+    "changeReason": "用户只是询问退款流程，没有明确的退款请求，应该归为咨询类",
+    "reviewer": "张工程师"
   }'
 
 # 示例：修正 S008 的意图
@@ -163,8 +163,8 @@ curl -X PUT "http://localhost:3001/api/conversations/S008/review" \
   -H "Content-Type: application/json" \
   -d '{
     "correctedIntent": "refund",
-    "reviewRemark": "用户明确要求退款，之前标注为other是错误的",
-    "operator": "李主管"
+    "changeReason": "用户明确要求退款，之前标注为other是错误的",
+    "reviewer": "李主管"
   }'
 ```
 
@@ -325,19 +325,19 @@ curl -X GET "http://localhost:3001/api/report/download/{REPORT_ID}" \
 # 导入 CSV 文件
 curl -X POST "http://localhost:3001/api/material/import" \
   -F "file=@/path/to/your/data.csv" \
-  -F "sourceType=segmentation" \
+  -F "sourceType=segmentation_list" \
   -F "operator=李运营"
 
 # 导入 JSON 文件（训练样本）
 curl -X POST "http://localhost:3001/api/material/import" \
   -F "file=@/path/to/your/training_data.json" \
-  -F "sourceType=training" \
+  -F "sourceType=training_sample" \
   -F "operator=王工程师"
 
 # 导入 Excel 文件（标注记录）
 curl -X POST "http://localhost:3001/api/material/import" \
   -F "file=@/path/to/your/annotations.xlsx" \
-  -F "sourceType=annotation" \
+  -F "sourceType=annotation_record" \
   -F "operator=张主管"
 ```
 

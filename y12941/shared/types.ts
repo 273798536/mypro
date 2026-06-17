@@ -45,6 +45,7 @@ export interface VersionRecord {
   trainingSampleId?: string;
   createdAt: string;
   parentVersionId?: string;
+  metadata?: Record<string, any>;
 }
 
 export interface ReviewRecord {
@@ -69,6 +70,7 @@ export interface MaterialBatch {
   status: BatchStatus;
   errorMessage?: string;
   importedAt: string;
+  createdBy?: string;
 }
 
 export interface PromptVersion {
@@ -110,11 +112,12 @@ export interface ReviewResponse {
 export interface ReportRequest {
   format: ReportFormat;
   includeTechnicalDetails: boolean;
+  includeRawData?: boolean;
+  includeVersions?: boolean;
   batchIds?: string[];
-  dateRange?: {
-    start: string;
-    end: string;
-  };
+  startDate?: string;
+  endDate?: string;
+  generatedBy?: string;
 }
 
 export interface ReportResponse {
@@ -194,3 +197,20 @@ export const VERSION_TYPE_LABELS: Record<VersionType, string> = {
   manual: '人工修正',
   rollback: '版本回滚'
 };
+
+export interface ConversationQueryOptions {
+  page?: number;
+  pageSize?: number;
+  riskLevel?: RiskLevel;
+  sourceType?: MaterialSource;
+  batchId?: string;
+  hasDrift?: boolean;
+  search?: string;
+}
+
+export interface ConversationListResult {
+  items: Conversation[];
+  total: number;
+  page: number;
+  pageSize: number;
+}

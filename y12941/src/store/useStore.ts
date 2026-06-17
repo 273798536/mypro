@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import type {
-  VersionRecord,
   PromptVersion,
   RiskLevel,
-  MaterialSource
+  MaterialSource,
+  ReviewRequest
 } from '../../shared/types';
 import { conversationApi, statsApi, materialApi, promptApi } from '../utils/api';
 import type {
@@ -11,17 +11,12 @@ import type {
   UIConversation,
   UITruncationInfo,
   UIToolCallError,
-  UIMaterialBatch
+  UIMaterialBatch,
+  UIVersionRecord,
+  UIConversationListResult
 } from '../utils/adapters';
 
-interface ConversationListResult {
-  items: UIConversation[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
-
-interface ReviewRequest {
+interface UIReviewSubmit {
   correctedIntent: string;
   reviewRemark: string;
   operator: string;
@@ -29,9 +24,9 @@ interface ReviewRequest {
 
 interface AppState {
   dashboardStats: UIDashboardStats | null;
-  conversations: ConversationListResult | null;
+  conversations: UIConversationListResult | null;
   selectedConversation: UIConversation | null;
-  versions: VersionRecord[];
+  versions: UIVersionRecord[];
   batches: UIMaterialBatch[];
   promptVersions: PromptVersion[];
   activePrompt: PromptVersion | null;
@@ -64,7 +59,7 @@ interface AppState {
   fetchTruncationInfos: () => Promise<void>;
   fetchToolCallErrors: () => Promise<void>;
   selectConversation: (conversation: UIConversation | null) => void;
-  reviewConversation: (id: string, data: ReviewRequest) => Promise<any>;
+  reviewConversation: (id: string, data: UIReviewSubmit) => Promise<any>;
   rollbackVersion: (conversationId: string, versionId: string, operator: string) => Promise<any>;
   generateReport: (data: any) => Promise<any>;
 }
@@ -160,7 +155,12 @@ export const useStore = create<AppState>((set, get) => ({
   },
   
   reviewConversation: async (id, data) => {
-    const result = await conversationApi.review(id, data);
+    const apiData: ReviewRequest = {
+      correctedIntent: data.correctedIntent as any,
+      changeReason: data.reviewRemark,
+      reviewer: data.operator
+    };
+    const result = await conversationApi.review(id, apiData);
     await get().fetchConversations();
     await get().fetchDashboard();
     if (get().selectedConversation?.id === id) {

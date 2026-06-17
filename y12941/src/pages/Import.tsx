@@ -19,7 +19,7 @@ export const Import: React.FC = () => {
   const { batches, fetchBatches } = useStore();
 
   const [file, setFile] = useState<File | null>(null);
-  const [sourceType, setSourceType] = useState<MaterialSource>('annotation');
+  const [sourceType, setSourceType] = useState<MaterialSource>('annotation_record');
   const [operator, setOperator] = useState('李运营');
   const [dragging, setDragging] = useState(false);
   const [importing, setImporting] = useState(false);

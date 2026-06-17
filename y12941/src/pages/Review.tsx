@@ -17,13 +17,14 @@ import { useStore } from '../store/useStore';
 import { RiskBadge } from '../components/RiskBadge';
 import { IntentTag } from '../components/IntentTag';
 import { ConfidenceBar } from '../components/ConfidenceBar';
+import type { UIConversation } from '../utils/adapters';
 import {
   INTENT_LABELS,
   SOURCE_TYPE_LABELS,
   RISK_LEVEL_LABELS,
   VERSION_TYPE_LABELS
 } from '../../shared/types';
-import type { Intent, RiskLevel, MaterialSource, Conversation } from '../../shared/types';
+import type { Intent, RiskLevel, MaterialSource } from '../../shared/types';
 
 export const Review: React.FC = () => {
   const {
@@ -75,7 +76,7 @@ export const Review: React.FC = () => {
     }
   };
 
-  const openReviewModal = (conversation: Conversation) => {
+  const openReviewModal = (conversation: UIConversation) => {
     setReviewIntent(conversation.predictedIntent);
     setShowReviewModal(true);
   };
