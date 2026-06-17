@@ -1,9 +1,9 @@
 export type AnomalyType =
   | 'train_val_leakage'
-  | 'duplicate_cluster'
+  | 'duplicate_samples'
   | 'label_noise'
   | 'distribution_shift'
-  | 'other';
+  | 'outlier';
 
 export type AnomalyStatus = 'pending' | 'confirmed' | 'rejected' | 'fixed';
 
@@ -18,6 +18,18 @@ export interface Batch {
   fingerprint: string;
   name: string;
   sourceFile: string;
+  rawContent: string;
+  parsedSamples: Omit<Sample, 'id' | 'runId' | 'clusterId'>[];
+  importMetadata: {
+    totalCount: number;
+    trainCount: number;
+    valCount: number;
+    testCount: number;
+    labels: string[];
+    labelDistribution: Record<string, number>;
+    duplicateCount: number;
+    duplicateGroups: number;
+  };
   createdAt: string;
   updatedAt: string;
   runCount: number;
@@ -72,20 +84,13 @@ export interface Sample {
 export interface Cluster {
   id: string;
   runId: string;
-  name: string;
+  clusterIndex: number;
   anomalyType: AnomalyType;
-  sampleCount: number;
+  sampleIds: string[];
   severityScore: number;
-  metrics: {
-    precision?: number;
-    recall?: number;
-    leakageRatio?: number;
-    overlapCount?: number;
-    feature?: string;
-    diff?: number;
-    duplicateCount?: number;
-    noiseCount?: number;
-  };
+  size: number;
+  representativeSampleId: string;
+  summary: string;
 }
 
 export interface Anomaly {
@@ -93,12 +98,10 @@ export interface Anomaly {
   clusterId: string;
   sampleId: string;
   runId: string;
-  batchId: string;
-  title: string;
+  status: AnomalyStatus;
+  detectedAt: string;
   description: string;
   friendlyDescription: string;
-  status: AnomalyStatus;
-  metadata: Record<string, any>;
 }
 
 export interface Correction {

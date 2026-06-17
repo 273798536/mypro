@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 import { Batch, Run, Sample, Cluster, Anomaly, Correction, ParamConfig, TimelineEvent, AnomalyStatus, CorrectionAction } from '../types';
-import { MOCK_BATCHES, MOCK_RUNS, MOCK_SAMPLES, MOCK_CLUSTERS, MOCK_ANOMALIES, MOCK_CORRECTIONS } from '../mock';
+import { MOCK_DATA } from '../mock';
 import { generateId, calculateFingerprint } from '../utils';
-import { STORAGE_KEYS } from '../constants';
+import { parseSplitList, prepareSamplesForRun } from '../utils/parser';
+import { runClustering } from '../utils/clustering';
+import { STORAGE_KEYS, ANOMALY_TYPE_MAPPING } from '../constants';
 
 interface WorkflowState {
   batches: Batch[];
@@ -77,15 +79,16 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
   error: null,
 
   initMockData: () => {
+    const data = MOCK_DATA;
     set({
-      batches: MOCK_BATCHES,
-      runs: MOCK_RUNS,
-      samples: MOCK_SAMPLES,
-      clusters: MOCK_CLUSTERS,
-      anomalies: MOCK_ANOMALIES,
-      corrections: MOCK_CORRECTIONS,
-      selectedBatchId: MOCK_BATCHES[0]?.id ?? null,
-      selectedRunId: MOCK_RUNS.find(r => r.batchId === MOCK_BATCHES[0]?.id && r.version === MOCK_BATCHES[0]?.latestRunVersion)?.id ?? null
+      batches: data.batches,
+      runs: data.runs,
+      samples: data.samples,
+      clusters: data.clusters,
+      anomalies: data.anomalies,
+      corrections: data.corrections,
+      selectedBatchId: data.batches[0]?.id ?? null,
+      selectedRunId: data.runs.find(r => r.batchId === data.batches[0]?.id && r.version === data.batches[0]?.latestRunVersion)?.id ?? null
     });
   },
 
@@ -123,11 +126,16 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       return { batch: { ...existing, updatedAt: new Date().toISOString() }, isDuplicate: true };
     }
 
+    const parsed = parseSplitList(fileName, content);
+
     const newBatch: Batch = {
       id: generateId(),
       fingerprint,
       name: fileName.replace(/\.[^.]+$/, ''),
       sourceFile: fileName,
+      rawContent: content,
+      parsedSamples: parsed.samples,
+      importMetadata: parsed.metadata,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       runCount: 0,
@@ -141,28 +149,18 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
   createRun: (batchId, promptVersion, paramConfig) => {
     const state = get();
     const batch = state.batches.find(b => b.id === batchId);
-    const newVersion = (batch?.runCount ?? 0) + 1;
+    if (!batch) {
+      throw new Error('未找到对应的数据批次');
+    }
 
-    const previousRun = state.runs
-      .filter(r => r.batchId === batchId)
-      .sort((a, b) => b.version - a.version)[0];
+    const newVersion = (batch.runCount ?? 0) + 1;
+    const runId = generateId();
 
-    const dedupStats = previousRun?.dedupStats ?? {
-      totalSamples: 10000,
-      uniqueSamples: 9600,
-      duplicateSamples: 400,
-      duplicateGroups: 150
-    };
-
-    const distributionStats = previousRun?.distributionStats ?? {
-      trainSplit: 7000,
-      valSplit: 2000,
-      testSplit: 1000,
-      byLabel: {}
-    };
+    const { samples, dedupStats, distributionStats } = prepareSamplesForRun(batch.parsedSamples, runId);
+    const { clusters, anomalies } = runClustering(samples, paramConfig, runId);
 
     const newRun: Run = {
-      id: generateId(),
+      id: runId,
       batchId,
       version: newVersion,
       promptVersion,
@@ -175,12 +173,15 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
 
     set(state => ({
       runs: [...state.runs, newRun],
+      samples: [...state.samples, ...samples],
+      clusters: [...state.clusters, ...clusters],
+      anomalies: [...state.anomalies, ...anomalies],
       batches: state.batches.map(b =>
         b.id === batchId
           ? { ...b, runCount: newVersion, latestRunVersion: newVersion, updatedAt: new Date().toISOString() }
           : b
       ),
-      selectedRunId: newRun.id
+      selectedRunId: runId
     }));
 
     return newRun;
@@ -231,7 +232,7 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
     if (!anomaly) return [];
 
     const run = state.runs.find(r => r.id === anomaly.runId);
-    const batch = state.batches.find(b => b.id === anomaly.batchId);
+    const batch = state.batches.find(b => b.id === run?.batchId);
     const cluster = state.clusters.find(c => c.id === anomaly.clusterId);
     const sample = state.samples.find(s => s.id === anomaly.sampleId);
     const corrections = state.getAnomalyCorrections(anomalyId);
@@ -244,8 +245,16 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
         timestamp: batch.createdAt,
         type: 'import',
         title: '数据批次导入',
-        description: `导入文件：${batch.sourceFile}`,
-        details: { fingerprint: batch.fingerprint, fileName: batch.sourceFile },
+        description: `导入文件：${batch.sourceFile}，共 ${batch.importMetadata.totalCount} 条样本`,
+        details: {
+          fingerprint: batch.fingerprint,
+          fileName: batch.sourceFile,
+          totalSamples: batch.importMetadata.totalCount,
+          trainCount: batch.importMetadata.trainCount,
+          valCount: batch.importMetadata.valCount,
+          testCount: batch.importMetadata.testCount,
+          duplicateCount: batch.importMetadata.duplicateCount
+        },
         operator: '系统'
       });
     }
@@ -260,24 +269,27 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
         details: {
           promptVersion: run.promptVersion,
           paramConfig: run.paramConfig,
-          dedupStats: run.dedupStats
+          dedupStats: run.dedupStats,
+          distributionStats: run.distributionStats
         },
         operator: run.executedBy
       });
     }
 
     if (cluster) {
+      const typeInfo = ANOMALY_TYPE_MAPPING[cluster.anomalyType];
       events.push({
         id: `cluster-${cluster.id}`,
         timestamp: run?.executedAt ?? new Date().toISOString(),
         type: 'cluster',
         title: '异常聚类检出',
-        description: `${cluster.name}，包含 ${cluster.sampleCount} 条样本，严重程度 ${Math.round(cluster.severityScore * 100)}%`,
+        description: `${typeInfo.title}，包含 ${cluster.size} 条样本，严重程度 ${Math.round(cluster.severityScore * 100)}%`,
         details: {
-          clusterName: cluster.name,
+          clusterSummary: cluster.summary,
           anomalyType: cluster.anomalyType,
           severity: cluster.severityScore,
-          metrics: cluster.metrics
+          size: cluster.size,
+          representativeSample: sample?.content
         }
       });
     }

@@ -32,7 +32,7 @@ export function AnomalyDetailPage({ onNavigate }: AnomalyDetailPageProps) {
   const cluster = anomaly ? clusters.find(c => c.id === anomaly.clusterId) : null;
   const sample = anomaly ? samples.find(s => s.id === anomaly.sampleId) : null;
   const run = anomaly ? runs.find(r => r.id === anomaly.runId) : null;
-  const batch = anomaly ? batches.find(b => b.id === anomaly.batchId) : null;
+  const batch = run ? batches.find(b => b.id === run.batchId) : null;
   const timeline = anomaly ? getAnomalyTimeline(anomaly.id) : [];
   const corrections = anomaly ? getAnomalyCorrections(anomaly.id) : [];
 
@@ -113,7 +113,7 @@ export function AnomalyDetailPage({ onNavigate }: AnomalyDetailPageProps) {
                 </span>
               )}
             </div>
-            <h1 className="font-mono text-xl font-bold text-slate-100">{anomaly.title}</h1>
+            <h1 className="font-mono text-xl font-bold text-slate-100">{anomaly.description.slice(0, 100)}{anomaly.description.length > 100 ? '...' : ''}</h1>
             <div className="text-xs text-slate-500 font-mono mt-1">
               {batch?.name} · run v{run.version} · {run.promptVersion}
             </div>
@@ -239,7 +239,7 @@ export function AnomalyDetailPage({ onNavigate }: AnomalyDetailPageProps) {
             <div className="space-y-3 text-sm">
               <div>
                 <div className="text-xs text-slate-500 mb-1">聚类分组</div>
-                <div className="font-mono text-slate-200">{cluster.name}</div>
+                <div className="font-mono text-slate-200">{cluster.summary}</div>
               </div>
               <div>
                 <div className="text-xs text-slate-500 mb-1">聚类严重度</div>
@@ -278,14 +278,13 @@ export function AnomalyDetailPage({ onNavigate }: AnomalyDetailPageProps) {
                   ))}
                 </div>
               </div>
-              {Object.keys(cluster.metrics).length > 0 && (
-                <div>
-                  <div className="text-xs text-slate-500 mb-1">聚类指标</div>
-                  <div className="p-2 bg-slate-950 border border-slate-800 rounded font-mono text-xs text-slate-400">
-                    {JSON.stringify(cluster.metrics, null, 2)}
-                  </div>
+              <div>
+                <div className="text-xs text-slate-500 mb-1">聚类样本ID列表</div>
+                <div className="p-2 bg-slate-950 border border-slate-800 rounded font-mono text-xs text-slate-400">
+                  {cluster.sampleIds.slice(0, 10).join(', ')}
+                  {cluster.sampleIds.length > 10 ? ` ... 共${cluster.sampleIds.length}个` : ''}
                 </div>
-              )}
+              </div>
             </div>
           </Card>
 

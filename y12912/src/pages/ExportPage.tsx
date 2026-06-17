@@ -260,9 +260,10 @@ export function ExportPage({ onNavigate }: ExportPageProps) {
                             {format.type === 'friendly' && col === '异常类型' ? (
                               <span className="inline-flex items-center gap-1">
                                 {val === '训练验证数据重叠' && <AlertTriangle size={11} className="text-rose-400" />}
-                                {val === '重复样本聚集' && <AlertTriangle size={11} className="text-amber-400" />}
-                                {val === '标签异常' && <AlertTriangle size={11} className="text-amber-400" />}
+                                {val === '重复样本' && <AlertTriangle size={11} className="text-amber-400" />}
+                                {val === '标签噪声' && <AlertTriangle size={11} className="text-amber-400" />}
                                 {val === '数据分布偏移' && <AlertTriangle size={11} className="text-cyan-400" />}
+                                {val === '文本长度异常' && <AlertTriangle size={11} className="text-slate-400" />}
                                 <span>{displayVal}</span>
                               </span>
                             ) : format.type === 'friendly' && col === '状态' ? (
@@ -298,11 +299,11 @@ export function ExportPage({ onNavigate }: ExportPageProps) {
                         {info.title}
                       </span>
                       <span className="text-xs text-slate-400 font-mono">
-                        共 {clusters.filter(c => c.anomalyType === type).reduce((s, c) => s + c.sampleCount, 0)} 条样本
+                        共 {clusters.filter(c => c.anomalyType === type).reduce((s, c) => s + c.size, 0)} 条样本
                       </span>
                     </div>
                     <div className="text-sm text-slate-300 leading-relaxed">
-                      {info.description(sampleCluster?.metrics ?? {})}
+                      {info.description}
                     </div>
                     <div className="text-xs text-emerald-400 mt-1.5">{info.suggestion}</div>
                   </div>

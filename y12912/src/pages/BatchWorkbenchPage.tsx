@@ -431,14 +431,14 @@ function ClusterCard({
             <span className={`text-xs px-2 py-0.5 rounded border font-medium ${typeInfo.bgColor} ${typeInfo.color}`}>
               {typeInfo.title}
             </span>
-            <span className="font-mono text-sm text-slate-200 font-medium">{cluster.name}</span>
+            <span className="font-mono text-sm text-slate-200 font-medium line-clamp-1">{cluster.summary}</span>
           </div>
           <div className="text-xs text-slate-500 mt-0.5 line-clamp-1">{typeInfo.suggestion}</div>
         </div>
         <div className="flex items-center gap-4 shrink-0">
           <div className="text-right">
             <div className="text-[10px] text-slate-500">样本数</div>
-            <div className="font-mono text-sm text-slate-200">{cluster.sampleCount}</div>
+            <div className="font-mono text-sm text-slate-200">{cluster.size}</div>
           </div>
           <div className="text-right">
             <div className="text-[10px] text-slate-500">严重度</div>
@@ -457,7 +457,7 @@ function ClusterCard({
           <div className="px-4 py-3 border-b border-slate-800">
             <div className="text-xs text-slate-400 flex items-center gap-2">
               <Info size={12} />
-              {typeInfo.description(cluster.metrics)}
+              {typeInfo.description}
             </div>
           </div>
           <div className="divide-y divide-slate-800">
@@ -473,7 +473,7 @@ function ClusterCard({
                   >
                     <FileText size={14} className="text-slate-600 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-slate-200 truncate">{anomaly.title}</div>
+                      <div className="text-sm text-slate-200 truncate">{anomaly.description.slice(0, 80)}{anomaly.description.length > 80 ? '...' : ''}</div>
                       <div className="text-xs text-slate-500 truncate">{anomaly.friendlyDescription}</div>
                     </div>
                     <span className={`text-[10px] px-2 py-0.5 rounded border ${statusInfo.bgColor} ${statusInfo.color} font-medium shrink-0`}>

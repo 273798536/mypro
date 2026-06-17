@@ -5,7 +5,7 @@ export const ANOMALY_TYPE_MAPPING: Record<AnomalyType, {
   shortName: string;
   color: string;
   bgColor: string;
-  description: (data: any) => string;
+  description: string;
   suggestion: string;
 }> = {
   train_val_leakage: {
@@ -13,44 +13,40 @@ export const ANOMALY_TYPE_MAPPING: Record<AnomalyType, {
     shortName: '泄漏',
     color: 'text-rose-500',
     bgColor: 'bg-rose-500/10 border-rose-500/30',
-    description: (d) => `检测到有 ${d.overlapCount ?? d.sampleCount ?? '多'} 条数据同时出现在训练集和验证集中。` +
-      '这意味着模型在训练时已经"见过"验证数据，会导致验证结果虚高，不能真实反映模型在新数据上的表现。',
-    suggestion: '建议：请将重叠数据只保留在一个数据集中，或从两个集合中都移除。'
+    description: '检测到{source}样本与{target}存在{similarity}的相似度重叠。这意味着模型在训练时已经"见过"验证/测试数据，会导致测试效果虚高，不能真实反映模型在新数据上的泛化能力。',
+    suggestion: '请将重叠数据只保留在一个数据集中，或从两个集合中都移除。需要同步更新原始数据切分脚本，避免后续再次出现相同问题。'
   },
-  duplicate_cluster: {
-    title: '重复样本聚集',
+  duplicate_samples: {
+    title: '重复样本',
     shortName: '重复',
     color: 'text-amber-500',
     bgColor: 'bg-amber-500/10 border-amber-500/30',
-    description: (d) => `发现 ${d.duplicateCount ?? d.sampleCount ?? '多'} 组高度相似的重复样本。` +
-      '重复样本会让模型过度记忆这些内容，降低泛化能力。',
-    suggestion: '建议：每组重复样本只保留一条质量最好的，其余删除。'
+    description: '该样本内容与样本ID {original_id} 完全相同，属于重复数据。当前批次共发现 {count} 条重复样本。重复样本会让模型过度记忆特定内容，降低泛化能力，并导致去重统计不准。',
+    suggestion: '每组重复样本只保留一条质量最好的，其余删除。如果是数据生成流程导致的重复，需要检查上游数据清洗逻辑。'
   },
   label_noise: {
-    title: '标签异常',
+    title: '标签噪声',
     shortName: '标签',
     color: 'text-amber-500',
     bgColor: 'bg-amber-500/10 border-amber-500/30',
-    description: (d) => `有 ${d.noiseCount ?? d.sampleCount ?? '多'} 条数据的标签与其内容特征不一致。` +
-      '错误的标签会误导模型学习方向。',
-    suggestion: '建议：人工逐条复核，修正错误标签。'
+    description: '相似内容组的主流标签是「{main_label}」，但该样本标签为「{this_label}」，噪声率{noise_rate}。错误的标签会误导模型学习方向，降低模型在该类别上的准确率。',
+    suggestion: '人工逐条复核，修正错误标签。如果标注人员较多，可考虑使用多轮交叉标注减少人为错误。'
   },
   distribution_shift: {
     title: '数据分布偏移',
     shortName: '分布',
     color: 'text-cyan-500',
     bgColor: 'bg-cyan-500/10 border-cyan-500/30',
-    description: (d) => `训练集与验证集在「${d.feature ?? '关键'}」特征上的分布差异较大（差异度: ${d.diff ?? '显著'}）。` +
-      '分布不一致会导致模型在验证集上表现下降。',
-    suggestion: '建议：重新划分数据集，确保各集合分布相近；或考虑使用数据增强。'
+    description: '{split}中某类样本占比与另一侧数据集差异过大（差异{diff}），说明训练数据和验证数据的分布不一致。这会导致模型在验证集上表现下降，甚至出现"训练准确率高但实际效果差"的情况。',
+    suggestion: '重新划分数据集，确保各集合分布相近；或考虑使用数据增强、加权采样等方法平衡分布。'
   },
-  other: {
-    title: '其他异常',
-    shortName: '其他',
+  outlier: {
+    title: '文本长度异常',
+    shortName: '异常',
     color: 'text-slate-400',
     bgColor: 'bg-slate-500/10 border-slate-500/30',
-    description: () => '该异常类型需要进一步人工分析。',
-    suggestion: '建议：联系模型训练工程师做深入分析。'
+    description: '该样本长度为{length}字符，数据集平均长度约为{avg}字符，明显偏离正常范围。过长或过短的样本可能是脏数据、格式错误或特殊情况。',
+    suggestion: '人工检查该样本是否为有效数据。如果是脏数据，建议删除；如果是特殊场景样本，可考虑单独处理或标注为特殊类别。'
   }
 };
 

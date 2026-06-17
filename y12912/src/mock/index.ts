@@ -1,266 +1,182 @@
 import { Batch, Run, Sample, Cluster, Anomaly, Correction, ParamConfig } from '../types';
-import { ANOMALY_TYPE_MAPPING } from '../constants';
 import { generateId } from '../utils';
+import { parseSplitList, prepareSamplesForRun } from '../utils/parser';
+import { runClustering } from '../utils/clustering';
 
 const now = new Date();
 const daysAgo = (d: number) => new Date(now.getTime() - d * 24 * 60 * 60 * 1000).toISOString();
 const hoursAgo = (h: number) => new Date(now.getTime() - h * 60 * 60 * 1000).toISOString();
 
-export const MOCK_BATCHES: Batch[] = [
-  {
-    id: 'batch_001',
-    fingerprint: 'a1b2c3d4e5f6',
-    name: '对话数据_2026Q2_v1',
-    sourceFile: 'split_list_2026Q2_v1.json',
+const sampleContents = [
+  { content: '如何优化深度学习模型的训练速度？可以尝试使用混合精度训练、梯度累积等技术。', label: '深度学习', split: 'train' as const },
+  { content: '患者体温38.5摄氏度，伴有咳嗽症状，初步诊断为上呼吸道感染。', label: '医疗', split: 'train' as const },
+  { content: '请实现一个快速排序算法，要求时间复杂度为O(n log n)。', label: '算法', split: 'train' as const },
+  { content: '机器学习中的过拟合问题可以通过正则化和数据增强来缓解。', label: '深度学习', split: 'train' as const },
+  { content: '神经网络的反向传播算法是训练深度模型的核心。', label: '深度学习', split: 'train' as const },
+  { content: 'Transformer架构使用自注意力机制实现并行计算。', label: '深度学习', split: 'train' as const },
+  { content: '患者血压140/90mmHg，属于高血压范围，建议服用降压药。', label: '医疗', split: 'train' as const },
+  { content: '二叉搜索树的查找时间复杂度为O(log n)。', label: '算法', split: 'train' as const },
+  { content: '梯度下降算法是优化神经网络的常用方法。', label: '深度学习', split: 'train' as const },
+  { content: '该患者血常规检查显示白细胞计数偏高。', label: '医疗', split: 'train' as const },
+  { content: '动态规划可以用来解决最优子结构问题。', label: '算法', split: 'train' as const },
+  { content: 'CNN卷积神经网络在图像识别领域表现出色。', label: '深度学习', split: 'val' as const },
+  { content: '患者体温38.5摄氏度，伴有咳嗽症状，初步诊断为上呼吸道感染。', label: '医疗', split: 'val' as const },
+  { content: '请实现一个快速排序算法，要求时间复杂度为O(n log n)。', label: '算法', split: 'val' as const },
+  { content: 'BERT模型采用双向Transformer编码器。', label: '深度学习', split: 'val' as const },
+  { content: '患者心电图显示窦性心律，心率正常。', label: '医疗', split: 'val' as const },
+  { content: '图的深度优先搜索使用栈实现。', label: '算法', split: 'val' as const },
+  { content: 'LSTM长短期记忆网络可以解决梯度消失问题。', label: '深度学习', split: 'val' as const },
+  { content: '该药品每日服用三次，每次两片。', label: '医疗', split: 'val' as const },
+  { content: '哈希表的平均查找时间复杂度为O(1)。', label: '算法', split: 'test' as const },
+  { content: '机器学习中的过拟合问题可以通过正则化和数据增强来缓解。', label: '深度学习', split: 'test' as const },
+  { content: '患者体温36.5摄氏度，各项指标正常。', label: '医疗', split: 'test' as const },
+  { content: '递归算法的时间复杂度分析。', label: '算法', split: 'test' as const },
+  { content: '注意力机制让模型可以关注输入的重要部分。', label: '深度学习', split: 'test' as const },
+  { content: '请实现一个快速排序算法，要求时间复杂度为O(n log n)。', label: '算法', split: 'test' as const },
+  { content: 'BP神经网络的训练过程包括前向传播和反向传播。', label: '深度学习', split: 'train' as const },
+  { content: '患者体温38.5摄氏度，伴有咳嗽症状，初步诊断为上呼吸道感染。', label: '错误标签', split: 'train' as const },
+  { content: '机器学习中的过拟合问题可以通过正则化和数据增强来缓解。', label: '错误标签', split: 'train' as const },
+  { content: '神经网络的反向传播算法是训练深度模型的核心。', label: '错误标签', split: 'train' as const },
+  { content: 'def hello_world():\n    print("Hello, World!")', label: '代码', split: 'train' as const },
+  { content: '今天的天气很好，适合户外运动。', label: '其他', split: 'train' as const },
+  { content: '该产品的用户满意度评分达到了4.8分（满分5分）。', label: '其他', split: 'train' as const },
+  { content: 'a'.repeat(500), label: '异常长文本', split: 'train' as const },
+];
+
+function generateMockBatch(fileName: string, extraSamples: number = 0): Batch {
+  const allContents = [...sampleContents];
+
+  for (let i = 0; i < extraSamples; i++) {
+    const base = sampleContents[i % sampleContents.length];
+    allContents.push({
+      ...base,
+      content: base.content + ` [变体${i}]`,
+      split: i % 10 < 7 ? 'train' : i % 10 < 9 ? 'val' : 'test'
+    });
+  }
+
+  const jsonContent = JSON.stringify(allContents.map((s, i) => ({
+    id: `mock_sample_${String(i + 1).padStart(5, '0')}`,
+    content: s.content,
+    label: s.label,
+    split: s.split
+  })), null, 2);
+
+  const parsed = parseSplitList(fileName, jsonContent);
+
+  return {
+    id: generateId(),
+    fingerprint: generateId(),
+    name: fileName.replace(/\.[^.]+$/, ''),
+    sourceFile: fileName,
+    rawContent: jsonContent,
+    parsedSamples: parsed.samples,
+    importMetadata: parsed.metadata,
     createdAt: daysAgo(7),
     updatedAt: hoursAgo(2),
-    runCount: 3,
-    latestRunVersion: 3
-  },
-  {
-    id: 'batch_002',
-    fingerprint: 'f6e5d4c3b2a1',
-    name: '分类任务_医疗数据',
-    sourceFile: 'medical_classification_split.csv',
-    createdAt: daysAgo(14),
-    updatedAt: daysAgo(3),
-    runCount: 2,
-    latestRunVersion: 2
-  },
-  {
-    id: 'batch_003',
-    fingerprint: '1a2b3c4d5e6f',
-    name: '代码生成训练集',
-    sourceFile: 'code_gen_train_split.jsonl',
-    createdAt: daysAgo(30),
-    updatedAt: daysAgo(10),
-    runCount: 1,
-    latestRunVersion: 1
-  }
-];
+    runCount: 0,
+    latestRunVersion: undefined
+  };
+}
 
 export const MOCK_PARAM_CONFIG: ParamConfig = {
   eps: 0.5,
-  minSamples: 5,
+  minSamples: 3,
   distanceMetric: 'cosine',
-  featureColumns: ['text_embedding', 'label']
+  featureColumns: ['content', 'label']
 };
 
-export const MOCK_RUNS: Run[] = [
-  {
-    id: 'run_001',
-    batchId: 'batch_001',
-    version: 1,
-    promptVersion: 'v1.0.0',
-    executedAt: daysAgo(6),
-    executedBy: '张工程师',
-    dedupStats: { totalSamples: 10000, uniqueSamples: 9650, duplicateSamples: 350, duplicateGroups: 120 },
-    distributionStats: { trainSplit: 7000, valSplit: 2000, testSplit: 1000, byLabel: { '类别A': 3500, '类别B': 4000, '类别C': 2500 } },
-    paramConfig: { ...MOCK_PARAM_CONFIG, eps: 0.6 }
-  },
-  {
-    id: 'run_002',
-    batchId: 'batch_001',
-    version: 2,
-    promptVersion: 'v1.1.0',
-    executedAt: daysAgo(2),
-    executedBy: '李工程师',
-    dedupStats: { totalSamples: 10000, uniqueSamples: 9650, duplicateSamples: 350, duplicateGroups: 120 },
-    distributionStats: { trainSplit: 7000, valSplit: 2000, testSplit: 1000, byLabel: { '类别A': 3500, '类别B': 4000, '类别C': 2500 } },
-    paramConfig: { ...MOCK_PARAM_CONFIG, minSamples: 3 }
-  },
-  {
-    id: 'run_003',
-    batchId: 'batch_001',
-    version: 3,
-    promptVersion: 'v1.2.0',
-    executedAt: hoursAgo(2),
-    executedBy: '王工程师',
-    dedupStats: { totalSamples: 10000, uniqueSamples: 9650, duplicateSamples: 350, duplicateGroups: 120 },
-    distributionStats: { trainSplit: 7000, valSplit: 2000, testSplit: 1000, byLabel: { '类别A': 3500, '类别B': 4000, '类别C': 2500 } },
-    paramConfig: MOCK_PARAM_CONFIG
-  },
-  {
-    id: 'run_004',
-    batchId: 'batch_002',
-    version: 1,
-    promptVersion: 'v1.0.0',
-    executedAt: daysAgo(14),
-    executedBy: '张工程师',
-    dedupStats: { totalSamples: 5000, uniqueSamples: 4920, duplicateSamples: 80, duplicateGroups: 25 },
-    distributionStats: { trainSplit: 3500, valSplit: 1000, testSplit: 500, byLabel: { '阳性': 2600, '阴性': 2400 } },
-    paramConfig: MOCK_PARAM_CONFIG
-  },
-  {
-    id: 'run_005',
-    batchId: 'batch_002',
-    version: 2,
-    promptVersion: 'v1.2.0',
-    executedAt: daysAgo(3),
-    executedBy: '李工程师',
-    dedupStats: { totalSamples: 5000, uniqueSamples: 4920, duplicateSamples: 80, duplicateGroups: 25 },
-    distributionStats: { trainSplit: 3500, valSplit: 1000, testSplit: 500, byLabel: { '阳性': 2600, '阴性': 2400 } },
-    paramConfig: MOCK_PARAM_CONFIG
-  },
-  {
-    id: 'run_006',
-    batchId: 'batch_003',
-    version: 1,
-    promptVersion: 'v1.0.0',
-    executedAt: daysAgo(30),
-    executedBy: '王工程师',
-    dedupStats: { totalSamples: 20000, uniqueSamples: 19800, duplicateSamples: 200, duplicateGroups: 60 },
-    distributionStats: { trainSplit: 14000, valSplit: 4000, testSplit: 2000, byLabel: { 'Python': 8000, 'JavaScript': 6000, 'Java': 4000, '其他': 2000 } },
-    paramConfig: MOCK_PARAM_CONFIG
-  }
+export const MOCK_BATCHES: Batch[] = [
+  generateMockBatch('split_list_2026Q2_v1.json', 20),
+  generateMockBatch('medical_classification_split.json', 10),
+  generateMockBatch('code_gen_train_split.jsonl', 5)
 ];
 
-const sampleContents = [
-  '如何优化深度学习模型的训练速度？可以尝试使用混合精度训练、梯度累积等技术。',
-  '患者体温38.5摄氏度，伴有咳嗽症状，初步诊断为上呼吸道感染。',
-  '请实现一个快速排序算法，要求时间复杂度为O(n log n)。',
-  '今天的天气很好，适合户外运动。',
-  '机器学习中的过拟合问题可以通过正则化和数据增强来缓解。',
-  'def hello_world():\n    print("Hello, World!")',
-  '神经网络的反向传播算法是训练深度模型的核心。',
-  '该产品的用户满意度评分达到了4.8分（满分5分）。'
-];
-
-function generateSamples(runId: string, count: number): Sample[] {
-  const splits: ('train' | 'val' | 'test')[] = ['train', 'val', 'test'];
-  const samples: Sample[] = [];
-  for (let i = 0; i < count; i++) {
-    samples.push({
-      id: generateId(),
-      runId,
-      originalId: `sample_${String(i + 1).padStart(5, '0')}`,
-      content: sampleContents[i % sampleContents.length],
-      sourceSplit: splits[i % 3],
-      isDuplicate: i % 25 === 0,
-      duplicateGroupId: i % 25 === 0 ? `dup_group_${Math.floor(i / 25)}` : undefined,
-      clusterId: i % 10 < 3 ? `cluster_${runId}_${Math.floor(i / 30)}` : undefined,
-      rawData: { index: i, embedding: Array(128).fill(0).map(() => Math.random()) }
-    });
-  }
-  return samples;
+interface GeneratedMockData {
+  batches: Batch[];
+  runs: Run[];
+  samples: Sample[];
+  clusters: Cluster[];
+  anomalies: Anomaly[];
+  corrections: Correction[];
 }
 
-export const MOCK_SAMPLES: Sample[] = [
-  ...generateSamples('run_003', 50),
-  ...generateSamples('run_002', 30),
-  ...generateSamples('run_005', 20)
-];
+export function generateCompleteMockData(): GeneratedMockData {
+  const batches = MOCK_BATCHES.map((b, batchIdx) => ({
+    ...b,
+    id: `batch_mock_${batchIdx + 1}`,
+    createdAt: daysAgo(7 + batchIdx * 7),
+    updatedAt: hoursAgo(2 + batchIdx * 24)
+  }));
 
-export const MOCK_CLUSTERS: Cluster[] = [
-  {
-    id: 'cluster_run_003_0',
-    runId: 'run_003',
-    name: '训练验证泄漏组#001',
-    anomalyType: 'train_val_leakage',
-    sampleCount: 23,
-    severityScore: 0.92,
-    metrics: { leakageRatio: 0.0033, overlapCount: 23 }
-  },
-  {
-    id: 'cluster_run_003_1',
-    runId: 'run_003',
-    name: '重复样本聚簇#002',
-    anomalyType: 'duplicate_cluster',
-    sampleCount: 45,
-    severityScore: 0.71,
-    metrics: { duplicateCount: 45 }
-  },
-  {
-    id: 'cluster_run_003_2',
-    runId: 'run_003',
-    name: '标签噪声组#003',
-    anomalyType: 'label_noise',
-    sampleCount: 12,
-    severityScore: 0.65,
-    metrics: { noiseCount: 12, precision: 0.87 }
-  },
-  {
-    id: 'cluster_run_003_3',
-    runId: 'run_003',
-    name: '分布偏移#004',
-    anomalyType: 'distribution_shift',
-    sampleCount: 8,
-    severityScore: 0.58,
-    metrics: { feature: '文本长度分布', diff: 0.32 }
-  },
-  {
-    id: 'cluster_run_002_0',
-    runId: 'run_002',
-    name: '训练验证泄漏组#001',
-    anomalyType: 'train_val_leakage',
-    sampleCount: 31,
-    severityScore: 0.88,
-    metrics: { leakageRatio: 0.0044, overlapCount: 31 }
-  },
-  {
-    id: 'cluster_run_002_1',
-    runId: 'run_002',
-    name: '重复样本聚簇#002',
-    anomalyType: 'duplicate_cluster',
-    sampleCount: 52,
-    severityScore: 0.68,
-    metrics: { duplicateCount: 52 }
-  },
-  {
-    id: 'cluster_run_005_0',
-    runId: 'run_005',
-    name: '标签噪声组#001',
-    anomalyType: 'label_noise',
-    sampleCount: 8,
-    severityScore: 0.74,
-    metrics: { noiseCount: 8 }
-  }
-];
+  const allRuns: Run[] = [];
+  const allSamples: Sample[] = [];
+  const allClusters: Cluster[] = [];
+  const allAnomalies: Anomaly[] = [];
+  const allCorrections: Correction[] = [];
 
-function generateAnomalies(runId: string, batchId: string, clusters: Cluster[], samples: Sample[]): Anomaly[] {
-  const anomalies: Anomaly[] = [];
-  const runClusters = clusters.filter(c => c.runId === runId);
-  const runSamples = samples.filter(s => s.runId === runId && s.clusterId);
+  const operatorNames = ['张工程师', '李工程师', '王工程师', '赵工程师'];
 
-  runClusters.forEach(cluster => {
-    const clusterSamples = runSamples.filter(s => s.clusterId === cluster.id);
-    const typeInfo = ANOMALY_TYPE_MAPPING[cluster.anomalyType];
+  batches.forEach((batch, batchIdx) => {
+    const runCount = batchIdx === 0 ? 3 : batchIdx === 1 ? 2 : 1;
 
-    clusterSamples.slice(0, 5).forEach((sample, idx) => {
-      anomalies.push({
-        id: generateId(),
-        clusterId: cluster.id,
-        sampleId: sample.id,
-        runId,
-        batchId,
-        title: `${typeInfo.title} - 样本#${idx + 1}`,
-        description: `样本 ${sample.originalId} 检测到${typeInfo.title}，严重程度：${Math.round(cluster.severityScore * 100)}%`,
-        friendlyDescription: typeInfo.description(cluster.metrics),
-        status: idx === 0 ? 'fixed' : idx === 1 ? 'confirmed' : idx === 2 ? 'rejected' : 'pending',
-        metadata: { originalSample: sample.originalId, clusterName: cluster.name }
-      });
-    });
+    for (let v = 1; v <= runCount; v++) {
+      const runId = `run_mock_${batchIdx + 1}_${v}`;
+      const { samples, dedupStats, distributionStats } = prepareSamplesForRun(batch.parsedSamples, runId);
+      const paramConfig = { ...MOCK_PARAM_CONFIG, eps: 0.4 + v * 0.1, minSamples: Math.max(2, 4 - v) };
+      const { clusters, anomalies } = runClustering(samples, paramConfig, runId);
+
+      const run: Run = {
+        id: runId,
+        batchId: batch.id,
+        version: v,
+        promptVersion: `v1.${v - 1}.0`,
+        executedAt: hoursAgo(2 + (runCount - v) * 24 + batchIdx * 48),
+        executedBy: operatorNames[(batchIdx + v) % operatorNames.length],
+        dedupStats,
+        distributionStats,
+        paramConfig
+      };
+
+      allRuns.push(run);
+      allSamples.push(...samples);
+      allClusters.push(...clusters);
+      allAnomalies.push(...anomalies);
+
+      if (v === runCount) {
+        batch.runCount = runCount;
+        batch.latestRunVersion = runCount;
+
+        anomalies.forEach((anomaly, aIdx) => {
+          if (aIdx % 3 === 0) {
+            const correction: Correction = {
+              id: generateId(),
+              sampleId: anomaly.sampleId,
+              anomalyId: anomaly.id,
+              runId,
+              action: aIdx % 9 < 3 ? 'remove' : aIdx % 9 < 6 ? 'relabel' : 'keep',
+              reason: aIdx % 9 < 3 ? '确认异常，从数据集中移除' : aIdx % 9 < 6 ? '标签标注错误，已修正' : '经复核为误报，保留原数据',
+              operator: operatorNames[(aIdx + batchIdx) % operatorNames.length],
+              correctedAt: hoursAgo(1 + aIdx * 0.5),
+              note: aIdx % 9 < 3 ? '需要同步更新原始数据切分脚本' : ''
+            };
+            allCorrections.push(correction);
+
+            const targetStatus = aIdx % 9 < 6 ? 'fixed' : 'rejected';
+            anomaly.status = targetStatus;
+          }
+        });
+      }
+    }
   });
 
-  return anomalies;
+  return { batches, runs: allRuns, samples: allSamples, clusters: allClusters, anomalies: allAnomalies, corrections: allCorrections };
 }
 
-export const MOCK_ANOMALIES: Anomaly[] = [
-  ...generateAnomalies('run_003', 'batch_001', MOCK_CLUSTERS, MOCK_SAMPLES),
-  ...generateAnomalies('run_002', 'batch_001', MOCK_CLUSTERS, MOCK_SAMPLES),
-  ...generateAnomalies('run_005', 'batch_002', MOCK_CLUSTERS, MOCK_SAMPLES)
-];
+export const MOCK_DATA = generateCompleteMockData();
 
-export const MOCK_CORRECTIONS: Correction[] = MOCK_ANOMALIES
-  .filter(a => a.status !== 'pending')
-  .map((anomaly, idx) => ({
-    id: generateId(),
-    sampleId: anomaly.sampleId,
-    anomalyId: anomaly.id,
-    runId: anomaly.runId,
-    action: anomaly.status === 'fixed' ? 'remove' : anomaly.status === 'confirmed' ? 'relabel' : 'keep',
-    reason: anomaly.status === 'fixed' ? '确认样本同时出现在训练集和验证集中，从验证集移除' : anomaly.status === 'confirmed' ? '标签标注错误，已重新标注正确类别' : '经复核为误报，样本实际无异常',
-    operator: idx % 2 === 0 ? '张工程师' : '李工程师',
-    correctedAt: hoursAgo(idx + 1),
-    note: anomaly.status === 'fixed' ? '需要同步更新原始数据切分脚本' : ''
-  }));
+export const MOCK_RUNS = MOCK_DATA.runs;
+export const MOCK_SAMPLES = MOCK_DATA.samples;
+export const MOCK_CLUSTERS = MOCK_DATA.clusters;
+export const MOCK_ANOMALIES = MOCK_DATA.anomalies;
+export const MOCK_CORRECTIONS = MOCK_DATA.corrections;
