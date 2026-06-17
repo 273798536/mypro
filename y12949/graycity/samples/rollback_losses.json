@@ -1,0 +1,42 @@
+[
+  {
+    "id": "rl01",
+    "sample_id": "s02",
+    "from_version": "v2",
+    "to_version": "v1",
+    "lost_field": "summary",
+    "recoverable": true,
+    "recovered": false,
+    "note": "v2 生成的关键信号摘要，回滚 v1 时被丢，需恢复后才能复核长文本截断影响。"
+  },
+  {
+    "id": "rl02",
+    "sample_id": "s04",
+    "from_version": "v2",
+    "to_version": "v1",
+    "lost_field": "manual_note",
+    "recoverable": true,
+    "recovered": false,
+    "note": "PM 的口径备注在回滚时丢失，必须按原话恢复。"
+  },
+  {
+    "id": "rl03",
+    "sample_id": "s08",
+    "from_version": "v1",
+    "to_version": "v0",
+    "lost_field": "truncated_flag",
+    "recoverable": true,
+    "recovered": false,
+    "note": "截断标记丢失，会导致该样本被误算进转化率。"
+  },
+  {
+    "id": "rl04",
+    "sample_id": "s10",
+    "from_version": "v2",
+    "to_version": "v1",
+    "lost_field": "group",
+    "recoverable": false,
+    "recovered": false,
+    "note": "灰度分组记录丢失且不可恢复，需人工确认归属。"
+  }
+]

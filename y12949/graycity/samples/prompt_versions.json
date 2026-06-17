@@ -1,0 +1,23 @@
+[
+  {
+    "version": "v1",
+    "content": "你是转化判定助手。阅读线索描述，输出 转化 或 未转化。max_len=100，超长截断。",
+    "status": "rolled_back",
+    "rolled_back_to": null,
+    "note": "旧版提示词，长文本直接截断，关键信息常在尾部丢失。"
+  },
+  {
+    "version": "v2",
+    "content": "你是转化判定助手。先总结线索关键信号（预算/意向/时间），再输出 转化 或 未转化。max_len=100，超长先摘要再判断。本次灰度生效版本。",
+    "status": "active",
+    "rolled_back_to": null,
+    "note": "灰度城市转化差异当前生效版本，灰度分组 treatment 走 v2。"
+  },
+  {
+    "version": "v0",
+    "content": "你是转化判定助手。输出 转化 或 未转化。无长度限制。",
+    "status": "rolled_back",
+    "rolled_back_to": null,
+    "note": "最早版本，无截断但易超 token，已弃用。"
+  }
+]

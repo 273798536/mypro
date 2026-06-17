@@ -1,0 +1,122 @@
+[
+  {
+    "id": "s01",
+    "city": "北京",
+    "text": "用户主动留资咨询套餐，预算充足，意向高。",
+    "label": "转化",
+    "prompt_version": "v2",
+    "length": 20,
+    "truncated": false,
+    "group": "treatment"
+  },
+  {
+    "id": "s02",
+    "city": "北京",
+    "text": "用户在企业微信里发了一段很长的需求描述，先讲了自己公司背景、团队规模、当前在用的几套系统分别遇到什么问题、为什么这次想换、对交付时间的硬性要求、以及预算审批流程要走多久，最后才提到关键的一句话：这单只要能在月底前出方案就马上签。",
+    "label": "转化",
+    "prompt_version": "v2",
+    "length": 114,
+    "truncated": true,
+    "group": "treatment"
+  },
+  {
+    "id": "s03",
+    "city": "上海",
+    "text": "销售线索质量高，客户已确认采购意向。",
+    "label": "转化",
+    "prompt_version": "v2",
+    "length": 18,
+    "truncated": false,
+    "group": "treatment"
+  },
+  {
+    "id": "s04",
+    "city": "上海",
+    "text": "客户只问了价格没留联系方式，但行业匹配度高。",
+    "label": "未转化",
+    "prompt_version": "v2",
+    "length": 22,
+    "truncated": false,
+    "group": "treatment"
+  },
+  {
+    "id": "s05",
+    "city": "广州",
+    "text": "客户留资后失联，判定为未转化。",
+    "label": "未转化",
+    "prompt_version": "v1",
+    "length": 15,
+    "truncated": false,
+    "group": "control"
+  },
+  {
+    "id": "s06",
+    "city": "广州",
+    "text": "客户复购，强转化信号。",
+    "label": "转化",
+    "prompt_version": "v1",
+    "length": 11,
+    "truncated": false,
+    "group": "control"
+  },
+  {
+    "id": "s07",
+    "city": "深圳",
+    "text": "线索来自广告投放，意向偏弱。",
+    "label": "未转化",
+    "prompt_version": "v1",
+    "length": 14,
+    "truncated": false,
+    "group": "control"
+  },
+  {
+    "id": "s08",
+    "city": "深圳",
+    "text": "客户在电话里讲了很多业务细节，包括上游供应商、下游分销链路、各环节结算周期、当前痛点是结算对账耗时长、希望系统能自动对账并出报表、同时要支持多币种、还要和现有 ERP 打通，最后补充：只要对账能自动化就愿意先试点一个城市。",
+    "label": "转化",
+    "prompt_version": "v1",
+    "length": 111,
+    "truncated": true,
+    "group": "control"
+  },
+  {
+    "id": "s09",
+    "city": "成都",
+    "text": "老客户续约，转化明确。",
+    "label": "转化",
+    "prompt_version": "v2",
+    "length": 11,
+    "truncated": false,
+    "group": "treatment"
+  },
+  {
+    "id": "s10",
+    "city": "成都",
+    "text": "客户咨询后未决策，样本偏少难判定。",
+    "label": "未转化",
+    "prompt_version": "v2",
+    "length": 17,
+    "truncated": false,
+    "group": "treatment"
+  },
+  {
+    "id": "s11",
+    "city": "北京",
+    "text": "高意向线索，预计本周成单。",
+    "label": "转化",
+    "prompt_version": "v2",
+    "length": 13,
+    "truncated": false,
+    "group": "treatment"
+  },
+  {
+    "id": "s12",
+    "city": "上海",
+    "text": "客户比价中，暂未转化。",
+    "label": "未转化",
+    "prompt_version": "v2",
+    "length": 11,
+    "truncated": false,
+    "group": "treatment"
+  }
+]

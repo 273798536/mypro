@@ -1,0 +1,2 @@
+{"sample_id": "s04", "city": "上海", "version": "v2", "prediction": "转化", "score": 0.71, "truncated": false, "complete": true}
+{"sample_id": "s10", "city": "成都", "version": "v2", "prediction": "转化", "score": 0.62, "truncated": false, "complete": true}

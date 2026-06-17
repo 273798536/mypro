@@ -1,0 +1,12 @@
+{"sample_id": "s01", "city": "北京", "version": "v2", "prediction": "转化", "score": 0.92, "truncated": false, "complete": true}
+{"sample_id": "s02", "city": "北京", "version": "v2", "prediction": "未转化", "score": 0.41, "truncated": true, "complete": true}
+{"sample_id": "s03", "city": "上海", "version": "v2", "prediction": "转化", "score": 0.88, "truncated": false, "complete": true}
+{"sample_id": "s04", "city": "上海", "version": "v2", "prediction": "", "score": 0.0, "truncated": false, "complete": false}
+{"sample_id": "s05", "city": "广州", "version": "v1", "prediction": "未转化", "score": 0.79, "truncated": false, "complete": true}
+{"sample_id": "s06", "city": "广州", "version": "v1", "prediction": "转化", "score": 0.81, "truncated": false, "complete": true}
+{"sample_id": "s07", "city": "深圳", "version": "v1", "prediction": "未转化", "score": 0.74, "truncated": false, "complete": true}
+{"sample_id": "s08", "city": "深圳", "version": "v1", "prediction": "未转化", "score": 0.38, "truncated": true, "complete": true}
+{"sample_id": "s09", "city": "成都", "version": "v2", "prediction": "转化", "score": 0.9, "truncated": false, "complete": true}
+{"sample_id": "s10", "city": "成都", "version": "v2", "prediction": "", "score": 0.0, "truncated": false, "complete": false}
+{"sample_id": "s11", "city": "北京", "version": "v2", "prediction": "转化", "score": 0.85, "truncated": false, "complete": true}
+{"sample_id": "s12", "city": "上海", "version": "v2", "prediction": "未转化", "score": 0.6, "truncated": false, "complete": true}

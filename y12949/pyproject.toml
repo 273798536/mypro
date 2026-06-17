@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "graycity"
+version = "0.1.0"
+description = "灰度城市转化差异 - 面向平台工程师的日常复核工具"
+requires-python = ">=3.8"
+dependencies = []
+
+[project.scripts]
+graycity = "graycity.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["graycity*"]
+
+[tool.setuptools.package-data]
+graycity = ["samples/*.json", "samples/*.jsonl"]
