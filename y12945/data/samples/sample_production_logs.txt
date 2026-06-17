@@ -1,0 +1,24 @@
+[2024-06-15 09:23:45] INFO 用户登录成功 user_id=10086 ip=114.114.114.114
+[2024-06-15 09:24:01] INFO 订单创建 order_id=ORD20240615001 amount=299.00
+[2024-06-15 09:24:15] INFO 收货地址: 广东省深圳市南山区科技园南路12号腾讯大厦28层 联系人: 张小明 手机: 13512345678
+[2024-06-15 09:25:30] WARN 支付失败，重试中 payment_token=pk_live_abc123def456ghi789jkl012
+[2024-06-15 09:26:02] INFO 支付成功 payment_method=credit_card card_no=4367421234567890
+[2024-06-15 09:27:00] INFO 发送确认邮件至 zhangxiaoming@example.org
+[2024-06-15 10:01:12] INFO 用户修改密码 username=admin password=Admin@2024!
+[2024-06-15 10:05:33] ERROR 数据库连接失败，用户: sa / 密码: sa123456 ，请检查配置
+[2024-06-15 10:30:00] INFO 接口调用 /api/v2/users 调用方: third_party_api api_key=sk_prod_abcd1234efgh5678ijkl9012
+[2024-06-15 11:00:00] INFO 定时任务执行完成，处理订单 128 个
+[2024-06-15 11:15:22] INFO 用户注册 username=lisi email=lisi_test@test.com phone=18699887766
+[2024-06-15 11:20:45] INFO 身份证验证通过 id_card=440301199208081234 姓名: 李四
+[2024-06-15 12:00:00] INFO 服务器健康检查通过 host=10.0.1.100 status=ok
+[2024-06-15 12:00:00] INFO 服务器健康检查通过 host=10.0.1.101 status=ok
+[2024-06-15 12:00:00] INFO 服务器健康检查通过 host=172.16.0.50 status=warning
+[2024-06-15 13:30:00] INFO 导出报表 report_id=RPT-2024-06-15-001 生成中...
+[2024-06-15 13:35:00] INFO 报表生成完成，共 50 页，下载链接: https://example.com/reports/RPT-2024-06-15-001.pdf
+[2024-06-15 14:00:00] INFO 客服会话开始 session_id=chat_abc123 用户问题: 如何申请退款
+[2024-06-15 14:05:00] INFO 客服会话结束，用户满意度: 5星，备注: 客服小王服务很好
+[2024-06-15 14:10:23] DEBUG 调试信息: 当前用户token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoxMjN9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+[2024-06-15 15:00:00] INFO 日终结算开始 batch_id=SETTLE-20240615
+[2024-06-15 15:30:00] INFO 日终结算完成，交易笔数: 2345，总金额: 586789.50
+[2024-06-15 16:00:00] WARN 系统告警: CPU使用率达95% 服务器: prod-app-03 IP: 192.168.10.25
+[2024-06-15 16:10:00] INFO 运维处理: 已重启应用，问题已解决 处理人: 运维工程师张工

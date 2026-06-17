@@ -1,0 +1,92 @@
+[
+  {
+    "rule_id": "rule_phone_cn_mobile",
+    "name": "中国大陆手机号",
+    "description": "匹配中国大陆11位手机号码",
+    "pattern": "1[3-9]\\d{9}",
+    "severity": "high",
+    "category": "phone",
+    "enabled": true,
+    "version": "1.0.0"
+  },
+  {
+    "rule_id": "rule_id_card_cn",
+    "name": "中国身份证号",
+    "description": "匹配18位中国居民身份证号",
+    "pattern": "[1-9]\\d{5}(19|20)\\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\\d|3[01])\\d{3}[\\dXx]",
+    "severity": "high",
+    "category": "id_card",
+    "enabled": true,
+    "version": "1.0.0"
+  },
+  {
+    "rule_id": "rule_email",
+    "name": "邮箱地址",
+    "description": "匹配常见邮箱地址格式",
+    "pattern": "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}",
+    "severity": "medium",
+    "category": "email",
+    "enabled": true,
+    "version": "1.0.0"
+  },
+  {
+    "rule_id": "rule_bank_card",
+    "name": "银行卡号",
+    "description": "匹配16-19位银行卡号",
+    "pattern": "\\b\\d{16,19}\\b",
+    "severity": "high",
+    "category": "bank_card",
+    "enabled": true,
+    "version": "1.0.0"
+  },
+  {
+    "rule_id": "rule_ipv4",
+    "name": "IPv4地址",
+    "description": "匹配IPv4地址",
+    "pattern": "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b",
+    "severity": "medium",
+    "category": "ip",
+    "enabled": true,
+    "version": "1.0.0"
+  },
+  {
+    "rule_id": "rule_password_field",
+    "name": "密码字段",
+    "description": "匹配password=或密钥等敏感字段",
+    "pattern": "(password|passwd|pwd)\\s*[=:]\\s*\\S+",
+    "severity": "high",
+    "category": "password",
+    "enabled": true,
+    "version": "1.0.0"
+  },
+  {
+    "rule_id": "rule_token_field",
+    "name": "Token字段",
+    "description": "匹配token、access_token等敏感字段",
+    "pattern": "(access_token|refresh_token|api_key|secret)\\s*[=:]\\s*\\S+",
+    "severity": "high",
+    "category": "token",
+    "enabled": true,
+    "version": "1.0.0"
+  },
+  {
+    "rule_id": "rule_cn_name",
+    "name": "中文姓名",
+    "description": "匹配2-4个汉字的中文姓名（上下文相关）",
+    "pattern": "(?:姓名|名字|用户|联系人)[：:]\\s*[\\u4e00-\\u9fa5]{2,4}",
+    "severity": "medium",
+    "category": "name",
+    "enabled": true,
+    "version": "1.0.0"
+  },
+  {
+    "rule_id": "rule_address_cn",
+    "name": "中国地址",
+    "description": "匹配包含省市区的详细地址",
+    "pattern": "[\\u4e00-\\u9fa5]{2,}(?:省|自治区|特别行政区)[\\u4e00-\\u9fa5]{2,}(?:市|州|盟)[\\u4e00-\\u9fa5]{2,}(?:区|县|旗)[\\u4e00-\\u9fa5\\d]+号?路?街?",
+    "severity": "medium",
+    "category": "address",
+    "enabled": true,
+    "version": "1.0.0"
+  }
+]
