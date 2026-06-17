@@ -41,9 +41,9 @@ export function BatchWorkbenchPage({ onNavigate }: BatchWorkbenchPageProps) {
 
   const [paramConfig, setParamConfig] = useState<ParamConfig>({
     eps: currentRun?.paramConfig.eps ?? 0.5,
-    minSamples: currentRun?.paramConfig.minSamples ?? 5,
+    minSamples: currentRun?.paramConfig.minSamples ?? 3,
     distanceMetric: currentRun?.paramConfig.distanceMetric ?? 'cosine',
-    featureColumns: currentRun?.paramConfig.featureColumns ?? ['text_embedding', 'label']
+    featureColumns: currentRun?.paramConfig.featureColumns ?? ['content', 'label']
   });
   const [promptVersion, setPromptVersion] = useState(PROMPT_VERSIONS[2].id);
   const [featureColumnInput, setFeatureColumnInput] = useState('');

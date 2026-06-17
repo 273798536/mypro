@@ -28,9 +28,9 @@ export function runClustering(
     outlier: 0
   };
 
-  const trainSamples = samples.filter(s => s.sourceSplit === 'train' && !s.isDuplicate);
-  const valSamples = samples.filter(s => s.sourceSplit === 'val' && !s.isDuplicate);
-  const testSamples = samples.filter(s => s.sourceSplit === 'test' && !s.isDuplicate);
+  const trainSamples = samples.filter(s => s.sourceSplit === 'train');
+  const valSamples = samples.filter(s => s.sourceSplit === 'val');
+  const testSamples = samples.filter(s => s.sourceSplit === 'test');
 
   const leakageResult = detectTrainValLeakage(trainSamples, valSamples, testSamples, runId, params);
   clusters.push(...leakageResult.clusters);

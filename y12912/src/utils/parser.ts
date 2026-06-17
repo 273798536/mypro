@@ -211,7 +211,7 @@ function processRawSamples(rawSamples: RawSample[]): ParsedSplitList {
         const sample = samples.find(s => s.originalId === id);
         if (sample) {
           sample.isDuplicate = i > 0;
-          sample.duplicateGroupId = i > 0 ? groupId : undefined;
+          sample.duplicateGroupId = groupId;
         }
       });
     }
