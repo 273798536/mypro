@@ -261,7 +261,9 @@ export default function ComparePanel() {
                       <th className="border px-2 py-1.5 text-center font-serif w-[40px]" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
                         Δ
                       </th>
-                      <GitBranch className="w-4 h-4 text-academic-paper/80 my-auto" />
+                      <th className="border px-1 py-1.5 text-center" style={{ borderColor: 'rgba(255,255,255,0.2)', width: '36px' }}>
+                        <GitBranch className="w-4 h-4 text-academic-paper/80 mx-auto" />
+                      </th>
                       <th className="border px-2 py-1.5 text-center font-serif" style={{ borderColor: 'rgba(255,255,255,0.2)' }}>
                         B组派生计算（含晚到）
                       </th>
