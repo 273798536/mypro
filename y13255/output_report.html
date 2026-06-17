@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>学校接送点位归并·灰度复核版</title>
+<style>
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+         margin: 0; padding: 24px; background: #f5f6f8; color: #222; }
+  h1 { margin: 0 0 8px; font-size: 22px; }
+  h2 { margin: 0 0 12px; font-size: 17px; }
+  .subtitle { color: #666; margin-bottom: 20px; }
+  .summary { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  .summary .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+                    padding: 12px 18px; min-width: 140px; }
+  .summary .num { font-size: 24px; font-weight: 600; }
+  .summary .label { color: #666; font-size: 13px; }
+  .peak-note { background: #fff8e6; border-left: 4px solid #f0b429;
+                padding: 10px 14px; border-radius: 4px; margin-bottom: 20px; }
+  .delivery-guide { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+                     padding: 18px 20px; margin-bottom: 20px; }
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .guide-item { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 6px;
+                 padding: 12px 14px; }
+  .guide-item h4 { margin: 0 0 6px; font-size: 14px; color: #1e40af; }
+  .guide-item p { margin: 0; font-size: 13px; color: #374151; line-height: 1.65; }
+  .guide-item code { background: #e0e7ff; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+  .history-summary { background: #faf5ff; border-left: 4px solid #7c3aed;
+                      padding: 10px 14px; border-radius: 4px; margin-bottom: 20px;
+                      font-size: 13px; color: #4c1d95; }
+  .history-summary strong { color: #5b21b6; }
+  .point-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+                 padding: 18px 20px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+  .point-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .point-head h3 { margin: 0; font-size: 18px; }
+  .status { padding: 3px 10px; border-radius: 999px; font-size: 12px; }
+  .status-pending { background: #fff1e6; color: #c05621; }
+  .status-confirmed { background: #e6fffa; color: #2c7a7b; }
+  .counts { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; color: #444; }
+  .count strong { color: #111; }
+  .block { margin-top: 12px; }
+  .block h4 { margin: 0 0 6px; font-size: 14px; color: #374151; }
+  .block ul, .block ol { margin: 0; padding-left: 20px; line-height: 1.7; }
+  .evidence li { margin-bottom: 6px; }
+  .raw { margin: 4px 0 2px; color: #1f2937; }
+  .meta { font-size: 12px; color: #6b7280; }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 4px; font-size: 12px;
+          margin-right: 6px; }
+  .tag-peak { background: #e0e7ff; color: #3730a3; }
+  .tag-sim { background: #f3f4f6; color: #374151; }
+  .tag-src { background: #d1fae5; color: #065f46; }
+  .tag-action { background: #ede9fe; color: #5b21b6; }
+  .tag-op { background: #fee2e2; color: #991b1b; }
+  .anomaly { background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 10px 14px; }
+  .anomaly-flag { color: #991b1b; }
+  .next-steps { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px 14px; }
+  .next-steps ol { padding-left: 22px; }
+  .next-steps li { color: #1e3a8a; }
+  .reason { color: #444; }
+  .history ol { background: #fafafa; padding: 8px 8px 8px 28px; border-radius: 6px; }
+  .history li { margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #e5e7eb; }
+  .history li:last-child { border-bottom: none; }
+  .point-id { margin-top: 10px; }
+  .footer { margin-top: 30px; color: #9ca3af; font-size: 12px; text-align: center; }
+</style>
+</head>
+<body>
+<h1>学校接送点位归并·灰度复核版</h1>
+<div class="subtitle">版本 gray-preview-1 · 会话 07838bd5af34 · 生成于 2026-06-18T01:35:11</div>
+<div class="summary">
+  <div class="card"><div class="num">9</div><div class="label">归并点位</div></div>
+  <div class="card"><div class="num">9</div><div class="label">已人工确认</div></div>
+  <div class="card"><div class="num">6</div><div class="label">异常待处理</div></div>
+  <div class="card"><div class="num">5</div><div class="label">早高峰反馈</div></div>
+  <div class="card"><div class="num">5</div><div class="label">晚高峰反馈</div></div>
+  <div class="card"><div class="num">12</div><div class="label">人工处理记录</div></div>
+</div>
+<div class="peak-note"><p><strong>口径说明（早晚高峰为什么不一样）：</strong>「早高峰」仅统计标注为早高峰/上午/送学的反馈；「晚高峰」仅统计标注为晚高峰/下午/接学的反馈；未标注高峰时段的反馈同时计入两边，避免遗漏。每一条反馈的「高峰类型」tag 可以在下方证据区核对。</p></div>
+<div class="history-summary"><strong>灰度复盘：</strong>操作明细：人工确认 9次 / 拆分配对 1次 / 由拆分产生新点位 1次 / 重命名标准点位名 1次；操作人：社区运营-阿宁 12次。每条变更记录在对应点位卡的「人工处理历史」区可追溯。</div>
+
+        <div class="delivery-guide">
+          <h2>交付使用说明（给阿宁对照用）</h2>
+          <div class="guide-grid">
+            <div class="guide-item">
+              <h4>① 居民反馈 ↔ 归并点位</h4>
+              <p>每个点位卡的「居民反馈与计算证据」区列出了所有被归并进来的原始反馈。<br>
+              <strong>核对方法：</strong>看「反馈ID」是否和居民提交表一致；<br>
+              看「相似度」值（≥0.72 被自动归并），低的重点复核。</p>
+            </div>
+            <div class="guide-item">
+              <h4>② 同地点不同写法 ↔ 最终结论</h4>
+              <p>「同地点不同写法（作为证据留存）」区列出了该点位被收录的全部别名。<br>
+              <strong>核对方法：</strong>每个别名标了「来源反馈」，居民说的A写法和B写法<br>
+              都在这里，不会因为重命名而丢失原始说法。</p>
+            </div>
+            <div class="guide-item">
+              <h4>③ 异常提示 ↔ 下一步处理</h4>
+              <p>出现红色「异常提示」的点位，下方有蓝色「下一步操作」清单。<br>
+              <strong>处理方法：</strong>按编号步骤逐条操作，处理完用 ManualOperator<br>
+              做拆分/合并/确认，操作记录会自动进「人工处理历史」。</p>
+            </div>
+            <div class="guide-item">
+              <h4>④ 接口返回 ↔ 三方对照</h4>
+              <p>HTML 上的 <code>点位ID / 反馈ID</code> 与 JSON 导出文件、后端接口字段完全一致。<br>
+              <strong>对接口方法：</strong>render_flat_json 导出的每一行包含 point_id、feedback_id、<br>
+              canonical_name、alias_names、peak_type、anomaly_flags，直接对齐后端返回体。</p>
+            </div>
+          </div>
+        </div>
+        
+
+        <div class="point-card">
+          <div class="point-head">
+            <h3>阳光第一小学 · 正门西侧路口(校牌处)</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 1 条</span>
+            <span class="count"><strong>晚高峰</strong> 0 条</span>
+            <span class="count"><strong>关联反馈</strong> 1 条</span>
+          </div>
+          <div class='block'><h4>同地点不同写法（作为证据留存）</h4><ul><li>学校正门路口（重命名前的标准名）</li></ul></div>
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'><li><span class='tag tag-peak'>早高峰</span><span class='tag tag-sim'>相似度 1.0</span><span class='tag tag-src'>居民微信群</span><div class='raw'>送孩子在阳光第一小学正门路口下车，早高峰很堵</div><div class='meta'>反馈ID: 77debf93e632 / 提交: 2026-06-18T01:35:11</div></li></ol></div>
+          <div class='block anomaly'><h4>异常提示</h4><ul><li class='anomaly-flag'>⚠️ 相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认</li><li class='anomaly-flag'>⚠️ 相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认</li><li class='anomaly-flag'>⚠️ 相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认</li><li class='anomaly-flag'>⚠️ 相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67</li><li class='anomaly-flag'>⚠️ 相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67</li><li class='anomaly-flag'>⚠️ 相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60</li><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并</li><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并</li><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并</li></ul></div>
+          <div class='block next-steps'><h4>下一步操作（照着处理即可）</h4><ol><li>第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置</li><li>第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认</li><li>第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单</li><li>第4步（拆分操作）：调用 ManualOperator.split_point(point_id=&#x27;当前点位ID&#x27;, keep_feedback_ids=[&#x27;保留在本点位的反馈ID列表&#x27;], split_name=&#x27;拆出点位的新名称（带方位词）&#x27;, reason=&#x27;地图核实为两个不同接送路口&#x27;)</li><li>第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确</li><li>第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置</li><li>第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置</li><li>第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置</li><li>第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系</li><li>第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步</li><li>第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id=&#x27;保留点位的ID&#x27;, remove_id=&#x27;被合并点位的ID&#x27;, reason=&#x27;地图核实为同一接送点&#x27;)，合并后两个点位名会同时保存在别名区</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li><li>第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）</li><li>第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li><li>第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li></ol></div>
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>拆分配对</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：学校正门路口 → 学校正门路口</div><div class='reason'>对照百度地图核实，东侧红绿灯和西侧路口是两个不同的接送点</div><div class='meta'>2026-06-18T01:35:11</div></li><li><span class='tag tag-action'>重命名标准点位名</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：学校正门路口 → 正门西侧路口(校牌处)</div><div class='reason'>原标准名过于笼统，补充方位词明确点位</div><div class='meta'>2026-06-18T01:35:11</div></li><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：正门西侧路口(校牌处) → 正门西侧路口(校牌处)</div><div class='reason'>地图+现场双确认</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：64ef152e80e0</div>
+        </div>
+        
+        <div class="point-card">
+          <div class="point-head">
+            <h3>阳光第一小学 · 阳光一小大门口</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 1 条</span>
+            <span class="count"><strong>晚高峰</strong> 0 条</span>
+            <span class="count"><strong>关联反馈</strong> 1 条</span>
+          </div>
+          
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'><li><span class='tag tag-peak'>上午</span><span class='tag tag-sim'>相似度 1.0</span><span class='tag tag-src'>社区小程序</span><div class='raw'>阳光一小大门口，早上车多</div><div class='meta'>反馈ID: 401e874411dc / 提交: 2026-06-18T01:35:11</div></li></ol></div>
+          <div class='block anomaly'><h4>异常提示</h4><ul><li class='anomaly-flag'>⚠️ 相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，疑似不同路口，需要人工确认</li><li class='anomaly-flag'>⚠️ 相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55</li><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并</li></ul></div>
+          <div class='block next-steps'><h4>下一步操作（照着处理即可）</h4><ol><li>第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，对比卫星图和街景判断是否同一个接送位置</li><li>第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认</li><li>第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单</li><li>第4步（拆分操作）：调用 ManualOperator.split_point(point_id=&#x27;当前点位ID&#x27;, keep_feedback_ids=[&#x27;保留在本点位的反馈ID列表&#x27;], split_name=&#x27;拆出点位的新名称（带方位词）&#x27;, reason=&#x27;地图核实为两个不同接送路口&#x27;)</li><li>第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确</li><li>第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置</li><li>第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系</li><li>第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步</li><li>第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id=&#x27;保留点位的ID&#x27;, remove_id=&#x27;被合并点位的ID&#x27;, reason=&#x27;地图核实为同一接送点&#x27;)，合并后两个点位名会同时保存在别名区</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li><li>第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）</li></ol></div>
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：阳光一小大门口 → 阳光一小大门口</div><div class='reason'>名称一致，无相邻路口风险</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：333be82e9a58</div>
+        </div>
+        
+        <div class="point-card">
+          <div class="point-head">
+            <h3>阳光第一小学 · 正门东侧路口</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 1 条</span>
+            <span class="count"><strong>晚高峰</strong> 0 条</span>
+            <span class="count"><strong>关联反馈</strong> 1 条</span>
+          </div>
+          
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'><li><span class='tag tag-peak'>早高峰</span><span class='tag tag-sim'>相似度 1.0</span><span class='tag tag-src'>居民电话</span><div class='raw'>正门东侧路口红绿灯那里下车，不是大门正门口</div><div class='meta'>反馈ID: fc2a9ceb20f1 / 提交: 2026-06-18T01:35:11</div></li></ol></div>
+          <div class='block anomaly'><h4>异常提示</h4><ul><li class='anomaly-flag'>⚠️ 相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，疑似不同路口，需要人工确认</li><li class='anomaly-flag'>⚠️ 相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83</li><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并</li><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并</li></ul></div>
+          <div class='block next-steps'><h4>下一步操作（照着处理即可）</h4><ol><li>第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置</li><li>第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认</li><li>第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单</li><li>第4步（拆分操作）：调用 ManualOperator.split_point(point_id=&#x27;当前点位ID&#x27;, keep_feedback_ids=[&#x27;保留在本点位的反馈ID列表&#x27;], split_name=&#x27;拆出点位的新名称（带方位词）&#x27;, reason=&#x27;地图核实为两个不同接送路口&#x27;)</li><li>第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确</li><li>第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置</li><li>第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系</li><li>第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步</li><li>第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id=&#x27;保留点位的ID&#x27;, remove_id=&#x27;被合并点位的ID&#x27;, reason=&#x27;地图核实为同一接送点&#x27;)，合并后两个点位名会同时保存在别名区</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li><li>第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）</li><li>第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li></ol></div>
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：正门东侧路口 → 正门东侧路口</div><div class='reason'>名称一致，无相邻路口风险</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：741755396b1d</div>
+        </div>
+        
+        <div class="point-card">
+          <div class="point-head">
+            <h3>阳光第一小学 · 正门西侧路口</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 0 条</span>
+            <span class="count"><strong>晚高峰</strong> 1 条</span>
+            <span class="count"><strong>关联反馈</strong> 1 条</span>
+          </div>
+          
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'><li><span class='tag tag-peak'>晚高峰</span><span class='tag tag-sim'>相似度 1.0</span><span class='tag tag-src'>社区小程序</span><div class='raw'>下午接孩子，正门西侧路口等</div><div class='meta'>反馈ID: efae37d532b2 / 提交: 2026-06-18T01:35:11</div></li></ol></div>
+          <div class='block anomaly'><h4>异常提示</h4><ul><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并</li><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并</li></ul></div>
+          <div class='block next-steps'><h4>下一步操作（照着处理即可）</h4><ol><li>第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系</li><li>第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步</li><li>第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id=&#x27;保留点位的ID&#x27;, remove_id=&#x27;被合并点位的ID&#x27;, reason=&#x27;地图核实为同一接送点&#x27;)，合并后两个点位名会同时保存在别名区</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li><li>第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）</li><li>第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li></ol></div>
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：正门西侧路口 → 正门西侧路口</div><div class='reason'>名称一致，无相邻路口风险</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：94405989e0a8</div>
+        </div>
+        
+        <div class="point-card">
+          <div class="point-head">
+            <h3>阳光第一小学 · 学校后门</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 0 条</span>
+            <span class="count"><strong>晚高峰</strong> 1 条</span>
+            <span class="count"><strong>关联反馈</strong> 1 条</span>
+          </div>
+          
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'><li><span class='tag tag-peak'>晚高峰</span><span class='tag tag-sim'>相似度 1.0</span><span class='tag tag-src'>居民微信群</span><div class='raw'>阳光第一小学后门接孩子，下午4点半</div><div class='meta'>反馈ID: a27f1fbd1cdc / 提交: 2026-06-18T01:35:11</div></li></ol></div>
+          <div class='block anomaly'><h4>异常提示</h4><ul><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并</li></ul></div>
+          <div class='block next-steps'><h4>下一步操作（照着处理即可）</h4><ol><li>第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系</li><li>第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步</li><li>第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id=&#x27;保留点位的ID&#x27;, remove_id=&#x27;被合并点位的ID&#x27;, reason=&#x27;地图核实为同一接送点&#x27;)，合并后两个点位名会同时保存在别名区</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li><li>第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）</li></ol></div>
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：学校后门 → 学校后门</div><div class='reason'>名称一致，无相邻路口风险</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：c61b6759ba02</div>
+        </div>
+        
+        <div class="point-card">
+          <div class="point-head">
+            <h3>阳光第一小学 · 一小后门</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 0 条</span>
+            <span class="count"><strong>晚高峰</strong> 1 条</span>
+            <span class="count"><strong>关联反馈</strong> 1 条</span>
+          </div>
+          
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'><li><span class='tag tag-peak'>下午</span><span class='tag tag-sim'>相似度 1.0</span><span class='tag tag-src'>社区网格员</span><div class='raw'>一小后门，靠近家属院那个门</div><div class='meta'>反馈ID: b6674f2e632d / 提交: 2026-06-18T01:35:11</div></li></ol></div>
+          <div class='block anomaly'><h4>异常提示</h4><ul><li class='anomaly-flag'>⚠️ 跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并</li></ul></div>
+          <div class='block next-steps'><h4>下一步操作（照着处理即可）</h4><ol><li>第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系</li><li>第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步</li><li>第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id=&#x27;保留点位的ID&#x27;, remove_id=&#x27;被合并点位的ID&#x27;, reason=&#x27;地图核实为同一接送点&#x27;)，合并后两个点位名会同时保存在别名区</li><li>第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认</li><li>第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）</li></ol></div>
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：一小后门 → 一小后门</div><div class='reason'>名称一致，无相邻路口风险</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：34379610522c</div>
+        </div>
+        
+        <div class="point-card">
+          <div class="point-head">
+            <h3>实验幼儿园 · 园门口</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 2 条</span>
+            <span class="count"><strong>晚高峰</strong> 1 条</span>
+            <span class="count"><strong>关联反馈</strong> 2 条</span>
+          </div>
+          <div class='block'><h4>同地点不同写法（作为证据留存）</h4><ul><li>幼儿园门口（来源反馈：29a586179dcb）</li></ul></div>
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'><li><span class='tag tag-peak'>送学</span><span class='tag tag-sim'>相似度 1.0</span><span class='tag tag-src'>家长群</span><div class='raw'>实验幼儿园园门口早上送孩子</div><div class='meta'>反馈ID: a0201c6672de / 提交: 2026-06-18T01:35:11</div></li><li><span class='tag tag-peak'>未标注</span><span class='tag tag-sim'>相似度 0.75</span><span class='tag tag-src'>随手拍</span><div class='raw'>幼儿园门口（没标注高峰）</div><div class='meta'>反馈ID: 29a586179dcb / 提交: 2026-06-18T01:35:11</div></li></ol></div>
+          
+          
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：园门口 → 园门口</div><div class='reason'>名称一致，无相邻路口风险</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：cd4b95c5b05b</div>
+        </div>
+        
+        <div class="point-card">
+          <div class="point-head">
+            <h3>实验幼儿园 · 实验幼儿园大门口</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 0 条</span>
+            <span class="count"><strong>晚高峰</strong> 1 条</span>
+            <span class="count"><strong>关联反馈</strong> 1 条</span>
+          </div>
+          
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'><li><span class='tag tag-peak'>接学</span><span class='tag tag-sim'>相似度 1.0</span><span class='tag tag-src'>家长群</span><div class='raw'>实验幼儿园大门口下午接，没写高峰的那条下面算早晚</div><div class='meta'>反馈ID: 2a6a096d58db / 提交: 2026-06-18T01:35:11</div></li></ol></div>
+          
+          
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：实验幼儿园大门口 → 实验幼儿园大门口</div><div class='reason'>名称一致，无相邻路口风险</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：de243cb67e75</div>
+        </div>
+        
+        <div class="point-card">
+          <div class="point-head">
+            <h3>阳光第一小学 · 正门东侧路口(红绿灯)</h3>
+            <span class="status status-confirmed">已人工确认</span>
+          </div>
+          <div class="counts">
+            <span class="count"><strong>早高峰</strong> 0 条</span>
+            <span class="count"><strong>晚高峰</strong> 0 条</span>
+            <span class="count"><strong>关联反馈</strong> 0 条</span>
+          </div>
+          
+          <div class='block'><h4>居民反馈与计算证据</h4><ol class='evidence'></ol></div>
+          
+          
+          <div class='block history'><h4>人工处理历史（灰度复盘用）</h4><ol><li><span class='tag tag-action'>由拆分产生新点位</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：- → 正门东侧路口(红绿灯)</div><div class='reason'>对照百度地图核实，东侧红绿灯和西侧路口是两个不同的接送点</div><div class='meta'>2026-06-18T01:35:11</div></li><li><span class='tag tag-action'>人工确认</span><span class='tag tag-op'>社区运营-阿宁</span><div>变更：正门东侧路口(红绿灯) → 正门东侧路口(红绿灯)</div><div class='reason'>地图+现场双确认</div><div class='meta'>2026-06-18T01:35:11</div></li></ol></div>
+          <div class="meta point-id">点位ID：4f5b73a7da17</div>
+        </div>
+        
+<div class="footer">交付对象：社区运营阿宁 · 用途：灰度发布前复核与复盘 · JSON 导出可与接口字段一一对应</div>
+</body>
+</html>

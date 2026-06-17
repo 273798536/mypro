@@ -1,0 +1,1701 @@
+{
+  "session_meta": {
+    "session_id": "07838bd5af34",
+    "version": "gray-preview-1",
+    "created_at": "2026-06-18T01:35:11",
+    "rules": [
+      {
+        "rule_id": "a2488334a5f4",
+        "rule_name": "文本相似度归并",
+        "description": "归一化后路名相似度≥0.72自动归并，≥0.50且有方位词差异标记相邻路口风险",
+        "peak_scope": "both",
+        "threshold": 0.72,
+        "created_at": "2026-06-18T01:35:11"
+      }
+    ]
+  },
+  "peak_calculation_rule": {
+    "morning_keywords": [
+      "早高峰",
+      "早",
+      "morning",
+      "上午",
+      "送学"
+    ],
+    "evening_keywords": [
+      "晚高峰",
+      "晚",
+      "evening",
+      "下午",
+      "接学"
+    ],
+    "unmarked_strategy": "未标注高峰时同时计入早晚两边"
+  },
+  "merge_threshold": {
+    "text_similarity": 0.72,
+    "alias_similarity": 0.8,
+    "adjacent_intersection_similarity_range": [
+      0.5,
+      0.92
+    ],
+    "note": "相邻路口命中方位词差异且相似度在区间内的，标记异常待人工确认"
+  },
+  "summary": {
+    "total_points": 9,
+    "confirmed_points": 9,
+    "anomalous_points": 6,
+    "total_morning": 5,
+    "total_evening": 5,
+    "total_feedbacks": 9,
+    "total_history_records": 12
+  },
+  "points": [
+    {
+      "point_id": "64ef152e80e0",
+      "school_name": "阳光第一小学",
+      "canonical_name": "正门西侧路口(校牌处)",
+      "alias_count": 1,
+      "feedback_count": 1,
+      "peak_morning_count": 1,
+      "peak_evening_count": 0,
+      "anomaly_count": 9,
+      "anomaly_flags": [
+        "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+        "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+        "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认",
+        "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67",
+        "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67",
+        "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60",
+        "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+        "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+        "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置",
+        "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+        "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+        "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+        "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+        "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+      ],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "拆分配对",
+          "operator": "社区运营-阿宁",
+          "reason": "对照百度地图核实，东侧红绿灯和西侧路口是两个不同的接送点",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "学校正门路口",
+          "after_canonical": "学校正门路口"
+        },
+        {
+          "action": "重命名标准点位名",
+          "operator": "社区运营-阿宁",
+          "reason": "原标准名过于笼统，补充方位词明确点位",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "学校正门路口",
+          "after_canonical": "正门西侧路口(校牌处)"
+        },
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "地图+现场双确认",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "正门西侧路口(校牌处)",
+          "after_canonical": "正门西侧路口(校牌处)"
+        }
+      ]
+    },
+    {
+      "point_id": "333be82e9a58",
+      "school_name": "阳光第一小学",
+      "canonical_name": "阳光一小大门口",
+      "alias_count": 0,
+      "feedback_count": 1,
+      "peak_morning_count": 1,
+      "peak_evening_count": 0,
+      "anomaly_count": 3,
+      "anomaly_flags": [
+        "相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，疑似不同路口，需要人工确认",
+        "相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55",
+        "跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，对比卫星图和街景判断是否同一个接送位置",
+        "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+        "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+        "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+        "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+        "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+        "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+      ],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "名称一致，无相邻路口风险",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "阳光一小大门口",
+          "after_canonical": "阳光一小大门口"
+        }
+      ]
+    },
+    {
+      "point_id": "741755396b1d",
+      "school_name": "阳光第一小学",
+      "canonical_name": "正门东侧路口",
+      "alias_count": 0,
+      "feedback_count": 1,
+      "peak_morning_count": 1,
+      "peak_evening_count": 0,
+      "anomaly_count": 4,
+      "anomaly_flags": [
+        "相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，疑似不同路口，需要人工确认",
+        "相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83",
+        "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+        "跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+        "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+        "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+        "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+        "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+        "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+        "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+      ],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "名称一致，无相邻路口风险",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "正门东侧路口",
+          "after_canonical": "正门东侧路口"
+        }
+      ]
+    },
+    {
+      "point_id": "94405989e0a8",
+      "school_name": "阳光第一小学",
+      "canonical_name": "正门西侧路口",
+      "alias_count": 0,
+      "feedback_count": 1,
+      "peak_morning_count": 0,
+      "peak_evening_count": 1,
+      "anomaly_count": 2,
+      "anomaly_flags": [
+        "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+        "跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+        "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+      ],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "名称一致，无相邻路口风险",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "正门西侧路口",
+          "after_canonical": "正门西侧路口"
+        }
+      ]
+    },
+    {
+      "point_id": "c61b6759ba02",
+      "school_name": "阳光第一小学",
+      "canonical_name": "学校后门",
+      "alias_count": 0,
+      "feedback_count": 1,
+      "peak_morning_count": 0,
+      "peak_evening_count": 1,
+      "anomaly_count": 1,
+      "anomaly_flags": [
+        "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+      ],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "名称一致，无相邻路口风险",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "学校后门",
+          "after_canonical": "学校后门"
+        }
+      ]
+    },
+    {
+      "point_id": "34379610522c",
+      "school_name": "阳光第一小学",
+      "canonical_name": "一小后门",
+      "alias_count": 0,
+      "feedback_count": 1,
+      "peak_morning_count": 0,
+      "peak_evening_count": 1,
+      "anomaly_count": 1,
+      "anomaly_flags": [
+        "跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+      ],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "名称一致，无相邻路口风险",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "一小后门",
+          "after_canonical": "一小后门"
+        }
+      ]
+    },
+    {
+      "point_id": "cd4b95c5b05b",
+      "school_name": "实验幼儿园",
+      "canonical_name": "园门口",
+      "alias_count": 1,
+      "feedback_count": 2,
+      "peak_morning_count": 2,
+      "peak_evening_count": 1,
+      "anomaly_count": 0,
+      "anomaly_flags": [],
+      "next_steps": [],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "名称一致，无相邻路口风险",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "园门口",
+          "after_canonical": "园门口"
+        }
+      ]
+    },
+    {
+      "point_id": "de243cb67e75",
+      "school_name": "实验幼儿园",
+      "canonical_name": "实验幼儿园大门口",
+      "alias_count": 0,
+      "feedback_count": 1,
+      "peak_morning_count": 0,
+      "peak_evening_count": 1,
+      "anomaly_count": 0,
+      "anomaly_flags": [],
+      "next_steps": [],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "名称一致，无相邻路口风险",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "实验幼儿园大门口",
+          "after_canonical": "实验幼儿园大门口"
+        }
+      ]
+    },
+    {
+      "point_id": "4f5b73a7da17",
+      "school_name": "阳光第一小学",
+      "canonical_name": "正门东侧路口(红绿灯)",
+      "alias_count": 0,
+      "feedback_count": 0,
+      "peak_morning_count": 0,
+      "peak_evening_count": 0,
+      "anomaly_count": 0,
+      "anomaly_flags": [],
+      "next_steps": [],
+      "is_manual_confirmed": true,
+      "history_records": [
+        {
+          "action": "由拆分产生新点位",
+          "operator": "社区运营-阿宁",
+          "reason": "对照百度地图核实，东侧红绿灯和西侧路口是两个不同的接送点",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": null,
+          "after_canonical": "正门东侧路口(红绿灯)"
+        },
+        {
+          "action": "人工确认",
+          "operator": "社区运营-阿宁",
+          "reason": "地图+现场双确认",
+          "timestamp": "2026-06-18T01:35:11",
+          "before_canonical": "正门东侧路口(红绿灯)",
+          "after_canonical": "正门东侧路口(红绿灯)"
+        }
+      ]
+    }
+  ],
+  "evidence_rows": [
+    {
+      "point_id": "64ef152e80e0",
+      "school_name": "阳光第一小学",
+      "canonical_name": "正门西侧路口(校牌处)",
+      "location_hint": "学校正门路口",
+      "alias_names": [
+        "学校正门路口"
+      ],
+      "aliases_with_source": [
+        {
+          "alias_text": "学校正门路口",
+          "source_feedback_id": null,
+          "note": "重命名前的标准名"
+        }
+      ],
+      "peak_type": "早高峰",
+      "peak_morning_count": 1,
+      "peak_evening_count": 0,
+      "feedback_id": "77debf93e632",
+      "feedback_raw": "送孩子在阳光第一小学正门路口下车，早高峰很堵",
+      "feedback_source": "居民微信群",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 1.0,
+      "anomaly_flags": [
+        "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+        "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+        "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认",
+        "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67",
+        "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67",
+        "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60",
+        "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+        "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+        "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置",
+        "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+        "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+        "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+        "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+        "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+      ],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "77debf93e632"
+      ]
+    },
+    {
+      "point_id": "333be82e9a58",
+      "school_name": "阳光第一小学",
+      "canonical_name": "阳光一小大门口",
+      "location_hint": "阳光一小大门口",
+      "alias_names": [],
+      "aliases_with_source": [],
+      "peak_type": "上午",
+      "peak_morning_count": 1,
+      "peak_evening_count": 0,
+      "feedback_id": "401e874411dc",
+      "feedback_raw": "阳光一小大门口，早上车多",
+      "feedback_source": "社区小程序",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 1.0,
+      "anomaly_flags": [
+        "相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，疑似不同路口，需要人工确认",
+        "相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55",
+        "跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，对比卫星图和街景判断是否同一个接送位置",
+        "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+        "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+        "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+        "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+        "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+        "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+      ],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "401e874411dc"
+      ]
+    },
+    {
+      "point_id": "741755396b1d",
+      "school_name": "阳光第一小学",
+      "canonical_name": "正门东侧路口",
+      "location_hint": "正门东侧路口",
+      "alias_names": [],
+      "aliases_with_source": [],
+      "peak_type": "早高峰",
+      "peak_morning_count": 1,
+      "peak_evening_count": 0,
+      "feedback_id": "fc2a9ceb20f1",
+      "feedback_raw": "正门东侧路口红绿灯那里下车，不是大门正门口",
+      "feedback_source": "居民电话",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 1.0,
+      "anomaly_flags": [
+        "相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，疑似不同路口，需要人工确认",
+        "相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83",
+        "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+        "跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+        "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+        "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+        "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+        "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+        "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+        "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+      ],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "fc2a9ceb20f1"
+      ]
+    },
+    {
+      "point_id": "94405989e0a8",
+      "school_name": "阳光第一小学",
+      "canonical_name": "正门西侧路口",
+      "location_hint": "正门西侧路口",
+      "alias_names": [],
+      "aliases_with_source": [],
+      "peak_type": "晚高峰",
+      "peak_morning_count": 0,
+      "peak_evening_count": 1,
+      "feedback_id": "efae37d532b2",
+      "feedback_raw": "下午接孩子，正门西侧路口等",
+      "feedback_source": "社区小程序",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 1.0,
+      "anomaly_flags": [
+        "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+        "跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+        "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+      ],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "efae37d532b2"
+      ]
+    },
+    {
+      "point_id": "c61b6759ba02",
+      "school_name": "阳光第一小学",
+      "canonical_name": "学校后门",
+      "location_hint": "学校后门",
+      "alias_names": [],
+      "aliases_with_source": [],
+      "peak_type": "晚高峰",
+      "peak_morning_count": 0,
+      "peak_evening_count": 1,
+      "feedback_id": "a27f1fbd1cdc",
+      "feedback_raw": "阳光第一小学后门接孩子，下午4点半",
+      "feedback_source": "居民微信群",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 1.0,
+      "anomaly_flags": [
+        "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+      ],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "a27f1fbd1cdc"
+      ]
+    },
+    {
+      "point_id": "34379610522c",
+      "school_name": "阳光第一小学",
+      "canonical_name": "一小后门",
+      "location_hint": "一小后门",
+      "alias_names": [],
+      "aliases_with_source": [],
+      "peak_type": "下午",
+      "peak_morning_count": 0,
+      "peak_evening_count": 1,
+      "feedback_id": "b6674f2e632d",
+      "feedback_raw": "一小后门，靠近家属院那个门",
+      "feedback_source": "社区网格员",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 1.0,
+      "anomaly_flags": [
+        "跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并"
+      ],
+      "next_steps": [
+        "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系",
+        "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+        "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+        "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+        "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+      ],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "b6674f2e632d"
+      ]
+    },
+    {
+      "point_id": "cd4b95c5b05b",
+      "school_name": "实验幼儿园",
+      "canonical_name": "园门口",
+      "location_hint": "园门口",
+      "alias_names": [
+        "幼儿园门口"
+      ],
+      "aliases_with_source": [
+        {
+          "alias_text": "幼儿园门口",
+          "source_feedback_id": "29a586179dcb",
+          "note": ""
+        }
+      ],
+      "peak_type": "送学",
+      "peak_morning_count": 2,
+      "peak_evening_count": 1,
+      "feedback_id": "a0201c6672de",
+      "feedback_raw": "实验幼儿园园门口早上送孩子",
+      "feedback_source": "家长群",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 1.0,
+      "anomaly_flags": [],
+      "next_steps": [],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "a0201c6672de",
+        "29a586179dcb"
+      ]
+    },
+    {
+      "point_id": "cd4b95c5b05b",
+      "school_name": "实验幼儿园",
+      "canonical_name": "园门口",
+      "location_hint": "园门口",
+      "alias_names": [
+        "幼儿园门口"
+      ],
+      "aliases_with_source": [
+        {
+          "alias_text": "幼儿园门口",
+          "source_feedback_id": "29a586179dcb",
+          "note": ""
+        }
+      ],
+      "peak_type": "",
+      "peak_morning_count": 2,
+      "peak_evening_count": 1,
+      "feedback_id": "29a586179dcb",
+      "feedback_raw": "幼儿园门口（没标注高峰）",
+      "feedback_source": "随手拍",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 0.75,
+      "anomaly_flags": [],
+      "next_steps": [],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "a0201c6672de",
+        "29a586179dcb"
+      ]
+    },
+    {
+      "point_id": "de243cb67e75",
+      "school_name": "实验幼儿园",
+      "canonical_name": "实验幼儿园大门口",
+      "location_hint": "实验幼儿园大门口",
+      "alias_names": [],
+      "aliases_with_source": [],
+      "peak_type": "接学",
+      "peak_morning_count": 0,
+      "peak_evening_count": 1,
+      "feedback_id": "2a6a096d58db",
+      "feedback_raw": "实验幼儿园大门口下午接，没写高峰的那条下面算早晚",
+      "feedback_source": "家长群",
+      "feedback_submitted_at": "2026-06-18T01:35:11",
+      "similarity": 1.0,
+      "anomaly_flags": [],
+      "next_steps": [],
+      "is_manual_confirmed": true,
+      "feedback_refs": [
+        "2a6a096d58db"
+      ]
+    }
+  ],
+  "history": [
+    {
+      "record_id": "42f6f109f9e5",
+      "point_id": "64ef152e80e0",
+      "action": "拆分配对",
+      "operator": "社区运营-阿宁",
+      "reason": "对照百度地图核实，东侧红绿灯和西侧路口是两个不同的接送点",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "64ef152e80e0",
+        "canonical_name": "学校正门路口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "学校正门路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "77debf93e632"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "77debf93e632",
+            "raw_text": "送孩子在阳光第一小学正门路口下车，早高峰很堵",
+            "peak_type": "早高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60",
+          "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      },
+      "after": {
+        "point_id": "64ef152e80e0",
+        "canonical_name": "学校正门路口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "学校正门路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "77debf93e632"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "77debf93e632",
+            "raw_text": "送孩子在阳光第一小学正门路口下车，早高峰很堵",
+            "peak_type": "早高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60",
+          "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      }
+    },
+    {
+      "record_id": "1d0121e10bf9",
+      "point_id": "4f5b73a7da17",
+      "action": "由拆分产生新点位",
+      "operator": "社区运营-阿宁",
+      "reason": "对照百度地图核实，东侧红绿灯和西侧路口是两个不同的接送点",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": null,
+      "after": {
+        "point_id": "4f5b73a7da17",
+        "canonical_name": "正门东侧路口(红绿灯)",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "正门东侧路口(红绿灯)",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 0,
+        "feedback_refs": [],
+        "is_manual_confirmed": false,
+        "merge_evidence": [],
+        "anomaly_flags": [],
+        "next_steps": []
+      }
+    },
+    {
+      "record_id": "fcd8428d78e4",
+      "point_id": "64ef152e80e0",
+      "action": "重命名标准点位名",
+      "operator": "社区运营-阿宁",
+      "reason": "原标准名过于笼统，补充方位词明确点位",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "64ef152e80e0",
+        "canonical_name": "学校正门路口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "学校正门路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "77debf93e632"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "77debf93e632",
+            "raw_text": "送孩子在阳光第一小学正门路口下车，早高峰很堵",
+            "peak_type": "早高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60",
+          "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      },
+      "after": {
+        "point_id": "64ef152e80e0",
+        "canonical_name": "正门西侧路口(校牌处)",
+        "school_name": "阳光第一小学",
+        "aliases": [
+          {
+            "alias_id": "4fb7115ae3ac",
+            "alias_text": "学校正门路口",
+            "source_feedback_id": null,
+            "note": "重命名前的标准名"
+          }
+        ],
+        "location_hint": "学校正门路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "77debf93e632"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "77debf93e632",
+            "raw_text": "送孩子在阳光第一小学正门路口下车，早高峰很堵",
+            "peak_type": "早高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60",
+          "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      }
+    },
+    {
+      "record_id": "3e8bf36b60d5",
+      "point_id": "64ef152e80e0",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "地图+现场双确认",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "64ef152e80e0",
+        "canonical_name": "正门西侧路口(校牌处)",
+        "school_name": "阳光第一小学",
+        "aliases": [
+          {
+            "alias_id": "4fb7115ae3ac",
+            "alias_text": "学校正门路口",
+            "source_feedback_id": null,
+            "note": "重命名前的标准名"
+          }
+        ],
+        "location_hint": "学校正门路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "77debf93e632"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "77debf93e632",
+            "raw_text": "送孩子在阳光第一小学正门路口下车，早高峰很堵",
+            "peak_type": "早高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60",
+          "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      },
+      "after": {
+        "point_id": "64ef152e80e0",
+        "canonical_name": "正门西侧路口(校牌处)",
+        "school_name": "阳光第一小学",
+        "aliases": [
+          {
+            "alias_id": "4fb7115ae3ac",
+            "alias_text": "学校正门路口",
+            "source_feedback_id": null,
+            "note": "重命名前的标准名"
+          }
+        ],
+        "location_hint": "学校正门路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "77debf93e632"
+        ],
+        "is_manual_confirmed": true,
+        "merge_evidence": [
+          {
+            "feedback_id": "77debf93e632",
+            "raw_text": "送孩子在阳光第一小学正门路口下车，早高峰很堵",
+            "peak_type": "早高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，疑似不同路口，需要人工确认",
+          "相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67",
+          "相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60",
+          "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，对比卫星图和街景判断是否同一个接送位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      }
+    },
+    {
+      "record_id": "16b9745061e2",
+      "point_id": "4f5b73a7da17",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "地图+现场双确认",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "4f5b73a7da17",
+        "canonical_name": "正门东侧路口(红绿灯)",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "正门东侧路口(红绿灯)",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 0,
+        "feedback_refs": [],
+        "is_manual_confirmed": false,
+        "merge_evidence": [],
+        "anomaly_flags": [],
+        "next_steps": []
+      },
+      "after": {
+        "point_id": "4f5b73a7da17",
+        "canonical_name": "正门东侧路口(红绿灯)",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "正门东侧路口(红绿灯)",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 0,
+        "feedback_refs": [],
+        "is_manual_confirmed": true,
+        "merge_evidence": [],
+        "anomaly_flags": [],
+        "next_steps": []
+      }
+    },
+    {
+      "record_id": "fd7d81b753ef",
+      "point_id": "333be82e9a58",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "名称一致，无相邻路口风险",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "333be82e9a58",
+        "canonical_name": "阳光一小大门口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "阳光一小大门口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "401e874411dc"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "401e874411dc",
+            "raw_text": "阳光一小大门口，早上车多",
+            "peak_type": "上午",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，疑似不同路口，需要人工确认",
+          "相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55",
+          "跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+        ]
+      },
+      "after": {
+        "point_id": "333be82e9a58",
+        "canonical_name": "阳光一小大门口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "阳光一小大门口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "401e874411dc"
+        ],
+        "is_manual_confirmed": true,
+        "merge_evidence": [
+          {
+            "feedback_id": "401e874411dc",
+            "raw_text": "阳光一小大门口，早上车多",
+            "peak_type": "上午",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，疑似不同路口，需要人工确认",
+          "相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55",
+          "跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+        ]
+      }
+    },
+    {
+      "record_id": "9fb93752f3fc",
+      "point_id": "741755396b1d",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "名称一致，无相邻路口风险",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "741755396b1d",
+        "canonical_name": "正门东侧路口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "正门东侧路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "fc2a9ceb20f1"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "fc2a9ceb20f1",
+            "raw_text": "正门东侧路口红绿灯那里下车，不是大门正门口",
+            "peak_type": "早高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，疑似不同路口，需要人工确认",
+          "相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83",
+          "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      },
+      "after": {
+        "point_id": "741755396b1d",
+        "canonical_name": "正门东侧路口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "正门东侧路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 1,
+        "peak_evening_count": 0,
+        "feedback_refs": [
+          "fc2a9ceb20f1"
+        ],
+        "is_manual_confirmed": true,
+        "merge_evidence": [
+          {
+            "feedback_id": "fc2a9ceb20f1",
+            "raw_text": "正门东侧路口红绿灯那里下车，不是大门正门口",
+            "peak_type": "早高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，疑似不同路口，需要人工确认",
+          "相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83",
+          "跨点位相邻路口风险：「学校正门路口」与「正门东侧路口」检测到方位词差异(东/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，对比卫星图和街景判断是否同一个接送位置",
+          "第2步：若为同一地点（距离≤50米 / 同一路口不同表述 / 指向同一个校门）→ 无需拆分，将两个名称都保留为别名，然后调用 ManualOperator.confirm_point 标记确认",
+          "第3步：若为不同路口（隔了一条路、或方位明显不同，如一个东门一个西门）→ 需要拆分：先整理两组居民反馈各自的 feedback_id 清单",
+          "第4步（拆分操作）：调用 ManualOperator.split_point(point_id='当前点位ID', keep_feedback_ids=['保留在本点位的反馈ID列表'], split_name='拆出点位的新名称（带方位词）', reason='地图核实为两个不同接送路口')",
+          "第5步：拆分完成后，对两个新点位分别调用 confirm_point，确认拆分结果正确",
+          "第6步：将新点位名（带方位词）同步反馈给排班同事，避免车辆走错位置",
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门东侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门东侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      }
+    },
+    {
+      "record_id": "dd37edc0a2bb",
+      "point_id": "94405989e0a8",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "名称一致，无相邻路口风险",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "94405989e0a8",
+        "canonical_name": "正门西侧路口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "正门西侧路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "efae37d532b2"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "efae37d532b2",
+            "raw_text": "下午接孩子，正门西侧路口等",
+            "peak_type": "晚高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      },
+      "after": {
+        "point_id": "94405989e0a8",
+        "canonical_name": "正门西侧路口",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "正门西侧路口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "efae37d532b2"
+        ],
+        "is_manual_confirmed": true,
+        "merge_evidence": [
+          {
+            "feedback_id": "efae37d532b2",
+            "raw_text": "下午接孩子，正门西侧路口等",
+            "peak_type": "晚高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "跨点位相邻路口风险：「学校正门路口」与「正门西侧路口」检测到方位词差异(西/侧)且相似度=0.67，可能被错误拆分或错误合并",
+          "跨点位相邻路口风险：「正门东侧路口」与「正门西侧路口」检测到方位词差异(东/西)且相似度=0.83，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）",
+          "第1步：打开地图APP，分别搜索「正门东侧路口」和「正门西侧路口」，观察两个位置的实际距离与方位关系",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「正门东侧路口(东侧)」「正门西侧路口(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认"
+        ]
+      }
+    },
+    {
+      "record_id": "267b8745f97e",
+      "point_id": "c61b6759ba02",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "名称一致，无相邻路口风险",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "c61b6759ba02",
+        "canonical_name": "学校后门",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "学校后门",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "a27f1fbd1cdc"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "a27f1fbd1cdc",
+            "raw_text": "阳光第一小学后门接孩子，下午4点半",
+            "peak_type": "晚高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+        ]
+      },
+      "after": {
+        "point_id": "c61b6759ba02",
+        "canonical_name": "学校后门",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "学校后门",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "a27f1fbd1cdc"
+        ],
+        "is_manual_confirmed": true,
+        "merge_evidence": [
+          {
+            "feedback_id": "a27f1fbd1cdc",
+            "raw_text": "阳光第一小学后门接孩子，下午4点半",
+            "peak_type": "晚高峰",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "跨点位相邻路口风险：「学校正门路口」与「学校后门」检测到方位词差异(后)且相似度=0.60，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「学校正门路口」和「学校后门」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「学校正门路口(东侧)」「学校后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+        ]
+      }
+    },
+    {
+      "record_id": "e661d584302a",
+      "point_id": "34379610522c",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "名称一致，无相邻路口风险",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "34379610522c",
+        "canonical_name": "一小后门",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "一小后门",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "b6674f2e632d"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "b6674f2e632d",
+            "raw_text": "一小后门，靠近家属院那个门",
+            "peak_type": "下午",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+        ]
+      },
+      "after": {
+        "point_id": "34379610522c",
+        "canonical_name": "一小后门",
+        "school_name": "阳光第一小学",
+        "aliases": [],
+        "location_hint": "一小后门",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "b6674f2e632d"
+        ],
+        "is_manual_confirmed": true,
+        "merge_evidence": [
+          {
+            "feedback_id": "b6674f2e632d",
+            "raw_text": "一小后门，靠近家属院那个门",
+            "peak_type": "下午",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [
+          "跨点位相邻路口风险：「阳光一小大门口」与「一小后门」检测到方位词差异(后)且相似度=0.55，可能被错误拆分或错误合并"
+        ],
+        "next_steps": [
+          "第1步：打开地图APP，分别搜索「阳光一小大门口」和「一小后门」，观察两个位置的实际距离与方位关系",
+          "第2步：若地图显示两点距离≤50米或街景为同一物理位置（同一校门/同一路口对角）→ 判定为同一地点，走第3步；否则判定为不同路口，走第4步",
+          "第3步（同一地点需合并）：调用 ManualOperator.merge_two_points(keep_id='保留点位的ID', remove_id='被合并点位的ID', reason='地图核实为同一接送点')，合并后两个点位名会同时保存在别名区",
+          "第4步（不同路口需拆分维持）：分别给两个点位名补上方位词（如「阳光一小大门口(东侧)」「一小后门(西侧)」），调用 ManualOperator.rename_canonical 逐个重命名，并分别对两条记录调用 confirm_point 确认",
+          "第5步：处理完成后检查点位的异常提示是否被清除，如仍残留旧提示可忽略（历史已记录，新的归并会话不会再触发）"
+        ]
+      }
+    },
+    {
+      "record_id": "64ce893093bb",
+      "point_id": "cd4b95c5b05b",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "名称一致，无相邻路口风险",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "cd4b95c5b05b",
+        "canonical_name": "园门口",
+        "school_name": "实验幼儿园",
+        "aliases": [
+          {
+            "alias_id": "ce82ce40b72f",
+            "alias_text": "幼儿园门口",
+            "source_feedback_id": "29a586179dcb",
+            "note": ""
+          }
+        ],
+        "location_hint": "园门口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 2,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "a0201c6672de",
+          "29a586179dcb"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "a0201c6672de",
+            "raw_text": "实验幼儿园园门口早上送孩子",
+            "peak_type": "送学",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          },
+          {
+            "feedback_id": "29a586179dcb",
+            "raw_text": "幼儿园门口（没标注高峰）",
+            "peak_type": "",
+            "similarity": 0.75,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [],
+        "next_steps": []
+      },
+      "after": {
+        "point_id": "cd4b95c5b05b",
+        "canonical_name": "园门口",
+        "school_name": "实验幼儿园",
+        "aliases": [
+          {
+            "alias_id": "ce82ce40b72f",
+            "alias_text": "幼儿园门口",
+            "source_feedback_id": "29a586179dcb",
+            "note": ""
+          }
+        ],
+        "location_hint": "园门口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 2,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "a0201c6672de",
+          "29a586179dcb"
+        ],
+        "is_manual_confirmed": true,
+        "merge_evidence": [
+          {
+            "feedback_id": "a0201c6672de",
+            "raw_text": "实验幼儿园园门口早上送孩子",
+            "peak_type": "送学",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          },
+          {
+            "feedback_id": "29a586179dcb",
+            "raw_text": "幼儿园门口（没标注高峰）",
+            "peak_type": "",
+            "similarity": 0.75,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [],
+        "next_steps": []
+      }
+    },
+    {
+      "record_id": "28d2bb00abe6",
+      "point_id": "de243cb67e75",
+      "action": "人工确认",
+      "operator": "社区运营-阿宁",
+      "reason": "名称一致，无相邻路口风险",
+      "timestamp": "2026-06-18T01:35:11",
+      "before": {
+        "point_id": "de243cb67e75",
+        "canonical_name": "实验幼儿园大门口",
+        "school_name": "实验幼儿园",
+        "aliases": [],
+        "location_hint": "实验幼儿园大门口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "2a6a096d58db"
+        ],
+        "is_manual_confirmed": false,
+        "merge_evidence": [
+          {
+            "feedback_id": "2a6a096d58db",
+            "raw_text": "实验幼儿园大门口下午接，没写高峰的那条下面算早晚",
+            "peak_type": "接学",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [],
+        "next_steps": []
+      },
+      "after": {
+        "point_id": "de243cb67e75",
+        "canonical_name": "实验幼儿园大门口",
+        "school_name": "实验幼儿园",
+        "aliases": [],
+        "location_hint": "实验幼儿园大门口",
+        "latitude": null,
+        "longitude": null,
+        "peak_morning_count": 0,
+        "peak_evening_count": 1,
+        "feedback_refs": [
+          "2a6a096d58db"
+        ],
+        "is_manual_confirmed": true,
+        "merge_evidence": [
+          {
+            "feedback_id": "2a6a096d58db",
+            "raw_text": "实验幼儿园大门口下午接，没写高峰的那条下面算早晚",
+            "peak_type": "接学",
+            "similarity": 1.0,
+            "attached_at": "2026-06-18T01:35:11"
+          }
+        ],
+        "anomaly_flags": [],
+        "next_steps": []
+      }
+    }
+  ]
+}
