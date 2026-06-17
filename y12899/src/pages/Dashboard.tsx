@@ -40,6 +40,8 @@ export default function Dashboard() {
     anomalies,
     reviewRounds,
     addReviewNote,
+    supplementWaterQuality,
+    addBuoyDataBatch,
     updateFarmLog,
     resolveAnomaly,
     addSupplementMaterial,
@@ -222,6 +224,7 @@ export default function Dashboard() {
             tideRange={tideRange}
             windSpeed={windSpeed}
             waterRecords={waterQuality}
+            onImportBatch={addBuoyDataBatch}
           />
         );
 
@@ -229,7 +232,7 @@ export default function Dashboard() {
         return <NoSailPanel violations={violations} zones={noSailZones} />;
 
       case 'water':
-        return <WaterQualityPanel records={waterQuality} onAddNote={addReviewNote} />;
+        return <WaterQualityPanel records={waterQuality} onSupplement={supplementWaterQuality} />;
 
       case 'logs':
         return <FarmLogPanel logs={farmLogs} onUpdate={updateFarmLog} />;

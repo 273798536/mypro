@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Thermometer, Droplets, Wind, Activity, Upload, Table, LineChart } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Thermometer, Droplets, Wind, Activity, Upload, Table, LineChart, X, AlertCircle, CheckCircle2, FileJson, FileSpreadsheet, Edit3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { BuoyData } from '../types';
 import { LineChart as RechartsLine, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -13,6 +13,7 @@ interface BuoyDataPanelProps {
   tideRange: number;
   windSpeed: number;
   waterRecords: any[];
+  onImportBatch?: (rows: Partial<BuoyData>[]) => { added: number; errors: string[] };
   className?: string;
 }
 
@@ -32,10 +33,27 @@ export function BuoyDataPanel({
   tideRange,
   windSpeed,
   waterRecords,
+  onImportBatch,
   className,
 }: BuoyDataPanelProps) {
   const [viewMode, setViewMode] = useState<'table' | 'chart'>('table');
   const [selectedIndicator, setSelectedIndicator] = useState('temperature');
+  const [showImport, setShowImport] = useState(false);
+  const [importMode, setImportMode] = useState<'file' | 'manual'>('file');
+  const [parseErrors, setParseErrors] = useState<string[]>([]);
+  const [parseSuccess, setParseSuccess] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const manualDefaults: Record<string, string> = {
+    temperature: '',
+    salinity: '',
+    dissolvedOxygen: '',
+    pH: '',
+    chlorophyll: '',
+    turbidity: '',
+    timestamp: '',
+  };
+  const [manualRow, setManualRow] = useState<Record<string, string>>(manualDefaults);
 
   const estimate = calculateHarvestEstimate(
     area,
@@ -46,17 +64,19 @@ export function BuoyDataPanel({
     windSpeed
   );
 
-  const avgData = dataList.reduce(
-    (acc, data) => ({
-      temperature: acc.temperature + data.temperature / dataList.length,
-      salinity: acc.salinity + data.salinity / dataList.length,
-      dissolvedOxygen: acc.dissolvedOxygen + data.dissolvedOxygen / dataList.length,
-      pH: acc.pH + data.pH / dataList.length,
-      chlorophyll: acc.chlorophyll + data.chlorophyll / dataList.length,
-      turbidity: acc.turbidity + data.turbidity / dataList.length,
-    }),
-    { temperature: 0, salinity: 0, dissolvedOxygen: 0, pH: 0, chlorophyll: 0, turbidity: 0 }
-  );
+  const avgData = dataList.length > 0
+    ? dataList.reduce(
+        (acc, data) => ({
+          temperature: acc.temperature + data.temperature / dataList.length,
+          salinity: acc.salinity + data.salinity / dataList.length,
+          dissolvedOxygen: acc.dissolvedOxygen + data.dissolvedOxygen / dataList.length,
+          pH: acc.pH + data.pH / dataList.length,
+          chlorophyll: acc.chlorophyll + data.chlorophyll / dataList.length,
+          turbidity: acc.turbidity + data.turbidity / dataList.length,
+        }),
+        { temperature: 0, salinity: 0, dissolvedOxygen: 0, pH: 0, chlorophyll: 0, turbidity: 0 }
+      )
+    : { temperature: 0, salinity: 0, dissolvedOxygen: 0, pH: 0, chlorophyll: 0, turbidity: 0 };
 
   const chartData = dataList.map(d => ({
     time: new Date(d.timestamp).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
@@ -64,6 +84,131 @@ export function BuoyDataPanel({
   }));
 
   const selectedConfig = indicatorConfig.find(c => c.key === selectedIndicator)!;
+
+  const parseCSV = (text: string): Partial<BuoyData>[] => {
+    const lines = text.trim().split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length === 0) return [];
+
+    const header = lines[0].split(',').map(s => s.trim().toLowerCase());
+    const fieldMap: Record<string, keyof BuoyData | 'timestamp'> = {
+      'timestamp': 'timestamp', '时间': 'timestamp', 'time': 'timestamp', 'datetime': 'timestamp',
+      'temperature': 'temperature', '水温': 'temperature', 'temp': 'temperature',
+      'salinity': 'salinity', '盐度': 'salinity',
+      'dissolvedoxygen': 'dissolvedOxygen', '溶解氧': 'dissolvedOxygen', 'do': 'dissolvedOxygen',
+      'ph': 'pH',
+      'chlorophyll': 'chlorophyll', '叶绿素': 'chlorophyll', 'chl': 'chlorophyll',
+      'turbidity': 'turbidity', '浊度': 'turbidity',
+      'lat': 'location', 'latitude': 'location', '纬度': 'location',
+      'lng': 'location', 'longitude': 'location', '经度': 'location',
+    };
+
+    const idx: Partial<Record<keyof BuoyData | 'timestamp' | 'lat' | 'lng', number>> = {};
+    header.forEach((h, i) => {
+      const key = fieldMap[h];
+      if (key === 'location') {
+        if (h.includes('lat') || h === '纬度') idx.lat = i;
+        else idx.lng = i;
+      } else if (key) {
+        (idx as any)[key] = i;
+      }
+    });
+
+    const rows: Partial<BuoyData>[] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',').map(s => s.trim());
+      const row: Partial<BuoyData> = {};
+      if (typeof idx.timestamp === 'number') {
+        const v = cols[idx.timestamp];
+        if (v) row.timestamp = v;
+      }
+      const numericFields: (keyof BuoyData)[] = ['temperature', 'salinity', 'dissolvedOxygen', 'pH', 'chlorophyll', 'turbidity'];
+      numericFields.forEach(f => {
+        const i2 = (idx as any)[f];
+        if (typeof i2 === 'number' && cols[i2] !== '') {
+          const v = parseFloat(cols[i2]);
+          if (!Number.isNaN(v)) (row as any)[f] = v;
+        }
+      });
+      if (typeof idx.lat === 'number' || typeof idx.lng === 'number') {
+        const lat = typeof idx.lat === 'number' ? parseFloat(cols[idx.lat]) : NaN;
+        const lng = typeof idx.lng === 'number' ? parseFloat(cols[idx.lng]) : NaN;
+        if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+          row.location = { lat, lng };
+        }
+      }
+      rows.push(row);
+    }
+    return rows;
+  };
+
+  const handleFile = async (file: File) => {
+    setParseErrors([]);
+    setParseSuccess(null);
+    const text = await file.text();
+    let rows: Partial<BuoyData>[] = [];
+    try {
+      if (file.name.toLowerCase().endsWith('.json')) {
+        const parsed = JSON.parse(text);
+        rows = Array.isArray(parsed) ? parsed : [parsed];
+      } else {
+        rows = parseCSV(text);
+      }
+    } catch (e: any) {
+      setParseErrors([`文件解析失败：${e?.message || '未知错误'}`]);
+      return;
+    }
+    if (rows.length === 0) {
+      setParseErrors(['未解析到任何数据行']);
+      return;
+    }
+    if (!onImportBatch) {
+      setParseErrors(['未配置导入处理器']);
+      return;
+    }
+    const result = onImportBatch(rows);
+    if (result.errors.length > 0) setParseErrors(result.errors);
+    if (result.added > 0) {
+      setParseSuccess(`成功导入 ${result.added} 条浮标数据，收成估算已自动更新`);
+      setShowImport(false);
+    }
+  };
+
+  const handleManualSubmit = () => {
+    setParseErrors([]);
+    setParseSuccess(null);
+    if (!onImportBatch) return;
+    const row: Partial<BuoyData> = {};
+    const required = ['temperature', 'salinity', 'dissolvedOxygen', 'pH', 'chlorophyll', 'turbidity'] as const;
+    const missing: string[] = [];
+    required.forEach(k => {
+      const v = manualRow[k];
+      const num = parseFloat(v);
+      if (v === '' || Number.isNaN(num)) {
+        missing.push(indicatorConfig.find(c => c.key === k)?.label || k);
+      } else {
+        (row as any)[k] = num;
+      }
+    });
+    if (missing.length > 0) {
+      setParseErrors([`缺少或格式错误：${missing.join('、')}`]);
+      return;
+    }
+    if (manualRow.timestamp) {
+      const ts = new Date(manualRow.timestamp);
+      row.timestamp = Number.isNaN(ts.getTime()) ? new Date().toISOString() : ts.toISOString();
+    }
+    const result = onImportBatch([row]);
+    if (result.errors.length > 0) setParseErrors(result.errors);
+    if (result.added > 0) {
+      setParseSuccess(`已添加 1 条浮标数据，收成估算已自动更新`);
+      setManualRow(manualDefaults);
+    }
+  };
+
+  const resetFeedback = () => {
+    setParseErrors([]);
+    setParseSuccess(null);
+  };
 
   return (
     <div className={cn('space-y-6', className)}>
@@ -95,12 +240,138 @@ export function BuoyDataPanel({
               趋势图
             </button>
           </div>
-          <button className="rounded-lg bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-200 flex items-center gap-1.5">
+          <button
+            onClick={() => { resetFeedback(); setShowImport(v => !v); }}
+            className={cn(
+              'rounded-lg px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-colors',
+              showImport
+                ? 'bg-sky-500 text-white hover:bg-sky-600'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            )}
+          >
             <Upload size={14} />
-            导入数据
+            {showImport ? '收起导入' : '导入数据'}
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".csv,.json,text/csv,application/json"
+            className="hidden"
+            onChange={e => {
+              const f = e.target.files?.[0];
+              if (f) handleFile(f);
+              if (fileInputRef.current) fileInputRef.current.value = '';
+            }}
+          />
         </div>
       </div>
+
+      {showImport && (
+        <div className="rounded-xl border border-sky-200 bg-sky-50/60 p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h4 className="text-sm font-semibold text-slate-800">浮标数据导入</h4>
+              <p className="text-xs text-slate-500 mt-0.5">
+                支持 CSV / JSON（CSV 表头示例：timestamp,temperature,salinity,dissolvedOxygen,pH,chlorophyll,turbidity,lat,lng）
+              </p>
+            </div>
+            <button
+              onClick={() => setShowImport(false)}
+              className="text-slate-400 hover:text-slate-600"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <div className="flex rounded-lg border border-sky-200 bg-white overflow-hidden w-fit">
+            <button
+              onClick={() => { setImportMode('file'); resetFeedback(); }}
+              className={cn(
+                'px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5',
+                importMode === 'file' ? 'bg-sky-500 text-white' : 'text-slate-600 hover:bg-slate-50'
+              )}
+            >
+              <FileSpreadsheet size={14} />
+              上传文件
+            </button>
+            <button
+              onClick={() => { setImportMode('manual'); resetFeedback(); }}
+              className={cn(
+                'px-3 py-1.5 text-sm font-medium transition-colors flex items-center gap-1.5',
+                importMode === 'manual' ? 'bg-sky-500 text-white' : 'text-slate-600 hover:bg-slate-50'
+              )}
+            >
+              <Edit3 size={14} />
+              手动录入
+            </button>
+          </div>
+
+          {parseSuccess && (
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-700 flex items-center gap-2">
+              <CheckCircle2 size={15} />
+              {parseSuccess}
+            </div>
+          )}
+          {parseErrors.length > 0 && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 space-y-1">
+              {parseErrors.map((e, i) => (
+                <div key={i} className="text-sm text-amber-700 flex items-start gap-2">
+                  <AlertCircle size={15} className="mt-0.5 shrink-0" />
+                  {e}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {importMode === 'file' && (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full rounded-lg border-2 border-dashed border-sky-300 bg-white py-6 text-sm text-sky-700 hover:bg-sky-50 hover:border-sky-400 transition-colors flex flex-col items-center gap-1.5"
+            >
+              <FileJson size={24} className="text-sky-500" />
+              点击选择 CSV 或 JSON 文件
+            </button>
+          )}
+
+          {importMode === 'manual' && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+              {indicatorConfig.map(c => (
+                <label key={c.key} className="space-y-1">
+                  <span className="text-xs font-medium text-slate-600 flex items-center gap-1">
+                    <c.icon size={12} className={c.color} />
+                    {c.label} ({c.unit}) <span className="text-rose-500">*</span>
+                  </span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={manualRow[c.key]}
+                    onChange={e => setManualRow({ ...manualRow, [c.key]: e.target.value })}
+                    className="w-full rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
+                    placeholder={`例如 ${c.key === 'pH' ? '8.1' : c.key === 'temperature' ? '22.5' : '30'}`}
+                  />
+                </label>
+              ))}
+              <label className="space-y-1">
+                <span className="text-xs font-medium text-slate-600">采集时间（留空=现在）</span>
+                <input
+                  type="datetime-local"
+                  value={manualRow.timestamp}
+                  onChange={e => setManualRow({ ...manualRow, timestamp: e.target.value })}
+                  className="w-full rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
+                />
+              </label>
+              <div className="flex items-end">
+                <button
+                  onClick={handleManualSubmit}
+                  className="w-full rounded-md bg-sky-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-600 transition-colors"
+                >
+                  提交 1 条
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="grid grid-cols-6 gap-3">
         {indicatorConfig.map(config => {
