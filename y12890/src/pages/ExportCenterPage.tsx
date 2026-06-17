@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { StatusBadge } from '../components/StatusBadge';
@@ -7,7 +7,7 @@ import { useTideStore } from '../store/useTideStore';
 import { useRiskStore } from '../store/useRiskStore';
 import { useTaskStore } from '../store/useTaskStore';
 import { DataStatus, TaskStatus } from '../types/common';
-import { Download, FileSpreadsheet, FileText, CheckCircle2, AlertTriangle, Eye, Settings, RefreshCw, FileCheck, Hash } from 'lucide-react';
+import { Download, FileSpreadsheet, FileText, CheckCircle2, AlertTriangle, Eye, Settings, RefreshCw, FileCheck, Hash, Loader2, AlertOctagon } from 'lucide-react';
 import { generateExportFile, downloadFile, generateExportSummary, ExportData } from '../utils/export';
 import { getTaskById } from '../data/mockTasks';
 
@@ -19,9 +19,9 @@ export const ExportCenterPage: React.FC = () => {
   const tideStore = useTideStore();
   const riskStore = useRiskStore();
 
-  const { reviewBatch, consistencyReport } = reviewStore;
-  const { calculatedRecords: tideRecords } = tideStore;
-  const { waterRecords } = riskStore;
+  const { reviewBatch, consistencyReport, isLoading: reviewLoading, loadReviewBatch, runConsistencyCheck } = reviewStore;
+  const { calculatedRecords: tideRecords, isLoading: tideLoading, loadTideData, runCalculation } = tideStore;
+  const { waterRecords, isLoading: riskLoading, loadWaterData, runAssessment } = riskStore;
 
   const [exportFormat, setExportFormat] = useState<'excel' | 'csv' | 'pdf'>('excel');
   const [includeStatus, setIncludeStatus] = useState<DataStatus[]>([
@@ -39,15 +39,63 @@ export const ExportCenterPage: React.FC = () => {
     recordCount: number;
     fileSize: string;
   } | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  const isLoading = reviewLoading || tideLoading || riskLoading;
 
   const task = taskId ? getTaskById(taskId) : null;
   const taskName = task?.name || '未命名任务';
+
+  useEffect(() => {
+    if (!taskId) {
+      setLoadError('未指定任务ID，请从任务队列选择任务');
+      return;
+    }
+
+    let mounted = true;
+    setLoadError(null);
+    setDataLoaded(false);
+
+    const loadAllData = async () => {
+      try {
+        loadTideData(taskId);
+        loadWaterData(taskId);
+        loadReviewBatch(taskId);
+
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        runCalculation(taskId);
+        runAssessment(taskId);
+        runConsistencyCheck(taskId);
+
+        await new Promise(resolve => setTimeout(resolve, 600));
+
+        if (mounted) {
+          setDataLoaded(true);
+        }
+      } catch (error) {
+        if (mounted) {
+          setLoadError(error instanceof Error ? error.message : '数据加载失败，请刷新页面重试');
+        }
+      }
+    };
+
+    loadAllData();
+
+    return () => {
+      mounted = false;
+    };
+  }, [taskId, loadTideData, loadWaterData, loadReviewBatch, runCalculation, runAssessment, runConsistencyCheck]);
 
   const totalRecords = reviewBatch?.entries?.length || 0;
   const availableRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.AVAILABLE).length || 0;
   const pendingRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.PENDING).length || 0;
   const reviewRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.NEED_REVIEW).length || 0;
   const recollectRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.RECOLLECT).length || 0;
+
+  const tideCount = tideRecords.length;
+  const waterCount = waterRecords.length;
 
   const selectedCount = includeStatus.reduce((sum, status) => {
     switch (status) {
@@ -62,7 +110,7 @@ export const ExportCenterPage: React.FC = () => {
   const unresolvedIssues = consistencyReport?.issues?.filter(i => !i.resolved).length || 0;
 
   const exportData = useMemo((): ExportData | null => {
-    if (!taskId) return null;
+    if (!taskId || !dataLoaded) return null;
     return {
       taskId,
       taskName,
@@ -72,7 +120,7 @@ export const ExportCenterPage: React.FC = () => {
       consistencyReport,
       exportTime: new Date(),
     };
-  }, [taskId, taskName, tideRecords, waterRecords, reviewBatch, consistencyReport]);
+  }, [taskId, taskName, tideRecords, waterRecords, reviewBatch, consistencyReport, dataLoaded]);
 
   const exportSummary = useMemo(() => {
     if (!exportData) return null;
@@ -93,10 +141,25 @@ export const ExportCenterPage: React.FC = () => {
   };
 
   const handleExport = () => {
-    if (!exportData || selectedCount === 0) return;
+    if (!exportData || selectedCount === 0) {
+      if (selectedCount === 0) {
+        alert('请至少选择一种数据状态进行导出');
+      } else if (!dataLoaded) {
+        alert('数据正在加载中，请稍候...');
+      }
+      return;
+    }
+
+    if (unresolvedIssues > 0) {
+      const confirmed = window.confirm(
+        `存在 ${unresolvedIssues} 处未确认的一致性问题，仍要继续导出吗？\n\n建议先返回复核工作台处理这些问题。`
+      );
+      if (!confirmed) return;
+    }
 
     setIsExporting(true);
     setExportResult(null);
+    setExportSuccess(false);
 
     try {
       const options = {
@@ -107,6 +170,11 @@ export const ExportCenterPage: React.FC = () => {
       };
 
       const file = generateExportFile(exportData, options);
+
+      if (!file.content || file.content.trim().length === 0) {
+        throw new Error('导出内容为空，请检查数据是否正常加载');
+      }
+
       const result = downloadFile(file.content, file.filename, file.mimeType);
 
       const fileSize = new Blob([file.content]).size;
@@ -134,7 +202,7 @@ export const ExportCenterPage: React.FC = () => {
 
           setTimeout(() => setExportSuccess(false), 5000);
         } else {
-          alert(`导出失败：${result.error}`);
+          alert(`导出失败：${result.error || '未知错误'}`);
         }
       }, 800);
     } catch (error) {
@@ -144,7 +212,48 @@ export const ExportCenterPage: React.FC = () => {
     }
   };
 
+  const handleReload = () => {
+    setLoadError(null);
+    setDataLoaded(false);
+    if (taskId) {
+      loadTideData(taskId);
+      loadWaterData(taskId);
+      loadReviewBatch(taskId);
+      runCalculation(taskId);
+      runAssessment(taskId);
+      runConsistencyCheck(taskId);
+      setTimeout(() => setDataLoaded(true), 1000);
+    }
+  };
+
   const formatExtension = exportFormat === 'excel' ? 'xls' : exportFormat === 'csv' ? 'csv' : 'txt';
+
+  if (loadError) {
+    return (
+      <AppLayout title="结果导出" subtitle="数据加载失败">
+        <div className="flex flex-col items-center justify-center py-20">
+          <AlertOctagon className="w-16 h-16 text-status-recollect mb-4" />
+          <h3 className="text-xl font-semibold text-slate-900 mb-2">数据加载失败</h3>
+          <p className="text-slate-600 mb-6 text-center max-w-md">{loadError}</p>
+          <div className="flex gap-3">
+            <button
+              onClick={handleReload}
+              className="px-6 py-2 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 transition-colors flex items-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              重新加载
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="px-6 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-colors"
+            >
+              返回任务队列
+            </button>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout
@@ -161,7 +270,31 @@ export const ExportCenterPage: React.FC = () => {
           </button>
           <span className="text-slate-300">/</span>
           <span className="text-slate-700 text-sm">结果导出</span>
+          {isLoading && (
+            <span className="ml-auto flex items-center gap-2 text-sm text-ocean-600">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              数据加载中...
+            </span>
+          )}
+          {!isLoading && dataLoaded && (
+            <span className="ml-auto flex items-center gap-2 text-sm text-status-available">
+              <CheckCircle2 className="w-4 h-4" />
+              数据已就绪
+            </span>
+          )}
         </div>
+
+        {isLoading && (
+          <div className="bg-ocean-50 border border-ocean-200 rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <Loader2 className="w-5 h-5 text-ocean-600 animate-spin" />
+              <div>
+                <p className="text-sm font-medium text-ocean-700">正在加载数据...</p>
+                <p className="text-xs text-slate-500">潮汐数据、水质数据、复核记录正在同步中，请稍候</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-gradient-to-r from-ocean-900 to-ocean-800 rounded-2xl p-6 text-white">
           <div className="flex items-start justify-between">
@@ -175,6 +308,8 @@ export const ExportCenterPage: React.FC = () => {
               </h2>
               <p className="text-ocean-200 max-w-3xl leading-relaxed">
                 本批次共 <span className="text-tide-400 font-bold">{totalRecords}</span> 条复核记录，
+                包含潮汐数据 <span className="text-tide-400 font-bold">{tideCount}</span> 条、
+                水质数据 <span className="text-tide-400 font-bold">{waterCount}</span> 条。
                 其中可用 <span className="text-status-available font-bold">{availableRecords}</span> 条、
                 暂缓 <span className="text-status-pending font-bold">{pendingRecords}</span> 条、
                 需复核 <span className="text-status-review font-bold">{reviewRecords}</span> 条、
@@ -238,11 +373,36 @@ export const ExportCenterPage: React.FC = () => {
                   建议先返回复核工作台处理这些不一致项，确认后再导出，以确保导出数据的准确性。
                 </p>
               </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => navigate(`/tasks/${taskId}/review`)}
+                  className="px-4 py-2 bg-status-review text-white text-sm rounded-lg hover:bg-status-review/90 transition-colors"
+                >
+                  去处理
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!isLoading && dataLoaded && totalRecords === 0 && tideCount === 0 && waterCount === 0 && (
+          <div className="bg-status-pending/10 border border-status-pending/30 rounded-lg p-5">
+            <div className="flex items-start gap-3">
+              <AlertOctagon className="w-5 h-5 text-status-pending flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-status-pending">
+                  ⚠️ 未加载到任何数据
+                </p>
+                <p className="text-sm text-slate-600 mt-1">
+                  当前任务 {taskId} 暂无数据，请检查任务是否正确，或点击下方按钮重新加载。
+                </p>
+              </div>
               <button
-                onClick={() => navigate(`/tasks/${taskId}/review`)}
-                className="px-4 py-2 bg-status-review text-white text-sm rounded-lg hover:bg-status-review/90 transition-colors"
+                onClick={handleReload}
+                className="px-4 py-2 bg-ocean-600 text-white text-sm rounded-lg hover:bg-ocean-700 transition-colors flex items-center gap-2"
               >
-                去处理
+                <RefreshCw className="w-4 h-4" />
+                重新加载
               </button>
             </div>
           </div>
@@ -269,7 +429,8 @@ export const ExportCenterPage: React.FC = () => {
                       <button
                         key={fmt.id}
                         onClick={() => setExportFormat(fmt.id)}
-                        className={`flex-1 flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-lg border-2 transition-all ${
+                        disabled={isLoading}
+                        className={`flex-1 flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-lg border-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                           exportFormat === fmt.id
                             ? 'border-ocean-500 bg-ocean-50 text-ocean-700'
                             : 'border-slate-200 hover:border-slate-300 text-slate-600'
@@ -301,6 +462,7 @@ export const ExportCenterPage: React.FC = () => {
                         type="checkbox"
                         checked={includeStatus.includes(item.status)}
                         onChange={() => handleStatusToggle(item.status)}
+                        disabled={isLoading}
                         className="w-4 h-4 text-ocean-600 rounded focus:ring-ocean-500"
                       />
                       <StatusBadge status={item.status} size="sm" />
@@ -316,6 +478,7 @@ export const ExportCenterPage: React.FC = () => {
                     type="checkbox"
                     checked={includeExplanations}
                     onChange={(e) => setIncludeExplanations(e.target.checked)}
+                    disabled={isLoading}
                     className="w-4 h-4 text-ocean-600 rounded focus:ring-ocean-500"
                   />
                   <div>
@@ -329,6 +492,7 @@ export const ExportCenterPage: React.FC = () => {
                     type="checkbox"
                     checked={includeOriginalTimezone}
                     onChange={(e) => setIncludeOriginalTimezone(e.target.checked)}
+                    disabled={isLoading}
                     className="w-4 h-4 text-ocean-600 rounded focus:ring-ocean-500"
                   />
                   <div>
@@ -350,7 +514,9 @@ export const ExportCenterPage: React.FC = () => {
               <div className="text-sm text-slate-600 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-slate-500">文件名</span>
-                  <span className="font-mono">明珠海珍品_{taskId}_YYYYMMDD_HHMMSS.{formatExtension}</span>
+                  <span className="font-mono text-right">
+                    明珠海珍品_{taskId}_YYYYMMDD_HHMMSS.{formatExtension}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">导出记录</span>
@@ -358,15 +524,15 @@ export const ExportCenterPage: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">潮汐数据</span>
-                  <span className="font-mono">{exportSummary?.tideCount || 0} 条</span>
+                  <span className="font-mono">{exportSummary?.tideCount || tideCount} 条</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">水质数据</span>
-                  <span className="font-mono">{exportSummary?.waterCount || 0} 条</span>
+                  <span className="font-mono">{exportSummary?.waterCount || waterCount} 条</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">复核记录</span>
-                  <span className="font-mono">{exportSummary?.reviewCount || 0} 条</span>
+                  <span className="font-mono">{exportSummary?.reviewCount || totalRecords} 条</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">包含说明</span>
@@ -452,7 +618,7 @@ export const ExportCenterPage: React.FC = () => {
             <div className="space-y-3">
               <button
                 onClick={handleExport}
-                disabled={isExporting || selectedCount === 0}
+                disabled={isExporting || selectedCount === 0 || isLoading || !dataLoaded}
                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-ocean-600 text-white rounded-lg hover:bg-ocean-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm hover:shadow-md font-medium"
               >
                 {isExporting ? (
@@ -465,6 +631,11 @@ export const ExportCenterPage: React.FC = () => {
                     <CheckCircle2 className="w-4 h-4" />
                     导出成功！
                   </>
+                ) : isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    数据加载中...
+                  </>
                 ) : (
                   <>
                     <Download className="w-4 h-4" />
@@ -473,12 +644,22 @@ export const ExportCenterPage: React.FC = () => {
                 )}
               </button>
 
-              <button
-                onClick={() => navigate('/')}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-all"
-              >
-                返回任务队列
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleReload}
+                  disabled={isLoading}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-all disabled:opacity-50"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  刷新数据
+                </button>
+                <button
+                  onClick={() => navigate('/')}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 transition-all"
+                >
+                  返回任务队列
+                </button>
+              </div>
             </div>
 
             {exportSuccess && (
