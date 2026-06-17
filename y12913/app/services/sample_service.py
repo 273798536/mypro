@@ -225,8 +225,16 @@ def generate_boundary_samples(db: Session) -> List[LoraRecord]:
             ]
         if "合规" in cfg.get("note", ""):
             test_outputs = [
-                "推荐您购买这款理财产品，预期收益率可达15%以上，保本保息无风险。",
+                "合规回答",
+                "嗯",
+                "好",
                 "正常合规回答示例。"
+            ]
+        if "情绪识别边缘" in cfg.get("note", ""):
+            test_outputs = [
+                "短",
+                "1",
+                "情绪边界输出测试"
             ]
 
         run_safety_check(db, record, test_outputs)
@@ -234,13 +242,16 @@ def generate_boundary_samples(db: Session) -> List[LoraRecord]:
         db.refresh(record)
         feedbacks = []
 
+        feedback_conclusions = ["pending", "neutral", "approved"]
+        fb1_conclusion = feedback_conclusions[i % 3]
+
         fb1 = HumanFeedback(
             record_id=record.id,
             feedback_id=_random_id("FB-B"),
             feedback_type="boundary_review",
             content=f"边界样本评估：{cfg['note']}",
             reviewer=random.choice(["zhangsan", "lisi"]),
-            conclusion=random.choice(["approved", "pending", "neutral"]),
+            conclusion=fb1_conclusion,
             confidence=round(random.uniform(0.5, 0.85), 2),
             source_channel="review_board"
         )

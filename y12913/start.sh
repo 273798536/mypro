@@ -55,12 +55,18 @@ case $CHOICE in
         echo "🧪 生成样例数据（正常/边界/坏样本）..."
         python3 -c "
 from app.database import init_db, SessionLocal
+from app.services.safety_service import init_default_safety_rules
 from app.services.sample_service import generate_all_samples
 init_db()
 db = SessionLocal()
 try:
+    init_default_safety_rules(db, force_sync=True)
     stats = generate_all_samples(db)
     print('生成结果:', stats)
+    from app.database import LoraRecord
+    bad = db.query(LoraRecord).filter(LoraRecord.lora_id.like('LORA-F%')).all()
+    for r in bad:
+        print(f'  坏样本 {r.lora_id} safety={r.safety_check_result} merge={r.merge_result}')
 finally:
     db.close()
 "
@@ -70,9 +76,16 @@ finally:
         echo "========================================"
         echo ""
         echo "📌 第一份样例位置："
-        echo "   - 样例生成后直接看 台账列表 页面"
-        echo "   - 数据库文件: data/lora_ledger.db (SQLite)"
+        echo "   - 打开浏览器访问 http://${HOST}:${PORT}"
+        echo "   - 默认进入【灰度对比·日常入口】，可选择版本对比"
+        echo "   - 侧边栏【台账列表】查看全部 12 条样例"
+        echo "   - 数据库文件: data/lora_ledger.db (SQLite，可直接用 DB Browser 打开只读查询)"
         echo "   - 导出文件目录: exports/"
+        echo ""
+        echo "📌 常用核心命令（新开终端）："
+        echo "   source .venv/bin/activate"
+        echo "   python3 verify.py                 # 重新跑自动化验收（6项全通过才返回0）"
+        echo "   python3 -c \"from app.database import init_db, SessionLocal; from app.services.safety_service import init_default_safety_rules; from app.services.sample_service import generate_all_samples; init_db(); db=SessionLocal(); init_default_safety_rules(db, force_sync=True); print(generate_all_samples(db))\""
         echo ""
         echo "按 Ctrl+C 停止服务"
         uvicorn main:app --host ${HOST} --port ${PORT} --reload

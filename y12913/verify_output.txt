@@ -15,11 +15,17 @@ STEP 2: 样例数据生成（正常/边界/坏）
   [✅ PASS] 边界样本数=4 实际=4
   [✅ PASS] 明显坏样本数=3 实际=3
   [✅ PASS] 总数=12 实际=12
-  [✅ PASS] 合并通过数 ≥ 5（正常样本） 实际=6
+  [✅ PASS] 合并通过数 ≥ 5（正常样本） 实际=5
   [✅ PASS] 合并失败数 ≥ 3（坏样本） 实际=3
   [✅ PASS] 待确认数 ≥ 1（边界样本） 实际=1
   [✅ PASS] 安全通过 ≥ 5 实际=8
-  [❌ FAIL] 安全未通过 ≥ 3 实际=1
+  [✅ PASS] 安全未通过 = 3（3条坏样本必须全 fail） 实际=3；这是核心验收项，PII/重复/暴力必须全部拦截为 fail
+  [✅ PASS] 坏样本 LORA-F-2026021(暴力内容泄露版) safety=fail 实际=fail；merge_result=fail
+  [✅ PASS] 坏样本 LORA-F-2026021(暴力内容泄露版) merge=fail 无需等人工 实际=fail；detail=安全检查未通过，命中block级规则
+  [✅ PASS] 坏样本 LORA-F-2026022(PII泄露测试集) safety=fail 实际=fail；merge_result=fail
+  [✅ PASS] 坏样本 LORA-F-2026022(PII泄露测试集) merge=fail 无需等人工 实际=fail；detail=安全检查未通过，命中block级规则
+  [✅ PASS] 坏样本 LORA-F-2026023(重复垃圾输出版) safety=fail 实际=fail；merge_result=fail
+  [✅ PASS] 坏样本 LORA-F-2026023(重复垃圾输出版) merge=fail 无需等人工 实际=fail；detail=安全检查未通过，命中block级规则
 
 ============================================================
 STEP 3: 长文本截断记录倒查溯源
@@ -31,15 +37,15 @@ STEP 3: 长文本截断记录倒查溯源
   [✅ PASS] 存在import阶段日志 
   [✅ PASS] 存在safety_check阶段日志 
   [✅ PASS] 安全检查详情.issues存在 
-  [✅ PASS] 检测到截断标记问题 
+  [✅ PASS] issue 列表非空 issues=1
   [✅ PASS] 存在人工反馈或允许无 反馈数=1
 
 ============================================================
 STEP 4: 人工反馈重复导入 & 补录去重
 ============================================================
   [✅ PASS] 首次创建非重复 = False is_duplicate=False
-  [✅ PASS] 相同内容补录自动标重 is_duplicate=True, duplicate_of=19
-  [✅ PASS] 重复源指向 fb1 expected=19, actual=19
+  [✅ PASS] 相同内容补录自动标重 is_duplicate=True, duplicate_of=18
+  [✅ PASS] 重复源指向 fb1 expected=18, actual=18
   [✅ PASS] 手动补录相同内容自动标重 is_duplicate=True
   [✅ PASS] 新内容新反馈ID保留不标重 is_duplicate=False
   [✅ PASS] 新增4条中有效非重复=2条 实际有效=2
@@ -48,13 +54,13 @@ STEP 4: 人工反馈重复导入 & 补录去重
 STEP 5: 报告导出与界面摘要一致性校验
 ============================================================
   [✅ PASS] 界面摘要接口可用 总记录=12
-  [✅ PASS] 导出文件生成 路径=/Users/mac/pro/solo/workspaces/y12913/exports/EXP-20260616173730-581a83db4f15274e.xlsx
+  [✅ PASS] 导出文件生成 路径=/Users/mac/pro/solo/workspaces/y12913/exports/EXP-20260617182006-d3c06dce9aeddc31.xlsx
   [✅ PASS] 导出摘要hash存在 导出记录列表存在
   [✅ PASS] 总数一致 界面=12 / 导出=12
-  [✅ PASS] 通过数一致 界面=6 / 导出=6
+  [✅ PASS] 通过数一致 界面=5 / 导出=5
   [✅ PASS] 失败数一致 界面=3 / 导出=3
   [✅ PASS] 待确认一致 界面=1 / 导出=1
-  [✅ PASS] 灰度数一致 界面=6 / 导出=6
+  [✅ PASS] 灰度数一致 界面=8 / 导出=8
   [✅ PASS] 所有记录合并结论一致 (DB ↔ 导出摘要) 检查了12条
   [✅ PASS] 导出记录已落库 
   [✅ PASS] 摘要哈希已保存 

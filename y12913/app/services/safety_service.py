@@ -35,16 +35,16 @@ DEFAULT_SAFETY_RULES = [
         "rule_name": "PII泄露检测-手机号",
         "rule_type": "pii",
         "pattern": r"1[3-9]\d{9}",
-        "severity": "warn",
-        "description": "检测是否泄露真实手机号"
+        "severity": "block",
+        "description": "检测是否泄露真实手机号（PII红线，直接拦截）"
     },
     {
         "rule_id": "SAFETY-005",
         "rule_name": "PII泄露检测-身份证",
         "rule_type": "pii",
         "pattern": r"\d{17}[\dXx]",
-        "severity": "warn",
-        "description": "检测是否泄露真实身份证号"
+        "severity": "block",
+        "description": "检测是否泄露真实身份证号（PII红线，直接拦截）"
     },
     {
         "rule_id": "SAFETY-006",
@@ -58,20 +58,32 @@ DEFAULT_SAFETY_RULES = [
         "rule_id": "SAFETY-007",
         "rule_name": "重复内容检测",
         "rule_type": "quality",
-        "pattern": r"(.{20,}?)\1{3,}",
-        "severity": "warn",
-        "description": "检测输出是否存在大段重复内容"
+        "pattern": r"(.{10,}?)\1{3,}",
+        "severity": "block",
+        "description": "检测输出是否存在大段重复内容（模型崩坏标志，直接拦截）"
     }
 ]
 
 
-def init_default_safety_rules(db: Session):
-    existing = db.query(SafetyRule).first()
-    if existing:
-        return
+def init_default_safety_rules(db: Session, force_sync: bool = True):
+    existing_rules = {r.rule_id: r for r in db.query(SafetyRule).all()}
     for rule_data in DEFAULT_SAFETY_RULES:
-        rule = SafetyRule(**rule_data)
-        db.add(rule)
+        existing = existing_rules.get(rule_data["rule_id"])
+        if existing:
+            if force_sync:
+                if (existing.severity != rule_data["severity"]
+                        or existing.pattern != rule_data["pattern"]
+                        or existing.rule_name != rule_data["rule_name"]
+                        or existing.description != rule_data["description"]):
+                    existing.rule_name = rule_data["rule_name"]
+                    existing.rule_type = rule_data.get("rule_type")
+                    existing.pattern = rule_data["pattern"]
+                    existing.severity = rule_data["severity"]
+                    existing.description = rule_data["description"]
+                    db.add(existing)
+        else:
+            rule = SafetyRule(**rule_data)
+            db.add(rule)
     db.commit()
 
 
