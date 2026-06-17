@@ -31,15 +31,17 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/" element={<MainLayout><Dashboard /></MainLayout>} />
-      <Route path="/dashboard" element={<Navigate to="/" replace />} />
-      <Route path="/review-3d" element={<MainLayout><Review3D /></MainLayout>} />
-      <Route path="/track-cleaning" element={<MainLayout><TrackCleaning /></MainLayout>} />
-      <Route path="/workbench" element={<MainLayout><Workbench /></MainLayout>} />
-      <Route path="/traceability" element={<MainLayout><Traceability /></MainLayout>} />
-      <Route path="/tide-analysis" element={<MainLayout><TideAnalysis /></MainLayout>} />
-      <Route path="/settings" element={<MainLayout><Settings /></MainLayout>} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
+        <Route path="/review-3d" element={<Review3D />} />
+        <Route path="/track-cleaning" element={<TrackCleaning />} />
+        <Route path="/workbench" element={<Workbench />} />
+        <Route path="/traceability" element={<Traceability />} />
+        <Route path="/tide-analysis" element={<TideAnalysis />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
     </Routes>
   );
 }

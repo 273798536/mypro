@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
   Box,
@@ -28,6 +28,7 @@ const menuItems = [
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { qualityStats } = useDataStore();
+  const location = useLocation();
 
   const badCount = qualityStats ? qualityStats.unitMismatch + qualityStats.negativeDepth : 0;
 
@@ -60,45 +61,46 @@ export function Sidebar() {
 
         <nav className="flex-1 py-4 overflow-y-auto">
           <ul className="space-y-1 px-2">
-            {menuItems.map((item) => (
-              <li key={item.path}>
-                <NavLink
-                  to={item.path}
-                  end={item.path === '/'}
-                  className={({ isActive }) => cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
-                    'hover:bg-white/10 group relative',
-                    isActive && 'bg-white/15 border-l-2 border-[#3E92CC]',
-                    collapsed && 'justify-center px-2'
-                  )}
-                >
-                  {({ isActive }) => (
-                    <>
-                      <item.icon className={cn(
-                        'w-5 h-5 flex-shrink-0 transition-colors',
-                        isActive ? 'text-[#3E92CC]' : 'text-white/70 group-hover:text-white'
-                      )} />
-                      {!collapsed && (
-                        <>
-                          <span className="text-sm flex-1">{item.label}</span>
-                          {item.badge && badCount > 0 && (
-                            <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E63946] text-[10px] font-bold animate-pulse">
-                              <AlertTriangle className="w-3 h-3" />
-                              {badCount}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
-                  {collapsed && item.badge && badCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#E63946] text-[9px] flex items-center justify-center font-bold">
-                      {badCount > 9 ? '9+' : badCount}
-                    </span>
-                  )}
-                </NavLink>
-              </li>
-            ))}
+            {menuItems.map((item) => {
+              const isActive = item.path === '/'
+                ? location.pathname === '/'
+                : location.pathname.startsWith(item.path);
+              return (
+                <li key={item.path}>
+                  <NavLink
+                    to={item.path}
+                    end={item.path === '/'}
+                    className={cn(
+                      'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 relative group',
+                      'hover:bg-white/10',
+                      isActive && 'bg-white/15 border-l-2 border-[#3E92CC]',
+                      collapsed && 'justify-center px-2'
+                    )}
+                  >
+                    <item.icon className={cn(
+                      'w-5 h-5 flex-shrink-0 transition-colors',
+                      isActive ? 'text-[#3E92CC]' : 'text-white/70 group-hover:text-white'
+                    )} />
+                    {!collapsed && (
+                      <>
+                        <span className="text-sm flex-1">{item.label}</span>
+                        {item.badge && badCount > 0 && (
+                          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E63946] text-[10px] font-bold animate-pulse">
+                            <AlertTriangle className="w-3 h-3" />
+                            {badCount}
+                          </span>
+                        )}
+                      </>
+                    )}
+                    {collapsed && item.badge && badCount > 0 && (
+                      <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#E63946] text-[9px] flex items-center justify-center font-bold">
+                        {badCount > 9 ? '9+' : badCount}
+                      </span>
+                    )}
+                  </NavLink>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
