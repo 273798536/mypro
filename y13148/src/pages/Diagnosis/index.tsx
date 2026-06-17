@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Hash,
   Clock,
+  X,
 } from 'lucide-react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -32,19 +33,35 @@ const jumpCauseLabels: Record<JumpCause | 'unknown', { label: string; color: str
 }
 
 export default function Diagnosis() {
-  const { records, updateRecord } = useRecordStore()
-  const { params } = useFilterStore()
+  const { records: currentRecords, updateRecord } = useRecordStore()
+  const { params: currentParams } = useFilterStore()
   const { history } = useHistoryStore()
-  const { result } = useSimulationStore()
+  const {
+    result,
+    params: snapshotParams,
+    records: snapshotRecords,
+    isStale,
+    checkConsistency,
+    clearResult,
+  } = useSimulationStore()
 
   const [diagnosis, setDiagnosis] = useState<DiagnosisResult | null>(null)
 
-  const filteredRecords = useMemo(() => {
-    return records.filter((r) => params.sourceTypes.includes(r.source))
-  }, [records, params.sourceTypes])
+  const consistencyCheck = useMemo(() => {
+    return checkConsistency(currentParams, currentRecords)
+  }, [checkConsistency, currentParams, currentRecords])
+
+  const snapshotFilteredRecords = useMemo(() => {
+    if (!snapshotRecords || !snapshotParams) return []
+    return snapshotRecords.filter((r) => snapshotParams.sourceTypes.includes(r.source))
+  }, [snapshotRecords, snapshotParams])
+
+  const currentFilteredRecords = useMemo(() => {
+    return currentRecords.filter((r) => currentParams.sourceTypes.includes(r.source))
+  }, [currentRecords, currentParams.sourceTypes])
 
   useEffect(() => {
-    if (!result) {
+    if (!result || !snapshotParams || !consistencyCheck.isConsistent) {
       setDiagnosis(null)
       return
     }
@@ -66,62 +83,111 @@ export default function Diagnosis() {
           },
         } as any
         previousParams = secondLatest.filterParams
-        previousRecords = filteredRecords
+        previousRecords = snapshotFilteredRecords
       }
     }
 
     const diagResult = diagnoseJump(
       result,
       previousResult,
-      params,
+      snapshotParams,
       previousParams,
-      filteredRecords,
+      snapshotFilteredRecords,
       previousRecords
     )
 
     setDiagnosis(diagResult)
-  }, [result, history, params, filteredRecords])
+  }, [result, history, snapshotParams, snapshotFilteredRecords, consistencyCheck.isConsistent])
 
   const duplicateRecords = useMemo(() => {
-    const dupIds = detectDuplicateRecords(filteredRecords)
-    return filteredRecords.filter((r) => dupIds.includes(r.id))
-  }, [filteredRecords])
+    const dupIds = detectDuplicateRecords(currentFilteredRecords)
+    return currentFilteredRecords.filter((r) => dupIds.includes(r.id))
+  }, [currentFilteredRecords])
 
   const handleMarkNonDuplicate = (id: string) => {
     updateRecord(id, { isDuplicate: false })
   }
 
+  const canDiagnose = result !== null && consistencyCheck.isConsistent
+
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 font-serif">异常诊断</h1>
-          <p className="text-gray-500 mt-1 text-sm">检测结果跳变原因、识别重复样本，提供处理建议</p>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 font-serif">异常诊断</h1>
+            <p className="text-gray-500 mt-1 text-sm">检测结果跳变原因、识别重复样本，提供处理建议</p>
+          </div>
+          <Badge variant={diagnosis?.hasJump ? 'danger' : 'success'} size="md">
+            {diagnosis?.hasJump ? '存在异常' : '状态正常'}
+          </Badge>
         </div>
-        <Badge variant={diagnosis?.hasJump ? 'danger' : 'success'} size="md">
-          {diagnosis?.hasJump ? '存在异常' : '状态正常'}
-        </Badge>
-      </div>
 
-      {!result && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-          <div className="flex items-start gap-4">
-            <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-amber-800">暂无模拟数据</h3>
-              <p className="text-amber-700 text-sm mt-1">
-                请先前往误差图表页运行模拟，生成数据后再进行诊断。
-              </p>
-              <Link
-                to="/"
-                className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium mt-3"
-              >
-                前往误差图表页 →
-              </Link>
+        {!result && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+            <div className="flex items-start gap-4">
+              <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-800">暂无模拟数据</h3>
+                <p className="text-amber-700 text-sm mt-1">
+                  请先前往误差图表页运行模拟，生成数据后再进行诊断。
+                </p>
+                <Link
+                  to="/"
+                  className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium mt-3"
+                >
+                  前往误差图表页 →
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {result && !consistencyCheck.isConsistent && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+            <div className="flex items-start gap-4">
+              <AlertTriangle size={24} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-800">数据已过期，跳变诊断已禁用</h3>
+                <p className="text-red-700 text-sm mt-1">
+                  {consistencyCheck.reason}，跳变诊断结果可能不准确。重复样本检测仍可使用当前数据。
+                </p>
+                <div className="flex items-center gap-3 mt-3">
+                  <Link
+                    to="/"
+                    className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium"
+                  >
+                    返回误差图表页重新模拟 →
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<X size={14} />}
+                    onClick={clearResult}
+                    className="text-gray-500"
+                  >
+                    清除过期数据
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {result && isStale && consistencyCheck.isConsistent && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle size={20} className="text-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <div className="font-medium text-amber-800 text-sm">数据正在更新</div>
+                <div className="text-xs text-amber-700 mt-0.5">
+                  参数已变更，新的模拟结果即将生成...
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -130,7 +196,12 @@ export default function Diagnosis() {
             subtitle="自动分析结果跳变的原因"
             icon={<AlertTriangle size={20} className="text-amber-500" />}
           >
-            {diagnosis ? (
+            {!canDiagnose ? (
+              <div className="text-center py-8 text-gray-400">
+                <AlertCircle size={40} className="mx-auto mb-2 opacity-50" />
+                <p>{result ? '数据已过期，请重新模拟后再诊断' : '暂无诊断数据'}</p>
+              </div>
+            ) : diagnosis ? (
               <div className="space-y-4">
                 <div
                   className={`p-4 rounded-lg border ${
@@ -193,7 +264,7 @@ export default function Diagnosis() {
 
           <Card
             title="重复样本检测"
-            subtitle={`检测到 ${duplicateRecords.length} 条疑似重复记录`}
+            subtitle={`检测到 ${duplicateRecords.length} 条疑似重复记录（基于当前数据）`}
             icon={<Copy size={20} className={duplicateRecords.length > 0 ? 'text-amber-500' : 'text-gray-400'} />}
           >
             {duplicateRecords.length > 0 ? (
@@ -242,7 +313,7 @@ export default function Diagnosis() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500">总记录数</span>
-                <span className="font-semibold text-gray-800">{filteredRecords.length}</span>
+                <span className="font-semibold text-gray-800">{currentFilteredRecords.length}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500">疑似重复</span>
@@ -253,12 +324,14 @@ export default function Diagnosis() {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-500">结果跳变</span>
                 <span className={`font-semibold ${diagnosis?.hasJump ? 'text-red-600' : 'text-green-600'}`}>
-                  {diagnosis?.hasJump ? '是' : '否'}
+                  {!canDiagnose ? '--' : diagnosis?.hasJump ? '是' : '否'}
                 </span>
               </div>
               <div className="pt-3 border-t border-gray-100">
                 <div className="text-sm text-gray-500 mb-2">跳变原因</div>
-                {diagnosis?.jumpCause ? (
+                {!canDiagnose ? (
+                  <span className="text-sm text-gray-400">数据已过期</span>
+                ) : diagnosis?.jumpCause ? (
                   <Badge variant="warning">{jumpCauseLabels[diagnosis.jumpCause]?.label}</Badge>
                 ) : (
                   <span className="text-sm text-gray-400">无异常</span>

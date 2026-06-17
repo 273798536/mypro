@@ -12,6 +12,7 @@ import {
   Activity,
   Percent,
   AlertTriangle,
+  X,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Card from '@/components/ui/Card'
@@ -26,33 +27,68 @@ import { formatNumber, formatPercent, formatDateTime } from '@/utils/format'
 import { sourceLabels, statusLabels, statusColors } from '@/data/unitConfigs'
 
 export default function Export() {
-  const { records, getRecordsByStatus } = useRecordStore()
-  const { params } = useFilterStore()
-  const { result } = useSimulationStore()
+  const { records: currentRecords, getRecordsByStatus } = useRecordStore()
+  const { params: currentParams } = useFilterStore()
+  const {
+    result,
+    params: snapshotParams,
+    records: snapshotRecords,
+    lastUpdated,
+    isStale,
+    checkConsistency,
+    clearResult,
+  } = useSimulationStore()
+
   const [exportFormat, setExportFormat] = useState<'pdf' | 'csv' | 'json'>('pdf')
 
-  const filteredRecords = useMemo(() => {
-    return records.filter((r) => params.sourceTypes.includes(r.source))
-  }, [records, params.sourceTypes])
+  const consistencyCheck = useMemo(() => {
+    return checkConsistency(currentParams, currentRecords)
+  }, [checkConsistency, currentParams, currentRecords])
 
-  const processedRecords = getRecordsByStatus('processed')
-  const pendingRecords = getRecordsByStatus('pending')
-  const evidenceNeededRecords = getRecordsByStatus('evidence_needed')
+  const canExport = result !== null && consistencyCheck.isConsistent
+
+  const snapshotFilteredRecords = useMemo(() => {
+    if (!snapshotRecords || !snapshotParams) return []
+    return snapshotRecords.filter((r) => snapshotParams.sourceTypes.includes(r.source))
+  }, [snapshotRecords, snapshotParams])
+
+  const processedRecords = useMemo(() =>
+    snapshotFilteredRecords.filter((r) => r.status === 'processed'),
+    [snapshotFilteredRecords]
+  )
+  const pendingRecords = useMemo(() =>
+    snapshotFilteredRecords.filter((r) => r.status === 'pending'),
+    [snapshotFilteredRecords]
+  )
+  const evidenceNeededRecords = useMemo(() =>
+    snapshotFilteredRecords.filter((r) => r.status === 'evidence_needed'),
+    [snapshotFilteredRecords]
+  )
+
+  const displayParams = snapshotParams || currentParams
+  const displayRecords = snapshotFilteredRecords.length > 0 ? snapshotFilteredRecords : []
+  const displayUnit = displayParams.unit
 
   const handleExport = () => {
-    if (!result) {
+    if (!result || !snapshotParams || !snapshotRecords) {
       alert('请先在误差图表页运行模拟后再导出')
+      return
+    }
+
+    if (!consistencyCheck.isConsistent) {
+      alert(`数据已过期：${consistencyCheck.reason}\n请返回误差图表页重新模拟后再导出`)
       return
     }
 
     if (exportFormat === 'json') {
       const data = {
         generatedAt: new Date().toISOString(),
+        dataTimestamp: lastUpdated,
         parameters: {
-          unit: params.unit,
-          confidenceLevel: params.confidenceLevel,
-          simulationCount: params.simulationCount,
-          sourceTypes: params.sourceTypes,
+          unit: snapshotParams.unit,
+          confidenceLevel: snapshotParams.confidenceLevel,
+          simulationCount: snapshotParams.simulationCount,
+          sourceTypes: snapshotParams.sourceTypes,
         },
         result: {
           mean: result.mean,
@@ -60,9 +96,9 @@ export default function Export() {
           variance: result.variance,
           confidenceInterval: result.confidenceInterval,
           relativeError: result.relativeError,
-          unit: params.unit,
+          unit: snapshotParams.unit,
         },
-        records: filteredRecords.map(r => ({
+        records: snapshotFilteredRecords.map(r => ({
           id: r.id,
           name: r.name,
           value: r.value,
@@ -77,7 +113,7 @@ export default function Export() {
           notes: r.notes,
         })),
         summary: {
-          totalRecords: filteredRecords.length,
+          totalRecords: snapshotFilteredRecords.length,
           processed: processedRecords.length,
           pending: pendingRecords.length,
           evidenceNeeded: evidenceNeededRecords.length,
@@ -96,21 +132,22 @@ export default function Export() {
       const summaryRows = [
         ['# 蒙特卡洛误差分析报告 - 统计摘要', '', ''],
         ['指标', '数值', '单位'],
-        ['均值', formatNumber(result.mean), params.unit],
-        ['标准差', formatNumber(result.stdDev), params.unit],
+        ['均值', formatNumber(result.mean), snapshotParams.unit],
+        ['标准差', formatNumber(result.stdDev), snapshotParams.unit],
         ['相对误差', formatPercent(result.relativeError, 2), ''],
-        ['置信区间下限', formatNumber(result.confidenceInterval.lower), params.unit],
-        ['置信区间上限', formatNumber(result.confidenceInterval.upper), params.unit],
+        ['置信区间下限', formatNumber(result.confidenceInterval.lower), snapshotParams.unit],
+        ['置信区间上限', formatNumber(result.confidenceInterval.upper), snapshotParams.unit],
         ['置信水平', `${(result.confidenceInterval.level * 100).toFixed(0)}`, '%'],
-        ['模拟次数', params.simulationCount.toLocaleString(), '次'],
-        ['记录数量', filteredRecords.length.toString(), '条'],
+        ['模拟次数', snapshotParams.simulationCount.toLocaleString(), '次'],
+        ['记录数量', snapshotFilteredRecords.length.toString(), '条'],
         ['生成时间', formatDateTime(new Date().toISOString()), ''],
+        ['数据时间戳', lastUpdated ? formatDateTime(lastUpdated) : '', ''],
         ['', '', ''],
         ['# 数据记录明细', '', ''],
         ['名称', '数值', '单位', '误差', '来源', '状态', '创建时间', '备注'],
       ]
 
-      const recordRows = filteredRecords.map((r) => [
+      const recordRows = snapshotFilteredRecords.map((r) => [
         r.name,
         r.value.toString(),
         r.unit,
@@ -152,50 +189,97 @@ export default function Export() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 font-serif">导出报告</h1>
-          <p className="text-gray-500 mt-1 text-sm">生成与屏幕显示一致的分析报告，查看处理进度</p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" icon={<Printer size={16} />} onClick={() => window.print()}>
-            打印预览
-          </Button>
-          <Button 
-            icon={<Download size={16} />} 
-            onClick={handleExport}
-            disabled={!result}
-          >
-            导出报告
-          </Button>
-        </div>
-      </div>
-
-      {!result && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
-          <div className="flex items-start gap-4">
-            <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-semibold text-amber-800">暂无模拟数据</h3>
-              <p className="text-amber-700 text-sm mt-1">
-                请先前往误差图表页运行模拟，生成数据后再导出报告。
-              </p>
-              <Link
-                to="/"
-                className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium mt-3"
-              >
-                前往误差图表页 →
-              </Link>
-            </div>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 font-serif">导出报告</h1>
+            <p className="text-gray-500 mt-1 text-sm">生成与屏幕显示一致的分析报告，查看处理进度</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" icon={<Printer size={16} />} onClick={() => window.print()} disabled={!canExport}>
+              打印预览
+            </Button>
+            <Button
+              icon={<Download size={16} />}
+              onClick={handleExport}
+              disabled={!canExport}
+            >
+              导出报告
+            </Button>
           </div>
         </div>
-      )}
+
+        {!result && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+            <div className="flex items-start gap-4">
+              <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-800">暂无模拟数据</h3>
+                <p className="text-amber-700 text-sm mt-1">
+                  请先前往误差图表页运行模拟，生成数据后再导出报告。
+                </p>
+                <Link
+                  to="/"
+                  className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium mt-3"
+                >
+                  前往误差图表页 →
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {result && !consistencyCheck.isConsistent && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+            <div className="flex items-start gap-4">
+              <AlertTriangle size={24} className="text-red-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-red-800">数据已过期，无法导出</h3>
+                <p className="text-red-700 text-sm mt-1">
+                  {consistencyCheck.reason}，导出的报告将与当前屏幕显示不一致。
+                </p>
+                <div className="flex items-center gap-3 mt-3">
+                  <Link
+                    to="/"
+                    className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium"
+                  >
+                    返回误差图表页重新模拟 →
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon={<X size={14} />}
+                    onClick={clearResult}
+                    className="text-gray-500"
+                  >
+                    清除过期数据
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {result && isStale && consistencyCheck.isConsistent && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle size={20} className="text-amber-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <div className="font-medium text-amber-800 text-sm">数据正在更新</div>
+                <div className="text-xs text-amber-700 mt-0.5">
+                  参数已变更，新的模拟结果即将生成...
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card
             title="报告预览"
-            subtitle="导出内容与屏幕显示完全一致"
+            subtitle={result && lastUpdated ? `数据时间：${formatDateTime(lastUpdated)}` : '暂无数据'}
             icon={<FileText size={20} />}
           >
             <div className="space-y-6">
@@ -206,9 +290,9 @@ export default function Export() {
                 <p className="text-sm text-gray-500 mt-1">
                   生成时间：{formatDateTime(new Date().toISOString())}
                 </p>
-                {result && (
+                {result && lastUpdated && (
                   <p className="text-xs text-gray-400 mt-0.5">
-                    数据来源：Dashboard 页 {result ? formatDateTime(useSimulationStore.getState().lastUpdated || '') : ''}
+                    数据来源：Dashboard 页 {formatDateTime(lastUpdated)}
                   </p>
                 )}
               </div>
@@ -219,13 +303,13 @@ export default function Export() {
                     <MetricCard
                       title="均值"
                       value={formatNumber(result.mean)}
-                      unit={params.unit}
+                      unit={displayUnit}
                       icon={<Target size={16} />}
                     />
                     <MetricCard
                       title="标准差"
                       value={formatNumber(result.stdDev)}
-                      unit={params.unit}
+                      unit={displayUnit}
                       icon={<Activity size={16} />}
                     />
                     <MetricCard
@@ -236,7 +320,7 @@ export default function Export() {
                     <MetricCard
                       title="置信区间"
                       value={`${formatNumber(result.confidenceInterval.lower)} ~ ${formatNumber(result.confidenceInterval.upper)}`}
-                      unit={params.unit}
+                      unit={displayUnit}
                       icon={<BarChart3 size={16} />}
                     />
                   </div>
@@ -244,7 +328,7 @@ export default function Export() {
                   <div>
                     <h3 className="text-sm font-medium text-gray-700 mb-3">误差分布</h3>
                     <div className="bg-gray-50 rounded-lg p-4">
-                      <MonteCarloChart result={result} unit={params.unit} height={200} />
+                      <MonteCarloChart result={result} unit={displayUnit} height={200} />
                     </div>
                   </div>
                 </>
@@ -264,7 +348,7 @@ export default function Export() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-50">
-                      {filteredRecords.slice(0, 5).map((record) => (
+                      {displayRecords.slice(0, 5).map((record) => (
                         <tr key={record.id}>
                           <td className="py-2 px-3 text-gray-700">{record.name}</td>
                           <td className="py-2 px-3 font-mono text-gray-700">
@@ -285,12 +369,12 @@ export default function Export() {
                       ))}
                     </tbody>
                   </table>
-                  {filteredRecords.length > 5 && (
+                  {displayRecords.length > 5 && (
                     <p className="text-xs text-gray-400 text-center py-2">
-                      ... 还有 {filteredRecords.length - 5} 条记录
+                      ... 还有 {displayRecords.length - 5} 条记录
                     </p>
                   )}
-                  {filteredRecords.length === 0 && (
+                  {displayRecords.length === 0 && (
                     <p className="text-xs text-gray-400 text-center py-4">
                       暂无数据记录
                     </p>
@@ -324,7 +408,8 @@ export default function Export() {
                         exportFormat === fmt.key
                           ? 'border-primary-500 bg-primary-50'
                           : 'border-gray-100 hover:border-gray-200'
-                      }`}
+                      } ${!canExport ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={!canExport}
                     >
                       <div className={`font-medium text-sm ${exportFormat === fmt.key ? 'text-primary-700' : 'text-gray-700'}`}>
                         {fmt.label}
@@ -349,10 +434,16 @@ export default function Export() {
                 icon={<Download size={16} />}
                 onClick={handleExport}
                 className="w-full"
-                disabled={!result}
+                disabled={!canExport}
               >
                 导出 {exportFormat.toUpperCase()}
               </Button>
+
+              {!canExport && result && (
+                <p className="text-xs text-red-500 text-center mt-2">
+                  {consistencyCheck.reason}，请重新模拟后再导出
+                </p>
+              )}
             </div>
           </Card>
 
@@ -404,20 +495,20 @@ export default function Export() {
               <div className="pt-3 border-t border-gray-100">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">总计</span>
-                  <span className="font-semibold text-gray-800">{records.length} 条记录</span>
+                  <span className="font-semibold text-gray-800">{snapshotFilteredRecords.length} 条记录</span>
                 </div>
                 <div className="mt-2 h-2 bg-gray-100 rounded-full overflow-hidden flex">
                   <div
                     className="bg-green-500 h-full"
-                    style={{ width: `${records.length > 0 ? (processedRecords.length / records.length) * 100 : 0}%` }}
+                    style={{ width: `${snapshotFilteredRecords.length > 0 ? (processedRecords.length / snapshotFilteredRecords.length) * 100 : 0}%` }}
                   />
                   <div
                     className="bg-blue-500 h-full"
-                    style={{ width: `${records.length > 0 ? (pendingRecords.length / records.length) * 100 : 0}%` }}
+                    style={{ width: `${snapshotFilteredRecords.length > 0 ? (pendingRecords.length / snapshotFilteredRecords.length) * 100 : 0}%` }}
                   />
                   <div
                     className="bg-amber-500 h-full"
-                    style={{ width: `${records.length > 0 ? (evidenceNeededRecords.length / records.length) * 100 : 0}%` }}
+                    style={{ width: `${snapshotFilteredRecords.length > 0 ? (evidenceNeededRecords.length / snapshotFilteredRecords.length) * 100 : 0}%` }}
                   />
                 </div>
               </div>

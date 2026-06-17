@@ -9,6 +9,7 @@ import {
   Play,
   RotateCcw,
   Filter,
+  AlertTriangle,
 } from 'lucide-react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -29,7 +30,7 @@ export default function Dashboard() {
   const { records } = useRecordStore()
   const { params, setUnit, setConfidenceLevel, setSimulationCount, resetFilters, toggleSourceType } = useFilterStore()
   const { addHistory } = useHistoryStore()
-  const { result, setResult } = useSimulationStore()
+  const { result, setResult, markStale, isStale } = useSimulationStore()
 
   const [isSimulating, setIsSimulating] = useState(false)
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -65,7 +66,7 @@ export default function Dashboard() {
         params.confidenceLevel
       )
       
-      setResult(simResult, params, filteredRecords.length)
+      setResult(simResult, params, filteredRecords)
       
       if (shouldAddHistory) {
         addHistory(params, simResult, filteredRecords.length)
@@ -83,6 +84,7 @@ export default function Dashboard() {
     if (filteredRecords.length === 0) return
 
     if (prevParamsRef.current !== null && prevParamsRef.current !== paramsKey) {
+      markStale()
       debounceTimerRef.current = setTimeout(() => {
         runSimulation(true)
       }, 500)
@@ -97,7 +99,7 @@ export default function Dashboard() {
         clearTimeout(debounceTimerRef.current)
       }
     }
-  }, [paramsKey, filteredRecords.length, runSimulation])
+  }, [paramsKey, filteredRecords.length, runSimulation, markStale])
 
   const handleSimulate = () => {
     runSimulation(true)
@@ -115,15 +117,29 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 font-serif">蒙特卡洛误差分析</h1>
-          <p className="text-gray-500 mt-1 text-sm">基于输入数据的蒙特卡洛随机模拟误差分布</p>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800 font-serif">蒙特卡洛误差分析</h1>
+            <p className="text-gray-500 mt-1 text-sm">基于输入数据的蒙特卡洛随机模拟误差分布</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Badge variant="info">当前单位：{params.unit}</Badge>
+            <Badge variant="success">记录数：{filteredRecords.length}</Badge>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Badge variant="info">当前单位：{params.unit}</Badge>
-          <Badge variant="success">记录数：{filteredRecords.length}</Badge>
-        </div>
+
+        {isStale && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-start gap-3">
+            <AlertTriangle size={20} className="text-amber-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <div className="font-medium text-amber-800">数据已过期</div>
+              <div className="text-sm text-amber-700 mt-0.5">
+                参数或记录已变更，正在重新模拟... 或点击"重新模拟"按钮立即更新
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
