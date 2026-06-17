@@ -1,0 +1,7 @@
+{
+  "material_file": "sample_geometry_01.json",
+  "feedback_type": "pass_fail",
+  "verdict": "fail",
+  "comment": "缺少单位和步骤说明，需补充",
+  "reviewer": "李老师"
+}
