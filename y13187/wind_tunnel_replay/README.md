@@ -11,16 +11,21 @@ cd wind_tunnel_replay
 # 1) 安装依赖（系统 Python 3.9+）
 python3 -m pip install --user click pyyaml pandas numpy matplotlib jinja2
 
-# 2) 自检配置里的稳定参数名 / 阈值
+# 2) ✅ 轻量自检：核对稳定参数名 / 阈值（日常脚本用，不触发绘图依赖）
 ./wind-tunnel-replay check-config
 
-# 3) 用样例数据试跑（包含：旧版 + 撤回 + 口头备注 + 阈值篡改 + 离群点）
+# 3) ✅ 轻量帮助：解释退出码含义（不触发绘图依赖）
+./wind-tunnel-replay explain-exit
+
+# 4) ✅ 完整回放：解析日志 + 生成单页 HTML 报告
 ./wind-tunnel-replay run -i data/sample/smoke_line_mixed.log --id daily
 # 退出码：0=通过 2=有告警 3=有错误 4=输入错（脚本直接判断即可）
-
-# 4) 退出码含义
-./wind-tunnel-replay explain-exit
 ```
+
+> 🔑 核心稳定性保证：`check-config` 和 `explain-exit` 是**纯文本轻量命令**，
+> 不加载 matplotlib，即使在无 X11 / 无可写缓存目录的严格环境下也能稳定执行。
+> 只有 `run` 命令在需要生成图表时才会初始化 matplotlib，并会自动将 `MPLCONFIGDIR`
+> 降级到 `$TMPDIR/mpl_windtunnel_<uid>`。
 
 > 注：`wind-tunnel-replay` 是项目根目录下的启动脚本，会自动设置 `PYTHONPATH=src`。
 > 如果 `pip install -e .` 能跑通（pip ≥ 21.3 支持 pyproject.toml 可编辑安装），也可以使用入口命令 `wind-tunnel-replay`（`pyproject.toml` 已声明）。

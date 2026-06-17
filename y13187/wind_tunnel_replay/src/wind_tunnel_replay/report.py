@@ -2,18 +2,31 @@ from __future__ import annotations
 
 import base64
 import io
+import os
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from . import __version__
 from .types import ReplayResult
+
+
+_MATPLOTLIB_INITIALIZED = False
+
+
+def _ensure_matplotlib_env() -> None:
+    global _MATPLOTLIB_INITIALIZED
+    if _MATPLOTLIB_INITIALIZED:
+        return
+    mpl_cfg = os.environ.get("MPLCONFIGDIR", "")
+    if not mpl_cfg or not os.access(mpl_cfg, os.W_OK):
+        fallback = Path(tempfile.gettempdir()) / f"mpl_windtunnel_{os.getuid()}"
+        fallback.mkdir(parents=True, exist_ok=True)
+        os.environ["MPLCONFIGDIR"] = str(fallback)
+    _MATPLOTLIB_INITIALIZED = True
 
 
 _TEMPLATE_DIR = Path(__file__).parent / "templates"
@@ -56,6 +69,11 @@ class ReportBuilder:
         return out_html
 
     def _render_charts(self, result: ReplayResult, dpi: int) -> list[str]:
+        _ensure_matplotlib_env()
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+        import numpy as np
         out: list[str] = []
         plot_params = [n for n in self.stable_names if result.param_versions[n].values]
         if not plot_params:

@@ -1,9 +1,9 @@
 {
-  "run_id": "smoke-smoke-20260614021803",
-  "generated_at": "2026-06-14T02:18:03.868529",
+  "run_id": "smoke-smoke-20260618031446",
+  "generated_at": "2026-06-18T03:14:46.857097",
   "conclusion": "失败（1 项错误）；有效参数 9 条，排除 7 条",
   "input": "data/sample/smoke_line_mixed.log",
-  "report": "/Users/mac/pro/solo/workspaces/y13187/wind_tunnel_replay/outputs/replay_smoke-smoke-20260614021803.html",
+  "report": "/Users/mac/pro/solo/workspaces/y13187/wind_tunnel_replay/outputs/replay_smoke-smoke-20260618031446.html",
   "meta": {
     "total_lines": 16,
     "effective_lines": 9,

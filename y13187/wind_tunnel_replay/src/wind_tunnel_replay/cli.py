@@ -10,7 +10,6 @@ import yaml
 
 from .anomaly import AnomalyDetector
 from .parser import LogParser
-from .report import ReportBuilder
 from .replay import ParamReplay
 
 
@@ -34,6 +33,11 @@ def _load_config(path: Path | None) -> dict:
 @click.group(help="风洞烟线参数回放：日志解析、参数复核、异常溯源、单页报告")
 def main() -> None:
     pass
+
+
+def _get_report_builder(stable_names: list[str]):
+    from .report import ReportBuilder
+    return ReportBuilder(stable_names)
 
 
 @main.command("run", help="执行一次回放并生成报告")
@@ -67,7 +71,7 @@ def run(input_path: Path, config_path: Path | None, output_dir: Path | None, run
     if run_id_prefix:
         result.run_id = f"{run_id_prefix}-{datetime.now().strftime('%Y%m%d%H%M%S')}"
 
-    builder = ReportBuilder(replay.stable_names)
+    builder = _get_report_builder(replay.stable_names)
     report_path = out_root / f"replay_{result.run_id}.html"
     builder.build(result, report_path)
 
