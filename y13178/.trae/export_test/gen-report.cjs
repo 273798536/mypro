@@ -14,7 +14,7 @@ const speckleRecords = [
   { id: 'rec-010', date: '2026-06-10', value: 3.8, type: 'old_note', source: '维修记录旧档案', content: '【历史数据】去年同期也有过一次偏高，当时是透镜脏了', impactWeight: 1, isThresholdChanged: true, thresholdBefore: 3.5, thresholdAfter: 4.0 },
   { id: 'rec-011', date: '2026-06-11', value: 2.5, type: 'normal', source: '设备自动采集', content: '维护后第一天，误差回落到正常范围', impactWeight: 5 },
   { id: 'rec-012', date: '2026-06-12', value: 2.4, type: 'normal', source: '设备自动采集', content: '正常生产，散斑误差 2.4μm', impactWeight: 5 },
-  { id: 'rec-013', date: '2026-06-13', value: 5.2, type: 'normal', source: '设备自动采集', content: '突发跳变！散斑误差飙升到 5.2μm，远超阈值', impactWeight: 8, isJumpPoint: true, jumpReason: 'normal_record' },
+  { id: 'rec-013', date: '2026-06-13', value: 5.2, type: 'normal', source: '设备自动采集', content: '突发跳变！散斑误差飙升到 5.2μm，远超阈值', impactWeight: 3, isJumpPoint: true, jumpReason: 'normal_record' },
   { id: 'rec-014', date: '2026-06-14', value: 3.1, type: 'verbal', source: '老何口头汇报', content: '紧急处理后降下来了，暂时 3.1 左右，还在观察', impactWeight: 3 },
 ];
 

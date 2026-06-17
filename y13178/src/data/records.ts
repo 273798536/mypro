@@ -129,7 +129,7 @@ export const speckleRecords: SpeckleRecord[] = [
     type: 'normal',
     source: '设备自动采集',
     content: '突发跳变！散斑误差飙升到 5.2μm，远超阈值',
-    impactWeight: 8,
+    impactWeight: 3,
     isJumpPoint: true,
     jumpReason: 'normal_record',
   },
