@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Noto Sans SC', system-ui, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #17304e;
+  background: #f5f8fc;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+.conflict-stripe {
+  background-image: repeating-linear-gradient(
+    45deg,
+    #fde7e4,
+    #fde7e4 6px,
+    #fbd3cd 6px,
+    #fbd3cd 12px
+  );
+}
+
+.remark-paper {
+  background: #fffbeb;
+  background-image:
+    linear-gradient(180deg, #fef3c7 0%, transparent 24px),
+    repeating-linear-gradient(
+      transparent,
+      transparent 22px,
+      #fde68a 22px,
+      #fde68a 23px
+    );
+  box-shadow: 2px 3px 8px rgba(180, 83, 9, 0.12);
+}
+
+.dash-arrow {
+  background-image: linear-gradient(90deg, #d97706 50%, transparent 50%);
+  background-size: 8px 2px;
+  background-repeat: repeat-x;
+  background-position: center;
+}
+
+.timeline-node::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 6px;
+  width: 13px;
+  height: 13px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 2.5px solid #1e3a5f;
+}
+
+.timeline-node.processed::before { border-color: #15803d; background: #dff0e5; }
+.timeline-node.pending::before { border-color: #d97706; background: #fff2d9; }
+.timeline-node.conflict::before { border-color: #b03421; background: #fde7e4; }
+
+.card-hover {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -12px rgba(15, 32, 56, 0.25);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #e8eff7; }
+::-webkit-scrollbar-thumb { background: #9dbad5; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #5e89b5; }

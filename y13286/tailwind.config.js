@@ -1,0 +1,107 @@
+/** @type {import('tailwindcss').Config} */
+
+export default {
+  darkMode: "class",
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    container: {
+      center: true,
+    },
+    extend: {
+      colors: {
+        ink: {
+          50: "#f5f8fc",
+          100: "#e8eff7",
+          200: "#cbd9ea",
+          300: "#9dbad5",
+          400: "#5e89b5",
+          500: "#3a6696",
+          600: "#2a507d",
+          700: "#1e3a5f",
+          800: "#17304e",
+          900: "#0f2038",
+        },
+        moss: {
+          50: "#f1f9f4",
+          100: "#dff0e5",
+          200: "#bfe1cc",
+          300: "#8cc8a4",
+          400: "#53a674",
+          500: "#2f8656",
+          600: "#1f6a44",
+          700: "#15803d",
+          800: "#135935",
+          900: "#11492d",
+        },
+        amber: {
+          50: "#fffaf0",
+          100: "#fff2d9",
+          200: "#ffe1b0",
+          300: "#ffc97a",
+          400: "#ffa742",
+          500: "#f68b1a",
+          600: "#e76f0d",
+          700: "#d97706",
+          800: "#b45309",
+          900: "#92400e",
+        },
+        clay: {
+          50: "#fef5f3",
+          100: "#fde7e4",
+          200: "#fbd3cd",
+          300: "#f7b3a8",
+          400: "#ef8776",
+          500: "#e4604a",
+          600: "#d14730",
+          700: "#b03421",
+          800: "#923020",
+          900: "#7a2d21",
+        },
+        slate: {
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          800: "#1e293b",
+          900: "#0f172a",
+        },
+      },
+      fontFamily: {
+        serif: ['"Noto Serif SC"', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        sans: ['"Noto Sans SC"', 'system-ui', 'sans-serif'],
+      },
+      keyframes: {
+        shake: {
+          "0%, 100%": { transform: "translateX(0)" },
+          "20%": { transform: "translateX(-3px)" },
+          "40%": { transform: "translateX(3px)" },
+          "60%": { transform: "translateX(-2px)" },
+          "80%": { transform: "translateX(2px)" },
+        },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(8px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "pulse-highlight": {
+          "0%, 100%": { backgroundColor: "rgba(255, 251, 235, 0)" },
+          "50%": { backgroundColor: "rgba(255, 251, 235, 1)" },
+        },
+        "stripe-slide": {
+          "0%": { backgroundPosition: "0 0" },
+          "100%": { backgroundPosition: "20px 0" },
+        },
+      },
+      animation: {
+        shake: "shake 0.35s ease-in-out",
+        "fade-in-up": "fade-in-up 0.4s ease-out both",
+        "pulse-highlight": "pulse-highlight 0.8s ease-in-out 2",
+        "stripe-slide": "stripe-slide 1s linear infinite",
+      },
+    },
+  },
+  plugins: [],
+};
