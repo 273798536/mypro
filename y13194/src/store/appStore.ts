@@ -24,7 +24,7 @@ const activities = generateActivities(logs, remarks, reports);
 const firstTs = logs[0]?.timestamp ?? Date.now() - 86400000;
 const lastTs = logs[logs.length - 1]?.timestamp ?? Date.now();
 
-interface AppState {
+export interface AppState {
   ui: {
     activeNav: string;
     rightPanelCollapsed: boolean;
@@ -62,6 +62,7 @@ interface AppState {
   toggleBatteryFilter: (id: string) => void;
   toggleUnitFilter: (u: ResistanceUnit) => void;
   toggleAnomalyOnly: () => void;
+  toggleUnauditedOnly: () => void;
   markAudited: (logId: string, by: string) => void;
   toggleDirectionReversed: (logId: string) => void;
   setEvidenceStatus: (logId: string, status: "pending" | "collected" | "unavailable") => void;
@@ -70,6 +71,7 @@ interface AppState {
   updateDraftReport: (patch: Partial<ReportConfig>) => void;
   submitReport: (name: string, createdBy: string) => void;
   updateReportProgress: () => void;
+  finalizeReport: (reportId: string, downloadUrl: string) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -89,6 +91,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       batteryIds: [],
       units: [],
       anomalyOnly: false,
+      unauditedOnly: false,
       directionSigns: [],
     },
   },
@@ -128,6 +131,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       return { log: { ...s.log, filters: { ...s.log.filters, units: Array.from(set1) } } };
     }),
   toggleAnomalyOnly: () => set((s) => ({ log: { ...s.log, filters: { ...s.log.filters, anomalyOnly: !s.log.filters.anomalyOnly } } })),
+  toggleUnauditedOnly: () => set((s) => ({ log: { ...s.log, filters: { ...s.log.filters, unauditedOnly: !s.log.filters.unauditedOnly } } })),
   markAudited: (logId, by) =>
     set((s) => ({
       log: {
@@ -222,22 +226,32 @@ export const useAppStore = create<AppState>((set, get) => ({
         }),
       },
     })),
+  finalizeReport: (reportId, downloadUrl) =>
+    set((s) => ({
+      report: {
+        ...s.report,
+        reports: s.report.reports.map((r) =>
+          r.id === reportId ? { ...r, downloadUrl, progress: 100, status: "completed" } : r,
+        ),
+      },
+    })),
 }));
 
 export function useFilteredLogs() {
   const { logs, timeRange, filters } = useAppStore((s) => s.log);
   const selectedBatteryId = useAppStore((s) => s.battery.selectedId);
+  const remarks = useAppStore((s) => s.history.remarks);
   return logs.filter((l) => {
     if (l.timestamp < timeRange.start || l.timestamp > timeRange.end) return false;
     if (selectedBatteryId && l.batteryId !== selectedBatteryId) return false;
     if (filters.batteryIds.length && !filters.batteryIds.includes(l.batteryId)) return false;
     if (filters.units.length && !filters.units.includes(l.unit)) return false;
     if (filters.anomalyOnly && !l.isAnomaly) return false;
+    if (filters.unauditedOnly && l.isAudited) return false;
     if (filters.directionSigns.length && !filters.directionSigns.includes(l.directionSign)) return false;
     if (filters.remarkKeyword) {
-      const state = useAppStore.getState();
-      const remarks = state.history.remarks.filter((r) => r.logId === l.id);
-      if (!remarks.some((r) => r.content.includes(filters.remarkKeyword!))) return false;
+      const rms = remarks.filter((r) => r.logId === l.id);
+      if (!rms.some((r) => r.content.includes(filters.remarkKeyword!))) return false;
     }
     return true;
   });

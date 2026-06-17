@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   CheckCircle2,
-  ChevronRight,
   Clock3,
   Download,
   FileDown,
@@ -10,15 +9,15 @@ import {
   Layers,
   Loader2,
   Pause,
-  Play,
   RefreshCw,
-  Search,
   Eye,
   ZoomIn,
+  Sparkles,
 } from "lucide-react";
 import { useAppStore } from "@/store/appStore";
 import { clsx } from "clsx";
 import type { ReportConfig, ReportTemplate } from "@/types";
+import { useReportExporter } from "@/utils/useReportExporter";
 
 const TEMPLATE_OPTIONS: { key: ReportTemplate; label: string; desc: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { key: "standard", label: "标准报告", desc: "完整数据+异常摘要+证据索引", icon: FileSpreadsheet },
@@ -37,7 +36,7 @@ function TemplateSelector({
     <div className="panel p-5">
       <div className="mb-4">
         <h2 className="section-title">模板选择</h2>
-        <p className="mt-1 text-sm text-slate-400">根据需要选择报告模板</p>
+        <p className="mt-1 text-sm text-slate-400">根据需要选择报告模板，决定导出内容</p>
       </div>
       <div className="divider-line mb-4"></div>
       <div className="grid grid-cols-3 gap-3">
@@ -84,7 +83,7 @@ function ReportPreview({ template }: { template: ReportTemplate }) {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="section-title">报告预览</h2>
-          <p className="mt-1 text-sm text-slate-400">实时预览，异常红色边框标注</p>
+          <p className="mt-1 text-sm text-slate-400">实时预览，异常红色边框标注，导出内容与此一致</p>
         </div>
         <Eye className="h-4 w-4 text-slate-500" />
       </div>
@@ -132,7 +131,7 @@ function ReportPreview({ template }: { template: ReportTemplate }) {
 
           {anomalyLogs.length > 0 && (
             <div className="rounded-lg border-2 border-alert-500/40 bg-alert-500/5 p-3">
-              <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-alert-400 mb-2">二、异常记录（已隔离）</h4>
+              <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-alert-400 mb-2">二、异常记录（已隔离，不参与统计）</h4>
               {anomalyLogs.map((l) => (
                 <div key={l.id} className="flex items-center gap-3 border-b border-alert-500/10 py-1.5 text-xs last:border-0">
                   <span className="chip-alert !py-0 !text-[10px]">
@@ -150,7 +149,7 @@ function ReportPreview({ template }: { template: ReportTemplate }) {
           {template === "full-history" && (
             <div className="rounded-lg border border-aurora-500/20 bg-aurora-500/5 p-3">
               <h4 className="font-mono text-xs font-semibold uppercase tracking-wider text-aurora-400 mb-1">三、历史版本追溯</h4>
-              <p className="text-[11px] text-slate-400">含全部备注版本和截图归档（展开查看）</p>
+              <p className="text-[11px] text-slate-400">含全部备注版本和截图归档（完整 PDF 中展示）</p>
             </div>
           )}
         </div>
@@ -159,89 +158,84 @@ function ReportPreview({ template }: { template: ReportTemplate }) {
   );
 }
 
-function SampleSection() {
+function SampleSection({ onDownload }: { onDownload: (r: ReportConfig) => Promise<void> }) {
   const allReports = useAppStore((s) => s.report.reports);
   const reports = allReports.filter((r) => r.isSample);
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
   return (
     <div className="panel p-5">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="section-title">样例专区</h2>
-          <p className="mt-1 text-sm text-slate-400">预置 3 份样例报告，小宋快速参考格式</p>
+          <p className="mt-1 text-sm text-slate-400">小宋接班首选，3 份标准样例，点击即可下载参考</p>
         </div>
-        <span className="chip-cyber">样例</span>
+        <span className="chip-cyber"><Sparkles className="h-3 w-3" />样例</span>
       </div>
       <div className="divider-line mb-4"></div>
       <div className="grid grid-cols-3 gap-3">
-        {reports.map((r) => (
-          <div
-            key={r.id}
-            className="group relative overflow-hidden rounded-xl border border-deepspace-600/50 bg-deepspace-800/40 p-4 transition-all hover:border-cyber-500/30 hover:shadow-glow-cyber"
-          >
-            <div className="absolute -right-6 -top-6 h-20 w-20 rotate-12 rounded-md bg-cyber-500/10"></div>
-            <div className="absolute right-3 top-3 rounded-sm bg-cyber-500/20 px-1.5 py-0.5 font-mono text-[9px] text-cyber-400">
-              样例
-            </div>
-            <div className="relative">
-              <FileSpreadsheet className="h-8 w-8 text-cyber-400/70" />
-              <h3 className="mt-3 text-sm font-semibold text-slate-200">{r.name}</h3>
-              <p className="mt-1 text-xs text-slate-400">
-                模板：{TEMPLATE_OPTIONS.find((t) => t.key === r.template)?.label}
-              </p>
-              <p className="text-[11px] text-slate-500">
-                {r.batteryIds.length} 个单体 · {r.includeAnomalies ? "含异常" : "仅正常"}
-              </p>
-              <div className="mt-3 flex gap-2">
-                <button className="btn-ghost !py-1 text-[11px]">
-                  <ZoomIn className="h-3 w-3" />预览
-                </button>
-                <button className="btn-primary !py-1 text-[11px]">
-                  <Download className="h-3 w-3" />下载 PDF
-                </button>
+        {reports.map((r) => {
+          const loading = loadingId === r.id;
+          return (
+            <div
+              key={r.id}
+              className="group relative overflow-hidden rounded-xl border border-deepspace-600/50 bg-deepspace-800/40 p-4 transition-all hover:border-cyber-500/30 hover:shadow-glow-cyber"
+            >
+              <div className="absolute -right-6 -top-6 h-20 w-20 rotate-12 rounded-md bg-cyber-500/10"></div>
+              <div className="absolute right-3 top-3 rounded-sm bg-cyber-500/20 px-1.5 py-0.5 font-mono text-[9px] text-cyber-400">样例</div>
+              <div className="relative">
+                <FileSpreadsheet className="h-8 w-8 text-cyber-400/70" />
+                <h3 className="mt-3 text-sm font-semibold text-slate-200">{r.name}</h3>
+                <p className="mt-1 text-xs text-slate-400">模板：{TEMPLATE_OPTIONS.find((t) => t.key === r.template)?.label}</p>
+                <p className="text-[11px] text-slate-500">{r.batteryIds.length} 个单体 · {r.includeAnomalies ? "含异常" : "仅正常"}</p>
+                <div className="mt-3 flex gap-2">
+                  <button className="btn-ghost !py-1 text-[11px]">
+                    <ZoomIn className="h-3 w-3" />预览
+                  </button>
+                  <button
+                    disabled={loading}
+                    onClick={async () => { setLoadingId(r.id); try { await onDownload(r); } finally { setLoadingId(null); } }}
+                    className="btn-primary !py-1 text-[11px] disabled:opacity-60"
+                  >
+                    {loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Download className="h-3 w-3" />}
+                    {loading ? "生成中..." : "下载 PDF"}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 }
 
-function ExportQueue() {
+function ExportQueue({ onDownload }: { onDownload: (r: ReportConfig) => Promise<void> }) {
   const allReports = useAppStore((s) => s.report.reports);
   const reports = allReports.filter((r) => !r.isSample);
+  const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const state = useAppStore.getState();
-      const hasActive = state.report.reports.some((r) => r.status === "generating" || r.status === "queued");
-      if (hasActive) state.updateReportProgress();
+      const st = useAppStore.getState();
+      const hasActive = st.report.reports.some((r) => r.status === "generating" || r.status === "queued");
+      if (hasActive) st.updateReportProgress();
     }, 1500);
     return () => clearInterval(interval);
   }, []);
 
   const statusIcon = (status: ReportConfig["status"]) => {
     switch (status) {
-      case "completed":
-        return <CheckCircle2 className="h-4 w-4 text-cyber-400" />;
-      case "generating":
-        return <Loader2 className="h-4 w-4 text-amberx-400 animate-spin" />;
-      case "queued":
-        return <Clock3 className="h-4 w-4 text-slate-400" />;
-      case "paused":
-        return <Pause className="h-4 w-4 text-slate-400" />;
-      case "failed":
-        return <RefreshCw className="h-4 w-4 text-alert-400" />;
+      case "completed": return <CheckCircle2 className="h-4 w-4 text-cyber-400" />;
+      case "generating": return <Loader2 className="h-4 w-4 text-amberx-400 animate-spin" />;
+      case "queued": return <Clock3 className="h-4 w-4 text-slate-400" />;
+      case "paused": return <Pause className="h-4 w-4 text-slate-400" />;
+      case "failed": return <RefreshCw className="h-4 w-4 text-alert-400" />;
     }
   };
 
   const statusLabel: Record<ReportConfig["status"], string> = {
-    completed: "已完成",
-    generating: "生成中",
-    queued: "排队中",
-    paused: "已暂停",
-    failed: "失败",
+    completed: "已完成", generating: "生成中", queued: "排队中", paused: "已暂停", failed: "失败",
   };
 
   return (
@@ -249,71 +243,87 @@ function ExportQueue() {
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="section-title">导出队列</h2>
-          <p className="mt-1 text-sm text-slate-400">批量任务进度，完成后一键下载</p>
+          <p className="mt-1 text-sm text-slate-400">批量任务进度，完成后点击"下载 PDF"即可获取文件</p>
         </div>
         <FileDown className="h-4 w-4 text-slate-500" />
       </div>
       <div className="divider-line mb-4"></div>
 
       <div className="space-y-3">
-        {reports.map((r) => (
-          <div
-            key={r.id}
-            className={clsx(
-              "rounded-xl border p-4 transition-all",
-              r.status === "completed"
-                ? "border-cyber-500/20 bg-cyber-500/5"
-                : r.status === "failed"
-                  ? "border-alert-500/20 bg-alert-500/5"
-                  : "border-deepspace-700/50 bg-deepspace-800/40",
-            )}
-          >
-            <div className="flex items-center gap-3">
-              {statusIcon(r.status)}
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-slate-200">{r.name}</span>
-                  <span className={clsx("chip !py-0 !text-[10px]",
-                    r.status === "completed" ? "chip-cyber" :
-                    r.status === "generating" ? "chip-amber" :
-                    r.status === "failed" ? "chip-alert" : "chip"
-                  )}>
-                    {statusLabel[r.status]}
-                  </span>
-                </div>
-                <div className="mt-1 text-xs text-slate-500">
-                  {r.createdBy} · {TEMPLATE_OPTIONS.find((t) => t.key === r.template)?.label} · {r.batteryIds.length} 个单体
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                {r.status === "generating" && (
-                  <span className="data-value text-sm font-semibold text-amberx-400">{r.progress}%</span>
-                )}
-                {r.status === "completed" && (
-                  <button className="btn-primary !py-1.5 text-xs">
-                    <Download className="h-3.5 w-3.5" />下载 PDF
-                  </button>
-                )}
-                {(r.status === "queued" || r.status === "generating") && (
-                  <button className="btn-ghost !py-1.5 text-xs">
-                    <Pause className="h-3.5 w-3.5" />暂停
-                  </button>
-                )}
-              </div>
-            </div>
-            {(r.status === "generating" || r.status === "queued") && (
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-deepspace-700/60">
-                <div
-                  className={clsx(
-                    "h-full rounded-full transition-all duration-500",
-                    r.status === "generating" ? "bg-gradient-to-r from-amberx-500 to-amberx-400" : "bg-deepspace-600",
-                  )}
-                  style={{ width: `${r.progress}%` }}
-                ></div>
-              </div>
-            )}
+        {reports.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-deepspace-600/60 py-12 text-center text-sm text-slate-500">
+            暂无导出任务，选择模板后点击上方"生成报告并加入导出队列"开始
           </div>
-        ))}
+        ) : reports.map((r) => {
+          const loading = loadingIds.has(r.id);
+          return (
+            <div
+              key={r.id}
+              className={clsx(
+                "rounded-xl border p-4 transition-all",
+                r.status === "completed" ? "border-cyber-500/20 bg-cyber-500/5" :
+                r.status === "failed" ? "border-alert-500/20 bg-alert-500/5" :
+                "border-deepspace-700/50 bg-deepspace-800/40",
+              )}
+            >
+              <div className="flex items-center gap-3">
+                {statusIcon(r.status)}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-slate-200">{r.name}</span>
+                    <span className={clsx("chip !py-0 !text-[10px]",
+                      r.status === "completed" ? "chip-cyber" :
+                      r.status === "generating" ? "chip-amber" :
+                      r.status === "failed" ? "chip-alert" : "chip"
+                    )}>{statusLabel[r.status]}</span>
+                    {r.downloadUrl && r.status === "completed" && (
+                      <span className="chip-cyber !py-0 !text-[10px] !border-cyber-500/30">文件已就绪</span>
+                    )}
+                  </div>
+                  <div className="mt-1 text-xs text-slate-500">
+                    {r.createdBy} · {TEMPLATE_OPTIONS.find((t) => t.key === r.template)?.label} · {r.batteryIds.length} 个单体
+                    {r.createdAt && ` · ${new Date(r.createdAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}`}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {r.status === "generating" && (
+                    <span className="data-value text-sm font-semibold text-amberx-400">{r.progress}%</span>
+                  )}
+                  {(r.status === "completed" || r.status === "generating") && (
+                    <button
+                      disabled={loading}
+                      onClick={async () => {
+                        setLoadingIds((p) => new Set(p).add(r.id));
+                        try { await onDownload(r); } finally {
+                          setLoadingIds((p) => { const n = new Set(p); n.delete(r.id); return n; });
+                        }
+                      }}
+                      className="btn-primary !py-1.5 text-xs disabled:opacity-60"
+                    >
+                      {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Download className="h-3.5 w-3.5" />}
+                      {loading ? (r.status === "generating" ? "生成并下载" : "打包中...") : "下载 PDF"}
+                    </button>
+                  )}
+                  {(r.status === "queued" || r.status === "generating") && (
+                    <button className="btn-ghost !py-1.5 text-xs">
+                      <Pause className="h-3.5 w-3.5" />暂停
+                    </button>
+                  )}
+                </div>
+              </div>
+              {(r.status === "generating" || r.status === "queued") && (
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-deepspace-700/60">
+                  <div
+                    className={clsx("h-full rounded-full transition-all duration-500",
+                      r.status === "generating" ? "bg-gradient-to-r from-amberx-500 to-amberx-400" : "bg-deepspace-600"
+                    )}
+                    style={{ width: `${r.progress}%` }}
+                  ></div>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -323,6 +333,17 @@ export default function ExportCenter() {
   const template = useAppStore((s) => s.report.selectedTemplate);
   const setReportTemplate = useAppStore((s) => s.setReportTemplate);
   const submitReport = useAppStore((s) => s.submitReport);
+  const { exportReport } = useReportExporter();
+  const [submitLoading, setSubmitLoading] = useState(false);
+
+  const handleSubmit = async () => {
+    setSubmitLoading(true);
+    try {
+      submitReport(`导出报告 ${new Date().toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}`, "小宋");
+    } finally {
+      setTimeout(() => setSubmitLoading(false), 800);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-5">
@@ -331,18 +352,19 @@ export default function ExportCenter() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <ReportPreview template={template} />
         <div className="space-y-5">
-          <SampleSection />
+          <SampleSection onDownload={exportReport} />
           <button
-            onClick={() => submitReport(`导出报告 ${new Date().toLocaleDateString("zh-CN")}`, "小宋")}
-            className="btn-primary w-full py-3"
+            onClick={handleSubmit}
+            disabled={submitLoading}
+            className="btn-primary w-full py-3 disabled:opacity-60"
           >
-            <FileDown className="h-5 w-5" />
-            生成报告并加入导出队列
+            {submitLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <FileDown className="h-5 w-5" />}
+            {submitLoading ? "正在加入队列..." : "生成报告并加入导出队列"}
           </button>
         </div>
       </div>
 
-      <ExportQueue />
+      <ExportQueue onDownload={exportReport} />
     </div>
   );
 }

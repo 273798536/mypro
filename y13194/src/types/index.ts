@@ -111,5 +111,6 @@ export interface LogFilters {
   units: ResistanceUnit[];
   remarkKeyword?: string;
   anomalyOnly: boolean;
+  unauditedOnly: boolean;
   directionSigns: DirectionSign[];
 }

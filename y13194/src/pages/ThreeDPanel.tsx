@@ -215,9 +215,11 @@ function TimeAxisSlider() {
 function FilterPanel() {
   const filters = useAppStore((s) => s.log.filters);
   const toggleAnomalyOnly = useAppStore((s) => s.toggleAnomalyOnly);
+  const toggleUnauditedOnly = useAppStore((s) => s.toggleUnauditedOnly);
+  const toggleUnitFilter = useAppStore((s) => s.toggleUnitFilter);
+  const setFilters = useAppStore((s) => s.setFilters);
   const cells = useAppStore((s) => s.battery.cells);
   const selectedId = useAppStore((s) => s.battery.selectedId);
-  const [keyword, setKeyword] = useState("");
 
   return (
     <div className="panel p-4 space-y-3">
@@ -229,8 +231,8 @@ function FilterPanel() {
         <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
         <input
           placeholder="备注关键词..."
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
+          value={filters.remarkKeyword ?? ""}
+          onChange={(e) => setFilters({ remarkKeyword: e.target.value })}
           className="input-deep !py-1.5 !pl-8 text-xs"
         />
       </div>
@@ -240,7 +242,7 @@ function FilterPanel() {
           {(["mΩ", "μΩ", "Ω"] as const).map((u) => (
             <button
               key={u}
-              onClick={() => {}}
+              onClick={() => toggleUnitFilter(u)}
               className={clsx(
                 "rounded-md border px-2 py-1 text-[11px] font-mono transition-all",
                 filters.units.includes(u)
@@ -267,7 +269,15 @@ function FilterPanel() {
           >
             仅异常
           </button>
-          <button className="rounded-md border border-deepspace-600/50 px-2 py-1 text-[11px] text-slate-400 hover:border-cyber-500/30">
+          <button
+            onClick={toggleUnauditedOnly}
+            className={clsx(
+              "rounded-md border px-2 py-1 text-[11px] transition-all",
+              filters.unauditedOnly
+                ? "border-amberx-500/50 bg-amberx-500/15 text-amberx-400"
+                : "border-deepspace-600/50 text-slate-400 hover:border-amberx-500/30",
+            )}
+          >
             未审核
           </button>
         </div>
