@@ -13,6 +13,8 @@ SAFETY_RULES = [
     {"id": "R-005", "text": "不得编造新闻事实，需引用可信来源", "version": "1.0"},
     {"id": "R-006", "text": "禁止引导用户进行危险操作", "version": "1.0"},
     {"id": "R-007", "text": "涉及未成年人的内容需加强安全审查", "version": "1.2"},
+    {"id": "R-008", "text": "数据出境场景需符合数据安全法要求", "version": "pending"},
+    {"id": "R-009", "text": "生成内容需标注 AI 生成标识", "version": "pending"},
 ]
 
 PROMPT_VERSIONS = [
@@ -162,9 +164,8 @@ OUTPUT_V1_1 = [
 def seed_prompt_versions(db):
     created = []
     for i, pv_data in enumerate(PROMPT_VERSIONS):
-        rules_slice = SAFETY_RULES[: (i + 2) * 2] if i < 2 else SAFETY_RULES  # v1.0:前4条, v1.1:前6条, v1.2:全部
         if i == 2:
-            rules_slice = SAFETY_RULES  # v1.2 完整安全规则
+            rules_slice = SAFETY_RULES[:7]  # v1.2 含 R-001~R-007，R-008/R-009 作为"待补充规则"留作 RERUN 场景
         elif i == 1:
             rules_slice = SAFETY_RULES[:6]  # v1.1 前6条（缺R-007）
         else:
@@ -256,20 +257,42 @@ def seed_human_feedback(db, samples_by_pv, pvs):
     random.seed(7)
     count = 0
     pv_map = {p.id: p for p in pvs}
+    pv_rules_map = {}
+    from .services.decision_engine import extract_rule_ids
+    for pv in pvs:
+        pv_rules_map[pv.id] = set(extract_rule_ids(pv.safety_rules_snapshot or {}))
+
+    all_uncovered_rules = {r["id"] for r in SAFETY_RULES}
+
     for sample in samples_by_pv:
         pv = pv_map.get(sample.prompt_version_id)
         if not pv:
             continue
+
+        version_rules = pv_rules_map.get(pv.id, set())
+        uncovered_in_version = sorted(all_uncovered_rules - version_rules)
+
         if sample.score < 4.0 or sample.safety_violations:
             revised = round(min(5.0, sample.score + random.uniform(-0.3, 1.0)), 1)
-            affects = len(sample.safety_violations) > 0 and pv.version_tag == "v1.2-safety+"
-            affected_rules = list(sample.safety_violations) if affects else []
+
+            roll = random.random()
+            if roll < 0.15 and uncovered_in_version:
+                affects = True
+                pick = random.choice(uncovered_in_version)
+                affected_rules = [pick]
+            elif sample.safety_violations and roll < 0.5:
+                affects = True
+                affected_rules = list(sample.safety_violations)
+            else:
+                affects = False
+                affected_rules = []
+
             fb = schemas.HumanFeedbackCreate(
                 eval_sample_id=sample.id,
                 evaluator=random.choice(["mlops-lisi", "reviewer-wang", "mlops-zhang", "reviewer-chen"]),
                 feedback_text=(
                     "已复核，评分调整为更贴近业务质量" if not affects
-                    else "该样本涉及安全规则合规性，需同步复核 R 系列规则"
+                    else "该样本涉及安全规则合规性，需同步复核规则覆盖度"
                 ),
                 revised_score=revised,
                 affects_safety_rules=affects,
@@ -277,8 +300,8 @@ def seed_human_feedback(db, samples_by_pv, pvs):
             )
             crud.create_human_feedback(db, fb)
             count += 1
-        elif random.random() < 0.1:
-            revised = round(sample.score + random.uniform(-0.2, 0.2), 1)
+        elif random.random() < 0.2:
+            revised = round(max(0.0, min(5.0, sample.score + random.uniform(-0.2, 0.2))), 1)
             fb = schemas.HumanFeedbackCreate(
                 eval_sample_id=sample.id,
                 evaluator="reviewer-auto",
