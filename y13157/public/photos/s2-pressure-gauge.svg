@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="压缩机吸气压力表组">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f172a"/><stop offset="1" stop-color="#1e293b"/></linearGradient>
+    <radialGradient id="dial2" cx="0.5" cy="0.4" r="0.6"><stop offset="0" stop-color="#e2e8f0"/><stop offset="1" stop-color="#94a3b8"/></radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg2)"/>
+  <!-- manifold body -->
+  <rect x="60" y="180" width="280" height="60" rx="8" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+  <rect x="60" y="180" width="280" height="14" rx="8" fill="#475569"/>
+  <!-- hoses -->
+  <path d="M60 210 C 30 210 20 250 60 280" stroke="#1d4ed8" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M340 210 C 370 210 380 250 340 280" stroke="#dc2626" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M200 180 L200 130" stroke="#64748b" stroke-width="6"/>
+  <!-- left gauge (low pressure) -->
+  <circle cx="130" cy="120" r="52" fill="url(#dial2)" stroke="#1e293b" stroke-width="4"/>
+  <circle cx="130" cy="120" r="52" fill="none" stroke="#475569" stroke-width="1"/>
+  <text x="130" y="86" text-anchor="middle" font-family="monospace" font-size="9" fill="#334155">LOW MPa</text>
+  <text x="130" y="150" text-anchor="middle" font-family="monospace" font-size="9" fill="#334155">R410A</text>
+  <g stroke="#475569" stroke-width="1.5">
+    <line x1="130" y1="78" x2="130" y2="84"/><line x1="172" y1="120" x2="166" y2="120"/>
+    <line x1="130" y1="162" x2="130" y2="156"/><line x1="88" y1="120" x2="94" y2="120"/>
+  </g>
+  <!-- needle pointing to ~0.42 -->
+  <line x1="130" y1="120" x2="158" y2="96" stroke="#dc2626" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="130" cy="120" r="4" fill="#1e293b"/>
+  <text x="158" y="112" font-family="monospace" font-size="11" fill="#dc2626" font-weight="700">0.42</text>
+  <!-- right gauge (high pressure) -->
+  <circle cx="270" cy="120" r="52" fill="url(#dial2)" stroke="#1e293b" stroke-width="4"/>
+  <text x="270" y="86" text-anchor="middle" font-family="monospace" font-size="9" fill="#334155">HIGH MPa</text>
+  <g stroke="#475569" stroke-width="1.5">
+    <line x1="270" y1="78" x2="270" y2="84"/><line x1="312" y1="120" x2="306" y2="120"/>
+    <line x1="270" y1="162" x2="270" y2="156"/><line x1="228" y1="120" x2="234" y2="120"/>
+  </g>
+  <line x1="270" y1="120" x2="288" y2="92" stroke="#1d4ed8" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="270" cy="120" r="4" fill="#1e293b"/>
+  <!-- knobs -->
+  <circle cx="100" cy="220" r="9" fill="#1e293b" stroke="#64748b"/><circle cx="100" cy="220" r="3" fill="#64748b"/>
+  <circle cx="200" cy="220" r="9" fill="#1e293b" stroke="#64748b"/><circle cx="200" cy="220" r="3" fill="#64748b"/>
+  <circle cx="300" cy="220" r="9" fill="#1e293b" stroke="#64748b"/><circle cx="300" cy="220" r="3" fill="#64748b"/>
+  <!-- blue glove hint -->
+  <path d="M330 250 q10 -14 22 -8 q4 8 -2 14 q-8 6 -16 2 z" fill="#2563eb" opacity="0.8"/>
+  <text x="20" y="270" fill="#64748b" font-family="monospace" font-size="11">STEP-02 · 吸气压力 P_low</text>
+  <text x="20" y="286" fill="#475569" font-family="monospace" font-size="9">现场照片 · 表组读数</text>
+</svg>

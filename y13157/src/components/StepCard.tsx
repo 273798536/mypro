@@ -82,10 +82,20 @@ export default function StepCard({ step, params, anomalies, expanded, onToggle }
                 <Camera size={14} /> 现场照片
               </div>
               <img
-                src={`https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=${encodeURIComponent(step.photoPrompt)}&image_size=landscape_4_3`}
-                alt={step.title}
+                src={step.photo}
+                alt={`${step.title}现场照片`}
+                loading="lazy"
+                onError={(e) => {
+                  const t = e.currentTarget
+                  t.onerror = null
+                  t.src =
+                    "data:image/svg+xml;utf8," +
+                    encodeURIComponent(
+                      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><rect width="400" height="300" fill="#1e293b"/><text x="200" y="150" text-anchor="middle" fill="#64748b" font-family="monospace" font-size="14">现场照片缺失</text><text x="200" y="172" text-anchor="middle" fill="#475569" font-family="monospace" font-size="11">' + step.title + '</text></svg>',
+                    )
+                }}
                 className={[
-                  'w-full h-44 object-cover rounded border border-industrial-border',
+                  'w-full h-44 object-cover rounded border border-industrial-border bg-industrial-panel',
                   step.isRetracted ? 'grayscale' : '',
                 ].join(' ')}
               />

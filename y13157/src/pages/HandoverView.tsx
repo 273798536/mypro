@@ -6,7 +6,8 @@ import { exportReport } from '@/utils/detect'
 
 export default function HandoverView() {
   const navigate = useNavigate()
-  const { anomalies, steps, currentVersionId, currentParams } = useReplayStore()
+  const { anomalies, steps, currentVersionId, paramValues } = useReplayStore()
+  const currentParams = paramValues.filter((p) => p.versionId === currentVersionId)
 
   const anomalySteps = anomalies.map((a) => steps.find((s) => s.id === a.stepId)).filter(Boolean)
 
@@ -82,7 +83,7 @@ function BigCard({
   detailLines,
 }: {
   color: 'blue' | 'orange' | 'green'
-  Icon: React.ComponentType<{ size?: number; className?: string }>
+  Icon: React.ElementType
   title: string
   subtitle: string
   actionLabel: string

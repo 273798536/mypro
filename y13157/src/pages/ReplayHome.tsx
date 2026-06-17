@@ -1,14 +1,16 @@
+import { useMemo } from 'react'
 import { useReplayStore } from '@/store/useReplayStore'
 import PageHeader from '@/components/PageHeader'
 import VersionSelector from '@/components/VersionSelector'
 import StepCard from '@/components/StepCard'
 import AnomalyBanner from '@/components/AnomalyBanner'
 import { detectDirectionError, detectUnitError } from '@/utils/detect'
+import type { Anomaly } from '@/types'
 
 export default function ReplayHome() {
   const {
     steps,
-    currentParams,
+    paramValues,
     anomalies,
     currentVersionId,
     paramVersions,
@@ -18,9 +20,14 @@ export default function ReplayHome() {
 
   const currentVersion = paramVersions.find((v) => v.id === currentVersionId)
 
+  const currentParams = useMemo(
+    () => paramValues.filter((p) => p.versionId === currentVersionId),
+    [paramValues, currentVersionId],
+  )
+
   const autoDetected = currentParams
     .map((p) => detectUnitError(p) ?? detectDirectionError(p))
-    .filter(Boolean) as ReturnType<typeof detectUnitError>[]
+    .filter((a): a is Anomaly => a !== null)
 
   const directionErr = autoDetected.find((a) => a.type === 'direction')
 

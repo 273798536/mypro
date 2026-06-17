@@ -27,7 +27,7 @@ export const steps: Step[] = [
     stepIndex: 1,
     title: '蒸发器入口温度采集',
     description: '在蒸发器冷媒入口处安装温度传感器，记录初始读数并拍摄表盘。',
-    photoPrompt: '工业现场热泵蒸发器管道温度传感器表盘特写，有轻微油污，绿色数字显示屏，真实维修现场',
+    photo: '/photos/s1-temp-sensor.svg',
     isRetracted: false,
   },
   {
@@ -35,7 +35,7 @@ export const steps: Step[] = [
     stepIndex: 2,
     title: '压缩机吸气压力测量',
     description: '连接压力表组读取压缩机低压侧，确认与温度对应的饱和压力匹配。',
-    photoPrompt: '维修师傅手持冷媒压力表组连接热泵机组低压侧，表盘指针读数，现场有工具箱和蓝色手套',
+    photo: '/photos/s2-pressure-gauge.svg',
     isRetracted: false,
   },
   {
@@ -43,7 +43,7 @@ export const steps: Step[] = [
     stepIndex: 3,
     title: '冷凝器出水流量记录（已撤回）',
     description: '使用涡轮流量计读取热水侧流量，单位误记为 m³/h 实际应为 L/min。',
-    photoPrompt: '热泵冷凝器出水管道上的涡轮流量计显示屏，数字在跳动，周围有保温棉和少量水垢',
+    photo: '/photos/s3-flow-meter.svg',
     isRetracted: true,
     retractReason: '单位混写 m³/h 与 L/min 导致数量级偏差 60 倍，数据作废重采。',
   },
@@ -52,7 +52,7 @@ export const steps: Step[] = [
     stepIndex: 4,
     title: '膨胀阀开度调节',
     description: '根据过热度微调电子膨胀阀开度，记录调节前后参数变化。',
-    photoPrompt: '热泵机组控制柜上电子膨胀阀操作界面，显示开度百分比和过热度数值，屏幕有轻微反光',
+    photo: '/photos/s4-expansion-valve.svg',
     isRetracted: false,
   },
   {
@@ -60,7 +60,7 @@ export const steps: Step[] = [
     stepIndex: 5,
     title: '四通换向阀流向检测',
     description: '用听针判断四通阀内部冷媒流向，箭头指示与实际流向相反，需要标记。',
-    photoPrompt: '热泵机组四通换向阀特写，连接四根铜管，阀体上印有方向箭头，维修师傅用听针贴在阀体上',
+    photo: '/photos/s5-four-way-valve.svg',
     isRetracted: false,
   },
   {
@@ -68,7 +68,7 @@ export const steps: Step[] = [
     stepIndex: 6,
     title: '制热量与 COP 计算',
     description: '根据流量、温差计算制热量，结合输入功率得出 COP，收尾时注意单位统一。',
-    photoPrompt: '笔记本上手写的热泵循环计算公式，边上放着计算器和几支笔，纸页有咖啡渍',
+    photo: '/photos/s6-notebook.svg',
     isRetracted: false,
   },
 ]

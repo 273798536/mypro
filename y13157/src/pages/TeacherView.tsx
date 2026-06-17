@@ -1,6 +1,7 @@
 import { useReplayStore } from '@/store/useReplayStore'
 import PageHeader from '@/components/PageHeader'
 import { CheckCircle2, CircleDashed, Paperclip, ToggleLeft } from 'lucide-react'
+import type { Anomaly } from '@/types'
 
 export default function TeacherView() {
   const { anomalies, evidences, steps, toggleEvidence } = useReplayStore()
@@ -99,7 +100,7 @@ function StatusCard({
   anomaly,
   stepTitle,
 }: {
-  anomaly: (typeof anomalies)[number]
+  anomaly: Anomaly
   stepTitle?: string
 }) {
   return (

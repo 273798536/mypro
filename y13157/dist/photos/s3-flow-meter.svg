@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="冷凝器出水涡轮流量计（已撤回）">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f172a"/><stop offset="1" stop-color="#1e293b"/></linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg3)"/>
+  <!-- water scale stain -->
+  <path d="M0 210 L400 210 L400 300 L0 300 Z" fill="#1a2738"/>
+  <g opacity="0.5"><circle cx="60" cy="250" r="3" fill="#64748b"/><circle cx="320" cy="262" r="2" fill="#64748b"/><circle cx="200" cy="280" r="2.5" fill="#64748b"/></g>
+  <!-- insulated hot pipe -->
+  <rect x="-10" y="120" width="180" height="40" fill="#cbd5e1"/>
+  <rect x="-10" y="120" width="180" height="8" fill="#e2e8f0"/>
+  <rect x="-10" y="156" width="180" height="6" fill="#94a3b8"/>
+  <rect x="-10" y="162" width="180" height="12" fill="#475569"/>
+  <!-- flange -->
+  <rect x="160" y="110" width="20" height="62" fill="#64748b"/>
+  <!-- flow meter body -->
+  <rect x="180" y="100" width="150" height="82" rx="6" fill="#334155" stroke="#1e293b" stroke-width="2"/>
+  <rect x="190" y="110" width="130" height="62" rx="4" fill="#020617" stroke="#334155"/>
+  <!-- turbine impeller -->
+  <circle cx="220" cy="141" r="18" fill="#0b1220" stroke="#475569"/>
+  <g stroke="#64748b" stroke-width="2.5" fill="none">
+    <path d="M220 123 L214 159"/><path d="M238 141 L202 147"/><path d="M238 141 L202 135"/><path d="M220 159 L226 123"/>
+  </g>
+  <circle cx="220" cy="141" r="3" fill="#94a3b8"/>
+  <!-- display -->
+  <rect x="250" y="120" width="60" height="44" rx="3" fill="#031108" stroke="#0b3b22"/>
+  <text x="280" y="120" text-anchor="middle" font-family="monospace" font-size="7" fill="#16a34a" opacity="0.7">FLOW</text>
+  <text x="280" y="148" text-anchor="middle" font-family="monospace" font-size="24" fill="#22c55e" font-weight="700">2.4</text>
+  <text x="305" y="158" font-family="monospace" font-size="9" fill="#f97316" font-weight="700">m³/h</text>
+  <!-- unit error marker -->
+  <rect x="248" y="158" width="64" height="3" fill="#f97316"/>
+  <text x="280" y="172" text-anchor="middle" font-family="monospace" font-size="8" fill="#f97316">单位存疑</text>
+  <!-- outlet pipe -->
+  <rect x="330" y="120" width="80" height="40" fill="#cbd5e1"/>
+  <rect x="330" y="120" width="80" height="8" fill="#e2e8f0"/>
+  <rect x="330" y="156" width="80" height="6" fill="#94a3b8"/>
+  <rect x="330" y="162" width="80" height="12" fill="#475569"/>
+  <!-- water drip -->
+  <path d="M340 180 q-4 8 0 12 q8 0 4 -12 z" fill="#3b82f6" opacity="0.7"/>
+  <text x="20" y="270" fill="#64748b" font-family="monospace" font-size="11">STEP-03 · 流量计（已撤回）</text>
+  <text x="20" y="286" fill="#475569" font-family="monospace" font-size="9">单位混写 m³/h 与 L/min · 偏差 60×</text>
+</svg>

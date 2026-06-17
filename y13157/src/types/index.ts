@@ -10,7 +10,7 @@ export interface Step {
   stepIndex: number
   title: string
   description: string
-  photoPrompt: string
+  photo: string
   isRetracted: boolean
   retractReason?: string
 }

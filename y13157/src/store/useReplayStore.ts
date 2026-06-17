@@ -26,8 +26,6 @@ interface ReplayState {
   toggleStep: (id: string | null) => void
   resolveAnomaly: (id: string) => void
   toggleEvidence: (id: string) => void
-  currentParams: ParamValue[]
-  currentAnomalies: Anomaly[]
 }
 
 export const useReplayStore = create<ReplayState>((set, get) => ({
@@ -53,10 +51,8 @@ export const useReplayStore = create<ReplayState>((set, get) => ({
         e.id === id ? { ...e, provided: !e.provided } : e,
       ),
     }),
-  get currentParams() {
-    return get().paramValues.filter((p) => p.versionId === get().currentVersionId)
-  },
-  get currentAnomalies() {
-    return get().anomalies
-  },
 }))
+
+export const selectCurrentParams = (s: ReplayState): ParamValue[] =>
+  s.paramValues.filter((p) => p.versionId === s.currentVersionId)
+

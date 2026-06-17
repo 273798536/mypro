@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="蒸发器入口温度传感器表盘">
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="pipe1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#94a3b8"/>
+      <stop offset="0.5" stop-color="#64748b"/>
+      <stop offset="1" stop-color="#334155"/>
+    </linearGradient>
+    <filter id="glow1"><feGaussianBlur stdDeviation="2.2"/></filter>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg1)"/>
+  <circle cx="60" cy="60" r="1.5" fill="#475569"/><circle cx="340" cy="80" r="1.5" fill="#475569"/><circle cx="300" cy="250" r="1.5" fill="#475569"/>
+  <!-- insulated pipe -->
+  <rect x="-10" y="150" width="420" height="46" fill="#cbd5e1"/>
+  <rect x="-10" y="150" width="420" height="10" fill="#e2e8f0"/>
+  <rect x="-10" y="190" width="420" height="6" fill="#94a3b8"/>
+  <line x1="40" y1="165" x2="380" y2="165" stroke="#94a3b8" stroke-width="1" opacity="0.5"/>
+  <!-- pipe inner -->
+  <rect x="-10" y="196" width="420" height="14" fill="url(#pipe1)"/>
+  <!-- sensor probe clamp -->
+  <rect x="180" y="120" width="40" height="34" rx="4" fill="#475569"/>
+  <rect x="186" y="114" width="28" height="10" rx="2" fill="#1e293b"/>
+  <rect x="194" y="150" width="12" height="8" fill="#324158"/>
+  <!-- cable -->
+  <path d="M200 120 C 220 90 250 88 270 78" stroke="#0f172a" stroke-width="3" fill="none"/>
+  <!-- digital display housing -->
+  <rect x="250" y="40" width="120" height="64" rx="8" fill="#020617" stroke="#334155"/>
+  <rect x="258" y="48" width="104" height="48" rx="4" fill="#031108" stroke="#0b3b22"/>
+  <text x="266" y="62" fill="#16a34a" font-family="monospace" font-size="11" opacity="0.7">T1 SENSOR</text>
+  <text x="266" y="88" fill="#22c55e" font-family="monospace" font-size="26" font-weight="700" filter="url(#glow1)">4.2</text>
+  <text x="334" y="88" fill="#22c55e" font-family="monospace" font-size="14" opacity="0.9">℃</text>
+  <!-- oil stain -->
+  <ellipse cx="120" cy="172" rx="26" ry="7" fill="#1f2937" opacity="0.35"/>
+  <ellipse cx="120" cy="172" rx="12" ry="4" fill="#111827" opacity="0.4"/>
+  <!-- caption -->
+  <text x="20" y="270" fill="#64748b" font-family="monospace" font-size="11">STEP-01 · 蒸发器入口 T1</text>
+  <text x="20" y="286" fill="#475569" font-family="monospace" font-size="9">现场照片 · 真实维修记录</text>
+</svg>

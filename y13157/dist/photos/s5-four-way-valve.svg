@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="四通换向阀流向检测">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f172a"/><stop offset="1" stop-color="#1e293b"/></linearGradient>
+    <linearGradient id="brass5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4a64a"/><stop offset="0.5" stop-color="#b07d2a"/><stop offset="1" stop-color="#7a5618"/></linearGradient>
+    <linearGradient id="copper5" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8a06a"/><stop offset="1" stop-color="#b5651d"/></linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg5)"/>
+  <!-- four copper pipes -->
+  <rect x="40" y="96" width="120" height="22" rx="4" fill="url(#copper5)" stroke="#7a5618"/>
+  <rect x="240" y="96" width="120" height="22" rx="4" fill="url(#copper5)" stroke="#7a5618"/>
+  <rect x="189" y="20" width="22" height="110" rx="4" fill="url(#copper5)" stroke="#7a5618"/>
+  <rect x="189" y="190" width="22" height="90" rx="4" fill="url(#copper5)" stroke="#7a5618"/>
+  <!-- valve body -->
+  <rect x="150" y="74" width="100" height="172" rx="14" fill="url(#brass5)" stroke="#5c3f12" stroke-width="2"/>
+  <rect x="150" y="74" width="100" height="22" rx="14" fill="#e6c068"/>
+  <rect x="158" y="232" width="84" height="8" rx="3" fill="#5c3f12"/>
+  <!-- solenoid coil -->
+  <rect x="178" y="40" width="44" height="34" rx="4" fill="#1e293b" stroke="#475569"/>
+  <text x="200" y="61" text-anchor="middle" font-family="monospace" font-size="8" fill="#94a3b8">COIL</text>
+  <line x1="200" y1="40" x2="200" y2="74" stroke="#475569"/>
+  <!-- printed forward arrow on valve (WRONG) -->
+  <g transform="translate(178,120)">
+    <line x1="0" y1="0" x2="34" y2="0" stroke="#1e293b" stroke-width="3"/>
+    <path d="M34 -5 L44 0 L34 5 Z" fill="#1e293b"/>
+    <text x="14" y="14" font-family="monospace" font-size="8" fill="#1e293b">PRINTED</text>
+  </g>
+  <!-- actual reverse flow (correct direction) - RED -->
+  <g transform="translate(200,168)">
+    <path d="M22 0 L-6 0" stroke="#dc2626" stroke-width="3.5"/>
+    <path d="M-6 -5 L-16 0 L-6 5 Z" fill="#dc2626"/>
+  </g>
+  <text x="150" y="186" font-family="monospace" font-size="9" fill="#dc2626">实际流向 ←</text>
+  <!-- stethoscope/listening rod touching valve -->
+  <circle cx="232" cy="150" r="6" fill="#9ca3af" stroke="#1e293b"/>
+  <path d="M238 150 q40 -6 56 22 q8 14 -6 20" stroke="#9ca3af" stroke-width="3" fill="none"/>
+  <ellipse cx="300" cy="178" rx="14" ry="9" fill="#1e293b" stroke="#64748b"/>
+  <text x="20" y="270" fill="#64748b" font-family="monospace" font-size="11">STEP-05 · 四通换向阀流向</text>
+  <text x="20" y="286" fill="#dc2626" font-family="monospace" font-size="9">方向符号反写 · 听针实测相反</text>
+</svg>
