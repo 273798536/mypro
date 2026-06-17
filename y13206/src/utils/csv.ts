@@ -94,9 +94,17 @@ export function generateCsvPreview(
   config: ExportConfig,
   filter: FilterCriteria,
 ): string[][] {
-  void filter
   const headerLabels = config.selectedColumns.map((col) => COLUMN_LABELS[col] || col)
-  const rows: string[][] = [headerLabels]
+  const rows: string[][] = []
+
+  if (config.includeFilterCriteria) {
+    const filterRow = new Array(config.selectedColumns.length).fill('')
+    filterRow[0] = formatFilterCriteriaRow(filter)
+    rows.push(filterRow)
+    rows.push(new Array(config.selectedColumns.length).fill(''))
+  }
+
+  rows.push(headerLabels)
   for (const record of records) {
     rows.push(formatRecordForCsv(record, config.selectedColumns, config.includeSupplementaryRemarks))
   }

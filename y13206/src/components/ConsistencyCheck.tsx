@@ -22,10 +22,9 @@ export default function ConsistencyCheck() {
   const comparisons = useMemo<RowComparison[]>(() => {
     const csvPreview = generateCsvPreview(filtered, exportConfig, filter)
     const statusLabel = COLUMN_LABELS['status']
-    const headerRow = csvPreview[0]
-    const statusColIndex = headerRow?.findIndex((h) => h === statusLabel) ?? -1
+    const headerRowIndex = csvPreview.findIndex((row) => row.includes(statusLabel))
 
-    if (statusColIndex === -1) {
+    if (headerRowIndex === -1) {
       return filtered.map((r) => ({
         songName: r.songName,
         pageStatus: STATUS_LABELS[r.status],
@@ -34,8 +33,11 @@ export default function ConsistencyCheck() {
       }))
     }
 
+    const headerRow = csvPreview[headerRowIndex]
+    const statusColIndex = headerRow.findIndex((h) => h === statusLabel)
+
     return filtered.map((r, i) => {
-      const csvRow = csvPreview[i + 1]
+      const csvRow = csvPreview[headerRowIndex + 1 + i]
       const csvStatus = csvRow?.[statusColIndex] ?? ''
       const pageStatus = STATUS_LABELS[r.status]
       return {

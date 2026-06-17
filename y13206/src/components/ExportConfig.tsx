@@ -22,9 +22,11 @@ export default function ExportConfig() {
     setExportConfig({ selectedColumns: next })
   }
 
-  const previewRows = useMemo(() => {
+  const { headerRowIndex, displayRows } = useMemo(() => {
     const rows = generateCsvPreview(filtered.slice(0, 3), exportConfig, filter)
-    return rows
+    const firstHeader = COLUMN_LABELS['songName']
+    const idx = rows.findIndex((row) => row.includes(firstHeader))
+    return { headerRowIndex: idx, displayRows: rows }
   }, [filtered, exportConfig, filter])
 
   const handleExport = () => {
@@ -82,9 +84,24 @@ export default function ExportConfig() {
         </h3>
         <div className="overflow-x-auto rounded-lg border border-[#3a3a55]">
           <table className="w-full text-xs">
+            {headerRowIndex > 0 && (
+              <tbody>
+                {displayRows.slice(0, headerRowIndex).map((row, ri) => (
+                  <tr key={`pre-${ri}`} className="border-t border-[#3a3a55]">
+                    {row.map((cell, ci) => (
+                      <td
+                        key={ci}
+                        className="px-3 py-2 text-[#f0a500] whitespace-nowrap max-w-[300px] truncate italic">
+                        {cell || ' '}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            )}
             <thead>
               <tr className="bg-[#3a3a55]">
-                {previewRows[0]?.map((header, i) => (
+                {displayRows[headerRowIndex]?.map((header, i) => (
                   <th key={i} className="px-3 py-2 text-left text-[#e8e8e8] whitespace-nowrap">
                     {header}
                   </th>
@@ -92,7 +109,7 @@ export default function ExportConfig() {
               </tr>
             </thead>
             <tbody>
-              {previewRows.slice(1).map((row, ri) => (
+              {displayRows.slice(headerRowIndex + 1).map((row, ri) => (
                 <tr key={ri} className="border-t border-[#3a3a55]">
                   {row.map((cell, ci) => (
                     <td key={ci} className="px-3 py-2 text-[#b0b0b0] whitespace-nowrap max-w-[200px] truncate">
