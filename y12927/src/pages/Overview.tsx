@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
   PieChart,
@@ -47,21 +47,43 @@ export default function OverviewPage() {
     setFilterStatus,
   } = useStore();
 
-  useEffect(() => {
-    api.getBatches().then(setBatches);
-  }, [setBatches]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const loadData = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      await Promise.all([
+        api.getBatches().then(setBatches),
+        api
+          .getAnomalies({ batchId: currentBatchId, type: filterType, status: filterStatus })
+          .then(setAnomalies),
+      ]);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [currentBatchId, filterType, filterStatus, setBatches, setAnomalies]);
 
   useEffect(() => {
-    api
-      .getAnomalies({ batchId: currentBatchId, type: filterType, status: filterStatus })
-      .then(setAnomalies);
-  }, [currentBatchId, filterType, filterStatus, setAnomalies]);
+    loadData();
+  }, [loadData]);
 
   const currentBatch = batches.find((b) => b.id === currentBatchId);
 
+  const filteredAnomalies = useMemo(() => {
+    if (!searchQuery.trim()) return anomalies;
+    const q = searchQuery.trim().toLowerCase();
+    return anomalies.filter(
+      (a) =>
+        a.id.toLowerCase().includes(q) ||
+        a.originalText.toLowerCase().includes(q) ||
+        a.humanReason.toLowerCase().includes(q),
+    );
+  }, [anomalies, searchQuery]);
+
   const pieData = useMemo(() => {
     const groups: Record<string, number> = {};
-    anomalies.forEach((a) => {
+    filteredAnomalies.forEach((a) => {
       groups[a.type] = (groups[a.type] || 0) + 1;
     });
     return Object.entries(groups).map(([type, value]) => ({
@@ -69,11 +91,11 @@ export default function OverviewPage() {
       value,
       color: ANOMALY_TYPE_COLOR[type as AnomalyType] || '#9ca3af',
     }));
-  }, [anomalies]);
+  }, [filteredAnomalies]);
 
   const severityData = useMemo(() => {
     const groups: Record<string, number> = { high: 0, medium: 0, low: 0 };
-    anomalies.forEach((a) => {
+    filteredAnomalies.forEach((a) => {
       groups[a.severity] = (groups[a.severity] || 0) + 1;
     });
     const labelMap = { high: '严重', medium: '中等', low: '轻微' };
@@ -83,14 +105,14 @@ export default function OverviewPage() {
       count: v,
       fill: colorMap[k as keyof typeof colorMap] || '#6b7280',
     }));
-  }, [anomalies]);
+  }, [filteredAnomalies]);
 
   const stats = useMemo(() => {
-    const total = anomalies.length;
-    const pending = anomalies.filter((a) => a.status === 'pending').length;
-    const resolved = anomalies.filter((a) => a.status === 'resolved').length;
+    const total = filteredAnomalies.length;
+    const pending = filteredAnomalies.filter((a) => a.status === 'pending').length;
+    const resolved = filteredAnomalies.filter((a) => a.status === 'resolved').length;
     return { total, pending, resolved };
-  }, [anomalies]);
+  }, [filteredAnomalies]);
 
   return (
     <div className="p-8 max-w-[1400px] mx-auto">
@@ -102,9 +124,9 @@ export default function OverviewPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <button className="btn-secondary">
-            <RefreshCw className="w-4 h-4" />
-            刷新数据
+          <button className="btn-secondary" onClick={loadData} disabled={isRefreshing}>
+            <RefreshCw className={cn('w-4 h-4', isRefreshing && 'animate-spin')} />
+            {isRefreshing ? '刷新中...' : '刷新数据'}
           </button>
           <Link to="/export" className="btn-primary">
             <FileQuestion className="w-4 h-4" />
@@ -261,7 +283,20 @@ export default function OverviewPage() {
             </div>
             <div className="relative">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input className="input pl-9 w-56" placeholder="搜索异常ID或原文..." />
+              <input
+                className="input pl-9 w-56"
+                placeholder="搜索异常ID或原文..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs px-1"
+                  onClick={() => setSearchQuery('')}
+                >
+                  清除
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -279,7 +314,7 @@ export default function OverviewPage() {
               </tr>
             </thead>
             <tbody>
-              {anomalies.map((a, idx) => (
+              {filteredAnomalies.map((a, idx) => (
                 <tr
                   key={a.id}
                   className={cn(
