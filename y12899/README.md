@@ -1,57 +1,117 @@
-# React + TypeScript + Vite
+# 海藻养殖收成估算工具
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+面向科研助理和课题组的**日常计算工具**（非形式化评审文档）。纯前端实现，零后端依赖，所有数据在浏览器内存中运行。
 
-Currently, two official plugins are available:
+> 设计原则：打开即处理、公式写在人能看懂的位置、水质评估非一次性判断、异常区分为"补材料"和"改口径"。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 快速开始
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+```bash
+# 1. 安装依赖
+npm install
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# 2. 启动开发服务器
+npm run dev
+# 浏览器打开控制台输出的地址，默认 http://localhost:5173
+
+# 3. 类型检查（修改代码后建议跑一下）
+npm run check
+
+# 4. 生产构建
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+> Vite 会自动从 5173 起往后找可用端口，实际端口以终端输出为准。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 三个核心页面
+
+| 页面 | 路由 | 用途 |
+|------|------|------|
+| 主工作台 | `/` | 六标签页：数据概览 / 浮标数据 / 禁航检测 / 水质预警 / 养殖日志 / 异常处理 |
+| 复核中心 | `/review` | 按轮次并排展示潮汐表、气象预报、禁航区检测 |
+| 报告导出 | `/export` | 可打印 / 导出 Markdown，含轨迹漂移拦截独立章节 |
+
+左侧 Sidebar 可在三个页面间切换。
+
+---
+
+## 核心检查点
+
+以下是确保工具**真的能用**而非只跑起来的手动验证路径。
+
+### 检查点 A：水质补录 → 连锁重算
+
+验证水质不是一次性判断，补录后等级、WQI、异常同步更新。
+
+1. 主工作台 → 「水质预警」标签
+2. 找到**浊度**卡片（带"预警"或"warning"标记的那一条）→ 点「补录复核」
+3. 填入：
+   - 补录检测值：`7.8`（标准为 10 NTU，低于标准 → 正常）
+   - 复核备注：`人工采样复测，浊度正常，排除午间潮汐扰动影响`
+   - 数据来源：`实验室检测`
+4. 点「提交补录」
+5. **应看到的变化**：
+   - 浊度复核记录从 2 条变 3 条，新备注带"补录检测值"前缀
+   - 切回「数据概览」→ WQI 数值上升（例如从 93 → 100）
+   - 「需补充材料」从 2 项变 1 项（浊度超标预警被自动销项）
+
+### 检查点 B：浮标数据导入 → 收成估算更新
+
+验证导入按钮不是摆设，导入后均值、趋势图、估算产量同步变化。
+
+1. 主工作台 → 「浮标数据」标签
+2. 点右上角「导入数据」→ 展开导入面板
+3. 切到「手动录入」模式（快速验证）
+4. 填入 6 项指标（例如：水温 25.5、盐度 31.5、溶解氧 8.2、pH 8.05、叶绿素a 2.5、浊度 6.0）
+5. 点「提交 1 条」
+6. **应看到的变化**：
+   - 顶部 6 个指标均值变化（水温、溶解氧等）
+   - 下方「收成估算结果」数字变化（产量 ± 几十到几百 kg）
+   - 切到「趋势图」视图，数据点从 4 个变 5 个
+
+> 上传文件模式支持 CSV 和 JSON。CSV 表头示例：`timestamp,temperature,salinity,dissolvedOxygen,pH,chlorophyll,turbidity,lat,lng`
+
+### 检查点 C：报告导出包含轨迹拦截说明
+
+验证报告里课题组能看懂为什么有些数据被排除。
+
+1. 左侧导航 → 「报告导出」
+2. 滚动到「三、轨迹漂移拦截说明」章节
+3. **应看到**：独立标题、越界事件列表、漂移原因分析、拦截说明、后续操作提示
+4. 点顶部「打印报告」可直接打印或存 PDF
+
+### 检查点 D：类型检查
+
+```bash
+npm run check
+# 应无任何 TypeScript 错误，exit code 0
 ```
+
+---
+
+## 已知风险与待改进
+
+按影响程度从高到低：
+
+1. **纯内存状态，刷新即丢**：所有数据（浮标导入、水质补录、异常处理）都存在 zustand 内存里，浏览器刷新或关闭就没了。要做日常工具需加 `zustand/middleware` 的 persist 中间件写 localStorage。
+2. **CSV 解析简单，不处理复杂格式**：当前用 `split(',')` 实现，单元格里带逗号、双引号、换行的 CSV 会拆错。有真实数据接入前建议换成 `papaparse`。
+3. **浮标导入无范围校验**：水温 200°C、pH 14 也能入库，会让估算结果异常。建议在 `addBuoyDataBatch` 里加合理范围拦截。
+4. **补录备注时间显示不够直观**：列表里只显示相对时长，完整时间在 tooltip 里。课题组做追溯可能需要直接展示精确时间点。
+5. **没有后端 / 真实数据接入**：目前全部基于 mock 数据，要接入真实浮标 API 或数据库需要后端支持。
+
+---
+
+## 技术栈
+
+- React 18 + TypeScript
+- Zustand（状态管理）
+- Tailwind CSS 3
+- Recharts（趋势图）
+- Lucide React（图标）
+- Vite（构建）
+
+项目入口：`src/main.tsx`，三栏布局在 `src/App.tsx`，全局状态在 `src/store/useAppStore.ts`。
