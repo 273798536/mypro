@@ -1,0 +1,39 @@
+{
+  "files": [
+    {
+      "filename": "01_序曲_黎明.wav",
+      "file_path": "stems/01_序曲_黎明.wav",
+      "file_hash": "md5_a1b2c3d4",
+      "timecode": "03:15.00",
+      "duration": "03:15.00"
+    },
+    {
+      "filename": "02_第一幕_重逄.wav",
+      "file_path": "stems/02_第一幕_重逄.wav",
+      "file_hash": "md5_e5f6g7h8",
+      "timecode": "04:28.50",
+      "duration": "04:28.50"
+    },
+    {
+      "filename": "03_间奏_夜雨_rev2.wav",
+      "file_path": "stems/03_间奏_夜雨_rev2.wav",
+      "file_hash": "md5_i9j0k1l2",
+      "timecode": "02:56.50",
+      "duration": "02:56.50"
+    },
+    {
+      "filename": "04_第二幕_山河_final.wav",
+      "file_path": "stems/04_第二幕_山河_final.wav",
+      "file_hash": "md5_m3n4o5p6",
+      "timecode": "05:12.25",
+      "duration": "05:12.25"
+    },
+    {
+      "filename": "05_终曲_归途.wav",
+      "file_path": "stems/05_终曲_归途.wav",
+      "file_hash": "md5_q7r8s9t0",
+      "timecode": "04:45.00",
+      "duration": "04:45.00"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "tracks": [
+    {
+      "track_no": 1,
+      "track_title": "序曲·黎明",
+      "expected_filename": "01_序曲_黎明.wav",
+      "duration": "03:15.00",
+      "source_line_no": 2,
+      "notes": "初版通过，需等编曲第3次改稿",
+      "version_screenshot_path": "screenshots/v1_track01.png"
+    },
+    {
+      "track_no": 2,
+      "track_title": "第一幕·重逢",
+      "expected_filename": "02_第一幕_重逢.wav",
+      "duration": "04:28.50",
+      "source_line_no": 3,
+      "notes": "",
+      "version_screenshot_path": ""
+    },
+    {
+      "track_no": 3,
+      "track_title": "间奏·夜雨",
+      "expected_filename": "03_间奏_夜雨.wav",
+      "duration": "02:56.00",
+      "source_line_no": 4,
+      "notes": "录音棚时码显示02:56.50，偏了半拍，待阿蓝确认",
+      "version_screenshot_path": "screenshots/v1_track03_offbeat.png"
+    },
+    {
+      "track_no": 4,
+      "track_title": "第二幕·山海",
+      "expected_filename": "04_第二幕_山海.wav",
+      "duration": "05:12.25",
+      "source_line_no": 5,
+      "notes": "结尾需加钟声采样，已同步至后期",
+      "version_screenshot_path": "screenshots/v2_track04.png"
+    },
+    {
+      "track_no": 5,
+      "track_title": "终曲·归途",
+      "expected_filename": "05_终曲_归途.wav",
+      "duration": "04:45.00",
+      "source_line_no": 6,
+      "notes": "",
+      "version_screenshot_path": ""
+    }
+  ]
+}

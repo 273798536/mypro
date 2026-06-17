@@ -1,0 +1,12 @@
+{
+  "name": "timecode-anomaly-api",
+  "version": "1.0.0",
+  "description": "录音棚时码异常提醒后端服务 - FastAPI + SQLite",
+  "main": "main.py",
+  "scripts": {
+    "install": "pip install -r requirements.txt",
+    "start": "uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+    "start-prod": "uvicorn main:app --host 0.0.0.0 --port 8000",
+    "e2e": "python end_to_end_test.py"
+  }
+}
