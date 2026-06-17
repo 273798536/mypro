@@ -55,8 +55,10 @@ const FilterPanel: React.FC = () => {
     }
   };
 
-  const handleTorqueRangeChange = (value: [number, number]) => {
-    dispatch({ type: 'SET_FILTER', payload: { torque_range: value } });
+  const handleTorqueRangeChange = (value: number | number[]) => {
+    if (Array.isArray(value) && value.length === 2) {
+      dispatch({ type: 'SET_FILTER', payload: { torque_range: value as [number, number] } });
+    }
   };
 
   const handleUnitChange = (value: TorqueUnit[]) => {
