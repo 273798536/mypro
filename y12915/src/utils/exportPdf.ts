@@ -38,6 +38,12 @@ function formatDate(dateStr: string): string {
   }
 }
 
+function truncate(text: string, max: number): string {
+  if (!text) return '';
+  if (text.length <= max) return text;
+  return text.slice(0, max - 3) + '...';
+}
+
 export async function generatePdfReport(
   config: ExportConfig,
   data: {
@@ -52,7 +58,7 @@ export async function generatePdfReport(
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 50;
   let y = margin;
-  const lineHeight = 16;
+  const lineHeight = 14;
 
   const addText = (text: string, fontSize: number = 10, isBold: boolean = false) => {
     doc.setFontSize(fontSize);
@@ -84,7 +90,7 @@ export async function generatePdfReport(
   addText(`版本ID: ${config.versionId}`);
   y += 12;
 
-  addText('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 10);
+  addText('================================================================', 10);
   addText('一、预检结果', 14, true);
   y += 4;
   for (const item of data.precheck) {
@@ -98,16 +104,18 @@ export async function generatePdfReport(
   y += 8;
 
   checkNewPage(20);
-  addText('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 10);
+  addText('================================================================', 10);
   addText('二、安全规则校验', 14, true);
   y += 4;
   for (const rule of data.rules) {
-    const statusFlag = rule.pageStatus === undefined ? 'pending' : rule.pageStatus ? 'pass' : 'fail';
+    const pageFlag = rule.pageStatus === undefined ? 'PENDING' : rule.pageStatus ? 'PASS' : 'FAIL';
+    const exportFlag = rule.exportStatus === undefined ? 'PENDING' : rule.exportStatus ? 'PASS' : 'EXPORT';
+    const consistency = rule.isConsistent !== undefined ? (rule.isConsistent ? '[一致]' : '[不一致]') : '';
     const ruleInfo = rule.threshold !== undefined && rule.operator !== undefined
       ? ` (阈值: ${rule.operator} ${rule.threshold})`
       : '';
     addText(
-      `  [${statusFlag.toUpperCase()}] ${rule.name}${ruleInfo}`,
+      `  [页面:${pageFlag}] [导出:${exportFlag}] ${consistency} ${rule.name}${ruleInfo}`,
       11,
       true
     );
@@ -120,15 +128,12 @@ export async function generatePdfReport(
     if (rule.detail) {
       addWrappedText(`    详情: ${rule.detail}`);
     }
-    if (rule.isConsistent !== undefined) {
-      addText(`    一致性: ${rule.isConsistent ? '一致' : '不一致'}`);
-    }
     y += 4;
   }
   y += 8;
 
   checkNewPage(20);
-  addText('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 10);
+  addText('================================================================', 10);
   addText('三、置信区间分析', 14, true);
   y += 4;
   for (const group of data.ci) {
@@ -144,7 +149,7 @@ export async function generatePdfReport(
   y += 8;
 
   checkNewPage(30);
-  addText('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 10);
+  addText('================================================================', 10);
   addText('四、模型版本信息', 14, true);
   y += 4;
   for (const v of data.versions) {
@@ -165,6 +170,9 @@ export async function generatePdfReport(
   addText(`五、样本摘要 (共 ${data.samples.length} 条)`, 14, true);
   y += 4;
   const corrected = data.samples.filter((s) => isSampleCorrected(s)).length;
+  const withImages = data.samples.filter((s) => !!s.imageName).length;
+  const withSourceNotes = data.samples.filter((s) => !!s.sourceNote).length;
+  const traceComplete = data.samples.filter((s) => !!s.originalRowNumber && !!s.sourceFileName).length;
   const beforeAvg =
     data.samples.length > 0
       ? data.samples.reduce((s, x) => s + getBeforeScore(x), 0) / data.samples.length
@@ -174,35 +182,57 @@ export async function generatePdfReport(
       ? data.samples.reduce((s, x) => s + getEffectiveScore(x), 0) / data.samples.length
       : 0;
   addText(`  人工修正: ${corrected} 条 (${((corrected / Math.max(data.samples.length, 1)) * 100).toFixed(1)}%)`);
+  addText(`  含图片: ${withImages} 条 (${((withImages / Math.max(data.samples.length, 1)) * 100).toFixed(1)}%)`);
+  addText(`  含来源备注: ${withSourceNotes} 条 (${((withSourceNotes / Math.max(data.samples.length, 1)) * 100).toFixed(1)}%)`);
+  addText(`  追溯完整: ${traceComplete} 条 (${((traceComplete / Math.max(data.samples.length, 1)) * 100).toFixed(1)}%)`);
   addText(`  修正前平均: ${beforeAvg.toFixed(2)}`);
   addText(`  修正后平均: ${afterAvg.toFixed(2)}`);
   addText(`  平均提升: ${(afterAvg - beforeAvg).toFixed(2)}`);
   y += 8;
 
   if (config.includeRawData && data.samples.length > 0) {
-    checkNewPage(30);
-    addText('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 10);
-    addText('六、样本明细 (前 20 条)', 14, true);
-    y += 4;
-    const previewSamples = data.samples.slice(0, 20);
-    for (const sample of previewSamples) {
+    checkNewPage(15);
+    addText('================================================================', 10);
+    addText(`六、样本明细 (共 ${data.samples.length} 条，完整导出)`, 14, true);
+    y += 6;
+    for (let i = 0; i < data.samples.length; i++) {
+      const sample = data.samples[i];
       const before = getBeforeScore(sample);
       const after = getEffectiveScore(sample);
-      const corrected = isSampleCorrected(sample);
+      const correctedFlag = isSampleCorrected(sample);
       const rowInfo = sample.originalRowNumber
         ? `行#${sample.originalRowNumber}`
         : sample.id;
+
+      checkNewPage(6);
+
       addText(
-        `  ${rowInfo} | before: ${before} | after: ${after} | corrected: ${corrected ? '是' : '否'}`,
-        9
+        `[${i + 1}] ${rowInfo} | before:${before} | after:${after} | corrected:${correctedFlag ? '是' : '否'} | 状态:${sample.reviewStatus ?? '-'} | 置信度:${sample.confidenceLevel ?? '-'}`,
+        9,
+        true
       );
-      if (sample.sourceFileName) {
-        addText(`    文件: ${sample.sourceFileName}`, 8);
+      if (sample.sourceFileName || sample.batchId || sample.dataSource) {
+        addText(
+          `    文件:${sample.sourceFileName ?? '-'} | 批次:${sample.batchId ?? '-'} | 数据源:${sample.dataSource ?? '-'}`,
+          8
+        );
+      }
+      if (sample.imageName || sample.imageType) {
+        addText(
+          `    图片名:${sample.imageName ?? '-'} | 类型:${sample.imageType ?? '-'} | 链接:${truncate(sample.imageUrl ?? '-', 60)}`,
+          8
+        );
+      }
+      if (sample.sourceNote) {
+        addWrappedText(`    来源备注: ${sample.sourceNote}`, 8);
+      }
+      if (correctedFlag && (sample.correctionReason || sample.correctedBy || sample.correctedAt)) {
+        addText(
+          `    修正理由:${sample.correctionReason ?? '-'} | 修正人:${sample.correctedBy ?? '-'} | 修正时间:${sample.correctedAt ?? '-'}`,
+          8
+        );
       }
       y += 2;
-    }
-    if (data.samples.length > 20) {
-      addText(`  ... 其余 ${data.samples.length - 20} 条样本省略`, 9);
     }
   }
 

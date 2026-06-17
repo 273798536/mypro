@@ -329,7 +329,7 @@ export default function ExportPage() {
                 {PRECHECK_STEPS.map((step, idx) => {
                   const status = stepStatus[step.key] ?? 'idle';
                   return (
-                    <>
+                    <div key={step.key} className="flex items-start flex-1">
                       <div className="flex flex-col items-center flex-1">
                       <div className={cn(
                         'w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-500',
@@ -357,7 +357,7 @@ export default function ExportPage() {
                           : 'bg-slate-700'
                       )} />
                     )}
-                    </>
+                    </div>
                   );
                 })}
               </div>
