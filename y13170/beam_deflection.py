@@ -37,6 +37,7 @@ class BeamRow:
     i_cm4: Optional[float]
     measured_mm: Optional[float]
     notes: str = ""
+    e_gpa_original: Optional[float] = None
     status: RowStatus = RowStatus.PROCESSED_NORMAL
     calc_mm: Optional[float] = None
     deviation_pct: Optional[float] = None
@@ -163,13 +164,15 @@ def load_csv(source):
     reader = csv.DictReader(source)
     rows = []
     for i, r in enumerate(reader, start=2):
+        e_val = parse_float(r.get("弹模E(GPa)"))
         rows.append(BeamRow(
             line_no=i,
             nameplate=r.get("设备铭牌", "").strip(),
             beam_type=r.get("梁型", "").strip(),
             span_m=parse_float(r.get("跨度L(m)")),
             load_kn=parse_float(r.get("荷载P(kN)")),
-            e_gpa=parse_float(r.get("弹模E(GPa)")),
+            e_gpa=e_val,
+            e_gpa_original=e_val,
             i_cm4=parse_float(r.get("惯矩I(cm4)")),
             measured_mm=parse_float(r.get("实测挠度(mm)")),
             notes=r.get("备注", "").strip(),
@@ -178,18 +181,25 @@ def load_csv(source):
 
 
 def process_rows(rows, e_override, tolerance_pct):
+    override_count = 0
+    fill_count = 0
     for row in rows:
         if e_override is not None and row.e_gpa is not None:
+            if row.e_gpa != e_override:
+                row.e_gpa = e_override
+                override_count += 1
+        elif e_override is not None and row.e_gpa is None:
             row.e_gpa = e_override
+            fill_count += 1
         classify_row(row, tolerance_pct)
-    return rows
+    return rows, override_count, fill_count
 
 
 def _line_nos(rows, status):
     return ",".join(str(r.line_no) for r in rows if r.status == status)
 
 
-def print_report(rows, e_gpa, tolerance_pct, e_new):
+def print_report(rows, e_gpa, tolerance_pct, e_new, override_count, fill_count):
     counts = {}
     for s in RowStatus:
         counts[s] = sum(1 for r in rows if r.status == s)
@@ -218,7 +228,13 @@ def print_report(rows, e_gpa, tolerance_pct, e_new):
     print(f"公式: {FORMULA}  [{UNIT_MAP['δ']}]")
     unit_str = "  ".join(f"{k}[{v}]" for k, v in UNIT_MAP.items() if k != "δ")
     print(f"单位: {unit_str}")
-    print(f"参数: E={e_gpa} GPa, 容差=±{tolerance_pct}%")
+    parts = [f"E={e_gpa} GPa"]
+    if override_count > 0:
+        parts.append(f"覆盖原值 {override_count} 行")
+    if fill_count > 0:
+        parts.append(f"补空值 {fill_count} 行")
+    parts.append(f"容差=±{tolerance_pct}%")
+    print(f"参数: {', '.join(parts)}")
 
     print()
     print("异常位置:")
@@ -268,7 +284,7 @@ def print_report(rows, e_gpa, tolerance_pct, e_new):
 def export_csv(rows, path):
     fieldnames = [
         "行号", "设备铭牌", "梁型", "跨度L(m)", "荷载P(kN)",
-        "弹模E(GPa)", "惯矩I(cm4)", "实测挠度(mm)",
+        "弹模E(GPa)", "弹模E原始(GPa)", "惯矩I(cm4)", "实测挠度(mm)",
         "计算挠度(mm)", "偏差(%)", "状态", "原因"
     ]
     with open(path, "w", newline="", encoding="utf-8-sig") as f:
@@ -282,7 +298,8 @@ def export_csv(rows, path):
                 "跨度L(m)": f"{r.span_m:.2f}" if r.span_m is not None else "",
                 "荷载P(kN)": f"{r.load_kn:.1f}" if r.load_kn is not None else "",
                 "弹模E(GPa)": f"{r.e_gpa:.1f}" if r.e_gpa is not None else "",
-                "惯矩I(cm4)": f"{r.i_cm4:.1e}" if r.i_cm4 is not None else "",
+                "弹模E原始(GPa)": f"{r.e_gpa_original:.1f}" if r.e_gpa_original is not None else "",
+                "惯矩I(cm4)": f"{r.i_cm4:.0f}" if r.i_cm4 is not None else "",
                 "实测挠度(mm)": f"{r.measured_mm:.2f}" if r.measured_mm is not None else "",
                 "计算挠度(mm)": f"{r.calc_mm:.2f}" if r.calc_mm is not None else "",
                 "偏差(%)": f"{r.deviation_pct:+.1f}" if r.deviation_pct is not None else "",
@@ -316,9 +333,11 @@ def main():
     else:
         rows = load_sample()
 
-    rows = process_rows(rows, e_override=None, tolerance_pct=args.tolerance)
+    rows, override_count, fill_count = process_rows(
+        rows, e_override=args.e_gpa, tolerance_pct=args.tolerance
+    )
 
-    print_report(rows, args.e_gpa, args.tolerance, args.e_new)
+    print_report(rows, args.e_gpa, args.tolerance, args.e_new, override_count, fill_count)
 
     if args.output:
         export_csv(rows, args.output)
