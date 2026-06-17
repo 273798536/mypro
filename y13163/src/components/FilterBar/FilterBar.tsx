@@ -1,10 +1,11 @@
-import { Search, Filter, RefreshCw, AlertTriangle, AlertCircle, TrendingDown, Ban, X } from 'lucide-react';
+import { Search, Filter, RefreshCw, AlertTriangle, AlertCircle, TrendingDown, Ban, X, Clock, Eye, CheckCircle } from 'lucide-react';
 import { useFilterStore } from '@/store/useFilterStore';
 import { anomalyTypeLabels } from '@/utils/anomaly';
-import type { AnomalyType, DataStatus } from '@/types';
+import type { AnomalyType, DataStatus, AnomalyStatus } from '@/types';
 
 const anomalyTypes: AnomalyType[] = ['extreme', 'noise', 'drift', 'missing'];
 const statuses: DataStatus[] = ['normal', 'warning', 'error', 'processed'];
+const anomalyStatuses: AnomalyStatus[] = ['pending', 'reviewed', 'resolved'];
 
 const statusLabels: Record<DataStatus, string> = {
   normal: '正常',
@@ -13,11 +14,35 @@ const statusLabels: Record<DataStatus, string> = {
   processed: '已处理',
 };
 
+const anomalyStatusLabels: Record<AnomalyStatus, string> = {
+  pending: '待处理',
+  reviewed: '已复核',
+  resolved: '已解决',
+};
+
 const statusColors: Record<DataStatus, string> = {
   normal: 'bg-success-green/20 text-success-green border-success-green/30',
   warning: 'bg-warning-orange/20 text-warning-orange border-warning-orange/30',
   error: 'bg-error-red/20 text-error-red border-error-red/30',
   processed: 'bg-cyan-glow/20 text-cyan-glow border-cyan-glow/30',
+};
+
+const anomalyStatusColors: Record<AnomalyStatus, string> = {
+  pending: 'bg-warning-orange/20 text-warning-orange border-warning-orange/30',
+  reviewed: 'bg-cyan-glow/20 text-cyan-glow border-cyan-glow/30',
+  resolved: 'bg-success-green/20 text-success-green border-success-green/30',
+};
+
+const anomalyStatusActiveColors: Record<AnomalyStatus, string> = {
+  pending: 'bg-warning-orange text-white border-warning-orange',
+  reviewed: 'bg-cyan-glow text-white border-cyan-glow',
+  resolved: 'bg-success-green text-white border-success-green',
+};
+
+const anomalyStatusIcons: Record<AnomalyStatus, typeof Clock> = {
+  pending: Clock,
+  reviewed: Eye,
+  resolved: CheckCircle,
 };
 
 const anomalyIcons: Record<AnomalyType, typeof AlertTriangle> = {
@@ -45,10 +70,12 @@ export default function FilterBar() {
   const {
     anomalyTypes: selectedTypes,
     statuses: selectedStatuses,
+    anomalyStatuses: selectedAnomalyStatuses,
     showNoiseOnly,
     searchKeyword,
     toggleAnomalyType,
     toggleStatus,
+    toggleAnomalyStatus,
     setShowNoiseOnly,
     setSearchKeyword,
     resetFilters,
@@ -57,6 +84,7 @@ export default function FilterBar() {
   const hasActiveFilters =
     selectedTypes.length > 0 ||
     selectedStatuses.length > 0 ||
+    selectedAnomalyStatuses.length > 0 ||
     showNoiseOnly ||
     searchKeyword.length > 0;
 
@@ -132,6 +160,30 @@ export default function FilterBar() {
         </div>
 
         <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2 text-xs text-slate-400">
+            <span>处理状态</span>
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {anomalyStatuses.map((status) => {
+              const Icon = anomalyStatusIcons[status];
+              const isActive = selectedAnomalyStatuses.includes(status);
+              return (
+                <button
+                  key={status}
+                  onClick={() => toggleAnomalyStatus(status)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium border transition-all ${
+                    isActive ? anomalyStatusActiveColors[status] : anomalyStatusColors[status]
+                  }`}
+                >
+                  <Icon className="w-3 h-3" />
+                  {anomalyStatusLabels[status]}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
           <div className="text-xs text-slate-400">其他筛选</div>
           <div className="flex items-center gap-2">
             <button
@@ -168,6 +220,11 @@ export default function FilterBar() {
           {selectedStatuses.length > 0 && (
             <span className="text-xs text-cyan-glow">
               数据状态: {selectedStatuses.map((s) => statusLabels[s]).join(', ')}
+            </span>
+          )}
+          {selectedAnomalyStatuses.length > 0 && (
+            <span className="text-xs text-cyan-glow">
+              处理状态: {selectedAnomalyStatuses.map((s) => anomalyStatusLabels[s]).join(', ')}
             </span>
           )}
           {showNoiseOnly && <span className="text-xs text-yellow-400">仅疑似噪声</span>}

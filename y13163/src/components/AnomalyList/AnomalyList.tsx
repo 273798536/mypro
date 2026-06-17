@@ -27,11 +27,11 @@ const statusColors = {
 
 export default function AnomalyList() {
   const { anomalies, buoyData, selectedAnomalyId, selectDataAndAnomaly } = useDataStore();
-  const { anomalyTypes, showNoiseOnly, searchKeyword } = useFilterStore();
+  const { anomalyTypes, statuses, anomalyStatuses, showNoiseOnly, searchKeyword } = useFilterStore();
 
   const filteredAnomalies = useMemo(() => {
-    return filterAnomalies(anomalies, anomalyTypes, showNoiseOnly, searchKeyword);
-  }, [anomalies, anomalyTypes, showNoiseOnly, searchKeyword]);
+    return filterAnomalies(anomalies, buoyData, anomalyTypes, statuses, anomalyStatuses, showNoiseOnly, searchKeyword);
+  }, [anomalies, buoyData, anomalyTypes, statuses, anomalyStatuses, showNoiseOnly, searchKeyword]);
 
   const getAnomalyDataPoint = (dataId: string) => {
     return buoyData.find((d) => d.id === dataId);

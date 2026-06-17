@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FileText, Copy, Download, Check, X, ChevronRight, Layers } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { useDataStore } from '@/store/useDataStore';
@@ -16,8 +16,9 @@ export default function ReportPreview({ onClose }: ReportPreviewProps) {
   const { getCurrentVersionData } = useParamStore();
   
   const [copied, setCopied] = useState(false);
-  const [markdownContent] = useState<string>(() => {
-    const paramVersion = getCurrentVersionData();
+  
+  const paramVersion = getCurrentVersionData();
+  const markdownContent = useMemo(() => {
     if (!paramVersion) return '';
     return generateMarkdownReport({
       paramVersion,
@@ -30,7 +31,7 @@ export default function ReportPreview({ onClose }: ReportPreviewProps) {
       runStatus,
       runTime: new Date().toISOString(),
     });
-  });
+  }, [paramVersion, buoyData, anomalies, notes, filters, selectedDataId, selectedAnomalyId, runStatus]);
 
   const handleCopy = async () => {
     const success = await copyToClipboard(markdownContent);
@@ -43,8 +44,6 @@ export default function ReportPreview({ onClose }: ReportPreviewProps) {
   const handleDownload = () => {
     downloadMarkdown(markdownContent);
   };
-
-  const paramVersion = getCurrentVersionData();
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-8 animate-fade-in">

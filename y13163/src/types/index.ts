@@ -68,6 +68,7 @@ export interface FilterState {
   dateRange: [string, string] | null;
   anomalyTypes: AnomalyType[];
   statuses: DataStatus[];
+  anomalyStatuses: AnomalyStatus[];
   showNoiseOnly: boolean;
   searchKeyword: string;
 }

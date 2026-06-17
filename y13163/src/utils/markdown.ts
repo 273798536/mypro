@@ -1,6 +1,6 @@
 import type { BuoyDataPoint, AnomalyPoint, MaintenanceNote, ParamVersion, FilterState } from '@/types';
 import { formatTimestamp, formatWithUnit } from './format';
-import { anomalyTypeLabels, anomalyStatusLabels, dataStatusLabels } from './anomaly';
+import { anomalyTypeLabels, anomalyStatusLabels, dataStatusLabels, filterAnomalies } from './anomaly';
 import { noteStatusLabels } from './notes';
 
 interface GenerateReportOptions {
@@ -31,6 +31,16 @@ export function generateMarkdownReport(options: GenerateReportOptions): string {
   const selectedData = buoyData.find((d) => d.id === selectedDataId);
   const selectedAnomaly = anomalies.find((a) => a.id === selectedAnomalyId);
   const relatedNotes = notes.filter((n) => selectedData && n.relatedDataIds.includes(selectedData.id));
+
+  const filteredAnomalies = filterAnomalies(
+    anomalies,
+    buoyData,
+    filters.anomalyTypes,
+    filters.statuses,
+    filters.anomalyStatuses,
+    filters.showNoiseOnly,
+    filters.searchKeyword
+  );
 
   const stats = {
     total: buoyData.length,
@@ -114,6 +124,9 @@ export function generateMarkdownReport(options: GenerateReportOptions): string {
   if (filters.statuses.length > 0) {
     lines.push(`- **数据状态**：${filters.statuses.map((s) => dataStatusLabels[s]).join('、')}`);
   }
+  if (filters.anomalyStatuses.length > 0) {
+    lines.push(`- **处理状态**：${filters.anomalyStatuses.map((s) => anomalyStatusLabels[s]).join('、')}`);
+  }
   lines.push(`- **仅显示疑似噪声**：${filters.showNoiseOnly ? '是' : '否'}`);
   if (filters.searchKeyword) {
     lines.push(`- **搜索关键词**：\`${filters.searchKeyword}\``);
@@ -122,11 +135,17 @@ export function generateMarkdownReport(options: GenerateReportOptions): string {
 
   lines.push('## 4. 异常点清单');
   lines.push('');
+  lines.push(`> 筛选后 ${filteredAnomalies.length} / 总计 ${anomalies.length}（与页面列表展示一致）`);
+  lines.push('');
   lines.push('| 序号 | 异常类型 | 描述 | 疑似噪声 | 处理状态 | 归因说明 |');
   lines.push('|------|----------|------|----------|----------|----------|');
-  anomalies.forEach((a, index) => {
-    lines.push(`| ${index + 1} | ${anomalyTypeLabels[a.type]} | ${a.description} | ${a.isSuspectedNoise ? '是' : '否'} | ${anomalyStatusLabels[a.status]} | ${a.attribution} |`);
-  });
+  if (filteredAnomalies.length === 0) {
+    lines.push('| - | 暂无符合条件的异常点 | - | - | - | - |');
+  } else {
+    filteredAnomalies.forEach((a, index) => {
+      lines.push(`| ${index + 1} | ${anomalyTypeLabels[a.type]} | ${a.description} | ${a.isSuspectedNoise ? '是' : '否'} | ${anomalyStatusLabels[a.status]} | ${a.attribution} |`);
+    });
+  }
   lines.push('');
 
   if (selectedData && selectedAnomaly) {

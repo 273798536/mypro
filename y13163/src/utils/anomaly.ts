@@ -1,4 +1,4 @@
-import type { AnomalyPoint, AnomalyType, BuoyDataPoint } from '@/types';
+import type { AnomalyPoint, AnomalyType, BuoyDataPoint, DataStatus } from '@/types';
 
 export const anomalyTypeLabels: Record<AnomalyType, string> = {
   extreme: '极端值',
@@ -93,13 +93,23 @@ export function detectAnomalies(
 
 export function filterAnomalies(
   anomalies: AnomalyPoint[],
+  buoyData: BuoyDataPoint[],
   types: AnomalyType[],
+  dataStatuses: DataStatus[],
+  anomalyStatuses: AnomalyPoint['status'][],
   showNoiseOnly: boolean,
   searchKeyword: string
 ): AnomalyPoint[] {
   return anomalies.filter((a) => {
     if (types.length > 0 && !types.includes(a.type)) return false;
+    if (anomalyStatuses.length > 0 && !anomalyStatuses.includes(a.status)) return false;
     if (showNoiseOnly && !a.isSuspectedNoise) return false;
+    
+    if (dataStatuses.length > 0) {
+      const dataPoint = buoyData.find((d) => d.id === a.dataId);
+      if (!dataPoint || !dataStatuses.includes(dataPoint.status)) return false;
+    }
+    
     if (searchKeyword) {
       const keyword = searchKeyword.toLowerCase();
       return (

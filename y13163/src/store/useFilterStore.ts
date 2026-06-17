@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { FilterState, AnomalyType, DataStatus } from '@/types';
+import type { FilterState, AnomalyType, DataStatus, AnomalyStatus } from '@/types';
 
 interface FilterStore extends FilterState {
   setDateRange: (range: [string, string] | null) => void;
@@ -7,6 +7,8 @@ interface FilterStore extends FilterState {
   setAnomalyTypes: (types: AnomalyType[]) => void;
   toggleStatus: (status: DataStatus) => void;
   setStatuses: (statuses: DataStatus[]) => void;
+  toggleAnomalyStatus: (status: AnomalyStatus) => void;
+  setAnomalyStatuses: (statuses: AnomalyStatus[]) => void;
   setShowNoiseOnly: (show: boolean) => void;
   setSearchKeyword: (keyword: string) => void;
   resetFilters: () => void;
@@ -16,6 +18,7 @@ const initialState: FilterState = {
   dateRange: null,
   anomalyTypes: [],
   statuses: [],
+  anomalyStatuses: [],
   showNoiseOnly: false,
   searchKeyword: '',
 };
@@ -42,6 +45,15 @@ export const useFilterStore = create<FilterStore>((set) => ({
     })),
 
   setStatuses: (statuses) => set({ statuses }),
+
+  toggleAnomalyStatus: (status) =>
+    set((state) => ({
+      anomalyStatuses: state.anomalyStatuses.includes(status)
+        ? state.anomalyStatuses.filter((s) => s !== status)
+        : [...state.anomalyStatuses, status],
+    })),
+
+  setAnomalyStatuses: (statuses) => set({ anomalyStatuses: statuses }),
 
   setShowNoiseOnly: (show) => set({ showNoiseOnly: show }),
 
