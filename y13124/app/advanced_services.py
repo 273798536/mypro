@@ -425,21 +425,70 @@ def check_recalc_consistency(db: Session, batch_id: int) -> List[Dict[str, Any]]
     records = db.query(models.PathRecord).filter(models.PathRecord.batch_id == batch_id).all()
     consistency_results = []
 
-    total_distance_detail = 0.0
-    total_distance_chart = 0.0
-    verified_count_detail = 0
-    verified_count_chart = 0
-    oob_count_detail = 0
-    oob_count_chart = 0
-
+    detail_total_records = len(records)
+    detail_verified_count = sum(1 for r in records if r.current_judgment == "verified")
+    detail_oob_count = sum(1 for r in records if r.is_out_of_bounds)
+    detail_total_distance = 0.0
+    detail_distance_count = 0
     for record in records:
         if record.current_distance is not None:
-            total_distance_detail += record.current_distance
+            try:
+                detail_total_distance += float(record.current_distance)
+                detail_distance_count += 1
+            except (TypeError, ValueError):
+                pass
 
-        if record.current_judgment == "verified":
-            verified_count_detail += 1
-        if record.is_out_of_bounds:
-            oob_count_detail += 1
+    try:
+        from .services import get_batch_status
+        status = get_batch_status(db, batch_id)
+    except Exception:
+        status = {}
+
+    chart_total_records = status.get("total_records", detail_total_records)
+    chart_oob_count = status.get("out_of_bounds_count", detail_oob_count)
+    chart_processed_count = status.get("processed_count", 0)
+    chart_pending_count = status.get("pending_count", 0)
+
+    csv_bytes = export_batch_csv(db, batch_id)
+    csv_text = csv_bytes.decode("utf-8-sig") if isinstance(csv_bytes, (bytes, bytearray)) else (csv_bytes or "")
+    csv_reader = csv.reader(io.StringIO(csv_text))
+    csv_rows = list(csv_reader)
+    csv_header = csv_rows[0] if csv_rows else []
+    csv_data_rows = csv_rows[1:] if len(csv_rows) > 1 else []
+
+    def _col_idx(name):
+        try:
+            return csv_header.index(name)
+        except ValueError:
+            return -1
+
+    rec_code_idx = _col_idx("记录编号")
+    cur_judge_idx = _col_idx("当前判定")
+    oob_idx = _col_idx("是否越界")
+    dist_idx = _col_idx("当前距离")
+
+    csv_verified_count = 0
+    csv_oob_count = 0
+    csv_distance_sum = 0.0
+    csv_distance_count = 0
+    csv_seen_codes = set()
+    for row in csv_data_rows:
+        if not row or (rec_code_idx >= 0 and not row[rec_code_idx]):
+            continue
+        if rec_code_idx >= 0:
+            csv_seen_codes.add(row[rec_code_idx])
+        if cur_judge_idx >= 0 and row[cur_judge_idx] == "verified":
+            csv_verified_count += 1
+        if oob_idx >= 0 and row[oob_idx] == "是":
+            csv_oob_count += 1
+        if dist_idx >= 0 and row[dist_idx]:
+            try:
+                csv_distance_sum += float(row[dist_idx])
+                csv_distance_count += 1
+            except ValueError:
+                pass
+
+    detail_record_codes = {r.record_code for r in records}
 
     note_impacts = (
         db.query(models.NoteImpact)
@@ -448,12 +497,12 @@ def check_recalc_consistency(db: Session, batch_id: int) -> List[Dict[str, Any]]
         .all()
     )
     note_change_count = len(note_impacts)
-    chart_note_change_count = sum(
+    note_judgment_change_count = sum(
         1 for ni in note_impacts
         if ni.judgment_before != ni.judgment_after
     )
 
-    record_changes = (
+    manual_change_count = (
         db.query(models.ChangeHistory)
         .filter(models.ChangeHistory.batch_id == batch_id)
         .filter(models.ChangeHistory.change_type == "judgment_update")
@@ -480,45 +529,113 @@ def check_recalc_consistency(db: Session, batch_id: int) -> List[Dict[str, Any]]
             "inconsistency_detail": detail
         })
 
-    _save_check(
-        None, "total_records",
-        len(records), len(records), True
+    def _cmp(check_type, chart_val, detail_val, label):
+        ok = (chart_val == detail_val)
+        _save_check(
+            None, check_type,
+            chart_val, detail_val, ok,
+            None if ok else f"{label}不一致: 图表口径={chart_val} vs 明细口径={detail_val}"
+        )
+
+    _cmp("total_records", chart_total_records, detail_total_records, "总记录数")
+    _cmp("verified_count", csv_verified_count, detail_verified_count, "已验算记录数")
+    _cmp("out_of_bounds_count", chart_oob_count, detail_oob_count, "越界记录数")
+    _cmp("note_impact_count", note_judgment_change_count, note_change_count, "备注影响数")
+    _save_check(None, "manual_change_count", manual_change_count, manual_change_count, True)
+
+    _cmp(
+        "csv_record_count",
+        len(csv_data_rows), detail_total_records, "CSV导出行数与记录数"
     )
-    _save_check(
-        None, "verified_count",
-        verified_count_chart or verified_count_detail, verified_count_detail,
-        verified_count_chart == verified_count_detail or True,
-        None if (verified_count_chart == verified_count_detail or verified_count_chart == 0)
-        else f"图表口径 {verified_count_chart} vs 明细口径 {verified_count_detail}"
+    _cmp(
+        "csv_record_codes",
+        len(csv_seen_codes), len(detail_record_codes), "CSV导出记录编码集合大小"
     )
+
+    detail_distance_rounded = round(detail_total_distance, 6)
+    csv_distance_rounded = round(csv_distance_sum, 6)
+    dist_ok = abs(detail_distance_rounded - csv_distance_rounded) < 1e-6
     _save_check(
-        None, "out_of_bounds_count",
-        oob_count_chart or oob_count_detail, oob_count_detail,
-        oob_count_chart == oob_count_detail or True,
-        None if (oob_count_chart == oob_count_detail or oob_count_chart == 0)
-        else f"图表口径 {oob_count_chart} vs 明细口径 {oob_count_detail}"
+        None, "total_distance_sum",
+        csv_distance_rounded, detail_distance_rounded, dist_ok,
+        None if dist_ok
+        else f"距离总和不一致: 导出口径={csv_distance_rounded} vs 明细口径={detail_distance_rounded}"
     )
-    _save_check(
-        None, "note_impact_count",
-        chart_note_change_count, note_change_count,
-        chart_note_change_count == note_change_count,
-        None if chart_note_change_count == note_change_count
-        else f"图表口径 {chart_note_change_count} vs 明细口径 {note_change_count}"
+    _cmp(
+        "distance_record_count",
+        csv_distance_count, detail_distance_count, "有距离值的记录数"
     )
-    _save_check(
-        None, "manual_change_count",
-        record_changes, record_changes, True
+
+    _cmp(
+        "processed_count",
+        chart_processed_count,
+        sum(1 for r in records if r.processing_status in ("processed", "revised")),
+        "已处理记录数"
+    )
+    _cmp(
+        "pending_count",
+        chart_pending_count,
+        sum(1 for r in records if r.processing_status in ("pending", "error")),
+        "待处理记录数"
     )
 
     for record in records:
-        _save_check(
-            record.id, "distance_match",
-            record.current_distance, record.current_distance, True
-        )
-        _save_check(
-            record.id, "judgment_match",
-            record.current_judgment, record.current_judgment, True
-        )
+        csv_row = None
+        if rec_code_idx >= 0:
+            for row in csv_data_rows:
+                if row and len(row) > rec_code_idx and row[rec_code_idx] == record.record_code:
+                    csv_row = row
+                    break
+
+        if csv_row is not None:
+            csv_judge = csv_row[cur_judge_idx] if cur_judge_idx >= 0 and len(csv_row) > cur_judge_idx else ""
+            judge_ok = (csv_judge == record.current_judgment)
+            _save_check(
+                record.id, "judgment_match",
+                csv_judge, record.current_judgment, judge_ok,
+                None if judge_ok
+                else f"CSV判定={csv_judge} vs 记录判定={record.current_judgment}"
+            )
+
+            csv_oob_flag = csv_row[oob_idx] if oob_idx >= 0 and len(csv_row) > oob_idx else ""
+            record_oob_flag = "是" if record.is_out_of_bounds else "否"
+            oob_ok = (csv_oob_flag == record_oob_flag)
+            _save_check(
+                record.id, "out_of_bounds_match",
+                csv_oob_flag, record_oob_flag, oob_ok,
+                None if oob_ok
+                else f"CSV越界标记={csv_oob_flag} vs 记录越界标记={record_oob_flag}"
+            )
+
+            if dist_idx >= 0 and len(csv_row) > dist_idx:
+                try:
+                    csv_dist = float(csv_row[dist_idx]) if csv_row[dist_idx] else None
+                except ValueError:
+                    csv_dist = None
+                if csv_dist is not None and record.current_distance is not None:
+                    dist_ok = abs(csv_dist - float(record.current_distance)) < 1e-6
+                    _save_check(
+                        record.id, "distance_match",
+                        csv_dist, round(float(record.current_distance), 6), dist_ok,
+                        None if dist_ok
+                        else f"CSV距离={csv_dist} vs 记录距离={record.current_distance}"
+                    )
+                else:
+                    _save_check(
+                        record.id, "distance_match",
+                        csv_row[dist_idx], record.current_distance, True
+                    )
+            else:
+                _save_check(
+                    record.id, "distance_match",
+                    None, record.current_distance, True
+                )
+        else:
+            _save_check(
+                record.id, "csv_row_exists",
+                "缺失", record.record_code, False,
+                f"记录 {record.record_code} 在 CSV 导出中未找到对应行"
+            )
 
         if record.current_distance is not None and record.original_distance is not None:
             try:

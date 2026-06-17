@@ -378,6 +378,118 @@ class TestRecalcConsistency:
         assert status["total_records"] == len(records)
         assert status["out_of_bounds_count"] == sum(1 for r in records if r.is_out_of_bounds)
 
+    def test_consistency_passes_when_data_aligned(self, db):
+        request = build_sample_request()
+        result = create_batch_with_records(db, request)
+        batch_id = result["batch"].id
+
+        checks = check_recalc_consistency(db, batch_id)
+        assert len(checks) > 0
+
+        inconsistency_keywords = {
+            "不一致", "未找到", "vs"
+        }
+        for c in checks:
+            detail = c.get("inconsistency_detail")
+            if detail:
+                assert not any(k in detail for k in inconsistency_keywords), (
+                    f"未做任何改动的批次不应报告不一致，但 {c['check_type']} 报告: {detail}"
+                )
+
+        check_types = {c["check_type"] for c in checks}
+        for required in (
+            "total_records", "verified_count", "out_of_bounds_count",
+            "csv_record_count", "csv_record_codes", "total_distance_sum",
+            "distance_record_count", "processed_count", "pending_count",
+            "judgment_match", "out_of_bounds_match", "distance_match",
+            "unit_conversion_consistency"
+        ):
+            assert required in check_types, f"一致性检查缺少类型: {required}"
+
+    def test_consistency_detects_judgment_csv_mismatch(self, db):
+        request = build_sample_request()
+        result = create_batch_with_records(db, request)
+        batch_id = result["batch"].id
+
+        records = db.query(models.PathRecord).filter(models.PathRecord.batch_id == batch_id).all()
+        target = next(r for r in records if r.current_judgment == "verified")
+        original_judgment = target.current_judgment
+        target.current_judgment = "out_of_bounds"
+        target.is_out_of_bounds = True
+        db.add(target)
+        db.commit()
+
+        checks = check_recalc_consistency(db, batch_id)
+
+        verified_check = next(
+            (c for c in checks if c["check_type"] == "verified_count"), None
+        )
+        assert verified_check is not None
+        detail_total = sum(
+            1 for r in records if r.current_judgment == "verified"
+        )
+        assert verified_check["is_consistent"] is False or detail_total == int(verified_check["chart_value"]), (
+            f"verified_count 应能感知到不一致: {verified_check}"
+        )
+
+        target_match = next(
+            (c for c in checks if c["record_id"] == target.id and c["check_type"] == "judgment_match"),
+            None
+        )
+        assert target_match is not None
+        if int(verified_check["chart_value"]) != detail_total:
+            assert target_match["is_consistent"] is False or target_match["inconsistency_detail"]
+
+        target.current_judgment = original_judgment
+        target.is_out_of_bounds = False
+        db.add(target)
+        db.commit()
+
+    def test_consistency_detects_unit_conversion_drift(self, db):
+        request = build_sample_request()
+        result = create_batch_with_records(db, request)
+        batch_id = result["batch"].id
+
+        records = db.query(models.PathRecord).filter(models.PathRecord.batch_id == batch_id).all()
+        target = next(
+            (r for r in records
+             if r.current_distance is not None
+             and r.original_distance is not None
+             and r.original_unit
+             and r.current_unit
+             and r.original_unit != r.current_unit),
+            None
+        )
+        if target is None:
+            target = next(
+                r for r in records
+                if r.current_distance is not None and r.original_distance is not None
+            )
+
+        original_distance = target.current_distance
+        target.current_distance = float(target.current_distance) * 1.5
+        db.add(target)
+        db.commit()
+
+        checks = check_recalc_consistency(db, batch_id)
+
+        uc_check = next(
+            (c for c in checks
+             if c["record_id"] == target.id
+             and c["check_type"] == "unit_conversion_consistency"),
+            None
+        )
+        assert uc_check is not None, "应该存在 unit_conversion_consistency 检查项"
+        assert uc_check["is_consistent"] is False, (
+            f"当前距离被人为放大 50% 后，单位换算一致性应判为不一致: {uc_check}"
+        )
+        assert uc_check["inconsistency_detail"] is not None
+        assert "差异" in uc_check["inconsistency_detail"]
+
+        target.current_distance = original_distance
+        db.add(target)
+        db.commit()
+
 
 class TestEvidenceTracking:
     def test_evidence_needed_endpoint(self, db):
