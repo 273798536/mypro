@@ -1,0 +1,203 @@
+{
+  "base_total": 14,
+  "target_total": 11,
+  "base_prompt_version": "v1.0.0",
+  "target_prompt_version": "v2.0.0",
+  "content": {
+    "new": 8,
+    "resolved": 11,
+    "unchanged": 3,
+    "severity_changed": 0,
+    "diffs": [
+      {
+        "status": "resolved",
+        "rule_id": "rule_phone_cn_mobile",
+        "matched_text": "13800001111",
+        "line_number": 2,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_phone_cn_mobile",
+        "matched_text": "19900101123",
+        "line_number": 3,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_cn_name",
+        "matched_text": "姓名: 王小明",
+        "line_number": 3,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "medium"
+      },
+      {
+        "status": "unchanged",
+        "rule_id": "rule_phone_cn_mobile",
+        "matched_text": "18611112222",
+        "line_number": 14,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "high"
+      },
+      {
+        "status": "new",
+        "rule_id": "rule_email",
+        "matched_text": "support_new@company.com",
+        "line_number": 11,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "medium"
+      },
+      {
+        "status": "unchanged",
+        "rule_id": "rule_ipv4",
+        "matched_text": "203.0.113.10",
+        "line_number": 2,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "medium"
+      },
+      {
+        "status": "new",
+        "rule_id": "rule_bank_card",
+        "matched_text": "6217009876543210987",
+        "line_number": 19,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_password_field",
+        "matched_text": "password=123456",
+        "line_number": 7,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "new",
+        "rule_id": "rule_id_card_cn",
+        "matched_text": "440301199505056789",
+        "line_number": 18,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_token_field",
+        "matched_text": "access_token=tok_abc123def456ghi789",
+        "line_number": 8,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_id_card_cn",
+        "matched_text": "110101199001011234",
+        "line_number": 3,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_bank_card",
+        "matched_text": "6222021234567890123",
+        "line_number": 6,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_email",
+        "matched_text": "wangxiaoming@test.com",
+        "line_number": 4,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "medium"
+      },
+      {
+        "status": "new",
+        "rule_id": "rule_bank_card",
+        "matched_text": "440301199505056789",
+        "line_number": 18,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "high"
+      },
+      {
+        "status": "unchanged",
+        "rule_id": "rule_ipv4",
+        "matched_text": "192.168.1.10",
+        "line_number": 12,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "medium"
+      },
+      {
+        "status": "new",
+        "rule_id": "rule_token_field",
+        "matched_text": "access_token=***",
+        "line_number": 8,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_bank_card",
+        "matched_text": "110101199001011234",
+        "line_number": 3,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_phone_cn_mobile",
+        "matched_text": "13900002222",
+        "line_number": 9,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "new",
+        "rule_id": "rule_phone_cn_mobile",
+        "matched_text": "17009876543",
+        "line_number": 19,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "high"
+      },
+      {
+        "status": "resolved",
+        "rule_id": "rule_phone_cn_mobile",
+        "matched_text": "13700003333",
+        "line_number": 16,
+        "source_file": "data/samples/sample_gray_logs_v1.txt",
+        "severity": "high"
+      },
+      {
+        "status": "new",
+        "rule_id": "rule_phone_cn_mobile",
+        "matched_text": "19950505678",
+        "line_number": 18,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "high"
+      },
+      {
+        "status": "new",
+        "rule_id": "rule_email",
+        "matched_text": "g@test.com",
+        "line_number": 4,
+        "source_file": "data/samples/sample_gray_logs_v2.txt",
+        "severity": "medium"
+      }
+    ]
+  },
+  "content_line": {
+    "new": 8,
+    "resolved": 11,
+    "unchanged": 3,
+    "severity_changed": 0
+  },
+  "strict": {
+    "new": 11,
+    "resolved": 14,
+    "unchanged": 0,
+    "severity_changed": 0
+  },
+  "VERDICT": "PASS: content 模式 unchanged=3 > 0, 灰度对比可识别业务记录延续"
+}

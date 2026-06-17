@@ -182,23 +182,57 @@ def check(
     help="输出对比结果文件",
 )
 @click.option(
+    "--match-mode",
+    type=click.Choice(["content", "content_line", "strict"]),
+    default="content",
+    help="匹配模式: content(按内容,默认,适合灰度) / content_line(内容+行号) / strict(严格)",
+)
+@click.option(
+    "--no-normalize-source",
+    is_flag=True,
+    help="strict 模式下不归一化源文件路径 (默认取 basename)",
+)
+@click.option(
+    "--no-unchanged",
+    is_flag=True,
+    help="不在差异表里显示 unchanged 记录",
+)
+@click.option(
     "--show-all",
     is_flag=True,
-    help="显示所有差异项",
+    help="显示所有差异项 (不受默认条数限制)",
 )
-def compare(base_result, target_result, output, show_all):
-    """灰度对比：对比两个检查结果"""
+def compare(base_result, target_result, output, match_mode, no_normalize_source, no_unchanged, show_all):
+    """灰度对比：识别同一业务记录在版本间的延续或变化"""
     engine = ComplianceCheckEngine()
 
-    base = engine.load_result(base_result)
-    target = engine.load_result(target_result)
+    try:
+        base = engine.load_result(base_result)
+        target = engine.load_result(target_result)
+    except Exception as e:
+        console.print(f"[red]加载结果文件失败: {e}[/red]")
+        sys.exit(1)
 
-    comparison = compare_results(base, target)
+    try:
+        comparison = compare_results(
+            base,
+            target,
+            match_mode=match_mode,
+            normalize_source=not no_normalize_source,
+            include_unchanged=not no_unchanged,
+        )
+    except ValueError as e:
+        console.print(f"[red]灰度对比参数错误: {e}[/red]")
+        sys.exit(1)
 
     _print_comparison_summary(comparison)
 
-    if show_all or comparison.diffs:
-        _print_diff_table(comparison.diffs)
+    display_diffs = comparison.diffs
+    if no_unchanged:
+        display_diffs = [d for d in display_diffs if d.status != "unchanged"]
+
+    if display_diffs:
+        _print_diff_table(display_diffs, show_all=show_all)
 
     if output:
         Path(output).parent.mkdir(parents=True, exist_ok=True)
@@ -553,12 +587,14 @@ def _print_comparison_summary(comparison):
     text.append(f"新增问题: {summary['new_findings']}\n", style="red")
     text.append(f"已解决: {summary['resolved_findings']}\n", style="green")
     text.append(f"严重度变化: {summary['severity_changed']}\n", style="yellow")
-    text.append(f"未变化: {summary['unchanged']}", style="white")
+    text.append(f"未变化(延续): {summary['unchanged']}\n", style="white")
+    match_mode = summary.get('match_mode', 'content')
+    text.append(f"匹配模式: {match_mode}", style="dim")
 
     console.print(Panel(text, title="灰度对比结果", border_style="blue"))
 
 
-def _print_diff_table(diffs):
+def _print_diff_table(diffs, show_all=False):
     table = Table(title="差异详情")
     table.add_column("状态", style="bold")
     table.add_column("规则ID", style="cyan")
@@ -571,13 +607,17 @@ def _print_diff_table(diffs):
         "new": "red",
         "resolved": "green",
         "severity_changed": "yellow",
+        "unchanged": "dim",
     }
 
-    for diff in diffs[:20]:
+    limit = len(diffs) if show_all else 20
+    for diff in diffs[:limit]:
         status_style = status_colors.get(diff.status, "white")
         sev_change = ""
         if diff.severity_changed:
             sev_change = f"{diff.base_severity.value} → {diff.target_severity.value}"
+        elif diff.status == "unchanged":
+            sev_change = "—"
         table.add_row(
             f"[{status_style}]{diff.status}[/{status_style}]",
             diff.rule_id,
@@ -587,8 +627,8 @@ def _print_diff_table(diffs):
             sev_change,
         )
 
-    if len(diffs) > 20:
-        console.print(f"... 还有 {len(diffs) - 20} 条差异未显示")
+    if len(diffs) > limit:
+        console.print(f"... 还有 {len(diffs) - limit} 条差异未显示 (使用 --show-all 查看)")
 
     console.print(table)
 

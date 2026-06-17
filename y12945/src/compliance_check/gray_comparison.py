@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Callable, Optional
+from collections import defaultdict
+from pathlib import Path
 
 from .models import (
     CheckResult,
@@ -13,94 +15,170 @@ from .models import (
 )
 
 
-def _finding_signature(finding: Finding) -> Tuple[str, str, int, str]:
-    return (
-        finding.rule_id,
-        finding.matched_text,
-        finding.line_number,
-        finding.source_file,
-    )
+def _content_key(finding: Finding) -> Tuple[str, str]:
+    return (finding.rule_id, finding.matched_text)
+
+
+def _content_line_key(finding: Finding) -> Tuple[str, str, int]:
+    return (finding.rule_id, finding.matched_text, finding.line_number)
+
+
+def _strict_key(finding: Finding, normalize_source: bool) -> Tuple[str, str, int, str]:
+    source = _normalize_source(finding.source_file) if normalize_source else finding.source_file
+    return (finding.rule_id, finding.matched_text, finding.line_number, source)
+
+
+def _normalize_source(source_file: str) -> str:
+    return Path(source_file).name
+
+
+MATCH_MODE_CONTENT = "content"
+MATCH_MODE_CONTENT_LINE = "content_line"
+MATCH_MODE_STRICT = "strict"
+
+MATCH_MODES = (MATCH_MODE_CONTENT, MATCH_MODE_CONTENT_LINE, MATCH_MODE_STRICT)
+
+
+def _build_key(finding: Finding, match_mode: str, normalize_source: bool):
+    if match_mode == MATCH_MODE_CONTENT:
+        return _content_key(finding)
+    if match_mode == MATCH_MODE_CONTENT_LINE:
+        return _content_line_key(finding)
+    if match_mode == MATCH_MODE_STRICT:
+        return _strict_key(finding, normalize_source)
+    raise ValueError(f"不支持的匹配模式: {match_mode}，可选: {list(MATCH_MODES)}")
+
+
+def _build_groups(
+    result: CheckResult,
+    match_mode: str,
+    normalize_source: bool,
+) -> Dict[Tuple, List[Finding]]:
+    groups: Dict[Tuple, List[Finding]] = defaultdict(list)
+    for f in result.findings:
+        key = _build_key(f, match_mode, normalize_source)
+        groups[key].append(f)
+    return groups
+
+
+def _max_severity(findings: List[Finding]) -> Severity:
+    order = get_severity_order()
+    return max(findings, key=lambda f: order[f.severity]).severity
 
 
 def compare_results(
     base_result: CheckResult,
     target_result: CheckResult,
+    match_mode: str = MATCH_MODE_CONTENT,
+    normalize_source: bool = True,
+    include_unchanged: bool = True,
 ) -> GrayComparisonResult:
-    base_map: Dict[Tuple[str, str, int, str], Finding] = {}
-    target_map: Dict[Tuple[str, str, int, str], Finding] = {}
+    """
+    灰度对比：识别同一业务记录在版本间的延续或变化。
 
-    for f in base_result.findings:
-        sig = _finding_signature(f)
-        base_map[sig] = f
+    匹配模式 match_mode：
+        - "content"      (默认) 按 (规则ID, 匹配文本) 匹配。
+                          适合灰度对比：同一业务数据在不同版本/不同文件中，
+                          只要敏感内容相同即视为同一条记录，可识别延续。
+        - "content_line" 按 (规则ID, 匹配文本, 行号) 匹配。
+        - "strict"       按 (规则ID, 匹配文本, 行号, 源文件) 严格匹配。
 
-    for f in target_result.findings:
-        sig = _finding_signature(f)
-        target_map[sig] = f
+    normalize_source：strict 模式下是否把源文件归一化为 basename，
+        避免不同版本的同名文件被误判为不同来源。
 
-    all_sigs = set(base_map.keys()) | set(target_map.keys())
+    include_unchanged：是否在 diffs 中输出 unchanged 记录，
+        方便看到哪些业务记录在版本间延续了下来。
+    """
+    if base_result is None or target_result is None:
+        raise ValueError("base_result 与 target_result 不能为空")
+    if match_mode not in MATCH_MODES:
+        raise ValueError(f"不支持的匹配模式: {match_mode}，可选: {list(MATCH_MODES)}")
+
+    base_groups = _build_groups(base_result, match_mode, normalize_source)
+    target_groups = _build_groups(target_result, match_mode, normalize_source)
+
+    all_keys: set = set(base_groups.keys()) | set(target_groups.keys())
+
     diffs: List[ComparisonDiff] = []
+    new_count = 0
+    resolved_count = 0
+    severity_changed_count = 0
+    unchanged_count = 0
 
-    new_findings = 0
-    resolved_findings = 0
-    severity_changed = 0
+    for key in all_keys:
+        base_findings = base_groups.get(key, [])
+        target_findings = target_groups.get(key, [])
 
-    for sig in all_sigs:
-        base_finding = base_map.get(sig)
-        target_finding = target_map.get(sig)
+        if base_findings and not target_findings:
+            resolved_count += len(base_findings)
+            for f in base_findings:
+                diffs.append(ComparisonDiff(
+                    finding_id=f.finding_id,
+                    rule_id=f.rule_id,
+                    matched_text=f.matched_text,
+                    line_number=f.line_number,
+                    source_file=f.source_file,
+                    status="resolved",
+                    base_only=True,
+                    base_severity=f.severity,
+                ))
 
-        if base_finding and not target_finding:
-            resolved_findings += 1
-            diff = ComparisonDiff(
-                finding_id=base_finding.finding_id,
-                rule_id=base_finding.rule_id,
-                matched_text=base_finding.matched_text,
-                line_number=base_finding.line_number,
-                source_file=base_finding.source_file,
-                status="resolved",
-                base_only=True,
-                base_severity=base_finding.severity,
-            )
-            diffs.append(diff)
-
-        elif not base_finding and target_finding:
-            new_findings += 1
-            diff = ComparisonDiff(
-                finding_id=target_finding.finding_id,
-                rule_id=target_finding.rule_id,
-                matched_text=target_finding.matched_text,
-                line_number=target_finding.line_number,
-                source_file=target_finding.source_file,
-                status="new",
-                target_only=True,
-                target_severity=target_finding.severity,
-            )
-            diffs.append(diff)
+        elif not base_findings and target_findings:
+            new_count += len(target_findings)
+            for f in target_findings:
+                diffs.append(ComparisonDiff(
+                    finding_id=f.finding_id,
+                    rule_id=f.rule_id,
+                    matched_text=f.matched_text,
+                    line_number=f.line_number,
+                    source_file=f.source_file,
+                    status="new",
+                    target_only=True,
+                    target_severity=f.severity,
+                ))
 
         else:
-            base_sev = base_finding.severity
-            target_sev = target_finding.severity
+            base_sev = _max_severity(base_findings)
+            target_sev = _max_severity(target_findings)
+
             if base_sev != target_sev:
-                severity_changed += 1
-                diff = ComparisonDiff(
-                    finding_id=target_finding.finding_id,
-                    rule_id=target_finding.rule_id,
-                    matched_text=target_finding.matched_text,
-                    line_number=target_finding.line_number,
-                    source_file=target_finding.source_file,
-                    status="severity_changed",
-                    severity_changed=True,
-                    base_severity=base_sev,
-                    target_severity=target_sev,
-                )
-                diffs.append(diff)
+                severity_changed_count += len(target_findings)
+                for f in target_findings:
+                    diffs.append(ComparisonDiff(
+                        finding_id=f.finding_id,
+                        rule_id=f.rule_id,
+                        matched_text=f.matched_text,
+                        line_number=f.line_number,
+                        source_file=f.source_file,
+                        status="severity_changed",
+                        severity_changed=True,
+                        base_severity=base_sev,
+                        target_severity=target_sev,
+                    ))
+            else:
+                unchanged_count += len(target_findings)
+                if include_unchanged:
+                    for f in target_findings:
+                        diffs.append(ComparisonDiff(
+                            finding_id=f.finding_id,
+                            rule_id=f.rule_id,
+                            matched_text=f.matched_text,
+                            line_number=f.line_number,
+                            source_file=f.source_file,
+                            status="unchanged",
+                            base_severity=f.severity,
+                            target_severity=f.severity,
+                        ))
 
     summary = {
         "total_base_findings": len(base_result.findings),
         "total_target_findings": len(target_result.findings),
-        "new_findings": new_findings,
-        "resolved_findings": resolved_findings,
-        "severity_changed": severity_changed,
-        "unchanged": len(all_sigs) - new_findings - resolved_findings - severity_changed,
+        "new_findings": new_count,
+        "resolved_findings": resolved_count,
+        "severity_changed": severity_changed_count,
+        "unchanged": unchanged_count,
+        "match_mode": match_mode,
+        "normalize_source": normalize_source,
         "base_prompt_version": base_result.prompt_version,
         "target_prompt_version": target_result.prompt_version,
         "base_sample_batch": base_result.sample_batch,
@@ -116,9 +194,9 @@ def compare_results(
         compare_time=datetime.now(),
         total_base_findings=len(base_result.findings),
         total_target_findings=len(target_result.findings),
-        new_findings=new_findings,
-        resolved_findings=resolved_findings,
-        severity_changed=severity_changed,
+        new_findings=new_count,
+        resolved_findings=resolved_count,
+        severity_changed=severity_changed_count,
         diffs=diffs,
         summary=summary,
     )

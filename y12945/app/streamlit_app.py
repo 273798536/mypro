@@ -324,6 +324,20 @@ elif page == "⚖️ 灰度对比":
         sample_dir = get_sample_dir()
         st.info("将使用 sample_gray_logs_v1.txt 和 sample_gray_logs_v2.txt 的检查结果对比")
 
+    st.markdown("#### 匹配模式")
+    match_mode = st.radio(
+        "选择匹配模式（决定如何识别同一业务记录的延续）",
+        options=["content", "content_line", "strict"],
+        format_func=lambda x: {
+            "content": "content：按内容匹配（推荐，灰度对比默认）",
+            "content_line": "content_line：按内容+行号匹配",
+            "strict": "strict：严格匹配（含源文件，不同文件会判为不同记录）",
+        }[x],
+        index=0,
+        help="灰度对比两个不同文件时，content 模式只按规则ID+敏感内容判断是否同一条记录，能识别跨版本的延续。",
+    )
+    include_unchanged = st.checkbox("在差异表显示 unchanged（延续）记录", value=True)
+
     if st.button("执行对比", type="primary", disabled=not (base_file and target_file) and not use_sample):
         with st.spinner("正在对比..."):
             if use_sample:
@@ -358,7 +372,12 @@ elif page == "⚖️ 灰度对比":
                     os.unlink(base_path)
                     os.unlink(target_path)
 
-            comparison = compare_results(base_result, target_result)
+            comparison = compare_results(
+                base_result,
+                target_result,
+                match_mode=match_mode,
+                include_unchanged=include_unchanged,
+            )
             st.session_state.comparison = comparison
             st.session_state.base_result = base_result
             st.session_state.target_result = target_result
@@ -381,11 +400,13 @@ elif page == "⚖️ 灰度对比":
         with col4:
             st.metric("已解决", summary["resolved_findings"], delta_color="normal")
 
-        col5, col6 = st.columns(2)
+        col5, col6, col7 = st.columns(3)
         with col5:
             st.metric("严重度变化", summary["severity_changed"])
         with col6:
-            st.metric("未变化", summary["unchanged"])
+            st.metric("未变化(延续)", summary["unchanged"])
+        with col7:
+            st.metric("匹配模式", summary.get("match_mode", "content"))
 
         if summary.get("base_prompt_version") or summary.get("target_prompt_version"):
             st.info(
@@ -398,10 +419,16 @@ elif page == "⚖️ 灰度对比":
                 f"→ {summary.get('target_sample_batch', '未设置')}"
             )
 
+        if summary.get("unchanged", 0) == 0 and summary.get("match_mode") == "strict":
+            st.warning(
+                "⚠️ strict 模式下不同源文件会被判为不同记录，导致 unchanged 为 0。"
+                "灰度对比同一业务数据的不同版本时，建议切换为 content 模式。"
+            )
+
         st.markdown("### 差异详情")
         diff_filter = st.selectbox(
             "筛选差异类型",
-            ["全部", "new", "resolved", "severity_changed"],
+            ["全部", "new", "resolved", "severity_changed", "unchanged"],
         )
 
         diffs = comparison.diffs
@@ -413,18 +440,21 @@ elif page == "⚖️ 灰度对比":
             sev_change = ""
             if d.severity_changed:
                 sev_change = f"{d.base_severity.value} → {d.target_severity.value}"
+            elif d.status == "unchanged":
+                sev_change = "—"
             diff_data.append({
                 "状态": d.status,
                 "规则ID": d.rule_id,
                 "匹配文本": d.matched_text,
                 "行号": d.line_number,
                 "源文件": Path(d.source_file).name,
+                "严重度": (d.target_severity.value if d.target_severity else "") if d.status != "resolved" else (d.base_severity.value if d.base_severity else ""),
                 "严重度变化": sev_change,
             })
         diff_df = pd.DataFrame(diff_data)
         st.dataframe(diff_df, use_container_width=True, hide_index=True)
 
-        st.info(f"共 {len(diffs)} 条差异记录")
+        st.info(f"共 {len(diffs)} 条差异记录（可按状态筛选查看）")
 
 elif page == "📼 评测回放":
     st.header("📼 评测回放")
