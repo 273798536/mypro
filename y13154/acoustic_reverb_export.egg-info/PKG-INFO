@@ -1,0 +1,6 @@
+Metadata-Version: 2.4
+Name: acoustic-reverb-export
+Version: 1.0.0
+Summary: 声学混响报告导出 - 参数版本/照片/采样缺口/重跑追溯的值班脚本工具
+Author: acoustic-reverb-export
+Requires-Python: >=3.8

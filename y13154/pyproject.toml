@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "acoustic-reverb-export"
+version = "1.0.0"
+description = "声学混响报告导出 - 参数版本/照片/采样缺口/重跑追溯的值班脚本工具"
+requires-python = ">=3.8"
+authors = [{ name = "acoustic-reverb-export" }]
+dependencies = []
+
+[project.scripts]
+reverb-cli = "reverb_cli:main"
+
+[tool.setuptools]
+py-modules = ["reverb_cli"]
+packages = ["acoustic_reverb_export", "acoustic_reverb_export.core"]

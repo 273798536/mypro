@@ -75,6 +75,7 @@ class Storage:
                     frequency_range TEXT,
                     impact_scope TEXT NOT NULL,
                     description TEXT,
+                    is_manual INTEGER DEFAULT 0,
                     detected_at TEXT NOT NULL,
                     FOREIGN KEY(report_run_id) REFERENCES report_runs(id)
                 );
@@ -113,6 +114,19 @@ class Storage:
                 """
             )
             conn.commit()
+        self._migrate()
+
+    def _migrate(self):
+        """对已存在的旧库做增量迁移, 保证新增列存在。"""
+        conn = self._get_conn()
+        with self._lock:
+            cursor = conn.execute("PRAGMA table_info(sampling_gaps)")
+            existing_cols = {row["name"] for row in cursor.fetchall()}
+            if "is_manual" not in existing_cols:
+                conn.execute(
+                    "ALTER TABLE sampling_gaps ADD COLUMN is_manual INTEGER DEFAULT 0"
+                )
+                conn.commit()
 
     @staticmethod
     def _now() -> str:
@@ -470,11 +484,12 @@ class Storage:
         end_time: str = "",
         frequency_range: str = "",
         description: str = "",
+        is_manual: bool = False,
     ) -> int:
         conn = self._get_conn()
         with self._lock:
             cursor = conn.execute(
-                "INSERT INTO sampling_gaps (report_run_id, gap_type, source_file, source_row, start_time, end_time, frequency_range, impact_scope, description, detected_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO sampling_gaps (report_run_id, gap_type, source_file, source_row, start_time, end_time, frequency_range, impact_scope, description, is_manual, detected_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     report_run_id,
                     gap_type,
@@ -485,6 +500,7 @@ class Storage:
                     frequency_range,
                     impact_scope,
                     description,
+                    1 if is_manual else 0,
                     self._now(),
                 ),
             )
@@ -499,6 +515,7 @@ class Storage:
                     "impact_scope": impact_scope,
                     "source_file": source_file,
                     "source_row": source_row,
+                    "is_manual": is_manual,
                 },
             )
             return cursor.lastrowid

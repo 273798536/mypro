@@ -1,0 +1,265 @@
+{
+  "human_summary": {
+    "报告编号": "RR-20260617-161906-167",
+    "开始时间": "2026-06-17T16:19:06",
+    "触发方": "老唐-手动重跑",
+    "参数版本": "PV-20260617-161906-154",
+    "参数来源": "评审会修改-2026-06-12",
+    "参数操作人": "老唐",
+    "参数备注": "追加8kHz并收紧缺口容忍",
+    "参数内容": {
+      "sample_rate": 48000,
+      "frequency_bands": [
+        "125Hz",
+        "250Hz",
+        "500Hz",
+        "1kHz",
+        "2kHz",
+        "4kHz",
+        "8kHz"
+      ],
+      "reverb_target_t60": 1.1,
+      "window_size_ms": 40,
+      "gap_tolerance_samples": 2,
+      "smoothing": "hann",
+      "denoise_enabled": false,
+      "extra_filter": "lowpass_10kHz"
+    },
+    "照片数量": 4,
+    "采样缺口数量": 3,
+    "缺口影响范围": [
+      "时间缺失 0.005s 约等于 238 个采样点, 影响频带覆盖全部, 来源行 9 ~ 4",
+      "频带采样数量不均匀, 最多 6 最少 3, 涉及 2 个频带",
+      "第200-220行 4kHz幅值全为0, 影响该段混响计算"
+    ],
+    "历史备注": "[2026-06-17T16:19:06] success: 首次跑完, 缺口待人工复核",
+    "当前备注": "重跑完成, 准备交接",
+    "截图说明": "重跑截图: 已按v2参数重新计算, 人工缺口标注在来源行210",
+    "导出时间": "2026-06-17T16:19:06"
+  },
+  "param_trace": {
+    "report_run_tag": "RR-20260617-161906-167",
+    "param_version_tag": "PV-20260617-161906-154",
+    "param_created_at": "2026-06-17T16:19:06",
+    "param_source": "评审会修改-2026-06-12",
+    "param_operator": "老唐",
+    "param_remark": "追加8kHz并收紧缺口容忍",
+    "params": {
+      "sample_rate": 48000,
+      "frequency_bands": [
+        "125Hz",
+        "250Hz",
+        "500Hz",
+        "1kHz",
+        "2kHz",
+        "4kHz",
+        "8kHz"
+      ],
+      "reverb_target_t60": 1.1,
+      "window_size_ms": 40,
+      "gap_tolerance_samples": 2,
+      "smoothing": "hann",
+      "denoise_enabled": false,
+      "extra_filter": "lowpass_10kHz"
+    },
+    "is_current_active": true
+  },
+  "photos": [
+    {
+      "photo_id": "P20260612-004",
+      "source_system": "示例数据集",
+      "process_status": "linked",
+      "raw_description": "观众厅后墙扩散体间距异常，需要二次确认",
+      "file_path": "/photos/20260612/P20260612-004.jpg",
+      "reviewer": "张工",
+      "upload_time": "2026-06-12 10:15:00",
+      "original_fields": {
+        "照片id": "P20260612-004",
+        "问题描述": "观众厅后墙扩散体间距异常，需要二次确认",
+        "图片地址": "/photos/20260612/P20260612-004.jpg",
+        "日期": "2026-06-12 10:15:00",
+        "审核人": "张工",
+        "来源": "现场APP-iOS",
+        "我们_自己加的字段_前后不一": "就是这个字段"
+      },
+      "normalized_fields": {
+        "photo_id": "P20260612-004",
+        "raw_description": "观众厅后墙扩散体间距异常，需要二次确认",
+        "file_path": "/photos/20260612/P20260612-004.jpg",
+        "upload_time": "2026-06-12 10:15:00",
+        "reviewer": "张工",
+        "source_system": "示例数据集"
+      }
+    },
+    {
+      "photo_id": "P20260612-003",
+      "source_system": "示例数据集",
+      "process_status": "linked",
+      "raw_description": "舞台幕布已更换，待复测",
+      "file_path": "/photos/20260612/P20260612-003.jpg",
+      "reviewer": "张工",
+      "upload_time": "2026-06-12 10:02:00",
+      "original_fields": {
+        "图片id": "P20260612-003",
+        "原始备注": "舞台幕布已更换，待复测",
+        "路径": "/photos/20260612/P20260612-003.jpg",
+        "上传时间": "2026-06-12 10:02:00",
+        "操作人": "张工",
+        "系统": "网页后台"
+      },
+      "normalized_fields": {
+        "photo_id": "P20260612-003",
+        "raw_description": "舞台幕布已更换，待复测",
+        "file_path": "/photos/20260612/P20260612-003.jpg",
+        "upload_time": "2026-06-12 10:02:00",
+        "reviewer": "张工",
+        "source_system": "示例数据集"
+      }
+    },
+    {
+      "photo_id": "P20260612-002",
+      "source_system": "示例数据集",
+      "process_status": "linked",
+      "raw_description": "走廊吊顶空腔过大，疑似造成低频混响过长",
+      "file_path": "/photos/20260612/P20260612-002.jpg",
+      "reviewer": "老王",
+      "upload_time": "2026-06-12 09:25:00",
+      "original_fields": {
+        "PhotoID": "P20260612-002",
+        "备注说明": "走廊吊顶空腔过大，疑似造成低频混响过长",
+        "FilePath": "/photos/20260612/P20260612-002.jpg",
+        "UploadTime": "2026-06-12 09:25:00",
+        "Reviewer": "老王",
+        "SourceSystem": "现场APP-iOS"
+      },
+      "normalized_fields": {
+        "photo_id": "P20260612-002",
+        "raw_description": "走廊吊顶空腔过大，疑似造成低频混响过长",
+        "file_path": "/photos/20260612/P20260612-002.jpg",
+        "upload_time": "2026-06-12 09:25:00",
+        "reviewer": "老王",
+        "source_system": "示例数据集"
+      }
+    },
+    {
+      "photo_id": "P20260612-001",
+      "source_system": "示例数据集",
+      "process_status": "linked",
+      "raw_description": "会议室A东北角吸声棉安装到位，混响目测正常",
+      "file_path": "/photos/20260612/P20260612-001.jpg",
+      "reviewer": "老王",
+      "upload_time": "2026-06-12 09:21:00",
+      "original_fields": {
+        "照片编号": "P20260612-001",
+        "现场描述": "会议室A东北角吸声棉安装到位，混响目测正常",
+        "文件路径": "/photos/20260612/P20260612-001.jpg",
+        "提交时间": "2026-06-12 09:21:00",
+        "复核人": "老王",
+        "来源系统": "现场APP-安卓"
+      },
+      "normalized_fields": {
+        "photo_id": "P20260612-001",
+        "raw_description": "会议室A东北角吸声棉安装到位，混响目测正常",
+        "file_path": "/photos/20260612/P20260612-001.jpg",
+        "upload_time": "2026-06-12 09:21:00",
+        "reviewer": "老王",
+        "source_system": "示例数据集"
+      }
+    }
+  ],
+  "sampling_gaps": [
+    {
+      "id": 4,
+      "report_run_id": 2,
+      "gap_type": "time_missing",
+      "source_file": "/Users/mac/pro/solo/workspaces/y13154/examples/samples_with_gap.json",
+      "source_row": 4,
+      "start_time": "4e-05",
+      "end_time": "0.005",
+      "frequency_range": "",
+      "impact_scope": "时间缺失 0.005s 约等于 238 个采样点, 影响频带覆盖全部, 来源行 9 ~ 4",
+      "description": "连续两帧时间差 0.005s 超过容忍 0.000s, 源文件 /Users/mac/pro/solo/workspaces/y13154/examples/samples_with_gap.json 行 4",
+      "is_manual": 0,
+      "detected_at": "2026-06-17T16:19:06"
+    },
+    {
+      "id": 5,
+      "report_run_id": 2,
+      "gap_type": "frequency_missing",
+      "source_file": "/Users/mac/pro/solo/workspaces/y13154/examples/samples_with_gap.json",
+      "source_row": null,
+      "start_time": "",
+      "end_time": "",
+      "frequency_range": "1kHz,500Hz",
+      "impact_scope": "频带采样数量不均匀, 最多 6 最少 3, 涉及 2 个频带",
+      "description": "各频带采样点数差异超过 10%, 请检查数据采集是否对所有频带一致, 1kHz=3; 500Hz=6",
+      "is_manual": 0,
+      "detected_at": "2026-06-17T16:19:06"
+    },
+    {
+      "id": 6,
+      "report_run_id": 2,
+      "gap_type": "data_corrupt",
+      "source_file": "/Users/mac/pro/solo/workspaces/y13154/examples/samples_with_gap.json",
+      "source_row": 210,
+      "start_time": "",
+      "end_time": "",
+      "frequency_range": "",
+      "impact_scope": "第200-220行 4kHz幅值全为0, 影响该段混响计算",
+      "description": "老唐人工扫到: 原始CSV第210行附近4kHz全0",
+      "is_manual": 1,
+      "detected_at": "2026-06-17T16:19:06"
+    }
+  ],
+  "extra": {},
+  "audit_trail_tail": [
+    {
+      "id": 41,
+      "entity_type": "report_run",
+      "entity_id": 2,
+      "action": "update",
+      "before_json": "{\"id\": 2, \"run_tag\": \"RR-20260617-161906-167\", \"param_version_id\": 2, \"status\": \"running\", \"failure_reason\": null, \"screenshot_path\": null, \"screenshot_description\": null, \"export_path\": null, \"historical_remark\": \"[2026-06-17T16:19:06] success: 首次跑完, 缺口待人工复核\", \"current_remark\": null, \"triggered_by\": \"老唐-手动重跑\", \"started_at\": \"2026-06-17T16:19:06\", \"finished_at\": null}",
+      "after_json": "{\"status\": \"success\", \"screenshot_path\": \"/screenshots/20260613-retry.png\", \"screenshot_description\": \"重跑截图: 已按v2参数重新计算, 人工缺口标注在来源行210\", \"current_remark\": \"重跑完成, 准备交接\", \"finished_at\": \"2026-06-17T16:19:06\"}",
+      "operator": "老唐-手动重跑",
+      "remark": "",
+      "created_at": "2026-06-17T16:19:06",
+      "before": {
+        "id": 2,
+        "run_tag": "RR-20260617-161906-167",
+        "param_version_id": 2,
+        "status": "running",
+        "failure_reason": null,
+        "screenshot_path": null,
+        "screenshot_description": null,
+        "export_path": null,
+        "historical_remark": "[2026-06-17T16:19:06] success: 首次跑完, 缺口待人工复核",
+        "current_remark": null,
+        "triggered_by": "老唐-手动重跑",
+        "started_at": "2026-06-17T16:19:06",
+        "finished_at": null
+      },
+      "after": {
+        "status": "success",
+        "screenshot_path": "/screenshots/20260613-retry.png",
+        "screenshot_description": "重跑截图: 已按v2参数重新计算, 人工缺口标注在来源行210",
+        "current_remark": "重跑完成, 准备交接",
+        "finished_at": "2026-06-17T16:19:06"
+      }
+    },
+    {
+      "id": 25,
+      "entity_type": "report_run",
+      "entity_id": 2,
+      "action": "create",
+      "before_json": null,
+      "after_json": "{\"run_tag\": \"RR-20260617-161906-167\", \"param_version_id\": 2}",
+      "operator": "老唐-手动重跑",
+      "remark": "",
+      "created_at": "2026-06-17T16:19:06",
+      "after": {
+        "run_tag": "RR-20260617-161906-167",
+        "param_version_id": 2
+      }
+    }
+  ]
+}

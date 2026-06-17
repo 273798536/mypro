@@ -10,6 +10,7 @@ import argparse
 import json
 import sys
 import os
+import shutil
 from typing import Any, Dict
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -78,8 +79,9 @@ def cmd_param(args):
 def cmd_export(args):
     storage = Storage(args.db)
     exporter = ReportExporter(storage)
-    sample_rows = _load_json(args.samples_file) or []
-    photo_rows = _load_json(args.photos_file) or []
+    # 注意: 未提供文件时保持 None, 不能用 `or []`, 否则 retry 的继承判断会失效
+    sample_rows = _load_json(args.samples_file)
+    photo_rows = _load_json(args.photos_file)
     if args.run_tag:
         result = exporter.retry(
             run_tag=args.run_tag,
@@ -165,6 +167,55 @@ def cmd_list(args):
     return 0
 
 
+def cmd_show(args):
+    """查看 / 下载某次 run 的导出文件。"""
+    storage = Storage(args.db)
+    run = storage.get_report_run(run_tag=args.run_tag)
+    if not run:
+        _print_json({"status": "failed", "failure_reason": f"找不到 run_tag={args.run_tag}"})
+        return 1
+    export_path = run.get("export_path") or ""
+    if not export_path or not os.path.exists(export_path):
+        _print_json({
+            "status": "failed",
+            "failure_reason": f"导出文件不存在: {export_path or '(未生成)'}",
+            "run_tag": args.run_tag,
+        })
+        return 1
+    if args.copy:
+        dest = os.path.abspath(args.copy)
+        os.makedirs(os.path.dirname(dest) or ".", exist_ok=True)
+        shutil.copyfile(export_path, dest)
+        _print_json({
+            "status": "success",
+            "run_tag": args.run_tag,
+            "source": export_path,
+            "copied_to": dest,
+            "message": f"已复制到 {dest}",
+        })
+        return 0
+    with open(export_path, "r", encoding="utf-8") as f:
+        artifact = json.load(f)
+    if args.field and isinstance(artifact, dict):
+        keys = args.field.split(".")
+        cur = artifact
+        for k in keys:
+            if isinstance(cur, dict) and k in cur:
+                cur = cur[k]
+            else:
+                _print_json({"status": "failed", "failure_reason": f"字段不存在: {args.field}"})
+                return 1
+        _print_json({"status": "success", "run_tag": args.run_tag, "field": args.field, "value": cur})
+        return 0
+    _print_json({
+        "status": "success",
+        "run_tag": args.run_tag,
+        "export_path": export_path,
+        "artifact": artifact,
+    })
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(prog="reverb-cli", description="声学混响报告导出 CLI")
     parser.add_argument("--db", default=None, help="SQLite 数据库路径, 默认使用内置路径")
@@ -209,6 +260,11 @@ def main():
     p_lst.add_argument("what", choices=["runs", "photos"])
     p_lst.add_argument("--limit", type=int, default=50)
 
+    p_show = sub.add_parser("show", help="查看/下载某次 run 的导出文件")
+    p_show.add_argument("run_tag", help="报告 run_tag")
+    p_show.add_argument("--copy", help="复制导出文件到该路径 (下载)")
+    p_show.add_argument("--field", help="只输出指定字段, 如 human_summary.照片数量")
+
     args = parser.parse_args()
     if args.cmd == "param":
         sys.exit(cmd_param(args))
@@ -220,6 +276,8 @@ def main():
         sys.exit(cmd_trace(args))
     if args.cmd == "list":
         sys.exit(cmd_list(args))
+    if args.cmd == "show":
+        sys.exit(cmd_show(args))
     parser.print_help()
     sys.exit(1)
 

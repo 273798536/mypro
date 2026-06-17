@@ -106,12 +106,16 @@ class ReportExporter:
         historical_remark: str = "",
         param_version_tag: str = None,
         extra_payload: Dict[str, Any] = None,
+        inherit_from_run_id: int = None,
     ) -> Dict[str, Any]:
         """
         执行一次完整的导出流程, 值班脚本只需调用这一个入口。
 
         返回结构始终包含: run_id / run_tag / status / failure_reason / export_path
         这样值班脚本即使失败也能稳定解析。
+
+        inherit_from_run_id: 重跑时传入旧 run_id, 会把旧 run 关联的采样缺口
+            (含人工补录) 复制到新 run, 保证导出内容与现场照片、处理结果对得上。
         """
         result = {
             "run_id": None,
@@ -164,9 +168,27 @@ class ReportExporter:
                     source_file=source_file,
                 )
                 gap_count = len(detected)
+            # 重跑继承: 把旧 run 的缺口 (含人工补录) 复制到新 run
+            if inherit_from_run_id:
+                inherited = self._inherit_gaps(
+                    old_run_id=inherit_from_run_id,
+                    new_run_id=run_id,
+                    re_detected=bool(sample_rows),
+                )
+                gap_count += inherited
             result["gap_count"] = gap_count
 
-            # 生成导出文件
+            # 先落库截图/备注/成功状态, 再生成导出文件, 确保导出内容与 DB(页面)一致
+            self.storage.update_report_run(
+                run_id=run_id,
+                status="success",
+                screenshot_path=screenshot_path,
+                screenshot_description=screenshot_description,
+                current_remark=current_remark,
+                operator=triggered_by,
+            )
+
+            # 生成导出文件 (此时 DB 已含截图说明/当前备注/状态, 文件内容与页面一致)
             export_path, export_summary = self._build_export_artifact(
                 run_id=run_id,
                 run_tag=run_tag,
@@ -177,11 +199,7 @@ class ReportExporter:
 
             self.storage.update_report_run(
                 run_id=run_id,
-                status="success",
-                screenshot_path=screenshot_path,
-                screenshot_description=screenshot_description,
                 export_path=export_path,
-                current_remark=current_remark,
                 operator=triggered_by,
             )
             result["status"] = "success"
@@ -267,6 +285,39 @@ class ReportExporter:
         return export_path, human_summary
 
     # ---------- 重跑 / 状态补录 ----------
+    def _inherit_gaps(
+        self,
+        old_run_id: int,
+        new_run_id: int,
+        re_detected: bool,
+    ) -> int:
+        """
+        把旧 run 的缺口复制到新 run。
+        - 人工补录缺口 (is_manual=True) 始终复制, 现场判断不丢。
+        - 自动检测缺口仅在未重新检测 (re_detected=False) 时复制, 避免与新鲜检测重复。
+        返回复制的条数。
+        """
+        old_gaps = self.storage.list_gaps(old_run_id)
+        copied = 0
+        for g in old_gaps:
+            is_manual = bool(g.get("is_manual"))
+            if re_detected and not is_manual:
+                continue
+            self.storage.add_sampling_gap(
+                report_run_id=new_run_id,
+                gap_type=g["gap_type"],
+                impact_scope=g["impact_scope"],
+                source_file=g.get("source_file") or "",
+                source_row=g.get("source_row"),
+                start_time=g.get("start_time") or "",
+                end_time=g.get("end_time") or "",
+                frequency_range=g.get("frequency_range") or "",
+                description=g.get("description") or "",
+                is_manual=is_manual,
+            )
+            copied += 1
+        return copied
+
     def retry(
         self,
         run_tag: str,
@@ -280,7 +331,13 @@ class ReportExporter:
         source_system: str = "",
     ) -> Dict[str, Any]:
         """
-        重启后针对某次失败的 run 进行重跑, 历史备注和截图说明通过数据库关联。
+        重启后针对某次 run 进行重跑。
+
+        会继承旧 run 关联的:
+          - 照片 (用原始字段重新接入并挂到新 run, 原始说法不丢)
+          - 采样缺口 (含人工补录, 复制到新 run, 来源行/影响范围保留)
+          - 历史备注 (旧 current_remark + 失败原因 并入 historical_remark)
+        从而保证重跑后导出内容与现场照片、处理结果仍能对得上。
         """
         prev = self.storage.get_report_run(run_tag=run_tag)
         if not prev:
@@ -289,6 +346,19 @@ class ReportExporter:
                 "failure_reason": f"找不到 run_tag={run_tag}",
                 "run_tag": run_tag,
             }
+        prev_id = prev["id"]
+
+        # 继承照片: 未显式传入时, 用旧 run 的原始字段重新接入
+        inherited_source_system = source_system
+        if photo_rows is None:
+            prev_photos = self.storage.list_photos(report_run_id=prev_id)
+            photo_rows = [p["original_fields"] for p in prev_photos]
+            if not inherited_source_system:
+                for p in prev_photos:
+                    if p.get("source_system"):
+                        inherited_source_system = p["source_system"]
+                        break
+
         # 继承历史备注: 把之前的 current_remark 并入 historical_remark
         new_hist = (
             (prev.get("historical_remark") or "").rstrip()
@@ -297,17 +367,26 @@ class ReportExporter:
                if (prev.get("current_remark") or prev.get("failure_reason"))
                else "")
         ).strip()
+
+        active_pv = self.storage.get_param_version(None)
+        if not active_pv:
+            return {
+                "status": "failed",
+                "failure_reason": "没有可用的参数版本, 请先注册参数",
+                "run_tag": run_tag,
+            }
         return self.run_export(
             sample_rows=sample_rows,
             photo_rows=photo_rows,
             source_file=source_file,
-            source_system=source_system,
+            source_system=inherited_source_system,
             screenshot_path=screenshot_path,
             screenshot_description=screenshot_description,
             triggered_by=triggered_by,
             current_remark=current_remark,
             historical_remark=new_hist,
-            param_version_tag=self.storage.get_param_version(None)["version_tag"],
+            param_version_tag=active_pv["version_tag"],
+            inherit_from_run_id=prev_id,
         )
 
     def attach_screenshot(

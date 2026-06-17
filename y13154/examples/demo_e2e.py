@@ -112,6 +112,7 @@ def main():
         triggered_by="老唐-手动重跑",
     )
     print("重跑结果:", json.dumps(retry_result, ensure_ascii=False, indent=2)[:800])
+    assert retry_result["status"] == "success", f"重跑失败: {retry_result}"
     retry_run_tag = retry_result["run_tag"]
     retry_run_detail = exporter.get_run_detail(retry_run_tag)
     print("重跑后的历史备注:")
@@ -119,6 +120,30 @@ def main():
     print("  current_remark    =", retry_run_detail.get("current_remark"))
     print("  screenshot_desc   =", retry_run_detail.get("screenshot_description"))
     print("  status            =", retry_run_detail.get("status"))
+
+    # 关键验证: 重跑必须继承旧 run 的照片与缺口(含人工补录)
+    print("  继承照片数量       =", len(retry_run_detail.get("photos", [])))
+    print("  继承缺口数量       =", len(retry_run_detail.get("gaps", [])))
+    assert len(retry_run_detail.get("photos", [])) > 0, "重跑未继承照片"
+    assert len(retry_run_detail.get("gaps", [])) > 0, "重跑未继承缺口"
+    assert any(
+        g.get("source_row") == 210 for g in retry_run_detail["gaps"]
+    ), "重跑未继承人工补录缺口 (来源行210)"
+    assert any(
+        bool(g.get("is_manual")) for g in retry_run_detail["gaps"]
+    ), "重跑未保留人工缺口标记"
+
+    # 关键验证: 导出文件内容与页面(trace.from_report)数据一致且能正常打开
+    with open(retry_result["export_path"], "r", encoding="utf-8") as f:
+        artifact = json.load(f)
+    hs = artifact["human_summary"]
+    assert hs["照片数量"] == len(retry_run_detail["photos"]), "导出文件照片数与页面不一致"
+    assert hs["采样缺口数量"] == len(retry_run_detail["gaps"]), "导出文件缺口数与页面不一致"
+    assert hs["截图说明"] == retry_run_detail["screenshot_description"], "导出文件截图说明与页面不一致"
+    assert hs["当前备注"] == retry_run_detail["current_remark"], "导出文件当前备注与页面不一致"
+    assert len(artifact["photos"]) == hs["照片数量"], "导出 photos 列表长度与摘要不一致"
+    assert len(artifact["sampling_gaps"]) == hs["采样缺口数量"], "导出 sampling_gaps 长度与摘要不一致"
+    print("  [一致性校验通过] 导出文件与 trace.from_report 完全对得上")
 
     # 6. 老唐交接: 从照片找原始说法 + 从截图讲清处理结果
     sep("Step 6/7: 老唐交接话术 - 从照片找原始说法")

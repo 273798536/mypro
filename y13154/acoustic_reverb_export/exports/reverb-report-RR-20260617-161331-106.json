@@ -1,0 +1,116 @@
+{
+  "human_summary": {
+    "报告编号": "RR-20260617-161331-106",
+    "开始时间": "2026-06-17T16:13:31",
+    "触发方": "老唐-重跑",
+    "参数版本": "PV-20260617-161326-001",
+    "参数来源": "CLI验证",
+    "参数操作人": "老唐",
+    "参数备注": "v2",
+    "参数内容": {
+      "sample_rate": 48000,
+      "frequency_bands": [
+        "125Hz",
+        "250Hz",
+        "500Hz",
+        "1kHz",
+        "2kHz",
+        "4kHz",
+        "8kHz"
+      ],
+      "reverb_target_t60": 1.1,
+      "window_size_ms": 40,
+      "gap_tolerance_samples": 2,
+      "smoothing": "hann",
+      "denoise_enabled": false,
+      "extra_filter": "lowpass_10kHz"
+    },
+    "照片数量": 0,
+    "采样缺口数量": 0,
+    "缺口影响范围": [],
+    "历史备注": "[2026-06-17T16:13:29] success: 首次跑完",
+    "当前备注": "重跑完成",
+    "截图说明": "重跑截图",
+    "导出时间": "2026-06-17T16:13:31"
+  },
+  "param_trace": {
+    "report_run_tag": "RR-20260617-161331-106",
+    "param_version_tag": "PV-20260617-161326-001",
+    "param_created_at": "2026-06-17T16:13:26",
+    "param_source": "CLI验证",
+    "param_operator": "老唐",
+    "param_remark": "v2",
+    "params": {
+      "sample_rate": 48000,
+      "frequency_bands": [
+        "125Hz",
+        "250Hz",
+        "500Hz",
+        "1kHz",
+        "2kHz",
+        "4kHz",
+        "8kHz"
+      ],
+      "reverb_target_t60": 1.1,
+      "window_size_ms": 40,
+      "gap_tolerance_samples": 2,
+      "smoothing": "hann",
+      "denoise_enabled": false,
+      "extra_filter": "lowpass_10kHz"
+    },
+    "is_current_active": true
+  },
+  "photos": [],
+  "sampling_gaps": [],
+  "extra": {},
+  "audit_trail_tail": [
+    {
+      "id": 20,
+      "entity_type": "report_run",
+      "entity_id": 2,
+      "action": "update",
+      "before_json": "{\"id\": 2, \"run_tag\": \"RR-20260617-161331-106\", \"param_version_id\": 1, \"status\": \"running\", \"failure_reason\": null, \"screenshot_path\": null, \"screenshot_description\": null, \"export_path\": null, \"historical_remark\": \"[2026-06-17T16:13:29] success: 首次跑完\", \"current_remark\": null, \"triggered_by\": \"老唐-重跑\", \"started_at\": \"2026-06-17T16:13:31\", \"finished_at\": null}",
+      "after_json": "{\"status\": \"success\", \"screenshot_path\": \"\", \"screenshot_description\": \"重跑截图\", \"current_remark\": \"重跑完成\", \"finished_at\": \"2026-06-17T16:13:31\"}",
+      "operator": "老唐-重跑",
+      "remark": "",
+      "created_at": "2026-06-17T16:13:31",
+      "before": {
+        "id": 2,
+        "run_tag": "RR-20260617-161331-106",
+        "param_version_id": 1,
+        "status": "running",
+        "failure_reason": null,
+        "screenshot_path": null,
+        "screenshot_description": null,
+        "export_path": null,
+        "historical_remark": "[2026-06-17T16:13:29] success: 首次跑完",
+        "current_remark": null,
+        "triggered_by": "老唐-重跑",
+        "started_at": "2026-06-17T16:13:31",
+        "finished_at": null
+      },
+      "after": {
+        "status": "success",
+        "screenshot_path": "",
+        "screenshot_description": "重跑截图",
+        "current_remark": "重跑完成",
+        "finished_at": "2026-06-17T16:13:31"
+      }
+    },
+    {
+      "id": 19,
+      "entity_type": "report_run",
+      "entity_id": 2,
+      "action": "create",
+      "before_json": null,
+      "after_json": "{\"run_tag\": \"RR-20260617-161331-106\", \"param_version_id\": 1}",
+      "operator": "老唐-重跑",
+      "remark": "",
+      "created_at": "2026-06-17T16:13:31",
+      "after": {
+        "run_tag": "RR-20260617-161331-106",
+        "param_version_id": 1
+      }
+    }
+  ]
+}

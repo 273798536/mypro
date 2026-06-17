@@ -63,6 +63,7 @@ class GapDetector:
                             f"连续两帧时间差 {dt:.3f}s 超过容忍 {tolerance:.3f}s, "
                             f"源文件 {source_file or '未提供'} 行 {row.get('row_index')}"
                         ),
+                        "is_manual": False,
                     }
                     self.storage.add_sampling_gap(**gap)
                     gaps.append(gap)
@@ -93,6 +94,7 @@ class GapDetector:
                         "各频带采样点数差异超过 10%, 请检查数据采集是否对所有频带一致, "
                         + "; ".join(f"{k}={v}" for k, v in sorted(band_rows.items()))
                     ),
+                    "is_manual": False,
                 }
                 self.storage.add_sampling_gap(**gap)
                 gaps.append(gap)
@@ -126,6 +128,7 @@ class GapDetector:
             end_time=end_time,
             frequency_range=frequency_range,
             description=description,
+            is_manual=True,
         )
 
     def list_for_report(self, report_run_id: int) -> List[Dict[str, Any]]:
