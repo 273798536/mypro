@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TideRecord } from '../types/tide';
 import { DataStatus } from '../types/common';
-import { formatDateTime, getStatusLabel } from '../utils/format';
+import { formatDateTime } from '../utils/format';
 import { COMMON_TIMEZONES } from '../core/timezone';
 import { ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { StatusBadge } from './StatusBadge';
@@ -133,7 +133,7 @@ export const DataTable: React.FC<DataTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {sortedRecords.map((record, index) => {
+          {sortedRecords.map((record) => {
             const isExpanded = expandedRows.has(record.id);
             const hasIssues = record.status !== DataStatus.AVAILABLE;
             const tzToShow = showOriginalTimezone ? record.originalTimezone : record.timezone;

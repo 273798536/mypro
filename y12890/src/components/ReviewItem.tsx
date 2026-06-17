@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, MessageSquare, ArrowRight, Check } from 'lucide-react';
 import { ReviewEntry } from '../types/review';
 import { DataStatus, NextStep, ReviewEntryType } from '../types/common';
-import { getStatusLabel, getNextStepLabel, getNextStepDescription, formatDateTime } from '../utils/format';
+import { getNextStepLabel, getNextStepDescription, formatDateTime } from '../utils/format';
 import { StatusBadge } from './StatusBadge';
 
 interface ReviewItemProps {

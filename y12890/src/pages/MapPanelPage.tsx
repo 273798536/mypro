@@ -100,7 +100,7 @@ export const MapPanelPage: React.FC = () => {
     });
 
     setMapPoints(pointsWithData);
-  }, []);
+  }, [taskId]);
 
   const handlePointClick = (point: MapPoint) => {
     setSelectedPoint(point);
@@ -148,7 +148,7 @@ export const MapPanelPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-5 gap-4 mt-6">
-            {['A1', 'A2', 'A3', 'B1', 'C1'].map((zone, index) => {
+            {['A1', 'A2', 'A3', 'B1', 'C1'].map((zone) => {
               const zonePoints = mapPoints.filter(p => p.id.startsWith(zone.charAt(0)));
               const avgQuality = zonePoints.length > 0
                 ? Math.round(zonePoints.reduce((sum, p) => sum + (p.dataQuality || 0), 0) / zonePoints.length)

@@ -70,7 +70,6 @@ export function generateConsistencyReport(
   const unresolved = issues.filter(i => !i.resolved);
   const isConsistent = unresolved.length === 0;
 
-  const resolvedCount = issues.filter(i => i.resolved).length;
   const displayResolved = issues.filter(i => i.resolution === 'use_display').length;
   const calcResolved = issues.filter(i => i.resolution === 'use_calculated').length;
 

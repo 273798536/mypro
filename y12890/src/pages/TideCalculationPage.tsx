@@ -7,13 +7,12 @@ import { QualityCard } from '../components/QualityCard';
 import { StatusBadge } from '../components/StatusBadge';
 import { useTideStore } from '../store/useTideStore';
 import { DataStatus } from '../types/common';
-import { Waves, Play, RefreshCw, Eye, EyeOff, ChevronRight, AlertTriangle, Clock, Info } from 'lucide-react';
+import { Play, RefreshCw, Eye, EyeOff, ChevronRight, AlertTriangle, Clock, Info } from 'lucide-react';
 
 export const TideCalculationPage: React.FC = () => {
   const { taskId } = useParams<{ taskId: string }>();
   const navigate = useNavigate();
   const {
-    rawRecords,
     calculatedRecords,
     chartData,
     highLowTides,

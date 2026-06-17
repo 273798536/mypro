@@ -1,4 +1,4 @@
-import { toZonedTime, formatInTimeZone, format } from 'date-fns-tz';
+import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
 import { zhCN } from 'date-fns/locale';
 
 export interface TimezoneCorrected {

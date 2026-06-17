@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Task, TaskFilters, QualitySummary } from '../types/task';
-import { TaskStatus, RiskLevel, DataStatus, QualityIssue } from '../types/common';
+import { TaskStatus, DataStatus, QualityIssue } from '../types/common';
 import { MOCK_TASKS, getTaskById } from '../data/mockTasks';
 import { checkTideDataQuality, checkWaterDataQuality } from '../core/dataQuality';
 import { generateMockTideData } from '../data/mockTideData';

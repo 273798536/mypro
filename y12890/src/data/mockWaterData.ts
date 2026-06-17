@@ -21,14 +21,13 @@ export function generateMockWaterData(taskId: string): WaterRecord[] {
     let dissolvedOxygen = 6.5 + Math.sin(i / 6) * 1.5 + (Math.random() - 0.5) * 0.5;
     let temperature = 26 + Math.sin(i / 8) * 3 + (Math.random() - 0.5) * 1;
 
-    let status = DataStatus.AVAILABLE;
     let salinityStatus = DataStatus.AVAILABLE;
     let phStatus = DataStatus.AVAILABLE;
     let dissolvedOxygenStatus = DataStatus.AVAILABLE;
     let temperatureStatus = DataStatus.AVAILABLE;
     let overallStatus = DataStatus.AVAILABLE;
     let unitMismatch = false;
-    let qualityIssues: QualityIssue[] = [];
+    const qualityIssues: QualityIssue[] = [];
 
     if (i === 5) {
       salinityUnit = SalinityUnit.PERMILLE;

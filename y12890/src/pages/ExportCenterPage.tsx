@@ -1,21 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { StatusBadge } from '../components/StatusBadge';
 import { useReviewStore } from '../store/useReviewStore';
-import { DataStatus } from '../types/common';
-import { Download, FileSpreadsheet, FileText, CheckCircle2, AlertTriangle, ChevronRight, Eye, Settings, RefreshCw } from 'lucide-react';
-import { formatNumber } from '../utils/format';
+import { useTideStore } from '../store/useTideStore';
+import { useRiskStore } from '../store/useRiskStore';
+import { useTaskStore } from '../store/useTaskStore';
+import { DataStatus, TaskStatus } from '../types/common';
+import { Download, FileSpreadsheet, FileText, CheckCircle2, AlertTriangle, Eye, Settings, RefreshCw, FileCheck, Hash } from 'lucide-react';
+import { generateExportFile, downloadFile, generateExportSummary, ExportData } from '../utils/export';
+import { getTaskById } from '../data/mockTasks';
 
 export const ExportCenterPage: React.FC = () => {
   const { taskId } = useParams<{ taskId: string }>();
   const navigate = useNavigate();
-  const {
-    reviewBatch,
-    consistencyReport,
-    isLoading,
-    completeReview,
-  } = useReviewStore();
+
+  const reviewStore = useReviewStore();
+  const tideStore = useTideStore();
+  const riskStore = useRiskStore();
+
+  const { reviewBatch, consistencyReport } = reviewStore;
+  const { calculatedRecords: tideRecords } = tideStore;
+  const { waterRecords } = riskStore;
 
   const [exportFormat, setExportFormat] = useState<'excel' | 'csv' | 'pdf'>('excel');
   const [includeStatus, setIncludeStatus] = useState<DataStatus[]>([
@@ -27,6 +33,15 @@ export const ExportCenterPage: React.FC = () => {
   const [includeOriginalTimezone, setIncludeOriginalTimezone] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [exportSuccess, setExportSuccess] = useState(false);
+  const [exportResult, setExportResult] = useState<{
+    filePath: string;
+    dataHash: string;
+    recordCount: number;
+    fileSize: string;
+  } | null>(null);
+
+  const task = taskId ? getTaskById(taskId) : null;
+  const taskName = task?.name || '未命名任务';
 
   const totalRecords = reviewBatch?.entries?.length || 0;
   const availableRecords = reviewBatch?.entries?.filter(e => e.status === DataStatus.AVAILABLE).length || 0;
@@ -46,6 +61,29 @@ export const ExportCenterPage: React.FC = () => {
 
   const unresolvedIssues = consistencyReport?.issues?.filter(i => !i.resolved).length || 0;
 
+  const exportData = useMemo((): ExportData | null => {
+    if (!taskId) return null;
+    return {
+      taskId,
+      taskName,
+      tideRecords,
+      waterRecords,
+      reviewEntries: reviewBatch?.entries || [],
+      consistencyReport,
+      exportTime: new Date(),
+    };
+  }, [taskId, taskName, tideRecords, waterRecords, reviewBatch, consistencyReport]);
+
+  const exportSummary = useMemo(() => {
+    if (!exportData) return null;
+    return generateExportSummary(exportData, {
+      includeStatus,
+      includeExplanations,
+      includeOriginalTimezone,
+      format: exportFormat,
+    });
+  }, [exportData, includeStatus, includeExplanations, includeOriginalTimezone, exportFormat]);
+
   const handleStatusToggle = (status: DataStatus) => {
     if (includeStatus.includes(status)) {
       setIncludeStatus(includeStatus.filter(s => s !== status));
@@ -55,13 +93,58 @@ export const ExportCenterPage: React.FC = () => {
   };
 
   const handleExport = () => {
+    if (!exportData || selectedCount === 0) return;
+
     setIsExporting(true);
-    setTimeout(() => {
+    setExportResult(null);
+
+    try {
+      const options = {
+        includeStatus,
+        includeExplanations,
+        includeOriginalTimezone,
+        format: exportFormat,
+      };
+
+      const file = generateExportFile(exportData, options);
+      const result = downloadFile(file.content, file.filename, file.mimeType);
+
+      const fileSize = new Blob([file.content]).size;
+      const fileSizeStr = fileSize < 1024
+        ? `${fileSize} B`
+        : fileSize < 1024 * 1024
+        ? `${(fileSize / 1024).toFixed(1)} KB`
+        : `${(fileSize / (1024 * 1024)).toFixed(2)} MB`;
+
+      setTimeout(() => {
+        setIsExporting(false);
+
+        if (result.success) {
+          setExportSuccess(true);
+          setExportResult({
+            filePath: result.filePath,
+            dataHash: exportSummary?.dataHash || '',
+            recordCount: exportSummary?.totalRecords || 0,
+            fileSize: fileSizeStr,
+          });
+
+          if (taskId) {
+            useTaskStore.getState().updateTaskStatus(taskId, TaskStatus.EXPORTED);
+          }
+
+          setTimeout(() => setExportSuccess(false), 5000);
+        } else {
+          alert(`导出失败：${result.error}`);
+        }
+      }, 800);
+    } catch (error) {
       setIsExporting(false);
-      setExportSuccess(true);
-      setTimeout(() => setExportSuccess(false), 3000);
-    }, 2000);
+      const errorMsg = error instanceof Error ? error.message : '未知错误';
+      alert(`导出失败：${errorMsg}`);
+    }
   };
+
+  const formatExtension = exportFormat === 'excel' ? 'xls' : exportFormat === 'csv' ? 'csv' : 'txt';
 
   return (
     <AppLayout
@@ -91,7 +174,7 @@ export const ExportCenterPage: React.FC = () => {
                 数据一致性校验通过后导出
               </h2>
               <p className="text-ocean-200 max-w-3xl leading-relaxed">
-                本批次共 <span className="text-tide-400 font-bold">{totalRecords}</span> 条记录，
+                本批次共 <span className="text-tide-400 font-bold">{totalRecords}</span> 条复核记录，
                 其中可用 <span className="text-status-available font-bold">{availableRecords}</span> 条、
                 暂缓 <span className="text-status-pending font-bold">{pendingRecords}</span> 条、
                 需复核 <span className="text-status-review font-bold">{reviewRecords}</span> 条、
@@ -177,23 +260,24 @@ export const ExportCenterPage: React.FC = () => {
                 <label className="block text-sm font-medium text-slate-700 mb-2">导出格式</label>
                 <div className="flex gap-3">
                   {[
-                    { id: 'excel' as const, label: 'Excel', icon: FileSpreadsheet },
-                    { id: 'csv' as const, label: 'CSV', icon: FileText },
-                    { id: 'pdf' as const, label: 'PDF报告', icon: FileText },
+                    { id: 'excel' as const, label: 'Excel', icon: FileSpreadsheet, desc: '可用Excel打开' },
+                    { id: 'csv' as const, label: 'CSV', icon: FileText, desc: '通用文本格式' },
+                    { id: 'pdf' as const, label: 'PDF报告', icon: FileText, desc: '纯文本格式' },
                   ].map((fmt) => {
                     const Icon = fmt.icon;
                     return (
                       <button
                         key={fmt.id}
                         onClick={() => setExportFormat(fmt.id)}
-                        className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+                        className={`flex-1 flex flex-col items-center justify-center gap-1 px-4 py-3 rounded-lg border-2 transition-all ${
                           exportFormat === fmt.id
                             ? 'border-ocean-500 bg-ocean-50 text-ocean-700'
                             : 'border-slate-200 hover:border-slate-300 text-slate-600'
                         }`}
                       >
-                        <Icon className="w-4 h-4" />
-                        {fmt.label}
+                        <Icon className="w-5 h-5" />
+                        <span className="text-sm font-medium">{fmt.label}</span>
+                        <span className="text-xs text-slate-400">{fmt.desc}</span>
                       </button>
                     );
                   })}
@@ -236,7 +320,7 @@ export const ExportCenterPage: React.FC = () => {
                   />
                   <div>
                     <span className="text-sm font-medium text-slate-700">包含解释说明</span>
-                    <p className="text-xs text-slate-500">导出每条记录的计算说明和异常解释</p>
+                    <p className="text-xs text-slate-500">导出每条记录的计算说明和异常解释，方便汇报</p>
                   </div>
                 </label>
 
@@ -249,7 +333,7 @@ export const ExportCenterPage: React.FC = () => {
                   />
                   <div>
                     <span className="text-sm font-medium text-slate-700">包含原始时区</span>
-                    <p className="text-xs text-slate-500">同时导出原始时区和校正后时区的数据</p>
+                    <p className="text-xs text-slate-500">同时导出原始时区和校正后时区，便于追溯</p>
                   </div>
                 </label>
               </div>
@@ -266,11 +350,23 @@ export const ExportCenterPage: React.FC = () => {
               <div className="text-sm text-slate-600 space-y-2">
                 <div className="flex justify-between">
                   <span className="text-slate-500">文件名</span>
-                  <span className="font-mono">明珠海珍品_202606巡检_数据报告.{exportFormat}</span>
+                  <span className="font-mono">明珠海珍品_{taskId}_YYYYMMDD_HHMMSS.{formatExtension}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">导出记录</span>
-                  <span className="font-mono">{selectedCount} 条</span>
+                  <span className="font-mono">{exportSummary?.totalRecords || 0} 条</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">潮汐数据</span>
+                  <span className="font-mono">{exportSummary?.tideCount || 0} 条</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">水质数据</span>
+                  <span className="font-mono">{exportSummary?.waterCount || 0} 条</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">复核记录</span>
+                  <span className="font-mono">{exportSummary?.reviewCount || 0} 条</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-500">包含说明</span>
@@ -284,6 +380,14 @@ export const ExportCenterPage: React.FC = () => {
                     {includeOriginalTimezone ? '包含' : '不包含'}
                   </span>
                 </div>
+                {exportSummary?.dataHash && (
+                  <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+                    <span className="text-slate-500 flex items-center gap-1">
+                      <Hash className="w-3 h-3" /> 数据校验码
+                    </span>
+                    <span className="font-mono text-xs text-ocean-600">{exportSummary.dataHash}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -312,6 +416,36 @@ export const ExportCenterPage: React.FC = () => {
                     </p>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {exportResult && (
+              <div className="bg-ocean-50 border border-ocean-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileCheck className="w-4 h-4 text-ocean-600" />
+                  <span className="text-sm font-medium text-ocean-700">导出详情</span>
+                </div>
+                <div className="text-xs text-slate-600 space-y-1">
+                  <div className="flex justify-between">
+                    <span>保存路径</span>
+                    <span className="font-mono">{exportResult.filePath}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>文件大小</span>
+                    <span className="font-mono">{exportResult.fileSize}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>记录数量</span>
+                    <span className="font-mono">{exportResult.recordCount} 条</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>数据校验码</span>
+                    <span className="font-mono text-ocean-600">{exportResult.dataHash}</span>
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 mt-2">
+                  💡 校验码用于验证数据完整性，同批次数据多次导出应生成相同校验码
+                </p>
               </div>
             )}
 
@@ -353,7 +487,7 @@ export const ExportCenterPage: React.FC = () => {
                   ✅ 导出成功！文件已保存至：
                 </p>
                 <p className="text-xs text-slate-600 mt-1 font-mono">
-                  /Downloads/明珠海珍品_202606巡检_数据报告.{exportFormat}
+                  {exportResult?.filePath}
                 </p>
               </div>
             )}

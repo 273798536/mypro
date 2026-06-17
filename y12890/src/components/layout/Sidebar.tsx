@@ -7,7 +7,6 @@ import {
   Map,
   FileCheck,
   Download,
-  Settings,
   ChevronLeft,
   ChevronRight,
   Fish,

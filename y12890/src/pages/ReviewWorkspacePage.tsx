@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AppLayout } from '../components/layout/AppLayout';
 import { ReviewItem } from '../components/ReviewItem';
-import { StatusBadge } from '../components/StatusBadge';
 import { useReviewStore } from '../store/useReviewStore';
 import { DataStatus, ReviewEntryType } from '../types/common';
 import { FileCheck, ChevronRight, Filter, CheckCircle2, AlertCircle, Clock, Play, RefreshCw } from 'lucide-react';
@@ -195,7 +194,7 @@ export const ReviewWorkspacePage: React.FC = () => {
 
                 {!consistencyReport.isConsistent && consistencyReport.issues.length > 0 && (
                   <div className="mt-3 space-y-2">
-                    {consistencyReport.issues.map((issue, index) => (
+                    {consistencyReport.issues.map((issue) => (
                       <div key={issue.id} className="bg-white rounded p-3 border border-slate-200">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">

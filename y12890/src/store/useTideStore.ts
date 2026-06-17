@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { TideRecord, TideCalculationResult, TideChartPoint, HighLowTide, HarmonicComponent, TideCalculationResponse } from '../types/tide';
+import { TideRecord, TideChartPoint, HighLowTide, HarmonicComponent, TideCalculationResponse } from '../types/tide';
 import { TideUnit, TaskStatus } from '../types/common';
 import { generateMockTideData } from '../data/mockTideData';
 import { calculateTideRecords } from '../core/tideCalculator';

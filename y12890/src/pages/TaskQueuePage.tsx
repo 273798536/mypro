@@ -3,14 +3,12 @@ import { AppLayout } from '../components/layout/AppLayout';
 import { TaskCard } from '../components/TaskCard';
 import { QualityCard } from '../components/QualityCard';
 import { useTaskStore } from '../store/useTaskStore';
-import { StatusBadge } from '../components/StatusBadge';
-import { DataStatus, TaskStatus } from '../types/common';
-import { Fish, Filter, TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { TaskStatus } from '../types/common';
+import { Fish, Filter, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 export const TaskQueuePage: React.FC = () => {
-  const { tasks, qualitySummary, isLoading, loadTasks, runQualityCheck, getTaskQualitySummary } = useTaskStore();
+  const { tasks, qualitySummary, loadTasks } = useTaskStore();
   const [statusFilter, setStatusFilter] = useState<TaskStatus | 'all'>('all');
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   useEffect(() => {
     loadTasks();
@@ -19,11 +17,6 @@ export const TaskQueuePage: React.FC = () => {
   const filteredTasks = statusFilter === 'all'
     ? tasks
     : tasks.filter(t => t.status === statusFilter);
-
-  const handleRunQualityCheck = async (taskId: string) => {
-    setSelectedTaskId(taskId);
-    await runQualityCheck(taskId);
-  };
 
   return (
     <AppLayout

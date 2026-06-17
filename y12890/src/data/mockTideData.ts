@@ -23,7 +23,7 @@ export function generateMockTideData(taskId: string): TideRecord[] {
     if (tideLevel > 3) tideLevel = 2.9;
 
     let timezone = 'Asia/Shanghai';
-    let unit: TideUnit = TideUnit.METER;
+    const unit: TideUnit = TideUnit.METER;
     let status: DataStatus = DataStatus.AVAILABLE;
     let note: string | undefined = undefined;
     let isDuplicate = false;

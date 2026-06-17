@@ -121,6 +121,12 @@ export const QUALITY_ISSUE_LABELS: Record<QualityIssueType, { label: string; def
   },
 };
 
+export const REVIEW_ENTRY_TYPE_LABELS: Record<ReviewEntryType, { label: string; color: string }> = {
+  [ReviewEntryType.RISK_ALERT]: { label: '风险通报', color: 'bg-status-review' },
+  [ReviewEntryType.WATER_RECORD]: { label: '水质记录', color: 'bg-ocean-500' },
+  [ReviewEntryType.DUPLICATE]: { label: '重复上报', color: 'bg-status-pending' },
+};
+
 export const SALINITY_UNIT_FACTORS: Record<SalinityUnit, number> = {
   [SalinityUnit.PSU]: 1,
   [SalinityUnit.PPT]: 1,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Bell, Search, Clock, Calendar } from 'lucide-react';
+import { User, Bell, Search, Clock } from 'lucide-react';
 import { formatDateTime } from '../../utils/format';
 
 interface HeaderProps {

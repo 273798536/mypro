@@ -1,5 +1,5 @@
 import { TideRecord, TideCalculationResult, TideChartPoint, HighLowTide, HarmonicComponent, TideCalculationResponse } from '../types/tide';
-import { DataStatus, TideUnit, QualityIssue } from '../types/common';
+import { DataStatus, TideUnit } from '../types/common';
 import { correctTimezone } from './timezone';
 import { convertTideLevel } from './unitConverter';
 
@@ -89,19 +89,17 @@ export function calculateHarmonicComponents(records: { recordTime: Date; tideLev
 
   function calculateComponent(name: string, periodHours: number): HarmonicComponent {
     const omega = (2 * Math.PI) / (periodHours * 3600 * 1000);
-    let sumCos = 0, sumSin = 0, sumY = 0;
+    let sumCos = 0, sumSin = 0;
 
-    records.forEach((record, i) => {
+    records.forEach((record) => {
       const t = record.recordTime.getTime() - t0;
       const y = record.tideLevel;
       sumCos += y * Math.cos(omega * t);
       sumSin += y * Math.sin(omega * t);
-      sumY += y;
     });
 
     const amplitude = (2 / n) * Math.sqrt(sumCos * sumCos + sumSin * sumSin);
     const phase = Math.atan2(sumSin, sumCos);
-    const meanY = sumY / n;
 
     return {
       name,

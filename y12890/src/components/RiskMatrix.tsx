@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { RiskMatrixCell } from '../types/risk';
-import { getRiskLevelColor, getRiskGradientColor } from '../utils/color';
+import { getRiskGradientColor } from '../utils/color';
 import { formatNumber } from '../utils/format';
 
 interface RiskMatrixProps {

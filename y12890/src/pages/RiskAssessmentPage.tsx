@@ -218,7 +218,7 @@ export const RiskAssessmentPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-                {waterRecords.map((record, index) => (
+                {waterRecords.map((record) => (
                   <tr key={record.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                     <td className="p-3 font-mono font-medium">{record.pointId}</td>
                     <td className="p-3 text-slate-600">{record.recordTime.toLocaleString('zh-CN')}</td>

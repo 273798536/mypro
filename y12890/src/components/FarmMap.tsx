@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MapPoint, MapZone } from '../types/task';
-import { getRiskLevelColor, DATA_STATUS_COLORS } from '../utils/color';
+import { DATA_STATUS_COLORS } from '../utils/color';
 import { DataStatus } from '../types/common';
 
 interface FarmMapProps {
@@ -71,7 +71,7 @@ export const FarmMap: React.FC<FarmMapProps> = ({ points, zones, onPointClick, s
 
         <rect x="0" y="0" width="600" height="400" fill="url(#water)" />
 
-        {zones.map((zone, index) => (
+        {zones.map((zone) => (
           <g key={zone.id}>
             {zone.coordinates && (
               <rect
@@ -114,7 +114,7 @@ export const FarmMap: React.FC<FarmMapProps> = ({ points, zones, onPointClick, s
           排水
         </text>
 
-        {points.map((point, index) => {
+        {points.map((point) => {
           const isSelected = selectedPointId === point.id;
           const isHovered = hoveredPoint?.id === point.id;
           const color = getPointColor(point);

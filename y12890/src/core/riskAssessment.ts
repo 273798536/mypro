@@ -210,9 +210,6 @@ export function assessRisk(
   waterRecords: WaterRecord[],
   zoneNames: string[] = ['A区近岸', 'B区深水', 'C区进水渠']
 ): RiskAssessmentResult {
-  const latestTide = tideRecords[tideRecords.length - 1];
-  const latestWater = waterRecords[waterRecords.length - 1];
-
   const avgTide = tideRecords.reduce((sum, r) => sum + r.tideLevel, 0) / tideRecords.length;
   const avgSalinity = waterRecords
     .filter(r => r.salinity !== null)

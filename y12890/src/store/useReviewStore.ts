@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ReviewEntry, ReviewBatch, ConsistencyIssue, ConsistencyReport, ExportOptions } from '../types/review';
+import { ReviewEntry, ReviewBatch, ConsistencyReport, ExportOptions } from '../types/review';
 import { DataStatus, NextStep, ReviewEntryType, QualityIssueType, QUALITY_ISSUE_LABELS, TaskStatus } from '../types/common';
 import { useTaskStore } from './useTaskStore';
 import { checkTideDataQuality, checkWaterDataQuality } from '../core/dataQuality';
@@ -28,7 +28,7 @@ function generateEntryId(): string {
   return `review_entry_${Date.now()}_${++entryIdCounter}`;
 }
 
-export const useReviewStore = create<ReviewState>((set, get) => ({
+export const useReviewStore = create<ReviewState>((set) => ({
   reviewBatch: null,
   consistencyReport: null,
   isLoading: false,
