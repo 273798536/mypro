@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tour {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  status      String   @default("active")
+  shows       Show[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Show {
+  id        String  @id @default(uuid())
+  tourId    String
+  tour      Tour    @relation(fields: [tourId], references: [id])
+  showDate  DateTime
+  city      String
+  venue     String?
+  tracks    Track[]
+  createdAt DateTime @default(now())
+}
+
+model Track {
+  id               String          @id @default(uuid())
+  showId           String
+  show             Show            @relation(fields: [showId], references: [id])
+  trackNo          Int
+  title            String
+  artist           String
+  expectedDuration Float
+  expectedTimecode String?
+  status           String          @default("pending")
+  materials        AudioMaterial[]
+  reviews          ReviewRecord[]
+  notes            TrackNote[]
+  auditLogs        AuditLog[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+}
+
+model AudioMaterial {
+  id                String           @id @default(uuid())
+  trackId           String
+  track             Track            @relation(fields: [trackId], references: [id])
+  fileId            String
+  file              File             @relation(fields: [fileId], references: [id])
+  fileName          String
+  parsedTrackNo     Int?
+  parsedTitle       String?
+  duration          Float
+  timecode          String?
+  timecodeDeviation Int?
+  version           Int
+  isActive          Boolean          @default(true)
+  matchStatus       String           @default("none")
+  matchConfidence   Float            @default(0)
+  submittedBy       String
+  submittedAt       DateTime         @default(now())
+  sourceBatch       String
+  versionHistories  VersionHistory[]
+  auditLogs         AuditLog[]
+}
+
+model VersionHistory {
+  id         String         @id @default(uuid())
+  materialId String
+  material   AudioMaterial  @relation(fields: [materialId], references: [id])
+  fieldName  String
+  oldValue   String?
+  newValue   String?
+  changedBy  String
+  changedAt  DateTime       @default(now())
+  changeType String
+  reason     String?
+}
+
+model ReviewRecord {
+  id              String   @id @default(uuid())
+  trackId         String
+  track           Track    @relation(fields: [trackId], references: [id])
+  reviewerId      String
+  reviewerName    String
+  reviewType      String
+  decision        String
+  comment         String
+  evidenceMissing String?
+  auditLogs       AuditLog[]
+  createdAt       DateTime @default(now())
+}
+
+model TrackNote {
+  id             String     @id @default(uuid())
+  trackId        String
+  track          Track      @relation(fields: [trackId], references: [id])
+  content        String
+  createdBy      String
+  createdByName  String
+  createdAt      DateTime   @default(now())
+  isActive       Boolean    @default(true)
+  previousNoteId String?
+  previousNote   TrackNote? @relation("NoteChain", fields: [previousNoteId], references: [id])
+  nextNotes      TrackNote[] @relation("NoteChain")
+  auditLogs      AuditLog[]
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String
+  entityId   String
+  action     String
+  userId     String
+  userName   String
+  timestamp  DateTime @default(now())
+  details    Json?
+}
+
+model File {
+  id           String          @id @default(uuid())
+  originalName String
+  storedName   String
+  mimeType     String
+  size         Int
+  path         String
+  material     AudioMaterial?
+  uploadedAt   DateTime        @default(now())
+}
