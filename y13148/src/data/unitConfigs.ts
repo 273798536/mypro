@@ -1,4 +1,4 @@
-import type { UnitCategory } from '@/types'
+import type { UnitCategory, UnitDefinition } from '@/types'
 
 export const unitConfigs: UnitCategory[] = [
   {

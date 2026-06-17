@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import {
   AlertTriangle,
   AlertCircle,
@@ -9,6 +10,7 @@ import {
   Lightbulb,
   TrendingUp,
   Hash,
+  Clock,
 } from 'lucide-react'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
@@ -16,8 +18,8 @@ import Badge from '@/components/ui/Badge'
 import { useRecordStore } from '@/store/useRecordStore'
 import { useFilterStore } from '@/store/useFilterStore'
 import { useHistoryStore } from '@/store/useHistoryStore'
+import { useSimulationStore } from '@/store/useSimulationStore'
 import { diagnoseJump, detectDuplicateRecords } from '@/utils/diagnosis'
-import { runMonteCarloSimulation } from '@/utils/monteCarlo'
 import { formatNumber, formatDateTime } from '@/utils/format'
 import type { DiagnosisResult, JumpCause } from '@/types'
 import { sourceLabels } from '@/data/unitConfigs'
@@ -32,7 +34,8 @@ const jumpCauseLabels: Record<JumpCause | 'unknown', { label: string; color: str
 export default function Diagnosis() {
   const { records, updateRecord } = useRecordStore()
   const { params } = useFilterStore()
-  const { history, getLatest } = useHistoryStore()
+  const { history } = useHistoryStore()
+  const { result } = useSimulationStore()
 
   const [diagnosis, setDiagnosis] = useState<DiagnosisResult | null>(null)
 
@@ -41,19 +44,16 @@ export default function Diagnosis() {
   }, [records, params.sourceTypes])
 
   useEffect(() => {
-    const currentResult = runMonteCarloSimulation(
-      filteredRecords,
-      params.simulationCount,
-      params.unit,
-      params.confidenceLevel
-    )
+    if (!result) {
+      setDiagnosis(null)
+      return
+    }
 
-    const latest = getLatest()
     let previousResult = null
     let previousParams = null
     let previousRecords = null
 
-    if (latest && history.length > 1) {
+    if (history.length > 1) {
       const secondLatest = history[1]
       if (secondLatest) {
         previousResult = {
@@ -70,8 +70,8 @@ export default function Diagnosis() {
       }
     }
 
-    const result = diagnoseJump(
-      currentResult,
+    const diagResult = diagnoseJump(
+      result,
       previousResult,
       params,
       previousParams,
@@ -79,8 +79,8 @@ export default function Diagnosis() {
       previousRecords
     )
 
-    setDiagnosis(result)
-  }, [params, filteredRecords.length, history.length])
+    setDiagnosis(diagResult)
+  }, [result, history, params, filteredRecords])
 
   const duplicateRecords = useMemo(() => {
     const dupIds = detectDuplicateRecords(filteredRecords)
@@ -102,6 +102,26 @@ export default function Diagnosis() {
           {diagnosis?.hasJump ? '存在异常' : '状态正常'}
         </Badge>
       </div>
+
+      {!result && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+          <div className="flex items-start gap-4">
+            <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-amber-800">暂无模拟数据</h3>
+              <p className="text-amber-700 text-sm mt-1">
+                请先前往误差图表页运行模拟，生成数据后再进行诊断。
+              </p>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium mt-3"
+              >
+                前往误差图表页 →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">

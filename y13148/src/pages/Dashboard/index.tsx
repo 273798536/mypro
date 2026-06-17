@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import {
   BarChart3,
   Target,
@@ -19,6 +19,7 @@ import MonteCarloChart from '@/components/charts/MonteCarloChart'
 import { useRecordStore } from '@/store/useRecordStore'
 import { useFilterStore } from '@/store/useFilterStore'
 import { useHistoryStore } from '@/store/useHistoryStore'
+import { useSimulationStore } from '@/store/useSimulationStore'
 import { runMonteCarloSimulation } from '@/utils/monteCarlo'
 import { formatNumber, formatPercent } from '@/utils/format'
 import { unitConfigs } from '@/data/unitConfigs'
@@ -28,9 +29,11 @@ export default function Dashboard() {
   const { records } = useRecordStore()
   const { params, setUnit, setConfidenceLevel, setSimulationCount, resetFilters, toggleSourceType } = useFilterStore()
   const { addHistory } = useHistoryStore()
+  const { result, setResult } = useSimulationStore()
 
   const [isSimulating, setIsSimulating] = useState(false)
-  const [result, setResult] = useState<MonteCarloResult | null>(null)
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const prevParamsRef = useRef<string | null>(null)
 
   const filteredRecords = useMemo(() => {
     return records.filter((r) => params.sourceTypes.includes(r.source))
@@ -45,7 +48,13 @@ export default function Dashboard() {
     )
   }, [])
 
-  const handleSimulate = () => {
+  const paramsKey = useMemo(() => {
+    return `${params.unit}-${params.confidenceLevel}-${params.simulationCount}-${params.sourceTypes.join(',')}-${filteredRecords.length}`
+  }, [params, filteredRecords.length])
+
+  const runSimulation = useCallback((shouldAddHistory: boolean = true) => {
+    if (filteredRecords.length === 0) return
+
     setIsSimulating(true)
     
     setTimeout(() => {
@@ -55,35 +64,54 @@ export default function Dashboard() {
         params.unit,
         params.confidenceLevel
       )
-      setResult(simResult)
-      addHistory(params, simResult, filteredRecords.length)
+      
+      setResult(simResult, params, filteredRecords.length)
+      
+      if (shouldAddHistory) {
+        addHistory(params, simResult, filteredRecords.length)
+      }
+      
       setIsSimulating(false)
-    }, 500)
+    }, 300)
+  }, [filteredRecords, params, setResult, addHistory])
+
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    if (filteredRecords.length === 0) return
+
+    if (prevParamsRef.current !== null && prevParamsRef.current !== paramsKey) {
+      debounceTimerRef.current = setTimeout(() => {
+        runSimulation(true)
+      }, 500)
+    } else if (prevParamsRef.current === null && filteredRecords.length > 0) {
+      runSimulation(true)
+    }
+
+    prevParamsRef.current = paramsKey
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [paramsKey, filteredRecords.length, runSimulation])
+
+  const handleSimulate = () => {
+    runSimulation(true)
   }
 
-  useEffect(() => {
-    if (filteredRecords.length > 0) {
-      const simResult = runMonteCarloSimulation(
-        filteredRecords,
-        params.simulationCount,
-        params.unit,
-        params.confidenceLevel
-      )
-      setResult(simResult)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (result && filteredRecords.length > 0) {
-      const simResult = runMonteCarloSimulation(
-        filteredRecords,
-        params.simulationCount,
-        params.unit,
-        params.confidenceLevel
-      )
-      setResult(simResult)
-    }
-  }, [params.unit, params.confidenceLevel, params.simulationCount, filteredRecords.length])
+  const emptyResult: MonteCarloResult = {
+    samples: [],
+    mean: 0,
+    stdDev: 0,
+    variance: 0,
+    confidenceInterval: { lower: 0, upper: 0, level: 0.95 },
+    histogram: { bins: [], counts: [] },
+    relativeError: 0,
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -147,7 +175,7 @@ export default function Dashboard() {
               </Button>
             }
           >
-            <MonteCarloChart result={result || { samples: [], mean: 0, stdDev: 0, variance: 0, confidenceInterval: { lower: 0, upper: 0, level: 0.95 }, histogram: { bins: [], counts: [] }, relativeError: 0 }} unit={params.unit} height={360} />
+            <MonteCarloChart result={result || emptyResult} unit={params.unit} height={360} />
           </Card>
         </div>
 

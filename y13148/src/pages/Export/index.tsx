@@ -6,13 +6,14 @@ import {
   AlertCircle,
   Clock,
   Download,
-  Copy,
   Printer,
   BarChart3,
   Target,
   Activity,
   Percent,
+  AlertTriangle,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
@@ -20,48 +21,61 @@ import MonteCarloChart from '@/components/charts/MonteCarloChart'
 import MetricCard from '@/components/ui/MetricCard'
 import { useRecordStore } from '@/store/useRecordStore'
 import { useFilterStore } from '@/store/useFilterStore'
-import { useHistoryStore } from '@/store/useHistoryStore'
-import { runMonteCarloSimulation } from '@/utils/monteCarlo'
+import { useSimulationStore } from '@/store/useSimulationStore'
 import { formatNumber, formatPercent, formatDateTime } from '@/utils/format'
 import { sourceLabels, statusLabels, statusColors } from '@/data/unitConfigs'
-import type { DataRecord, RecordStatus } from '@/types'
 
 export default function Export() {
   const { records, getRecordsByStatus } = useRecordStore()
   const { params } = useFilterStore()
-  const { history } = useHistoryStore()
+  const { result } = useSimulationStore()
   const [exportFormat, setExportFormat] = useState<'pdf' | 'csv' | 'json'>('pdf')
 
   const filteredRecords = useMemo(() => {
     return records.filter((r) => params.sourceTypes.includes(r.source))
   }, [records, params.sourceTypes])
 
-  const simResult = useMemo(() => {
-    return runMonteCarloSimulation(
-      filteredRecords,
-      params.simulationCount,
-      params.unit,
-      params.confidenceLevel
-    )
-  }, [filteredRecords, params])
-
   const processedRecords = getRecordsByStatus('processed')
   const pendingRecords = getRecordsByStatus('pending')
   const evidenceNeededRecords = getRecordsByStatus('evidence_needed')
 
   const handleExport = () => {
+    if (!result) {
+      alert('请先在误差图表页运行模拟后再导出')
+      return
+    }
+
     if (exportFormat === 'json') {
       const data = {
         generatedAt: new Date().toISOString(),
-        parameters: params,
-        result: {
-          mean: simResult.mean,
-          stdDev: simResult.stdDev,
-          variance: simResult.variance,
-          confidenceInterval: simResult.confidenceInterval,
-          relativeError: simResult.relativeError,
+        parameters: {
+          unit: params.unit,
+          confidenceLevel: params.confidenceLevel,
+          simulationCount: params.simulationCount,
+          sourceTypes: params.sourceTypes,
         },
-        records: filteredRecords,
+        result: {
+          mean: result.mean,
+          stdDev: result.stdDev,
+          variance: result.variance,
+          confidenceInterval: result.confidenceInterval,
+          relativeError: result.relativeError,
+          unit: params.unit,
+        },
+        records: filteredRecords.map(r => ({
+          id: r.id,
+          name: r.name,
+          value: r.value,
+          unit: r.unit,
+          error: r.error,
+          source: r.source,
+          sourceLabel: sourceLabels[r.source],
+          status: r.status,
+          statusLabel: statusLabels[r.status],
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          notes: r.notes,
+        })),
         summary: {
           totalRecords: filteredRecords.length,
           processed: processedRecords.length,
@@ -69,36 +83,71 @@ export default function Export() {
           evidenceNeeded: evidenceNeededRecords.length,
         },
       }
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json;charset=utf-8' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
       a.download = `monte-carlo-report-${Date.now()}.json`
+      document.body.appendChild(a)
       a.click()
+      document.body.removeChild(a)
       URL.revokeObjectURL(url)
     } else if (exportFormat === 'csv') {
-      const headers = ['名称', '数值', '单位', '误差', '来源', '状态', '创建时间', '备注']
-      const rows = filteredRecords.map((r) => [
+      const summaryRows = [
+        ['# 蒙特卡洛误差分析报告 - 统计摘要', '', ''],
+        ['指标', '数值', '单位'],
+        ['均值', formatNumber(result.mean), params.unit],
+        ['标准差', formatNumber(result.stdDev), params.unit],
+        ['相对误差', formatPercent(result.relativeError, 2), ''],
+        ['置信区间下限', formatNumber(result.confidenceInterval.lower), params.unit],
+        ['置信区间上限', formatNumber(result.confidenceInterval.upper), params.unit],
+        ['置信水平', `${(result.confidenceInterval.level * 100).toFixed(0)}`, '%'],
+        ['模拟次数', params.simulationCount.toLocaleString(), '次'],
+        ['记录数量', filteredRecords.length.toString(), '条'],
+        ['生成时间', formatDateTime(new Date().toISOString()), ''],
+        ['', '', ''],
+        ['# 数据记录明细', '', ''],
+        ['名称', '数值', '单位', '误差', '来源', '状态', '创建时间', '备注'],
+      ]
+
+      const recordRows = filteredRecords.map((r) => [
         r.name,
-        r.value,
+        r.value.toString(),
         r.unit,
-        r.error,
+        r.error.toString(),
         sourceLabels[r.source],
         statusLabels[r.status],
         formatDateTime(r.createdAt),
-        r.notes,
+        r.notes || '',
       ])
-      const csv = [headers, ...rows].map((row) => row.map((c) => `"${c}"`).join(',')).join('\n')
+
+      const allRows = [...summaryRows, ...recordRows]
+      const csv = allRows
+        .map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
+        .join('\n')
+
       const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `monte-carlo-data-${Date.now()}.csv`
+      a.download = `monte-carlo-report-${Date.now()}.csv`
+      document.body.appendChild(a)
       a.click()
+      document.body.removeChild(a)
       URL.revokeObjectURL(url)
     } else {
       window.print()
     }
+  }
+
+  const emptyResult = {
+    samples: [],
+    mean: 0,
+    stdDev: 0,
+    variance: 0,
+    confidenceInterval: { lower: 0, upper: 0, level: 0.95 },
+    histogram: { bins: [], counts: [] },
+    relativeError: 0,
   }
 
   return (
@@ -112,11 +161,35 @@ export default function Export() {
           <Button variant="outline" icon={<Printer size={16} />} onClick={() => window.print()}>
             打印预览
           </Button>
-          <Button icon={<Download size={16} />} onClick={handleExport}>
+          <Button 
+            icon={<Download size={16} />} 
+            onClick={handleExport}
+            disabled={!result}
+          >
             导出报告
           </Button>
         </div>
       </div>
+
+      {!result && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+          <div className="flex items-start gap-4">
+            <AlertTriangle size={24} className="text-amber-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-amber-800">暂无模拟数据</h3>
+              <p className="text-amber-700 text-sm mt-1">
+                请先前往误差图表页运行模拟，生成数据后再导出报告。
+              </p>
+              <Link
+                to="/"
+                className="inline-flex items-center gap-1 text-primary-600 hover:text-primary-700 text-sm font-medium mt-3"
+              >
+                前往误差图表页 →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -133,40 +206,49 @@ export default function Export() {
                 <p className="text-sm text-gray-500 mt-1">
                   生成时间：{formatDateTime(new Date().toISOString())}
                 </p>
+                {result && (
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    数据来源：Dashboard 页 {result ? formatDateTime(useSimulationStore.getState().lastUpdated || '') : ''}
+                  </p>
+                )}
               </div>
 
-              <div className="grid grid-cols-4 gap-3">
-                <MetricCard
-                  title="均值"
-                  value={formatNumber(simResult.mean)}
-                  unit={params.unit}
-                  icon={<Target size={16} />}
-                />
-                <MetricCard
-                  title="标准差"
-                  value={formatNumber(simResult.stdDev)}
-                  unit={params.unit}
-                  icon={<Activity size={16} />}
-                />
-                <MetricCard
-                  title="相对误差"
-                  value={formatPercent(simResult.relativeError, 2)}
-                  icon={<Percent size={16} />}
-                />
-                <MetricCard
-                  title="置信区间"
-                  value={`${formatNumber(simResult.confidenceInterval.lower)} ~ ${formatNumber(simResult.confidenceInterval.upper)}`}
-                  unit={params.unit}
-                  icon={<BarChart3 size={16} />}
-                />
-              </div>
+              {result && (
+                <>
+                  <div className="grid grid-cols-4 gap-3">
+                    <MetricCard
+                      title="均值"
+                      value={formatNumber(result.mean)}
+                      unit={params.unit}
+                      icon={<Target size={16} />}
+                    />
+                    <MetricCard
+                      title="标准差"
+                      value={formatNumber(result.stdDev)}
+                      unit={params.unit}
+                      icon={<Activity size={16} />}
+                    />
+                    <MetricCard
+                      title="相对误差"
+                      value={formatPercent(result.relativeError, 2)}
+                      icon={<Percent size={16} />}
+                    />
+                    <MetricCard
+                      title="置信区间"
+                      value={`${formatNumber(result.confidenceInterval.lower)} ~ ${formatNumber(result.confidenceInterval.upper)}`}
+                      unit={params.unit}
+                      icon={<BarChart3 size={16} />}
+                    />
+                  </div>
 
-              <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">误差分布</h3>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <MonteCarloChart result={simResult} unit={params.unit} height={200} />
-                </div>
-              </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">误差分布</h3>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <MonteCarloChart result={result} unit={params.unit} height={200} />
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div>
                 <h3 className="text-sm font-medium text-gray-700 mb-3">数据记录明细</h3>
@@ -206,6 +288,11 @@ export default function Export() {
                   {filteredRecords.length > 5 && (
                     <p className="text-xs text-gray-400 text-center py-2">
                       ... 还有 {filteredRecords.length - 5} 条记录
+                    </p>
+                  )}
+                  {filteredRecords.length === 0 && (
+                    <p className="text-xs text-gray-400 text-center py-4">
+                      暂无数据记录
                     </p>
                   )}
                 </div>
@@ -248,11 +335,21 @@ export default function Export() {
                 </div>
               </div>
 
+              <div className="text-xs text-gray-500 bg-gray-50 rounded-lg p-3">
+                <p className="font-medium text-gray-600 mb-1">格式说明</p>
+                <ul className="space-y-1">
+                  <li><strong>PDF/打印：</strong>与屏幕显示完全一致</li>
+                  <li><strong>CSV：</strong>含统计摘要和记录明细，Excel 可直接打开</li>
+                  <li><strong>JSON：</strong>完整结构化数据，便于程序处理</li>
+                </ul>
+              </div>
+
               <Button
                 variant="primary"
                 icon={<Download size={16} />}
                 onClick={handleExport}
                 className="w-full"
+                disabled={!result}
               >
                 导出 {exportFormat.toUpperCase()}
               </Button>

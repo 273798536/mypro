@@ -128,7 +128,7 @@ export default function MonteCarloChart({ result, unit, height = 350 }: MonteCar
           title: {
             display: true,
             text: `数值 (${unit})`,
-            font: { size: 12, weight: '500' as const },
+            font: { size: 12, weight: 500 },
           },
           grid: {
             display: false,
@@ -142,7 +142,7 @@ export default function MonteCarloChart({ result, unit, height = 350 }: MonteCar
           title: {
             display: true,
             text: '频数',
-            font: { size: 12, weight: '500' as const },
+            font: { size: 12, weight: 500 },
           },
           grid: {
             color: 'rgba(0, 0, 0, 0.05)',
