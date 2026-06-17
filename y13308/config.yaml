@@ -1,0 +1,43 @@
+threshold: 0.75
+source_field_aliases:
+  - "来源"
+  - "数据源"
+  - "source"
+  - "data_source"
+  - "评测来源"
+status_field_aliases:
+  - "处理状态"
+  - "状态"
+  - "status"
+  - "处理结果"
+  - "评测状态"
+id_field_aliases:
+  - "样本ID"
+  - "id"
+  - "sample_id"
+  - "病历ID"
+question_field_aliases:
+  - "问题"
+  - "question"
+  - "问诊问题"
+answer_field_aliases:
+  - "回答"
+  - "答案"
+  - "answer"
+label_field_aliases:
+  - "标签"
+  - "金标准"
+  - "label"
+  - "ground_truth"
+prediction_field_aliases:
+  - "预测结果"
+  - "模型输出"
+  - "prediction"
+  - "predict"
+score_field_aliases:
+  - "置信度"
+  - "score"
+  - "置信度分数"
+duplicate_mark_suffix: "_重复评测"
+export_dir: "exports"
+data_dir: "data"
