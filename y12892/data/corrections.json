@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "id": "corr_1781672302571",
+    "batchId": "batch_1781567627312",
+    "correctedForecast": {
+      "forecastWaveHeight": 1.9,
+      "forecastPeriod": 9.8,
+      "forecastDirection": 138
+    },
+    "reason": "预报到达晚了2小时，结合实时浮标数据下调波高0.2m、周期0.4s",
+    "correctedBy": "张工",
+    "type": "风浪预报晚到修正",
+    "createdAt": "2026-06-17T04:58:22.571Z"
+  },
+  {
+    "id": "corr_1781672349754",
+    "batchId": "batch_1781567627312",
+    "correctedForecast": {
+      "forecastWaveHeight": 1.9,
+      "forecastPeriod": 9.8,
+      "forecastDirection": 138
+    },
+    "reason": "预报到达晚了2小时，结合浮标数据下调",
+    "correctedBy": "张工",
+    "type": "风浪预报晚到修正",
+    "createdAt": "2026-06-17T04:59:09.757Z"
+  }
+]

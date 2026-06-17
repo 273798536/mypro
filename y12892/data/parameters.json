@@ -30,5 +30,37 @@
       "explanation": "主波向135°，来自偏南方向，需结合风流场综合判断。"
     },
     "createdAt": "2026-06-15T23:53:47.314Z"
+  },
+  {
+    "id": "param_1781672889415",
+    "batchId": "batch_1781672889404",
+    "hs": {
+      "value": 1.8,
+      "unit": "m",
+      "explanation": "有效波高1.8m，海况中等，处于1.25-2.5m区间，需关注海况变化。"
+    },
+    "tp": {
+      "value": 9.5,
+      "unit": "s",
+      "explanation": "谱峰周期9.5s，属于中等周期海浪，涌浪与风浪共存。"
+    },
+    "spectrumType": {
+      "value": "JONSWAP-常规",
+      "explanation": "有效波高1.8m在正常范围，海浪谱符合标准JONSWAP谱，谱峰增强因子γ=3.3。"
+    },
+    "windWaveRatio": {
+      "value": 0.447,
+      "explanation": "风速8.5m/s下风浪占比44.7%，风浪成分较弱。"
+    },
+    "swellRatio": {
+      "value": 0.553,
+      "explanation": "涌浪占比55.3%，谱峰周期9.5s表明涌浪为主要成分。"
+    },
+    "dominantDirection": {
+      "value": 135,
+      "unit": "°",
+      "explanation": "主波向135°，来自偏南方向，需结合风流场综合判断。"
+    },
+    "createdAt": "2026-06-17T05:08:09.415Z"
   }
 ]

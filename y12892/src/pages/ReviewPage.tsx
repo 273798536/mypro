@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   FileCheck2,
   Camera,
@@ -6,25 +6,33 @@ import {
   AlertTriangle,
   Edit3,
   Check,
-  X,
-  MapPin,
   MessageSquare,
-  Clock,
   Anchor,
+  Loader2,
+  RefreshCw,
 } from 'lucide-react'
 import { useAppStore } from '@/store/appStore'
 import { cn } from '@/lib/utils'
 
 export default function ReviewPage() {
+  const currentBatchId = useAppStore((s) => s.currentBatchId)
+  const setCorrections = useAppStore((s) => s.setCorrections)
+  const setOpinions = useAppStore((s) => s.setOpinions)
+  const setBuoyData = useAppStore((s) => s.setBuoyData)
+  const setForecastData = useAppStore((s) => s.setForecastData)
+  const setInspectionPhotos = useAppStore((s) => s.setInspectionPhotos)
+  const setBuoyOfflineEvents = useAppStore((s) => s.setBuoyOfflineEvents)
+
   const buoyData = useAppStore((s) => s.buoyData)
   const forecastData = useAppStore((s) => s.forecastData)
   const inspectionPhotos = useAppStore((s) => s.inspectionPhotos)
   const buoyOfflineEvents = useAppStore((s) => s.buoyOfflineEvents)
   const corrections = useAppStore((s) => s.corrections)
-  const addCorrection = useAppStore((s) => s.addCorrection)
   const opinions = useAppStore((s) => s.opinions)
-  const addOpinion = useAppStore((s) => s.addOpinion)
-  const currentBatchId = useAppStore((s) => s.currentBatchId)
+
+  const [loading, setLoading] = useState(false)
+  const [savingCorrection, setSavingCorrection] = useState(false)
+  const [savingOpinion, setSavingOpinion] = useState(false)
 
   const [editingForecast, setEditingForecast] = useState(false)
   const [correctedWaveHeight, setCorrectedWaveHeight] = useState(forecastData?.forecastWaveHeight || 0)
@@ -46,51 +54,129 @@ export default function ReviewPage() {
     { lat: 32.0, lng: 123.0, timestamp: '2026-06-16T12:30:00Z', label: '作业区' },
   ]
 
-  const handleSaveCorrection = () => {
-    const correction = {
-      id: `corr_${Date.now()}`,
-      batchId: currentBatchId || '',
-      field: 'forecast',
-      originalValue: JSON.stringify({
-        waveHeight: forecastData?.forecastWaveHeight,
-        period: forecastData?.forecastPeriod,
-        direction: forecastData?.forecastDirection,
-      }),
-      correctedValue: JSON.stringify({
-        waveHeight: correctedWaveHeight,
-        period: correctedPeriod,
-        direction: correctedDirection,
-      }),
-      reason: correctionReason,
-      createdAt: new Date().toISOString(),
-      type: '风浪预报晚到修正',
-      correctedBy: submittedBy,
-      correctedForecast: {
-        forecastWaveHeight: correctedWaveHeight,
-        forecastPeriod: correctedPeriod,
-        forecastDirection: correctedDirection,
-      },
+  useEffect(() => {
+    if (currentBatchId) {
+      loadReviewData()
     }
-    addCorrection(correction)
-    setEditingForecast(false)
-    setCorrectionReason('')
+  }, [currentBatchId])
+
+  const loadReviewData = async () => {
+    if (!currentBatchId) return
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/review/${currentBatchId}`)
+      const data = await res.json()
+      if (data.success) {
+        const d = data.data
+        if (d.buoyData) setBuoyData(d.buoyData)
+        if (d.lateForecast) {
+          setForecastData({
+            forecastWaveHeight: d.lateForecast.forecastWaveHeight,
+            forecastPeriod: d.lateForecast.forecastPeriod,
+            forecastDirection: d.lateForecast.forecastDirection,
+            arrivalTime: d.lateForecast.arrivalTime,
+            isLate: d.lateForecast.isLate,
+          })
+        }
+        if (d.inspectionPhotos) setInspectionPhotos(d.inspectionPhotos)
+        if (d.buoyOfflineEvents) setBuoyOfflineEvents(d.buoyOfflineEvents)
+        if (d.existingCorrections) setCorrections(d.existingCorrections)
+        if (d.existingOpinions) setOpinions(d.existingOpinions)
+      }
+    } catch (err) {
+      console.error('加载复核数据失败:', err)
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleSubmitOpinion = () => {
-    if (!opinionText.trim()) return
-    const opinion = {
-      id: `opin_${Date.now()}`,
-      batchId: currentBatchId || '',
-      opinion: opinionText,
-      shipTrajectory,
-      submittedBy,
-      createdAt: new Date().toISOString(),
+  const handleSaveCorrection = async () => {
+    if (!currentBatchId || !correctionReason.trim()) return
+    setSavingCorrection(true)
+    try {
+      const res = await fetch(`/api/review/${currentBatchId}/correction`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          correctedForecast: {
+            forecastWaveHeight: correctedWaveHeight,
+            forecastPeriod: correctedPeriod,
+            forecastDirection: correctedDirection,
+          },
+          reason: correctionReason,
+          correctedBy: submittedBy,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        const newCorrection = {
+          ...data.data,
+          originalValue: JSON.stringify({
+            waveHeight: forecastData?.forecastWaveHeight,
+            period: forecastData?.forecastPeriod,
+            direction: forecastData?.forecastDirection,
+          }),
+          correctedValue: JSON.stringify({
+            waveHeight: correctedWaveHeight,
+            period: correctedPeriod,
+            direction: correctedDirection,
+          }),
+        }
+        setCorrections([...corrections, newCorrection])
+        setEditingForecast(false)
+        setCorrectionReason('')
+      }
+    } catch (err) {
+      console.error('保存修正失败:', err)
+    } finally {
+      setSavingCorrection(false)
     }
-    addOpinion(opinion)
-    setOpinionText('')
+  }
+
+  const handleSubmitOpinion = async () => {
+    if (!currentBatchId || !opinionText.trim()) return
+    setSavingOpinion(true)
+    try {
+      const res = await fetch(`/api/review/${currentBatchId}/opinion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          opinion: opinionText,
+          shipTrajectory,
+          submittedBy,
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        const newOpinion = {
+          ...data.data,
+          opinion: data.data.opinion || opinionText,
+          submittedBy: data.data.submittedBy || submittedBy,
+          shipTrajectory,
+        }
+        setOpinions([...opinions, newOpinion])
+        setOpinionText('')
+      }
+    } catch (err) {
+      console.error('提交意见失败:', err)
+    } finally {
+      setSavingOpinion(false)
+    }
   }
 
   const allVerified = buoyVerified && photosVerified && offlineVerified
+
+  if (!currentBatchId) {
+    return (
+      <div className="p-6">
+        <div className="bg-white rounded-xl border border-dashed border-slate-300 h-96 flex flex-col items-center justify-center text-slate-400">
+          <FileCheck2 className="w-16 h-16 mb-4 opacity-30" />
+          <p className="text-sm">请先在计算工作台执行计算</p>
+          <p className="text-xs mt-2 opacity-60">计算完成后可在此处复核数据</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-6 space-y-6">
@@ -101,7 +187,15 @@ export default function ReviewPage() {
             浮标数据、巡检照片、浮标离线统一复核 · 风浪预报晚到可内联修正
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={loadReviewData}
+            disabled={loading}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-slate-600 hover:bg-slate-100 transition-colors"
+          >
+            <RefreshCw className={cn('w-3.5 h-3.5', loading && 'animate-spin')} />
+            刷新
+          </button>
           <span className={`px-3 py-1.5 rounded-lg text-xs font-medium ${
             allVerified
               ? 'bg-tide-100 text-tide-700 border border-tide-200'
@@ -111,6 +205,13 @@ export default function ReviewPage() {
           </span>
         </div>
       </div>
+
+      {loading && (
+        <div className="bg-deep-50 border border-deep-200 rounded-lg p-3 flex items-center gap-2 text-deep-700 text-sm">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          正在从后端加载复核数据...
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-5">
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
@@ -232,7 +333,7 @@ export default function ReviewPage() {
             </button>
           </div>
           <div className="p-4 space-y-3">
-            {buoyOfflineEvents.map((event, idx) => (
+            {buoyOfflineEvents.map((event: any, idx: number) => (
               <div key={idx} className="bg-amber-50 rounded-lg p-3 border border-amber-100">
                 <div className="flex items-center gap-2 text-amber-700 text-xs font-medium mb-1.5">
                   <AlertTriangle className="w-3.5 h-3.5" />
@@ -324,7 +425,7 @@ export default function ReviewPage() {
                 </div>
               </div>
               <div>
-                <label className="text-xs text-slate-500 mb-1.5 block">修正原因</label>
+                <label className="text-xs text-slate-500 mb-1.5 block">修正原因 *</label>
                 <textarea
                   value={correctionReason}
                   onChange={(e) => setCorrectionReason(e.target.value)}
@@ -341,8 +442,15 @@ export default function ReviewPage() {
                 </button>
                 <button
                   onClick={handleSaveCorrection}
-                  className="px-4 py-2 rounded-lg text-sm text-white bg-coral-500 hover:bg-coral-600 transition-colors"
+                  disabled={savingCorrection || !correctionReason.trim()}
+                  className={cn(
+                    'px-4 py-2 rounded-lg text-sm text-white transition-colors flex items-center gap-2',
+                    savingCorrection || !correctionReason.trim()
+                      ? 'bg-slate-400 cursor-not-allowed'
+                      : 'bg-coral-500 hover:bg-coral-600'
+                  )}
                 >
+                  {savingCorrection && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   保存修正
                 </button>
               </div>
@@ -365,14 +473,21 @@ export default function ReviewPage() {
               </div>
               {corrections.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-slate-100">
-                  <div className="text-xs text-slate-500 mb-2">已有修正记录 ({corrections.length})</div>
-                  {corrections.map((c, idx) => (
+                  <div className="text-xs text-slate-500 mb-2">已有修正记录 ({corrections.length}) · 已持久化保存</div>
+                  {corrections.map((c: any, idx: number) => (
                     <div key={idx} className="text-xs text-slate-600 bg-tide-50 rounded-lg p-2.5 mb-2 border border-tide-100">
                       <div className="flex justify-between items-center">
-                        <span className="text-tide-700 font-medium">修正 #{idx + 1}</span>
-                        <span className="text-slate-400">{c.createdAt}</span>
+                        <span className="text-tide-700 font-medium">
+                          {c.type || '修正'} #{idx + 1}
+                        </span>
+                        <span className="text-slate-400 font-mono text-[10px]">
+                          {c.id}
+                        </span>
                       </div>
                       <div className="mt-1 text-slate-600">原因：{c.reason}</div>
+                      <div className="mt-1 text-slate-500 text-[11px]">
+                        修正人：{c.correctedBy || '未知'} · {c.createdAt}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -394,13 +509,14 @@ export default function ReviewPage() {
                 暂无处理意见
               </div>
             ) : (
-              opinions.map((op, idx) => (
+              opinions.map((op: any, idx: number) => (
                 <div key={idx} className="bg-slate-50 rounded-lg p-3 border border-slate-100">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-medium text-slate-700">{op.submittedBy}</span>
-                    <span className="text-xs text-slate-400">{op.createdAt}</span>
+                    <span className="text-xs text-slate-400 font-mono text-[10px]">{op.id}</span>
                   </div>
                   <p className="text-sm text-slate-600">{op.opinion}</p>
+                  <div className="mt-1.5 text-[11px] text-slate-400">{op.createdAt}</div>
                 </div>
               ))
             )}
@@ -422,8 +538,15 @@ export default function ReviewPage() {
               />
               <button
                 onClick={handleSubmitOpinion}
-                className="px-4 py-2 rounded-lg text-sm text-white bg-tide-500 hover:bg-tide-600 transition-colors"
+                disabled={savingOpinion || !opinionText.trim()}
+                className={cn(
+                  'px-4 py-2 rounded-lg text-sm text-white transition-colors flex items-center gap-2',
+                  savingOpinion || !opinionText.trim()
+                    ? 'bg-slate-400 cursor-not-allowed'
+                    : 'bg-tide-500 hover:bg-tide-600'
+                )}
               >
+                {savingOpinion && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 提交意见
               </button>
             </div>

@@ -15,5 +15,22 @@
     "rawDataId": "raw_1781567627314",
     "parametersId": "param_1781567627314",
     "createdAt": "2026-06-15T23:53:47.315Z"
+  },
+  {
+    "id": "proc_1781672889418",
+    "batchId": "batch_1781672889404",
+    "algorithm": "JONSWAP谱参数化方法",
+    "inputSummary": {
+      "hs": 1.8,
+      "tp": 9.5,
+      "mainDirection": 135,
+      "windSpeed": 8.5,
+      "waterTemp": 24.5
+    },
+    "riskLevel": "medium",
+    "waterQualityAlert": "watch",
+    "rawDataId": "raw_1781672889411",
+    "parametersId": "param_1781672889415",
+    "createdAt": "2026-06-17T05:08:09.418Z"
   }
 ]

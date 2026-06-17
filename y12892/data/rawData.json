@@ -30,5 +30,37 @@
       }
     ],
     "createdAt": "2026-06-15T23:53:47.314Z"
+  },
+  {
+    "id": "raw_1781672889411",
+    "batchId": "batch_1781672889404",
+    "buoyData": {
+      "significantWaveHeight": 1.8,
+      "peakPeriod": 9.5,
+      "mainDirection": 135,
+      "windSpeed": 8.5,
+      "windDirection": 120,
+      "waterTemp": 24.5
+    },
+    "forecastData": {
+      "forecastWaveHeight": 2.1,
+      "forecastPeriod": 10.2,
+      "forecastDirection": 140,
+      "arrivalTime": "2026-06-16T14:30:00Z",
+      "isLate": true
+    },
+    "inspectionPhotos": [
+      "photo_001.jpg",
+      "photo_002.jpg",
+      "photo_003.jpg"
+    ],
+    "buoyOfflineEvents": [
+      {
+        "startTime": "2026-06-16T02:15:00Z",
+        "endTime": "2026-06-16T03:45:00Z",
+        "reason": "浮标电池更换"
+      }
+    ],
+    "createdAt": "2026-06-17T05:08:09.411Z"
   }
 ]
