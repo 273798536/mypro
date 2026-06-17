@@ -1,11 +1,9 @@
 from typing import List, Tuple, Optional
-from .. import models
 from ..models import FinalDecision
 
 
 SCORE_THRESHOLD = 4.0
 SCORE_FLUCTUATION_THRESHOLD = 1.0
-PROMPT_DIFF_CHAR_THRESHOLD = 100
 
 
 def extract_rule_ids(safety_snapshot: dict) -> set:
@@ -28,40 +26,39 @@ def compute_decision(
     original_score: float,
     revised_score: float,
     has_safety_violations: bool,
-    safety_rules_diff: bool,
-    prompt_diff_chars: int = 0,
     affects_safety_rules: bool = False,
-    newly_added_rules: Optional[List[str]] = None,
+    affected_rule_ids: Optional[List[str]] = None,
+    version_rule_ids: Optional[set] = None,
 ) -> Tuple[FinalDecision, str]:
-    newly_added_rules = newly_added_rules or []
+    affected_rule_ids = affected_rule_ids or []
+    version_rule_ids = version_rule_ids or set()
 
-    if prompt_diff_chars > PROMPT_DIFF_CHAR_THRESHOLD or len(newly_added_rules) > 0:
-        reason_parts = []
-        if prompt_diff_chars > PROMPT_DIFF_CHAR_THRESHOLD:
-            reason_parts.append(f"提示词本体变更 {prompt_diff_chars} 字符超过阈值 {PROMPT_DIFF_CHAR_THRESHOLD}")
-        if newly_added_rules:
-            reason_parts.append(f"新增安全规则 {', '.join(newly_added_rules)}，需重新评测验证")
-        return FinalDecision.RERUN, "；".join(reason_parts)
+    uncovered_rules = [r for r in affected_rule_ids if r not in version_rule_ids]
 
-    if abs(revised_score - original_score) > SCORE_FLUCTUATION_THRESHOLD or safety_rules_diff or affects_safety_rules:
-        reason_parts = []
-        if abs(revised_score - original_score) > SCORE_FLUCTUATION_THRESHOLD:
-            reason_parts.append(
-                f"评分波动 {round(abs(revised_score - original_score), 2)} 分超过阈值 {SCORE_FLUCTUATION_THRESHOLD}"
-            )
-        if safety_rules_diff:
-            reason_parts.append("关联的安全规则版本发生变更")
-        if affects_safety_rules:
-            reason_parts.append("人工反馈标记为影响安全规则")
-        return FinalDecision.REVIEW_REQUIRED, "；".join(reason_parts)
+    if affects_safety_rules and len(uncovered_rules) > 0:
+        return (
+            FinalDecision.RERUN,
+            f"反馈涉及当前版本快照未覆盖的安全规则 {', '.join(uncovered_rules)}，"
+            f"需补充规则后重新评测验证覆盖度",
+        )
 
-    if revised_score >= SCORE_THRESHOLD and not has_safety_violations:
-        return FinalDecision.APPROVED, f"修订评分 {revised_score} ≥ {SCORE_THRESHOLD} 且无安全违规，可直接使用"
+    if revised_score >= SCORE_THRESHOLD and not has_safety_violations and not affects_safety_rules:
+        return (
+            FinalDecision.APPROVED,
+            f"修订评分 {revised_score} ≥ {SCORE_THRESHOLD} 且无安全违规、不影响规则，可直接使用",
+        )
 
+    reason_parts = []
+    if abs(revised_score - original_score) > SCORE_FLUCTUATION_THRESHOLD:
+        reason_parts.append(
+            f"评分波动 {round(abs(revised_score - original_score), 2)} 分超过阈值 {SCORE_FLUCTUATION_THRESHOLD}"
+        )
+    if affects_safety_rules:
+        reason_parts.append("人工反馈标记为影响安全规则，需 MLOps 同步复核")
     if has_safety_violations:
-        return FinalDecision.REVIEW_REQUIRED, "存在未解决的安全违规，需 MLOps 复核"
-
+        reason_parts.append("存在未解决的安全违规")
     if revised_score < SCORE_THRESHOLD:
-        return FinalDecision.REVIEW_REQUIRED, f"修订评分 {revised_score} < 阈值 {SCORE_THRESHOLD}，需复核"
-
-    return FinalDecision.REVIEW_REQUIRED, "默认状态，待 MLOps 工程师确认"
+        reason_parts.append(f"修订评分 {revised_score} < 阈值 {SCORE_THRESHOLD}")
+    if not reason_parts:
+        reason_parts.append("默认状态，待 MLOps 工程师确认")
+    return FinalDecision.REVIEW_REQUIRED, "；".join(reason_parts)

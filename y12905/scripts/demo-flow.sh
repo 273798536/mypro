@@ -139,25 +139,25 @@ for s in json.load(sys.stdin):
 ")
 echo "         DEMO-SRC-001 = sample#$SRC1_ID, DEMO-SRC-002=#$SRC2_ID, DEMO-SRC-006=#$SRC6_ID"
 
-# 反馈 1：高分、无违规 → 系统自动判定 APPROVED 🟢
+# 反馈 1：高分、无违规、不影响规则 → 系统自动判定 APPROVED 🟢
 echo "       ↳ 反馈 1：样本#$SRC1_ID (高分无违规) → 期望 🟢 APPROVED"
 FB1=$(curl -sS -X POST "$BASE/api/human-feedback" \
   -H "Content-Type: application/json" \
   -d "{\"eval_sample_id\": $SRC1_ID, \"evaluator\": \"demo-mlops\", \"feedback_text\": \"标注通过，无问题\", \"revised_score\": 4.8, \"affects_safety_rules\": false, \"affected_rule_ids\": []}")
 echo "         决策: $(echo "$FB1" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['final_decision'], '|', d['reason'])")"
 
-# 反馈 2：涉及安全规则 → 期望 🟡 REVIEW_REQUIRED
-echo "       ↳ 反馈 2：样本#$SRC2_ID (标记影响 R-004 金融规则) → 期望 🟡 REVIEW_REQUIRED"
+# 反馈 2：涉及已有安全规则 R-004（版本B快照已覆盖）→ 期望 🟡 REVIEW_REQUIRED
+echo "       ↳ 反馈 2：样本#$SRC2_ID (标记影响 R-004，规则已覆盖需复核) → 期望 🟡 REVIEW_REQUIRED"
 FB2=$(curl -sS -X POST "$BASE/api/human-feedback" \
   -H "Content-Type: application/json" \
   -d "{\"eval_sample_id\": $SRC2_ID, \"evaluator\": \"demo-reviewer\", \"feedback_text\": \"涉及金融建议规则，需同步复核 R-004 是否覆盖\", \"revised_score\": 4.5, \"affects_safety_rules\": true, \"affected_rule_ids\": [\"R-004\"]}")
 echo "         决策: $(echo "$FB2" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['final_decision'], '|', d['reason'])")"
 
-# 反馈 3：评分大幅波动 → 期望 🟡 REVIEW_REQUIRED
-echo "       ↳ 反馈 3：样本#$SRC6_ID (评分波动>1分) → 期望 🟡 REVIEW_REQUIRED"
+# 反馈 3：涉及版本快照未覆盖的新规则 R-099 → 期望 � RERUN
+echo "       ↳ 反馈 3：样本#$SRC6_ID (发现版本未覆盖的新规则 R-099) → 期望 � RERUN"
 FB3=$(curl -sS -X POST "$BASE/api/human-feedback" \
   -H "Content-Type: application/json" \
-  -d "{\"eval_sample_id\": $SRC6_ID, \"evaluator\": \"demo-mlops\", \"feedback_text\": \"大幅修正评分\", \"revised_score\": 3.0, \"affects_safety_rules\": false, \"affected_rule_ids\": []}")
+  -d "{\"eval_sample_id\": $SRC6_ID, \"evaluator\": \"demo-mlops\", \"feedback_text\": \"该样本暴露了版本快照未覆盖的隐私风险 R-099，需补充规则后重跑\", \"revised_score\": 2.0, \"affects_safety_rules\": true, \"affected_rule_ids\": [\"R-099\"]}")
 echo "         决策: $(echo "$FB3" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['final_decision'], '|', d['reason'])")"
 echo ""
 

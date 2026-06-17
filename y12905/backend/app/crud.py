@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from . import models, schemas
-from .services.decision_engine import rules_are_consistent, detect_added_rules
+from .services.decision_engine import rules_are_consistent, detect_added_rules, extract_rule_ids
 from .services.diff_service import char_diff_count
 
 
@@ -209,37 +209,20 @@ def create_human_feedback(
 ) -> models.HumanFeedback:
     sample = get_eval_sample(db, fb.eval_sample_id)
     original_score = sample.score if sample else fb.revised_score
-    prompt_version = sample.prompt_version if sample else None
-    pv = prompt_version
+    pv = sample.prompt_version if sample else None
 
-    prev_versions = db.query(models.PromptVersion).order_by(models.PromptVersion.created_at.asc()).all()
-    prev_pv = None
-    def _prefix(tag: str) -> str:
-        import re
-        m = re.match(r"^(v\d+)", tag)
-        return m.group(1) if m else tag.split(".")[0]
+    version_rule_ids = set()
     if pv:
-        cur_prefix = _prefix(pv.version_tag)
-        for p in prev_versions:
-            if p.id < pv.id and _prefix(p.version_tag) == cur_prefix:
-                prev_pv = p
-    safety_diff = False
-    prompt_diff_chars = 0
-    added_rules = []
-    if prev_pv and pv:
-        safety_diff = not rules_are_consistent(prev_pv.safety_rules_snapshot, pv.safety_rules_snapshot)
-        added_rules = detect_added_rules(prev_pv.safety_rules_snapshot, pv.safety_rules_snapshot)
-        prompt_diff_chars = char_diff_count(prev_pv.content, pv.content)
+        version_rule_ids = set(extract_rule_ids(pv.safety_rules_snapshot or {}))
 
     from .services.decision_engine import compute_decision
     final_decision, reason = compute_decision(
         original_score=original_score,
         revised_score=fb.revised_score,
         has_safety_violations=bool(sample.safety_violations) if sample else False,
-        safety_rules_diff=safety_diff,
-        prompt_diff_chars=prompt_diff_chars,
         affects_safety_rules=fb.affects_safety_rules,
-        newly_added_rules=added_rules,
+        affected_rule_ids=fb.affected_rule_ids,
+        version_rule_ids=version_rule_ids,
     )
 
     obj = models.HumanFeedback(
