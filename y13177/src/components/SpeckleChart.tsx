@@ -10,7 +10,7 @@ import {
   Legend,
 } from 'recharts';
 import { useSpeckleStore } from '@/store/useSpeckleStore';
-import type { DataPoint, AnomalyInfo } from '@/types';
+import type { DataPoint, AnomalyInfo, VersionSnapshot } from '@/types';
 import { cn } from '@/lib/utils';
 import { useState, useMemo } from 'react';
 
@@ -30,26 +30,31 @@ function CustomTooltip({
   active,
   payload,
   label,
+  snapshot,
 }: {
   active?: boolean;
   payload?: Array<{ name: string; value: number; color: string }>;
   label?: number;
+  snapshot: VersionSnapshot | null;
 }) {
-  const dataset = useSpeckleStore((s) => s.dataset);
-  if (!active || !payload || !dataset) return null;
+  if (!active || !payload || !snapshot) return null;
 
-  const point = dataset.dataPoints.find((d) => d.timestamp === label);
+  const point = snapshot.dataPoints.find((d) => d.timestamp === label);
   if (!point) return null;
 
   return (
     <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-xl px-4 py-3 shadow-2xl shadow-black/40">
-      <div className="text-xs text-slate-400 mb-2">采样点 #{label} · {point.sourceRow}</div>
+      <div className="text-xs text-slate-400 mb-2">
+        采样点 #{label} · {point.sourceRow}
+      </div>
       <div className="space-y-1">
         {payload.map((entry) => (
           <div key={entry.name} className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
             <span className="text-sm text-slate-300">{entry.name}</span>
-            <span className="text-sm font-mono text-white ml-auto">{entry.value.toFixed(2)}</span>
+            <span className="text-sm font-mono text-white ml-auto">
+              {entry.value.toFixed(2)}
+            </span>
           </div>
         ))}
       </div>
@@ -57,7 +62,10 @@ function CustomTooltip({
         <div className="mt-3 pt-2 border-t border-slate-700">
           <div
             className="text-xs font-semibold px-2 py-0.5 rounded inline-block"
-            style={{ background: `${anomalyColorMap[point.anomaly.type]}22`, color: anomalyColorMap[point.anomaly.type] }}
+            style={{
+              background: `${anomalyColorMap[point.anomaly.type]}22`,
+              color: anomalyColorMap[point.anomaly.type],
+            }}
           >
             {anomalyLabelMap[point.anomaly.type]}
           </div>
@@ -92,7 +100,12 @@ function AnomalyDot(props: {
           <animate attributeName="r" values="10;18;10" dur="2s" repeatCount="indefinite" />
         )}
         {!isSelected && (
-          <animate attributeName="opacity" values="0.15;0.02;0.15" dur="2s" repeatCount="indefinite" />
+          <animate
+            attributeName="opacity"
+            values="0.15;0.02;0.15"
+            dur="2s"
+            repeatCount="indefinite"
+          />
         )}
       </circle>
       <circle cx={cx} cy={cy} r={7} fill={color} stroke="white" strokeWidth={2} />
@@ -103,17 +116,25 @@ function AnomalyDot(props: {
 
 export function SpeckleChart() {
   const dataset = useSpeckleStore((s) => s.dataset);
+  const selectedVersionId = useSpeckleStore((s) => s.selectedVersionId);
+  const selectAnomaly = useSpeckleStore((s) => s.selectAnomaly);
+  const selectedAnomaly = useSpeckleStore((s) => s.selectedAnomaly);
   const [activeParams, setActiveParams] = useState({
     intensity: true,
     contrast: true,
     stability: true,
   });
 
+  const currentSnapshot = useMemo(() => {
+    if (!dataset || !selectedVersionId) return null;
+    return dataset.snapshots.find((s) => s.id === selectedVersionId) || null;
+  }, [dataset, selectedVersionId]);
+
   const anomalyRegions = useMemo(() => {
-    if (!dataset) return [];
+    if (!currentSnapshot) return [];
     const regions: Array<{ start: number; end: number; anomaly: AnomalyInfo }> = [];
     const seen = new Set<string>();
-    dataset.dataPoints.forEach((p) => {
+    currentSnapshot.dataPoints.forEach((p) => {
       if (p.anomaly && !seen.has(p.anomaly.id)) {
         seen.add(p.anomaly.id);
         regions.push({
@@ -124,14 +145,20 @@ export function SpeckleChart() {
       }
     });
     return regions;
-  }, [dataset]);
+  }, [currentSnapshot]);
 
-  if (!dataset) {
+  if (!currentSnapshot) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
           <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-slate-800/50 border border-slate-700 flex items-center justify-center">
-            <svg className="w-12 h-12 text-slate-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <svg
+              className="w-12 h-12 text-slate-600"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+            >
               <path d="M3 3v18h18" strokeLinecap="round" />
               <path d="M7 15l4-4 4 3 5-6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -154,7 +181,8 @@ export function SpeckleChart() {
         <div>
           <h2 className="text-sm font-semibold text-slate-200">参数曲线图</h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            共 {dataset.dataPoints.length} 个采样点，检测到 {dataset.summary.anomalyCount} 处异常
+            共 {currentSnapshot.dataPoints.length} 个采样点，检测到{' '}
+            {currentSnapshot.summary.anomalyCount} 处异常
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -179,7 +207,10 @@ export function SpeckleChart() {
       <div className="flex-1 px-6 pb-6 min-h-0">
         <div className="h-full w-full rounded-2xl bg-slate-900/40 border border-slate-800 p-4">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={dataset.dataPoints} margin={{ top: 20, right: 30, left: 0, bottom: 10 }}>
+            <LineChart
+              data={currentSnapshot.dataPoints}
+              margin={{ top: 20, right: 30, left: 0, bottom: 10 }}
+            >
               <defs>
                 {paramConfig.map((p) => (
                   <linearGradient key={p.key} id={`shadow-${p.key}`} x1="0" y1="0" x2="0" y2="1">
@@ -197,7 +228,13 @@ export function SpeckleChart() {
                 tick={{ fill: '#94a3b8', fontSize: 11 }}
                 tickLine={false}
                 axisLine={{ stroke: '#334155' }}
-                label={{ value: '采样序号', position: 'insideBottom', offset: -4, fill: '#64748b', fontSize: 11 }}
+                label={{
+                  value: '采样序号',
+                  position: 'insideBottom',
+                  offset: -4,
+                  fill: '#64748b',
+                  fontSize: 11,
+                }}
               />
 
               <YAxis
@@ -209,7 +246,7 @@ export function SpeckleChart() {
                 tickFormatter={(v) => v.toFixed(1)}
               />
 
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip snapshot={currentSnapshot} />} />
 
               {anomalyRegions.map((r, idx) => (
                 <ReferenceArea

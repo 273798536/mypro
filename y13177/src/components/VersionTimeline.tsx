@@ -14,30 +14,32 @@ export function VersionTimeline() {
   const selectedVersionId = useSpeckleStore((s) => s.selectedVersionId);
   const selectVersion = useSpeckleStore((s) => s.selectVersion);
 
-  if (!dataset) return null;
+  if (!dataset || dataset.snapshots.length === 0) return null;
+
+  const snapshots = dataset.snapshots;
 
   return (
     <div className="h-full flex flex-col">
       <div className="px-5 py-3 border-b border-slate-800/50 flex items-center gap-2">
         <History className="w-4 h-4 text-slate-400" />
         <h3 className="text-sm font-semibold text-slate-200">版本时间线</h3>
-        <span className="ml-auto text-xs text-slate-500">{dataset.versions.length} 条记录</span>
+        <span className="ml-auto text-xs text-slate-500">{snapshots.length} 条记录</span>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-1">
-        {dataset.versions
+        {snapshots
           .slice()
           .reverse()
-          .map((v, idx) => {
-            const cfg = changeTypeConfig[v.changeType];
+          .map((snap, idx) => {
+            const cfg = changeTypeConfig[snap.changeType];
             const Icon = cfg.icon;
-            const isSelected = selectedVersionId === v.id;
+            const isSelected = selectedVersionId === snap.id;
             const isLatest = idx === 0;
 
             return (
               <button
-                key={v.id}
-                onClick={() => selectVersion(v.id)}
+                key={snap.id}
+                onClick={() => selectVersion(snap.id)}
                 className={cn(
                   'w-full text-left relative pl-8 py-3 rounded-xl transition-all duration-200',
                   isSelected
@@ -46,7 +48,7 @@ export function VersionTimeline() {
                 )}
               >
                 <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-slate-700/60 ml-[15px]" />
-                {idx === dataset.versions.length - 1 && (
+                {idx === snapshots.length - 1 && (
                   <div className="absolute left-0 bottom-0 h-1/2 w-0.5 bg-transparent ml-[15px]" />
                 )}
 
@@ -66,7 +68,7 @@ export function VersionTimeline() {
                 )}
 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-mono font-semibold text-white">{v.version}</span>
+                  <span className="text-sm font-mono font-semibold text-white">{snap.version}</span>
                   <span
                     className={cn(
                       'text-[10px] font-semibold px-1.5 py-0.5 rounded border',
@@ -78,14 +80,24 @@ export function VersionTimeline() {
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-300 mt-1.5 leading-relaxed pr-16">{v.description}</p>
+                <p className="text-xs text-slate-300 mt-1.5 leading-relaxed pr-16">{snap.description}</p>
 
                 <div className="flex items-center gap-3 mt-2">
                   <div className="flex items-center gap-1 text-[11px] text-slate-500">
                     <User className="w-3 h-3" />
-                    {v.operatorName}
+                    {snap.operatorName}
                   </div>
-                  <span className="text-[11px] text-slate-600">{v.timestamp}</span>
+                  <span className="text-[11px] text-slate-600">{snap.timestamp}</span>
+                </div>
+
+                <div className="flex items-center gap-2 mt-2 text-[10px] text-slate-500">
+                  <span>{snap.dataPoints.length} 个采样点</span>
+                  <span>·</span>
+                  <span className={cn(
+                    snap.summary.anomalyCount > 0 ? 'text-orange-400' : 'text-emerald-400'
+                  )}>
+                    {snap.summary.anomalyCount} 处异常
+                  </span>
                 </div>
               </button>
             );

@@ -1,28 +1,34 @@
 import { X, FileCheck, AlertCircle, GitBranch, CheckCircle2, Clipboard } from 'lucide-react';
 import { useSpeckleStore } from '@/store/useSpeckleStore';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 
 export function SummaryModal() {
-  const dataset = useSpeckleStore((s) => s.dataset);
   const isOpen = useSpeckleStore((s) => s.isSummaryOpen);
   const setOpen = useSpeckleStore((s) => s.setSummaryOpen);
   const selectAnomaly = useSpeckleStore((s) => s.selectAnomaly);
+  const dataset = useSpeckleStore((s) => s.dataset);
+  const selectedVersionId = useSpeckleStore((s) => s.selectedVersionId);
   const [copied, setCopied] = useState(false);
 
-  if (!dataset) return null;
+  const currentSnapshot = useMemo(() => {
+    if (!dataset || !selectedVersionId) return null;
+    return dataset.snapshots.find((s) => s.id === selectedVersionId) || null;
+  }, [dataset, selectedVersionId]);
 
-  const anomalies = dataset.dataPoints
+  if (!currentSnapshot) return null;
+
+  const anomalies = currentSnapshot.dataPoints
     .filter((p) => p.anomaly)
     .map((p) => p.anomaly!)
     .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i);
 
   const handleCopy = async () => {
     const text = `【激光散斑参数回放摘要】
-设备：${dataset.deviceName}
-材料：${dataset.materialName}
-参数版本：${dataset.summary.paramVersion}
-异常点数：${dataset.summary.anomalyCount} 处
+设备：${currentSnapshot.deviceParams.deviceName}
+材料：${currentSnapshot.materialParams.materialName}
+参数版本：${currentSnapshot.summary.paramVersion}
+异常点数：${currentSnapshot.summary.anomalyCount} 处
 
 异常清单：
 ${anomalies
@@ -33,7 +39,7 @@ ${anomalies
   .join('\n')}
 
 处理结论：
-${dataset.summary.conclusion}`;
+${currentSnapshot.summary.conclusion}`;
 
     try {
       await navigator.clipboard.writeText(text);
@@ -56,11 +62,13 @@ ${dataset.summary.conclusion}`;
 
       <div
         className={cn(
-          'fixed inset-x-0 top-[8%] mx-auto max-w-2xl w-[92%] bg-slate-900/95 border border-slate-700/60 rounded-3xl shadow-2xl shadow-black/60 z-50 transition-all duration-500 ease-out overflow-hidden',
-          isOpen ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
+          'fixed inset-x-0 top-[8%] mx-auto max-w-2xl w-[92%] bg-slate-900/95 border border-slate-700/60 rounded-3xl shadow-2xl shadow-black/60 z-50 transition-all duration-500 ease-out overflow-hidden max-h-[84vh] flex flex-col',
+          isOpen
+            ? 'opacity-100 translate-y-0 scale-100'
+            : 'opacity-0 translate-y-4 scale-95 pointer-events-none'
         )}
       >
-        <div className="relative px-7 pt-7 pb-4">
+        <div className="relative px-7 pt-7 pb-4 shrink-0">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">
@@ -82,7 +90,11 @@ ${dataset.summary.conclusion}`;
                     : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 hover:border-slate-600'
                 )}
               >
-                {copied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Clipboard className="w-3.5 h-3.5" />}
+                {copied ? (
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                ) : (
+                  <Clipboard className="w-3.5 h-3.5" />
+                )}
                 {copied ? '已复制' : '复制文本'}
               </button>
               <button
@@ -95,7 +107,7 @@ ${dataset.summary.conclusion}`;
           </div>
         </div>
 
-        <div className="px-7 pb-7 space-y-5">
+        <div className="px-7 pb-7 space-y-5 overflow-y-auto flex-1">
           <div className="grid grid-cols-2 gap-3">
             <div className="rounded-2xl bg-slate-800/40 border border-slate-700/50 p-4">
               <div className="flex items-center gap-2 mb-2">
@@ -104,8 +116,10 @@ ${dataset.summary.conclusion}`;
                   参数版本
                 </span>
               </div>
-              <div className="text-sm font-mono text-white">{dataset.summary.paramVersion}</div>
-              <div className="text-[11px] text-slate-500 mt-1">{dataset.materialName}</div>
+              <div className="text-sm font-mono text-white">{currentSnapshot.summary.paramVersion}</div>
+              <div className="text-[11px] text-slate-500 mt-1">
+                {currentSnapshot.materialParams.materialName}
+              </div>
             </div>
             <div className="rounded-2xl bg-slate-800/40 border border-slate-700/50 p-4">
               <div className="flex items-center gap-2 mb-2">
@@ -115,7 +129,7 @@ ${dataset.summary.conclusion}`;
                 </span>
               </div>
               <div className="text-2xl font-semibold text-white">
-                {dataset.summary.anomalyCount}
+                {currentSnapshot.summary.anomalyCount}
                 <span className="text-sm font-normal text-slate-500 ml-1">处</span>
               </div>
               <div className="text-[11px] text-slate-500 mt-1">点击可跳转追溯</div>
@@ -130,6 +144,11 @@ ${dataset.summary.conclusion}`;
               <span className="text-[10px] text-slate-600">点击条目查看追溯</span>
             </div>
             <div className="divide-y divide-slate-700/40">
+              {anomalies.length === 0 && (
+                <div className="px-4 py-6 text-center text-xs text-slate-500">
+                  未检测到异常点
+                </div>
+              )}
               {anomalies.map((a, i) => (
                 <button
                   key={a.id}
@@ -155,8 +174,7 @@ ${dataset.summary.conclusion}`;
                         {a.type === 'extreme' ? '极端值' : a.type === 'noise' ? '疑似噪声' : '数据缺失'}
                       </span>
                       <span className="text-[10px] font-mono text-slate-600">
-                        #{a.affectedRangeStart}-#
-                        {a.affectedRangeEnd}
+                        #{a.affectedRangeStart}-#{a.affectedRangeEnd}
                       </span>
                     </div>
                     <p className="text-xs text-slate-300 leading-relaxed">{a.description}</p>
@@ -173,7 +191,9 @@ ${dataset.summary.conclusion}`;
                 处理结论
               </span>
             </div>
-            <p className="text-sm text-slate-200 leading-relaxed">{dataset.summary.conclusion}</p>
+            <p className="text-sm text-slate-200 leading-relaxed">
+              {currentSnapshot.summary.conclusion}
+            </p>
           </div>
         </div>
       </div>

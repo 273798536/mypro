@@ -1,5 +1,6 @@
 import { X, AlertTriangle, FileText, Layers, Link } from 'lucide-react';
 import { useSpeckleStore } from '@/store/useSpeckleStore';
+import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import type { AnomalyType, SourceType } from '@/types';
 
@@ -19,10 +20,16 @@ export function AnomalyDrawer() {
   const selectedAnomaly = useSpeckleStore((s) => s.selectedAnomaly);
   const selectAnomaly = useSpeckleStore((s) => s.selectAnomaly);
   const dataset = useSpeckleStore((s) => s.dataset);
+  const selectedVersionId = useSpeckleStore((s) => s.selectedVersionId);
+
+  const currentSnapshot = useMemo(() => {
+    if (!dataset || !selectedVersionId) return null;
+    return dataset.snapshots.find((s) => s.id === selectedVersionId) || null;
+  }, [dataset, selectedVersionId]);
 
   const isOpen = !!selectedAnomaly;
 
-  if (!dataset) return null;
+  if (!currentSnapshot) return null;
 
   return (
     <>
@@ -66,7 +73,7 @@ export function AnomalyDrawer() {
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400 mt-1">{dataset.deviceName}</p>
+            <p className="text-xs text-slate-400 mt-1">{currentSnapshot.deviceParams.deviceName}</p>
           </div>
           <button
             onClick={() => selectAnomaly(null)}
@@ -117,7 +124,7 @@ export function AnomalyDrawer() {
                 来源证据（{selectedAnomaly.evidences.length}）
               </h4>
               <div className="space-y-3">
-                {selectedAnomaly.evidences.map((ev) => {
+                {selectedAnomaly.evidences.map((ev, evIdx) => {
                   const sc = sourceTypeConfig[ev.sourceType];
                   const Icon = sc.icon;
                   return (
@@ -126,12 +133,16 @@ export function AnomalyDrawer() {
                       className="rounded-xl bg-slate-800/40 border border-slate-700/50 overflow-hidden hover:border-slate-600 transition-colors"
                     >
                       <div className="px-4 py-3 border-b border-slate-700/40 flex items-center gap-2">
-                        <div className={cn('w-7 h-7 rounded-lg bg-slate-900/60 flex items-center justify-center')}>
+                        <div className="w-7 h-7 rounded-lg bg-slate-900/60 flex items-center justify-center">
                           <Icon className={cn('w-3.5 h-3.5', sc.color)} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-slate-200 truncate">{ev.sourceName}</div>
-                          <div className={cn('text-[10px] font-medium', sc.color)}>{ev.sourceType}</div>
+                          <div className="text-sm font-medium text-slate-200 truncate">
+                            {ev.sourceName}
+                          </div>
+                          <div className={cn('text-[10px] font-medium', sc.color)}>
+                            {ev.sourceType} · 证据 {evIdx + 1}
+                          </div>
                         </div>
                         <div className="text-[10px] font-mono text-slate-500 bg-slate-900/60 px-2 py-1 rounded">
                           第 {ev.lineNumber} 行

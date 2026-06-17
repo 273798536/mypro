@@ -3,6 +3,7 @@ import { SpeckleChart } from '@/components/SpeckleChart';
 import { VersionTimeline } from '@/components/VersionTimeline';
 import { AnomalyDrawer } from '@/components/AnomalyDrawer';
 import { SummaryModal } from '@/components/SummaryModal';
+import { ParamPanel } from '@/components/ParamPanel';
 import { useSpeckleStore } from '@/store/useSpeckleStore';
 import { useEffect } from 'react';
 import { AlertCircle, Info } from 'lucide-react';
@@ -41,7 +42,7 @@ export default function Home() {
                   <Info className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
                   <div className="text-xs text-slate-400 leading-relaxed">
                     <span className="text-slate-300 font-medium">使用提示：</span>
-                    点击图表上的橙色异常点可查看追溯详情（影响范围、来源行、材料证据）；顶部「重跑」模拟参数重新计算；「查看摘要」可一键导出复核结论。
+                    点击图表上的橙色异常点可查看追溯详情；右侧版本时间线可切换历史版本；「参数/材料」面板可修改设备铭牌或补充材料，改动会自动生成新版本并保留旧判断；「重跑」基于当前参数重新计算；「查看摘要」可一键导出复核结论。
                   </div>
                 </div>
               </div>
@@ -89,6 +90,7 @@ export default function Home() {
 
         <AnomalyDrawer />
         <SummaryModal />
+        <ParamPanel />
       </div>
     </div>
   );

@@ -45,11 +45,51 @@ export interface DatasetSummary {
   conclusion: string;
 }
 
+export interface DeviceParams {
+  deviceName: string;
+  nameplateLine: string;
+  intensityMin: number;
+  intensityMax: number;
+  contrastMin: number;
+  contrastMax: number;
+  stabilityThreshold: number;
+  vibrationLimit: number;
+}
+
+export interface MaterialParams {
+  materialName: string;
+  materialReportLine: string;
+  surfaceRoughness: number;
+  hardness: number;
+  sampleId: string;
+}
+
+export interface SupplementItem {
+  id: string;
+  sourceName: string;
+  sourceType: SourceType;
+  content: string;
+  lineNumber: number;
+  anomalyId?: string;
+  timestamp: string;
+  operatorName: string;
+}
+
+export interface VersionSnapshot {
+  id: string;
+  version: string;
+  timestamp: string;
+  changeType: ChangeType;
+  description: string;
+  operatorName: string;
+  dataPoints: DataPoint[];
+  summary: DatasetSummary;
+  deviceParams: DeviceParams;
+  materialParams: MaterialParams;
+  supplements: SupplementItem[];
+}
+
 export interface SpeckleDataset {
   id: string;
-  deviceName: string;
-  materialName: string;
-  dataPoints: DataPoint[];
-  versions: VersionEntry[];
-  summary: DatasetSummary;
+  snapshots: VersionSnapshot[];
 }

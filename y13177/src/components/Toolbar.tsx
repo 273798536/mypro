@@ -1,10 +1,28 @@
-import { FileText, RefreshCw, Scroll, Database } from 'lucide-react';
+import { FileText, RefreshCw, Scroll, Database, Settings } from 'lucide-react';
 import { useSpeckleStore } from '@/store/useSpeckleStore';
+import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 
 export function Toolbar() {
-  const { dataset, loadSample, startRerun, setSummaryOpen, isRerunning, rerunProgress } =
-    useSpeckleStore();
+  const dataset = useSpeckleStore((s) => s.dataset);
+  const selectedVersionId = useSpeckleStore((s) => s.selectedVersionId);
+  const loadSample = useSpeckleStore((s) => s.loadSample);
+  const startRerun = useSpeckleStore((s) => s.startRerun);
+  const setSummaryOpen = useSpeckleStore((s) => s.setSummaryOpen);
+  const isRerunning = useSpeckleStore((s) => s.isRerunning);
+  const rerunProgress = useSpeckleStore((s) => s.rerunProgress);
+  const setParamPanelOpen = useSpeckleStore((s) => s.setParamPanelOpen);
+  const isParamPanelOpen = useSpeckleStore((s) => s.isParamPanelOpen);
+
+  const currentSnapshot = useMemo(() => {
+    if (!dataset || !selectedVersionId) return null;
+    return dataset.snapshots.find((s) => s.id === selectedVersionId) || null;
+  }, [dataset, selectedVersionId]);
+
+  const hasData = !!dataset;
+  const deviceName = currentSnapshot?.deviceParams.deviceName || '';
+  const materialName = currentSnapshot?.materialParams.materialName || '';
+  const currentVersion = currentSnapshot?.version || '';
 
   return (
     <div className="flex items-center justify-between px-6 py-4 bg-slate-900/60 backdrop-blur-md border-b border-slate-700/50">
@@ -15,7 +33,9 @@ export function Toolbar() {
         <div>
           <h1 className="text-lg font-semibold text-white tracking-wide">激光散斑参数回放</h1>
           <p className="text-xs text-slate-400">
-            {dataset ? `${dataset.deviceName} · ${dataset.materialName}` : '未加载数据，请放样例开始'}
+            {hasData
+              ? `${deviceName} · ${materialName} · ${currentVersion}`
+              : '未加载数据，请放样例开始'}
           </p>
         </div>
       </div>
@@ -30,11 +50,33 @@ export function Toolbar() {
         </button>
 
         <button
-          onClick={startRerun}
-          disabled={!dataset || isRerunning}
+          onClick={() => setParamPanelOpen(!isParamPanelOpen)}
           className={cn(
             'group flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border',
-            dataset && !isRerunning
+            hasData
+              ? isParamPanelOpen
+                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hover:border-slate-500'
+              : 'bg-slate-900 text-slate-500 border-slate-800 cursor-not-allowed'
+          )}
+          disabled={!hasData}
+        >
+          <Settings
+            className={cn(
+              'w-4 h-4 transition-all',
+              isParamPanelOpen && 'text-cyan-400',
+              !isParamPanelOpen && hasData && 'group-hover:text-cyan-400'
+            )}
+          />
+          <span>参数/材料</span>
+        </button>
+
+        <button
+          onClick={startRerun}
+          disabled={!hasData || isRerunning}
+          className={cn(
+            'group flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border',
+            hasData && !isRerunning
               ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700 hover:border-slate-500'
               : 'bg-slate-900 text-slate-500 border-slate-800 cursor-not-allowed'
           )}
@@ -43,7 +85,7 @@ export function Toolbar() {
             className={cn(
               'w-4 h-4 transition-all',
               isRerunning && 'animate-spin text-cyan-400',
-              !isRerunning && dataset && 'group-hover:text-cyan-400'
+              !isRerunning && hasData && 'group-hover:text-cyan-400'
             )}
           />
           <span>{isRerunning ? `重跑中 ${rerunProgress}%` : '重跑'}</span>
@@ -51,10 +93,10 @@ export function Toolbar() {
 
         <button
           onClick={() => setSummaryOpen(true)}
-          disabled={!dataset}
+          disabled={!hasData}
           className={cn(
             'group flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 border',
-            dataset
+            hasData
               ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white border-transparent shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40'
               : 'bg-slate-900 text-slate-500 border-slate-800 cursor-not-allowed'
           )}
