@@ -58,8 +58,8 @@ router.get('/:batchId/export', (req, res) => {
     const report = reportService.exportReportText(req.params.batchId, version);
 
     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="${report.reportNo}.txt"`);
-    res.send(report.content);
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(report.reportNo + '.txt')}"`);
+    res.send('\uFEFF' + report.content);
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
   }

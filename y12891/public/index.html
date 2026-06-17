@@ -7,244 +7,371 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
       background: #f5f7fa;
       color: #333;
       padding: 20px;
+      font-size: 14px;
     }
-    .container { max-width: 1200px; margin: 0 auto; }
+    .container { max-width: 1400px; margin: 0 auto; }
     header {
       background: linear-gradient(135deg, #1a237e, #283593);
       color: white;
-      padding: 20px 30px;
+      padding: 18px 26px;
       border-radius: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
-    header h1 { font-size: 22px; margin-bottom: 5px; }
-    header p { opacity: 0.8; font-size: 14px; }
+    header h1 { font-size: 20px; margin-bottom: 4px; }
+    header p { opacity: 0.85; font-size: 13px; }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      background: white;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .toolbar label { font-size: 13px; color: #555; font-weight: 500; }
+    .toolbar select, .toolbar input {
+      padding: 6px 10px;
+      border: 1px solid #d0d7de;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+    .toolbar .spacer { flex: 1; }
 
     .status-trail {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       background: white;
-      padding: 15px 20px;
+      padding: 13px 18px;
       border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      flex-wrap: wrap;
     }
     .status-step {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 6px 14px;
+      gap: 6px;
+      padding: 5px 13px;
       border-radius: 20px;
-      font-size: 13px;
+      font-size: 12.5px;
       background: #e3f2fd;
       color: #1565c0;
     }
-    .status-step.active {
-      background: #1565c0;
-      color: white;
+    .status-step.active { background: #1565c0; color: white; }
+    .status-step.done { background: #c8e6c9; color: #2e7d32; }
+    .status-arrow { color: #999; font-size: 12px; }
+    .status-meta {
+      margin-left: auto;
+      font-size: 12.5px;
+      color: #666;
     }
-    .status-step.done {
-      background: #c8e6c9;
-      color: #2e7d32;
-    }
-    .status-arrow { color: #999; }
+    .status-meta b { color: #1565c0; }
 
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-bottom: 20px;
+    .tab-bar {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 16px;
+      background: white;
+      border-radius: 8px 8px 0 0;
+      padding: 0 10px;
+      border-bottom: 2px solid #eaecef;
+      overflow-x: auto;
     }
+    .tab {
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 13.5px;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      white-space: nowrap;
+      color: #555;
+    }
+    .tab:hover { background: #f6f8fa; }
+    .tab.active {
+      color: #1565c0;
+      border-bottom-color: #1565c0;
+      font-weight: 600;
+    }
+
     .card {
       background: white;
       border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 18px 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      margin-bottom: 16px;
     }
-    .card h2 {
-      font-size: 16px;
-      margin-bottom: 15px;
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
       padding-bottom: 10px;
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #eaecef;
+    }
+    .card-head h2 {
+      font-size: 15px;
+      font-weight: 600;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 8px;
     }
-    .card h2 .badge {
-      font-size: 12px;
-      padding: 3px 10px;
-      border-radius: 12px;
-      background: #f0f0f0;
-      color: #666;
-      font-weight: normal;
-    }
+    .card-head .actions { display: flex; gap: 8px; }
 
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #eee;
-      border-radius: 4px;
-      overflow: hidden;
-      margin: 10px 0;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #4caf50, #8bc34a);
-      transition: width 0.3s;
-    }
-
-    .material-list { list-style: none; }
-    .material-list li {
-      padding: 10px 12px;
-      border-radius: 6px;
-      margin-bottom: 6px;
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #fafafa;
-    }
-    .material-list li:hover { background: #f0f0f0; }
-    .material-list .status-tag {
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 10px;
-    }
-    .tag-pending { background: #fff3e0; color: #e65100; }
-    .tag-reviewed { background: #c8e6c9; color: #2e7d32; }
-    .tag-rejected { background: #ffcdd2; color: #c62828; }
-    .tag-missing { background: #ffe0b2; color: #e65100; }
-    .tag-warning { background: #fff9c4; color: #f57f17; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 900px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
 
     .btn {
-      padding: 8px 16px;
+      padding: 6px 14px;
       border: none;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 13px;
-      transition: all 0.2s;
+      font-size: 12.5px;
+      transition: all 0.15s;
+      font-weight: 500;
     }
     .btn-primary { background: #1565c0; color: white; }
     .btn-primary:hover { background: #0d47a1; }
     .btn-success { background: #2e7d32; color: white; }
     .btn-success:hover { background: #1b5e20; }
-    .btn-outline { background: white; color: #666; border: 1px solid #ddd; }
-    .btn-outline:hover { background: #f5f5f5; }
-    .btn-sm { padding: 5px 10px; font-size: 12px; }
+    .btn-warn { background: #f57c00; color: white; }
+    .btn-warn:hover { background: #e65100; }
+    .btn-danger { background: #c62828; color: white; }
+    .btn-outline { background: white; color: #555; border: 1px solid #d0d7de; }
+    .btn-outline:hover { background: #f6f8fa; border-color: #1565c0; color: #1565c0; }
+    .btn-sm { padding: 3px 9px; font-size: 11.5px; }
+    .btn-lg { padding: 9px 20px; font-size: 14px; }
+    .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
 
-    .buoy-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .buoy-table th, .buoy-table td {
-      padding: 8px 10px;
-      text-align: left;
-      border-bottom: 1px solid #eee;
-    }
-    .buoy-table th { background: #fafafa; font-weight: 600; }
-    .buoy-table tr:hover { background: #f5f8ff; }
-    .buoy-row-invalid { opacity: 0.6; background: #fff8e1; }
-    .buoy-row-abnormal { background: #fce4ec; }
-
-    .risk-high { color: #c62828; font-weight: 600; }
-    .risk-medium { color: #f57f17; font-weight: 600; }
-    .risk-low { color: #2e7d32; font-weight: 600; }
-
-    .alert {
-      padding: 10px 14px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      font-size: 13px;
-    }
-    .alert-warning { background: #fff8e1; color: #f57f17; border-left: 3px solid #f57f17; }
-    .alert-info { background: #e3f2fd; color: #1565c0; border-left: 3px solid #1565c0; }
-    .alert-error { background: #ffebee; color: #c62828; border-left: 3px solid #c62828; }
-
-    .tab-bar {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 15px;
-      border-bottom: 2px solid #eee;
-    }
-    .tab {
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 14px;
-      border-bottom: 2px solid transparent;
-      margin-bottom: -2px;
-    }
-    .tab.active {
-      color: #1565c0;
-      border-bottom-color: #1565c0;
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
       font-weight: 500;
     }
+    .tag-pending { background: #fff3e0; color: #e65100; }
+    .tag-approved { background: #c8e6c9; color: #2e7d32; }
+    .tag-rejected { background: #ffcdd2; color: #c62828; }
+    .tag-missing { background: #ffe0b2; color: #e65100; }
+    .tag-valid { background: #e3f2fd; color: #1565c0; }
+    .tag-invalid { background: #ffcdd2; color: #c62828; }
+    .tag-high { background: #ffcdd2; color: #c62828; }
+    .tag-medium { background: #fff3e0; color: #e65100; }
+    .tag-low { background: #c8e6c9; color: #2e7d32; }
 
-    .version-compare {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 10px;
-      align-items: center;
-    }
-    .version-box {
-      background: #fafafa;
-      padding: 12px;
+    .progress-box {
+      background: #f6f8fa;
       border-radius: 6px;
-      font-size: 13px;
+      padding: 12px;
     }
-    .version-box h4 { font-size: 13px; margin-bottom: 8px; }
-    .compare-arrow { font-size: 24px; color: #999; }
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #eaecef;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #43a047, #66bb6a);
+      transition: width 0.3s;
+    }
+    .progress-fill.warn { background: linear-gradient(90deg, #fb8c00, #ffa726); }
+    .progress-fill.danger { background: linear-gradient(90deg, #e53935, #ef5350); }
 
-    .full-width { grid-column: 1 / -1; }
-    .hidden { display: none; }
+    table.tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    table.tbl th, table.tbl td {
+      padding: 7px 10px;
+      text-align: left;
+      border-bottom: 1px solid #eaecef;
+    }
+    table.tbl th {
+      background: #f6f8fa;
+      font-weight: 600;
+      color: #555;
+    }
+    table.tbl tr:hover { background: #fafcff; }
+    tr.row-invalid { background: #fff8e1 !important; opacity: 0.8; }
+    tr.row-abnormal { background: #ffebee !important; }
+    tr.row-missing { background: #fff3e0 !important; }
 
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      justify-content: center;
+    .ul-clean { list-style: none; }
+    .ul-clean li {
+      padding: 8px 10px;
+      background: #f6f8fa;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      z-index: 1000;
+      font-size: 12.5px;
     }
-    .modal-overlay.active { display: flex; }
+    .ul-clean li:hover { background: #eef2ff; }
+    .li-sub-info {
+      font-size: 11px;
+      color: #888;
+      margin-top: 3px;
+    }
+
+    .alert {
+      padding: 10px 13px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+    .alert-info { background: #e3f2fd; color: #0d47a1; border-left: 3px solid #1565c0; }
+    .alert-warn { background: #fff8e1; color: #e65100; border-left: 3px solid #f57c00; }
+    .alert-error { background: #ffebee; color: #b71c1c; border-left: 3px solid #e53935; }
+    .alert-success { background: #e8f5e9; color: #1b5e20; border-left: 3px solid #43a047; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    .modal-mask {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 20px;
+    }
+    .modal-mask.open { display: flex; }
     .modal {
       background: white;
-      border-radius: 8px;
-      padding: 24px;
-      max-width: 500px;
-      width: 90%;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    .modal h3 { margin-bottom: 16px; font-size: 18px; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #555; }
-    .form-group input, .form-group textarea, .form-group select {
+      border-radius: 10px;
+      padding: 22px 24px;
       width: 100%;
-      padding: 8px 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
+      max-width: 560px;
+      max-height: 86vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .modal h3 { font-size: 16px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid #eee; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label {
+      display: block;
+      font-size: 12.5px;
+      margin-bottom: 4px;
+      color: #555;
+      font-weight: 500;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid #d0d7de;
+      border-radius: 5px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #1565c0;
+      box-shadow: 0 0 0 3px rgba(21,101,192,0.1);
+    }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .modal-actions {
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
-      margin-top: 20px;
+      gap: 8px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #eee;
     }
 
-    .report-content {
-      white-space: pre-wrap;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      line-height: 1.6;
+    .create-batch-box {
+      background: linear-gradient(135deg, #e8eaf6, #ede7f6);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+    }
+    .create-batch-box h3 { font-size: 14px; margin-bottom: 12px; color: #1a237e; }
+    .create-batch-form {
+      display: grid;
+      grid-template-columns: 1.2fr 1.5fr 2fr auto;
+      gap: 8px;
+      align-items: end;
+    }
+    @media (max-width: 900px) { .create-batch-form { grid-template-columns: 1fr; } }
+
+    .risk-big {
+      text-align: center;
+      padding: 18px 10px;
+    }
+    .risk-level { font-size: 38px; font-weight: 700; }
+    .risk-score { font-size: 14px; color: #666; margin-top: 5px; }
+
+    .report-body {
+      font-family: 'Courier New', 'Consolas', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
       background: #fafafa;
-      padding: 15px;
+      padding: 16px;
       border-radius: 6px;
-      max-height: 400px;
+      max-height: 520px;
       overflow-y: auto;
+      white-space: pre-wrap;
+      border: 1px solid #eaecef;
+    }
+
+    .version-compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 40px 1fr;
+      gap: 10px;
+      align-items: stretch;
+    }
+    .ver-box {
+      background: #f6f8fa;
+      border-radius: 6px;
+      padding: 12px;
+    }
+    .ver-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: #999;
+      font-weight: bold;
+    }
+
+    .material-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .material-main { flex: 1; min-width: 0; }
+    .material-title { font-weight: 500; color: #333; }
+    .material-meta { font-size: 11.5px; color: #888; margin-top: 2px; }
+    .old-remark-box {
+      background: #fff8e1;
+      border-left: 3px solid #fbc02d;
+      padding: 5px 9px;
+      margin-top: 6px;
+      font-size: 11.5px;
+      color: #795548;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .hidden { display: none !important; }
+
+    .duplicate-row {
+      background: #fff8e1 !important;
     }
   </style>
 </head>
@@ -252,75 +379,129 @@
   <div class="container">
     <header>
       <h1>⛵ 港区危险品泊位检查系统</h1>
-      <p>材料导入 · 统一复核 · 风险评估 · 报告导出</p>
+      <p>批次创建 · 材料导入 · 统一复核 · 风险评估 · 报告导出 — 全链路闭环</p>
     </header>
 
-    <div id="batch-selector" class="card" style="margin-bottom: 20px;">
-      <h2>检查批次</h2>
-      <select id="batchSelect" style="width: 100%; padding: 10px; font-size: 14px; border: 1px solid #ddd; border-radius: 6px;">
+    <div class="create-batch-box">
+      <h3>＋ 新建检查批次</h3>
+      <div class="create-batch-form">
+        <div class="form-group">
+          <label>批次号 *</label>
+          <input type="text" id="newBatchNo" placeholder="如 GXWXP-2026-0616">
+        </div>
+        <div class="form-group">
+          <label>批次名称 *</label>
+          <input type="text" id="newBatchName" placeholder="如 港区危险品泊位检查-2026年6月第3轮">
+        </div>
+        <div class="form-group">
+          <label>说明</label>
+          <input type="text" id="newBatchDesc" placeholder="覆盖的泊位/材料简要说明">
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="createBatch()">新建批次</button>
+      </div>
+      <div style="margin-top: 10px; display: flex; gap: 8px; align-items: center;">
+        <span style="font-size: 12px; color: #666;">快速操作：</span>
+        <button class="btn btn-outline btn-sm" onclick="loadSampleDataToCurrent()">一键导入样例材料（6类数据）</button>
+        <button class="btn btn-outline btn-sm" onclick="resetDatabase()">⚠️ 重置数据库（测试用）</button>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <label>当前批次：</label>
+      <select id="batchSelect" style="min-width: 340px;">
         <option value="">加载中...</option>
       </select>
+      <button class="btn btn-outline btn-sm" onclick="refreshData()">🔄 刷新</button>
+      <span class="spacer"></span>
+      <button class="btn btn-outline btn-sm" onclick="exportFullData()">⬇️ 完整数据包 JSON</button>
+      <button class="btn btn-outline btn-sm" onclick="exportCsvPackage()">⬇️ CSV 导出包</button>
     </div>
 
-    <div id="batchInfo" class="status-trail" style="display:none;">
-      <div class="status-step done" data-status="imported">📥 已导入</div>
+    <div id="statusTrail" class="status-trail" style="display:none;">
+      <div class="status-step" data-s="imported">📥 已导入</div>
       <div class="status-arrow">→</div>
-      <div class="status-step" data-status="reviewing">🔍 复核中</div>
+      <div class="status-step" data-s="reviewing">🔍 复核中</div>
       <div class="status-arrow">→</div>
-      <div class="status-step" data-status="risk_assessed">⚠️ 已评估</div>
+      <div class="status-step" data-s="risk_assessed">⚠️ 已评估</div>
       <div class="status-arrow">→</div>
-      <div class="status-step" data-status="reported">📄 已报告</div>
-      <span style="margin-left:auto; font-size: 13px; color: #666;">
-        当前版本: <b id="currentVersion">1</b>
-      </span>
+      <div class="status-step" data-s="reported">📄 已报告</div>
+      <div class="status-meta">
+        当前版本 <b id="verDisplay">v1</b> ·
+        创建 <span id="createdAtDisplay"></span> ·
+        更新 <span id="updatedAtDisplay"></span>
+      </div>
     </div>
 
-    <div id="mainContent" style="display:none;">
+    <div id="mainPanel" style="display:none;">
       <div class="tab-bar">
-        <div class="tab active" data-tab="overview">概览</div>
-        <div class="tab" data-tab="buoy">浮标数据 <small style="color:#e65100;">(复核入口)</small></div>
-        <div class="tab" data-tab="materials">材料清单</div>
-        <div class="tab" data-tab="risk">风险分层</div>
-        <div class="tab" data-tab="history">历史对比</div>
-        <div class="tab" data-tab="report">报告导出</div>
+        <div class="tab active" data-tab="overview">📊 概览</div>
+        <div class="tab" data-tab="buoy">🌊 浮标数据 <span style="color:#e65100;">·复核入口</span></div>
+        <div class="tab" data-tab="materials">📋 材料清单</div>
+        <div class="tab" data-tab="risk">⚠️ 风险分层</div>
+        <div class="tab" data-tab="history">📜 历史对比</div>
+        <div class="tab" data-tab="report">📄 报告导出</div>
       </div>
 
-      <div id="tab-overview" class="tab-content">
-        <div class="main-grid">
+      <!-- 概览 -->
+      <div id="tab-overview" class="tab-content active">
+        <div class="grid-2">
           <div class="card">
-            <h2>复核进度 <span class="badge" id="progressBadge">0%</span></h2>
-            <div class="progress-bar">
-              <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            <div class="card-head">
+              <h2>复核进度</h2>
+              <div class="actions">
+                <button class="btn btn-warn btn-sm" onclick="submitBatchReview()">提交整批复核</button>
+              </div>
             </div>
-            <ul class="material-list" id="reviewProgressList">
-            </ul>
-            <div style="margin-top: 15px; display: flex; gap: 10px;">
-              <button class="btn btn-primary" onclick="submitReview()">提交整批复核</button>
-              <button class="btn btn-outline" onclick="refreshData()">刷新</button>
+            <div class="progress-box" id="reviewProgressBox">
+              <div style="display:flex;justify-content:space-between;">
+                <span style="font-size:13px;font-weight:600;">总进度</span>
+                <span id="progressPct" style="font-weight:600;">0%</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;color:#666;">
+                <span>已复核 <b id="reviewedCount">0</b> / <span id="totalCount">0</span></span>
+                <span>待复核 <b id="pendingCount" style="color:#e65100;">0</b></span>
+              </div>
+            </div>
+            <div style="margin-top: 12px;">
+              <ul class="ul-clean" id="byTypeList"></ul>
             </div>
           </div>
 
           <div class="card">
-            <h2>待处理事项</h2>
-            <div id="alertList"></div>
-          </div>
-
-          <div class="card full-width">
-            <h2>重复上报追踪 <span class="badge">海事处可见</span></h2>
-            <div id="duplicateList">
-              <p style="color: #999; font-size: 13px;">暂无重复上报记录</p>
+            <div class="card-head">
+              <h2>待处理事项</h2>
             </div>
+            <div id="alertList">
+              <div class="alert alert-info">暂无待处理事项</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>重复上报追踪（海事处可见）</h2>
+          </div>
+          <div id="dupList">
+            <div class="alert alert-info">暂无重复上报记录</div>
           </div>
         </div>
       </div>
 
-      <div id="tab-buoy" class="tab-content hidden">
+      <!-- 浮标数据 - 单独复核入口 -->
+      <div id="tab-buoy" class="tab-content">
         <div class="card">
-          <h2>浮标数据复核 <span class="tag-warning" style="font-size: 11px; padding: 2px 8px; border-radius: 10px;">单独复核入口</span></h2>
-          <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
-            提示：浮标数据可单独修正复核，无需重新导入整批材料。点击操作列的「复核」按钮可修改数据并提交。
-          </p>
-          <table class="buoy-table">
+          <div class="card-head">
+            <h2>🌊 浮标数据 <span class="tag tag-pending">单独复核入口</span></h2>
+            <div class="actions">
+              <button class="btn btn-outline btn-sm" onclick="openImportModal('buoy')">📥 导入浮标数据</button>
+              <button class="btn btn-success btn-sm" onclick="approveAll('buoy')">一键全部通过</button>
+            </div>
+          </div>
+          <div class="alert alert-info">
+            💡 <b>浮标数据可单独修正复核</b>：点击「复核」直接修改数值和状态，无需重新导入整批材料。修正记录会写入操作日志。
+          </div>
+          <table class="tbl" id="buoyTbl">
             <thead>
               <tr>
                 <th>浮标ID</th>
@@ -330,642 +511,888 @@
                 <th>浪高(m)</th>
                 <th>记录时间</th>
                 <th>来源</th>
+                <th>有效性</th>
                 <th>状态</th>
                 <th>操作</th>
               </tr>
             </thead>
-            <tbody id="buoyTableBody">
-            </tbody>
+            <tbody></tbody>
           </table>
         </div>
       </div>
 
-      <div id="tab-materials" class="tab-content hidden">
-        <div class="main-grid">
+      <!-- 材料清单 -->
+      <div id="tab-materials" class="tab-content">
+        <div class="grid-2">
+          <!-- 潮汐 -->
           <div class="card">
-            <h2>潮汐表 <span class="badge">3条</span></h2>
-            <div id="tideList"></div>
-          </div>
-          <div class="card">
-            <h2>气象预报 <span class="badge">3条</span></h2>
-            <div id="weatherList"></div>
-          </div>
-          <div class="card">
-            <h2>禁航区越界 <span class="badge">3条</span></h2>
-            <div id="violationList"></div>
-          </div>
-          <div class="card">
-            <h2>巡检照片 <span class="badge" id="photoBadge">7张</span></h2>
-            <div id="photoList"></div>
-          </div>
-        </div>
-      </div>
-
-      <div id="tab-risk" class="tab-content hidden">
-        <div class="main-grid">
-          <div class="card">
-            <h2>风险评估结果</h2>
-            <div id="riskResult">
-              <p style="color: #999;">暂无评估结果，点击下方按钮进行风险评估</p>
+            <div class="card-head">
+              <h2>🌊 潮汐表</h2>
+              <div class="actions">
+                <button class="btn btn-outline btn-sm" onclick="openImportModal('tide')">📥 导入</button>
+                <button class="btn btn-success btn-sm" onclick="approveAll('tide')">全部通过</button>
+              </div>
             </div>
-            <button class="btn btn-success" style="margin-top: 15px;" onclick="assessRisk()">执行风险评估</button>
+            <ul class="ul-clean" id="tideList"></ul>
           </div>
+
+          <!-- 气象 -->
           <div class="card">
-            <h2>评估说明</h2>
-            <div id="riskNote">
-              <p style="color: #999;">-</p>
+            <div class="card-head">
+              <h2>🌤️ 气象预报</h2>
+              <div class="actions">
+                <button class="btn btn-outline btn-sm" onclick="openImportModal('weather')">📥 导入</button>
+                <button class="btn btn-success btn-sm" onclick="approveAll('weather')">全部通过</button>
+              </div>
+            </div>
+            <ul class="ul-clean" id="weatherList"></ul>
+          </div>
+
+          <!-- 禁航区 -->
+          <div class="card">
+            <div class="card-head">
+              <h2>🚫 禁航区越界</h2>
+              <div class="actions">
+                <button class="btn btn-outline btn-sm" onclick="openImportModal('violation')">📥 导入</button>
+                <button class="btn btn-success btn-sm" onclick="approveAll('violation')">全部通过</button>
+              </div>
+            </div>
+            <ul class="ul-clean" id="violationList"></ul>
+          </div>
+
+          <!-- 照片 -->
+          <div class="card">
+            <div class="card-head">
+              <h2>📷 巡检照片 <span id="photoBadge" class="tag tag-valid">0张</span></h2>
+              <div class="actions">
+                <button class="btn btn-outline btn-sm" onclick="openImportModal('photo')">📥 导入</button>
+                <button class="btn btn-success btn-sm" onclick="approveAll('photo')">全部通过</button>
+              </div>
+            </div>
+            <ul class="ul-clean" id="photoList"></ul>
+          </div>
+
+          <!-- 养殖日志 -->
+          <div class="card">
+            <div class="card-head">
+              <h2>🐟 养殖日志</h2>
+              <div class="actions">
+                <button class="btn btn-outline btn-sm" onclick="openImportModal('aquaculture')">📥 导入</button>
+                <button class="btn btn-success btn-sm" onclick="approveAll('aquaculture')">全部通过</button>
+              </div>
+            </div>
+            <ul class="ul-clean" id="aquaList"></ul>
+          </div>
+
+          <!-- 复核说明 -->
+          <div class="card">
+            <div class="card-head">
+              <h2>ℹ️ 复核操作说明</h2>
+            </div>
+            <div class="alert alert-info">
+              <b>材料复核流程</b>：
+              <ol style="margin:8px 0 0 20px; line-height:1.7;">
+                <li>点击每类材料旁的「📥 导入」可批量写入 JSON 格式数据</li>
+                <li>点击单条记录后的「复核」按钮可单独设置通过/不通过</li>
+                <li>也可点击「全部通过」一键批量复核该类材料</li>
+                <li>浮标数据支持直接修改数值（单独复核入口页签）</li>
+                <li>所有材料复核完成后，在「概览」点击「提交整批复核」升级版本</li>
+              </ol>
             </div>
           </div>
         </div>
       </div>
 
-      <div id="tab-history" class="tab-content hidden">
-        <div class="card">
-          <h2>历史版本对比</h2>
-          <div style="margin-bottom: 15px;">
-            <select id="versionA" style="padding: 6px; margin-right: 10px;">
-              <option value="">选择版本A</option>
-            </select>
-            <span style="margin: 0 10px;">VS</span>
-            <select id="versionB" style="padding: 6px; margin-left: 10px;">
-              <option value="">选择版本B</option>
-            </select>
-            <button class="btn btn-primary btn-sm" style="margin-left: 15px;" onclick="compareVersions()">对比</button>
+      <!-- 风险分层 -->
+      <div id="tab-risk" class="tab-content">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-head">
+              <h2>风险评估结果</h2>
+              <div class="actions">
+                <button class="btn btn-success btn-sm" onclick="assessRisk()">重新执行评估</button>
+              </div>
+            </div>
+            <div id="riskDisplay"></div>
           </div>
-          <div id="compareResult">
-            <p style="color: #999;">请选择两个版本进行对比</p>
+          <div class="card">
+            <div class="card-head"><h2>评估说明与依据</h2></div>
+            <div id="riskNote"><div class="alert alert-info">尚未执行风险评估</div></div>
           </div>
         </div>
       </div>
 
-      <div id="tab-report" class="tab-content hidden">
+      <!-- 历史对比 -->
+      <div id="tab-history" class="tab-content">
         <div class="card">
-          <h2>检查报告</h2>
-          <div id="reportContent">
-            <p style="color: #999; margin-bottom: 15px;">暂无生成的报告</p>
+          <div class="card-head"><h2>历史版本对比</h2></div>
+          <div style="margin-bottom: 14px;">
+            <select id="verASel" style="padding:6px 10px;"></select>
+            <span style="margin:0 10px; color:#888;">VS</span>
+            <select id="verBSel" style="padding:6px 10px;"></select>
+            <button class="btn btn-primary btn-sm" style="margin-left:12px;" onclick="compareVersions()">执行对比</button>
           </div>
-          <div style="margin-top: 15px; display: flex; gap: 10px;">
-            <button class="btn btn-success" onclick="generateReport()">生成报告</button>
-            <button class="btn btn-outline" onclick="exportReport()">导出文本</button>
+          <div id="cmpResult"><div class="alert alert-info">请选择两个版本后点击「执行对比」</div></div>
+        </div>
+      </div>
+
+      <!-- 报告 -->
+      <div id="tab-report" class="tab-content">
+        <div class="card">
+          <div class="card-head">
+            <h2>检查报告</h2>
+            <div class="actions">
+              <button class="btn btn-success btn-sm" onclick="generateReport()">生成/刷新报告</button>
+              <button class="btn btn-primary btn-sm" onclick="downloadReport()">⬇️ 下载 TXT</button>
+            </div>
+          </div>
+          <div id="reportDisplay">
+            <div class="alert alert-info">尚未生成报告。完成复核和风险评估后点击「生成/刷新报告」。</div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="buoyModal">
+  <!-- 通用复核弹窗 -->
+  <div class="modal-mask" id="reviewModal">
     <div class="modal">
-      <h3>浮标数据复核</h3>
+      <h3 id="reviewModalTitle">复核材料</h3>
+      <div id="reviewModalBody"></div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal('reviewModal')">取消</button>
+        <button class="btn btn-primary" onclick="saveReview()">保存复核结论</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 浮标单独复核弹窗 -->
+  <div class="modal-mask" id="buoyModal">
+    <div class="modal">
+      <h3>🌊 浮标数据单独复核（可修正数值）</h3>
       <div class="form-group">
         <label>浮标ID</label>
-        <input type="text" id="modalBuoyId" readonly>
+        <input type="text" id="mb_id" readonly>
       </div>
-      <div class="form-row">
+      <div class="form-row-2">
         <div class="form-group">
           <label>水深 (m)</label>
-          <input type="number" step="0.1" id="modalWaterDepth">
+          <input type="number" step="0.1" id="mb_depth">
         </div>
         <div class="form-group">
           <label>流速 (m/s)</label>
-          <input type="number" step="0.1" id="modalFlowVelocity">
+          <input type="number" step="0.1" id="mb_flow">
         </div>
       </div>
-      <div class="form-row">
+      <div class="form-row-2">
         <div class="form-group">
           <label>浪高 (m)</label>
-          <input type="number" step="0.1" id="modalWaveHeight">
+          <input type="number" step="0.1" id="mb_wave">
         </div>
         <div class="form-group">
           <label>水温 (℃)</label>
-          <input type="number" step="0.1" id="modalWaterTemp">
+          <input type="number" step="0.1" id="mb_temp">
         </div>
       </div>
-      <div class="form-row">
+      <div class="form-row-2">
         <div class="form-group">
           <label>风速 (m/s)</label>
-          <input type="number" step="0.1" id="modalWindSpeed">
+          <input type="number" step="0.1" id="mb_wind">
         </div>
         <div class="form-group">
           <label>风向</label>
-          <input type="text" id="modalWindDirection">
+          <input type="text" id="mb_winddir">
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>数据是否有效</label>
+          <select id="mb_valid">
+            <option value="1">有效</option>
+            <option value="0">无效</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>复核结果</label>
+          <select id="mb_status">
+            <option value="pending">待复核</option>
+            <option value="approved">复核通过</option>
+            <option value="rejected">复核不通过</option>
+          </select>
         </div>
       </div>
       <div class="form-group">
-        <label>数据是否有效</label>
-        <select id="modalIsValid">
-          <option value="1">有效</option>
-          <option value="0">无效</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>复核状态</label>
-        <select id="modalReviewStatus">
-          <option value="pending">待复核</option>
-          <option value="approved">复核通过</option>
-          <option value="rejected">复核不通过</option>
-        </select>
-      </div>
-      <div class="form-group">
         <label>复核备注</label>
-        <textarea id="modalComment" rows="3" placeholder="请输入复核意见..."></textarea>
+        <textarea id="mb_comment" rows="2"></textarea>
       </div>
       <div class="form-group">
         <label>复核人</label>
-        <input type="text" id="modalReviewer" value="科研助理">
+        <input type="text" id="mb_reviewer" value="科研助理">
       </div>
       <div class="modal-actions">
-        <button class="btn btn-outline" onclick="closeModal()">取消</button>
+        <button class="btn btn-outline" onclick="closeModal('buoyModal')">取消</button>
         <button class="btn btn-primary" onclick="saveBuoyReview()">保存复核</button>
       </div>
     </div>
   </div>
 
+  <!-- 导入弹窗 -->
+  <div class="modal-mask" id="importModal">
+    <div class="modal" style="max-width: 640px;">
+      <h3 id="importTitle">导入数据</h3>
+      <div class="alert alert-info" id="importHint"></div>
+      <div class="form-group">
+        <label>JSON 数据（数组格式）</label>
+        <textarea id="importJson" rows="14" style="font-family:'Courier New',monospace; font-size:12px;"></textarea>
+      </div>
+      <button class="btn btn-outline btn-sm" id="fillSampleBtn" onclick="fillSampleImport()">填入该类型样例</button>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeModal('importModal')">取消</button>
+        <button class="btn btn-success" onclick="doImport()">确认导入</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    const $ = id => document.getElementById(id);
     let currentBatchId = null;
-    let currentBuoyId = null;
     let currentMaterials = null;
+    let currentSummary = null;
+    let editingBuoyId = null;
+    let editingReview = null;
+    let editingImportType = null;
 
-    document.querySelectorAll('.tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-        tab.classList.add('active');
-        document.getElementById('tab-' + tab.dataset.tab).classList.remove('hidden');
-        if (tab.dataset.tab === 'history') loadVersionOptions();
-      });
-    });
-
-    async function api(url, options = {}) {
+    async function api(url, opts = {}) {
       const res = await fetch('/api' + url, {
         headers: { 'Content-Type': 'application/json' },
-        ...options
+        ...opts,
+        body: opts.body ? JSON.stringify(opts.body) : undefined
       });
       return await res.json();
     }
 
+    function statusText(s) {
+      return { imported: '已导入', reviewing: '复核中', risk_assessed: '已评估', reported: '已报告' }[s] || s;
+    }
+
     async function loadBatches() {
       const res = await api('/batches');
-      const select = document.getElementById('batchSelect');
-      if (res.success && res.data.length > 0) {
-        select.innerHTML = res.data.map(b =>
-          `<option value="${b.id}">${b.batch_no} - ${b.name} (${statusText(b.status)})</option>`
-        ).join('');
-        currentBatchId = res.data[0].id;
-        loadBatchData();
-      } else {
-        select.innerHTML = '<option value="">暂无批次数据</option>';
-      }
-    }
-
-    function statusText(s) {
-      const map = { imported: '已导入', reviewing: '复核中', risk_assessed: '已评估', reported: '已报告' };
-      return map[s] || s;
-    }
-
-    document.getElementById('batchSelect').addEventListener('change', (e) => {
-      currentBatchId = e.target.value;
-      if (currentBatchId) loadBatchData();
-    });
-
-    async function loadBatchData() {
-      if (!currentBatchId) return;
-
-      document.getElementById('batchInfo').style.display = 'flex';
-      document.getElementById('mainContent').style.display = 'block';
-
-      const [materials, summary, riskRes, duplicates] = await Promise.all([
-        api(`/batches/${currentBatchId}/materials`),
-        api(`/review/${currentBatchId}/summary`),
-        api(`/risk/${currentBatchId}/latest`),
-        api(`/review/${currentBatchId}/duplicates`)
-      ]);
-
-      const batch = materials.data;
-      currentMaterials = batch;
-      document.getElementById('currentVersion').textContent = batch.version;
-
-      document.querySelectorAll('.status-step').forEach(step => {
-        step.classList.remove('active', 'done');
-      });
-      const statusOrder = ['imported', 'reviewing', 'risk_assessed', 'reported'];
-      const currentIdx = statusOrder.indexOf(materials.data.status);
-
-      const batchInfo = await api(`/batches/${currentBatchId}`);
-      if (batchInfo.success) {
-        const curStatus = batchInfo.data.status;
-        const idx = statusOrder.indexOf(curStatus);
-        statusOrder.forEach((s, i) => {
-          const el = document.querySelector(`.status-step[data-status="${s}"]`);
-          if (i < idx) el.classList.add('done');
-          else if (i === idx) el.classList.add('active');
-        });
-      }
-
-      if (summary.success) {
-        const s = summary.data;
-        document.getElementById('progressBadge').textContent = s.progress + '%';
-        document.getElementById('progressFill').style.width = s.progress + '%';
-
-        const typeNames = {
-          buoy: '浮标数据',
-          tide: '潮汐表',
-          weather: '气象预报',
-          violation: '禁航区越界',
-          photo: '巡检照片',
-          aquaculture: '养殖日志'
-        };
-        const list = document.getElementById('reviewProgressList');
-        list.innerHTML = Object.entries(s.byType).map(([key, val]) => `
-          <li>
-            <span>${typeNames[key] || key}</span>
-            <span>${val.total - val.pending}/${val.total} 已复核</span>
-          </li>
-        `).join('');
-      }
-
-      if (riskRes.success) {
-        renderRiskResult(riskRes.data);
-      }
-
-      loadBuoyTable(batch.buoyData);
-      loadMaterialsList(batch);
-      loadDuplicates(duplicates.data);
-      loadAlerts(summary.data, batch);
-      loadReportPreview();
-    }
-
-    function loadBuoyTable(data) {
-      const tbody = document.getElementById('buoyTableBody');
-      tbody.innerHTML = data.map(b => {
-        let rowClass = '';
-        if (b.is_valid === 0) rowClass = 'buoy-row-invalid';
-        else if (b.water_depth !== null && b.water_depth < 0) rowClass = 'buoy-row-abnormal';
-
-        const statusTag = b.review_status === 'approved' ? '<span class="status-tag tag-reviewed">已通过</span>'
-          : b.review_status === 'rejected' ? '<span class="status-tag tag-rejected">不通过</span>'
-          : '<span class="status-tag tag-pending">待复核</span>';
-
-        return `
-          <tr class="${rowClass}">
-            <td>${b.buoy_id}</td>
-            <td>${b.location || '-'}</td>
-            <td>${b.water_depth !== null ? b.water_depth : '缺失'}</td>
-            <td>${b.flow_velocity !== null ? b.flow_velocity : '-'}</td>
-            <td>${b.wave_height !== null ? b.wave_height : '-'}</td>
-            <td>${b.record_time || '-'}</td>
-            <td>${b.source || '-'}</td>
-            <td>${statusTag}</td>
-            <td><button class="btn btn-sm btn-outline" onclick="openBuoyModal(${b.id})">复核</button></td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function loadMaterialsList(batch) {
-      document.getElementById('tideList').innerHTML = `
-        <ul class="material-list">
-          ${batch.tideTables.map(t => `
-            <li>
-              <span>${t.tide_date} - ${t.port_name}</span>
-              <span class="status-tag ${t.review_status === 'approved' ? 'tag-reviewed' : t.review_status === 'rejected' ? 'tag-rejected' : 'tag-pending'}">
-                ${t.review_status === 'approved' ? '已复核' : t.review_status === 'rejected' ? '不通过' : '待复核'}
-              </span>
-            </li>
-            ${t.old_remark ? `<li style="background:#fffbe6; font-size:12px; color:#f57f17;">📝 旧备注: ${t.old_remark}</li>` : ''}
-          `).join('')}
-        </ul>
-      `;
-
-      document.getElementById('weatherList').innerHTML = `
-        <ul class="material-list">
-          ${batch.weatherForecasts.map(w => `
-            <li>
-              <span>${w.forecast_date} - ${w.weather_condition}</span>
-              <span class="status-tag ${w.review_status === 'approved' ? 'tag-reviewed' : w.review_status === 'rejected' ? 'tag-rejected' : 'tag-pending'}">
-                ${w.review_status === 'approved' ? '已复核' : w.review_status === 'rejected' ? '不通过' : '待复核'}
-              </span>
-            </li>
-          `).join('')}
-        </ul>
-      `;
-
-      document.getElementById('violationList').innerHTML = `
-        <ul class="material-list">
-          ${batch.restrictedZoneViolations.map(v => `
-            <li>
-              <span>${v.vessel_name || '未知船舶'} - ${v.zone_name}</span>
-              <span class="status-tag ${v.review_status === 'approved' ? 'tag-reviewed' : v.review_status === 'rejected' ? 'tag-rejected' : 'tag-pending'}">
-                ${v.review_status === 'approved' ? '已复核' : v.review_status === 'rejected' ? '不通过' : '待复核'}
-              </span>
-            </li>
-          `).join('')}
-        </ul>
-      `;
-
-      const missingCount = batch.inspectionPhotos.filter(p => p.is_missing === 1).length;
-      document.getElementById('photoBadge').textContent = `${batch.inspectionPhotos.length - missingCount}/${batch.inspectionPhotos.length}张`;
-
-      document.getElementById('photoList').innerHTML = `
-        <ul class="material-list">
-          ${batch.inspectionPhotos.map(p => `
-            <li style="${p.is_missing ? 'background:#fff3e0;' : ''}">
-              <span>${p.photo_no} - ${p.photo_type} ${p.is_missing ? '⚠️缺失' : ''}</span>
-              <span class="status-tag ${p.is_missing ? 'tag-missing' : 'tag-reviewed'}">
-                ${p.is_missing ? '缺失' : '可用'}
-              </span>
-            </li>
-          `).join('')}
-        </ul>
-      `;
-    }
-
-    function loadDuplicates(data) {
-      const el = document.getElementById('duplicateList');
-      if (!data || data.length === 0) {
-        el.innerHTML = '<p style="color: #999; font-size: 13px;">暂无重复上报记录</p>';
+      const sel = $('batchSelect');
+      if (!res.success || res.data.length === 0) {
+        sel.innerHTML = '<option value="">（暂无批次，请先在上方新建）</option>';
         return;
       }
-      el.innerHTML = `
-        <ul class="material-list">
-          ${data.map(d => `
-            <li>
-              <span>
-                <b>[${d.material_type}]</b> ${d.material_key}
-                <small style="color:#999; margin-left:8px;">出现${d.duplicate_count}次</small>
-              </span>
-              <span class="status-tag ${d.status === 'resolved' ? 'tag-reviewed' : 'tag-warning'}">
-                ${d.status === 'resolved' ? '已处理' : '待确认'}
-              </span>
-            </li>
-            ${d.status === 'resolved' ? `<li style="font-size:12px; color:#2e7d32; background:#f1f8e9;">处理: ${d.resolution}</li>` : ''}
-          `).join('')}
-        </ul>
-      `;
+      sel.innerHTML = res.data.map(b =>
+        `<option value="${b.id}">${b.batch_no} - ${b.name} [${statusText(b.status)} v${b.current_version}]</option>`
+      ).join('');
+      if (!currentBatchId || !res.data.find(b => String(b.id) === String(currentBatchId))) {
+        currentBatchId = res.data[0].id;
+      }
+      sel.value = currentBatchId;
+      renderBatch();
     }
 
-    function loadAlerts(summary, batch) {
+    async function createBatch() {
+      const no = $('newBatchNo').value.trim();
+      const name = $('newBatchName').value.trim();
+      const desc = $('newBatchDesc').value.trim();
+      if (!no || !name) { alert('请填写批次号和名称'); return; }
+      const res = await api('/batches', { method: 'POST', body: { batch_no: no, name, description: desc } });
+      if (!res.success) { alert('创建失败: ' + res.error); return; }
+      $('newBatchNo').value = '';
+      $('newBatchName').value = '';
+      $('newBatchDesc').value = '';
+      currentBatchId = res.data.id;
+      await loadBatches();
+      alert('创建成功！可点击「一键导入样例材料」快速体验完整流程。');
+    }
+
+    async function loadSampleDataToCurrent() {
+      if (!currentBatchId) { alert('请先选择或新建一个批次'); return; }
+      if (!confirm(`确认将样例数据导入当前批次 (id=${currentBatchId})？导入会追加到当前版本。`)) return;
+      const res = await api(`/batches/${currentBatchId}/import/sample`, { method: 'POST', body: {} });
+      if (!res.success) { alert('导入失败: ' + res.error); return; }
+      const d = res.data.details;
+      alert(`样例导入完成：\n浮标 ${d.buoy.inserted}/${d.buoy.total} 条\n潮汐 ${d.tide.inserted}/${d.tide.total} 条\n气象 ${d.weather.inserted}/${d.weather.total} 条\n越界 ${d.violation.inserted}/${d.violation.total} 条\n照片 ${d.photo.inserted}/${d.photo.total} 张\n养殖日志 ${d.aquaculture.inserted}/${d.aquaculture.total} 条\n\n检测重复: ${d.buoy.duplicates.length} 条浮标疑似重复`);
+      renderBatch();
+    }
+
+    async function resetDatabase() {
+      if (!confirm('⚠️ 确认重置数据库？所有批次和数据将被清空！（仅用于测试）')) return;
+      const res = await fetch('/api/resetdb');
+      const json = await res.json();
+      alert(json.message || '已重置');
+      location.reload();
+    }
+
+    function refreshData() { renderBatch(); }
+
+    async function renderBatch() {
+      if (!currentBatchId) return;
+      $('statusTrail').style.display = 'flex';
+      $('mainPanel').style.display = 'block';
+
+      const [infoRes, matRes, sumRes, dupRes, riskRes] = await Promise.all([
+        api(`/batches/${currentBatchId}`),
+        api(`/batches/${currentBatchId}/materials`),
+        api(`/review/${currentBatchId}/summary`),
+        api(`/review/${currentBatchId}/duplicates`),
+        api(`/risk/${currentBatchId}/latest`)
+      ]);
+
+      if (!infoRes.success) return;
+      const info = infoRes.data;
+      currentMaterials = matRes.data;
+      currentSummary = sumRes.data;
+
+      $('verDisplay').textContent = 'v' + info.current_version;
+      $('createdAtDisplay').textContent = info.created_at;
+      $('updatedAtDisplay').textContent = info.updated_at;
+
+      document.querySelectorAll('.status-step').forEach(el => el.classList.remove('active', 'done'));
+      const order = ['imported', 'reviewing', 'risk_assessed', 'reported'];
+      const idx = order.indexOf(info.status);
+      order.forEach((s, i) => {
+        const el = document.querySelector(`.status-step[data-s="${s}"]`);
+        if (i < idx) el.classList.add('done');
+        else if (i === idx) el.classList.add('active');
+      });
+
+      renderOverview(dupRes.data);
+      renderBuoyTable();
+      renderMaterialsLists();
+      renderRisk(riskRes.success ? riskRes.data : null);
+      renderHistorySelectors();
+      renderReport();
+    }
+
+    function renderOverview(duplicates) {
+      const s = currentSummary;
+      if (!s) return;
+      $('progressPct').textContent = s.progress + '%';
+      $('progressFill').style.width = s.progress + '%';
+      $('progressFill').className = 'progress-fill' + (s.progress < 40 ? ' danger' : s.progress < 80 ? ' warn' : '');
+      $('reviewedCount').textContent = s.reviewedItems;
+      $('pendingCount').textContent = s.pendingItems;
+      $('totalCount').textContent = s.totalItems;
+
+      const names = { buoy: '🌊 浮标数据', tide: '🌊 潮汐表', weather: '🌤️ 气象预报', violation: '🚫 禁航区越界', photo: '📷 巡检照片', aquaculture: '🐟 养殖日志' };
+      $('byTypeList').innerHTML = Object.entries(s.byType).map(([k, v]) => {
+        const done = v.total - v.pending;
+        const pct = v.total ? Math.round(done / v.total * 100) : 0;
+        return `<li>
+          <span>${names[k] || k}</span>
+          <span style="display:flex;align-items:center;gap:8px;">
+            <small style="color:#888;">${done}/${v.total}</small>
+            <div style="width:90px;height:6px;background:#eaecef;border-radius:3px;overflow:hidden;">
+              <div style="width:${pct}%;height:100%;background:${pct < 50 ? '#fb8c00' : '#43a047'};"></div>
+            </div>
+            <span class="tag tag-${v.pending ? 'pending' : 'approved'}">${v.pending ? v.pending + '待复核' : '已完成'}</span>
+          </span>
+        </li>`;
+      }).join('');
+
       const alerts = [];
+      if (s.pendingDuplicates > 0) alerts.push(`<div class="alert alert-warn">⚠️ <b>${s.pendingDuplicates}</b> 条重复上报待确认，海事处在报告中可见</div>`);
+      if (s.missingPhotos > 0) alerts.push(`<div class="alert alert-info">📷 <b>${s.missingPhotos}</b> 张照片缺失：系统先完成可计算部分，缺口清单会列入报告供科研助理补料</div>`);
 
-      if (summary.pendingDuplicates > 0) {
-        alerts.push(`<div class="alert alert-warning">⚠️ 有 ${summary.pendingDuplicates} 条重复上报待确认，海事处可在报告中查看</div>`);
+      const m = currentMaterials;
+      if (m) {
+        const invB = m.buoyData.filter(b => b.is_valid === 0).length;
+        if (invB > 0) alerts.push(`<div class="alert alert-warn">🌊 <b>${invB}</b> 条浮标无效/缺失，可在「浮标数据」页签复核修正</div>`);
+        const abn = m.buoyData.filter(b => b.is_valid === 1 && b.water_depth !== null && b.water_depth < 0).length;
+        if (abn > 0) alerts.push(`<div class="alert alert-error">❌ <b>${abn}</b> 条浮标数据异常（如负值），请前往「浮标数据」复核修正</div>`);
+        const oldTide = m.tideTables.filter(t => t.old_remark).length;
+        if (oldTide > 0) alerts.push(`<div class="alert alert-info">📝 <b>${oldTide}</b> 条潮汐表带旧备注，注意时效性核验</div>`);
+        const sup = m.aquacultureLogs.filter(a => a.is_supplementary).length;
+        if (sup > 0) alerts.push(`<div class="alert alert-info">🐟 <b>${sup}</b> 条养殖日志为临时补录，注意核实</div>`);
       }
+      if (s.pendingItems > 0) alerts.push(`<div class="alert alert-info">🔍 <b>${s.pendingItems}</b> 条材料待复核，可在「浮标数据」或「材料清单」中完成复核</div>`);
+      if (alerts.length === 0) alerts.push('<div class="alert alert-success">✅ 暂无待处理事项，流程顺畅</div>');
+      $('alertList').innerHTML = alerts.join('');
 
-      const missingPhotos = batch.inspectionPhotos.filter(p => p.is_missing === 1);
-      if (missingPhotos.length > 0) {
-        alerts.push(`<div class="alert alert-info">📷 ${missingPhotos.length} 张照片缺失，系统将先完成可计算部分，缺口清单将列入报告供科研助理补料</div>`);
+      if (!duplicates || duplicates.length === 0) {
+        $('dupList').innerHTML = '<div class="alert alert-info">暂无重复上报记录</div>';
+      } else {
+        $('dupList').innerHTML = `
+          <table class="tbl">
+            <thead><tr><th>材料类型</th><th>关键字</th><th>出现次数</th><th>首次</th><th>最近</th><th>状态</th><th>处理</th></tr></thead>
+            <tbody>
+              ${duplicates.map(d => `
+                <tr class="${d.status !== 'resolved' ? 'duplicate-row' : ''}">
+                  <td>${d.material_type}</td>
+                  <td><code>${d.material_key}</code></td>
+                  <td>${d.duplicate_count}</td>
+                  <td>${d.first_seen_at}</td>
+                  <td>${d.last_seen_at}</td>
+                  <td><span class="tag tag-${d.status === 'resolved' ? 'approved' : 'pending'}">${d.status === 'resolved' ? '已处理' : '待确认'}</span></td>
+                  <td>${d.resolution || '-'}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
       }
-
-      const invalidBuoy = batch.buoyData.filter(b => b.is_valid === 0);
-      if (invalidBuoy.length > 0) {
-        alerts.push(`<div class="alert alert-warning">🌊 ${invalidBuoy.length} 条浮标数据无效/缺失，可在「浮标数据」页签直接复核修正</div>`);
-      }
-
-      const abnormalBuoy = batch.buoyData.filter(b => b.is_valid === 1 && b.water_depth !== null && b.water_depth < 0);
-      if (abnormalBuoy.length > 0) {
-        alerts.push(`<div class="alert alert-error">❌ ${abnormalBuoy.length} 条浮标数据异常（如水深负值），请前往「浮标数据」复核修正</div>`);
-      }
-
-      const oldTide = batch.tideTables.filter(t => t.old_remark);
-      if (oldTide.length > 0) {
-        alerts.push(`<div class="alert alert-info">📝 ${oldTide.length} 条潮汐表带旧版备注，注意时效性核验</div>`);
-      }
-
-      document.getElementById('alertList').innerHTML = alerts.join('');
     }
 
+    function renderBuoyTable() {
+      const rows = currentMaterials.buoyData.map(b => {
+        let cls = '';
+        if (b.is_valid === 0) cls = 'row-invalid';
+        else if (b.water_depth !== null && b.water_depth < 0) cls = 'row-abnormal';
+        const statusTag = `<span class="tag tag-${b.review_status}">${b.review_status === 'approved' ? '已通过' : b.review_status === 'rejected' ? '不通过' : '待复核'}</span>`;
+        const validTag = `<span class="tag tag-${b.is_valid ? 'valid' : 'invalid'}">${b.is_valid ? '有效' : '无效'}</span>`;
+        return `<tr class="${cls}">
+          <td><b>${b.buoy_id}</b></td>
+          <td>${b.location || '-'}</td>
+          <td>${b.water_depth !== null ? b.water_depth : '<span style="color:#c62828;">缺失</span>'}</td>
+          <td>${b.flow_velocity !== null ? b.flow_velocity : '-'}</td>
+          <td>${b.wave_height !== null ? b.wave_height : '-'}</td>
+          <td>${b.record_time || '-'}</td>
+          <td><small>${b.source || '-'}</small></td>
+          <td>${validTag}</td>
+          <td>${statusTag}</td>
+          <td><button class="btn btn-primary btn-sm" onclick="openBuoyModal(${b.id})">复核</button></td>
+        </tr>${b.import_note ? `<tr class="${cls}"><td colspan="10" style="padding:2px 10px 8px 32px;font-size:11.5px;color:#888;">📝 ${b.import_note}</td></tr>` : ''}`;
+      }).join('');
+      document.querySelector('#buoyTbl tbody').innerHTML = rows || '<tr><td colspan="10" style="text-align:center;padding:30px;color:#999;">暂无数据，请先导入浮标数据</td></tr>';
+    }
+
+    function reviewTag(s) {
+      return `<span class="tag tag-${s}">${s === 'approved' ? '已通过' : s === 'rejected' ? '不通过' : '待复核'}</span>`;
+    }
+
+    function renderMaterialsLists() {
+      $('tideList').innerHTML = currentMaterials.tideTables.map(t => `
+        <li>
+          <div class="material-main">
+            <div class="material-title">${t.tide_date} · ${t.port_name || '港区主港'}</div>
+            <div class="material-meta">高潮 ${t.high_tide_level || '-'}m@${t.high_tide_time || '-'} · 低潮 ${t.low_tide_level || '-'}m@${t.low_tide_time || '-'}</div>
+            ${t.old_remark ? `<div class="old-remark-box">📜 旧备注: ${t.old_remark}</div>` : ''}
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${reviewTag(t.review_status)}
+            <button class="btn btn-outline btn-sm" onclick="openReviewModal('tide', ${t.id})">复核</button>
+          </div>
+        </li>
+      `).join('') || emptyLi('暂无潮汐数据');
+
+      $('weatherList').innerHTML = currentMaterials.weatherForecasts.map(w => `
+        <li>
+          <div class="material-main">
+            <div class="material-title">${w.forecast_date} · ${w.weather_condition || '-'}</div>
+            <div class="material-meta">${w.wind_force || ''} ${w.wind_direction || ''} · 能见度 ${w.visibility !== null && w.visibility !== undefined ? w.visibility + 'km' : '-'} ${w.fog_warning ? '<span style="color:#c62828;">⚠️ 大雾</span>' : ''}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${reviewTag(w.review_status)}
+            <button class="btn btn-outline btn-sm" onclick="openReviewModal('weather', ${w.id})">复核</button>
+          </div>
+        </li>
+      `).join('') || emptyLi('暂无气象数据');
+
+      $('violationList').innerHTML = currentMaterials.restrictedZoneViolations.map(v => `
+        <li>
+          <div class="material-main">
+            <div class="material-title">🚢 ${v.vessel_name || '未知船舶'} <span class="tag tag-pending">${v.zone_type || '越界'}</span></div>
+            <div class="material-meta">${v.zone_name} · ${v.violation_time || '时间不详'} · ${v.duration_minutes ? v.duration_minutes + '分钟' : '时长不详'}${v.intrusion_distance ? ' · 侵入' + v.intrusion_distance + 'km' : ''}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${reviewTag(v.review_status)}
+            <button class="btn btn-outline btn-sm" onclick="openReviewModal('violation', ${v.id})">复核</button>
+          </div>
+        </li>
+      `).join('') || emptyLi('暂无越界记录');
+
+      const photos = currentMaterials.inspectionPhotos;
+      const missingNum = photos.filter(p => p.is_missing).length;
+      $('photoBadge').textContent = `${photos.length - missingNum}/${photos.length}张`;
+      $('photoBadge').className = 'tag tag-' + (missingNum > 0 ? 'missing' : 'valid');
+      $('photoList').innerHTML = photos.map(p => `
+        <li class="${p.is_missing ? 'row-missing' : ''}">
+          <div class="material-main">
+            <div class="material-title">${p.photo_no} · ${p.photo_type || ''} ${p.is_missing ? '<span class="tag tag-missing">缺失</span>' : '<span class="tag tag-valid">可用</span>'}</div>
+            <div class="material-meta">${p.location || ''}${p.taken_time ? ' · ' + p.taken_time : ''}${p.file_name ? ' · ' + p.file_name : ''}</div>
+            ${p.missing_reason ? `<div class="old-remark-box" style="background:#fff3e0;border-left-color:#fb8c00;">原因: ${p.missing_reason}</div>` : ''}
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${reviewTag(p.review_status)}
+            <button class="btn btn-outline btn-sm" onclick="openReviewModal('photo', ${p.id})">复核</button>
+          </div>
+        </li>
+      `).join('') || emptyLi('暂无照片');
+
+      $('aquaList').innerHTML = currentMaterials.aquacultureLogs.map(a => `
+        <li>
+          <div class="material-main">
+            <div class="material-title">${a.log_date} ${a.is_supplementary ? '<span class="tag tag-pending">补录</span>' : ''}</div>
+            <div class="material-meta">${a.log_content || ''}</div>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${reviewTag(a.review_status)}
+            <button class="btn btn-outline btn-sm" onclick="openReviewModal('aquaculture', ${a.id})">复核</button>
+          </div>
+        </li>
+      `).join('') || emptyLi('暂无养殖日志');
+    }
+
+    function emptyLi(text) {
+      return `<li style="justify-content:center;color:#999;">${text}</li>`;
+    }
+
+    // 通用材料复核弹窗
+    const typeLabels = { tide: '潮汐表记录', weather: '气象预报记录', violation: '禁航区越界记录', photo: '巡检照片记录', aquaculture: '养殖日志记录' };
+    function openReviewModal(type, id) {
+      const listMap = {
+        tide: 'tideTables', weather: 'weatherForecasts',
+        violation: 'restrictedZoneViolations', photo: 'inspectionPhotos',
+        aquaculture: 'aquacultureLogs'
+      };
+      const item = currentMaterials[listMap[type]].find(x => x.id === id);
+      if (!item) return;
+      editingReview = { type, id };
+
+      $('reviewModalTitle').textContent = '复核 · ' + typeLabels[type];
+      let summary = '';
+      if (type === 'tide') summary = `${item.tide_date} · 高${item.high_tide_level}/低${item.low_tide_level}m`;
+      else if (type === 'weather') summary = `${item.forecast_date} · ${item.weather_condition}`;
+      else if (type === 'violation') summary = `${item.vessel_name || '未知'} · ${item.zone_name}`;
+      else if (type === 'photo') summary = `${item.photo_no} · ${item.photo_type} (${item.is_missing ? '缺失' : '可用'})`;
+      else if (type === 'aquaculture') summary = `${item.log_date} · ${(item.log_content || '').substring(0, 30)}`;
+
+      $('reviewModalBody').innerHTML = `
+        <div style="background:#f6f8fa;padding:10px;border-radius:5px;margin-bottom:14px;font-size:12.5px;color:#555;">${summary}</div>
+        <div class="form-group">
+          <label>复核结果 *</label>
+          <select id="rr_status">
+            <option value="pending" ${item.review_status === 'pending' ? 'selected' : ''}>待复核</option>
+            <option value="approved" ${item.review_status === 'approved' ? 'selected' : ''}>✅ 复核通过</option>
+            <option value="rejected" ${item.review_status === 'rejected' ? 'selected' : ''}>❌ 复核不通过</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>复核意见</label>
+          <textarea id="rr_comment" rows="3">${item.review_comment || ''}</textarea>
+        </div>
+        <div class="form-group">
+          <label>复核人</label>
+          <input type="text" id="rr_reviewer" value="科研助理">
+        </div>
+      `;
+      openModal('reviewModal');
+    }
+
+    async function saveReview() {
+      const { type, id } = editingReview;
+      const review_result = $('rr_status').value;
+      const comment = $('rr_comment').value;
+      const reviewer = $('rr_reviewer').value;
+      const res = await api(`/review/${currentBatchId}/item`, {
+        method: 'POST',
+        body: { material_type: type, item_id: id, review_result, reviewer, comment }
+      });
+      if (!res.success) { alert('保存失败: ' + res.error); return; }
+      closeModal('reviewModal');
+      renderBatch();
+    }
+
+    // 浮标单独复核
     function openBuoyModal(id) {
-      const buoy = currentMaterials.buoyData.find(b => b.id === id);
-      if (!buoy) return;
-
-      currentBuoyId = id;
-      document.getElementById('modalBuoyId').value = buoy.buoy_id;
-      document.getElementById('modalWaterDepth').value = buoy.water_depth ?? '';
-      document.getElementById('modalFlowVelocity').value = buoy.flow_velocity ?? '';
-      document.getElementById('modalWaveHeight').value = buoy.wave_height ?? '';
-      document.getElementById('modalWaterTemp').value = buoy.water_temperature ?? '';
-      document.getElementById('modalWindSpeed').value = buoy.wind_speed ?? '';
-      document.getElementById('modalWindDirection').value = buoy.wind_direction ?? '';
-      document.getElementById('modalIsValid').value = buoy.is_valid;
-      document.getElementById('modalReviewStatus').value = buoy.review_status;
-      document.getElementById('modalComment').value = buoy.review_comment || '';
-
-      document.getElementById('buoyModal').classList.add('active');
-    }
-
-    function closeModal() {
-      document.getElementById('buoyModal').classList.remove('active');
-      currentBuoyId = null;
+      const b = currentMaterials.buoyData.find(x => x.id === id);
+      if (!b) return;
+      editingBuoyId = id;
+      $('mb_id').value = b.buoy_id;
+      $('mb_depth').value = b.water_depth ?? '';
+      $('mb_flow').value = b.flow_velocity ?? '';
+      $('mb_wave').value = b.wave_height ?? '';
+      $('mb_temp').value = b.water_temperature ?? '';
+      $('mb_wind').value = b.wind_speed ?? '';
+      $('mb_winddir').value = b.wind_direction ?? '';
+      $('mb_valid').value = String(b.is_valid);
+      $('mb_status').value = b.review_status;
+      $('mb_comment').value = b.review_comment || '';
+      openModal('buoyModal');
     }
 
     async function saveBuoyReview() {
-      if (!currentBuoyId) return;
+      const updates = {};
+      const get = id => $(id).value;
+      if (get('mb_depth') !== '') updates.water_depth = parseFloat(get('mb_depth')); else updates.water_depth = null;
+      if (get('mb_flow') !== '') updates.flow_velocity = parseFloat(get('mb_flow')); else updates.flow_velocity = null;
+      if (get('mb_wave') !== '') updates.wave_height = parseFloat(get('mb_wave')); else updates.wave_height = null;
+      if (get('mb_temp') !== '') updates.water_temperature = parseFloat(get('mb_temp')); else updates.water_temperature = null;
+      if (get('mb_wind') !== '') updates.wind_speed = parseFloat(get('mb_wind')); else updates.wind_speed = null;
+      updates.wind_direction = get('mb_winddir') || null;
+      updates.is_valid = parseInt(get('mb_valid'));
+      updates.review_status = get('mb_status');
+      updates.import_note = '复核修正';
 
-      const updates = {
-        water_depth: document.getElementById('modalWaterDepth').value || null,
-        flow_velocity: document.getElementById('modalFlowVelocity').value || null,
-        wave_height: document.getElementById('modalWaveHeight').value || null,
-        water_temperature: document.getElementById('modalWaterTemp').value || null,
-        wind_speed: document.getElementById('modalWindSpeed').value || null,
-        wind_direction: document.getElementById('modalWindDirection').value || null,
-        is_valid: parseInt(document.getElementById('modalIsValid').value),
-        review_status: document.getElementById('modalReviewStatus').value,
-        import_note: '复核修正'
+      const res = await api(`/review/${currentBatchId}/buoy/${editingBuoyId}`, {
+        method: 'POST',
+        body: { updates, reviewer: $('mb_reviewer').value, comment: $('mb_comment').value }
+      });
+      if (!res.success) { alert('保存失败: ' + res.error); return; }
+      closeModal('buoyModal');
+      renderBatch();
+    }
+
+    // 一键全部通过
+    async function approveAll(type) {
+      const map = {
+        buoy: { key: 'buoyData', api: 'buoy' },
+        tide: { key: 'tideTables', api: 'tide' },
+        weather: { key: 'weatherForecasts', api: 'weather' },
+        violation: { key: 'restrictedZoneViolations', api: 'violation' },
+        photo: { key: 'inspectionPhotos', api: 'photo' },
+        aquaculture: { key: 'aquacultureLogs', api: 'aquaculture' }
       };
+      const cfg = map[type];
+      if (!cfg) return;
+      const items = currentMaterials[cfg.key];
+      if (!items.length) return;
+      if (!confirm(`确认将该类 ${items.length} 条记录全部标记为「复核通过」？`)) return;
 
-      const reviewer = document.getElementById('modalReviewer').value;
-      const comment = document.getElementById('modalComment').value;
-
-      const res = await api(`/review/${currentBatchId}/buoy/${currentBuoyId}`, {
-        method: 'POST',
-        body: JSON.stringify({ updates, reviewer, comment })
-      });
-
-      if (res.success) {
-        alert('浮标数据复核保存成功');
-        closeModal();
-        loadBatchData();
-      } else {
-        alert('保存失败: ' + res.error);
+      let ok = 0, fail = 0;
+      for (const item of items) {
+        if (cfg.api === 'buoy') {
+          const res = await api(`/review/${currentBatchId}/buoy/${item.id}`, {
+            method: 'POST',
+            body: { updates: { review_status: 'approved' }, reviewer: '科研助理', comment: '批量复核通过' }
+          });
+          res.success ? ok++ : fail++;
+        } else {
+          const res = await api(`/review/${currentBatchId}/item`, {
+            method: 'POST',
+            body: { material_type: cfg.api, item_id: item.id, review_result: 'approved', reviewer: '科研助理', comment: '批量复核通过' }
+          });
+          res.success ? ok++ : fail++;
+        }
       }
+      alert(`批量完成：成功 ${ok} 条，失败 ${fail} 条`);
+      renderBatch();
     }
 
-    async function submitReview() {
-      if (!confirm('确认提交整批复核？提交后将进入下一版本。')) return;
+    // 导入相关
+    const importSamples = {
+      buoy: [{ buoy_id: 'FB-001', location: '示例泊位', water_depth: 12.5, flow_velocity: 1.5, wave_height: 0.5, water_temperature: 23.0, wind_speed: 5.0, wind_direction: 'NE', record_time: '2026-06-16 08:00:00', source: '示例', is_valid: 1 }],
+      tide: [{ tide_date: '2026-06-18', high_tide_time: '06:30', high_tide_level: 4.05, low_tide_time: '12:50', low_tide_level: 1.05, port_name: '港区主港', old_remark: '' }],
+      weather: [{ forecast_date: '2026-06-18', weather_condition: '晴', wind_force: '3-4级', wind_direction: '偏南风', visibility: 10.0, fog_warning: 0 }],
+      violation: [{ vessel_name: '示例船', vessel_mmsi: '413000000', violation_time: '2026-06-16 10:00:00', zone_name: '示例警戒区', zone_type: '警戒区', duration_minutes: 5, intrusion_distance: 0.3 }],
+      photo: [{ photo_no: 'X-001', photo_type: '泊位全景', location: '示例泊位', taken_time: '2026-06-16 09:00:00', file_name: 'demo.jpg', is_missing: 0 }],
+      aquaculture: [{ log_date: '2026-06-16', log_content: '示例日志条目', is_supplementary: 0 }]
+    };
+    const importTitles = {
+      buoy: '导入浮标数据', tide: '导入潮汐表', weather: '导入气象预报',
+      violation: '导入禁航区越界记录', photo: '导入巡检照片记录',
+      aquaculture: '导入养殖日志'
+    };
+    const importHints = {
+      buoy: '字段示例：buoy_id*, location, water_depth, flow_velocity, wave_height, water_temperature, wind_speed, wind_direction, record_time, is_valid(1/0), source, import_note',
+      tide: '字段示例：tide_date*, high_tide_time, high_tide_level, low_tide_time, low_tide_level, port_name, old_remark',
+      weather: '字段示例：forecast_date*, weather_condition, wind_force, wind_direction, visibility, fog_warning(1/0)',
+      violation: '字段示例：vessel_name, vessel_mmsi, violation_time, zone_name*, zone_type, duration_minutes, intrusion_distance',
+      photo: '字段示例：photo_no*, photo_type, location, taken_time, file_path, file_name, is_missing(1/0), missing_reason',
+      aquaculture: '字段示例：log_date*, log_content, is_supplementary(1/0)'
+    };
 
+    function openImportModal(type) {
+      editingImportType = type;
+      $('importTitle').textContent = '📥 ' + importTitles[type];
+      $('importHint').textContent = '请粘贴 JSON 数组。' + importHints[type];
+      $('importJson').value = '';
+      openModal('importModal');
+    }
+
+    function fillSampleImport() {
+      $('importJson').value = JSON.stringify(importSamples[editingImportType], null, 2);
+    }
+
+    async function doImport() {
+      let parsed;
+      try { parsed = JSON.parse($('importJson').value); }
+      catch (e) { alert('JSON 解析失败: ' + e.message); return; }
+      if (!Array.isArray(parsed)) { alert('请传入数组格式'); return; }
+
+      const res = await api(`/batches/${currentBatchId}/import/${editingImportType}`, {
+        method: 'POST', body: { data: parsed }
+      });
+      if (!res.success) { alert('导入失败: ' + res.error); return; }
+      const d = res.data;
+      let msg = `导入完成：成功 ${d.inserted}/${d.total} 条`;
+      if (d.errors && d.errors.length) msg += `，失败 ${d.errors.length} 条（首条：${d.errors[0].error}）`;
+      if (d.duplicates && d.duplicates.length) msg += `，疑似重复 ${d.duplicates.length} 条已追踪`;
+      if (d.missingCount) msg += `（含缺失照片 ${d.missingCount} 张）`;
+      if (d.supplementaryCount) msg += `（含补录日志 ${d.supplementaryCount} 条）`;
+      alert(msg);
+      closeModal('importModal');
+      renderBatch();
+    }
+
+    // 提交整批复核
+    async function submitBatchReview() {
+      if (!confirm('提交后会升级到新版本，确认提交？')) return;
       const res = await api(`/review/${currentBatchId}/submit`, {
-        method: 'POST',
-        body: JSON.stringify({ reviewer: '科研助理', comment: '整批复核提交' })
+        method: 'POST', body: { reviewer: '科研助理', comment: '页面端提交整批复核' }
       });
-
-      if (res.success) {
-        alert('整批复核已提交，当前版本: ' + res.data.newVersion);
-        loadBatchData();
-      } else {
-        alert('提交失败: ' + res.error);
-      }
+      if (!res.success) { alert('提交失败: ' + res.error); return; }
+      alert(`提交成功！新版本：v${res.data.newVersion}`);
+      renderBatch();
     }
 
+    // 风险评估
     async function assessRisk() {
       const res = await api(`/risk/${currentBatchId}/assess`, {
-        method: 'POST',
-        body: JSON.stringify({ assessor: '系统' })
+        method: 'POST', body: { assessor: '系统' }
       });
-
-      if (res.success) {
-        renderRiskResult(res.data);
-        alert('风险评估完成');
-        loadBatchData();
-      } else {
-        alert('评估失败: ' + res.error);
-      }
+      if (!res.success) { alert('评估失败: ' + res.error); return; }
+      renderRisk(res.data);
+      renderBatch();
     }
 
-    function renderRiskResult(risk) {
-      const levelText = { high: '高风险', medium: '中风险', low: '低风险' };
-      const levelClass = { high: 'risk-high', medium: 'risk-medium', low: 'risk-low' };
-
-      document.getElementById('riskResult').innerHTML = `
-        <div style="text-align: center; padding: 20px 0;">
-          <div class="${levelClass[risk.risk_level]}" style="font-size: 36px; font-weight: bold;">
-            ${levelText[risk.risk_level]}
+    function renderRisk(r) {
+      if (!r) { $('riskDisplay').innerHTML = '<div class="alert alert-info">尚未执行评估，点击右上角「重新执行评估」</div>'; return; }
+      const colorMap = { high: '#c62828', medium: '#f57c00', low: '#2e7d32' };
+      const textMap = { high: '高风险', medium: '中风险', low: '低风险' };
+      $('riskDisplay').innerHTML = `
+        <div class="risk-big">
+          <div class="risk-level" style="color:${colorMap[r.risk_level]};">${textMap[r.risk_level]}</div>
+          <div class="risk-score">${r.risk_score} 分 · 版本 v${r.version}</div>
+          ${r.partialAssessment ? '<div class="tag tag-pending" style="margin-top:8px;">⚠️ 部分评估（材料有缺失）</div>' : ''}
+        </div>
+        <div style="margin-top:14px;">
+          <h4 style="font-size:13px;margin-bottom:8px;color:#555;">风险因素：</h4>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            ${r.risk_factors.map(f => `<span class="tag tag-${r.risk_level}">${f}</span>`).join('')}
           </div>
-          <div style="color: #666; margin-top: 8px;">风险分值: ${risk.risk_score} 分</div>
-          <div style="color: #999; font-size: 12px; margin-top: 4px;">评估版本: v${risk.version}</div>
         </div>
-        <div style="margin-top: 15px;">
-          <h4 style="font-size: 14px; margin-bottom: 8px;">风险因素:</h4>
-          <ul style="padding-left: 20px; font-size: 13px; color: #555;">
-            ${risk.risk_factors.map(f => `<li>${f}</li>`).join('')}
+        <div style="margin-top:14px;">
+          <h4 style="font-size:13px;margin-bottom:8px;color:#555;">详细风险项：</h4>
+          <ul style="padding-left:18px;line-height:1.7;font-size:12.5px;color:#555;">
+            ${r.details.map(d => `<li>${d}</li>`).join('')}
           </ul>
         </div>
-        ${risk.partialAssessment ? '<div class="alert alert-warning" style="margin-top:15px;">⚠️ 部分评估：因材料缺失，评估结果可能不完整</div>' : ''}
       `;
-
-      document.getElementById('riskNote').innerHTML = `
-        <p style="font-size: 13px; color: #555; line-height: 1.6;">
-          <b>评估依据:</b> ${risk.assessmentBasis}
-        </p>
-        <p style="font-size: 13px; color: #555; line-height: 1.6; margin-top: 10px;">
-          <b>评估说明:</b> ${risk.assessment_note}
-        </p>
-        <div style="margin-top: 15px;">
-          <h4 style="font-size: 14px; margin-bottom: 8px;">详细风险项:</h4>
-          <ul style="padding-left: 20px; font-size: 13px; color: #555;">
-            ${risk.details.map(d => `<li>${d}</li>`).join('')}
-          </ul>
-        </div>
+      $('riskNote').innerHTML = `
+        <div class="alert alert-success"><b>评估依据：</b>${r.assessment_basis}</div>
+        <div class="alert alert-info"><b>评估说明：</b>${r.assessment_note}</div>
       `;
     }
 
-    async function loadVersionOptions() {
-      const res = await api(`/risk/${currentBatchId}/all`);
-      if (res.success && res.data.length > 0) {
-        const options = res.data.map(a => `<option value="${a.version}">版本 ${a.version} - ${a.risk_level}</option>`).join('');
-        document.getElementById('versionA').innerHTML = '<option value="">选择版本A</option>' + options;
-        document.getElementById('versionB').innerHTML = '<option value="">选择版本B</option>' + options;
+    // 历史对比
+    function renderHistorySelectors() {
+      const versions = [];
+      for (let v = 1; v <= (currentMaterials ? currentMaterials.version : 1); v++) versions.push(v);
+      const opts = versions.map(v => `<option value="${v}">版本 v${v}</option>`).join('');
+      $('verASel').innerHTML = opts;
+      $('verBSel').innerHTML = opts;
+      if (versions.length >= 2) {
+        $('verASel').value = versions[0];
+        $('verBSel').value = versions[versions.length - 1];
       }
     }
 
     async function compareVersions() {
-      const vA = document.getElementById('versionA').value;
-      const vB = document.getElementById('versionB').value;
-      if (!vA || !vB) {
-        alert('请选择两个版本');
-        return;
-      }
-
+      const vA = $('verASel').value, vB = $('verBSel').value;
       const res = await api(`/risk/${currentBatchId}/compare?versionA=${vA}&versionB=${vB}`);
-      if (res.success) {
-        renderCompareResult(res.data);
-      } else {
-        alert('对比失败: ' + res.error);
-      }
-    }
-
-    function renderCompareResult(c) {
-      const levelText = { high: '高风险', medium: '中风险', low: '低风险' };
-      const levelClass = { high: 'risk-high', medium: 'risk-medium', low: 'risk-low' };
-
-      document.getElementById('compareResult').innerHTML = `
-        <div class="version-compare">
-          <div class="version-box">
-            <h4>版本 ${c.versionA}</h4>
-            <div class="${levelClass[c.levelA]}" style="font-size: 20px; font-weight: bold;">${levelText[c.levelA]}</div>
-            <div style="color: #666; font-size: 13px; margin-top: 5px;">${c.scoreA} 分</div>
-            <div style="margin-top: 10px; font-size: 12px; color: #888;">
-              风险因素: ${c.commonFactors.concat(c.removedFactors).join('、')}
+      if (!res.success) { $('cmpResult').innerHTML = `<div class="alert alert-error">${res.error}</div>`; return; }
+      const c = res.data;
+      const text = { high: '高风险', medium: '中风险', low: '低风险' };
+      const tag = l => `<span class="tag tag-${l}">${text[l]}</span>`;
+      $('cmpResult').innerHTML = `
+        <div class="version-compare-grid">
+          <div class="ver-box">
+            <h4 style="font-size:13px;margin-bottom:8px;color:#555;">版本 v${c.versionA}</h4>
+            <div style="font-size:24px;font-weight:bold;margin:6px 0;">${tag(c.levelA)}</div>
+            <div style="font-size:13px;color:#666;">${c.scoreA} 分</div>
+            <div style="margin-top:10px;font-size:12px;color:#666;line-height:1.6;">
+              ${(c.detailsA || []).map(d => `• ${d}`).join('<br>')}
             </div>
           </div>
-          <div class="compare-arrow">→</div>
-          <div class="version-box">
-            <h4>版本 ${c.versionB}</h4>
-            <div class="${levelClass[c.levelB]}" style="font-size: 20px; font-weight: bold;">${levelText[c.levelB]}</div>
-            <div style="color: #666; font-size: 13px; margin-top: 5px;">
+          <div class="ver-arrow">→</div>
+          <div class="ver-box">
+            <h4 style="font-size:13px;margin-bottom:8px;color:#555;">版本 v${c.versionB}</h4>
+            <div style="font-size:24px;font-weight:bold;margin:6px 0;">${tag(c.levelB)}</div>
+            <div style="font-size:13px;color:#666;">
               ${c.scoreB} 分
-              <span style="color: ${c.scoreDiff > 0 ? '#c62828' : c.scoreDiff < 0 ? '#2e7d32' : '#999'};">
+              <span style="color:${c.scoreDiff > 0 ? '#c62828' : c.scoreDiff < 0 ? '#2e7d32' : '#888'};font-weight:600;margin-left:6px;">
                 (${c.scoreDiff > 0 ? '+' : ''}${c.scoreDiff})
               </span>
             </div>
-            <div style="margin-top: 10px; font-size: 12px; color: #888;">
-              风险因素: ${c.commonFactors.concat(c.addedFactors).join('、')}
+            <div style="margin-top:10px;font-size:12px;color:#666;line-height:1.6;">
+              ${(c.detailsB || []).map(d => `• ${d}`).join('<br>')}
             </div>
           </div>
         </div>
-        <div style="margin-top: 15px;">
-          ${c.levelChanged ? '<div class="alert alert-warning">⚠️ 风险等级发生变化</div>' : '<div class="alert alert-info">ℹ️ 风险等级未变，分值有调整</div>'}
-          ${c.addedFactors.length > 0 ? `
-            <div style="margin-top: 10px; font-size: 13px;">
-              <b style="color: #c62828;">新增风险因素:</b> ${c.addedFactors.join('、')}
-            </div>
-          ` : ''}
-          ${c.removedFactors.length > 0 ? `
-            <div style="margin-top: 8px; font-size: 13px;">
-              <b style="color: #2e7d32;">消除风险因素:</b> ${c.removedFactors.join('、')}
-            </div>
-          ` : ''}
+        <div style="margin-top:14px;">
+          ${c.levelChanged ? '<div class="alert alert-warn">⚠️ 风险等级已变更</div>' : '<div class="alert alert-info">ℹ️ 风险等级未变化</div>'}
+          ${c.addedFactors.length ? `<div class="alert alert-error">新增风险因素：<b>${c.addedFactors.join('、')}</b></div>` : ''}
+          ${c.removedFactors.length ? `<div class="alert alert-success">消除风险因素：<b>${c.removedFactors.join('、')}</b></div>` : ''}
         </div>
       `;
     }
 
+    // 报告
     async function generateReport() {
-      const res = await api(`/report/${currentBatchId}/generate`, {
-        method: 'POST',
-        body: JSON.stringify({ generator: '系统' })
-      });
-
-      if (res.success) {
-        alert('报告生成成功');
-        loadBatchData();
-        loadReportPreview();
-      } else {
-        alert('生成失败: ' + res.error);
-      }
+      const res = await api(`/report/${currentBatchId}/generate`, { method: 'POST', body: { generator: '页面端' } });
+      if (!res.success) { alert('生成失败: ' + res.error); return; }
+      renderReport();
+      alert('报告已生成！');
     }
 
-    async function loadReportPreview() {
+    async function renderReport() {
       const res = await api(`/report/${currentBatchId}/latest`);
-      const el = document.getElementById('reportContent');
-      if (res.success && res.data) {
-        el.innerHTML = `
-          <h3 style="margin-bottom: 10px;">${res.data.report_content.title}</h3>
-          <p style="color: #666; font-size: 13px; margin-bottom: 15px;">
-            报告编号: ${res.data.report_no} | 生成时间: ${res.data.generated_at}
-          </p>
-          <div class="report-content">${res.data.report_content.plainText}</div>
-        `;
-      } else {
-        el.innerHTML = '<p style="color: #999; margin-bottom: 15px;">暂无生成的报告</p>';
+      if (!res.success || !res.data) {
+        $('reportDisplay').innerHTML = '<div class="alert alert-info">尚未生成报告，完成复核和评估后点击上方「生成/刷新报告」</div>';
+        return;
       }
+      const r = res.data;
+      $('reportDisplay').innerHTML = `
+        <div style="margin-bottom:12px;padding:10px 14px;background:#e8eaf6;border-radius:6px;">
+          <b>${r.report_content.title}</b>
+          <span style="margin-left:12px;font-size:12.5px;color:#555;">
+            报告编号：${r.report_no} · 版本 v${r.version} · 生成于 ${r.generated_at}
+          </span>
+        </div>
+        <div class="report-body">${r.report_content.plainText}</div>
+      `;
     }
 
-    async function exportReport() {
-      window.open(`/api/report/${currentBatchId}/export`, '_blank');
+    function downloadReport() {
+      window.open(`/api/export/${currentBatchId}/report`, '_blank');
     }
 
-    function refreshData() {
-      loadBatchData();
+    function exportFullData() {
+      window.open(`/api/export/${currentBatchId}/json`, '_blank');
     }
 
+    function exportCsvPackage() {
+      window.open(`/api/export/${currentBatchId}/csv`, '_blank');
+    }
+
+    // 通用弹窗
+    function openModal(id) { $(id).classList.add('open'); }
+    function closeModal(id) { $(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-mask').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
+
+    // Tab 切换
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        $('tab-' + tab.dataset.tab).classList.add('active');
+        if (tab.dataset.tab === 'history') renderHistorySelectors();
+      });
+    });
+
+    // 批次切换
+    $('batchSelect').addEventListener('change', e => {
+      currentBatchId = e.target.value || null;
+      if (currentBatchId) renderBatch();
+    });
+
+    // 启动
     loadBatches();
   </script>
 </body>

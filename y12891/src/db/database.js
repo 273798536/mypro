@@ -201,4 +201,22 @@ function initDatabase() {
 
 initDatabase();
 
+function resetDatabase() {
+  db.exec(`
+    DROP TABLE IF EXISTS duplicate_tracking;
+    DROP TABLE IF EXISTS reports;
+    DROP TABLE IF EXISTS review_records;
+    DROP TABLE IF EXISTS risk_assessments;
+    DROP TABLE IF EXISTS aquaculture_logs;
+    DROP TABLE IF EXISTS inspection_photos;
+    DROP TABLE IF EXISTS restricted_zone_violations;
+    DROP TABLE IF EXISTS weather_forecasts;
+    DROP TABLE IF EXISTS tide_tables;
+    DROP TABLE IF EXISTS buoy_data;
+    DROP TABLE IF EXISTS inspection_batches;
+  `);
+  initDatabase();
+}
+
 module.exports = db;
+module.exports.resetDatabase = resetDatabase;
