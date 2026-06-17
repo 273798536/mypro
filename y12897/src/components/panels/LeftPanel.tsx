@@ -1,8 +1,9 @@
-import { ChevronDown, ChevronRight, AlertTriangle, Activity, Ship, Fish, Droplets, Radio } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronDown, ChevronRight, AlertTriangle, Activity, Ship, Fish, Droplets, Radio, Upload, X, CheckCircle } from 'lucide-react';
+import { useState, useRef } from 'react';
 import { useDataStore, useProcessStore, useSceneStore } from '@/stores';
-import { getRiskColor, getRiskLabel, formatTime } from '@/utils/geo';
+import { getRiskColor, getRiskLabel, formatTime, generateId } from '@/utils/geo';
 import { cn } from '@/lib/utils';
+import type { RiskNotice, BuoyData, AquacultureLog, SalinityData } from '@/types';
 
 interface SectionProps {
   title: string;
@@ -73,7 +74,15 @@ function RiskNoticeList() {
 
 function BuoyStatusList() {
   const { buoys } = useDataStore();
-  const { filters, toggleFilter } = useSceneStore();
+  const { filters, toggleFilter, selectObject, selectedObject } = useSceneStore();
+
+  const handleBuoyClick = (buoy: any) => {
+    selectObject({
+      type: 'buoy',
+      id: buoy.id,
+      data: buoy as unknown as Record<string, unknown>,
+    });
+  };
 
   return (
     <div className="space-y-2">
@@ -94,11 +103,15 @@ function BuoyStatusList() {
       {buoys.map((buoy) => (
         <div
           key={buoy.id}
+          onClick={() => handleBuoyClick(buoy)}
           className={cn(
-            'p-2 rounded-lg border flex items-center gap-2',
+            'p-2 rounded-lg border flex items-center gap-2 cursor-pointer transition-all',
             buoy.isOffline
               ? 'bg-red-900/20 border-red-800/50'
-              : 'bg-slate-800/30 border-slate-700/50'
+              : 'bg-slate-800/30 border-slate-700/50',
+            selectedObject?.id === buoy.id && selectedObject?.type === 'buoy'
+              ? 'ring-2 ring-cyan-500 ring-offset-1 ring-offset-slate-900'
+              : 'hover:border-slate-600'
           )}
         >
           <div
@@ -201,40 +214,251 @@ function FilterPanel() {
   );
 }
 
-export function LeftPanel() {
+interface ImportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function ImportModal({ isOpen, onClose }: ImportModalProps) {
+  const [importType, setImportType] = useState<string>('riskNotice');
+  const [importStatus, setImportStatus] = useState<'idle' | 'importing' | 'success'>('idle');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { importData, riskNotices, buoys, aquacultureLogs, salinityDataList } = useDataStore();
+  const { runProcessing } = useProcessStore();
+
+  const importTypes = [
+    { key: 'riskNotice', label: '风险通报', icon: <AlertTriangle size={14} />, count: riskNotices.length },
+    { key: 'buoy', label: '浮标数据', icon: <Radio size={14} />, count: buoys.length },
+    { key: 'aquaculture', label: '养殖日志', icon: <Fish size={14} />, count: aquacultureLogs.length },
+    { key: 'salinity', label: '盐度监测', icon: <Droplets size={14} />, count: salinityDataList.length },
+  ];
+
+  const handleDemoImport = () => {
+    setImportStatus('importing');
+    setTimeout(() => {
+      let demoData: unknown[] = [];
+      switch (importType) {
+        case 'riskNotice':
+          demoData = [{
+            id: generateId('notice'),
+            title: '新增：东涌养殖区发现异常油膜',
+            noticeTime: new Date().toISOString(),
+            location: '东涌养殖区附近',
+            severity: 'medium' as const,
+            handlingOpinion: '请立即派遣现场核查船前往确认，采集水样送检。',
+            source: '养殖区巡查员上报',
+            latitude: 22.54,
+            longitude: 113.95,
+          } as RiskNotice];
+          break;
+        case 'buoy':
+          demoData = [{
+            id: generateId('buoy'),
+            buoyId: 'F-05',
+            timestamp: new Date().toISOString(),
+            latitude: 22.6,
+            longitude: 113.9,
+            oilThickness: 0.22,
+            status: 'active' as const,
+            isOffline: false,
+          } as BuoyData];
+          break;
+        case 'aquaculture':
+          demoData = [{
+            id: generateId('aqua'),
+            farmId: 'farm-003',
+            farmName: '西涌鲍鱼养殖区',
+            logDate: '2025-06-15',
+            salinity: 32.5,
+            waterQuality: '良好',
+            notes: '今日水质正常，未见异常',
+            latitude: 22.52,
+            longitude: 113.9,
+          } as AquacultureLog];
+          break;
+        case 'salinity':
+          demoData = [{
+            id: generateId('sal'),
+            stationId: 'station-004',
+            stationName: '港口门盐度站',
+            timestamp: new Date().toISOString(),
+            salinity: 30.2,
+            unit: 'psu' as const,
+            source: '在线监测',
+            latitude: 22.57,
+            longitude: 113.88,
+          } as SalinityData];
+          break;
+      }
+      importData(importType, demoData);
+      setImportStatus('success');
+      setTimeout(() => {
+        runProcessing();
+        onClose();
+        setImportStatus('idle');
+      }, 800);
+    }, 600);
+  };
+
+  const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportStatus('importing');
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        const dataArray = Array.isArray(data) ? data : [data];
+        importData(importType, dataArray);
+        setImportStatus('success');
+        setTimeout(() => {
+          runProcessing();
+          onClose();
+          setImportStatus('idle');
+        }, 800);
+      } catch {
+        setImportStatus('idle');
+        alert('文件解析失败，请检查JSON格式');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <div className="w-72 h-full bg-slate-900/90 backdrop-blur-sm border-r border-slate-700/50 flex flex-col overflow-hidden">
-      <div className="px-4 py-4 border-b border-slate-700/50">
-        <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-          <Activity size={18} className="text-cyan-400" />
-          海面溢油扩散复盘
-        </h2>
-        <p className="text-xs text-slate-500 mt-1">大亚湾 6·15 溢油事件</p>
-      </div>
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+      <div className="bg-slate-900 border border-slate-700 rounded-xl w-96 shadow-2xl">
+        <div className="px-5 py-4 border-b border-slate-700/50 flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
+            <Upload size={16} className="text-cyan-400" />
+            导入数据
+          </h3>
+          <button
+            onClick={onClose}
+            className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
 
-      <div className="flex-1 overflow-y-auto">
-        <Section title="风险通报" icon={<AlertTriangle size={16} className="text-orange-400" />}>
-          <RiskNoticeList />
-        </Section>
+        <div className="p-5 space-y-4">
+          <div>
+            <p className="text-xs text-slate-400 mb-2">选择数据类型</p>
+            <div className="grid grid-cols-2 gap-2">
+              {importTypes.map((type) => (
+                <button
+                  key={type.key}
+                  onClick={() => setImportType(type.key)}
+                  className={cn(
+                    'p-3 rounded-lg border text-left transition-all',
+                    importType === type.key
+                      ? 'bg-cyan-900/30 border-cyan-500/50 text-cyan-200'
+                      : 'bg-slate-800/50 border-slate-700/50 text-slate-400 hover:bg-slate-800'
+                  )}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    {type.icon}
+                    <span className="text-xs font-medium">{type.label}</span>
+                  </div>
+                  <p className="text-xs text-slate-500">现有 {type.count} 条</p>
+                </button>
+              ))}
+            </div>
+          </div>
 
-        <Section title="浮标状态" icon={<Radio size={16} className="text-emerald-400" />} defaultOpen={true}>
-          <BuoyStatusList />
-        </Section>
+          <div className="space-y-2">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".json"
+              onChange={handleFileImport}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importStatus !== 'idle'}
+              className="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 text-slate-200 text-sm rounded-lg transition-colors border border-slate-600 flex items-center justify-center gap-2"
+            >
+              <Upload size={14} />
+              选择 JSON 文件
+            </button>
+            <p className="text-xs text-slate-500 text-center">— 或 —</p>
+            <button
+              onClick={handleDemoImport}
+              disabled={importStatus !== 'idle'}
+              className={cn(
+                'w-full py-2.5 px-3 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 font-medium',
+                importStatus === 'success'
+                  ? 'bg-emerald-600 text-white'
+                  : importStatus === 'importing'
+                    ? 'bg-cyan-600/50 text-cyan-200 cursor-wait'
+                    : 'bg-cyan-600 hover:bg-cyan-500 text-white'
+              )}
+            >
+              {importStatus === 'success' ? (
+                <><CheckCircle size={14} /> 导入成功，正在重算...</>
+              ) : importStatus === 'importing' ? (
+                '正在导入...'
+              ) : (
+                <>快速导入示例数据</>
+              )}
+            </button>
+          </div>
 
-        <Section title="数据源" icon={<Activity size={16} className="text-cyan-400" />} defaultOpen={true}>
-          <DataSourceSummary />
-        </Section>
-
-        <Section title="筛选设置" icon={<Activity size={16} className="text-purple-400" />} defaultOpen={false}>
-          <FilterPanel />
-        </Section>
-      </div>
-
-      <div className="px-4 py-3 border-t border-slate-700/50">
-        <button className="w-full py-2 px-3 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium rounded-lg transition-colors">
-          导入数据
-        </button>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            导入完成后将自动重新运行轨迹清洗与风险分层，
+            处理记录会与之前的数据共用同一批次。
+          </p>
+        </div>
       </div>
     </div>
+  );
+}
+
+export function LeftPanel() {
+  const [importModalOpen, setImportModalOpen] = useState(false);
+
+  return (
+    <>
+      <div className="w-72 h-full bg-slate-900/90 backdrop-blur-sm border-r border-slate-700/50 flex flex-col overflow-hidden">
+        <div className="px-4 py-4 border-b border-slate-700/50">
+          <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
+            <Activity size={18} className="text-cyan-400" />
+            海面溢油扩散复盘
+          </h2>
+          <p className="text-xs text-slate-500 mt-1">大亚湾 6·15 溢油事件</p>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          <Section title="风险通报" icon={<AlertTriangle size={16} className="text-orange-400" />}>
+            <RiskNoticeList />
+          </Section>
+
+          <Section title="浮标状态" icon={<Radio size={16} className="text-emerald-400" />} defaultOpen={true}>
+            <BuoyStatusList />
+          </Section>
+
+          <Section title="数据源" icon={<Activity size={16} className="text-cyan-400" />} defaultOpen={true}>
+            <DataSourceSummary />
+          </Section>
+
+          <Section title="筛选设置" icon={<Activity size={16} className="text-purple-400" />} defaultOpen={false}>
+            <FilterPanel />
+          </Section>
+        </div>
+
+        <div className="px-4 py-3 border-t border-slate-700/50">
+          <button
+            onClick={() => setImportModalOpen(true)}
+            className="w-full py-2 px-3 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+          >
+            <Upload size={14} />
+            导入数据
+          </button>
+        </div>
+      </div>
+      <ImportModal isOpen={importModalOpen} onClose={() => setImportModalOpen(false)} />
+    </>
   );
 }

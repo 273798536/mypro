@@ -1,11 +1,27 @@
 import { useNavigate } from 'react-router-dom';
 import { FileText, Settings, Layers, RefreshCw, Info } from 'lucide-react';
-import { useSceneStore } from '@/stores';
+import { useSceneStore, useProcessStore } from '@/stores';
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
 
 export function TopToolbar() {
   const navigate = useNavigate();
   const { clippingEnabled, toggleClipping } = useSceneStore();
+  const { runProcessing, records } = useProcessStore();
+  const [isRecalculating, setIsRecalculating] = useState(false);
+
+  const handleRecalculate = () => {
+    if (isRecalculating) return;
+    setIsRecalculating(true);
+    runProcessing();
+    setTimeout(() => {
+      setIsRecalculating(false);
+      console.log(
+        `%c[重算完成] 共处理 ${records.length} 条记录，${records.reduce((s, r) => s + r.anomalies.length, 0)} 个异常点`,
+        'color:#10b981;'
+      );
+    }, 300);
+  };
 
   return (
     <div className="h-12 bg-slate-900/90 backdrop-blur-sm border-b border-slate-700/50 px-4 flex items-center justify-between">
@@ -34,11 +50,17 @@ export function TopToolbar() {
         </button>
 
         <button
-          onClick={() => console.log('%c[刷新] 重新运行轨迹清洗与风险分层', 'color:#74c0fc;')}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded text-sm text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-colors"
+          onClick={handleRecalculate}
+          disabled={isRecalculating}
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors',
+            isRecalculating
+              ? 'bg-cyan-600/30 text-cyan-300 cursor-wait'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+          )}
         >
-          <RefreshCw size={15} />
-          重算
+          <RefreshCw size={15} className={cn(isRecalculating && 'animate-spin')} />
+          {isRecalculating ? '重算中...' : '重算'}
         </button>
 
         <div className="w-px h-5 bg-slate-700 mx-1" />

@@ -253,9 +253,87 @@ function StationDetail({ station }: { station: SalinityData }) {
   );
 }
 
-function ReviewSection() {
+function ReviewSection({ selectedObject }: { selectedObject: { type: string; id: string; data: Record<string, unknown> } }) {
   const [isReviewing, setIsReviewing] = useState(false);
   const [reviewNote, setReviewNote] = useState('');
+  const [reviewAction, setReviewAction] = useState<'confirmed' | 'corrected' | 'escalated'>('confirmed');
+  const { addReviewEntry, correctData, records, getAllDataGaps, runProcessing } = useProcessStore();
+  const { updateBuoy, aquacultureLogs, importData } = useDataStore();
+
+  const relatedRecord = records.find((r) => {
+    switch (selectedObject.type) {
+      case 'anomaly':
+        return r.anomalies.some((a) => a.id === selectedObject.id);
+      case 'buoy':
+        return r.sourceType === 'buoy';
+      case 'farm':
+        return r.sourceType === 'aquaculture';
+      case 'station':
+        return r.sourceType === 'salinity';
+      default:
+        return false;
+    }
+  });
+
+  const reviewEntries = relatedRecord?.reviewEntries || [];
+  const dataGaps = getAllDataGaps();
+  const hasGap = dataGaps.some((g) => g.recordId === relatedRecord?.id);
+
+  const handleSubmitReview = () => {
+    if (!relatedRecord) return;
+
+    let correctedData: Record<string, unknown> = {};
+
+    if (selectedObject.type === 'buoy' && reviewAction === 'corrected') {
+      const buoy = selectedObject.data as unknown as BuoyData;
+      const correctedBuoy = { ...buoy, isOffline: false, status: 'active' as const };
+      updateBuoy(correctedBuoy);
+      correctedData = { buoys: [correctedBuoy] };
+    }
+
+    if (selectedObject.type === 'farm' && reviewAction === 'corrected') {
+      const farm = selectedObject.data as unknown as AquacultureLog;
+      if (!farm.salinity || !farm.waterQuality) {
+        const correctedFarm = {
+          ...farm,
+          salinity: farm.salinity || 31.5,
+          waterQuality: farm.waterQuality || '良好',
+        };
+        importData('aquaculture', [correctedFarm]);
+        correctedData = { logs: [correctedFarm] };
+      }
+    }
+
+    addReviewEntry(relatedRecord.id, {
+      reviewedAt: new Date().toISOString(),
+      reviewer: '潜水教练',
+      action: reviewAction,
+      notes: reviewNote,
+      originalData: selectedObject.data,
+      correctedData,
+    });
+
+    if (reviewAction === 'corrected' && Object.keys(correctedData).length > 0) {
+      correctData(relatedRecord.id, correctedData);
+    }
+
+    console.log(
+      `%c[复核完成] ${selectedObject.type} ${selectedObject.id} - ${reviewAction} - ${reviewNote || '(无备注)'}`,
+      'color:#10b981;'
+    );
+
+    setIsReviewing(false);
+    setReviewNote('');
+  };
+
+  const getActionLabel = (action: string) => {
+    switch (action) {
+      case 'confirmed': return '确认无误';
+      case 'corrected': return '数据修正';
+      case 'escalated': return '上报升级';
+      default: return action;
+    }
+  };
 
   return (
     <div className="mt-4 pt-4 border-t border-slate-700">
@@ -263,6 +341,43 @@ function ReviewSection() {
         <Edit3 size={16} className="text-cyan-400" />
         复核操作
       </p>
+
+      {reviewEntries.length > 0 && (
+        <div className="mb-4 space-y-2">
+          <p className="text-xs text-slate-400 mb-2">复核记录 ({reviewEntries.length})</p>
+          {reviewEntries.slice(-3).reverse().map((entry) => (
+            <div
+              key={entry.id}
+              className="p-2 rounded bg-slate-800/50 border border-slate-700/50 text-xs">
+              <div className="flex items-center justify-between mb-1">
+                <span className={cn(
+                  'font-medium',
+                  entry.action === 'corrected' ? 'text-emerald-400' :
+                  entry.action === 'confirmed' ? 'text-cyan-400' : 'text-amber-400'
+                )}>
+                  {getActionLabel(entry.action)}
+                </span>
+                <span className="text-slate-500">
+                  {new Date(entry.reviewedAt).toLocaleString('zh-CN', {
+                  month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                })}
+                </span>
+              </div>
+              <p className="text-slate-400">
+                {entry.notes || '(无备注)'}</p>
+              <p className="text-slate-600 mt-1">复核人：{entry.reviewer}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {hasGap && (
+        <div className="mb-3 p-2 rounded bg-amber-900/20 border border-amber-700/50">
+          <p className="text-xs text-amber-300">
+            存在数据缺口，修正后将重新计算
+          </p>
+        </div>
+      )}
 
       {!isReviewing ? (
         <div className="space-y-2">
@@ -279,22 +394,45 @@ function ReviewSection() {
         </div>
       ) : (
         <div className="space-y-3">
+          <div className="flex gap-1.5">
+            {(['confirmed', 'corrected', 'escalated'] as const).map((action) => (
+              <button
+                key={action}
+                onClick={() => setReviewAction(action)}
+                className={cn(
+                  'flex-1 py-1.5 text-xs rounded border transition-colors',
+                  reviewAction === action
+                    ? action === 'confirmed'
+                      ? 'bg-cyan-600/30 text-cyan-300 border-cyan-500/50'
+                      : action === 'corrected'
+                        ? 'bg-emerald-600/30 text-emerald-300 border-emerald-500/50'
+                        : 'bg-amber-600/30 text-amber-300 border-amber-500/50'
+                    : 'bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700'
+                )}
+              >
+                {getActionLabel(action)}
+              </button>
+            ))}
+          </div>
           <textarea
             value={reviewNote}
             onChange={(e) => setReviewNote(e.target.value)}
             placeholder="请输入复核说明..."
             className="w-full h-20 p-2 bg-slate-800 border border-slate-600 rounded-lg text-sm text-slate-200 placeholder-slate-500 resize-none focus:outline-none focus:border-cyan-500"
           />
+          {reviewAction === 'corrected' && selectedObject.type === 'buoy' && (
+            <p className="text-xs text-emerald-400">
+              ✓ 将标记该浮标为在线状态
+            </p>
+          )}
+          {reviewAction === 'corrected' && selectedObject.type === 'farm' && hasGap && (
+            <p className="text-xs text-emerald-400">
+              ✓ 将补录水质数据（默认值）
+            </p>
+          )}
           <div className="flex gap-2">
             <button
-              onClick={() => {
-                console.log(
-                  `%c[复核] 已提交复核意见: ${reviewNote || '(无备注)'}`,
-                  'color:#10b981;'
-                );
-                setIsReviewing(false);
-                setReviewNote('');
-              }}
+              onClick={handleSubmitReview}
               className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white text-sm rounded-lg transition-colors flex items-center justify-center gap-1.5"
             >
               <CheckCircle size={14} />
@@ -368,7 +506,7 @@ export function RightPanel() {
 
       <div className="flex-1 overflow-y-auto p-4">
         {renderDetail()}
-        <ReviewSection />
+        <ReviewSection selectedObject={selectedObject} />
       </div>
     </div>
   );
