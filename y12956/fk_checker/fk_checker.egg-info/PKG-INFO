@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: fk-checker
+Version: 1.0.0
+Summary: 外键断链排查器 - 数据库外键完整性检测与分析工具
+Requires-Python: >=3.8
+Requires-Dist: pymysql>=1.1.0
+Requires-Dist: click>=8.1.0
+Requires-Dist: tabulate>=0.9.0
+Requires-Dist: pyyaml>=6.0
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

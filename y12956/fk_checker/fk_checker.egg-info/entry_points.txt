@@ -1,0 +1,2 @@
+[console_scripts]
+fk-checker = fk_checker.cli:cli
