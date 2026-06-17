@@ -6,6 +6,7 @@ const VALID_STATUSES = new Set(['normal', 'auth_expired', 'name_mismatch'])
 function normalizeStatus(input: {
   existingStatus: string
   existingAuthExpired: number
+  existingAuthNote: string
   status?: string
   authExpired?: unknown
   authNote?: unknown
@@ -21,37 +22,76 @@ function normalizeStatus(input: {
 
   let finalStatus = input.status ?? input.existingStatus
   let finalAuthExpiredNum: number = input.existingAuthExpired
-  let finalAuthNote: string = ''
+  // ⚠️ 用已有值初始化；只有显式传了 authNote（字符串类型，包括 ''）才覆盖
+  let finalAuthNote: string = input.existingAuthNote
 
+  // 1) 显式覆盖 authExpired
   if (input.authExpired !== undefined) {
     finalAuthExpiredNum = input.authExpired ? 1 : 0
   }
+  // 2) 显式覆盖 authNote（注意：传了 '' 也是用户主动清空）
   if (typeof input.authNote === 'string') {
     finalAuthNote = input.authNote
   }
 
-  const effectiveAuthExpired = finalAuthExpiredNum === 1 || finalAuthNote.trim().length > 0
+  // 3) ⚠️ 关键：关开关必须同步清空 authNote（否则 finalAuthNote 非空 → effectiveAuthExpired 永真 → 关不掉）
+  //    这里即使没传 authNote 也强制清空，与前端 NotesPage 的级联行为对齐
+  if (input.authExpired === false) {
+    if (finalAuthNote.trim().length > 0) {
+      changes.push(
+        `已关闭授权到期，auth_note 被同步清空（原内容：${finalAuthNote.slice(0, 24)}${finalAuthNote.length > 24 ? '…' : ''}）`,
+      )
+      finalAuthNote = ''
+    }
+  }
 
+  // 4) 计算 effective：auth_expired=1 或 authNote 有内容，都视为"授权到期"
+  const effectiveAuthExpired =
+    finalAuthExpiredNum === 1 || finalAuthNote.trim().length > 0
+
+  // 5) 开：归一为 auth_expired
   if (effectiveAuthExpired) {
     if (finalAuthExpiredNum !== 1) {
       finalAuthExpiredNum = 1
       changes.push('因填写了授权备注，auth_expired 强制置为 1')
     }
     if (finalStatus !== 'auth_expired') {
-      warnings.push(`状态已从"${labelOf(finalStatus)}"强制归一为"授权到期"（因授权到期相关字段已填）`)
+      warnings.push(
+        `状态已从"${labelOf(finalStatus)}"强制归一为"授权到期"（因授权到期相关字段已填）`,
+      )
       changes.push(`status 从 ${finalStatus} → auth_expired`)
       finalStatus = 'auth_expired'
     }
   } else {
-    if (finalAuthNote.trim().length > 0 && finalAuthExpiredNum === 0) {
-      // shouldn't hit after the above block, but keep as safety
-      finalAuthNote = ''
-      changes.push('已关闭授权到期，auth_note 被清空以避免残留')
-    }
-    if (finalStatus === 'auth_expired' && input.authExpired === false) {
-      warnings.push('你手动关闭了授权到期，状态已回退为"正常"。若为名称不一致请再调整。')
-      finalStatus = 'normal'
-      changes.push('status 从 auth_expired → normal（因主动关闭授权到期）')
+    // 6) 关：只有当用户**显式**关了开关 / 清空了 authNote 时才允许回退状态
+    //    ——避免"只改 note 不传 auth 字段"时把已有授权到期偷偷改成 normal
+    const userExplicitlyTurnedOff =
+      input.authExpired === false ||
+      (typeof input.authNote === 'string' &&
+        input.authNote.trim().length === 0 &&
+        input.existingAuthNote.trim().length > 0)
+
+    if (finalStatus === 'auth_expired' && userExplicitlyTurnedOff) {
+      // ⚠️ 如果原始状态不是 auth_expired（比如用户之前把 name_mismatch 归一为了 auth_expired），
+      //    回退时先看 existingStatus 是否仍在 DB；若 DB 现存已是 auth_expired，则保守退回到 normal 并提醒
+      const fallback =
+        input.existingStatus !== 'auth_expired' &&
+        VALID_STATUSES.has(input.existingStatus)
+          ? input.existingStatus
+          : 'normal'
+      if (fallback !== input.existingStatus) {
+        warnings.push(
+          '你手动关闭了授权到期，因数据库中已无原始状态，已回退为"正常"。若应是"名称不一致"请手动调整。',
+        )
+      } else {
+        warnings.push(
+          `你手动关闭了授权到期，状态已回退为"${labelOf(fallback)}"。`,
+        )
+      }
+      changes.push(
+        `status 从 auth_expired → ${fallback}（因主动关闭授权到期 / 清空授权备注）`,
+      )
+      finalStatus = fallback
     }
   }
 
@@ -198,6 +238,7 @@ router.patch('/:id', (req: Request, res: Response): void => {
   const norm = normalizeStatus({
     existingStatus: existing.status,
     existingAuthExpired: existing.auth_expired,
+    existingAuthNote: existing.auth_note,
     status,
     authExpired,
     authNote,
