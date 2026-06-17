@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Play, RotateCcw, History, FileText, ArrowRight } from 'lucide-react';
+import { Play, RotateCcw, History, FileText, ArrowRight } from 'lucide-react';
 import { Modal } from '@/components/common/Modal';
 
 interface GuideModalProps {

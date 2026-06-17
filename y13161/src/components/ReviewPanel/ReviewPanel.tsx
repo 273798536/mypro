@@ -1,9 +1,8 @@
 import React from 'react';
 import {
-  FileText, Calculator, AlertTriangle, CheckCircle2, XCircle, Clock, Database, Settings, ArrowRight } from 'lucide-react';
+  FileText, Calculator, AlertTriangle, CheckCircle2, XCircle, Database, Settings, ArrowRight } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { AnomalyTypeBadge, SeverityBadge, StatusBadge } from '@/components/common/StatusBadge';
-import { getAnomalyTypeLabel } from '@/utils/anomaly';
 import type { Anomaly, UnitMismatch, DirectionReversal, ThresholdAnomaly } from '@/types';
 
 export const ReviewPanel: React.FC = () => {
@@ -71,7 +70,6 @@ export const ReviewPanel: React.FC = () => {
               数量级偏差。
             </div>
           </div>
-          </div>
         </div>
       </div>
     </div>
@@ -137,7 +135,6 @@ export const ReviewPanel: React.FC = () => {
             </div>
           </div>
         </div>
-        </div>
       </div>
     </div>
   );
@@ -158,7 +155,7 @@ export const ReviewPanel: React.FC = () => {
         </div>
         <div className="flex items-center gap-3 mt-2">
           <span className="text-deep-sea-300">当前值:</span>
-          <span className={`font-mono font-bold text-alert-red">
+          <span className="font-mono font-bold text-alert-red">
             {details.value.toFixed(2)} {selectedAnomaly?.data.unit}
           </span>
         </div>
@@ -178,7 +175,6 @@ export const ReviewPanel: React.FC = () => {
                 : (details.threshold.min - details.value).toFixed(2)}{' '}
               {selectedAnomaly?.data.unit}
             </div>
-          </div>
           </div>
         </div>
       </div>
@@ -281,8 +277,9 @@ export const ReviewPanel: React.FC = () => {
             <div className="mt-2 text-alert-cyan">
               {selectedAnomaly.data.rawLog.rawValue}{' '}
               {selectedAnomaly.data.rawLog.rawUnit}
-              {selectedAnomaly.data.rawLog.rawDirection &&
-                ` ${selectedAnomaly.data.rawLog.rawDirection}`}
+              {selectedAnomaly.data.rawLog.rawDirection && (
+                <span> {selectedAnomaly.data.rawLog.rawDirection}</span>
+              )}
             </div>
           </div>
           <div className="mt-2 text-xs text-deep-sea-400">

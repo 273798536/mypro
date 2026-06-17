@@ -2,13 +2,6 @@ import React from 'react';
 import { getAnomalyTypeLabel, getAnomalySeverityLabel, getAnomalyStatusLabel } from '@/utils/anomaly';
 import type { AnomalyType, AnomalySeverity, AnomalyStatus } from '@/types';
 
-interface StatusBadgeProps {
-  type?: AnomalyType;
-  severity?: AnomalySeverity;
-  status?: AnomalyStatus;
-  className?: string;
-}
-
 export const AnomalyTypeBadge: React.FC<{ type: AnomalyType; className?: string }> = ({
   type,
   className = '',

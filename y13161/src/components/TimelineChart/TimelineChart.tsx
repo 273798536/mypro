@@ -3,13 +3,13 @@ import * as d3 from 'd3';
 import { useAppStore } from '@/store/useAppStore';
 import { StandardizedData, Anomaly } from '@/types';
 import { getAnomalyTypeLabel } from '@/utils/anomaly';
-import { Layers from 'lucide-react';
+import { Layers } from 'lucide-react';
 
 interface TimelineChartProps {
   onSelectAnomaly: (anomaly: Anomaly) => void;
 }
 
-type SensorType = 'wave_height' | 'wave_speed' | 'wave_direction' | 'temperature';
+type SensorType = 'wave_height' | 'wave_speed' | 'temperature';
 
 const SENSOR_CONFIG: { [key in SensorType]: {
   label: string;
@@ -131,12 +131,12 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({ onSelectAnomaly })
 
     const xAxis = d3.axisBottom(xScale)
       .ticks(6)
-      .tickFormat(d3.timeFormat('%H:%M'));
+      .tickFormat(d3.timeFormat('%H:%M') as any);
 
     g.append('g')
       .attr('transform', `translate(0,${innerHeight})`)
       .attr('color', '#94A3B8')
-      .call(xAxis)
+      .call(xAxis as any)
       .selectAll('text')
       .attr('font-size', '11px');
 
@@ -222,7 +222,7 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({ onSelectAnomaly })
         d3.select(this)
           .transition()
           .duration(150)
-          .attr('r', function(d: StandardizedData) {
+          .attr('r', function(d: any) {
             const isAnomaly = anomalyTimeSet.has(d.timestamp.getTime());
             return isAnomaly ? 6 : 3;
           });
@@ -290,10 +290,11 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({ onSelectAnomaly })
   if (standardizedData.length === 0) {
     return (
       <div className="h-full flex items-center justify-center bg-deep-sea-600/30 border border-deep-sea-500 rounded-lg">
-      <div className="text-center text-deep-sea-400">
-        <Layers className="w-12 h-12 mx-auto mb-3 opacity-50" />
-        <p className="text-sm">暂无数据</p>
-        <p className="text-xs mt-1">导入传感器日志开始分析</p>
+        <div className="text-center text-deep-sea-400">
+          <Layers className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <p className="text-sm">暂无数据</p>
+          <p className="text-xs mt-1">导入传感器日志开始分析</p>
+        </div>
       </div>
     );
   }

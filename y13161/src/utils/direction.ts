@@ -83,7 +83,6 @@ export function detectDirectionReversal(
 
   const current = data[index];
   const beforeWindow = data.slice(Math.max(0, index - 20), index);
-  const afterWindow = data.slice(index + 1, Math.min(data.length, index + 20));
 
   if (beforeWindow.length < 5) return null;
 

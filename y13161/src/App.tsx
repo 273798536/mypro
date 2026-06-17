@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Sidebar } from '@/components/Sidebar/Sidebar';
 import { TimelineChart } from '@/components/TimelineChart/TimelineChart';
 import { ReviewPanel } from '@/components/ReviewPanel/ReviewPanel';

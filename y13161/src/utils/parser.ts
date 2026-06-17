@@ -164,7 +164,7 @@ export function parseCSV(content: string, options: ParseOptions = {}): ParseResu
 
       const timestamp = parseTimestamp(values[timestampIndex]) || new Date();
       const rawValue = values[valueIndex] || '';
-      const { value, unit } = parseValueAndUnit(rawValue);
+      const { unit } = parseValueAndUnit(rawValue);
       const rawUnit = unit || values[unitIndex] || '';
       const rawDirection = values[directionIndex] || parseDirection(rawValue) || undefined;
       
@@ -233,7 +233,7 @@ export function parseText(content: string): ParseResult {
       if (!line.trim()) return;
 
       const timestampMatch = line.match(/(\d{4}[-/\d\s:]+)/);
-      const timestamp = timestampMatch ? parseTimestamp(timestampMatch[1]) : new Date();
+      const timestamp = (timestampMatch && parseTimestamp(timestampMatch[1])) || new Date();
 
       const { value, unit } = parseValueAndUnit(line);
       const direction = parseDirection(line);

@@ -26,7 +26,7 @@ function generateId(): string {
 
 export function standardizeLogs(
   logs: RawSensorLog[],
-  parameterVersion: ParameterVersion
+  _parameterVersion: ParameterVersion
 ): {
   standardizedData: StandardizedData[];
   unitMismatches: Array<{

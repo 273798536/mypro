@@ -26,7 +26,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onShowGuide, onShowImport }) =
     rawLogs,
     loadHistory,
     reRunAnalysis,
-    setShowGuide,
   } = useAppStore();
   const [showHistoryDetail, setShowHistoryDetail] = useState<AnalysisHistory | null>(null);
 
@@ -152,7 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onShowGuide, onShowImport }) =
 
       <div className="p-3 border-t border-deep-sea-500">
         <button
-          onClick={() => setShowGuide(true)}
+          onClick={onShowGuide}
           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-deep-sea-300 hover:text-deep-sea-100 hover:bg-deep-sea-600/50 rounded transition-colors"
         >
           <HelpCircle className="w-4 h-4" />
