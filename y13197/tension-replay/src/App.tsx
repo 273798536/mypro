@@ -55,7 +55,7 @@ function App() {
     });
   };
 
-  const handleStatusChange = (recordId: string, newStatus: ProcessingStatus, reason: string) => {
+  const handleStatusChange = (recordId: string, newStatus: ProcessingStatus, reason: string, operator: string) => {
     const record = allRecords.find(r => r.id === recordId);
     if (!record) return;
 
@@ -141,6 +141,7 @@ function App() {
               <section className="table-section">
                 <DetailTable
                   records={analysisResult.records}
+                  defaultOperator={operator}
                   onStatusChange={handleStatusChange}
                 />
               </section>

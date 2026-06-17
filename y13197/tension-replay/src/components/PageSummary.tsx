@@ -6,7 +6,7 @@ interface PageSummaryProps {
 }
 
 export const PageSummary: React.FC<PageSummaryProps> = ({ result }) => {
-  const { stats, jumpPoints, abnormalRecords, materialGroups, pulleyGroups } = result;
+  const { stats, jumpPoints, abnormalRecords, materialGroups } = result;
 
   const getOverallStatus = () => {
     if (stats.extremeCount > 0) return { level: 'danger', text: '存在极端值，需重点关注' };

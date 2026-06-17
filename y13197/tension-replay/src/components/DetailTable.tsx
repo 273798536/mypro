@@ -4,7 +4,8 @@ import { getRecordHistory } from '../utils/history';
 
 interface DetailTableProps {
   records: TensionRecord[];
-  onStatusChange: (recordId: string, newStatus: ProcessingStatus, reason: string) => void;
+  defaultOperator: string;
+  onStatusChange: (recordId: string, newStatus: ProcessingStatus, reason: string, operator: string) => void;
 }
 
 const STATUS_LABELS: Record<ProcessingStatus, string> = {
@@ -25,12 +26,12 @@ const STATUS_CLASS: Record<ProcessingStatus, string> = {
   [ProcessingStatus.PENDING]: 'status-pending',
 };
 
-export const DetailTable: React.FC<DetailTableProps> = ({ records, onStatusChange }) => {
+export const DetailTable: React.FC<DetailTableProps> = ({ records, defaultOperator, onStatusChange }) => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editStatus, setEditStatus] = useState<ProcessingStatus>(ProcessingStatus.NORMAL);
   const [editReason, setEditReason] = useState('');
-  const [operator, setOperator] = useState('小宋');
+  const [operator, setOperator] = useState(defaultOperator);
 
   const formatTime = (ts: number) => {
     const d = new Date(ts);
@@ -41,10 +42,11 @@ export const DetailTable: React.FC<DetailTableProps> = ({ records, onStatusChang
     setEditingId(record.id);
     setEditStatus(record.processingStatus);
     setEditReason(record.statusReason);
+    setOperator(defaultOperator);
   };
 
   const handleSaveEdit = (recordId: string) => {
-    onStatusChange(recordId, editStatus, editReason);
+    onStatusChange(recordId, editStatus, editReason, operator.trim() || defaultOperator);
     setEditingId(null);
   };
 
@@ -63,7 +65,7 @@ export const DetailTable: React.FC<DetailTableProps> = ({ records, onStatusChang
           <div key={h.id} className="history-item">
             <div className="history-header">
               <span className="history-time">{formatTime(h.timestamp)}</span>
-              <span className="history-operator">操作人：{h.operator}</span>
+              <span className="history-operator">操作人：{h.operator || '未署名'}</span>
             </div>
             <div className="history-detail">
               <span className={`status-tag ${STATUS_CLASS[h.oldStatus]}`}>
@@ -74,7 +76,12 @@ export const DetailTable: React.FC<DetailTableProps> = ({ records, onStatusChang
                 {STATUS_LABELS[h.newStatus]}
               </span>
             </div>
-            {h.note && <div className="history-note">备注：{h.note}</div>}
+            {h.oldReason && (
+              <div className="history-reason">原原因：{h.oldReason}</div>
+            )}
+            <div className="history-reason history-reason-new">
+              判断依据：{h.newReason || '（未填写）'}
+            </div>
           </div>
         ))}
       </div>
@@ -199,6 +206,7 @@ export const DetailTable: React.FC<DetailTableProps> = ({ records, onStatusChang
                             value={editReason}
                             onChange={e => setEditReason(e.target.value)}
                             rows={2}
+                            placeholder="请填写改判依据，会写入修改历史供交接班复盘"
                           />
                         </div>
                         <div className="form-actions">

@@ -817,6 +817,21 @@ tr.expand-row td {
   border-top: 1px dashed #d3adf7;
 }
 
+.history-reason {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+.history-reason-new {
+  font-weight: 500;
+  color: #531dab;
+  padding-top: 4px;
+  border-top: 1px dashed #d3adf7;
+}
+
 .no-history {
   font-size: 12px;
   color: #bbb;

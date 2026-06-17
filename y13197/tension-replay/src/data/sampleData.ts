@@ -19,7 +19,7 @@ export function generateSampleData(): RawSensorLog[] {
     const baseTension = 5 + Math.sin(i * 0.1) * 2;
 
     let tension = baseTension + (Math.random() - 0.5) * 0.5;
-    let fieldStyle = i % 3;
+    const fieldStyle = i % 3;
 
     if (i === 15) {
       tension = 30;

@@ -50,12 +50,13 @@ export function normalizeValue(value: unknown, type: 'number' | 'string' | 'time
   }
   
   switch (type) {
-    case 'number':
+    case 'number': {
       const num = Number(value);
       return isNaN(num) ? undefined : num;
+    }
     case 'string':
       return String(value).trim();
-    case 'timestamp':
+    case 'timestamp': {
       if (typeof value === 'number') {
         return value > 1e12 ? value : value * 1000;
       }
@@ -64,6 +65,7 @@ export function normalizeValue(value: unknown, type: 'number' | 'string' | 'time
         return isNaN(ts) ? undefined : ts;
       }
       return undefined;
+    }
     default:
       return value;
   }

@@ -134,7 +134,7 @@ export function detectJumps(records: TensionRecord[], config: AnalysisConfig = D
     const ratio = prevTension > 0 ? diff / prevTension : 0;
 
     if (ratio >= config.jumpRatioThreshold) {
-      let jumpCause = JumpCause.UNKNOWN;
+      let jumpCause: JumpCause;
       let jumpDetail = `张力从 ${prevTension.toFixed(2)} ${current.tensionUnit} 跳变至 ${currTension.toFixed(2)} ${current.tensionUnit}，变化率 ${(ratio * 100).toFixed(1)}%`;
 
       if (prev.tensionUnit !== current.tensionUnit) {
