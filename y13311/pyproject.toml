@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "credit-gray-compare"
+version = "0.1.0"
+description = "信贷评分灰度对比系统：串联样本、版本、人工修正与接口返回，拆解样本变化、阈值变化和人工改判"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{ name = "Algorithm Team" }]
+license = { text = "MIT" }
+dependencies = [
+    "pandas>=2.0",
+    "pydantic>=2.0",
+    "click>=8.0",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+credit-gray-compare = "credit_gray_compare.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
