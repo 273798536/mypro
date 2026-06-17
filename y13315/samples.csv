@@ -1,0 +1,7 @@
+sample_id,image_ref,object,model_version,model_prediction,confidence,manual_label,manual_by,notes,screenshot_ref
+S001,img/S001.png,panel-A3,v1.0,scratch,0.92,scratch,小孟,,img/S001_v1.png
+S002,img/S002.png,panel-B1,v1.0,ok,0.88,,,,
+S003,img/S003.png,panel-C2,v1.0,dent,0.75,dent,小孟,边缘案例待复核,
+S004,img/S004.png,panel-D4,v1.0,crack,0.60,,小孟,疑似误判,
+,img/S005.png,panel-E5,v1.0,ok,0.70,,,,
+S003,img/S003-dup.png,panel-C2,v1.0,ok,0.55,,,,
