@@ -26,6 +26,16 @@ async function post<T, B = unknown>(path: string, body: B): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+async function postBlob<B = unknown>(path: string, body: B): Promise<Blob> {
+  const res = await fetch(`${API_PREFIX}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`Request failed: ${path}`);
+  return res.blob();
+}
+
 export const api = {
   getBatches: () => get<Batch[]>('/batches'),
   getBatch: (id: string) => get<Batch>(`/batches/${id}`),
@@ -58,4 +68,20 @@ export const api = {
       generatedAt: string;
       batchId: string;
     }>('/report/metadata', { batchId }),
+  runCheck: (data: {
+    scenario?: 'mixed' | 'legacy_table' | 'supplement_remark' | 'missing_unit';
+    sampleCount?: number;
+    operator?: string;
+  }) =>
+    post<{
+      ok: boolean;
+      batch: Batch;
+      anomalies: Anomaly[];
+      logCount: number;
+      message: string;
+    }>('/check/run', data),
+  downloadExcel: (batchId?: string, operator?: string) =>
+    postBlob<{ batchId?: string; operator?: string }>('/report/excel', { batchId, operator }),
+  downloadHtml: (batchId?: string, operator?: string) =>
+    postBlob<{ batchId?: string; operator?: string }>('/report/html', { batchId, operator }),
 };

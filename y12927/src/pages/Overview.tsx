@@ -21,6 +21,9 @@ import {
   Filter,
   RefreshCw,
   Database,
+  PlayCircle,
+  AlertTriangle,
+  CheckCircle2,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useStore } from '@/store';
@@ -49,6 +52,9 @@ export default function OverviewPage() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
+  const [runScenario, setRunScenario] = useState<'mixed' | 'legacy_table' | 'supplement_remark' | 'missing_unit'>('mixed');
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const loadData = useCallback(async () => {
     setIsRefreshing(true);
@@ -67,6 +73,27 @@ export default function OverviewPage() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  const handleRunCheck = async () => {
+    setIsRunning(true);
+    try {
+      const res = await api.runCheck({ scenario: runScenario, operator: '训练组-当前用户' });
+      setToast({ type: 'success', text: res.message });
+      setCurrentBatchId(res.batch.id);
+      await loadData();
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '运行检查失败';
+      setToast({ type: 'error', text: msg });
+    } finally {
+      setIsRunning(false);
+    }
+  };
 
   const currentBatch = batches.find((b) => b.id === currentBatchId);
 
@@ -116,24 +143,59 @@ export default function OverviewPage() {
 
   return (
     <div className="p-8 max-w-[1400px] mx-auto">
-      <header className="mb-8 flex items-start justify-between">
+      <header className="mb-8 flex items-start justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-semibold">检查概览</h1>
           <p className="text-sm text-gray-500 mt-1">
             选择运行批次，查看异常分布和待处理问题
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <button className="btn-secondary" onClick={loadData} disabled={isRefreshing}>
+        <div className="flex items-center gap-2 flex-wrap">
+          <select
+            className="select w-40"
+            value={runScenario}
+            onChange={(e) => setRunScenario(e.target.value as typeof runScenario)}
+            disabled={isRunning}
+          >
+            <option value="mixed">混合场景（全部）</option>
+            <option value="legacy_table">旧表数据</option>
+            <option value="supplement_remark">补录备注</option>
+            <option value="missing_unit">漏填单位</option>
+          </select>
+          <button className="btn-secondary" onClick={loadData} disabled={isRefreshing || isRunning}>
             <RefreshCw className={cn('w-4 h-4', isRefreshing && 'animate-spin')} />
             {isRefreshing ? '刷新中...' : '刷新数据'}
           </button>
-          <Link to="/export" className="btn-primary">
+          <button
+            className="btn-primary"
+            onClick={handleRunCheck}
+            disabled={isRunning}
+          >
+            <PlayCircle className="w-4 h-4" />
+            {isRunning ? '检查运行中...' : '运行检查'}
+          </button>
+          <Link to="/export" className="btn-secondary">
             <FileQuestion className="w-4 h-4" />
             导出报告
           </Link>
         </div>
       </header>
+
+      {toast && (
+        <div
+          className={cn(
+            'fixed top-6 right-6 z-50 card px-5 py-3 shadow-lg flex items-center gap-2 text-sm',
+            toast.type === 'success' ? 'border-l-4 border-emerald-500' : 'border-l-4 border-rose-500',
+          )}
+        >
+          {toast.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          ) : (
+            <AlertTriangle className="w-4 h-4 text-rose-500" />
+          )}
+          {toast.text}
+        </div>
+      )}
 
       <section className="mb-8">
         <h2 className="text-sm font-medium text-gray-500 mb-3 flex items-center gap-1.5">

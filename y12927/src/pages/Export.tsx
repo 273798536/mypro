@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import * as XLSX from 'xlsx';
 import {
   FileDown,
   FileSpreadsheet,
@@ -9,16 +8,12 @@ import {
   CheckCircle2,
   Clock,
   ShieldAlert,
+  AlertTriangle,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useStore } from '@/store';
 import { AnomalyTypeTag, SeverityTag, StatusTag } from '@/components/Tags';
-import {
-  ANOMALY_TYPE_LABEL,
-  SEVERITY_LABEL,
-  STATUS_LABEL,
-} from '../../shared/types';
-import { formatDate, formatDateTime } from '@/utils/format';
+import { formatDate } from '@/utils/format';
 import { cn } from '@/lib/utils';
 
 type ReportFormat = 'excel' | 'html';
@@ -37,6 +32,7 @@ export default function ExportPage() {
   const [format, setFormat] = useState<ReportFormat>('excel');
   const [meta, setMeta] = useState<ReportMeta | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [toast, setToast] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     api.getBatches().then(setBatches);
@@ -48,140 +44,42 @@ export default function ExportPage() {
     api.getReportMeta(currentBatchId).then(setMeta);
   }, [currentBatchId]);
 
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(t);
+  }, [toast]);
+
   const currentBatch = batches.find((b) => b.id === currentBatchId);
 
   const fileName = meta
     ? `${meta.fileNameBase}.${format === 'excel' ? 'xlsx' : 'html'}`
     : '';
 
-  const buildExportRows = () => {
-    return anomalies.map((a) => {
-      const corr = corrections.find((c) => c.anomalyId === a.id);
-      return {
-        异常ID: a.id,
-        批次: a.batchId,
-        异常类型: ANOMALY_TYPE_LABEL[a.type],
-        严重程度: SEVERITY_LABEL[a.severity],
-        处理状态: STATUS_LABEL[a.status],
-        '原因说明(人话)': a.humanReason,
-        样本原文: a.originalText,
-        原始机器码: a.rawCode,
-        修正动作: corr?.action || '',
-        处理意见: corr?.opinion || '',
-        操作人: corr?.operator || '',
-        修正时间: corr?.correctedAt ? formatDateTime(corr.correctedAt) : '',
-      };
-    });
+  const downloadBlob = (blob: Blob, name: string) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
-  const exportExcel = () => {
+  const onExport = async () => {
     setGenerating(true);
-    setTimeout(() => {
-      const rows = buildExportRows();
-      const summary = [
-        { A: '训练切分隔离检查报告', B: '' },
-        { A: '生成时间', B: formatDateTime(new Date().toISOString()) },
-        { A: '批次号', B: currentBatchId },
-        { A: '文件名', B: fileName },
-        { A: '异常总数', B: meta?.totalAnomalies ?? 0 },
-        { A: '已处理', B: meta?.resolvedCount ?? 0 },
-        { A: '待处理', B: meta?.pendingCount ?? 0 },
-        { A: '', B: '' },
-        { A: '异常明细（界面与报告共用同一批数据）', B: '' },
-      ];
-      const ws = XLSX.utils.json_to_sheet(summary, {
-        header: ['A', 'B'],
-        skipHeader: true,
-      });
-      XLSX.utils.sheet_add_json(ws, rows, { origin: -1 });
-      ws['!cols'] = [
-        { wch: 14 }, { wch: 22 }, { wch: 14 }, { wch: 10 }, { wch: 10 },
-        { wch: 45 }, { wch: 55 }, { wch: 30 }, { wch: 16 }, { wch: 40 },
-        { wch: 14 }, { wch: 20 },
-      ];
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, '检查报告');
-      XLSX.writeFile(wb, fileName);
+    try {
+      const expectedName = fileName || `训练切分隔离检查_${format === 'excel' ? 'report.xlsx' : 'report.html'}`;
+      const blob = format === 'excel'
+        ? await api.downloadExcel(currentBatchId, '训练组-当前用户')
+        : await api.downloadHtml(currentBatchId, '训练组-当前用户');
+      downloadBlob(blob, expectedName);
+      setToast({ type: 'success', text: `已生成报告并触发下载：${expectedName}` });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '导出报告失败';
+      setToast({ type: 'error', text: msg });
+    } finally {
       setGenerating(false);
-    }, 400);
-  };
-
-  const exportHtml = () => {
-    setGenerating(true);
-    setTimeout(() => {
-      const rows = buildExportRows();
-      const headCells = Object.keys(rows[0] || {});
-      const html = `<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<title>训练切分隔离检查报告</title>
-<style>
-body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; max-width: 1200px; margin: 0 auto; padding: 32px; color: #374151; background: #fafaf7; }
-h1 { color: #1e3a5f; font-family: Georgia, "Songti SC", serif; font-size: 24px; }
-.summary { background: white; border: 1px solid #e9e6da; border-radius: 12px; padding: 20px; margin: 16px 0; }
-.summary p { margin: 4px 0; font-size: 14px; }
-.summary strong { color: #1e3a5f; }
-.hint { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 12px 16px; border-radius: 8px; font-size: 13px; margin: 12px 0; }
-table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #e9e6da; border-radius: 12px; overflow: hidden; font-size: 13px; margin-top: 16px; }
-th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #f4f3ed; vertical-align: top; }
-th { background: #f1f5fb; color: #1e3a5f; font-weight: 600; font-size: 12px; }
-tr:nth-child(even) td { background: #fafaf7; }
-.type-duplicate { color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 999px; font-size: 12px; }
-.type-rule_missing { color: #d97706; background: #fef3c7; padding: 2px 8px; border-radius: 999px; font-size: 12px; }
-.type-format_error { color: #7c3aed; background: #ede9fe; padding: 2px 8px; border-radius: 999px; font-size: 12px; }
-.type-leak { color: #be185d; background: #fce7f3; padding: 2px 8px; border-radius: 999px; font-size: 12px; }
-.footer { margin-top: 32px; font-size: 12px; color: #6b7280; text-align: center; }
-</style>
-</head>
-<body>
-<h1>训练切分隔离检查报告</h1>
-<div class="hint">⚠️ 本报告与人工修正工作台共用同一批数据，界面与报告保持一致。</div>
-<div class="summary">
-  <p><strong>生成时间：</strong>${formatDateTime(new Date().toISOString())}</p>
-  <p><strong>批次号：</strong>${currentBatchId}</p>
-  <p><strong>文件名：</strong>${fileName}</p>
-  <p><strong>异常总数：</strong>${meta?.totalAnomalies ?? 0}</p>
-  <p><strong>已处理：</strong>${meta?.resolvedCount ?? 0} · <strong>待处理：</strong>${meta?.pendingCount ?? 0}</p>
-</div>
-<table>
-  <thead><tr>${headCells.map((h) => `<th>${h}</th>`).join('')}</tr></thead>
-  <tbody>
-    ${rows
-      .map(
-        (r, i) => `<tr>
-          ${headCells
-            .map((h) => {
-              const val = r[h as keyof typeof r];
-              if (h === '异常类型') {
-                const t = anomalies[i]?.type;
-                return `<td><span class="type-${t}">${val}</span></td>`;
-              }
-              return `<td>${String(val ?? '')}</td>`;
-            })
-            .join('')}
-        </tr>`,
-      )
-      .join('')}
-  </tbody>
-</table>
-<div class="footer">报告由训练切分隔离检查系统自动生成 · ${formatDate(new Date().toISOString())}</div>
-</body>
-</html>`;
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = fileName;
-      a.click();
-      URL.revokeObjectURL(url);
-      setGenerating(false);
-    }, 400);
-  };
-
-  const onExport = () => {
-    if (format === 'excel') exportExcel();
-    else exportHtml();
+    }
   };
 
   return (
@@ -195,6 +93,22 @@ tr:nth-child(even) td { background: #fafaf7; }
           文件名带时间戳和批次号，一眼区分本次运行和上次运行；文件内容给不懂代码的人也能看懂
         </p>
       </header>
+
+      {toast && (
+        <div
+          className={cn(
+            'fixed top-6 right-6 z-50 card px-5 py-3 shadow-lg flex items-center gap-2 text-sm',
+            toast.type === 'success' ? 'border-l-4 border-emerald-500' : 'border-l-4 border-rose-500',
+          )}
+        >
+          {toast.type === 'success' ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+          ) : (
+            <AlertTriangle className="w-4 h-4 text-rose-500" />
+          )}
+          {toast.text}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
@@ -345,7 +259,7 @@ tr:nth-child(even) td { background: #fafaf7; }
               {generating ? '正在生成...' : `下载${format === 'excel' ? 'Excel' : 'HTML'}报告`}
             </button>
             <p className="text-xs text-gray-400 text-center mt-3">
-              生成时间 {formatDateTime(new Date().toISOString())}
+              生成时间 {formatDate(new Date().toISOString())}
             </p>
           </section>
 
