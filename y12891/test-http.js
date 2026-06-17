@@ -124,13 +124,18 @@ async function json(path, opts = {}) {
   await check('POST /api/risk/:id/assess', async () => {
     const r = await json(`/api/risk/${batchId}/assess`, { method: 'POST', body: { assessor: 'HTTP评估员' } });
     if (!r.success) throw new Error(JSON.stringify(r));
-    // assessRisk service 返回 camelCase 字段 (riskScore/riskLevel)
-    const score = r.data.risk_score ?? r.data.riskScore;
-    if (score === undefined || score === null) throw new Error('缺少分值 ' + JSON.stringify(r.data));
+    if (r.data.risk_score === undefined) throw new Error('缺少 risk_score 字段 ' + JSON.stringify(r.data));
+    if (r.data.risk_level === undefined) throw new Error('缺少 risk_level 字段');
+    if (!Array.isArray(r.data.risk_factors)) throw new Error('risk_factors 不是数组');
+    if (!Array.isArray(r.data.risk_details)) throw new Error('risk_details 不是数组');
   });
-  await check('GET /api/risk/:id/latest 返回最新评估', async () => {
+  await check('GET /api/risk/:id/latest 返回最新评估（字段与 assess 一致）', async () => {
     const r = await json(`/api/risk/${batchId}/latest`);
     if (!r.success || !r.data.risk_level) throw new Error(JSON.stringify(r));
+    if (r.data.risk_score === undefined) throw new Error('latest 缺少 risk_score');
+    if (!Array.isArray(r.data.risk_factors)) throw new Error('latest risk_factors 不是数组');
+    if (!Array.isArray(r.data.risk_details)) throw new Error('latest risk_details 不是数组');
+    if (r.data.partialAssessment === undefined) throw new Error('latest 缺少 partialAssessment');
   });
 
   // 5. 报告生成

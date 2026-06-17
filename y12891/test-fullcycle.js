@@ -145,12 +145,15 @@ section('【4】风险评估');
 const risk1 = riskService.assessRisk(batchId, '评估员老陈');
 check('风险评估生成', !!risk1 && risk1.version === 2);
 check('评估版本 v2', risk1.version === 2);
-check('风险等级有效', ['low', 'medium', 'high'].indexOf(risk1.riskLevel) >= 0);
-check('风险分值 0~100', risk1.riskScore >= 0 && risk1.riskScore <= 100);
+check('风险等级有效', ['low', 'medium', 'high'].indexOf(risk1.risk_level) >= 0);
+check('风险分值 0~100', risk1.risk_score >= 0 && risk1.risk_score <= 100);
+check('risk_factors 是数组', Array.isArray(risk1.risk_factors));
+check('risk_details 是数组', Array.isArray(risk1.risk_details));
 const latest = riskService.getLatestAssessment(batchId);
-check('最新评估匹配', latest.risk_level === risk1.riskLevel);
-console.log('  ' + c('→ 风险等级: ' + (risk1.riskLevel === 'high' ? '高' : risk1.riskLevel === 'medium' ? '中' : '低') +
-  '，分值: ' + risk1.riskScore, 'cyan'));
+check('最新评估匹配', latest.risk_level === risk1.risk_level);
+check('最新评估含 partialAssessment', latest.partialAssessment !== undefined);
+console.log('  ' + c('→ 风险等级: ' + (risk1.risk_level === 'high' ? '高' : risk1.risk_level === 'medium' ? '中' : '低') +
+  '，分值: ' + risk1.risk_score, 'cyan'));
 
 // ===== 5. 二次复核 (版本对比) =====
 section('【5】二次复核 - 修改浮标后重新评估，验证版本对比');

@@ -98,11 +98,11 @@ ok('照片缺口清晰列出，供科研助理补料');
 
 console.log('\n' + c('【7】风险评估 - 照片缺失时部分计算', 'bold'));
 const risk1 = riskService.assessRisk(batch.id, '测试评估员');
-console.log('  风险等级:', c(risk1.riskLevel, risk1.riskLevel === 'high' ? 'red' : risk1.riskLevel === 'medium' ? 'yellow' : 'green'));
-console.log('  风险分值:', risk1.riskScore, '分');
-console.log('  风险因素:', risk1.riskFactors.join('、'));
+console.log('  风险等级:', c(risk1.risk_level, risk1.risk_level === 'high' ? 'red' : risk1.risk_level === 'medium' ? 'yellow' : 'green'));
+console.log('  风险分值:', risk1.risk_score, '分');
+console.log('  风险因素:', risk1.risk_factors.join('、'));
 console.log('  是否部分评估:', risk1.partialAssessment ? '是（照片缺失）' : '否');
-console.log('  评估说明:', risk1.assessmentNote);
+console.log('  评估说明:', risk1.assessment_note);
 ok('照片缺失不整批失败，先算能算的，再列缺口');
 
 console.log('\n' + c('【8】同一轮复核 - 潮汐/气象/禁航区一起', 'bold'));
@@ -140,8 +140,8 @@ ok('状态推进正常: imported → reviewing');
 
 console.log('\n' + c('【10】重新评估风险（修正后第二版）', 'bold'));
 const risk2 = riskService.assessRisk(batch.id, '测试评估员');
-console.log('  v1等级:', risk1.riskLevel, '(' + risk1.riskScore + '分)');
-console.log('  v2等级:', risk2.riskLevel, '(' + risk2.riskScore + '分)');
+console.log('  v1等级:', risk1.risk_level, '(' + risk1.risk_score + '分)');
+console.log('  v2等级:', risk2.risk_level, '(' + risk2.risk_score + '分)');
 ok('第二版风险评估完成');
 
 console.log('\n' + c('【11】历史版本对比 - 风险分层前后差别', 'bold'));

@@ -1,18 +1,18 @@
 {
   "export_info": {
-    "exported_at": "2026/6/17 15:56:00",
+    "exported_at": "2026/6/17 22:59:21",
     "type": "full_batch_export"
   },
   "batch": {
     "id": 1,
-    "batch_no": "TEST-FULL-359675",
+    "batch_no": "TEST-FULL-760806",
     "name": "测试批次-进口危险品泊位核查",
     "status": "reported",
     "description": "通过导入API链路从头跑一遍",
     "current_version": 3,
     "exported_version": 3,
-    "created_at": "2026-06-17 15:55:59",
-    "updated_at": "2026-06-17 15:56:00"
+    "created_at": "2026-06-17 22:59:20",
+    "updated_at": "2026-06-17 22:59:21"
   },
   "materials": {
     "buoy_data": [
@@ -36,7 +36,7 @@
         "reviewed_at": null,
         "import_note": "",
         "source": "海洋监测站",
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 13,
@@ -58,7 +58,7 @@
         "reviewed_at": null,
         "import_note": "",
         "source": "海洋监测站",
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 14,
@@ -80,7 +80,7 @@
         "reviewed_at": null,
         "import_note": "",
         "source": "海洋监测站",
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 15,
@@ -102,7 +102,7 @@
         "reviewed_at": null,
         "import_note": "传感器离线，数据缺失",
         "source": "海洋监测站",
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 16,
@@ -124,7 +124,7 @@
         "reviewed_at": null,
         "import_note": "数据时间超前一天，疑似重复上报",
         "source": "科研助理补录",
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 17,
@@ -146,7 +146,7 @@
         "reviewed_at": null,
         "import_note": "水深为负值，明显异常需复核",
         "source": "海洋监测站",
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       }
     ],
     "tide_tables": [
@@ -165,7 +165,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 8,
@@ -182,7 +182,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 9,
@@ -199,7 +199,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       }
     ],
     "weather_forecasts": [
@@ -217,7 +217,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 8,
@@ -233,7 +233,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 9,
@@ -249,7 +249,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       }
     ],
     "restricted_zone_violations": [
@@ -268,7 +268,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 8,
@@ -285,7 +285,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 9,
@@ -302,7 +302,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       }
     ],
     "inspection_photos": [
@@ -322,7 +322,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 16,
@@ -340,7 +340,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 17,
@@ -358,7 +358,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 18,
@@ -376,7 +376,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 19,
@@ -394,7 +394,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 20,
@@ -412,7 +412,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 21,
@@ -430,7 +430,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       }
     ],
     "aquaculture_logs": [
@@ -445,7 +445,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 8,
@@ -458,7 +458,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       },
       {
         "id": 9,
@@ -471,7 +471,7 @@
         "review_comment": null,
         "reviewer": null,
         "reviewed_at": null,
-        "created_at": "2026-06-17 15:55:59"
+        "created_at": "2026-06-17 22:59:20"
       }
     ],
     "duplicate_tracking": [
@@ -481,8 +481,8 @@
         "material_type": "buoy",
         "material_key": "FB-002_2026-06-14",
         "duplicate_count": 1,
-        "first_seen_at": "2026-06-17 15:55:59",
-        "last_seen_at": "2026-06-17 15:55:59",
+        "first_seen_at": "2026-06-17 22:59:20",
+        "last_seen_at": "2026-06-17 22:59:20",
         "status": "pending",
         "resolution": null
       },
@@ -492,8 +492,8 @@
         "material_type": "buoy",
         "material_key": "FB-003_2026-06-14",
         "duplicate_count": 1,
-        "first_seen_at": "2026-06-17 15:55:59",
-        "last_seen_at": "2026-06-17 15:55:59",
+        "first_seen_at": "2026-06-17 22:59:20",
+        "last_seen_at": "2026-06-17 22:59:20",
         "status": "pending",
         "resolution": null
       },
@@ -503,8 +503,8 @@
         "material_type": "buoy",
         "material_key": "FB-005_2026-06-14",
         "duplicate_count": 1,
-        "first_seen_at": "2026-06-17 15:55:59",
-        "last_seen_at": "2026-06-17 15:55:59",
+        "first_seen_at": "2026-06-17 22:59:20",
+        "last_seen_at": "2026-06-17 22:59:20",
         "status": "pending",
         "resolution": null
       },
@@ -514,8 +514,8 @@
         "material_type": "buoy",
         "material_key": "FB-007_2026-06-14",
         "duplicate_count": 1,
-        "first_seen_at": "2026-06-17 15:55:59",
-        "last_seen_at": "2026-06-17 15:55:59",
+        "first_seen_at": "2026-06-17 22:59:20",
+        "last_seen_at": "2026-06-17 22:59:20",
         "status": "pending",
         "resolution": null
       },
@@ -525,8 +525,8 @@
         "material_type": "buoy",
         "material_key": "FB-009_2026-06-13",
         "duplicate_count": 1,
-        "first_seen_at": "2026-06-17 15:55:59",
-        "last_seen_at": "2026-06-17 15:55:59",
+        "first_seen_at": "2026-06-17 22:59:20",
+        "last_seen_at": "2026-06-17 22:59:20",
         "status": "pending",
         "resolution": null
       },
@@ -536,8 +536,8 @@
         "material_type": "buoy",
         "material_key": "FB-011_2026-06-14",
         "duplicate_count": 1,
-        "first_seen_at": "2026-06-17 15:55:59",
-        "last_seen_at": "2026-06-17 15:55:59",
+        "first_seen_at": "2026-06-17 22:59:20",
+        "last_seen_at": "2026-06-17 22:59:20",
         "status": "pending",
         "resolution": null
       }
@@ -566,489 +566,13 @@
     "assessment_basis": "基于浮标数据(5条有效)、禁航区越界(3起)、气象预报(3天)、潮汐表(3天)、巡检照片(5张可用/7张总计)综合评估",
     "assessment_note": "注：因2张巡检照片缺失，部分外观检查项无法完整评估，实际风险可能高于当前评估结果",
     "assessor": "评估员老陈",
-    "assessed_at": "2026-06-17 15:56:00"
+    "assessed_at": "2026-06-17 22:59:21"
   },
   "report": {
-    "report_no": "TEST-FULL-359675-R3",
-    "generated_at": "2026-06-17 15:56:00"
+    "report_no": "TEST-FULL-760806-R3",
+    "generated_at": "2026-06-17 22:59:21"
   },
   "review_records": [
-    {
-      "id": 9,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "tide",
-      "material_id": 2,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 10,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "tide",
-      "material_id": 3,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 11,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "weather",
-      "material_id": 1,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 12,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "weather",
-      "material_id": 2,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 13,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "weather",
-      "material_id": 3,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 14,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "violation",
-      "material_id": 2,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 15,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "violation",
-      "material_id": 3,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 16,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "photo",
-      "material_id": 1,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 17,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "photo",
-      "material_id": 2,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 18,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "photo",
-      "material_id": 3,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 19,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "photo",
-      "material_id": 4,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 20,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "photo",
-      "material_id": 5,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 21,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "photo",
-      "material_id": 6,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 22,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "photo",
-      "material_id": 7,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 23,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "aquaculture",
-      "material_id": 1,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 24,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "aquaculture",
-      "material_id": 2,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 25,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 1,
-      "material_type": "aquaculture",
-      "material_id": 3,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 26,
-      "batch_id": 1,
-      "version_from": 1,
-      "version_to": 2,
-      "material_type": "all",
-      "material_id": null,
-      "action": "batch_submit",
-      "old_value": null,
-      "new_value": null,
-      "reviewer": "张工",
-      "review_comment": "首轮复核完成，整体通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 27,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "buoy",
-      "material_id": 12,
-      "action": "buoy_review",
-      "old_value": "{\"water_depth\":18.6,\"flow_velocity\":1.2,\"wave_height\":0.4,\"is_valid\":1,\"review_status\":\"pending\"}",
-      "new_value": "{\"water_depth\":20.6,\"review_status\":\"approved\"}",
-      "reviewer": "复核人",
-      "review_comment": "微调水深",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 28,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "buoy",
-      "material_id": 7,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 29,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "buoy",
-      "material_id": 8,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 30,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "buoy",
-      "material_id": 9,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 31,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "buoy",
-      "material_id": 10,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 32,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "buoy",
-      "material_id": 11,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 33,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "tide",
-      "material_id": 4,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 34,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "tide",
-      "material_id": 5,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 35,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "tide",
-      "material_id": 6,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 36,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "weather",
-      "material_id": 4,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 37,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "weather",
-      "material_id": 5,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 38,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "weather",
-      "material_id": 6,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 39,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "violation",
-      "material_id": 4,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 40,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "violation",
-      "material_id": 5,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 41,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "violation",
-      "material_id": 6,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
-    {
-      "id": 42,
-      "batch_id": 1,
-      "version_from": 2,
-      "version_to": 2,
-      "material_type": "photo",
-      "material_id": 8,
-      "action": "review_update",
-      "old_value": "pending",
-      "new_value": "approved",
-      "reviewer": "自动化测试",
-      "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
-    },
     {
       "id": 43,
       "batch_id": 1,
@@ -1061,7 +585,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 44,
@@ -1075,7 +599,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 45,
@@ -1089,7 +613,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 46,
@@ -1103,7 +627,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 47,
@@ -1117,7 +641,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 48,
@@ -1131,7 +655,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 49,
@@ -1145,7 +669,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 50,
@@ -1159,7 +683,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 51,
@@ -1173,7 +697,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 52,
@@ -1187,7 +711,7 @@
       "new_value": null,
       "reviewer": "张工",
       "review_comment": "二次复核",
-      "created_at": "2026-06-17 15:56:00"
+      "created_at": "2026-06-17 22:59:21"
     },
     {
       "id": 1,
@@ -1201,7 +725,7 @@
       "new_value": "{\"water_depth\":11.5,\"flow_velocity\":0.8,\"review_status\":\"approved\"}",
       "reviewer": "科研助理小王",
       "review_comment": "原数值-1.5m异常，校准后修正为11.5m",
-      "created_at": "2026-06-17 15:55:59"
+      "created_at": "2026-06-17 22:59:20"
     },
     {
       "id": 2,
@@ -1215,7 +739,7 @@
       "new_value": "approved",
       "reviewer": "张工",
       "review_comment": "数据与海事局潮汐表一致",
-      "created_at": "2026-06-17 15:55:59"
+      "created_at": "2026-06-17 22:59:20"
     },
     {
       "id": 3,
@@ -1229,7 +753,7 @@
       "new_value": "rejected",
       "reviewer": "李工",
       "review_comment": "坐标判定错误，船并未越界",
-      "created_at": "2026-06-17 15:55:59"
+      "created_at": "2026-06-17 22:59:20"
     },
     {
       "id": 4,
@@ -1243,7 +767,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:55:59"
+      "created_at": "2026-06-17 22:59:20"
     },
     {
       "id": 5,
@@ -1257,7 +781,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:55:59"
+      "created_at": "2026-06-17 22:59:20"
     },
     {
       "id": 6,
@@ -1271,7 +795,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:55:59"
+      "created_at": "2026-06-17 22:59:20"
     },
     {
       "id": 7,
@@ -1285,7 +809,7 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:55:59"
+      "created_at": "2026-06-17 22:59:20"
     },
     {
       "id": 8,
@@ -1299,7 +823,483 @@
       "new_value": "approved",
       "reviewer": "自动化测试",
       "review_comment": "approveAll 批量通过",
-      "created_at": "2026-06-17 15:55:59"
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 9,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "tide",
+      "material_id": 2,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 10,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "tide",
+      "material_id": 3,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 11,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "weather",
+      "material_id": 1,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 12,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "weather",
+      "material_id": 2,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 13,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "weather",
+      "material_id": 3,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 14,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "violation",
+      "material_id": 2,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 15,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "violation",
+      "material_id": 3,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 16,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "photo",
+      "material_id": 1,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 17,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "photo",
+      "material_id": 2,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 18,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "photo",
+      "material_id": 3,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 19,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "photo",
+      "material_id": 4,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 20,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "photo",
+      "material_id": 5,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 21,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "photo",
+      "material_id": 6,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 22,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "photo",
+      "material_id": 7,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 23,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "aquaculture",
+      "material_id": 1,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 24,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "aquaculture",
+      "material_id": 2,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 25,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 1,
+      "material_type": "aquaculture",
+      "material_id": 3,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 26,
+      "batch_id": 1,
+      "version_from": 1,
+      "version_to": 2,
+      "material_type": "all",
+      "material_id": null,
+      "action": "batch_submit",
+      "old_value": null,
+      "new_value": null,
+      "reviewer": "张工",
+      "review_comment": "首轮复核完成，整体通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 27,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "buoy",
+      "material_id": 12,
+      "action": "buoy_review",
+      "old_value": "{\"water_depth\":18.6,\"flow_velocity\":1.2,\"wave_height\":0.4,\"is_valid\":1,\"review_status\":\"pending\"}",
+      "new_value": "{\"water_depth\":20.6,\"review_status\":\"approved\"}",
+      "reviewer": "复核人",
+      "review_comment": "微调水深",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 28,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "buoy",
+      "material_id": 7,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 29,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "buoy",
+      "material_id": 8,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 30,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "buoy",
+      "material_id": 9,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 31,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "buoy",
+      "material_id": 10,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 32,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "buoy",
+      "material_id": 11,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 33,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "tide",
+      "material_id": 4,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 34,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "tide",
+      "material_id": 5,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 35,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "tide",
+      "material_id": 6,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 36,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "weather",
+      "material_id": 4,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 37,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "weather",
+      "material_id": 5,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 38,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "weather",
+      "material_id": 6,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 39,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "violation",
+      "material_id": 4,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 40,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "violation",
+      "material_id": 5,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 41,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "violation",
+      "material_id": 6,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
+    },
+    {
+      "id": 42,
+      "batch_id": 1,
+      "version_from": 2,
+      "version_to": 2,
+      "material_type": "photo",
+      "material_id": 8,
+      "action": "review_update",
+      "old_value": "pending",
+      "new_value": "approved",
+      "reviewer": "自动化测试",
+      "review_comment": "approveAll 批量通过",
+      "created_at": "2026-06-17 22:59:20"
     }
   ]
 }

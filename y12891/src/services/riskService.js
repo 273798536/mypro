@@ -99,14 +99,28 @@ function assessRisk(batchId, assessor, version) {
 
   return {
     id: result.lastInsertRowid,
-    batchId,
+    batch_id: batchId,
     version: ver,
-    riskLevel,
-    riskScore,
-    riskFactors,
-    details,
-    assessmentBasis,
-    assessmentNote,
+    risk_level: riskLevel,
+    risk_score: riskScore,
+    risk_factors: riskFactors,
+    risk_details: details,
+    assessment_basis: assessmentBasis,
+    assessment_note: assessmentNote,
+    assessor: assessor || '系统',
+    partialAssessment: missingPhotos > 0,
+    missingPhotoCount: missingPhotos
+  };
+}
+
+function enrichAssessment(assessment) {
+  const missingPhotos = db.prepare(
+    'SELECT COUNT(*) as cnt FROM inspection_photos WHERE batch_id = ? AND version = ? AND is_missing = 1'
+  ).get(assessment.batch_id, assessment.version).cnt;
+  return {
+    ...assessment,
+    risk_factors: JSON.parse(assessment.risk_factors || '[]'),
+    risk_details: JSON.parse(assessment.risk_details || '[]'),
     partialAssessment: missingPhotos > 0,
     missingPhotoCount: missingPhotos
   };
@@ -121,12 +135,7 @@ function getLatestAssessment(batchId) {
   `).get(batchId);
 
   if (!assessment) return null;
-
-  return {
-    ...assessment,
-    risk_factors: JSON.parse(assessment.risk_factors || '[]'),
-    risk_details: JSON.parse(assessment.risk_details || '[]')
-  };
+  return enrichAssessment(assessment);
 }
 
 function getAssessmentByVersion(batchId, version) {
@@ -138,12 +147,7 @@ function getAssessmentByVersion(batchId, version) {
   `).get(batchId, version);
 
   if (!assessment) return null;
-
-  return {
-    ...assessment,
-    risk_factors: JSON.parse(assessment.risk_factors || '[]'),
-    risk_details: JSON.parse(assessment.risk_details || '[]')
-  };
+  return enrichAssessment(assessment);
 }
 
 function compareRiskVersions(batchId, versionA, versionB) {

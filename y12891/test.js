@@ -124,9 +124,9 @@ async function test() {
   console.log('【7】风险评估（照片缺失时部分计算）');
   const risk1 = await apiPost(`/risk/${batchId}/assess`, { assessor: '测试员' });
   const r = risk1.data;
-  console.log('  风险等级:', r.riskLevel);
-  console.log('  风险分值:', r.riskScore, '分');
-  console.log('  风险因素:', r.riskFactors.join('、'));
+  console.log('  风险等级:', r.risk_level);
+  console.log('  风险分值:', r.risk_score, '分');
+  console.log('  风险因素:', r.risk_factors.join('、'));
   console.log('  是否部分评估:', r.partialAssessment ? '是 (照片缺失)' : '否');
   console.log('  缺失照片数:', r.missingPhotoCount);
   console.log('  ✓ 照片缺失时先完成可计算部分，不整批失败\n');
@@ -169,8 +169,8 @@ async function test() {
 
   console.log('【10】重新评估风险（修正后）');
   const risk2 = await apiPost(`/risk/${batchId}/assess`, { assessor: '测试员' });
-  console.log('  新版本风险等级:', risk2.data.riskLevel);
-  console.log('  新版本风险分值:', risk2.data.riskScore, '分');
+  console.log('  新版本风险等级:', risk2.data.risk_level);
+  console.log('  新版本风险分值:', risk2.data.risk_score, '分');
   console.log('  ✓ 第二版风险评估完成\n');
 
   console.log('【11】历史版本对比 - 风险分层前后差别');

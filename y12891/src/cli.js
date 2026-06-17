@@ -272,8 +272,8 @@ function doRiskAssess(batch) {
     const result = riskService.assessRisk(batch.id, '系统-CLI');
     const levelText = { high: '高风险', medium: '中风险', low: '低风险' };
     console.log(c('\n  ✓ 风险评估完成', 'green'));
-    console.log(`  风险等级: ${c(levelText[result.riskLevel], result.riskLevel === 'high' ? 'red' : result.riskLevel === 'medium' ? 'yellow' : 'green')}`);
-    console.log(`  风险分值: ${result.riskScore} 分`);
+    console.log(`  风险等级: ${c(levelText[result.risk_level], result.risk_level === 'high' ? 'red' : result.risk_level === 'medium' ? 'yellow' : 'green')}`);
+    console.log(`  风险分值: ${result.risk_score} 分`);
     if (result.partialAssessment) {
       console.log(c('  注: 因照片缺失，为部分评估结果', 'yellow'));
     }
