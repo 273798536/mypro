@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppStore } from '@/store/appStore'
 import StatusBadge from '@/components/StatusBadge'
@@ -12,6 +12,9 @@ import {
   History,
   User,
   Sparkles,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react'
 import { formatDateTime } from '@/utils/format'
 import { ROLE_LABEL, STATUS_LABEL } from '@/types'
@@ -45,27 +48,132 @@ export default function NotesPage({ conflictId }: Props) {
   }, [activeId, fetchConflictDetail])
 
   const [note, setNote] = useState('')
-  const [authExpired, setAuthExpired] = useState(false)
-  const [authNote, setAuthNote] = useState('')
-  const [status, setStatus] = useState<ConflictStatus>('normal')
+  const [authExpired, setAuthExpiredState] = useState(false)
+  const [authNote, setAuthNoteState] = useState('')
+  const [status, setStatusState] = useState<ConflictStatus>('normal')
   const [saving, setSaving] = useState(false)
+  const [lastSavedAt, setLastSavedAt] = useState<string | null>(null)
+  const [saveResult, setSaveResult] = useState<{
+    ok: boolean
+    msg: string
+  } | null>(null)
 
   useEffect(() => {
     if (currentConflict) {
       setNote(currentConflict.note)
-      setAuthExpired(!!currentConflict.auth_expired)
-      setAuthNote(currentConflict.auth_note)
-      setStatus(currentConflict.status)
+      setAuthExpiredState(!!currentConflict.auth_expired)
+      setAuthNoteState(currentConflict.auth_note)
+      setStatusState(currentConflict.status)
+      setLastSavedAt(currentConflict.updated_at)
+      setSaveResult(null)
     }
   }, [currentConflict])
 
-  const canSave = !saving && !!currentConflict
+  const setAuthExpired = useCallback(
+    (v: boolean | ((prev: boolean) => boolean)) => {
+      setAuthExpiredState((prev) => {
+        const next = typeof v === 'function' ? (v as (p: boolean) => boolean)(prev) : v
+        if (next) {
+          setStatusState('auth_expired')
+        } else {
+          setAuthNoteState('')
+          setStatusState((s) => (s === 'auth_expired' ? 'normal' : s))
+        }
+        return next
+      })
+    },
+    [],
+  )
+
+  const setAuthNote = useCallback(
+    (v: string | ((prev: string) => string)) => {
+      setAuthNoteState((prev) => {
+        const next = typeof v === 'function' ? (v as (p: string) => string)(prev) : v
+        if (next.trim().length > 0) {
+          setAuthExpiredState(true)
+          setStatusState('auth_expired')
+        }
+        return next
+      })
+    },
+    [],
+  )
+
+  const setStatus = useCallback((s: ConflictStatus) => {
+    setStatusState(s)
+    if (s === 'auth_expired') {
+      setAuthExpiredState(true)
+    } else {
+      setAuthExpiredState(false)
+      setAuthNoteState('')
+    }
+  }, [])
+
+  const normalized = useMemo(() => {
+    const finalAuthExpired = authExpired || authNote.trim().length > 0
+    let finalStatus: ConflictStatus = status
+    if (finalAuthExpired) finalStatus = 'auth_expired'
+    let finalAuthNote = authNote
+    if (!finalAuthExpired) finalAuthNote = ''
+    return {
+      finalAuthExpired,
+      finalStatus,
+      finalAuthNote,
+    }
+  }, [authExpired, authNote, status])
+
+  const dirtyFlags = useMemo(() => {
+    if (!currentConflict) return { note: false, status: false, auth: false }
+    const base = currentConflict
+    return {
+      note: note !== base.note,
+      status:
+        normalized.finalStatus !== base.status ||
+        normalized.finalAuthExpired !== !!base.auth_expired ||
+        normalized.finalAuthNote !== base.auth_note,
+      auth:
+        normalized.finalAuthExpired !== !!base.auth_expired ||
+        normalized.finalAuthNote !== base.auth_note,
+    }
+  }, [note, normalized, currentConflict])
+
+  const isDirty = dirtyFlags.note || dirtyFlags.status || dirtyFlags.auth
+
+  const canSave = !saving && !!currentConflict && isDirty
+
+  const statusMismatchBeforeNormalize = useMemo(() => {
+    const authFilled = authExpired || authNote.trim().length > 0
+    return authFilled && status !== 'auth_expired'
+  }, [authExpired, authNote, status])
 
   const handleSave = async () => {
     if (!currentConflict || !canSave) return
     setSaving(true)
-    await updateConflict(currentConflict.id, { note, authExpired, authNote, status })
+    setSaveResult(null)
+    const patch = {
+      note,
+      authExpired: normalized.finalAuthExpired,
+      authNote: normalized.finalAuthNote,
+      status: normalized.finalStatus,
+      operatorRole: 'manager' as const,
+    }
+    const ok = await updateConflict(currentConflict.id, patch)
     setSaving(false)
+    setLastSavedAt(new Date().toISOString())
+    if (ok) {
+      setSaveResult({
+        ok: true,
+        msg:
+          normalized.finalStatus === 'auth_expired' && status !== normalized.finalStatus
+            ? '状态已自动归一为"授权到期"，所有字段已同步'
+            : '所有字段已按归一规则保存并同步',
+      })
+    } else {
+      setSaveResult({
+        ok: false,
+        msg: '保存失败，请查看上方 toast 提示并修正后重试',
+      })
+    }
   }
 
   if (!activeId) {
@@ -129,27 +237,53 @@ export default function NotesPage({ conflictId }: Props) {
                 <div>
                   <label className="flex items-center justify-between mb-2">
                     <span className="text-xs text-slate-400 font-medium">状态</span>
+                    {statusMismatchBeforeNormalize && (
+                      <span className="text-[10px] text-amber-300 flex items-center gap-1">
+                        <AlertTriangle className="w-3 h-3" />
+                        有授权字段：保存时将归一为"授权到期"
+                      </span>
+                    )}
                   </label>
                   <div className="flex flex-wrap gap-2">
-                    {(Object.keys(STATUS_LABEL) as ConflictStatus[]).map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => setStatus(s)}
-                        className={cn(
-                          'px-3 py-1.5 text-xs rounded-lg border transition-all',
-                          status === s
-                            ? s === 'normal'
-                              ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-200'
-                              : s === 'auth_expired'
-                                ? 'bg-violet-500/20 border-violet-400/40 text-violet-200'
-                                : 'bg-amber-500/20 border-amber-400/40 text-amber-200'
-                            : 'bg-white/[0.03] border-white/10 text-slate-400 hover:text-white',
-                        )}
-                      >
-                        {STATUS_LABEL[s]}
-                      </button>
-                    ))}
+                    {(Object.keys(STATUS_LABEL) as ConflictStatus[]).map((s) => {
+                      const active = normalized.finalStatus === s
+                      return (
+                        <button
+                          key={s}
+                          onClick={() => setStatus(s)}
+                          className={cn(
+                            'px-3 py-1.5 text-xs rounded-lg border transition-all relative',
+                            active
+                              ? s === 'normal'
+                                ? 'bg-emerald-500/20 border-emerald-400/40 text-emerald-200'
+                                : s === 'auth_expired'
+                                  ? 'bg-violet-500/20 border-violet-400/40 text-violet-200'
+                                  : 'bg-amber-500/20 border-amber-400/40 text-amber-200'
+                              : 'bg-white/[0.03] border-white/10 text-slate-400 hover:text-white',
+                          )}
+                        >
+                          {STATUS_LABEL[s]}
+                          {active && status !== s && (
+                            <span className="absolute -top-1.5 -right-1.5 text-[9px] px-1 rounded bg-amber-500 text-slate-900 font-medium">
+                              归一
+                            </span>
+                          )}
+                        </button>
+                      )
+                    })}
                   </div>
+                  {normalized.finalStatus !== status && (
+                    <p className="text-[11px] text-amber-300/80 mt-2 flex items-center gap-1.5">
+                      <Sparkles className="w-3 h-3" />
+                      保存时会从"
+                      <span className="font-medium">{STATUS_LABEL[status]}</span>
+                      "自动归为"
+                      <span className="font-medium text-violet-300">
+                        {STATUS_LABEL[normalized.finalStatus]}
+                      </span>
+                      "（因授权到期相关字段已填写）
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -157,7 +291,7 @@ export default function NotesPage({ conflictId }: Props) {
                     <span className="text-xs text-slate-400 font-medium">
                       冲突备注
                     </span>
-                    {note !== currentConflict.note && (
+                    {dirtyFlags.note && (
                       <span className="text-[10px] text-amber-300 flex items-center gap-1">
                         <Sparkles className="w-3 h-3" />
                         有未保存更改
@@ -185,44 +319,164 @@ export default function NotesPage({ conflictId }: Props) {
                       </span>
                     </div>
                     <button
-                      onClick={() => {
-                        setAuthExpired((v) => {
-                          const nv = !v
-                          if (nv && status === 'normal') setStatus('auth_expired')
-                          return nv
-                        })
-                      }}
+                      onClick={() => setAuthExpired(!authExpired)}
                       className={cn(
                         'relative w-11 h-6 rounded-full transition-colors',
-                        authExpired ? 'bg-violet-500' : 'bg-white/10',
+                        normalized.finalAuthExpired
+                          ? 'bg-violet-500'
+                          : 'bg-white/10',
                       )}
                     >
                       <span
                         className={cn(
                           'absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform',
-                          authExpired ? 'translate-x-[22px]' : 'translate-x-0.5',
+                          normalized.finalAuthExpired
+                            ? 'translate-x-[22px]'
+                            : 'translate-x-0.5',
                         )}
                       />
                     </button>
                   </div>
                   <textarea
-                    value={authNote}
+                    value={normalized.finalAuthNote}
                     onChange={(e) => setAuthNote(e.target.value)}
-                    disabled={!authExpired}
+                    disabled={!normalized.finalAuthExpired && !authNote}
                     rows={3}
                     placeholder={
-                      authExpired
-                        ? '填写授权备注：到期时间、申请进度、影响范围等...'
-                        : '开关开启后可填写。授权到期记录将在导出时单独拎出。'
+                      normalized.finalAuthExpired
+                        ? '填写授权备注：到期时间、申请进度、影响范围等...（一旦填写将自动置为授权到期状态）'
+                        : '开关开启后可填写。填写内容后，系统会自动把状态归为"授权到期"，并在导出时单独拎出。'
                     }
                     className={cn(
                       'w-full rounded-xl px-4 py-3 text-sm outline-none resize-none transition-colors',
-                      authExpired
+                      normalized.finalAuthExpired
                         ? 'bg-black/30 border border-violet-400/20 focus:border-violet-400/50 text-white placeholder:text-slate-600'
                         : 'bg-white/[0.02] border border-white/5 text-slate-500 placeholder:text-slate-600',
                     )}
                   />
+                  {!normalized.finalAuthExpired && authNote && (
+                    <p className="text-[11px] text-amber-300/80 mt-2 flex items-center gap-1">
+                      <AlertTriangle className="w-3 h-3" />
+                      检测到你在关闭开关时仍保留了授权备注——保存时会自动清空。
+                    </p>
+                  )}
                 </div>
+
+                <div
+                  className={cn(
+                    'rounded-2xl p-4 border',
+                    isDirty
+                      ? 'bg-amber-500/[0.04] border-amber-400/20'
+                      : 'bg-white/[0.02] border-white/5',
+                  )}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {isDirty ? (
+                        <AlertTriangle className="w-4 h-4 text-amber-300" />
+                      ) : (
+                        <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                      )}
+                      <span className="text-xs font-medium text-white">
+                        保存预览 · 归一后的字段
+                      </span>
+                    </div>
+                    <span
+                      className={cn(
+                        'text-[10px] px-2 py-0.5 rounded-full',
+                        isDirty
+                          ? 'bg-amber-500/15 text-amber-200 border border-amber-400/30'
+                          : 'bg-emerald-500/15 text-emerald-200 border border-emerald-400/30',
+                      )}
+                    >
+                      {isDirty ? '存在未保存变更' : '已与后端对齐'}
+                    </span>
+                  </div>
+                  <dl className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-slate-500">状态</dt>
+                      <dd
+                        className={cn(
+                          'font-medium',
+                          normalized.finalStatus === 'auth_expired'
+                            ? 'text-violet-300'
+                            : normalized.finalStatus === 'name_mismatch'
+                              ? 'text-amber-300'
+                              : 'text-emerald-300',
+                        )}
+                      >
+                        {STATUS_LABEL[normalized.finalStatus]}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-slate-500">授权到期</dt>
+                      <dd
+                        className={cn(
+                          'font-medium',
+                          normalized.finalAuthExpired
+                            ? 'text-violet-300'
+                            : 'text-slate-400',
+                        )}
+                      >
+                        {normalized.finalAuthExpired ? '是' : '否'}
+                      </dd>
+                    </div>
+                    <div className="col-span-2 flex gap-3">
+                      <dt className="text-slate-500 shrink-0">备注</dt>
+                      <dd className="text-slate-300 line-clamp-1 flex-1">
+                        {note || '—'}
+                      </dd>
+                    </div>
+                    <div className="col-span-2 flex gap-3">
+                      <dt className="text-slate-500 shrink-0">授权备注</dt>
+                      <dd className="text-violet-200/90 line-clamp-1 flex-1">
+                        {normalized.finalAuthNote || '—'}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+
+                {saveResult && (
+                  <div
+                    className={cn(
+                      'rounded-2xl p-3.5 flex items-start gap-2 border',
+                      saveResult.ok
+                        ? 'bg-emerald-500/[0.05] border-emerald-400/20'
+                        : 'bg-rose-500/[0.05] border-rose-400/20',
+                    )}
+                  >
+                    {saveResult.ok ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-300 mt-0.5 shrink-0" />
+                    ) : (
+                      <XCircle className="w-4 h-4 text-rose-300 mt-0.5 shrink-0" />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className={cn(
+                          'text-sm font-medium',
+                          saveResult.ok ? 'text-emerald-200' : 'text-rose-200',
+                        )}
+                      >
+                        {saveResult.ok ? '保存成功' : '保存失败'}
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {saveResult.msg}
+                        {lastSavedAt && saveResult.ok && (
+                          <>
+                            {'  ·  '}
+                            {formatDateTime(lastSavedAt)}
+                          </>
+                        )}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setSaveResult(null)}
+                      className="text-slate-500 hover:text-slate-300"
+                    >
+                      <XCircle className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
 
                 <div className="flex items-center justify-between pt-2">
                   <p className="text-[11px] text-slate-500">
@@ -239,7 +493,11 @@ export default function NotesPage({ conflictId }: Props) {
                     )}
                   >
                     <Save className="w-4 h-4" />
-                    {saving ? '保存中...' : '保存并同步'}
+                    {saving
+                      ? '保存中...'
+                      : !isDirty
+                        ? '无变更'
+                        : '保存并同步（已自动归一）'}
                   </button>
                 </div>
               </div>

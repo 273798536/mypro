@@ -52,7 +52,7 @@ router.get('/', (_req: Request, res: Response): void => {
   }
 
   rows.push('')
-  rows.push('授权到期记录')
+  rows.push('===== 授权到期记录 =====')
   rows.push(headers.map(escapeCsv).join(','))
 
   for (const r of authExpiredRecords) {
