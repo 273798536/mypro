@@ -196,11 +196,37 @@ def render_report_page(report) -> str:
     <div class="actions">
     <a class="btn" href="/report_txt">下载 TXT 版</a>
     <a class="btn secondary" href="/report_json">下载 JSON 版</a>
+    {_render_csv_btns(report)}
     </div>
     </div>
     """
     html += HTML_FOOTER
     return html
+
+
+def _render_csv_btns(report) -> str:
+    if report is None:
+        return ""
+    if report.is_incremental:
+        return f"""
+    <div style="margin-top: 12px;">
+      <p style="font-size: 13px; color: #909399; margin-bottom: 8px;">
+      【本次新增补录】针对刚补录的 2 条 &nbsp;|&nbsp;
+      【累计情况】合并基线后全量 {report.cumulative_total} 条
+      </p>
+      <a class="btn success" href="/csv_blocked_inc">CSV: 新增拦截样本 ({len(report.newly_blocked_ids)}条)</a>
+      <a class="btn" href="/csv_usable_inc">CSV: 新增可用样本 ({len(report.newly_usable_ids)}条)</a>
+      <div style="height: 8px;"></div>
+      <a class="btn success secondary" href="/csv_blocked_cum">CSV: 累计拦截样本 ({len(report.blocked_sample_ids)}条)</a>
+      <a class="btn secondary" href="/csv_usable_cum">CSV: 累计可用样本 ({len(report.usable_sample_ids)}条)</a>
+    </div>
+    """
+    return f"""
+    <div style="margin-top: 12px;">
+      <a class="btn success" href="/csv_blocked">CSV: 拦截样本 ({len(report.blocked_sample_ids)}条)</a>
+      <a class="btn secondary" href="/csv_usable">CSV: 可用样本 ({len(report.usable_sample_ids)}条)</a>
+    </div>
+    """
 
 
 def render_leaks_page(report) -> str:
@@ -322,12 +348,18 @@ class QADedupHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(content.encode("utf-8"))
 
-    def _send_text(self, content: str, filename: str = "report.txt"):
+    def _send_text(self, content: str, filename: str = "report.txt", content_type: Optional[str] = None):
         self.send_response(200)
-        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        ct = content_type or "text/plain; charset=utf-8"
+        self.send_header("Content-Type", ct)
         self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
         self.end_headers()
-        self.wfile.write(content.encode("utf-8"))
+        encoded = content.encode("utf-8")
+        if "csv" in ct and "utf-8-sig" not in ct:
+            encoded = "\ufeff".encode("utf-8") + encoded
+        if "utf-8-sig" in ct:
+            encoded = "\ufeff".encode("utf-8") + content.encode("utf-8")
+        self.wfile.write(encoded)
 
     def _send_json(self, data: Any, filename: str = "report.json"):
         self.send_response(200)
@@ -365,8 +397,49 @@ class QADedupHandler(http.server.BaseHTTPRequestHandler):
 
         elif path == "/report_json":
             if _g_latest_report:
-                self._send_json(_g_latest_report.to_dict(),
-                               f"qa_report_{_g_latest_report.version_tag}.json")
+                exporter = ReportExporter(_g_latest_report)
+                self._send_text(exporter.export_json(),
+                               f"qa_report_{_g_latest_report.version_tag}.json",
+                               content_type="application/json; charset=utf-8")
+            else:
+                self._redirect("/")
+
+        elif path.startswith("/csv_"):
+            if _g_latest_report:
+                exporter = ReportExporter(_g_latest_report)
+                mode = "incremental" if _g_latest_report.is_incremental else "full"
+                csv_map = {}
+                if _g_latest_report.is_incremental:
+                    csv_map = {
+                        "/csv_blocked_inc": ("blocked_incremental", ["sample_id", "block_reason", "severity"],
+                                            exporter._build_blocked_rows("incremental")),
+                        "/csv_blocked_cum": ("blocked_cumulative", ["sample_id", "block_reason", "severity"],
+                                            exporter._build_blocked_rows("cumulative")),
+                        "/csv_usable_inc": ("usable_incremental", ["sample_id"],
+                                           exporter._build_usable_rows("incremental")),
+                        "/csv_usable_cum": ("usable_cumulative", ["sample_id"],
+                                           exporter._build_usable_rows("cumulative")),
+                    }
+                else:
+                    csv_map = {
+                        "/csv_blocked": ("blocked", ["sample_id", "block_reason", "severity"],
+                                        exporter._build_blocked_rows("full")),
+                        "/csv_usable": ("usable", ["sample_id"],
+                                       exporter._build_usable_rows("full")),
+                    }
+                key = path
+                if key in csv_map:
+                    fname, header, rows = csv_map[key]
+                    buf = io.StringIO()
+                    import csv
+                    writer = csv.writer(buf)
+                    writer.writerow(header)
+                    writer.writerows(rows)
+                    filename = f"qa_{fname}_{_g_latest_report.version_tag}.csv"
+                    self._send_text(buf.getvalue(), filename,
+                                    content_type="text/csv; charset=utf-8-sig")
+                    return
+                self._send_html("<h1>404 Not Found</h1>", 404)
             else:
                 self._redirect("/")
 

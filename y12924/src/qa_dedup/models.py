@@ -191,6 +191,8 @@ class WorkflowReport:
     group_metrics: List[GroupMetrics] = field(default_factory=list)
     leak_records: List[LeakRecord] = field(default_factory=list)
     dedup_records: List[DedupRecord] = field(default_factory=list)
+    cumulative_leak_records: List[LeakRecord] = field(default_factory=list)
+    cumulative_dedup_records: List[DedupRecord] = field(default_factory=list)
     template_removed_count: int = 0
     blocked_sample_ids: List[str] = field(default_factory=list)
     usable_sample_ids: List[str] = field(default_factory=list)
@@ -215,6 +217,8 @@ class WorkflowReport:
             "group_metrics": [gm.to_dict() for gm in self.group_metrics],
             "leak_records": [lr.to_dict() for lr in self.leak_records],
             "dedup_records": [dr.to_dict() for dr in self.dedup_records],
+            "cumulative_leak_records": [lr.to_dict() for lr in self.cumulative_leak_records],
+            "cumulative_dedup_records": [dr.to_dict() for dr in self.cumulative_dedup_records],
             "template_removed_count": self.template_removed_count,
             "blocked_sample_ids": self.blocked_sample_ids,
             "usable_sample_ids": self.usable_sample_ids,

@@ -1,0 +1,4 @@
+﻿sample_id,block_reason,severity
+c81d2428-0a8f-4f3f-91ad-428e43747898,训练验证泄漏,blocker
+c81d2428-0a8f-4f3f-91ad-428e43747898,重复样本,warning
+b52bba8f-bd01-4b6e-9e37-9219feddf45e,重复样本,warning

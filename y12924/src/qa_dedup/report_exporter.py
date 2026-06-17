@@ -3,6 +3,8 @@
 from typing import List, Optional
 import json
 import os
+import csv
+import io
 from datetime import datetime
 
 from .models import WorkflowReport, LeakRecord, DedupRecord, GroupMetrics, QASample
@@ -208,6 +210,92 @@ class ReportExporter:
     def export_json(self, indent: int = 2) -> str:
         return self.report.to_json(indent=indent, ensure_ascii=False)
 
+    def _build_blocked_rows(self, mode: str = "auto") -> List[List[str]]:
+        rows = []
+        report = self.report
+        if report.is_incremental and mode == "cumulative":
+            reason_map = {}
+            for sid in report.blocked_sample_ids:
+                reason_map[sid] = {"reasons": [], "max_sev": "warning"}
+            for lr in report.cumulative_leak_records:
+                if lr.val_sample_id in reason_map:
+                    reason_map[lr.val_sample_id]["reasons"].append("训练验证泄漏")
+                    if lr.severity.value == "blocker":
+                        reason_map[lr.val_sample_id]["max_sev"] = "blocker"
+            for dr in report.cumulative_dedup_records:
+                if dr.removed_sample_id in reason_map:
+                    reason_map[dr.removed_sample_id]["reasons"].append("重复样本")
+            for sid, info in reason_map.items():
+                r = "；".join(info["reasons"]) if info["reasons"] else "其他原因"
+                rows.append([sid, r, info["max_sev"]])
+            return rows
+        if report.is_incremental and mode in ("auto", "incremental"):
+            for lr in report.leak_records:
+                if lr.val_sample_id in set(report.newly_blocked_ids):
+                    rows.append([lr.val_sample_id, "训练验证泄漏", lr.severity.value])
+            for dr in report.dedup_records:
+                if dr.removed_sample_id in set(report.newly_blocked_ids):
+                    rows.append([dr.removed_sample_id, "重复样本", dr.severity.value])
+            for sid in report.newly_blocked_ids:
+                found = any(r[0] == sid for r in rows)
+                if not found:
+                    rows.append([sid, "其他原因拦截", "warning"])
+            return rows
+        for lr in report.leak_records:
+            rows.append([lr.val_sample_id, "训练验证泄漏", lr.severity.value])
+        for dr in report.dedup_records:
+            rows.append([dr.removed_sample_id, "重复样本", dr.severity.value])
+        return rows
+
+    def _write_csv(self, path: str, header: List[str], rows: List[List[str]]):
+        with open(path, "w", encoding="utf-8-sig", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            writer.writerows(rows)
+
+    def _build_usable_rows(self, mode: str = "auto") -> List[List[str]]:
+        report = self.report
+        ids = report.newly_usable_ids if (report.is_incremental and mode in ("auto", "incremental")) else report.usable_sample_ids
+        rows = []
+        return [[sid] for sid in ids]
+
+    def export_csv_files(self, output_dir: str, filename_prefix: str) -> dict:
+        os.makedirs(output_dir, exist_ok=True)
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        result = {}
+        report = self.report
+        if report.is_incremental:
+            inc_blocked_path = os.path.join(output_dir, f"{filename_prefix}_blocked_incremental_{ts}.csv")
+            self._write_csv(inc_blocked_path,
+                           ["sample_id", "block_reason", "severity"],
+                           self._build_blocked_rows("incremental"))
+            result["blocked_incremental_csv"] = inc_blocked_path
+
+            cum_blocked_path = os.path.join(output_dir, f"{filename_prefix}_blocked_cumulative_{ts}.csv")
+            self._write_csv(cum_blocked_path,
+                           ["sample_id", "block_reason", "severity"],
+                           self._build_blocked_rows("cumulative"))
+            result["blocked_cumulative_csv"] = cum_blocked_path
+
+            inc_usable_path = os.path.join(output_dir, f"{filename_prefix}_usable_incremental_{ts}.csv")
+            self._write_csv(inc_usable_path, ["sample_id"], self._build_usable_rows("incremental"))
+            result["usable_incremental_csv"] = inc_usable_path
+
+            cum_usable_path = os.path.join(output_dir, f"{filename_prefix}_usable_cumulative_{ts}.csv")
+            self._write_csv(cum_usable_path, ["sample_id"], self._build_usable_rows("cumulative"))
+            result["usable_cumulative_csv"] = cum_usable_path
+        else:
+            blocked_path = os.path.join(output_dir, f"{filename_prefix}_blocked_{ts}.csv")
+            self._write_csv(blocked_path,
+                           ["sample_id", "block_reason", "severity"],
+                           self._build_blocked_rows("full"))
+            result["blocked_csv"] = blocked_path
+
+            usable_path = os.path.join(output_dir, f"{filename_prefix}_usable_{ts}.csv")
+            self._write_csv(usable_path, ["sample_id"], self._build_usable_rows("full"))
+            result["usable_csv"] = usable_path
+        return result
+
     def export_for_training_team(
         self,
         output_dir: str,
@@ -222,15 +310,9 @@ class ReportExporter:
             f.write(self.export_text_report())
         with open(json_path, "w", encoding="utf-8") as f:
             f.write(self.export_json())
-        blocked_csv_path = os.path.join(output_dir, f"{prefix}_blocked_{ts}.csv")
-        with open(blocked_csv_path, "w", encoding="utf-8") as f:
-            f.write("sample_id,block_reason,severity\n")
-            for lr in self.report.leak_records:
-                f.write(f"{lr.val_sample_id},训练验证泄漏,{lr.severity.value}\n")
-            for dr in self.report.dedup_records:
-                f.write(f"{dr.removed_sample_id},重复样本,{dr.severity.value}\n")
-        return {
+        result = {
             "text_report": text_path,
             "json_report": json_path,
-            "blocked_csv": blocked_csv_path,
         }
+        result.update(self.export_csv_files(output_dir, prefix))
+        return result

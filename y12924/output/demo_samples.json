@@ -2,7 +2,7 @@
   {
     "question": "请问深度学习和机器学习有什么区别？",
     "answer": "好的，深度学习是机器学习的一个子集，主要基于神经网络。希望能帮到你。",
-    "sample_id": "704278f4-8757-42d1-b497-d762b3e1c441",
+    "sample_id": "3f544708-48da-451d-9e3d-2e615cb8d2c0",
     "split": "train",
     "source": "内部题库v1",
     "group": "机器学习基础",
@@ -12,13 +12,13 @@
     "original_answer": null,
     "human_notes": [],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340212",
-    "updated_at": "2026-06-17T13:38:59.340231"
+    "created_at": "2026-06-18T04:19:50.034093",
+    "updated_at": "2026-06-18T04:19:50.034118"
   },
   {
     "question": "你好请问如何理解梯度下降算法？",
     "answer": "没问题，梯度下降是一种迭代优化算法，用于寻找损失函数的最小值。",
-    "sample_id": "0b2e62a5-0149-4b54-b318-117254dba5d3",
+    "sample_id": "48dd8e36-75ec-4b42-b657-963d9a6c3b80",
     "split": "train",
     "source": "内部题库v1",
     "group": "机器学习基础",
@@ -28,13 +28,13 @@
     "original_answer": null,
     "human_notes": [],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340257",
-    "updated_at": "2026-06-17T13:38:59.340260"
+    "created_at": "2026-06-18T04:19:50.034139",
+    "updated_at": "2026-06-18T04:19:50.034142"
   },
   {
     "question": "请解释一下 Transformer 模型中的自注意力机制",
     "answer": "自注意力机制允许模型在处理每个词时关注输入序列中的其他所有位置",
-    "sample_id": "2e7bdc5b-dc8d-4c0f-930e-5a5ceac931af",
+    "sample_id": "d983d73e-0bc6-468d-a7b4-f3d8d513eaa6",
     "split": "train",
     "source": "评测题库",
     "group": "NLP 进阶",
@@ -45,20 +45,20 @@
     "human_notes": [
       {
         "content": "这个例子是同事小李从论文里摘的，记得标注来源",
-        "note_id": "40a3d5d3-6628-4cbd-b631-0ba52b51f4b6",
+        "note_id": "897283ba-a3d4-4ea4-838d-2e1ab393c39a",
         "author": "算法PM",
-        "created_at": "2026-06-17T13:38:59.340297",
+        "created_at": "2026-06-18T04:19:50.034176",
         "preserved_original": "这个例子是同事小李从论文里摘的，记得标注来源"
       }
     ],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340276",
-    "updated_at": "2026-06-17T13:38:59.340302"
+    "created_at": "2026-06-18T04:19:50.034156",
+    "updated_at": "2026-06-18T04:19:50.034181"
   },
   {
     "question": "请解释一下 Transformer 模型中的自注意力机制",
     "answer": "自注意力机制允许模型在处理每个词时关注输入序列中的其他所有位置",
-    "sample_id": "3ae4cb41-d22b-4a95-ab74-d1ce0516dc9b",
+    "sample_id": "372133db-9f90-4f22-8204-3e05914795c6",
     "split": "val",
     "source": "评测题库补录",
     "group": "NLP 进阶",
@@ -69,20 +69,20 @@
     "human_notes": [
       {
         "content": "这条和训练集那条好像重复了，等下人工核对一下",
-        "note_id": "0fa9e605-d7d4-401a-b424-3a83236ea2b5",
+        "note_id": "01e5631f-3bc9-4d47-b140-180fea0b3c68",
         "author": "标注员小王",
-        "created_at": "2026-06-17T13:38:59.340330",
+        "created_at": "2026-06-18T04:19:50.034215",
         "preserved_original": "这条和训练集那条好像重复了，等下人工核对一下"
       }
     ],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340316",
-    "updated_at": "2026-06-17T13:38:59.340334"
+    "created_at": "2026-06-18T04:19:50.034195",
+    "updated_at": "2026-06-18T04:19:50.034219"
   },
   {
     "question": "什么是过拟合，怎么防止过拟合？",
     "answer": "过拟合是指模型在训练集上表现很好，但在测试集上表现较差。常用方法有正则化、数据增强、早停等。",
-    "sample_id": "ee08a64f-3635-48e0-8b64-67fe2a4bf6c3",
+    "sample_id": "34fc33d8-f2d9-4aab-9290-03f1c71d6e00",
     "split": "train",
     "source": "内部题库v1",
     "group": "机器学习基础",
@@ -92,13 +92,13 @@
     "original_answer": null,
     "human_notes": [],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340346",
-    "updated_at": "2026-06-17T13:38:59.340349"
+    "created_at": "2026-06-18T04:19:50.034232",
+    "updated_at": "2026-06-18T04:19:50.034235"
   },
   {
     "question": "什么是过拟合，怎么防止过拟合？",
     "answer": "过拟合是指模型在训练集上表现很好，但在测试集上表现较差。常用方法有正则化、数据增强、早停等。",
-    "sample_id": "73b7942c-385b-41aa-a084-03ede1d1b813",
+    "sample_id": "f4184f5a-e8a9-437b-96f6-4ca14009d432",
     "split": "train",
     "source": "内部题库v2",
     "group": "机器学习基础",
@@ -108,13 +108,13 @@
     "original_answer": null,
     "human_notes": [],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340361",
-    "updated_at": "2026-06-17T13:38:59.340364"
+    "created_at": "2026-06-18T04:19:50.034249",
+    "updated_at": "2026-06-18T04:19:50.034251"
   },
   {
     "question": "请说明 CNN 和 RNN 的主要区别",
     "answer": "CNN 擅长处理空间结构数据，RNN 擅长处理序列数据。",
-    "sample_id": "217f4064-d4e1-40d1-aad2-5326769a6365",
+    "sample_id": "b581d467-dd88-42d6-a08d-1f1d81749811",
     "split": "val",
     "source": "评测题库",
     "group": "深度学习基础",
@@ -124,13 +124,13 @@
     "original_answer": null,
     "human_notes": [],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340377",
-    "updated_at": "2026-06-17T13:38:59.340379"
+    "created_at": "2026-06-18T04:19:50.034264",
+    "updated_at": "2026-06-18T04:19:50.034267"
   },
   {
     "question": "BERT 模型的预训练任务有哪些？",
     "answer": "BERT 的预训练任务主要包括掩码语言模型（MLM）和下一句预测（NSP）。",
-    "sample_id": "55ed11f0-da35-4747-a8f4-198f2eabc8a4",
+    "sample_id": "7b8881b7-87af-4178-90cf-6cd5f994740c",
     "split": "test",
     "source": "评测题库",
     "group": "NLP 进阶",
@@ -140,13 +140,13 @@
     "original_answer": null,
     "human_notes": [],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340392",
-    "updated_at": "2026-06-17T13:38:59.340394"
+    "created_at": "2026-06-18T04:19:50.034280",
+    "updated_at": "2026-06-18T04:19:50.034283"
   },
   {
     "question": "你好，请问什么是词嵌入？谢谢！",
     "answer": "好的，词嵌入是将词汇映射为低维稠密向量的技术。如有疑问请随时追问。",
-    "sample_id": "0e63c399-dfb6-406a-9a41-20352c8864d6",
+    "sample_id": "76f4a199-cfe3-4f45-8075-fbca39d0cedf",
     "split": "train",
     "source": "内部题库v1",
     "group": "NLP 基础",
@@ -156,13 +156,13 @@
     "original_answer": null,
     "human_notes": [],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340411",
-    "updated_at": "2026-06-17T13:38:59.340414"
+    "created_at": "2026-06-18T04:19:50.034296",
+    "updated_at": "2026-06-18T04:19:50.034298"
   },
   {
     "question": "请解释一下什么是词向量",
     "answer": "词向量和词嵌入是同一概念，将词表示为向量。",
-    "sample_id": "61bc1cac-e02d-4974-8ec1-5f845edee3e0",
+    "sample_id": "55987788-0139-4ab0-9b37-e7c9a1f01183",
     "split": "val",
     "source": "评测题库",
     "group": "NLP 基础",
@@ -172,7 +172,7 @@
     "original_answer": null,
     "human_notes": [],
     "metadata": {},
-    "created_at": "2026-06-17T13:38:59.340427",
-    "updated_at": "2026-06-17T13:38:59.340430"
+    "created_at": "2026-06-18T04:19:50.034311",
+    "updated_at": "2026-06-18T04:19:50.034313"
   }
 ]

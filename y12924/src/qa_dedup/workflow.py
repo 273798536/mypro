@@ -229,6 +229,7 @@ class WorkflowManager:
             if lr.val_sample_id in new_sample_ids or lr.train_sample_id in new_sample_ids
         ]
         report.leak_records = new_leak_records
+        report.cumulative_leak_records = all_leak_records
         new_leak_val_ids = {lr.val_sample_id for lr in new_leak_records}
         newly_blocked = dedup_blocked_new | new_leak_val_ids
         report.newly_blocked_ids = sorted(newly_blocked)
@@ -237,6 +238,7 @@ class WorkflowManager:
         report.total_blocked = len(newly_blocked)
         report.total_usable = len(newly_usable_ids)
         all_leak_val_ids = {lr.val_sample_id for lr in all_leak_records}
+        report.cumulative_dedup_records = list(self.deduper._dedup_records)
         all_dedup_blocked = self.deduper.get_blocked_ids()
         cumulative_blocked = all_leak_val_ids | all_dedup_blocked
         report.cumulative_total = len(self.samples)

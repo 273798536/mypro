@@ -1,0 +1,4 @@
+﻿sample_id,block_reason,severity
+3adf1076-8501-4207-980c-13d233a803db,训练验证泄漏,blocker
+867e4659-6fc1-40e4-a72d-82d83b2e3d9c,重复样本,warning
+9b35a856-924f-4279-8233-87746b52ef64,训练验证泄漏；重复样本,blocker

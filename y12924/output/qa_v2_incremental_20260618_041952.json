@@ -1,0 +1,167 @@
+{
+  "report_id": "2ab962fb-a857-40cc-a9a0-90b5b1069584",
+  "generated_at": "2026-06-18T04:19:52.438381",
+  "version_tag": "v1",
+  "is_incremental": true,
+  "report_mode": "incremental",
+  "total_processed": 2,
+  "total_usable": 1,
+  "total_blocked": 1,
+  "cumulative_total": 12,
+  "cumulative_usable": 9,
+  "cumulative_blocked": 3,
+  "group_metrics": [
+    {
+      "group_name": "NLP 进阶",
+      "total_samples": 1,
+      "usable_samples": 0,
+      "blocked_samples": 1,
+      "train_count": 0,
+      "val_count": 1,
+      "leak_count": 1,
+      "duplicate_count": 0,
+      "template_count": 1
+    },
+    {
+      "group_name": "深度学习基础",
+      "total_samples": 1,
+      "usable_samples": 1,
+      "blocked_samples": 0,
+      "train_count": 1,
+      "val_count": 0,
+      "leak_count": 0,
+      "duplicate_count": 0,
+      "template_count": 0
+    }
+  ],
+  "leak_records": [
+    {
+      "train_sample_id": "3af7ef1e-bf7c-4a21-96d9-4fc5b6b08384",
+      "val_sample_id": "3adf1076-8501-4207-980c-13d233a803db",
+      "train_question_preview": "Transformer 模型中的自注意力机制",
+      "val_question_preview": "Transformer 模型中的自注意力机制，详细一点",
+      "similarity_score": 0.913,
+      "leak_reason": "整体相似度 91% ≥ 阈值 88%",
+      "plain_text_explanation": "【训练验证泄漏拦截说明】\n这条样本被拦下的原因是：它和训练集中的另一条样本在问题内容上相似度高达 91%，\n如果同时出现在训练集和验证集里，模型会在验证时「见过」这道题，验证分数就虚高，不能真实反映模型能力。\n\n具体情况：\n• 训练集样本 (ID: 3af7ef1e...)，分组：NLP 进阶\n  问题摘要：Transformer 模型中的自注意力机制\n• 验证集样本 (ID: 3adf1076...)，分组：NLP 进阶\n  问题摘要：Transformer 模型中的自注意力机制，详细一点\n\n处理建议：二选一保留即可，推荐保留来源更可靠、人工标注更完整的那条。\n\n相关人工备注（原话保留，未做改写）：\n【训练集人工备注·原话保留】这个例子是同事小李从论文里摘的，记得标注来源\n【验证集人工备注·原话保留】这是补录的，注意检查是否和训练集冲突",
+      "leak_id": "87773f3d-5fb3-4d12-9f14-3d7e2081cbdb",
+      "issue_type": "train_val_leak",
+      "severity": "blocker",
+      "matched_fields": [
+        "question"
+      ],
+      "preserved_human_notes": [
+        "这个例子是同事小李从论文里摘的，记得标注来源",
+        "这是补录的，注意检查是否和训练集冲突"
+      ],
+      "created_at": "2026-06-18T04:19:52.452430",
+      "metadata": {
+        "question_similarity": 0.913,
+        "answer_similarity": 0.6889
+      }
+    }
+  ],
+  "dedup_records": [],
+  "cumulative_leak_records": [
+    {
+      "train_sample_id": "3af7ef1e-bf7c-4a21-96d9-4fc5b6b08384",
+      "val_sample_id": "9b35a856-924f-4279-8233-87746b52ef64",
+      "train_question_preview": "Transformer 模型中的自注意力机制",
+      "val_question_preview": "Transformer 模型中的自注意力机制",
+      "similarity_score": 1.0,
+      "leak_reason": "问题相似度 100% ≥ 阈值 92%；回答相似度 100% ≥ 阈值 90%",
+      "plain_text_explanation": "【训练验证泄漏拦截说明】\n这条样本被拦下的原因是：它和训练集中的另一条样本在问题内容、回答内容上相似度高达 100%，\n如果同时出现在训练集和验证集里，模型会在验证时「见过」这道题，验证分数就虚高，不能真实反映模型能力。\n\n具体情况：\n• 训练集样本 (ID: 3af7ef1e...)，分组：NLP 进阶\n  问题摘要：Transformer 模型中的自注意力机制\n• 验证集样本 (ID: 9b35a856...)，分组：NLP 进阶\n  问题摘要：Transformer 模型中的自注意力机制\n\n处理建议：二选一保留即可，推荐保留来源更可靠、人工标注更完整的那条。\n\n相关人工备注（原话保留，未做改写）：\n【训练集人工备注·原话保留】这个例子是同事小李从论文里摘的，记得标注来源\n【验证集人工备注·原话保留】这条和训练集那条好像重复了，等下人工核对一下",
+      "leak_id": "f44b6ca3-2025-4139-9ec7-92b3121f9ee3",
+      "issue_type": "train_val_leak",
+      "severity": "blocker",
+      "matched_fields": [
+        "question",
+        "answer"
+      ],
+      "preserved_human_notes": [
+        "这个例子是同事小李从论文里摘的，记得标注来源",
+        "这条和训练集那条好像重复了，等下人工核对一下"
+      ],
+      "created_at": "2026-06-18T04:19:52.445470",
+      "metadata": {
+        "question_similarity": 1.0,
+        "answer_similarity": 1.0
+      }
+    },
+    {
+      "train_sample_id": "3af7ef1e-bf7c-4a21-96d9-4fc5b6b08384",
+      "val_sample_id": "3adf1076-8501-4207-980c-13d233a803db",
+      "train_question_preview": "Transformer 模型中的自注意力机制",
+      "val_question_preview": "Transformer 模型中的自注意力机制，详细一点",
+      "similarity_score": 0.913,
+      "leak_reason": "整体相似度 91% ≥ 阈值 88%",
+      "plain_text_explanation": "【训练验证泄漏拦截说明】\n这条样本被拦下的原因是：它和训练集中的另一条样本在问题内容上相似度高达 91%，\n如果同时出现在训练集和验证集里，模型会在验证时「见过」这道题，验证分数就虚高，不能真实反映模型能力。\n\n具体情况：\n• 训练集样本 (ID: 3af7ef1e...)，分组：NLP 进阶\n  问题摘要：Transformer 模型中的自注意力机制\n• 验证集样本 (ID: 3adf1076...)，分组：NLP 进阶\n  问题摘要：Transformer 模型中的自注意力机制，详细一点\n\n处理建议：二选一保留即可，推荐保留来源更可靠、人工标注更完整的那条。\n\n相关人工备注（原话保留，未做改写）：\n【训练集人工备注·原话保留】这个例子是同事小李从论文里摘的，记得标注来源\n【验证集人工备注·原话保留】这是补录的，注意检查是否和训练集冲突",
+      "leak_id": "87773f3d-5fb3-4d12-9f14-3d7e2081cbdb",
+      "issue_type": "train_val_leak",
+      "severity": "blocker",
+      "matched_fields": [
+        "question"
+      ],
+      "preserved_human_notes": [
+        "这个例子是同事小李从论文里摘的，记得标注来源",
+        "这是补录的，注意检查是否和训练集冲突"
+      ],
+      "created_at": "2026-06-18T04:19:52.452430",
+      "metadata": {
+        "question_similarity": 0.913,
+        "answer_similarity": 0.6889
+      }
+    }
+  ],
+  "cumulative_dedup_records": [
+    {
+      "kept_sample_id": "3af7ef1e-bf7c-4a21-96d9-4fc5b6b08384",
+      "removed_sample_id": "9b35a856-924f-4279-8233-87746b52ef64",
+      "kept_question_preview": "Transformer 模型中的自注意力机制",
+      "removed_question_preview": "Transformer 模型中的自注意力机制",
+      "similarity_score": 1.0,
+      "dedup_reason": "内容哈希完全一致（精确去重）",
+      "dedup_id": "bd8ed966-cfe2-4725-9c41-49223d8dd5a4",
+      "issue_type": "duplicate",
+      "severity": "warning",
+      "is_incremental": false,
+      "created_at": "2026-06-18T04:19:52.420867"
+    },
+    {
+      "kept_sample_id": "2923b427-3e50-4a2d-9ac1-8f2595cf3de6",
+      "removed_sample_id": "867e4659-6fc1-40e4-a72d-82d83b2e3d9c",
+      "kept_question_preview": "什么是过拟合，怎么防止过拟合？",
+      "removed_question_preview": "什么是过拟合，怎么防止过拟合？",
+      "similarity_score": 1.0,
+      "dedup_reason": "内容哈希完全一致（精确去重）",
+      "dedup_id": "cdf2ad3a-ccec-44b1-b18a-712a52f07e9a",
+      "issue_type": "duplicate",
+      "severity": "warning",
+      "is_incremental": false,
+      "created_at": "2026-06-18T04:19:52.421186"
+    }
+  ],
+  "template_removed_count": 1,
+  "blocked_sample_ids": [
+    "3adf1076-8501-4207-980c-13d233a803db",
+    "867e4659-6fc1-40e4-a72d-82d83b2e3d9c",
+    "9b35a856-924f-4279-8233-87746b52ef64"
+  ],
+  "usable_sample_ids": [
+    "2860ce24-5cfe-47b1-a158-193be326d6c4",
+    "6a7a023a-2a7a-4a9f-b19f-c347df377642",
+    "3af7ef1e-bf7c-4a21-96d9-4fc5b6b08384",
+    "2923b427-3e50-4a2d-9ac1-8f2595cf3de6",
+    "591e6338-db28-404e-a554-db084e41d4cf",
+    "a0711a6b-0d95-47f1-937e-8dc008c7418a",
+    "8a5efeea-7a45-4e15-807d-6b1827641df3",
+    "af0cc599-34d3-4435-89a7-091a53e37c99",
+    "bfed8b7f-c5b2-4a94-bcf5-ae28a48f83c7"
+  ],
+  "newly_blocked_ids": [
+    "3adf1076-8501-4207-980c-13d233a803db"
+  ],
+  "newly_usable_ids": [
+    "bfed8b7f-c5b2-4a94-bcf5-ae28a48f83c7"
+  ],
+  "export_summary": "增量补录样本处理汇总（版本 v1）\n本次新增补录样本：2 条\n本次新增可用：1 条\n本次新增拦截：1 条\n  - 新增训练验证泄漏：1 条\n  - 新增重复样本：0 条\n  - 本次模板化清理：1 条\n\n【累计情况】\n累计样本总数：12 条\n累计可用：9 条\n累计拦截：3 条\n\n【本次补录分组明细】\n  [NLP 进阶] 本次新增 1 条，可用 0 条，拦截 1 条（泄漏 1，重复 0）\n  [深度学习基础] 本次新增 1 条，可用 1 条，拦截 0 条（泄漏 0，重复 0）\n\n注意：本报告为增量视角，仅展示本次补录样本的情况。\n详细拦截记录见下方各条目，每条均附拦截原因和人工备注原话。"
+}
