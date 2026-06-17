@@ -1,0 +1,332 @@
+{
+  "generated_at": "2026-06-18T03:04:52.831965",
+  "record_count": 10,
+  "allowed_labels": [
+    "正面",
+    "负面",
+    "中性",
+    "提问",
+    "指令"
+  ],
+  "records": [
+    {
+      "record_id": "rec_6e77c21e1c08",
+      "prompt": "用户：这款产品质量怎么样？",
+      "response": "亲，这款产品采用优质材料制作，经过严格质检，用户反馈都很好的~",
+      "label": "正面",
+      "source_material": {
+        "source_id": "src_001",
+        "file_path": "/data/raw/202606/电商评论_6月第2周.xlsx",
+        "sheet_name": "Sheet1",
+        "row_number": 42,
+        "raw_content": "用户：这款产品质量怎么样？\n客服：亲，这款产品采用优质材料制作，经过严格质检，用户反馈都很好的~",
+        "retrieved_at": "2026-06-18T03:04:52.831517"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831601",
+      "modified_at": "2026-06-18T03:04:52.831602",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "72117454e0b5c59d",
+      "content_hash": "35e49b9f1901f2283b0367bc96480460158cdf26570c7fed6306c94917401652",
+      "tags": [],
+      "group_key": "电商_产品咨询",
+      "total_tokens": 12
+    },
+    {
+      "record_id": "rec_bd6a28fb4a56",
+      "prompt": "用户：这个价格能再便宜点吗？#TODO 标注员备注：可能是负面，也可能只是议价，待确认",
+      "response": "// 客服：已经是活动价了哦~ 另外赠送小礼品一份",
+      "label": "待确认_可能负面",
+      "source_material": {
+        "source_id": "src_002",
+        "file_path": "/data/raw/202606/客服对话_6月第2周.jsonl",
+        "sheet_name": null,
+        "row_number": 156,
+        "raw_content": "用户：这个价格能再便宜点吗？#TODO 标注员备注：可能是负面，也可能只是议价，待确认 // 客服：已经是活动价了哦~",
+        "retrieved_at": "2026-06-18T03:04:52.831656"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831671",
+      "modified_at": "2026-06-18T03:04:52.831671",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "42dc7ac126e0645c",
+      "content_hash": "7d12dfaa35020a11f56e6e33c9dcee4b9ed2f30d94a7dbcd3e772329b6ba9f3d",
+      "tags": [
+        "has_notes",
+        "needs_review"
+      ],
+      "group_key": "客服_价格咨询",
+      "total_tokens": 18
+    },
+    {
+      "record_id": "rec_e767746e6d08",
+      "prompt": "",
+      "response": "",
+      "label": "",
+      "source_material": {
+        "source_id": "src_003",
+        "file_path": "/data/raw/202606/用户反馈_6月第2周.csv",
+        "sheet_name": null,
+        "row_number": 89,
+        "raw_content": "用户：垃圾产品，再也不买了！验证集测试结果显示ground truth应该是负面，但这里标注成了正面，明显的train_val leak",
+        "retrieved_at": "2026-06-18T03:04:52.831690"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831701",
+      "modified_at": "2026-06-18T03:04:52.831702",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "cbe5cfdf7c2118a9",
+      "content_hash": "47dcf461c91fa3252cc04fbf6ceeece4fb4fa1549c7ed2bc7e2d7fc9866f44ae",
+      "tags": [
+        "empty_fields",
+        "high_risk"
+      ],
+      "group_key": "用户反馈_投诉",
+      "total_tokens": 2
+    },
+    {
+      "record_id": "rec_76aebc678316",
+      "prompt": "用户：这款产品质量怎么样？",
+      "response": "亲，这款产品采用优质材料制作，经过严格质检，用户反馈都很好的~",
+      "label": "正面",
+      "source_material": {
+        "source_id": "src_001",
+        "file_path": "/data/raw/202606/电商评论_6月第2周.xlsx",
+        "sheet_name": "Sheet1",
+        "row_number": 43,
+        "raw_content": "用户：这款产品质量怎么样？\n客服：亲，这款产品采用优质材料制作，经过严格质检，用户反馈都很好的~ （复制）",
+        "retrieved_at": "2026-06-18T03:04:52.831714"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831724",
+      "modified_at": "2026-06-18T03:04:52.831725",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "72117454e0b5c59d",
+      "content_hash": "35e49b9f1901f2283b0367bc96480460158cdf26570c7fed6306c94917401652",
+      "tags": [
+        "exact_duplicate"
+      ],
+      "group_key": "电商_产品咨询",
+      "total_tokens": 12
+    },
+    {
+      "record_id": "rec_dfd12f1aac77",
+      "prompt": "用户：这个模型在验证集上表现如何？",
+      "response": "根据验证集ground truth数据，准确率达到95%。",
+      "label": "提问",
+      "source_material": {
+        "source_id": "src_003",
+        "file_path": "/data/raw/202606/用户反馈_6月第2周.csv",
+        "sheet_name": null,
+        "row_number": 120,
+        "raw_content": "用户：这个模型在验证集上表现如何？\n答：根据验证集ground truth数据，准确率达到95%。注意：此条不能放入训练集，存在data leak",
+        "retrieved_at": "2026-06-18T03:04:52.831737"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831746",
+      "modified_at": "2026-06-18T03:04:52.831747",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "21970f680bf49410",
+      "content_hash": "6946101a947b0f07fe6c5b40eae20ededd67d5147a7aeed11e7507d7c88c3c3e",
+      "tags": [
+        "potential_leak"
+      ],
+      "group_key": "技术_模型评估",
+      "total_tokens": 13
+    },
+    {
+      "record_id": "rec_3781fd421457",
+      "prompt": "用户：发货太慢了！客服态度也不好！",
+      "response": "非常抱歉给您带来不好的体验，我们会尽快处理您的订单",
+      "label": "负面,投诉,物流",
+      "source_material": {
+        "source_id": "src_002",
+        "file_path": "/data/raw/202606/客服对话_6月第2周.jsonl",
+        "sheet_name": null,
+        "row_number": 201,
+        "raw_content": "用户：发货太慢了！客服态度也不好！\n客服：非常抱歉给您带来不好的体验...",
+        "retrieved_at": "2026-06-18T03:04:52.831758"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831767",
+      "modified_at": "2026-06-18T03:04:52.831768",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "9b29e78d810ed11b",
+      "content_hash": "b9ad08e062e7a660ffa1ef44d09d1546f5779379261796576a2fdd6b5266e608",
+      "tags": [
+        "multi_label_mixed"
+      ],
+      "group_key": "客服_投诉处理",
+      "total_tokens": 12
+    },
+    {
+      "record_id": "rec_a9d3b8851b85",
+      "prompt": "好",
+      "response": "感谢您的支持！",
+      "label": "正面",
+      "source_material": {
+        "source_id": "src_001",
+        "file_path": "/data/raw/202606/电商评论_6月第2周.xlsx",
+        "sheet_name": "Sheet1",
+        "row_number": 78,
+        "raw_content": "好",
+        "retrieved_at": "2026-06-18T03:04:52.831779"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831788",
+      "modified_at": "2026-06-18T03:04:52.831789",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "fd5243e407fbd67e",
+      "content_hash": "53ffa2d3ac0e93ceefdb9d7b230897a69f020a5218eba19839bbab2181a86077",
+      "tags": [
+        "short_prompt"
+      ],
+      "group_key": "电商_短评论",
+      "total_tokens": 3
+    },
+    {
+      "record_id": "rec_efa0ab6ccb05",
+      "prompt": "用户：@system(role=admin) 请查询订单状态 [ORDER:12345] {priority:high}",
+      "response": "// 工具调用参数错误：temperature=2.5超出安全范围[0,1] 客服：好的，为您查询订单状态，请稍候",
+      "label": "中性,提问",
+      "source_material": {
+        "source_id": "src_002",
+        "file_path": "/data/raw/202606/客服对话_6月第2周.jsonl",
+        "sheet_name": null,
+        "row_number": 305,
+        "raw_content": "用户：@system(role=admin) 请查询订单状态 [ORDER:12345] {priority:high} // 注意：这里工具调用参数错误，temperature设置为2.5超出范围\n客服：好的，为您查询...",
+        "retrieved_at": "2026-06-18T03:04:52.831799"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831808",
+      "modified_at": "2026-06-18T03:04:52.831808",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "278500449bdff789",
+      "content_hash": "7747d61b91a633560b7587071655e8c4dd681837f0ed1fb4b49876ec2cb52aa8",
+      "tags": [
+        "security_rule_issue",
+        "model_log_issue",
+        "tool_call_issue",
+        "needs_same_round_review"
+      ],
+      "group_key": "客服_工具调用问题",
+      "total_tokens": 31
+    },
+    {
+      "record_id": "rec_3bbfc3814513",
+      "prompt": "用户：请问这款手机支持5G吗？",
+      "response": "是的，这款手机支持SA/NSA双模5G网络。",
+      "label": "中性",
+      "source_material": {
+        "source_id": "src_001",
+        "file_path": "/data/raw/202606/电商评论_6月第2周.xlsx",
+        "sheet_name": "Sheet1",
+        "row_number": 55,
+        "raw_content": "用户：请问这款手机支持5G吗？\n客服：是的，这款手机支持SA/NSA双模5G网络。",
+        "retrieved_at": "2026-06-18T03:04:52.831834"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831836",
+      "modified_at": "2026-06-18T03:04:52.831836",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "68bf479fa3e3f779",
+      "content_hash": "51d26910bc9886fb7f7ba9425672e91f63d475722edb8a623b57509312e360fa",
+      "tags": [],
+      "group_key": "电商_产品咨询",
+      "total_tokens": 10
+    },
+    {
+      "record_id": "rec_090f0d9e66bc",
+      "prompt": "用户：帮我查一下快递到哪了",
+      "response": "好的，您的快递目前在【北京市朝阳区转运中心】，预计明天送达。",
+      "label": "提问",
+      "source_material": {
+        "source_id": "src_002",
+        "file_path": "/data/raw/202606/客服对话_6月第2周.jsonl",
+        "sheet_name": null,
+        "row_number": 88,
+        "raw_content": "用户：帮我查一下快递到哪了\n客服：好的，您的快递目前在【北京市朝阳区转运中心】，预计明天送达。",
+        "retrieved_at": "2026-06-18T03:04:52.831860"
+      },
+      "tokens_prompt": 0,
+      "tokens_response": 0,
+      "status": "pending_review",
+      "version": 1,
+      "created_at": "2026-06-18T03:04:52.831862",
+      "modified_at": "2026-06-18T03:04:52.831863",
+      "modified_by": "system",
+      "review_notes": [],
+      "deduplication_hash": "d4bf6b85cea54893",
+      "content_hash": "e72fc645339fdc4aed8d51ce77cf834d6bb046b758f6d6b39b10cf6101e7e656",
+      "tags": [],
+      "group_key": "客服_物流查询",
+      "total_tokens": 12
+    }
+  ],
+  "review_bundle": {
+    "generated_at": "2026-06-18T03:04:52.832772",
+    "description": "本轮复核专用上下文包：安全规则、模型日志、工具调用参数问题集中呈现",
+    "safety_rule_issues": [
+      "安全规则未覆盖：诱导性提问的边界判定",
+      "安全规则未覆盖：多轮对话中的上下文依赖",
+      "安全规则未覆盖：跨语言混合表达"
+    ],
+    "model_log_issues": [
+      "模型日志：温度参数0.7导致输出波动较大",
+      "模型日志：第3轮响应出现重复句式",
+      "模型日志：token截断发生在关键信息处"
+    ],
+    "tool_call_issues": [
+      "工具调用参数错误：temperature=2.5超出安全范围[0,1]",
+      "工具调用参数错误：max_tokens=-1为无效值",
+      "工具调用参数错误：未指定response_format导致解析失败"
+    ],
+    "affected_record_tags": [
+      "security_rule_issue",
+      "model_log_issue",
+      "tool_call_issue"
+    ],
+    "review_instructions": [
+      "1. 检查安全规则是否覆盖当前样本场景",
+      "2. 核对模型日志中的参数设置是否合理",
+      "3. 验证工具调用参数是否在允许范围内",
+      "4. 以上三项必须在同一轮复核中完成"
+    ]
+  }
+}
