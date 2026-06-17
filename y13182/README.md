@@ -1,57 +1,93 @@
-# React + TypeScript + Vite
+# 冷却塔水滴参数回放
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+面向设备工程师和算法值班人的参数历史回放工具。
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 1. 启动
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```bash
+cd /Users/mac/pro/solo/workspaces/y13182
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+打开浏览器访问 `http://localhost:5173/`，直接进入**参数回放页**。
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+页面三栏布局：
+- 左侧：时间轴，点击任意节点定位到对应时刻
+- 中间：水滴直径、流量、温度三个参数随时间变化的折线图
+- 右侧：当前时刻的所有备注（含后补）
 
-export default tseslint.config({
-  extends: [
-    // other configs...
-    // Enable lint rules for React
-    reactX.configs['recommended-typescript'],
-    // Enable lint rules for React DOM
-    reactDom.configs.recommended,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### 类型检查
+
+```bash
+./node_modules/.bin/tsc --noEmit --tsBuildInfoFile /tmp/y13182-tsconfig.tsbuildinfo
 ```
+
+### 生产构建
+
+```bash
+npm run build
+```
+
+---
+
+## 2. 重跑校验
+
+点击顶部导航的**异常队列**（或直接访问 `/anomalies`）。
+
+在页面顶部的**一致性指示器**中：
+- 绿色 = 状态一致（历史备注、当前状态、异常队列对得上）
+- 红色 = 状态不一致（显示具体差异详情）
+
+点击 **"重跑校验"** 按钮重新执行一致性校验。
+
+校验内容：
+- 备注总数是否与关联快照数一致
+- 异常记录数是否与关联快照数一致
+- 后补备注数是否与备注修正异常数一致
+
+点击 **"重置数据"** 按钮可将所有数据恢复为初始 Mock 数据（用于数据版本升级时清理旧缓存）。
+
+---
+
+## 3. 查看异常队列
+
+异常队列在 `/anomalies` 路径下。
+
+### 异常类型与处理结果标签
+
+| 类型 | 标签颜色 | 处理结果 |
+|------|---------|---------|
+| 安全阈值变更 | 红色 | **阈值变更**（不会写成"正常通过"） |
+| 参数超限 | 橙色 | 参数超限 |
+| 后补备注修正 | 蓝色 | 备注修正 |
+
+### 查看中间计算过程
+
+点击任意异常条目展开完整计算步骤：
+- 步骤编号 + 描述
+- 计算公式（等宽字体展示）
+- 输入值
+- 输出值
+- 单位换算（如有，琥珀色标注）
+
+### 为什么后补备注影响结论
+
+在参数回放页（`/`）：
+1. 左侧时间轴点击带橙色时钟图标的**"后补备注"**节点
+2. 右侧备注面板显示带"后补"徽章的备注，以及**旧版本参数截图**（保留了修正前的数值，红色划线+绿色箭头指向修正后的值）
+3. 点击 **"查看影响链路"** 按钮，弹出三步影响链：
+   - 第1步：后补备注内容
+   - 第2步：影响了哪些参数
+   - 第3步：最终如何改变了结论
+
+---
+
+## 关键设计约定
+
+- **后补备注永远保留原始时间戳**：`originalTimestamp` 是事件发生时间，`addedTimestamp` 是实际补入时间，两者都不覆盖
+- **旧版本截图保留在历史中**：不因为有了新值就删除旧截图，始终在备注下方展示修正前后对比
+- **阈值变更绝不标记为"正常通过"**：处理结果固定显示"阈值变更"，红色标签视觉突出
+- **中间计算过程和单位换算不隐藏**：所有推导步骤都在异常条目展开后可见
+- **重启后状态一致性可校验**：一致性指示器确保历史备注、当前状态、异常队列三方对得上
