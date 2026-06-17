@@ -411,6 +411,13 @@ function RightPanel() {
                 <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                 <p className="text-sm text-slate-400">正在复算中...</p>
               </div>
+            ) : selectedResult.status === 'error' ? (
+              <div className="py-6">
+                <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-md mb-3">
+                  <div className="text-xs text-red-400 font-medium mb-1">❌ 复算失败</div>
+                  <p className="text-xs text-red-300/70">{selectedResult.reviewReason || '未知错误，请重试'}</p>
+                </div>
+              </div>
             ) : (
               <>
                 <div className="grid grid-cols-2 gap-2">
@@ -512,7 +519,8 @@ function RightPanel() {
                     onClick={() => {
                       createReport(selectedResult.id);
                     }}
-                    className="py-2 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 rounded transition-colors flex items-center justify-center gap-1.5"
+                    disabled={selectedResult.status !== 'done'}
+                    className="py-2 text-xs bg-slate-800 hover:bg-slate-700 disabled:bg-slate-900 disabled:text-slate-600 text-slate-200 rounded transition-colors flex items-center justify-center gap-1.5"
                   >
                     <FileJson className="w-3.5 h-3.5" />
                     生成报告
@@ -527,7 +535,8 @@ function RightPanel() {
                         }
                       }, 50);
                     }}
-                    className="py-2 text-xs bg-cyan-600/80 hover:bg-cyan-500 text-white rounded transition-colors flex items-center justify-center gap-1.5"
+                    disabled={selectedResult.status !== 'done'}
+                    className="py-2 text-xs bg-cyan-600/80 hover:bg-cyan-500 disabled:bg-slate-800 disabled:text-slate-600 text-white rounded transition-colors flex items-center justify-center gap-1.5"
                   >
                     <Download className="w-3.5 h-3.5" />
                     导出 .md

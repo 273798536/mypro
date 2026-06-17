@@ -20,6 +20,7 @@ import {
   mockReports,
   getTimeSeriesData,
 } from '@/data/mockData';
+import { calculateSpeckleMetrics } from '@/utils/calculation';
 
 interface AppState {
   sensorLogs: SensorLog[];
@@ -162,57 +163,55 @@ export const useAppStore = create<AppState>((set, get) => {
       }));
 
       setTimeout(() => {
-        const avgIntensity = 0.65 + Math.random() * 0.25;
-        const contrast = 0.35 + Math.random() * 0.3;
-        const speckleSize = 10 + Math.random() * 8;
-        const stability = 0.6 + Math.random() * 0.35;
-        const confidence = 0.5 + Math.random() * 0.45;
+        const state = get();
+        const timeSeries = state.getTimeSeries(logId);
+        const points = state.sensorPoints.filter(p => p.logId === logId);
 
-        const hasGaps = Math.random() > 0.5;
-        const gaps = hasGaps
-          ? [
-              {
-                id: `gap-${Date.now()}`,
-                startTime: new Date(Date.now() - 3600000).toISOString(),
-                endTime: new Date(Date.now() - 3600000 + 30000).toISOString(),
-                duration: 30,
-                severity: (Math.random() > 0.7 ? 'high' : Math.random() > 0.5 ? 'medium' : 'low') as 'low' | 'medium' | 'high',
-                sensorIds: ['s-03', 's-04'],
-              },
-            ]
-          : [];
+        if (!timeSeries || timeSeries.length === 0) {
+          set((st) => ({
+            calculationResults: st.calculationResults.map((r) =>
+              r.id === resultId
+                ? {
+                    ...r,
+                    status: 'error',
+                    judgment: 'pending',
+                    confidence: 0,
+                    needsManualReview: true,
+                    reviewReason: '未获取到有效的时间序列数据，请先导入传感器日志文件',
+                  }
+                : r
+            ),
+          }));
+          return;
+        }
 
-        const needsReview = hasGaps && gaps[0].severity === 'high' || confidence < 0.7;
-        const judgment = confidence >= 0.8 ? 'pass' : confidence >= 0.6 ? 'pending' : 'fail';
+        const metrics = calculateSpeckleMetrics(timeSeries, points, param!);
 
-        set((state) => ({
-          calculationResults: state.calculationResults.map((r) =>
+        set((st) => ({
+          calculationResults: st.calculationResults.map((r) =>
             r.id === resultId
               ? {
                   ...r,
                   status: 'done',
-                  judgment,
-                  confidence,
+                  judgment: metrics.judgment,
+                  confidence: metrics.confidence,
                   resultData: {
-                    averageIntensity: avgIntensity,
-                    contrastRatio: contrast,
-                    speckleSize,
-                    stability,
+                    averageIntensity: metrics.averageIntensity,
+                    contrastRatio: metrics.contrastRatio,
+                    speckleSize: metrics.speckleSize,
+                    stability: metrics.stability,
                   },
-                  samplingGaps: gaps,
-                  needsManualReview: needsReview,
-                  reviewReason: needsReview
-                    ? `置信度${(confidence * 100).toFixed(0)}%，${hasGaps ? '存在采样缺口' : '指标接近阈值'}，建议人工确认`
-                    : undefined,
+                  samplingGaps: metrics.samplingGaps,
+                  needsManualReview: metrics.needsManualReview,
+                  reviewReason: metrics.reviewReason,
                 }
               : r
           ),
         }));
 
-        const state = get();
-        const updatedResult = state.calculationResults.find(r => r.id === resultId);
-        if (updatedResult) {
-          state.createReport(resultId);
+        const updated = get().calculationResults.find(r => r.id === resultId);
+        if (updated) {
+          get().createReport(resultId);
         }
       }, 1500);
     },
