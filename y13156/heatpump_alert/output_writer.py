@@ -7,6 +7,7 @@
 - 写文件附带校验和（行数/字节数）写入 JSON，便于后续比对
 """
 import os
+import csv
 import json
 import hashlib
 import pandas as pd
@@ -143,7 +144,7 @@ def write_details(output_dirs: Dict[str, str], details_df: pd.DataFrame,
     valid_df = details_df[details_df["是否纳入统计"] == True].copy()
     valid_path = os.path.join(output_dirs["details"], f"details_valid_{timestamp}.csv")
     try:
-        valid_df.to_csv(valid_path, index=False, encoding="utf-8-sig")
+        valid_df.to_csv(valid_path, index=False, encoding="utf-8-sig", quoting=csv.QUOTE_MINIMAL)
         meta = _file_meta(valid_path)
         assert len(valid_df) == max(0, meta["lines"] - 1), (
             f"有效明细行数不一致：df={len(valid_df)} file={meta['lines']-1}"
@@ -156,7 +157,7 @@ def write_details(output_dirs: Dict[str, str], details_df: pd.DataFrame,
     anomalies_df = details_df[details_df["是否纳入统计"] != True].copy()
     anomalies_path = os.path.join(output_dirs["anomalies"], f"anomalies_{timestamp}.csv")
     try:
-        anomalies_df.to_csv(anomalies_path, index=False, encoding="utf-8-sig")
+        anomalies_df.to_csv(anomalies_path, index=False, encoding="utf-8-sig", quoting=csv.QUOTE_MINIMAL)
         meta = _file_meta(anomalies_path)
         assert len(anomalies_df) == max(0, meta["lines"] - 1), (
             f"异常明细行数不一致：df={len(anomalies_df)} file={meta['lines']-1}"
@@ -168,7 +169,7 @@ def write_details(output_dirs: Dict[str, str], details_df: pd.DataFrame,
 
     full_path = os.path.join(output_dirs["details"], f"details_full_{timestamp}.csv")
     try:
-        details_df.to_csv(full_path, index=False, encoding="utf-8-sig")
+        details_df.to_csv(full_path, index=False, encoding="utf-8-sig", quoting=csv.QUOTE_MINIMAL)
         meta = _file_meta(full_path)
         assert len(details_df) == max(0, meta["lines"] - 1), (
             f"完整明细行数不一致：df={len(details_df)} file={meta['lines']-1}"

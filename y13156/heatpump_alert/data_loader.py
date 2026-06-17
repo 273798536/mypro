@@ -7,6 +7,8 @@
 - 所有异常捕获后给出明确的上下文信息
 """
 import os
+import csv
+import warnings
 import pandas as pd
 from typing import Tuple, List, Dict
 
@@ -25,6 +27,66 @@ SAMPLES_REQUIRED_COLS = [
 class DataValidationError(Exception):
     """数据校验异常，附带详细的错误原因。"""
     pass
+
+
+def _safe_read_csv(path: str, file_label: str, dtype: Dict = None) -> pd.DataFrame:
+    """安全读取 CSV，捕获解析错误并给出可操作的提示。
+
+    会处理：
+    - 字段数不一致（某行多/少了逗号）：提示具体行号和修复方法
+    - 编码错误：提示转 UTF-8
+    - 空文件：提示补数据
+    """
+    try:
+        read_kwargs = {
+            "dtype": dtype or {},
+            "quoting": csv.QUOTE_MINIMAL,
+            "encoding": "utf-8",
+        }
+        pd_ver = tuple(map(int, pd.__version__.split(".")[:2]))
+        if pd_ver >= (1, 3):
+            read_kwargs["on_bad_lines"] = "error"
+        else:
+            read_kwargs["error_bad_lines"] = True
+
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            warnings.simplefilter("always")
+            df = pd.read_csv(path, **read_kwargs)
+            for w in caught_warnings:
+                if issubclass(w.category, pd.errors.ParserWarning):
+                    raise DataValidationError(
+                        f"{file_label} 解析警告：{w.message}\n"
+                        f"  → 可能存在格式问题，建议检查逗号、引号是否配对。"
+                    )
+
+        return df
+
+    except pd.errors.ParserError as e:
+        err_msg = str(e)
+        hint = ""
+        if "Expected" in err_msg and "fields in line" in err_msg:
+            try:
+                parts = err_msg.split("Expected ")[1].split(" fields in line ")
+                expected = int(parts[0])
+                rest = parts[1].split(", saw ")
+                line_no = int(rest[0])
+                saw = int(rest[1].split()[0])
+                hint = (
+                    f"第 {line_no} 行字段数不一致：期望 {expected} 列，实际 {saw} 列。\n"
+                    f"  → 通常是因为备注字段含未加引号的英文逗号。\n"
+                    f"  → 修复方法：要么用双引号把备注括起来，要么把英文逗号 ',' 改成中文顿号 '、'。\n"
+                    f"  → 参考修复：`边界样本-高COP(温差9.5,功耗低)` 改为 `\"边界样本-高COP(温差9.5、功耗低)\"`"
+                )
+            except (IndexError, ValueError):
+                hint = f"解析错误详情：{err_msg}\n  → 请检查文件格式是否符合 CSV 规范。"
+        raise DataValidationError(f"{file_label} 解析失败：{hint}") from e
+
+    except UnicodeDecodeError as e:
+        raise DataValidationError(
+            f"{file_label} 编码错误：{e}。请另存为 UTF-8 格式（不要带 BOM）。"
+        ) from e
+    except pd.errors.EmptyDataError as e:
+        raise DataValidationError(f"{file_label} 内容为空或格式损坏：{e}") from e
 
 
 def _validate_columns(df: pd.DataFrame, required: List[str],
@@ -52,7 +114,7 @@ def load_nameplate(input_dir: str) -> pd.DataFrame:
     src_label = None
     try:
         if os.path.exists(csv_path):
-            df = pd.read_csv(csv_path, dtype={"设备编号": str})
+            df = _safe_read_csv(csv_path, "nameplate.csv", dtype={"设备编号": str})
             src_label = f"nameplate.csv (行:{len(df)})"
         elif os.path.exists(xlsx_path):
             df = pd.read_excel(xlsx_path, dtype={"设备编号": str})
@@ -79,6 +141,8 @@ def load_nameplate(input_dir: str) -> pd.DataFrame:
         df["_铭牌原始行号"] = range(2, len(df) + 2)
         return df
 
+    except DataValidationError:
+        raise
     except UnicodeDecodeError as e:
         raise DataValidationError(
             f"nameplate.csv 编码错误：{e}。请另存为 UTF-8 格式。"
@@ -104,7 +168,7 @@ def load_samples(input_dir: str) -> pd.DataFrame:
     src_label = None
     try:
         if os.path.exists(csv_path):
-            df = pd.read_csv(csv_path, dtype={"设备编号": str})
+            df = _safe_read_csv(csv_path, "samples.csv", dtype={"设备编号": str})
             src_label = f"samples.csv"
         elif os.path.exists(xlsx_path):
             df = pd.read_excel(xlsx_path, dtype={"设备编号": str})
@@ -137,6 +201,8 @@ def load_samples(input_dir: str) -> pd.DataFrame:
         df = _mark_bad_data(df)
         return df
 
+    except DataValidationError:
+        raise
     except UnicodeDecodeError as e:
         raise DataValidationError(
             f"samples.csv 编码错误：{e}。请另存为 UTF-8 格式。"
