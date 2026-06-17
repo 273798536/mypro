@@ -1,0 +1,473 @@
+{
+  "batch_info": {
+    "id": 1,
+    "batch_name": "2026-Q2-数学评测集-A",
+    "import_time": "2026-06-17T19:50:32.876462",
+    "importer": "张评测",
+    "description": "二季度数学评测题库",
+    "subject_category": "数学",
+    "rejection_reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求",
+    "current_status": "rejected",
+    "current_status_label": "评审会拦截"
+  },
+  "export_time": "2026-06-17T19:50:47.181441",
+  "plain_explanation": "各位同事，关于评测批次「2026-Q2-数学评测集-A」的版权来源账本审核情况如下：\n本批次共 5 道题。\n本批次未通过模型评审会审核，原因：评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求。\n复核阶段记录：通过 2 题，需补材料 1 题，需改口径 1 题，待复核 1 题。\n该评测集存在偏科问题，知识点「一元一次方程」占比过高，评测覆盖面不够均衡。\n详情请查阅导出的完整报告。",
+  "status_summary": {
+    "batch_status": "rejected",
+    "batch_status_label": "评审会拦截",
+    "total_questions": 5,
+    "review_passed": 2,
+    "review_blocked": 2,
+    "material_missing": 1,
+    "calibration_wrong": 1,
+    "pending": 1
+  },
+  "issue_breakdown": [
+    {
+      "issue_type": "material_missing",
+      "issue_type_label": "需补材料",
+      "count": 1,
+      "question_ids": [
+        2
+      ],
+      "details": [
+        {
+          "question_id": 2,
+          "question_content": "已知三角形ABC中，AB=3, BC=4, 角B=90度，求AC的长度",
+          "issue_detail": "公有领域证明材料缺失，需补充原始出版物扫描件",
+          "next_action": "请题库同学补传原始出版物的版权页扫描件",
+          "human_note": "勾股定理是高频考点，注意配图"
+        }
+      ]
+    },
+    {
+      "issue_type": "calibration_wrong",
+      "issue_type_label": "需改口径",
+      "count": 1,
+      "question_ids": [
+        3
+      ],
+      "details": [
+        {
+          "question_id": 3,
+          "question_content": "因式分解：x² - 6x + 9",
+          "issue_detail": "版权类型标记为unknown不符合入账要求，需重新确认",
+          "next_action": "请评测负责人和出题人重新确认来源后改口径",
+          "human_note": null
+        }
+      ]
+    }
+  ],
+  "bias_check_result": {
+    "has_bias": true,
+    "total_questions": 5,
+    "knowledge_point_distribution": {
+      "一元一次方程": 3,
+      "勾股定理": 1,
+      "因式分解": 1
+    },
+    "difficulty_distribution": {
+      "简单": 3,
+      "中等": 2
+    },
+    "biased_points": [
+      {
+        "knowledge_point": "一元一次方程",
+        "count": 3,
+        "ratio": 0.6
+      }
+    ],
+    "bias_explanation": "该评测集存在偏科问题，知识点「一元一次方程」占比过高，评测覆盖面不够均衡。"
+  },
+  "rejection_explanation": "评审会拦截原因：评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求\n该评测集存在偏科问题，知识点「一元一次方程」占比过高，评测覆盖面不够均衡。",
+  "questions": [
+    {
+      "id": 1,
+      "question_id_external": "MATH-001",
+      "question_content": "求解方程：2x + 5 = 13",
+      "standard_answer": "x = 4",
+      "difficulty": "简单",
+      "knowledge_point": "一元一次方程",
+      "human_note": "这题去年也考过，学生容易把移项搞反，别漏了这个细节哈",
+      "current_status": "rejected",
+      "current_status_label": "评审会拦截",
+      "last_review_passed": true,
+      "last_review_issue_type": null,
+      "last_review_issue_type_label": null,
+      "last_review_issue_detail": null,
+      "last_review_next_action": null,
+      "last_review_human_note_preserved": "这题去年也考过，学生容易把移项搞反，别漏了这个细节哈",
+      "copyright_sources": [
+        {
+          "copyright_type": "authorized",
+          "source_title": "初中数学精选题集（第3版）",
+          "source_author": null,
+          "source_publisher": null,
+          "source_url": null,
+          "publication_date": null,
+          "authorization_number": "AUTH-2024-00123",
+          "authorization_expiry": null,
+          "fair_use_justification": null,
+          "remark": null
+        }
+      ],
+      "review_records": [
+        {
+          "reviewer": "李复核",
+          "review_time": "2026-06-17T19:50:33.771582",
+          "issue_type": null,
+          "issue_type_label": null,
+          "issue_detail": null,
+          "next_action": null,
+          "passed": true,
+          "human_note_preserved": "这题去年也考过，学生容易把移项搞反，别漏了这个细节哈"
+        }
+      ],
+      "status_history": [
+        {
+          "from_status": "imported",
+          "to_status": "review_passed",
+          "operator": "李复核",
+          "operate_time": "2026-06-17T19:50:33.774905",
+          "reason": "复核通过"
+        },
+        {
+          "from_status": "review_passed",
+          "to_status": "rejected",
+          "operator": "模型评审会-赵老师",
+          "operate_time": "2026-06-17T19:50:34.259867",
+          "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "question_id_external": "MATH-002",
+      "question_content": "已知三角形ABC中，AB=3, BC=4, 角B=90度，求AC的长度",
+      "standard_answer": "AC = 5",
+      "difficulty": "中等",
+      "knowledge_point": "勾股定理",
+      "human_note": "勾股定理是高频考点，注意配图",
+      "current_status": "rejected",
+      "current_status_label": "评审会拦截",
+      "last_review_passed": false,
+      "last_review_issue_type": "material_missing",
+      "last_review_issue_type_label": "需补材料",
+      "last_review_issue_detail": "公有领域证明材料缺失，需补充原始出版物扫描件",
+      "last_review_next_action": "请题库同学补传原始出版物的版权页扫描件",
+      "last_review_human_note_preserved": "勾股定理是高频考点，注意配图",
+      "copyright_sources": [
+        {
+          "copyright_type": "public_domain",
+          "source_title": "经典几何题库",
+          "source_author": null,
+          "source_publisher": null,
+          "source_url": null,
+          "publication_date": null,
+          "authorization_number": null,
+          "authorization_expiry": null,
+          "fair_use_justification": null,
+          "remark": "已进入公有领域"
+        }
+      ],
+      "review_records": [
+        {
+          "reviewer": "李复核",
+          "review_time": "2026-06-17T19:50:33.771596",
+          "issue_type": "material_missing",
+          "issue_type_label": "需补材料",
+          "issue_detail": "公有领域证明材料缺失，需补充原始出版物扫描件",
+          "next_action": "请题库同学补传原始出版物的版权页扫描件",
+          "passed": false,
+          "human_note_preserved": "勾股定理是高频考点，注意配图"
+        }
+      ],
+      "status_history": [
+        {
+          "from_status": "imported",
+          "to_status": "review_blocked",
+          "operator": "李复核",
+          "operate_time": "2026-06-17T19:50:33.774910",
+          "reason": "公有领域证明材料缺失，需补充原始出版物扫描件"
+        },
+        {
+          "from_status": "review_blocked",
+          "to_status": "rejected",
+          "operator": "模型评审会-赵老师",
+          "operate_time": "2026-06-17T19:50:34.259868",
+          "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "question_id_external": "MATH-003",
+      "question_content": "因式分解：x² - 6x + 9",
+      "standard_answer": "(x-3)²",
+      "difficulty": "简单",
+      "knowledge_point": "因式分解",
+      "human_note": null,
+      "current_status": "rejected",
+      "current_status_label": "评审会拦截",
+      "last_review_passed": false,
+      "last_review_issue_type": "calibration_wrong",
+      "last_review_issue_type_label": "需改口径",
+      "last_review_issue_detail": "版权类型标记为unknown不符合入账要求，需重新确认",
+      "last_review_next_action": "请评测负责人和出题人重新确认来源后改口径",
+      "last_review_human_note_preserved": null,
+      "copyright_sources": [
+        {
+          "copyright_type": "unknown",
+          "source_title": null,
+          "source_author": null,
+          "source_publisher": null,
+          "source_url": null,
+          "publication_date": null,
+          "authorization_number": null,
+          "authorization_expiry": null,
+          "fair_use_justification": null,
+          "remark": "原始来源待确认"
+        }
+      ],
+      "review_records": [
+        {
+          "reviewer": "李复核",
+          "review_time": "2026-06-17T19:50:33.771598",
+          "issue_type": "calibration_wrong",
+          "issue_type_label": "需改口径",
+          "issue_detail": "版权类型标记为unknown不符合入账要求，需重新确认",
+          "next_action": "请评测负责人和出题人重新确认来源后改口径",
+          "passed": false,
+          "human_note_preserved": null
+        }
+      ],
+      "status_history": [
+        {
+          "from_status": "imported",
+          "to_status": "review_blocked",
+          "operator": "李复核",
+          "operate_time": "2026-06-17T19:50:33.774911",
+          "reason": "版权类型标记为unknown不符合入账要求，需重新确认"
+        },
+        {
+          "from_status": "review_blocked",
+          "to_status": "rejected",
+          "operator": "模型评审会-赵老师",
+          "operate_time": "2026-06-17T19:50:34.259869",
+          "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "question_id_external": "MATH-004",
+      "question_content": "求函数 y=x²-4x+3 的最小值",
+      "standard_answer": "-1",
+      "difficulty": "中等",
+      "knowledge_point": "一元一次方程",
+      "human_note": null,
+      "current_status": "rejected",
+      "current_status_label": "评审会拦截",
+      "last_review_passed": true,
+      "last_review_issue_type": null,
+      "last_review_issue_type_label": null,
+      "last_review_issue_detail": null,
+      "last_review_next_action": null,
+      "last_review_human_note_preserved": null,
+      "copyright_sources": [
+        {
+          "copyright_type": "fair_use",
+          "source_title": "高中数学教案",
+          "source_author": null,
+          "source_publisher": null,
+          "source_url": null,
+          "publication_date": null,
+          "authorization_number": null,
+          "authorization_expiry": null,
+          "fair_use_justification": "教学评测合理使用",
+          "remark": null
+        }
+      ],
+      "review_records": [
+        {
+          "reviewer": "李复核",
+          "review_time": "2026-06-17T19:50:33.771599",
+          "issue_type": null,
+          "issue_type_label": null,
+          "issue_detail": null,
+          "next_action": null,
+          "passed": true,
+          "human_note_preserved": null
+        }
+      ],
+      "status_history": [
+        {
+          "from_status": "imported",
+          "to_status": "review_passed",
+          "operator": "李复核",
+          "operate_time": "2026-06-17T19:50:33.774911",
+          "reason": "复核通过"
+        },
+        {
+          "from_status": "review_passed",
+          "to_status": "rejected",
+          "operator": "模型评审会-赵老师",
+          "operate_time": "2026-06-17T19:50:34.259870",
+          "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "question_id_external": "MATH-005",
+      "question_content": "解不等式：3x - 7 > 2",
+      "standard_answer": "x > 3",
+      "difficulty": "简单",
+      "knowledge_point": "一元一次方程",
+      "human_note": null,
+      "current_status": "rejected",
+      "current_status_label": "评审会拦截",
+      "last_review_passed": null,
+      "last_review_issue_type": null,
+      "last_review_issue_type_label": null,
+      "last_review_issue_detail": null,
+      "last_review_next_action": null,
+      "last_review_human_note_preserved": null,
+      "copyright_sources": [
+        {
+          "copyright_type": "original",
+          "source_title": null,
+          "source_author": null,
+          "source_publisher": null,
+          "source_url": null,
+          "publication_date": null,
+          "authorization_number": null,
+          "authorization_expiry": null,
+          "fair_use_justification": null,
+          "remark": null
+        }
+      ],
+      "review_records": [],
+      "status_history": [
+        {
+          "from_status": "imported",
+          "to_status": "rejected",
+          "operator": "模型评审会-赵老师",
+          "operate_time": "2026-06-17T19:50:34.259871",
+          "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+        }
+      ]
+    }
+  ],
+  "status_history": [
+    {
+      "from_status": null,
+      "from_status_label": null,
+      "to_status": "imported",
+      "to_status_label": "已导入",
+      "operator": "张评测",
+      "operate_time": "2026-06-17T19:50:33.193744",
+      "reason": "批次已导入"
+    },
+    {
+      "from_status": "imported",
+      "from_status_label": "已导入",
+      "to_status": "review_passed",
+      "to_status_label": "复核通过",
+      "operator": "李复核",
+      "operate_time": "2026-06-17T19:50:33.774905",
+      "reason": "复核通过"
+    },
+    {
+      "from_status": "imported",
+      "from_status_label": "已导入",
+      "to_status": "review_blocked",
+      "to_status_label": "复核受阻",
+      "operator": "李复核",
+      "operate_time": "2026-06-17T19:50:33.774910",
+      "reason": "公有领域证明材料缺失，需补充原始出版物扫描件"
+    },
+    {
+      "from_status": "imported",
+      "from_status_label": "已导入",
+      "to_status": "review_blocked",
+      "to_status_label": "复核受阻",
+      "operator": "李复核",
+      "operate_time": "2026-06-17T19:50:33.774911",
+      "reason": "版权类型标记为unknown不符合入账要求，需重新确认"
+    },
+    {
+      "from_status": "imported",
+      "from_status_label": "已导入",
+      "to_status": "review_passed",
+      "to_status_label": "复核通过",
+      "operator": "李复核",
+      "operate_time": "2026-06-17T19:50:33.774911",
+      "reason": "复核通过"
+    },
+    {
+      "from_status": "imported",
+      "from_status_label": "已导入",
+      "to_status": "review_blocked",
+      "to_status_label": "复核受阻",
+      "operator": "李复核",
+      "operate_time": "2026-06-17T19:50:33.774912",
+      "reason": "复核提交: 通过2题, 缺材料1题, 口径问题1题, 待处理-3题"
+    },
+    {
+      "from_status": "review_blocked",
+      "from_status_label": "复核受阻",
+      "to_status": "rejected",
+      "to_status_label": "评审会拦截",
+      "operator": "模型评审会-赵老师",
+      "operate_time": "2026-06-17T19:50:34.259860",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+    },
+    {
+      "from_status": "review_passed",
+      "from_status_label": "复核通过",
+      "to_status": "rejected",
+      "to_status_label": "评审会拦截",
+      "operator": "模型评审会-赵老师",
+      "operate_time": "2026-06-17T19:50:34.259867",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+    },
+    {
+      "from_status": "review_blocked",
+      "from_status_label": "复核受阻",
+      "to_status": "rejected",
+      "to_status_label": "评审会拦截",
+      "operator": "模型评审会-赵老师",
+      "operate_time": "2026-06-17T19:50:34.259868",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+    },
+    {
+      "from_status": "review_blocked",
+      "from_status_label": "复核受阻",
+      "to_status": "rejected",
+      "to_status_label": "评审会拦截",
+      "operator": "模型评审会-赵老师",
+      "operate_time": "2026-06-17T19:50:34.259869",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+    },
+    {
+      "from_status": "review_passed",
+      "from_status_label": "复核通过",
+      "to_status": "rejected",
+      "to_status_label": "评审会拦截",
+      "operator": "模型评审会-赵老师",
+      "operate_time": "2026-06-17T19:50:34.259870",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+    },
+    {
+      "from_status": "imported",
+      "from_status_label": "已导入",
+      "to_status": "rejected",
+      "to_status_label": "评审会拦截",
+      "operator": "模型评审会-赵老师",
+      "operate_time": "2026-06-17T19:50:34.259871",
+      "reason": "评测集知识点偏科严重，且仍有2题版权材料缺失，不符合上线要求"
+    }
+  ],
+  "prompt_version_tracks": []
+}

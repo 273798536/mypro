@@ -1,10 +1,13 @@
 from datetime import datetime
+from pathlib import Path
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.crud import crud
 from app.schemas import schemas
+from app.services.export_service import generate_export_files, STATUS_LABEL, ISSUE_TYPE_LABEL
 
 router = APIRouter(prefix="/api/batches", tags=["评测批次"])
 
@@ -92,121 +95,64 @@ def analyze_bias(batch_id: int, db: Session = Depends(get_db)):
     return crud.analyze_bias(db, batch_id)
 
 
-@router.get("/{batch_id}/export-report", response_model=schemas.ExportReportResponse, summary="导出版权账本报告")
-def export_report(batch_id: int, db: Session = Depends(get_db)):
-    db_batch = crud.get_batch(db, batch_id)
-    if not db_batch:
-        raise HTTPException(status_code=404, detail="批次不存在")
+def _build_export_report(batch_id: int, db: Session):
+    json_path, excel_path, err = generate_export_files(db, batch_id)
+    if err:
+        raise HTTPException(status_code=404, detail=err)
 
-    summary = crud.get_review_summary(db, batch_id)
-    issue_breakdown = crud.get_batch_issue_breakdown(db, batch_id)
-    bias = crud.analyze_bias(db, batch_id)
-    plain_explanation = crud.generate_plain_explanation(db, batch_id)
-    rejection_explanation = crud.get_rejection_explanation(db, batch_id)
-    prompt_tracks = crud.get_batch_prompt_tracks(db, batch_id)
+    with open(json_path, "r", encoding="utf-8") as f:
+        import json as _json
+        full = _json.load(f)
 
-    questions_data = []
-    for q in db_batch.questions:
-        questions_data.append({
-            "id": q.id,
-            "question_id_external": q.question_id_external,
-            "question_content": q.question_content,
-            "standard_answer": q.standard_answer,
-            "difficulty": q.difficulty,
-            "knowledge_point": q.knowledge_point,
-            "human_note": q.human_note,
-            "current_status": q.current_status.value,
-            "copyright_sources": [
-                {
-                    "copyright_type": cs.copyright_type.value,
-                    "source_title": cs.source_title,
-                    "source_author": cs.source_author,
-                    "source_publisher": cs.source_publisher,
-                    "source_url": cs.source_url,
-                    "publication_date": cs.publication_date,
-                    "authorization_number": cs.authorization_number,
-                    "authorization_expiry": cs.authorization_expiry,
-                    "fair_use_justification": cs.fair_use_justification,
-                    "remark": cs.remark,
-                }
-                for cs in q.copyright_sources
-            ],
-            "review_records": [
-                {
-                    "reviewer": r.reviewer,
-                    "review_time": r.review_time.isoformat(),
-                    "issue_type": r.issue_type.value if r.issue_type else None,
-                    "issue_detail": r.issue_detail,
-                    "next_action": r.next_action,
-                    "passed": r.passed,
-                    "human_note_preserved": r.human_note_preserved,
-                }
-                for r in q.review_records
-            ],
-            "status_history": [
-                {
-                    "from_status": s.from_status.value if s.from_status else None,
-                    "to_status": s.to_status.value,
-                    "operator": s.operator,
-                    "operate_time": s.operate_time.isoformat(),
-                    "reason": s.reason,
-                }
-                for s in q.status_history
-            ],
-        })
-
-    status_summary = {
-        "batch_status": db_batch.current_status.value,
-        "total_questions": db_batch.total_questions,
-        "review_passed": summary.total_passed,
-        "review_blocked": summary.total_blocked,
-        "material_missing": summary.material_missing_count,
-        "calibration_wrong": summary.calibration_wrong_count,
-        "pending": summary.total_pending,
-    }
-
-    full_data = {
-        "batch_info": {
-            "id": db_batch.id,
-            "batch_name": db_batch.batch_name,
-            "import_time": db_batch.import_time.isoformat(),
-            "importer": db_batch.importer,
-            "description": db_batch.description,
-            "subject_category": db_batch.subject_category,
-            "rejection_reason": db_batch.rejection_reason,
-        },
-        "questions": questions_data,
-        "status_history": [
-            {
-                "from_status": s.from_status.value if s.from_status else None,
-                "to_status": s.to_status.value,
-                "operator": s.operator,
-                "operate_time": s.operate_time.isoformat(),
-                "reason": s.reason,
-            }
-            for s in db_batch.status_history
-        ],
-        "prompt_version_tracks": [
-            {
-                "version_code": t.prompt_version.version_code if t.prompt_version else None,
-                "version_name": t.prompt_version.version_name if t.prompt_version else None,
-                "bind_time": t.bind_time.isoformat(),
-                "operator": t.operator,
-                "question_id": t.question_id,
-                "remark": t.remark,
-            }
-            for t in prompt_tracks
-        ],
-    }
+    ss = full["status_summary"]
+    issue_breakdown = []
+    for ib in full["issue_breakdown"]:
+        issue_breakdown.append(schemas.IssueBreakdown(
+            issue_type=ib["issue_type"],
+            issue_type_label=ib["issue_type_label"],
+            count=ib["count"],
+            question_ids=ib["question_ids"],
+            details=ib["details"],
+        ))
 
     return schemas.ExportReportResponse(
-        batch_id=db_batch.id,
-        batch_name=db_batch.batch_name,
+        batch_id=full["batch_info"]["id"],
+        batch_name=full["batch_info"]["batch_name"],
         export_time=datetime.utcnow(),
-        plain_explanation=plain_explanation,
-        status_summary=status_summary,
+        plain_explanation=full["plain_explanation"],
+        status_summary=ss,
         issue_breakdown=issue_breakdown,
-        bias_check_result=bias,
-        rejection_explanation=rejection_explanation,
-        full_data=full_data,
+        bias_check_result=full["bias_check_result"],
+        rejection_explanation=full.get("rejection_explanation"),
+        full_data=full,
+    ), json_path, excel_path
+
+
+@router.get("/{batch_id}/export-report", response_model=schemas.ExportReportResponse, summary="导出版权账本报告（JSON 格式，用于页面展示）")
+def export_report(batch_id: int, db: Session = Depends(get_db)):
+    report, _, _ = _build_export_report(batch_id, db)
+    return report
+
+
+@router.get("/{batch_id}/download/json", summary="下载版权账本报告（JSON 文件）")
+def download_report_json(batch_id: int, db: Session = Depends(get_db)):
+    _, json_path, _ = _build_export_report(batch_id, db)
+    if not json_path or not Path(json_path).exists():
+        raise HTTPException(status_code=500, detail="报告文件生成失败，请重试")
+    return FileResponse(
+        path=str(json_path),
+        media_type="application/json",
+        filename=Path(json_path).name,
+    )
+
+
+@router.get("/{batch_id}/download/excel", summary="下载版权账本报告（Excel 文件）")
+def download_report_excel(batch_id: int, db: Session = Depends(get_db)):
+    _, _, excel_path = _build_export_report(batch_id, db)
+    if not excel_path or not Path(excel_path).exists():
+        raise HTTPException(status_code=500, detail="报告文件生成失败，请重试")
+    return FileResponse(
+        path=str(excel_path),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        filename=Path(excel_path).name,
     )

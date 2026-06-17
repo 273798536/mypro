@@ -168,19 +168,22 @@ def get_review_summary(db: Session, batch_id: int) -> schemas.BatchReviewIssueSu
     pending = 0
 
     for q in questions:
-        if q.current_status == QuestionStatus.REVIEW_PASSED:
-            passed += 1
-        elif q.current_status == QuestionStatus.REVIEW_BLOCKED:
-            blocked += 1
-            last_review = db.query(models.ReviewRecord).filter(
-                models.ReviewRecord.question_id == q.id
-            ).order_by(models.ReviewRecord.review_time.desc()).first()
-            if last_review and last_review.issue_type == IssueType.MATERIAL_MISSING:
-                material_missing += 1
-            elif last_review and last_review.issue_type == IssueType.CALIBRATION_WRONG:
-                calibration_wrong += 1
-        else:
+        last_review = db.query(models.ReviewRecord).filter(
+            models.ReviewRecord.question_id == q.id
+        ).order_by(models.ReviewRecord.review_time.desc()).first()
+
+        if not last_review:
             pending += 1
+            continue
+
+        if last_review.passed:
+            passed += 1
+        else:
+            blocked += 1
+            if last_review.issue_type == IssueType.MATERIAL_MISSING:
+                material_missing += 1
+            elif last_review.issue_type == IssueType.CALIBRATION_WRONG:
+                calibration_wrong += 1
 
     return schemas.BatchReviewIssueSummary(
         material_missing_count=material_missing,
@@ -430,6 +433,10 @@ def generate_plain_explanation(db: Session, batch_id: int) -> str:
         parts.append("本批次已通过模型评审会审核。")
     elif db_batch.current_status == QuestionStatus.REJECTED:
         parts.append(f"本批次未通过模型评审会审核，原因：{db_batch.rejection_reason or '未填写'}。")
+        if summary.total_blocked > 0 or summary.total_passed < db_batch.total_questions:
+            parts.append(
+                f"复核阶段记录：通过 {summary.total_passed} 题，需补材料 {summary.material_missing_count} 题，需改口径 {summary.calibration_wrong_count} 题，待复核 {summary.total_pending} 题。"
+            )
 
     if bias["has_bias"]:
         parts.append(bias["bias_explanation"])
