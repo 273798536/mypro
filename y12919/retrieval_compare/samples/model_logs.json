@@ -1,0 +1,71 @@
+[
+  {
+    "log_id": "log_001",
+    "query": "如何办理银行卡挂失",
+    "segment_id": "seg_001",
+    "retrieved_segments": ["seg_001", "seg_002"],
+    "score": 0.92,
+    "safety_rule_hit": ["R001", "R002"],
+    "timestamp": "2026-06-16T09:15:22",
+    "human_remarks": [
+      {
+        "remark_id": "rm_001",
+        "content": "这条上次复盘会上张老师说暂时别加R003，等下个版本一起调整，别自作主张给我改成系统话术啊。",
+        "reviewer": "安全_李审核",
+        "created_at": "2026-06-15T14:22:10"
+      }
+    ],
+    "extra": {"model_version": "v2.3.1"}
+  },
+  {
+    "log_id": "log_002",
+    "query": "信用卡逾期利息怎么算",
+    "segment_id": "seg_002",
+    "retrieved_segments": ["seg_002"],
+    "score": 0.88,
+    "safety_rule_hit": ["R002"],
+    "timestamp": "2026-06-16T10:03:45",
+    "human_remarks": [],
+    "extra": {"model_version": "v2.3.1"}
+  },
+  {
+    "log_id": "log_003",
+    "query": "贷款需要什么材料",
+    "segment_id": "seg_003",
+    "retrieved_segments": ["seg_003"],
+    "score": 0.76,
+    "safety_rule_hit": [],
+    "timestamp": "2026-06-16T10:45:11",
+    "human_remarks": [],
+    "extra": {"model_version": "v2.3.1"}
+  },
+  {
+    "log_id": "log_004",
+    "query": "理财产品风险等级",
+    "segment_id": "seg_999",
+    "retrieved_segments": ["seg_999"],
+    "score": 0.81,
+    "safety_rule_hit": ["R004"],
+    "timestamp": "2026-06-16T11:20:33",
+    "human_remarks": [
+      {
+        "remark_id": "rm_002",
+        "content": "这个seg_999是昨天临时加的灰度样本，清单还没同步，我下午补进去。",
+        "reviewer": "检索_王工",
+        "created_at": "2026-06-16T11:25:00"
+      }
+    ],
+    "extra": {"model_version": "v2.3.1"}
+  },
+  {
+    "log_id": "log_005",
+    "query": "信用卡额度怎么提升",
+    "segment_id": "seg_004",
+    "retrieved_segments": ["seg_004"],
+    "score": 0.85,
+    "safety_rule_hit": ["R001"],
+    "timestamp": "2026-06-16T13:10:55",
+    "human_remarks": [],
+    "extra": {"model_version": "v2.3.1"}
+  }
+]

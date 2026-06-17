@@ -1,0 +1,54 @@
+[
+  {
+    "segment_id": "seg_001",
+    "content": "银行卡挂失可通过手机银行App、客服热线955XX或任意网点办理。挂失前请核实身份信息。",
+    "category": "银行卡",
+    "safety_rules": ["R001"],
+    "tags": ["挂失", "银行卡"],
+    "human_remarks": [
+      {
+        "remark_id": "rm_seg_001",
+        "content": "R002按张老师指示暂不启用，记录在此备查。",
+        "reviewer": "安全_李审核",
+        "created_at": "2026-06-10T09:00:00"
+      }
+    ],
+    "extra": {}
+  },
+  {
+    "segment_id": "seg_002",
+    "content": "信用卡逾期利息按日利率0.05%计算，按月计收复利。如遇特殊情况可申请协商还款。",
+    "category": "信用卡",
+    "safety_rules": ["R002", "R005"],
+    "tags": ["逾期", "利息", "信用卡"],
+    "human_remarks": [],
+    "extra": {}
+  },
+  {
+    "segment_id": "seg_003",
+    "content": "个人贷款需提供身份证明、收入证明、工作证明及贷款用途说明。具体材料以银行要求为准。",
+    "category": "贷款",
+    "safety_rules": [],
+    "tags": ["贷款", "材料"],
+    "human_remarks": [],
+    "extra": {}
+  },
+  {
+    "segment_id": "seg_004",
+    "content": "信用卡提额需保持良好用卡记录，按时还款，多元化消费。可通过App或客服申请临时/永久提额。",
+    "category": "信用卡",
+    "safety_rules": ["R001", "R006"],
+    "tags": ["提额", "信用卡"],
+    "human_remarks": [],
+    "extra": {}
+  },
+  {
+    "segment_id": "seg_005",
+    "content": "手机银行转账单笔限额50万元，日累计限额200万元。如需调整可到网点办理。",
+    "category": "电子银行",
+    "safety_rules": ["R003", "R007"],
+    "tags": ["转账", "限额"],
+    "human_remarks": [],
+    "extra": {}
+  }
+]

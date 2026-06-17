@@ -1,0 +1,58 @@
+[
+  {
+    "rule_id": "R001",
+    "rule_name": "身份核实",
+    "description": "涉及账户操作需提示用户核实身份信息，防止信息泄露。",
+    "applicable_categories": ["银行卡", "信用卡", "贷款"],
+    "enabled": true,
+    "human_remarks": []
+  },
+  {
+    "rule_id": "R002",
+    "rule_name": "风险提示",
+    "description": "涉及费用、利息、逾期等需给出明确风险提示。",
+    "applicable_categories": ["信用卡", "贷款"],
+    "enabled": true,
+    "human_remarks": []
+  },
+  {
+    "rule_id": "R003",
+    "rule_name": "限额说明",
+    "description": "涉及金额、限额、交易上限需明确告知数值及调整渠道。",
+    "applicable_categories": ["电子银行", "转账"],
+    "enabled": true,
+    "human_remarks": []
+  },
+  {
+    "rule_id": "R004",
+    "rule_name": "产品合规",
+    "description": "理财产品需披露风险等级和发行机构。",
+    "applicable_categories": ["理财"],
+    "enabled": true,
+    "human_remarks": []
+  },
+  {
+    "rule_id": "R005",
+    "rule_name": "协商通道",
+    "description": "逾期相关回答需提示协商还款通道。",
+    "applicable_categories": ["信用卡"],
+    "enabled": true,
+    "human_remarks": []
+  },
+  {
+    "rule_id": "R006",
+    "rule_name": "理性用卡",
+    "description": "提额相关回答需附带理性用卡提示。",
+    "applicable_categories": ["信用卡"],
+    "enabled": true,
+    "human_remarks": []
+  },
+  {
+    "rule_id": "R007",
+    "rule_name": "安全认证",
+    "description": "电子银行相关操作需提及安全认证方式。",
+    "applicable_categories": ["电子银行"],
+    "enabled": true,
+    "human_remarks": []
+  }
+]
