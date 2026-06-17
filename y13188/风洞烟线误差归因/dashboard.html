@@ -446,7 +446,11 @@ tr:hover { background: #f9f9f9; }
 
   <!-- 第1页：状态看板 -->
   <div class="page active" id="page-dashboard">
-    <h2 style="font-size:20px; margin-bottom:16px;">📊 总览仪表盘</h2>
+    <h2 style="font-size:20px; margin-bottom:8px;">📊 总览仪表盘</h2>
+    <div style="background:#fff3e0; border-left:4px solid #ff9800; padding:10px 14px; border-radius:4px; margin-bottom:16px; font-size:13px;">
+      <b>⚠️ 样例说明：</b>本看板中 <b>ERR-20260614-003</b> 为「🌟 完整样例」，有对应完整报告、29张现场照片、4个历史版本，可用于交接验证全链路；
+      ERR-001/002/004 为「📋 看板状态示例」，仅用于演示不同状态的看板长什么样，<b>没有对应的完整报告和照片归档</b>。
+    </div>
 
     <div class="stats-grid">
       <div class="stat-card blue">
@@ -477,9 +481,11 @@ tr:hover { background: #f9f9f9; }
 
     <div class="card">
       <h2>📋 报告列表（逐条追踪）</h2>
+      <p style="font-size:12px; color:#888; margin-bottom:8px;">🌟 完整样例 = 有报告+照片+历史版本，可验证全链路 &nbsp;|&nbsp; 📋 示例行 = 仅演示看板状态，无完整材料</p>
       <table>
         <thead>
           <tr>
+            <th>类型</th>
             <th>报告编号</th>
             <th>工况</th>
             <th>负责人</th>
@@ -490,7 +496,8 @@ tr:hover { background: #f9f9f9; }
           </tr>
         </thead>
         <tbody>
-          <tr style="cursor:pointer" onclick="switchToReport('ERR-20260614-003')">
+          <tr style="opacity:0.6;">
+            <td>📋 示例</td>
             <td><b>ERR-20260614-001</b></td>
             <td>#A-03</td>
             <td>小林</td>
@@ -499,7 +506,8 @@ tr:hover { background: #f9f9f9; }
             <td>—</td>
             <td>06-14 09:30</td>
           </tr>
-          <tr>
+          <tr style="opacity:0.6;">
+            <td>📋 示例</td>
             <td><b>ERR-20260614-002</b></td>
             <td>#B-01</td>
             <td>小王</td>
@@ -508,8 +516,9 @@ tr:hover { background: #f9f9f9; }
             <td>EV-002确认</td>
             <td>06-14 14:20</td>
           </tr>
-          <tr style="cursor:pointer" onclick="switchToReport('ERR-20260614-003')">
-            <td><b>ERR-20260614-003</b> <span class="badge badge-warn">样例</span></td>
+          <tr style="cursor:pointer; background:#f0f7ff;" onclick="switchToReport('ERR-20260614-003')" title="点击查看完整报告">
+            <td>🌟 完整</td>
+            <td><b>ERR-20260614-003</b></td>
             <td>#A-05</td>
             <td>小王</td>
             <td><span class="status-tag status-gap">⚠️ 含缺口（已评估）</span></td>
@@ -517,7 +526,8 @@ tr:hover { background: #f9f9f9; }
             <td>GAP-001补测（可选）</td>
             <td>06-14 18:00</td>
           </tr>
-          <tr>
+          <tr style="opacity:0.6;">
+            <td>📋 示例</td>
             <td><b>ERR-20260614-004</b></td>
             <td>#B-02</td>
             <td>小张</td>
@@ -528,18 +538,19 @@ tr:hover { background: #f9f9f9; }
           </tr>
         </tbody>
       </table>
+      <p style="font-size:12px; color:#888; margin-top:8px;">💡 点击 <b>ERR-003</b> 行可跳转到完整报告页面。</p>
     </div>
 
     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
       <div class="card">
         <h2>🚩 未关闭的采样缺口</h2>
-        <div class="todo-item high">
-          <h4>GAP-20260614-001 · ERR-003</h4>
+        <div class="todo-item high" style="border-left:4px solid #e65100; background:#fff8e1;">
+          <h4>GAP-20260614-001 · ERR-003 <span style="font-size:11px; color:#e65100;">🌟真实</span></h4>
           <p>y=30mm处1个测点缺失（对焦失败）→ 已评估影响±1.1%，未补数据</p>
           <p style="margin-top:4px; color:#c62828;">负责人：小王 · 预计06-15上午（可选）</p>
         </div>
-        <div class="todo-item high">
-          <h4>GAP-20260614-002 · ERR-004</h4>
+        <div class="todo-item high" style="opacity:0.6;">
+          <h4>GAP-20260614-002 · ERR-004 <span style="font-size:11px; color:#999;">📋示例</span></h4>
           <p>风速数据后半段丢失（DAQ掉线）→ 刚发现，还没评估</p>
           <p style="margin-top:4px; color:#c62828;">负责人：小张 · 预计06-15</p>
         </div>
@@ -547,13 +558,13 @@ tr:hover { background: #f9f9f9; }
 
       <div class="card">
         <h2>🚩 未确认的极端值</h2>
-        <div class="todo-item high">
-          <h4>EV-002 · ERR-002</h4>
+        <div class="todo-item high" style="opacity:0.6;">
+          <h4>EV-002 · ERR-002 <span style="font-size:11px; color:#999;">📋示例</span></h4>
           <p>位移比均值大3.8σ → 是尾涡还是对焦？需看原图+查尾迹</p>
           <p style="margin-top:4px; color:#c62828;">负责人：小林 · 死线 06-15 12:00</p>
         </div>
-        <div class="todo-item medium">
-          <h4>EV-001 · ERR-003 <span style="color:#2e7d32;">✅ 已确认</span></h4>
+        <div class="todo-item medium" style="border-left:4px solid #2e7d32; background:#e8f5e9;">
+          <h4>EV-001 · ERR-003 <span style="color:#2e7d32;">✅ 已确认</span> <span style="font-size:11px; color:#2e7d32;">🌟真实</span></h4>
           <p>Δy=12.3mm（4.2σ）→ 25%真实猝发 + 75%测量误差</p>
           <p style="margin-top:4px; color:#2e7d32;">确认人：小林 · 06-14 17:30</p>
         </div>
@@ -592,6 +603,7 @@ tr:hover { background: #f9f9f9; }
       <button class="filter-btn" data-filter="org">原始照片 (12)</button>
       <button class="filter-btn" data-filter="note">补备注照片 (12)</button>
       <button class="filter-btn" data-filter="old">旧版本截图 (5)</button>
+      <button onclick="exportPhotoList()" style="margin-left:auto; padding:6px 14px; background:#2e7d32; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;">📥 导出照片清单</button>
     </div>
 
     <div class="card">
@@ -623,6 +635,7 @@ tr:hover { background: #f9f9f9; }
         <option value="ERR-20260614-003-v0.2">ERR-20260614-003（历史 R-v0.2 修正标定）</option>
         <option value="ERR-20260614-003-v0.1">ERR-20260614-003（历史 R-v0.1 初稿有错误）</option>
       </select>
+      <button onclick="exportReport()" style="margin-left:12px; padding:6px 14px; background:#2e7d32; color:white; border:none; border-radius:4px; cursor:pointer; font-size:13px;">📥 导出 Markdown</button>
       <span id="reportMeta" style="font-size:12px; color:#888;"></span>
     </div>
 
@@ -821,6 +834,8 @@ function loadReport() {
   fetch(info.file)
     .then(r => r.text())
     .then(text => {
+      window.currentReportText = text;
+      window.currentReportKey = key;
       document.getElementById('reportContent').innerHTML = marked.parse(text);
       window.reportLoaded = true;
     })
@@ -828,6 +843,17 @@ function loadReport() {
       document.getElementById('reportContent').innerHTML =
         '<p style="color:#c62828;">加载失败：' + err.message + '</p>';
     });
+}
+
+// 导出Markdown报告
+function exportReport() {
+  if (!window.currentReportText) {
+    alert('请先选择并加载一份报告');
+    return;
+  }
+  const key = window.currentReportKey || 'report';
+  const filename = key + '.md';
+  downloadFile(window.currentReportText, filename, 'text/markdown');
 }
 
 function switchToReport(id) {
@@ -1211,8 +1237,134 @@ function resetHandoff() {
   switchHandoffStep(1);
 }
 
+// 导出交接验证结果（Markdown格式）
 function exportHandoff() {
-  alert('验证结果已导出（模拟）：交接验证报告_ERR-003_20260614.pdf');
+  const countChecked = (prefix, n) => {
+    let count = 0;
+    for (let i = 1; i <= n; i++) {
+      const el = document.getElementById(prefix + i);
+      if (el && el.checked) count++;
+    }
+    return count;
+  };
+  
+  const c2 = countChecked('h2-', 6);
+  const c3 = countChecked('h3-', 8);
+  const c4 = countChecked('h4-', 5);
+  const total = c2 + c3 + c4;
+  
+  const pass1 = c2 >= 4;
+  const pass2 = c3 >= 6;
+  const pass3 = c4 >= 4;
+  const allPass = pass1 && pass2 && pass3;
+  
+  const fixList = document.getElementById('fixList') ? document.getElementById('fixList').value : '';
+  
+  const today = new Date().toISOString().slice(0, 10);
+  
+  let md = `# 交接验证结果报告
+
+> 验证对象：ERR-20260614-003
+> 验证日期：${today}
+> 验证人：___________
+
+---
+
+## 三关汇总结果
+
+| 验证项 | 通过数/总数 | 结果 |
+|:---|:---:|:---:|
+| 第一关：照片找原始说法 | ${c2}/6 | ${pass1 ? '✅ 通过' : '❌ 未通过'} |
+| 第二关：报告讲清结果 | ${c3}/8 | ${pass2 ? '✅ 通过' : '❌ 未通过'} |
+| 第三关：交叉验证一致 | ${c4}/5 | ${pass3 ? '✅ 通过' : '❌ 未通过'} |
+| **总计** | **${total}/19** | **${allPass ? '🎉 交接通过' : '🟡 整改后再试'}** |
+
+---
+
+## 第一关详情（照片找原始说法）
+
+- [${c2 >= 1 ? 'x' : ' '}] 照片编号连续（#001到#012）
+- [${c2 >= 2 ? 'x' : ' '}] 能看出实验流程顺序
+- [${c2 >= 3 ? 'x' : ' '}] 补备注照片和原始照片一一对应
+- [${c2 >= 4 ? 'x' : ' '}] 补备注里能看到当时标注的疑问点
+- [${c2 >= 5 ? 'x' : ' '}] 旧版本截图里能看到分析过程
+- [${c2 >= 6 ? 'x' : ' '}] 随机抽3张在报告中能找到引用
+
+---
+
+## 第二关详情（报告讲清结果）
+
+- [${c3 >= 1 ? 'x' : ' '}] 30秒速答总误差（含/不含极端值）
+- [${c3 >= 2 ? 'x' : ' '}] 最大的误差来源是哪一项
+- [${c3 >= 3 ? 'x' : ' '}] 有几个极端值、确认完了吗
+- [${c3 >= 4 ? 'x' : ' '}] 参数版本和公式版本号
+- [${c3 >= 5 ? 'x' : ' '}] 采样缺口有没有、影响多大
+- [${c3 >= 6 ? 'x' : ' '}] 每个误差项都有公式+代入+过程+结果
+- [${c3 >= 7 ? 'x' : ' '}] 极端值EV-001能给外行讲明白
+- [${c3 >= 8 ? 'x' : ' '}] 两套结果都在，没有被平均掉
+
+---
+
+## 第三关详情（交叉验证一致）
+
+- [${c4 >= 1 ? 'x' : ' '}] 标定物长度：报告 vs 照片#001 一致
+- [${c4 >= 2 ? 'x' : ' '}] 风速12.47m/s：报告 vs 照片#003 一致
+- [${c4 >= 3 ? 'x' : ' '}] EV-001怀疑原因：报告 vs 补备注#008 一致
+- [${c4 >= 4 ? 'x' : ' '}] GAP-001位置：报告 vs 照片#011 一致
+- [${c4 >= 5 ? 'x' : ' '}] 历史版本：报告 vs 旧版本截图 一致
+
+---
+
+## 整改项
+
+${fixList || '（无）'}
+
+---
+
+**验证结论**：${allPass ? '✅ 交接通过，报告可归档' : '⚠️ 需整改后重新验证'}
+
+签字: 验证人___________ 日期___________
+`;
+
+  downloadFile(md, `交接验证结果_ERR-003_${today}.md`, 'text/markdown');
+}
+
+// 导出照片清单（CSV格式）
+function exportPhotoList() {
+  const filter = document.querySelector('.filter-btn.active').dataset.filter;
+  
+  let photos = [];
+  if (filter === 'all' || filter === 'org') {
+    photoData.org.forEach(p => photos.push({...p, category: '原始照片'}));
+  }
+  if (filter === 'all' || filter === 'note') {
+    photoData.note.forEach(p => photos.push({...p, category: '补备注照片'}));
+  }
+  if (filter === 'all' || filter === 'old') {
+    photoData.old.forEach(p => photos.push({...p, category: '旧版本截图'}));
+  }
+  
+  let csv = '编号,文件名,类别,名称,描述\n';
+  photos.forEach((p, i) => {
+    csv += `${i+1},"${p.file}","${p.category}","${p.name}","${p.desc}"\n`;
+  });
+  
+  downloadFile(csv, `照片清单_${filter}.csv`, 'text/csv');
+}
+
+// ========== 通用工具函数 ==========
+
+// 文件下载（纯前端，无需服务器）
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType + ';charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 // 初始化：默认加载照片
