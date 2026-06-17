@@ -81,21 +81,8 @@ class ContextWindowBudgeter:
         self.dedup_result = self.deduplicator.process(self.records)
         print(self.deduplicator.print_report(self.dedup_result))
 
-        record_map = {r.record_id: r for r in self.records}
-        self.all_records = []
-        for r in self.records:
-            if r.record_id in [rec.record_id for rec in self.dedup_result.clean_records]:
-                self.all_records.append(r)
-
-        for item in self.dedup_result.pending_review:
-            rec = record_map.get(item["record_id"])
-            if rec:
-                self.all_records.append(rec)
-
-        for item in self.dedup_result.dirty_records:
-            rec = record_map.get(item["record_id"])
-            if rec:
-                self.all_records.append(rec)
+        self.all_records = list(self.records)
+        print(f"\n✅ 所有 {len(self.all_records)} 条记录已纳入工作流处理")
 
         return self.dedup_result
 
@@ -355,9 +342,18 @@ class ContextWindowBudgeter:
         self.run_deduplication()
         self.run_review_workflow()
         self.run_security_check()
+
+        pre_export_stats = {
+            "total_records": len(self.all_records),
+            "clean_records": sum(1 for r in self.all_records if r.status == RecordStatus.CLEAN),
+            "pending_records": sum(1 for r in self.all_records if r.status == RecordStatus.PENDING),
+            "dirty_records": sum(1 for r in self.all_records if r.status == RecordStatus.DIRTY),
+            "leaked_records": sum(1 for r in self.all_records if r.status == RecordStatus.LEAKED),
+        }
+
         export_result = self.run_export()
 
-        self._save_final_report(export_result)
+        self._save_final_report(export_result, pre_export_stats)
 
         print("\n" + "╔" + "═" * 68 + "╗")
         print("║" + " " * 20 + "工作流执行完成" + " " * 23 + "║")
@@ -365,18 +361,15 @@ class ContextWindowBudgeter:
 
         return export_result
 
-    def _save_final_report(self, export_result: Dict[str, Any]) -> None:
+    def _save_final_report(self, export_result: Dict[str, Any], pre_export_stats: Dict[str, int]) -> None:
         report_path = os.path.join(self.output_dir, "final_report.json")
         report = {
             "workflow_version": "1.0.0",
             "generated_at": datetime.now().isoformat(),
             "allowed_labels": self.allowed_labels,
             "summary": {
-                "total_records": len(self.all_records),
-                "clean_records": sum(1 for r in self.all_records if r.status == RecordStatus.CLEAN),
-                "pending_records": sum(1 for r in self.all_records if r.status == RecordStatus.PENDING),
-                "dirty_records": sum(1 for r in self.all_records if r.status == RecordStatus.DIRTY),
-                "leaked_records": sum(1 for r in self.all_records if r.status == RecordStatus.LEAKED),
+                **pre_export_stats,
+                "exported_records": export_result.get("record_count", 0),
                 "duplicate_count": self.dedup_result.stats.get("duplicates", 0) + self.dedup_result.stats.get("fuzzy_duplicates", 0),
             },
             "dedup_stats": dict(self.dedup_result.stats),

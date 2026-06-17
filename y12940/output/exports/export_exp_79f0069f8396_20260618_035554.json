@@ -1,55 +1,58 @@
 {
   "manifest": {
-    "export_id": "exp_f4cf17f9a3ef",
-    "exported_at": "2026-06-18T03:04:53.098442",
+    "export_id": "exp_79f0069f8396",
+    "exported_at": "2026-06-18T03:55:54.210314",
     "exported_by": "算法PM_张工",
-    "manifest_hash": "6c4031009d288a2a22a5a68f2f4759aef523f5f9f8d21f5aafa61445f5a222cf",
-    "record_count": 4,
+    "manifest_hash": "05ec7cf55c2130af40697d1e4964dd8195cf5e2da3876c31ff4cae9423184ce5",
+    "record_count": 5,
     "record_ids": [
-      "rec_6e77c21e1c08",
-      "rec_3bbfc3814513",
-      "rec_090f0d9e66bc",
-      "rec_a9d3b8851b85"
+      "rec_e53f30f9be2c",
+      "rec_0cb7eaacd653",
+      "rec_e3a1aaa79ed4",
+      "rec_51da1dc6b214",
+      "rec_c829ba5ca965"
     ],
     "validation_result": {
       "is_valid": true,
-      "passed_count": 4,
+      "passed_count": 5,
       "failed_count": 0,
       "warning_count": 0,
       "passed": [
-        "rec_6e77c21e1c08",
-        "rec_3bbfc3814513",
-        "rec_090f0d9e66bc",
-        "rec_a9d3b8851b85"
+        "rec_e53f30f9be2c",
+        "rec_0cb7eaacd653",
+        "rec_e3a1aaa79ed4",
+        "rec_51da1dc6b214",
+        "rec_c829ba5ca965"
       ],
       "failed": [],
       "warnings": [],
       "hash_mismatches": [],
       "duplicate_check": {
-        "total_unique": 4,
+        "total_unique": 5,
         "duplicate_groups": []
       },
       "label_consistency": {
         "distribution": {
           "正面": 2,
+          "负面": 1,
           "中性": 1,
           "提问": 1
         },
-        "total_labels": 3,
+        "total_labels": 4,
         "min_count": 1,
         "max_count": 2
       },
       "source_traceability": {
-        "total_records": 4,
-        "records_with_source": 4,
+        "total_records": 5,
+        "records_with_source": 5,
         "records_missing_source": []
       }
     }
   },
-  "security_intercepted": 7,
+  "security_intercepted": 8,
   "records": [
     {
-      "record_id": "rec_6e77c21e1c08",
+      "record_id": "rec_e53f30f9be2c",
       "prompt": "用户：这款产品质量怎么样？",
       "response": "亲，这款产品采用优质材料制作，经过严格质检，用户反馈都很好的~",
       "label": "正面",
@@ -59,27 +62,27 @@
         "sheet_name": "Sheet1",
         "row_number": 42,
         "raw_content": "用户：这款产品质量怎么样？\n客服：亲，这款产品采用优质材料制作，经过严格质检，用户反馈都很好的~",
-        "retrieved_at": "2026-06-18T03:04:52.831517"
+        "retrieved_at": "2026-06-18T03:55:53.565691"
       },
       "tokens_prompt": 13,
       "tokens_response": 37,
       "status": "exported",
       "version": 1,
-      "created_at": "2026-06-18T03:04:52.831601",
-      "modified_at": "2026-06-18T03:04:53.097429",
+      "created_at": "2026-06-18T03:55:53.565898",
+      "modified_at": "2026-06-18T03:55:54.204678",
       "modified_by": "算法PM_张工",
       "review_notes": [
         {
           "reviewer": "算法PM_张工",
           "action": "approve",
           "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
-          "timestamp": "2026-06-18T03:04:53.097231"
+          "timestamp": "2026-06-18T03:55:54.203929"
         },
         {
           "reviewer": "算法PM_张工",
           "action": "approve",
           "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
-          "timestamp": "2026-06-18T03:04:53.097415"
+          "timestamp": "2026-06-18T03:55:54.204629"
         }
       ],
       "deduplication_hash": "72117454e0b5c59d",
@@ -91,87 +94,43 @@
       "total_tokens": 50
     },
     {
-      "record_id": "rec_3bbfc3814513",
-      "prompt": "用户：请问这款手机支持5G吗？",
-      "response": "是的，这款手机支持SA/NSA双模5G网络。",
-      "label": "中性",
-      "source_material": {
-        "source_id": "src_001",
-        "file_path": "/data/raw/202606/电商评论_6月第2周.xlsx",
-        "sheet_name": "Sheet1",
-        "row_number": 55,
-        "raw_content": "用户：请问这款手机支持5G吗？\n客服：是的，这款手机支持SA/NSA双模5G网络。",
-        "retrieved_at": "2026-06-18T03:04:52.831834"
-      },
-      "tokens_prompt": 14,
-      "tokens_response": 19,
-      "status": "exported",
-      "version": 1,
-      "created_at": "2026-06-18T03:04:52.831836",
-      "modified_at": "2026-06-18T03:04:53.097882",
-      "modified_by": "算法PM_张工",
-      "review_notes": [
-        {
-          "reviewer": "算法PM_张工",
-          "action": "approve",
-          "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
-          "timestamp": "2026-06-18T03:04:53.097436"
-        },
-        {
-          "reviewer": "算法PM_张工",
-          "action": "approve",
-          "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
-          "timestamp": "2026-06-18T03:04:53.097867"
-        }
-      ],
-      "deduplication_hash": "68bf479fa3e3f779",
-      "content_hash": "51d26910bc9886fb7f7ba9425672e91f63d475722edb8a623b57509312e360fa",
-      "tags": [],
-      "group_key": "电商_产品咨询",
-      "total_tokens": 33
-    },
-    {
-      "record_id": "rec_090f0d9e66bc",
-      "prompt": "用户：帮我查一下快递到哪了",
-      "response": "好的，您的快递目前在【北京市朝阳区转运中心】，预计明天送达。",
-      "label": "提问",
+      "record_id": "rec_0cb7eaacd653",
+      "prompt": "用户：发货太慢了！客服态度也不好！",
+      "response": "非常抱歉给您带来不好的体验，我们会尽快处理您的订单",
+      "label": "负面",
       "source_material": {
         "source_id": "src_002",
         "file_path": "/data/raw/202606/客服对话_6月第2周.jsonl",
         "sheet_name": null,
-        "row_number": 88,
-        "raw_content": "用户：帮我查一下快递到哪了\n客服：好的，您的快递目前在【北京市朝阳区转运中心】，预计明天送达。",
-        "retrieved_at": "2026-06-18T03:04:52.831860"
+        "row_number": 201,
+        "raw_content": "用户：发货太慢了！客服态度也不好！\n客服：非常抱歉给您带来不好的体验...",
+        "retrieved_at": "2026-06-18T03:55:53.566142"
       },
-      "tokens_prompt": 16,
-      "tokens_response": 32,
+      "tokens_prompt": 19,
+      "tokens_response": 27,
       "status": "exported",
-      "version": 1,
-      "created_at": "2026-06-18T03:04:52.831862",
-      "modified_at": "2026-06-18T03:04:53.098031",
+      "version": 2,
+      "created_at": "2026-06-18T03:55:53.566153",
+      "modified_at": "2026-06-18T03:55:54.203214",
       "modified_by": "算法PM_张工",
       "review_notes": [
         {
           "reviewer": "算法PM_张工",
-          "action": "approve",
-          "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
-          "timestamp": "2026-06-18T03:04:53.097888"
-        },
-        {
-          "reviewer": "算法PM_张工",
-          "action": "approve",
-          "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
-          "timestamp": "2026-06-18T03:04:53.098018"
+          "action": "fix_label",
+          "note": "多标签混写，取第一个有效标签。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
+          "timestamp": "2026-06-18T03:55:54.203179"
         }
       ],
-      "deduplication_hash": "d4bf6b85cea54893",
-      "content_hash": "e72fc645339fdc4aed8d51ce77cf834d6bb046b758f6d6b39b10cf6101e7e656",
-      "tags": [],
-      "group_key": "客服_物流查询",
-      "total_tokens": 48
+      "deduplication_hash": "9b29e78d810ed11b",
+      "content_hash": "7d512badea02de771c464aedcc3cc7c054f559d198c74455ab6bc2b56b9216db",
+      "tags": [
+        "multi_label_mixed"
+      ],
+      "group_key": "客服_投诉处理",
+      "total_tokens": 46
     },
     {
-      "record_id": "rec_a9d3b8851b85",
+      "record_id": "rec_e3a1aaa79ed4",
       "prompt": "好",
       "response": "感谢您的支持！",
       "label": "正面",
@@ -181,21 +140,21 @@
         "sheet_name": "Sheet1",
         "row_number": 78,
         "raw_content": "好",
-        "retrieved_at": "2026-06-18T03:04:52.831779"
+        "retrieved_at": "2026-06-18T03:55:53.566171"
       },
       "tokens_prompt": 1,
       "tokens_response": 8,
       "status": "exported",
       "version": 1,
-      "created_at": "2026-06-18T03:04:52.831788",
-      "modified_at": "2026-06-18T03:04:53.095913",
+      "created_at": "2026-06-18T03:55:53.566182",
+      "modified_at": "2026-06-18T03:55:54.200060",
       "modified_by": "算法PM_张工",
       "review_notes": [
         {
           "reviewer": "算法PM_张工",
           "action": "approve",
           "note": "短prompt样本确认可用，属于正常短评论场景。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
-          "timestamp": "2026-06-18T03:04:53.095822"
+          "timestamp": "2026-06-18T03:55:54.199995"
         }
       ],
       "deduplication_hash": "fd5243e407fbd67e",
@@ -205,6 +164,86 @@
       ],
       "group_key": "电商_短评论",
       "total_tokens": 9
+    },
+    {
+      "record_id": "rec_51da1dc6b214",
+      "prompt": "用户：请问这款手机支持5G吗？",
+      "response": "是的，这款手机支持SA/NSA双模5G网络。",
+      "label": "中性",
+      "source_material": {
+        "source_id": "src_001",
+        "file_path": "/data/raw/202606/电商评论_6月第2周.xlsx",
+        "sheet_name": "Sheet1",
+        "row_number": 55,
+        "raw_content": "用户：请问这款手机支持5G吗？\n客服：是的，这款手机支持SA/NSA双模5G网络。",
+        "retrieved_at": "2026-06-18T03:55:53.566256"
+      },
+      "tokens_prompt": 14,
+      "tokens_response": 19,
+      "status": "exported",
+      "version": 1,
+      "created_at": "2026-06-18T03:55:53.566259",
+      "modified_at": "2026-06-18T03:55:54.205909",
+      "modified_by": "算法PM_张工",
+      "review_notes": [
+        {
+          "reviewer": "算法PM_张工",
+          "action": "approve",
+          "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
+          "timestamp": "2026-06-18T03:55:54.204733"
+        },
+        {
+          "reviewer": "算法PM_张工",
+          "action": "approve",
+          "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
+          "timestamp": "2026-06-18T03:55:54.205719"
+        }
+      ],
+      "deduplication_hash": "68bf479fa3e3f779",
+      "content_hash": "51d26910bc9886fb7f7ba9425672e91f63d475722edb8a623b57509312e360fa",
+      "tags": [],
+      "group_key": "电商_产品咨询",
+      "total_tokens": 33
+    },
+    {
+      "record_id": "rec_c829ba5ca965",
+      "prompt": "用户：帮我查一下快递到哪了",
+      "response": "好的，您的快递目前在【北京市朝阳区转运中心】，预计明天送达。",
+      "label": "提问",
+      "source_material": {
+        "source_id": "src_002",
+        "file_path": "/data/raw/202606/客服对话_6月第2周.jsonl",
+        "sheet_name": null,
+        "row_number": 88,
+        "raw_content": "用户：帮我查一下快递到哪了\n客服：好的，您的快递目前在【北京市朝阳区转运中心】，预计明天送达。",
+        "retrieved_at": "2026-06-18T03:55:53.566299"
+      },
+      "tokens_prompt": 16,
+      "tokens_response": 32,
+      "status": "exported",
+      "version": 1,
+      "created_at": "2026-06-18T03:55:53.566302",
+      "modified_at": "2026-06-18T03:55:54.206329",
+      "modified_by": "算法PM_张工",
+      "review_notes": [
+        {
+          "reviewer": "算法PM_张工",
+          "action": "approve",
+          "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
+          "timestamp": "2026-06-18T03:55:54.205941"
+        },
+        {
+          "reviewer": "算法PM_张工",
+          "action": "approve",
+          "note": "系统自动检测通过，干净样本确认可用。同轮复核：安全规则✓ 模型日志✓ 工具调用✓",
+          "timestamp": "2026-06-18T03:55:54.206224"
+        }
+      ],
+      "deduplication_hash": "d4bf6b85cea54893",
+      "content_hash": "e72fc645339fdc4aed8d51ce77cf834d6bb046b758f6d6b39b10cf6101e7e656",
+      "tags": [],
+      "group_key": "客服_物流查询",
+      "total_tokens": 48
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "workflow_version": "1.0.0",
-  "generated_at": "2026-06-18T03:04:53.101617",
+  "generated_at": "2026-06-18T03:55:54.222397",
   "allowed_labels": [
     "正面",
     "负面",
@@ -9,35 +9,36 @@
     "指令"
   ],
   "summary": {
-    "total_records": 9,
-    "clean_records": 0,
-    "pending_records": 1,
-    "dirty_records": 3,
+    "total_records": 10,
+    "clean_records": 5,
+    "pending_records": 2,
+    "dirty_records": 2,
     "leaked_records": 1,
+    "exported_records": 5,
     "duplicate_count": 1
   },
   "dedup_stats": {
     "clean": 3,
-    "dirty": 5,
+    "dirty": 6,
     "duplicates": 1,
     "pending": 1,
     "fuzzy_duplicates": 0
   },
-  "security_blocked": 7,
+  "security_blocked": 8,
   "export_result": {
-    "export_id": "exp_f4cf17f9a3ef",
-    "manifest_hash": "6c4031009d288a2a22a5a68f2f4759aef523f5f9f8d21f5aafa61445f5a222cf",
-    "record_count": 4,
+    "export_id": "exp_79f0069f8396",
+    "manifest_hash": "05ec7cf55c2130af40697d1e4964dd8195cf5e2da3876c31ff4cae9423184ce5",
+    "record_count": 5,
     "files": {
-      "json": "./output/exports/export_exp_f4cf17f9a3ef_20260618_030453.json",
-      "jsonl": "./output/exports/export_exp_f4cf17f9a3ef_20260618_030453.jsonl",
-      "csv": "./output/exports/export_exp_f4cf17f9a3ef_20260618_030453.csv",
+      "json": "./output/exports/export_exp_79f0069f8396_20260618_035554.json",
+      "jsonl": "./output/exports/export_exp_79f0069f8396_20260618_035554.jsonl",
+      "csv": "./output/exports/export_exp_79f0069f8396_20260618_035554.csv",
       "review_csv": "./output/review_queue.csv"
     },
     "validation_passed": true
   },
   "review_bundle": {
-    "generated_at": "2026-06-18T03:04:53.101638",
+    "generated_at": "2026-06-18T03:55:54.222431",
     "description": "本轮复核专用上下文包：安全规则、模型日志、工具调用参数问题集中呈现",
     "safety_rule_issues": [
       "安全规则未覆盖：诱导性提问的边界判定",

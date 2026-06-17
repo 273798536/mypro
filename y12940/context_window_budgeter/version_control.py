@@ -89,11 +89,12 @@ class VersionControl:
         record.add_review_note(reviewer, action, note)
 
         if action == ReviewAction.APPROVE:
-            if record.status == RecordStatus.PENDING:
-                record.status = RecordStatus.CLEAN
+            record.status = RecordStatus.CLEAN
         elif action == ReviewAction.REJECT:
             record.status = RecordStatus.DIRTY
         elif action == ReviewAction.FIX_LABEL:
+            record.status = RecordStatus.CLEAN
+        elif action == ReviewAction.NEED_MORE_INFO:
             record.status = RecordStatus.PENDING
         elif action == ReviewAction.FLAG_AS_LEAK:
             record.status = RecordStatus.LEAKED

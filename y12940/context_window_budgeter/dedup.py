@@ -78,6 +78,12 @@ class Deduplicator:
                 record.tags.append("duplicate")
                 existing.tags.append("duplicate_original")
                 result.stats["duplicates"] += 1
+                result.dirty_records.append({
+                    "record_id": record.record_id,
+                    "issues": [f"精确重复样本，与 {existing.record_id} 重复"],
+                    "preview": self._get_preview(record)
+                })
+                result.stats["dirty"] += 1
                 continue
 
             if self.enable_fuzzy_match:
@@ -92,6 +98,12 @@ class Deduplicator:
                     record.status = RecordStatus.DIRTY
                     record.tags.append("fuzzy_duplicate")
                     result.stats["fuzzy_duplicates"] += 1
+                    result.dirty_records.append({
+                        "record_id": record.record_id,
+                        "issues": [f"模糊重复样本，与 {matched_with.record_id} 相似"],
+                        "preview": self._get_preview(record)
+                    })
+                    result.stats["dirty"] += 1
                     continue
 
             seen_hashes[dedup_hash] = record
@@ -161,12 +173,13 @@ class Deduplicator:
 
     def print_report(self, result: DeduplicationResult) -> str:
         lines = ["=" * 60, "样本去重与脏数据检测报告", "=" * 60]
-        lines.append(f"总样本数: {sum(result.stats.values())}")
+        total = result.stats['clean'] + result.stats['pending'] + result.stats['dirty']
+        lines.append(f"总样本数: {total}")
         lines.append(f"  ✅ 干净样本: {result.stats['clean']}")
         lines.append(f"  ⚠️  待复核: {result.stats['pending']}")
         lines.append(f"  ❌ 脏数据: {result.stats['dirty']}")
-        lines.append(f"  🔄 精确重复: {result.stats['duplicates']}")
-        lines.append(f"  🔄 模糊重复: {result.stats['fuzzy_duplicates']}")
+        lines.append(f"  🔄 精确重复: {result.stats['duplicates']} (已包含在脏数据中)")
+        lines.append(f"  🔄 模糊重复: {result.stats['fuzzy_duplicates']} (已包含在脏数据中)")
 
         if result.duplicate_groups:
             lines.append("\n重复样本组:")
