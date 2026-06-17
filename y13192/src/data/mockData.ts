@@ -40,9 +40,10 @@ function generateReadings(timestamp: number): ResistanceReading[] {
     let unitLabel: 'mΩ' | 'Ω' | 'mΩ·cm²'
 
     if (isUnitMixup) {
-      valueMohm = isAnomaly ? 45.2 + Math.random() * 10 : 25.0 + Math.random() * 8
-      valueMohmAlt = valueMohm / 1000
-      unitLabel = 'mΩ'
+      const base = isAnomaly ? 45.2 + Math.random() * 10 : 25.0 + Math.random() * 8
+      valueMohm = base / 1000
+      valueMohmAlt = base
+      unitLabel = 'Ω'
     } else if (isAnomaly) {
       valueMohm = 42.0 + Math.random() * 15
       valueMohmAlt = valueMohm

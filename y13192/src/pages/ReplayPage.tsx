@@ -1,9 +1,13 @@
 import { useStore } from '@/store/useStore'
-import { maintenanceNotes, cells } from '@/data/mockData'
+import { maintenanceNotes, cells, timestamps } from '@/data/mockData'
 import HeatMap from '@/components/HeatMap'
 import TimelineSlider from '@/components/TimelineSlider'
-import MaintenanceNotes from '@/components/MaintenanceNotes'
-import { AlertTriangle, MapPin } from 'lucide-react'
+import { AlertTriangle, MapPin, Download } from 'lucide-react'
+import { downloadCsv } from '@/utils/exportCsv'
+
+function toMohm(value: number, unit: string, coeff: number = 1000): number {
+  return unit === 'mΩ' ? value : value * coeff
+}
 
 export default function ReplayPage() {
   const { selectedCellId, currentTimestamp, readingsMap, thresholds } = useStore()
@@ -12,7 +16,32 @@ export default function ReplayPage() {
   const selectedCell = cells.find((c) => c.id === selectedCellId)
   const selectedNote = maintenanceNotes.filter((n) => n.cellId === selectedCellId)
   const thresholdConfig = thresholds.find((t) => t.parameter === '内阻安全阈值')
+  const unitConfig = thresholds.find((t) => t.parameter === '单位换算系数')
   const threshold = thresholdConfig?.value ?? 40
+  const unitCoeff = unitConfig?.value ?? 1000
+
+  const tIndex = timestamps.indexOf(currentTimestamp)
+  const tLabel = tIndex >= 0 ? `T${tIndex + 1}` : 'T'
+
+  const handleExport = () => {
+    const header = ['电池ID', '行', '列', '模块名称', '标注值', '单位', '换算后(mΩ)', '是否异常', '时间戳']
+    const rows = readings.map((r) => {
+      const cell = cells.find((c) => c.id === r.cellId)
+      const valueMohm = toMohm(r.valueMohm, r.unitLabel, unitCoeff)
+      return [
+        r.cellId,
+        cell?.row ?? '',
+        cell?.col ?? '',
+        cell?.moduleName ?? '',
+        r.valueMohm,
+        r.unitLabel,
+        Math.round(valueMohm * 100) / 100,
+        valueMohm > threshold ? '是' : '否',
+        currentTimestamp,
+      ]
+    })
+    downloadCsv([header, ...rows], `内阻参数回放_${tLabel}_${currentTimestamp}.csv`)
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -22,6 +51,13 @@ export default function ReplayPage() {
           <p className="text-xs text-gray-500">空间位置 · 异常高亮 · 维修备注来源</p>
         </div>
         <div className="flex items-center gap-4 text-xs text-gray-500">
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-1.5 rounded-md bg-amber-500/20 px-3 py-1.5 text-xs font-medium text-amber-400 transition-colors hover:bg-amber-500/30"
+          >
+            <Download className="h-3.5 w-3.5" />
+            导出CSV
+          </button>
           <span>安全阈值: <span className="text-amber-400 font-mono">{threshold} mΩ</span></span>
           <span>异常电池: <span className="text-red-400 font-mono">{readings.filter((r) => r.isAnomaly).length}</span></span>
         </div>
@@ -49,13 +85,20 @@ export default function ReplayPage() {
               <div className="mb-4 rounded-lg border border-gray-700/50 p-3" style={{ background: '#1a1a2e' }}>
                 <div className="mb-2 flex items-baseline justify-between">
                   <span className="text-xs text-gray-500">当前内阻</span>
-                  <span
-                    className={`text-xl font-bold font-mono ${
-                      selectedReading.isAnomaly ? 'text-red-400' : 'text-green-400'
-                    }`}
-                  >
-                    {selectedReading.valueMohm.toFixed(2)} mΩ
-                  </span>
+                  <div className="text-right">
+                    <span
+                      className={`text-xl font-bold font-mono ${
+                        selectedReading.isAnomaly ? 'text-red-400' : 'text-green-400'
+                      }`}
+                    >
+                      {selectedReading.valueMohm.toFixed(selectedReading.unitLabel === 'mΩ' ? 2 : 5)} {selectedReading.unitLabel}
+                    </span>
+                    {selectedReading.unitLabel !== 'mΩ' && (
+                      <div className="text-xs text-amber-400 mt-0.5">
+                        = {toMohm(selectedReading.valueMohm, selectedReading.unitLabel, unitCoeff).toFixed(2)} mΩ
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="mb-1 flex items-baseline justify-between">
                   <span className="text-xs text-gray-500">安全阈值</span>
@@ -64,13 +107,13 @@ export default function ReplayPage() {
                 {selectedReading.isAnomaly && (
                   <div className="mt-2 flex items-center gap-1 text-xs text-red-400">
                     <AlertTriangle className="h-3 w-3" />
-                    超标 {((selectedReading.valueMohm - threshold) / threshold * 100).toFixed(1)}%
+                    超标 {((toMohm(selectedReading.valueMohm, selectedReading.unitLabel, unitCoeff) - threshold) / threshold * 100).toFixed(1)}%
                   </div>
                 )}
                 {selectedReading.unitLabel !== 'mΩ' && (
                   <div className="mt-2 flex items-center gap-1 text-xs text-orange-400">
                     <AlertTriangle className="h-3 w-3" />
-                    单位标注: {selectedReading.unitLabel}（注意换算）
+                    单位标注: {selectedReading.unitLabel}（已自动换算为mΩ判断异常）
                   </div>
                 )}
               </div>

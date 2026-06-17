@@ -8,6 +8,10 @@ function getCellReading(readings: ResistanceReading[], cellId: string) {
   return readings.find((r) => r.cellId === cellId)
 }
 
+function toMohm(value: number, unit: string, coeff: number = 1000): number {
+  return unit === 'mΩ' ? value : value * coeff
+}
+
 function getCellColor(value: number, threshold: number, boundaryCoeff: number) {
   if (value > threshold) return 'anomaly'
   if (value > threshold * boundaryCoeff) return 'boundary'
@@ -40,8 +44,10 @@ export default function HeatMap() {
 
   const thresholdConfig = thresholds.find((t) => t.parameter === '内阻安全阈值')
   const boundaryConfig = thresholds.find((t) => t.parameter === '边界样本系数')
+  const unitConfig = thresholds.find((t) => t.parameter === '单位换算系数')
   const threshold = thresholdConfig?.value ?? 40
   const boundaryCoeff = boundaryConfig?.value ?? 0.95
+  const unitCoeff = unitConfig?.value ?? 1000
 
   const readings = readingsMap[currentTimestamp] || []
 
@@ -82,8 +88,10 @@ export default function HeatMap() {
         {grid.flat().map((cell, i) => {
           if (!cell) return <div key={i} className="aspect-square" />
           const reading = getCellReading(readings, cell.id)
-          const value = reading?.valueMohm ?? 0
-          const status = getCellColor(value, threshold, boundaryCoeff)
+          const valueMohm = reading ? toMohm(reading.valueMohm, reading.unitLabel, unitCoeff) : 0
+          const displayValue = reading?.valueMohm ?? 0
+          const displayUnit = reading?.unitLabel ?? 'mΩ'
+          const status = getCellColor(valueMohm, threshold, boundaryCoeff)
           const isSelected = selectedCellId === cell.id
           const isAnomaly = status === 'anomaly'
 
@@ -104,9 +112,9 @@ export default function HeatMap() {
                 className={cn('text-sm font-semibold', textMap[status])}
                 style={{ fontFamily: 'JetBrains Mono, monospace' }}
               >
-                {reading ? value.toFixed(1) : '—'}
+                {reading ? displayValue.toFixed(displayUnit === 'mΩ' ? 1 : 4) : '—'}
               </span>
-              <span className="mt-0.5 text-[10px] text-gray-500">mΩ</span>
+              <span className="mt-0.5 text-[10px] text-gray-500">{displayUnit}</span>
               {isAnomaly && (
                 <AlertTriangle className="absolute top-1 right-1 h-3 w-3 text-red-400" />
               )}
@@ -127,9 +135,14 @@ export default function HeatMap() {
         >
           <div className="text-gray-300 font-semibold">{tooltip.cell.id}</div>
           <div className="text-gray-500">{tooltip.cell.moduleName}</div>
-          <div className={cn('mt-1', textMap[getCellColor(tooltip.reading.valueMohm, threshold, boundaryCoeff)])}>
-            {tooltip.reading.valueMohm.toFixed(2)} mΩ
+          <div className={cn('mt-1', textMap[getCellColor(toMohm(tooltip.reading.valueMohm, tooltip.reading.unitLabel, unitCoeff), threshold, boundaryCoeff)])}>
+            {tooltip.reading.valueMohm.toFixed(tooltip.reading.unitLabel === 'mΩ' ? 2 : 5)} {tooltip.reading.unitLabel}
           </div>
+          {tooltip.reading.unitLabel !== 'mΩ' && (
+            <div className="text-amber-400 mt-0.5">
+              = {toMohm(tooltip.reading.valueMohm, tooltip.reading.unitLabel, unitCoeff).toFixed(2)} mΩ
+            </div>
+          )}
           <div className="text-gray-500 mt-0.5">
             位置: R{tooltip.cell.row} C{tooltip.cell.col}
           </div>

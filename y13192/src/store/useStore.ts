@@ -77,11 +77,13 @@ function computeRecalcResults(
 
     let changeReason: 'formula' | 'unit' | 'boundary' | '' = ''
     if (beforeAnomaly !== afterAnomaly) {
-      const unitChanged = oldUnitCoeff !== newUnitCoeff && r.unitLabel !== 'mΩ'
+      const isUnitMixup = r.unitLabel !== 'mΩ'
+      const unitCoeffChanged = oldUnitCoeff !== newUnitCoeff
       const thresholdChanged = oldThreshold !== newThreshold
       const boundaryChanged = oldBoundaryCoeff !== newBoundaryCoeff
 
-      if (unitChanged) changeReason = 'unit'
+      if (isUnitMixup) changeReason = 'unit'
+      else if (unitCoeffChanged) changeReason = 'unit'
       else if (thresholdChanged && !boundaryChanged) changeReason = 'formula'
       else changeReason = 'boundary'
     }
