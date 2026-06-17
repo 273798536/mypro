@@ -2,53 +2,57 @@
 
 教研编辑阿宁的凸包面积校验工具——给现场老师用的，不是给机器看的。
 
-## 核心改动（解决跳变归因问题）
+## 环境要求
 
-**之前的问题**：跳变检测是把当前题目与同一次运行的上一道题比，换参数再跑看不出同一题目怎么变的。
-
-**现在的逻辑**：跳变检测是**同一题目，跨两次运行对比**（本次 vs 基准）。每次运行结果会持久化到 `output/runs/`，带完整参数快照。换参数再跑时，自动拉取基准运行的结果，逐题对比参数差异、改判差异、数据差异，给出明确归因。
+- **Python 3.6+**（仅使用标准库，无需 `pip install` 任何依赖）
+- 入口文件：`main.py`
+- 核心模块：`convex_hull_verify.py`
+- 示例数据：`data/` 目录下 3 份 CSV
 
 ## 先跑哪条命令
 
-### 完整工作流（换参数看变化）
+### 完整工作流（验证跨运行跳变归因）
 
 ```bash
-# 1. 先清旧运行（首次可选）
+# 步骤 1：清旧运行（可选）
 python3 main.py --clear-runs
 
-# 2. 首次运行（设为基准）
+# 步骤 2：首次运行（跳过单位检测，打标签）
 python3 main.py --skip-unit-check --label "原始参数"
+# 终端会输出 RUN_ID，例如 20260617_135739
 
-# 3. 把刚才的运行设为基准（终端会提示 RUN_ID）
-python3 main.py --set-baseline <RUN_ID>
+# 步骤 3：设为基准
+python3 main.py --set-baseline 20260617_135739
 
-# 4. 换阈值参数再跑，自动与基准对比
+# 步骤 4：换参数/改数据再跑，自动跨运行对比
+# 例：换阈值
 python3 main.py --skip-unit-check --threshold 0.10 --label "阈值0.10"
+# 例：修改题目/改判记录后再跑
+python3 main.py --skip-unit-check \
+  --questions data/question_items_modified.csv \
+  --overrides data/manual_overrides_modified.csv \
+  --label "坐标修改+新增改判"
 
-# 5. 看结果
+# 步骤 5：看结果
 open output/verification_report.html
+# 或启动本地服务器：
+cd output && python3 -m http.server 8765 && open http://localhost:8765/verification_report.html
 ```
 
 ### 常用命令速查
 
-| 命令 | 用途 |
+| 命令 | 说明 |
 |------|------|
-| `python3 main.py --skip-unit-check` | 运行校验，跳过单位检测 |
-| `python3 main.py --skip-unit-check --label "xxx"` | 运行并打标签 |
-| `python3 main.py --skip-unit-check --threshold 0.10` | 换阈值再跑 |
-| `python3 main.py --list-runs` | 列出所有历史运行 |
-| `python3 main.py --set-baseline <RUN_ID>` | 设某运行为基准 |
-| `python3 main.py --clear-runs` | 清除所有历史运行 |
+| `python3 main.py` | 完整流程（检测到单位缺失会暂停并输出报告） |
+| `python3 main.py --skip-unit-check` | 跳过单位检测，直接计算 |
+| `python3 main.py --skip-unit-check --label "xxx"` | 运行并打标签，便于历史记录识别 |
+| `python3 main.py --skip-unit-check --threshold 0.10` | 自定义跳变判定阈值（默认 0.05 = 5%） |
+| `python3 main.py --skip-unit-check --questions data/my.csv --overrides data/ov.csv --notes data/n.csv` | 指定自己的材料文件 |
+| `python3 main.py --list-runs` | 列出所有历史运行，看哪条是基准 |
+| `python3 main.py --set-baseline <RUN_ID>` | 将指定运行设为对比基准 |
+| `python3 main.py --clear-runs` | 清除所有历史运行存档 |
 
-### 快速测试命令
-
-```bash
-# 单命令走完整流程（先看单位缺失检测）
-python3 main.py
-
-# 跳过单位检测继续
-python3 main.py --skip-unit-check
-```
+所有命令均从项目根目录执行，无其他前置步骤。
 
 ## 再看哪份CSV/HTML明细
 
@@ -58,56 +62,52 @@ python3 main.py --skip-unit-check
 |------|------|--------|-------------|
 | 1 | `verification_report.html` | **Web 可视化报告**：状态卡片、对比表格、逐步骤追溯、跨运行归因面板 | ✅ 最先打开 |
 | 2 | `verification_status.csv` | 哪些已处理、哪些待补证据、哪些单位缺失 | 快速总览 |
-| 3 | `verification_results.csv` | 每条题目的凸包面积、基准面积、相对变化、跳变归因 | 明细核对 |
-| 4 | `verification_trace.json` | 逐步骤追溯：每一步输入输出、哪一步让结果变化 | 深度排查 |
+| 3 | `verification_results.csv` | 每条题目：基准面积、本次面积、相对变化、跳变归因、信息标签 | 明细核对 |
+| 4 | `verification_trace.json` | 每一步输入输出快照，深度排查 | 技术追溯 |
 
-如果单位缺失，还会多出 `unit_missing_report.json`，列出待确认原因和影响范围。
+单位缺失时额外生成 `unit_missing_report.json`，列出待确认原因和影响范围。
 
-## 跳变归因说明
+## 跳变归因逻辑（核心修复点）
 
-当换参数再跑后，某道题的凸包面积相对变化超过阈值，工具会从三个维度排查：
+**关键原则：只有凸包面积相对变化超过阈值，才标「待补证据」并归因。**
+「有改判记录」只是信息标签，不直接触发待补证据。
 
-| 归因类型 | 触发条件 |
-|----------|----------|
-| **人工改判** | 两次运行之间，该题目的改判记录有增/删/改 |
-| **单位不一致** | 题目单位变化或缺失 |
-| **阈值调整** | 运行阈值或题目级阈值变化 |
-| **坐标数据变化** | 题目的坐标点变化 |
-| **题目数值变化** | 题目 value 变化且不是改判造成 |
-| **原因未明** | 有跳变但找不到上述差异 |
+| 场景 | 状态 | jump_causes（跳变归因） | info_tags（信息标签） |
+|------|------|------------------------|----------------------|
+| 面积没变，只是有改判记录 | **已处理** | (空) | 存在人工改判记录 |
+| 面积跳变，且改判记录也变了 | **待补证据** | 人工改判导致跳变 | 存在人工改判记录 |
+| 面积跳变，坐标变了 | **待补证据** | 坐标数据变化 | (空) |
+| 面积跳变，阈值变了 | **待补证据** | 阈值调整 | (空) |
+| 面积跳变，单位变了 | **待补证据** | 单位不一致 | (空) |
+| 单位缺失 | **单位缺失-待确认** | (空) | (空) |
 
-归因结果在 `verification_results.csv` 的 `jump_causes` 列，以及 `verification_report.html` 的每道题详情页中的"跨运行对比"区块。
+归因完整链条：先对比两次运行的参数、改判记录、题目数据差异 → 再看面积是否真的跳变 → 从差异中找出导致跳变的原因。
 
 ## 状态含义
 
 | 状态 | 含义 |
 |------|------|
-| 已处理 | 凸包面积计算完成，与基准相比无显著跳变 |
-| 待补证据 | 计算完成但与基准相比有跳变，需要补充证据说明 |
-| 单位缺失-待确认 | 单位未标注，暂停计算，等确认后重跑 |
+| 已处理 | 凸包面积计算完成，与基准相比无显著跳变（即使有改判记录也没事） |
+| 待补证据 | 面积与基准相比有显著跳变，需要补充证据说明变化原因 |
+| 单位缺失-待确认 | 题目单位未标注，暂停计算，等确认后重跑 |
 
 ## 示例材料
 
-`data/` 目录下三份示例材料，量少但像真活：
+`data/` 目录下三份示例材料：
 
-- **question_items.csv**：6条题目，Q003、Q006 缺失单位，Q004 用 mm²
-- **manual_overrides.csv**：2条人工改判
-- **supplementary_notes.csv**：3条后补说明
+- **question_items.csv**：6 条题目。Q003、Q006 故意缺单位；Q004 用 mm²，其余 cm²。
+- **manual_overrides.csv**：2 条人工改判（Q002 补录遗漏顶点、Q005 歧义修正）。
+- **supplementary_notes.csv**：3 条后补说明。
+
+另有 `question_items_modified.csv` 和 `manual_overrides_modified.csv`，用于模拟修改后再跑的场景（Q001 新增改判、Q004 坐标改宽导致面积跳变）。
 
 ## 跨运行追溯原理
 
-1. 每次运行自动保存到 `output/runs/run_<RUN_ID>.json`，包含：
-   - 完整参数快照（阈值、跳过单位检测、各文件哈希）
-   - 每道题的计算结果和逐步骤追溯
-   - 运行标签和时间戳
-
-2. 用 `--set-baseline` 标记某运行为基准后，后续运行自动：
-   - 加载基准运行的参数和结果
-   - 对同一 item_id，对比两次运行的参数、改判、数据
-   - 计算相对变化，超过阈值则归因
-   - 归因结果写入步骤追溯和报告
-
-3. Web 报告展示：
-   - 顶部状态卡片（已处理/待补证据/单位缺失 数量）
-   - 结果一览表格（含基准面积、本次面积、相对变化、归因标签）
-   - 每道题详情页：跨运行对比面板（基准面积、相对变化、所有检测到的差异、最终归因）+ 步骤追溯卡片（每步输入/输出快照）
+1. 每次运行自动存档到 `output/runs/run_<RUN_ID>.json`，含完整参数快照、每条题目的计算结果和逐步骤追溯。
+2. 用 `--set-baseline` 标记基准运行后，后续运行自动加载基准，对同一 `item_id` 逐题对比。
+3. 归因步骤：
+   - 对比两次运行的运行参数（阈值、文件哈希等）→ 得出 `parameter_diffs`
+   - 对比两次运行的改判记录（增/删/改）→ 得出 `override_diffs`
+   - 对比两次运行的题目数据（数值、单位、坐标、题目级阈值）→ 得出 `data_diffs`
+   - 计算面积相对变化，若超过阈值则从上述差异中匹配原因
+4. 结果在 `verification_report.html` 中可视化展示，每道题有独立的「跨运行对比」面板。

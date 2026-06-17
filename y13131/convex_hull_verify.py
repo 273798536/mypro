@@ -17,10 +17,14 @@ class ItemStatus(Enum):
 class JumpCause(Enum):
     THRESHOLD = "阈值调整"
     UNIT = "单位不一致"
-    MANUAL_OVERRIDE = "人工改判"
+    MANUAL_OVERRIDE = "人工改判导致跳变"
     COORDINATE_CHANGE = "坐标数据变化"
     VALUE_CHANGE = "题目数值变化"
     UNKNOWN = "原因未明"
+
+
+class InfoTag(Enum):
+    OVERRIDE_EXISTS = "存在人工改判记录"
 
 
 @dataclass
@@ -117,6 +121,7 @@ class VerificationResult:
     status: ItemStatus
     unit_missing: bool
     jump_causes: list = field(default_factory=list)
+    info_tags: list = field(default_factory=list)
     steps: list = field(default_factory=list)
     notes: str = ""
     baseline_comparison: Optional[CrossRunDiff] = None
@@ -418,10 +423,14 @@ def verify_item(
     ))
 
     jump_causes: List[JumpCause] = []
+    info_tags: List[InfoTag] = []
+
+    has_override_for_item = any(o.item_id == item.item_id for o in overrides)
+    if has_override_for_item:
+        info_tags.append(InfoTag.OVERRIDE_EXISTS)
+
     if baseline_comparison and baseline_comparison.final_causes:
         jump_causes = baseline_comparison.final_causes
-    else:
-        jump_causes = detect_jump_cause_single_run(item, overrides)
 
     if baseline_comparison and baseline_comparison.final_causes:
         step_idx += 1
@@ -444,18 +453,41 @@ def verify_item(
             delta=baseline_comparison.relative_delta,
             timestamp=datetime.now().isoformat(),
         ))
-    elif jump_causes:
+    elif baseline_comparison and not baseline_comparison.final_causes:
         step_idx += 1
         steps.append(VerificationStep(
             step_index=step_idx,
-            step_name="单次运行跳变检测",
+            step_name="跨运行跳变检测",
+            input_snapshot={
+                "baseline_area": baseline_comparison.baseline_area,
+                "current_area": area,
+                "parameter_diffs": baseline_comparison.parameter_diffs,
+                "override_diffs": baseline_comparison.override_diffs,
+                "data_diffs": baseline_comparison.data_diffs,
+            },
+            output_snapshot={
+                "relative_delta": baseline_comparison.relative_delta,
+                "threshold": item.threshold if item.threshold else threshold,
+                "conclusion": "面积无显著跳变",
+            },
+            delta=baseline_comparison.relative_delta,
+            timestamp=datetime.now().isoformat(),
+        ))
+    else:
+        step_idx += 1
+        steps.append(VerificationStep(
+            step_index=step_idx,
+            step_name="无基准运行模式",
             input_snapshot={"value": item.value, "unit": item.unit},
-            output_snapshot={"causes": [c.value for c in jump_causes]},
-            cause=jump_causes[0],
+            output_snapshot={
+                "info_tags": [t.value for t in info_tags],
+                "conclusion": "无基准，无法判断跳变，仅标记信息"
+            },
+            cause=None,
             timestamp=datetime.now().isoformat(),
         ))
 
-    has_jump = bool(jump_causes) or (baseline_comparison and baseline_comparison.final_causes)
+    has_jump = bool(jump_causes)
     status = ItemStatus.CONFIRMED if not has_jump else ItemStatus.PENDING_EVIDENCE
 
     note_texts = []
@@ -470,6 +502,7 @@ def verify_item(
         status=status,
         unit_missing=False,
         jump_causes=jump_causes,
+        info_tags=info_tags,
         steps=steps,
         notes="; ".join(note_texts) if note_texts else item.notes,
         baseline_comparison=baseline_comparison,
@@ -559,6 +592,7 @@ def result_to_dict(result: VerificationResult) -> dict:
         "status": result.status.value,
         "unit_missing": result.unit_missing,
         "jump_causes": [c.value for c in result.jump_causes],
+        "info_tags": [t.value for t in result.info_tags],
         "content_hash": result.content_hash,
         "notes": result.notes,
         "steps": [],
@@ -598,8 +632,8 @@ def write_results_csv(results, output_path):
         writer = csv.writer(f)
         writer.writerow([
             "item_id", "convex_hull_area", "baseline_area", "relative_delta",
-            "status", "unit_missing", "jump_causes", "boundary_points_count",
-            "steps_count", "notes",
+            "status", "unit_missing", "jump_causes", "info_tags",
+            "boundary_points_count", "steps_count", "notes",
         ])
         for r in results:
             baseline_area = ""
@@ -615,6 +649,7 @@ def write_results_csv(results, output_path):
                 r.status.value,
                 r.unit_missing,
                 "|".join(c.value for c in r.jump_causes),
+                "|".join(t.value for t in r.info_tags),
                 len(r.boundary_points),
                 len(r.steps),
                 r.notes,
@@ -747,7 +782,7 @@ def generate_html_report(
         colors = {
             "阈值调整": "badge-blue",
             "单位不一致": "badge-red",
-            "人工改判": "badge-purple",
+            "人工改判导致跳变": "badge-purple",
             "坐标数据变化": "badge-orange",
             "题目数值变化": "badge-teal",
             "原因未明": "badge-gray",
@@ -755,11 +790,15 @@ def generate_html_report(
         cls = colors.get(cause_str, "badge-gray")
         return f'<span class="badge {cls}">{cause_str}</span>'
 
+    def info_tag_html(tag_str):
+        return f'<span class="info-tag">{tag_str}</span>'
+
     baseline_label = baseline_run["meta"].get("label") or baseline_run["meta"]["run_id"] if baseline_run else "无"
 
     rows_html = ""
     for r in results:
         causes_html = "".join(cause_badge(c.value) for c in r.jump_causes) if r.jump_causes else "-"
+        info_tags_html = "".join(info_tag_html(t.value) for t in r.info_tags) if r.info_tags else ""
         baseline_area = "-"
         rel_delta = "-"
         if r.baseline_comparison:
@@ -772,7 +811,7 @@ def generate_html_report(
             <td>{baseline_area}</td>
             <td><strong>{r.convex_hull_area:.4f}</strong></td>
             <td>{rel_delta}</td>
-            <td>{causes_html}</td>
+            <td>{causes_html} {info_tags_html}</td>
             <td>{len(r.steps)}</td>
         </tr>
         """
@@ -805,13 +844,15 @@ def generate_html_report(
             """
 
         comparison_html = ""
-        if r.baseline_comparison and r.baseline_comparison.final_causes:
+        if r.baseline_comparison:
             bc = r.baseline_comparison
             all_diffs = bc.parameter_diffs + bc.override_diffs + bc.data_diffs
             diffs_html = "".join(f"<li>{d}</li>" for d in all_diffs) if all_diffs else "<li>无差异</li>"
-            causes_list = "".join(cause_badge(c.value) for c in bc.final_causes)
+            has_causes = bool(bc.final_causes)
+            causes_list = "".join(cause_badge(c.value) for c in bc.final_causes) if has_causes else '<span style="color:#67c23a;">面积无显著跳变</span>'
+            block_style = "comparison-block" if has_causes else "comparison-block comparison-block-neutral"
             comparison_html = f"""
-            <div class="comparison-block">
+            <div class="{block_style}">
                 <h4>跨运行对比（vs 基准 {baseline_label}）</h4>
                 <div class="comparison-metrics">
                     <div class="metric">
@@ -822,7 +863,7 @@ def generate_html_report(
                         <div class="metric-label">本次面积</div>
                         <div class="metric-value">{bc.current_area:.4f}</div>
                     </div>
-                    <div class="metric highlight">
+                    <div class="metric {'highlight' if has_causes else ''}">
                         <div class="metric-label">相对变化</div>
                         <div class="metric-value">{bc.relative_delta*100:.2f}%</div>
                     </div>
@@ -832,7 +873,7 @@ def generate_html_report(
                     <ul>{diffs_html}</ul>
                 </div>
                 <div class="comparison-causes">
-                    <h5>最终归因</h5>
+                    <h5>{'最终归因' if has_causes else '结论'}</h5>
                     <div>{causes_list}</div>
                 </div>
             </div>
@@ -897,6 +938,8 @@ def generate_html_report(
     .step-arrow {{ align-self: center; font-size: 20px; color: #909399; }}
     .step-delta {{ padding: 8px 15px; background: #fff3cd; color: #856404; font-weight: bold; border-top: 1px solid #ffeeba; }}
     .comparison-block {{ background: #ecf5ff; border: 1px solid #d9ecff; border-radius: 6px; padding: 15px; margin-bottom: 20px; }}
+    .comparison-block-neutral {{ background: #f5f7fa; border: 1px solid #ebeef5; }}
+    .info-tag {{ display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 12px; margin-right: 4px; color: #606266; background: #ebeef5; border: 1px dashed #c0c4cc; }}
     .comparison-metrics {{ display: flex; gap: 20px; margin: 15px 0; }}
     .metric {{ flex: 1; text-align: center; padding: 10px; background: white; border-radius: 4px; }}
     .metric.highlight {{ background: #fff3cd; }}
