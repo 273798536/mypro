@@ -11,12 +11,14 @@ import {
   ArrowUpDown,
   Copy,
   Share2,
+  Check,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useAppStore } from '@/store/useAppStore';
 import { ReportCategory } from '@/types';
 import { cn } from '@/lib/utils';
+import { downloadMarkdown } from '@/utils/fileImport';
 
 const categories: { key: ReportCategory; label: string; icon: any; color: string }[] = [
   { key: 'processed', label: '已处理', icon: CheckCircle, color: 'text-green-400' },
@@ -116,20 +118,26 @@ function ReportListItem({
 }
 
 function ReportPreview({ report }: { report: any }) {
+  const [copied, setCopied] = useState(false);
+
   const handleExport = () => {
-    const blob = new Blob([report.content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${report.title}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const safeTitle = (report.title || '报告').replace(/[\\/:*?"<>|]/g, '_');
+    downloadMarkdown(report.content, safeTitle);
   };
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(report.content);
+    try {
+      await navigator.clipboard.writeText(report.content);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch (e) {
+      const textarea = document.createElement('textarea');
+      textarea.value = report.content;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try { document.execCommand('copy'); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {}
+      document.body.removeChild(textarea);
+    }
   };
 
   return (
@@ -145,9 +153,9 @@ function ReportPreview({ report }: { report: any }) {
           <button
             onClick={handleCopy}
             className="p-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
-            title="复制"
+            title={copied ? '已复制' : '复制'}
           >
-            <Copy className="w-4 h-4" />
+            {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
           </button>
           <button
             onClick={handleExport}

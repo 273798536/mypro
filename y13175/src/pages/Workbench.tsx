@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import {
   ChevronRight,
   ChevronDown,
@@ -17,10 +17,12 @@ import {
   TrendingUp,
   Eye,
   Edit3,
+  Download,
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/utils';
 import Scene3D from '@/three/Scene3D';
+import { parseJSONLog, parseCSVLog, readFileAsText, downloadMarkdown } from '@/utils/fileImport';
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -100,6 +102,7 @@ function SeverityBadge({ severity }: { severity: string }) {
 function LeftPanel() {
   const [logsExpanded, setLogsExpanded] = useState(true);
   const [paramsExpanded, setParamsExpanded] = useState(true);
+  const [importMsg, setImportMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
   const selectedLogId = useAppStore((s) => s.selectedLogId);
   const setSelectedLogId = useAppStore((s) => s.setSelectedLogId);
   const selectedParamId = useAppStore((s) => s.selectedParamId);
@@ -107,6 +110,11 @@ function LeftPanel() {
   const sensorLogs = useAppStore((s) => s.sensorLogs);
   const paramVersions = useAppStore((s) => s.paramVersions);
   const logBatches = useAppStore((s) => s.logBatches);
+  const addLogBatch = useAppStore((s) => s.addLogBatch);
+  const createLog = useAppStore((s) => s.createLog);
+  const addTimeSeriesData = useAppStore((s) => s.addTimeSeriesData);
+  const addSensorPoints = useAppStore((s) => s.addSensorPoints);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const batchesByLog = useMemo(() => {
     const map: Record<string, typeof logBatches> = {};
@@ -116,6 +124,57 @@ function LeftPanel() {
     });
     return map;
   }, [logBatches]);
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const fileArr = Array.from(files);
+    let addedAny = false;
+    let failedNames: string[] = [];
+
+    for (const file of fileArr) {
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (ext !== 'json' && ext !== 'csv') {
+        failedNames.push(`${file.name}(不支持的格式)`);
+        continue;
+      }
+      try {
+        const text = await readFileAsText(file);
+        const parsed = ext === 'json' ? parseJSONLog(text, file.name) : parseCSVLog(text, file.name);
+        if (!parsed || parsed.batches.length === 0) {
+          failedNames.push(`${file.name}(解析失败)`);
+          continue;
+        }
+
+        let targetLogId = selectedLogId;
+        if (!targetLogId) {
+          const logName = `导入实验-${new Date().toLocaleDateString('zh-CN')}`;
+          targetLogId = createLog(logName, parsed.batches[0]);
+          setSelectedLogId(targetLogId);
+        } else {
+          addLogBatch(targetLogId, parsed.batches[0]);
+        }
+        if (parsed.timeSeries.length > 0) {
+          addTimeSeriesData(targetLogId, parsed.timeSeries);
+        }
+        if (parsed.sensorPoints.length > 0) {
+          addSensorPoints(targetLogId, parsed.sensorPoints);
+        }
+        addedAny = true;
+      } catch (e: any) {
+        failedNames.push(`${file.name}(${e?.message || '错误'})`);
+      }
+    }
+
+    if (addedAny) {
+      setImportMsg({ type: 'ok', text: `导入成功：${fileArr.length - failedNames.length} 个文件` });
+    }
+    if (failedNames.length > 0) {
+      setImportMsg({ type: 'err', text: `导入失败：${failedNames.join('、')}` });
+    }
+    setTimeout(() => setImportMsg(null), 4000);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
 
   return (
     <aside className="w-72 bg-slate-900/50 border-r border-slate-800 flex flex-col flex-shrink-0">
@@ -134,10 +193,34 @@ function LeftPanel() {
           {logsExpanded && (
             <div className="pb-2">
               <div className="px-4 py-2">
-                <button className="w-full flex items-center justify-center gap-2 py-2 text-sm border border-dashed border-slate-600 rounded-md text-slate-400 hover:border-cyan-500 hover:text-cyan-400 transition-colors">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,.csv"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => handleFiles(e.target.files)}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full flex items-center justify-center gap-2 py-2 text-sm border border-dashed border-slate-600 rounded-md text-slate-400 hover:border-cyan-500 hover:text-cyan-400 transition-colors"
+                >
                   <Upload className="w-4 h-4" />
-                  导入日志文件
+                  导入日志文件（JSON/CSV）
                 </button>
+                {importMsg && (
+                  <div className={cn(
+                    'mt-2 px-2 py-1.5 rounded text-xs',
+                    importMsg.type === 'ok'
+                      ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+                      : 'bg-red-500/10 text-red-400 border border-red-500/20'
+                  )}>
+                    {importMsg.text}
+                  </div>
+                )}
+                <div className="mt-2 text-[11px] text-slate-500 leading-relaxed">
+                  已选日志会合并到「{sensorLogs.find(l => l.id === selectedLogId)?.name || '新日志'}」，不会覆盖早先数据
+                </div>
               </div>
               <div className="space-y-1 px-2">
                 {sensorLogs.map((log) => (
@@ -232,8 +315,12 @@ function RightPanel() {
   const calculationResults = useAppStore((s) => s.calculationResults);
   const sensorPoints = useAppStore((s) => s.sensorPoints);
   const manualJudgments = useAppStore((s) => s.manualJudgments);
+  const reports = useAppStore((s) => s.reports);
   const triggerCalculation = useAppStore((s) => s.triggerCalculation);
   const applyManualJudgment = useAppStore((s) => s.applyManualJudgment);
+  const createReport = useAppStore((s) => s.createReport);
+  const createReportFromLog = useAppStore((s) => s.createReportFromLog);
+  const setSelectedReportId = useAppStore((s) => s.setSelectedReportId);
 
   const selectedLog = useMemo(
     () => sensorLogs.find((l) => l.id === selectedLogId),
@@ -289,6 +376,20 @@ function RightPanel() {
           >
             <Play className="w-4 h-4" />
             {selectedResult?.status === 'calculating' ? '复算中...' : '开始复算'}
+          </button>
+          <button
+            onClick={() => {
+              if (!selectedLogId) return;
+              const r = createReportFromLog(selectedLogId);
+              if (r) {
+                downloadMarkdown(r.content, `${selectedLog?.name || '日志'}-原始数据报告`);
+              }
+            }}
+            disabled={!selectedLogId}
+            className="mt-2 w-full py-2 text-xs bg-slate-800 hover:bg-slate-700 disabled:bg-slate-900 disabled:text-slate-600 text-slate-300 rounded-md transition-colors flex items-center justify-center gap-1.5"
+          >
+            <Download className="w-3.5 h-3.5" />
+            导出当前日志原始数据报告
           </button>
           <div className="mt-2 text-xs text-slate-500">
             当前日志: {selectedLog?.name.slice(0, 18) || '未选择'}...
@@ -405,6 +506,33 @@ function RightPanel() {
                     <p className="text-xs text-slate-400"><span className="text-slate-500">下一步：</span>{manualJudgment.nextStep}</p>
                   </div>
                 )}
+
+                <div className="mt-4 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={() => {
+                      createReport(selectedResult.id);
+                    }}
+                    className="py-2 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 rounded transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <FileJson className="w-3.5 h-3.5" />
+                    生成报告
+                  </button>
+                  <button
+                    onClick={() => {
+                      createReport(selectedResult.id);
+                      setTimeout(() => {
+                        const r = useAppStore.getState().reports.find(x => x.resultId === selectedResult.id);
+                        if (r) {
+                          downloadMarkdown(r.content, `${selectedResult.id}-复算报告`);
+                        }
+                      }, 50);
+                    }}
+                    className="py-2 text-xs bg-cyan-600/80 hover:bg-cyan-500 text-white rounded transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    导出 .md
+                  </button>
+                </div>
               </>
             )}
           </div>

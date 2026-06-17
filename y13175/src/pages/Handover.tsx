@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Footprints,
   Upload,
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { cn } from '@/lib/utils';
+import { parseJSONLog, parseCSVLog, readFileAsText, downloadMarkdown } from '@/utils/fileImport';
 
 interface StatCardProps {
   title: string;
@@ -150,10 +152,93 @@ function TodoItem({ text, completed, priority }: TodoItemProps) {
 }
 
 export default function Handover() {
+  const navigate = useNavigate();
   const sensorLogs = useAppStore((s) => s.sensorLogs);
   const calculationResults = useAppStore((s) => s.calculationResults);
   const reports = useAppStore((s) => s.reports);
   const manualJudgments = useAppStore((s) => s.manualJudgments);
+  const addLogBatch = useAppStore((s) => s.addLogBatch);
+  const createLog = useAppStore((s) => s.createLog);
+  const addTimeSeriesData = useAppStore((s) => s.addTimeSeriesData);
+  const addSensorPoints = useAppStore((s) => s.addSensorPoints);
+  const setSelectedLogId = useAppStore((s) => s.setSelectedLogId);
+  const createReport = useAppStore((s) => s.createReport);
+  const createReportFromLog = useAppStore((s) => s.createReportFromLog);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [actionMsg, setActionMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+
+  const showMsg = (type: 'ok' | 'err', text: string) => {
+    setActionMsg({ type, text });
+    setTimeout(() => setActionMsg(null), 3500);
+  };
+
+  const handleUploadFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    let okCount = 0;
+    for (const file of Array.from(files)) {
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (ext !== 'json' && ext !== 'csv') continue;
+      try {
+        const text = await readFileAsText(file);
+        const parsed = ext === 'json' ? parseJSONLog(text, file.name) : parseCSVLog(text, file.name);
+        if (!parsed) continue;
+        const latestLog = [...sensorLogs].sort(
+          (a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime()
+        )[0];
+        let logId: string;
+        if (latestLog && latestLog.status !== 'complete') {
+          logId = latestLog.id;
+          addLogBatch(logId, parsed.batches[0]);
+        } else {
+          logId = createLog(`导入-${new Date().toLocaleDateString('zh-CN')}`, parsed.batches[0]);
+        }
+        if (parsed.timeSeries.length > 0) addTimeSeriesData(logId, parsed.timeSeries);
+        if (parsed.sensorPoints.length > 0) addSensorPoints(logId, parsed.sensorPoints);
+        okCount++;
+      } catch {}
+    }
+    if (okCount > 0) {
+      showMsg('ok', `已成功导入 ${okCount} 个文件到最近的日志`);
+    } else {
+      showMsg('err', '导入失败，请检查文件格式');
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleJumpPending = () => {
+    navigate('/');
+    setTimeout(() => {
+      const state = useAppStore.getState();
+      const pending = state.calculationResults.find(r => r.needsManualReview);
+      if (pending) {
+        state.setSelectedLogId(pending.logId);
+        state.setSelectedResultId(pending.id);
+      }
+      showMsg('ok', '已跳回复算工作台，已定位到待人工确认的复算结果');
+    }, 100);
+  };
+
+  const handleRegenerateReports = () => {
+    const state = useAppStore.getState();
+    let count = 0;
+    state.calculationResults.forEach(r => {
+      const already = state.reports.find(rp => rp.resultId === r.id);
+      if (already) {
+        state.reports = state.reports.filter(rp => rp.id !== already.id);
+      }
+      state.createReport(r.id);
+      count++;
+    });
+    state.sensorLogs.forEach(l => {
+      if (!state.calculationResults.find(r => r.logId === l.id)) {
+        state.createReportFromLog(l.id);
+        count++;
+      }
+    });
+    // 强制更新：通过 set 重新设置 reports 数组触发重渲染
+    useAppStore.setState({ reports: [...useAppStore.getState().reports] });
+    showMsg('ok', `已重新生成/更新 ${count} 份报告，可在报告中心查看导出`);
+  };
 
   const todayLogs = sensorLogs.filter((l) => {
     const logDate = new Date(l.startTime).toDateString();
@@ -180,6 +265,24 @@ export default function Handover() {
 
   return (
     <div className="flex-1 overflow-y-auto p-6">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,.csv"
+        multiple
+        className="hidden"
+        onChange={(e) => handleUploadFiles(e.target.files)}
+      />
+      {actionMsg && (
+        <div className={cn(
+          'fixed top-20 right-6 z-50 px-4 py-3 rounded-lg shadow-xl text-sm border max-w-sm',
+          actionMsg.type === 'ok'
+            ? 'bg-green-900/90 text-green-100 border-green-700'
+            : 'bg-red-900/90 text-red-100 border-red-700'
+        )}>
+          {actionMsg.text}
+        </div>
+      )}
       <div className="max-w-6xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-slate-100">换班交接板</h1>
@@ -309,18 +412,21 @@ export default function Handover() {
               title="上传材料"
               description="导入传感器日志文件"
               color="bg-gradient-to-br from-cyan-600 to-blue-600"
+              onClick={() => fileInputRef.current?.click()}
             />
             <QuickAction
               icon={AlertTriangle}
               title="查看异常"
               description="待人工确认的复算结果"
               color="bg-gradient-to-br from-amber-600 to-orange-600"
+              onClick={handleJumpPending}
             />
             <QuickAction
               icon={RefreshCw}
               title="重新导出"
               description="生成或更新 Markdown 报告"
               color="bg-gradient-to-br from-purple-600 to-pink-600"
+              onClick={handleRegenerateReports}
             />
           </div>
         </div>

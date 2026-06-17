@@ -37,6 +37,7 @@ interface AppState {
   selectedReportId: string | null;
   currentTime: number;
   timeRange: { start: number; end: number } | null;
+  timeSeriesData: Record<string, TimeSeriesPoint[]>;
 
   setSelectedLogId: (id: string | null) => void;
   setSelectedPointId: (id: string | null) => void;
@@ -58,8 +59,12 @@ interface AppState {
 
   triggerCalculation: (logId: string, paramId: string) => void;
   addLogBatch: (logId: string, batch: Omit<LogBatch, 'id' | 'logId'>) => void;
+  createLog: (name: string, batch: Omit<LogBatch, 'id' | 'logId'>) => string;
+  addTimeSeriesData: (logId: string, points: TimeSeriesPoint[]) => void;
+  addSensorPoints: (logId: string, points: Omit<SensorPoint, 'id' | 'logId'>[]) => void;
   createReport: (resultId: string) => void;
   applyManualJudgment: (resultId: string, judgment: 'pass' | 'fail', reason: string, nextStep: string) => void;
+  createReportFromLog: (logId: string) => Report | null;
 }
 
 const STORAGE_KEY = 'speckle-recalc-app-state';
@@ -95,6 +100,7 @@ export const useAppStore = create<AppState>((set, get) => {
     selectedReportId: null,
     currentTime: 0,
     timeRange: null,
+    timeSeriesData: stored?.timeSeriesData || {},
 
     setSelectedLogId: (id) => {
       set({ selectedLogId: id, selectedPointId: null });
@@ -116,7 +122,13 @@ export const useAppStore = create<AppState>((set, get) => {
     getSelectedResult: () => get().calculationResults.find(r => r.id === get().selectedResultId),
     getSelectedReport: () => get().reports.find(r => r.id === get().selectedReportId),
     getLogBatches: (logId) => get().logBatches.filter(b => b.logId === logId),
-    getTimeSeries: (logId) => getTimeSeriesData(logId),
+    getTimeSeries: (logId) => {
+      const state = get();
+      if (state.timeSeriesData[logId] && state.timeSeriesData[logId].length > 0) {
+        return state.timeSeriesData[logId];
+      }
+      return getTimeSeriesData(logId);
+    },
     getReportsByCategory: (category) => get().reports.filter(r => r.category === category),
     getManualJudgment: (resultId) => get().manualJudgments.find(m => m.resultId === resultId),
 
@@ -211,9 +223,80 @@ export const useAppStore = create<AppState>((set, get) => {
         logId,
         ...batch,
       };
+      set((state) => {
+        const batches = [...state.logBatches, newBatch];
+        const relatedBatches = batches.filter(b => b.logId === logId);
+        const totalPoints = relatedBatches.reduce((sum, b) => sum + b.dataPointCount, 0);
+        const hasEnough = totalPoints >= 100;
+        return {
+          logBatches: batches,
+          sensorLogs: state.sensorLogs.map((log) =>
+            log.id === logId
+              ? {
+                  ...log,
+                  batchIds: Array.from(new Set([...(log.batchIds || []), newBatch.id])),
+                  pointCount: totalPoints,
+                  status: hasEnough ? (log.status === 'incomplete' ? 'pending_review' : log.status) : 'incomplete',
+                  startTime: relatedBatches[0]?.dataStartTime || log.startTime,
+                  endTime: relatedBatches[relatedBatches.length - 1]?.dataEndTime || log.endTime,
+                }
+              : log
+          ),
+        };
+      });
+    },
+
+    createLog: (name, batch) => {
+      const logId = `log-${Date.now()}`;
+      const batchId = `batch-${Date.now()}`;
+      const newBatch: LogBatch = {
+        id: batchId,
+        logId,
+        ...batch,
+      };
+      const newLog: SensorLog = {
+        id: logId,
+        name,
+        startTime: batch.dataStartTime,
+        endTime: batch.dataEndTime,
+        pointCount: batch.dataPointCount,
+        status: batch.dataPointCount >= 100 ? 'pending_review' : 'incomplete',
+        batchIds: [batchId],
+      };
       set((state) => ({
+        sensorLogs: [...state.sensorLogs, newLog],
         logBatches: [...state.logBatches, newBatch],
       }));
+      return logId;
+    },
+
+    addTimeSeriesData: (logId, points) => {
+      set((state) => {
+        const existing = state.timeSeriesData?.[logId] || [];
+        const merged = [...existing, ...points].sort(
+          (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        );
+        return {
+          timeSeriesData: {
+            ...(state.timeSeriesData || {}),
+            [logId]: merged,
+          },
+        };
+      });
+    },
+
+    addSensorPoints: (logId, points) => {
+      set((state) => {
+        const newPoints: SensorPoint[] = points.map((p, i) => ({
+          id: `sp-${Date.now()}-${i}`,
+          logId,
+          ...p,
+        }));
+        const existing = state.sensorPoints.filter((sp) => sp.logId !== logId);
+        return {
+          sensorPoints: [...existing, ...newPoints],
+        };
+      });
     },
 
     createReport: (resultId) => {
@@ -317,6 +400,64 @@ ${manual ? `## 人工改判记录
         }));
       }
       get().createReport(resultId);
+    },
+
+    createReportFromLog: (logId) => {
+      const log = get().sensorLogs.find(l => l.id === logId);
+      if (!log) return null;
+
+      const batches = get().logBatches.filter(b => b.logId === logId);
+      const timeSeries = get().getTimeSeries(logId);
+      const points = get().sensorPoints.filter(p => p.logId === logId);
+
+      const avgIntensity = timeSeries.length > 0
+        ? timeSeries.reduce((s, t) => {
+            const vals = Object.values(t.values);
+            return s + (vals.length > 0 ? vals.reduce((a, b) => a + b, 0) / vals.length : 0);
+          }, 0) / timeSeries.length
+        : 0;
+
+      const content = `# 激光散斑实验原始数据报告
+
+## 基本信息
+- **实验名称**: ${log.name}
+- **日志状态**: ${log.status === 'complete' ? '✅ 完整' : log.status === 'incomplete' ? '⏳ 不完整' : '📝 待审核'}
+- **数据时间范围**: ${new Date(log.startTime).toLocaleString('zh-CN')} ~ ${new Date(log.endTime).toLocaleString('zh-CN')}
+- **数据点数**: ${log.pointCount.toLocaleString()}
+- **生成时间**: ${new Date().toLocaleString('zh-CN')}
+
+## 数据来源（分批导入记录）
+${batches.map((b, i) => `${i + 1}. **${b.fileName}**
+   - 导入人: ${b.importedBy}
+   - 导入时间: ${new Date(b.importTime).toLocaleString('zh-CN')}
+   - 数据点数: ${b.dataPointCount}
+   - 时间范围: ${new Date(b.dataStartTime).toLocaleTimeString('zh-CN')} ~ ${new Date(b.dataEndTime).toLocaleTimeString('zh-CN')}
+`).join('\n')}
+
+## 传感器点位（${points.length} 个）
+${points.length > 0 ? points.map(p => `- ${p.name}: 类型=${p.type}, 坐标(${p.x.toFixed(2)}, ${p.y.toFixed(2)}, ${p.z.toFixed(2)})`).join('\n') : '_（无点位数据，请先导入传感器点位）_'}
+
+## 数据质量概览
+- **平均光强**: ${avgIntensity > 0 ? avgIntensity.toFixed(4) : '无数据'}
+- **时间序列样本数**: ${timeSeries.length}
+- **建议**: ${log.status === 'complete' ? '数据完整，可开始复算' : '请继续导入剩余批次，或确认数据已齐备后点击"开始复算"'}
+`;
+
+      const newReport: Report = {
+        id: `report-${Date.now()}`,
+        resultId: `raw-${logId}`,
+        category: 'pending_material',
+        title: `${log.name} 原始数据报告`,
+        content,
+        generatedAt: new Date().toISOString(),
+        dataSources: batches.map(b => b.id),
+      };
+
+      set((state) => ({
+        reports: [...state.reports, newReport],
+      }));
+
+      return newReport;
     },
   };
 });

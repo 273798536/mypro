@@ -1,0 +1,34 @@
+{
+  "description": "激光散斑实验示例数据 - 2026-06-18 测试批次",
+  "startTime": "2026-06-18T10:00:00.000Z",
+  "endTime": "2026-06-18T11:00:00.000Z",
+  "sensorPoints": [
+    { "name": "激光源-L1", "x": -3.0, "y": 1.2, "z": 0.5, "type": "laser" },
+    { "name": "探测器-D1", "x": 2.5, "y": 0.8, "z": 1.2, "type": "detector" },
+    { "name": "探测器-D2", "x": 2.8, "y": -0.6, "z": 1.0, "type": "detector" },
+    { "name": "探测器-D3", "x": 2.2, "y": 0.0, "z": 1.5, "type": "detector" },
+    { "name": "参考点-Ref-A", "x": 0.0, "y": 0.0, "z": 0.0, "type": "reference" }
+  ],
+  "timeSeries": [
+    {
+      "timestamp": "2026-06-18T10:00:00.000Z",
+      "values": { "sensor-1": 0.82, "sensor-2": 0.76, "sensor-3": 0.79, "sensor-4": 0.81, "sensor-5": 0.78 }
+    },
+    {
+      "timestamp": "2026-06-18T10:01:00.000Z",
+      "values": { "sensor-1": 0.84, "sensor-2": 0.77, "sensor-3": 0.80, "sensor-4": 0.83, "sensor-5": 0.79 }
+    },
+    {
+      "timestamp": "2026-06-18T10:02:00.000Z",
+      "values": { "sensor-1": 0.81, "sensor-2": 0.75, "sensor-3": 0.78, "sensor-4": 0.80, "sensor-5": 0.77 }
+    },
+    {
+      "timestamp": "2026-06-18T10:03:00.000Z",
+      "values": { "sensor-1": 0.85, "sensor-2": 0.78, "sensor-3": 0.81, "sensor-4": 0.84, "sensor-5": 0.80 }
+    },
+    {
+      "timestamp": "2026-06-18T10:04:00.000Z",
+      "values": { "sensor-1": 0.83, "sensor-2": 0.77, "sensor-3": 0.80, "sensor-4": 0.82, "sensor-5": 0.79 }
+    }
+  ]
+}
