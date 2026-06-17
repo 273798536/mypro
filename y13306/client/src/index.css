@@ -1,0 +1,166 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f2f5;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.page-container {
+  padding: 24px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  text-align: center;
+}
+
+.stat-card .stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.stat-card .stat-label {
+  color: #666;
+  font-size: 14px;
+}
+
+.detail-section {
+  margin-bottom: 24px;
+}
+
+.detail-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-item {
+  margin-bottom: 12px;
+}
+
+.detail-label {
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.timeline-item {
+  padding-bottom: 16px;
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.timeline-operation {
+  font-weight: 500;
+  color: #333;
+}
+
+.timeline-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.timeline-content {
+  font-size: 13px;
+  color: #666;
+}
+
+.timeline-change {
+  background: #f5f5f5;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.comparison-card {
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 16px;
+  background: #fafafa;
+}
+
+.comparison-header {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1677ff;
+}
+
+.comparison-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.comparison-col {
+  flex: 1;
+  padding: 12px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.comparison-col.old {
+  border: 1px solid #ffccc7;
+}
+
+.comparison-col.new {
+  border: 1px solid #b7eb8f;
+}
+
+.comparison-label {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.explanation-box {
+  margin-top: 12px;
+  padding: 12px;
+  background: #e6f4ff;
+  border-radius: 6px;
+  border-left: 4px solid #1677ff;
+}
+
+.explanation-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1677ff;
+}
+
+.explanation-content {
+  font-size: 13px;
+  color: #333;
+  line-height: 1.6;
+}

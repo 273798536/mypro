@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EvaluationStatus {
+  PENDING
+  EVALUATED
+  WITHDRAWN
+  CONFIRMED
+  REVISED
+  DUPLICATE
+}
+
+enum ModelType {
+  OLD
+  NEW
+  GRAY
+}
+
+model ModelVersion {
+  id            String   @id @default(uuid())
+  name          String
+  version       String
+  type          ModelType
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  evaluations   EvaluationRecord[]
+}
+
+model EvaluationRecord {
+  id              String            @id @default(uuid())
+  batchId         String
+  medicalRecordId String
+  questionId      String
+  questionContent String
+  modelAnswer     String
+  standardAnswer  String?
+  modelVersionId  String
+  isCorrect       Boolean?
+  confidence      Float?
+  errorType       String?
+  status          EvaluationStatus  @default(PENDING)
+  judgeReason     String?
+  revisionReason  String?
+  isDuplicate     Boolean           @default(false)
+  duplicateOfId   String?
+  hasWithdrawal   Boolean           @default(false)
+  finalConclusionId String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  evaluatedAt     DateTime?
+  confirmedAt     DateTime?
+  confirmedBy     String?
+
+  modelVersion    ModelVersion      @relation(fields: [modelVersionId], references: [id])
+  duplicateOf     EvaluationRecord? @relation("DuplicateLink", fields: [duplicateOfId], references: [id])
+  duplicates      EvaluationRecord[] @relation("DuplicateLink")
+  finalConclusion EvaluationRecord? @relation("FinalConclusion", fields: [finalConclusionId], references: [id])
+  conclusionFor   EvaluationRecord[] @relation("FinalConclusion")
+
+  withdrawal      WithdrawalRecord?
+  changeHistories ChangeHistory[]
+}
+
+model WithdrawalRecord {
+  id                 String           @id @default(uuid())
+  evaluationRecordId String           @unique
+  reason             String
+  operator           String
+  linkedConclusionId String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  evaluationRecord   EvaluationRecord @relation(fields: [evaluationRecordId], references: [id])
+  linkedConclusion   EvaluationRecord? @relation(fields: [linkedConclusionId], references: [id])
+}
+
+model ChangeHistory {
+  id                 String           @id @default(uuid())
+  evaluationRecordId String
+  fieldName          String
+  oldValue           String?
+  newValue           String?
+  changeReason       String?
+  operator           String?
+  operationType      String
+  createdAt          DateTime         @default(now())
+
+  evaluationRecord   EvaluationRecord @relation(fields: [evaluationRecordId], references: [id])
+}
+
+model ImportBatch {
+  id           String   @id @default(uuid())
+  fileName     String
+  recordCount  Int
+  importedBy   String?
+  createdAt    DateTime @default(now())
+}
