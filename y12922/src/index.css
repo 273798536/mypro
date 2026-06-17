@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.55;
+  font-weight: 400;
+  color: #14110d;
+  background-color: #f7f3ea;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #f7f3ea;
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(15, 76, 74, 0.04), transparent 38%),
+    radial-gradient(circle at 88% 0%, rgba(183, 121, 31, 0.05), transparent 32%);
+  background-attachment: fixed;
+}
+
+/* ledger rule */
+.rule {
+  border-top: 1px solid rgba(20, 17, 13, 0.12);
+}
+
+/* scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 17, 13, 0.2) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(20, 17, 13, 0.18);
+  border-radius: 9999px;
+}
+
+/* number tabular */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
