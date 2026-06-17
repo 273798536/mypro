@@ -42,7 +42,7 @@
 </head>
 <body>
   <h1>电机扭矩阈值预警 · 页面摘要</h1>
-  <div class="sub">运行时间: 2026-06-17 23:27:50 · 参数档 L2 · 阈值调整 +5.0% · 输入: <code>/Users/mac/pro/solo/workspaces/y13166/sample_input</code> · 输出: <code>/Users/mac/pro/solo/workspaces/y13166/output</code></div>
+  <div class="sub">运行时间: 2026-06-18 00:01:44 · 参数档 L2 · 阈值调整 +5.0% · 输入: <code>/Users/mac/pro/solo/workspaces/y13166/sample_input</code> · 输出: <code>/Users/mac/pro/solo/workspaces/y13166/output</code></div>
 
   <div class="overview">
     <div class="stats">
@@ -72,8 +72,8 @@
         <div class="grid">
           <div><label>额定扭矩</label><b>100.0 N·m</b></div>
           <div><label>峰值扭矩</label><b>62.1 N·m</b> @ 1463rpm</div>
-          <div><label>预警阈值</label>80.0 N·m (80%)</div>
-          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>预警阈值</label>85.0 N·m (85%)</div>
+          <div><label>严重阈值</label>115.0 N·m (115% (参数调整))</div>
           <div><label>读数条数</label>8</div>
           <div><label>出厂</label>2023-05-12</div>
         </div>
@@ -82,7 +82,7 @@
           <summary>计算依据 · 公式 · 单位</summary>
           <div class="sect">
             <h5>公式</h5>
-            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
           </div>
           <div class="sect">
             <h5>单位对照</h5>
@@ -102,8 +102,8 @@
         <div class="grid">
           <div><label>额定扭矩</label><b>100.0 N·m</b></div>
           <div><label>峰值扭矩</label><b>81.2 N·m</b> @ 1461rpm</div>
-          <div><label>预警阈值</label>80.0 N·m (80%)</div>
-          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>预警阈值</label>85.0 N·m (85%)</div>
+          <div><label>严重阈值</label>115.0 N·m (115% (参数调整))</div>
           <div><label>读数条数</label>8</div>
           <div><label>出厂</label>2023-03-08</div>
         </div>
@@ -112,7 +112,7 @@
           <summary>计算依据 · 公式 · 单位</summary>
           <div class="sect">
             <h5>公式</h5>
-            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
           </div>
           <div class="sect">
             <h5>单位对照</h5>
@@ -132,8 +132,8 @@
         <div class="grid">
           <div><label>额定扭矩</label><b>100.0 N·m</b></div>
           <div><label>峰值扭矩</label><b>145.6 N·m</b> @ 820rpm</div>
-          <div><label>预警阈值</label>80.0 N·m (80%)</div>
-          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>预警阈值</label>85.0 N·m (85%)</div>
+          <div><label>严重阈值</label>115.0 N·m (115% (参数调整))</div>
           <div><label>读数条数</label>23</div>
           <div><label>出厂</label>2022-11-20</div>
         </div>
@@ -142,7 +142,7 @@
           <summary>计算依据 · 公式 · 单位</summary>
           <div class="sect">
             <h5>公式</h5>
-            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
           </div>
           <div class="sect">
             <h5>单位对照</h5>
@@ -162,8 +162,8 @@
         <div class="grid">
           <div><label>额定扭矩</label><b>100.0 N·m</b></div>
           <div><label>峰值扭矩</label><b>64.7 N·m</b> @ 1440rpm</div>
-          <div><label>预警阈值</label>80.0 N·m (80%)</div>
-          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>预警阈值</label>85.0 N·m (85%)</div>
+          <div><label>严重阈值</label>115.0 N·m (115% (参数调整))</div>
           <div><label>读数条数</label>8</div>
           <div><label>出厂</label>2024-01-15</div>
         </div>
@@ -172,7 +172,7 @@
           <summary>计算依据 · 公式 · 单位</summary>
           <div class="sect">
             <h5>公式</h5>
-            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
           </div>
           <div class="sect">
             <h5>单位对照</h5>
@@ -197,8 +197,8 @@
         <div class="grid">
           <div><label>额定扭矩</label><b>100.0 N·m</b></div>
           <div><label>峰值扭矩</label><b>0.0 N·m</b> @ 0rpm</div>
-          <div><label>预警阈值</label>80.0 N·m (80%)</div>
-          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>预警阈值</label>85.0 N·m (85%)</div>
+          <div><label>严重阈值</label>115.0 N·m (115% (参数调整))</div>
           <div><label>读数条数</label>0</div>
           <div><label>出厂</label>2023-09-02</div>
         </div>
@@ -207,7 +207,7 @@
           <summary>计算依据 · 公式 · 单位</summary>
           <div class="sect">
             <h5>公式</h5>
-            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
           </div>
           <div class="sect">
             <h5>单位对照</h5>
@@ -232,8 +232,8 @@
         <div class="grid">
           <div><label>额定扭矩</label><b>100.0 N·m</b></div>
           <div><label>峰值扭矩</label><b>86.3 N·m</b> @ 1462rpm</div>
-          <div><label>预警阈值</label>80.0 N·m (80%)</div>
-          <div><label>严重阈值</label>110.0 N·m (110%)</div>
+          <div><label>预警阈值</label>95.0 N·m (95% (人工改判))</div>
+          <div><label>严重阈值</label>115.0 N·m (115% (参数调整))</div>
           <div><label>读数条数</label>8</div>
           <div><label>出厂</label>2023-07-18</div>
         </div>
@@ -242,7 +242,7 @@
           <summary>计算依据 · 公式 · 单位</summary>
           <div class="sect">
             <h5>公式</h5>
-            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 95.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
+            <ul><li><code>峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖</code></li><li><code>扭矩比 = 当前扭矩 / 额定扭矩 × 100%</code></li><li><code>预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (人工改判值 95%) = 95.0 N·m</code></li><li><code>严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m</code></li><li><code>极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR</code></li></ul>
           </div>
           <div class="sect">
             <h5>单位对照</h5>

@@ -138,11 +138,17 @@ def process_equipment(
     else:
         level = WarningLevel.NORMAL
 
+    if override_applied:
+        warn_formula_detail = f"人工改判值 {warn_pct:.0f}%"
+    else:
+        warn_formula_detail = f"铭牌 {nameplate.warning_threshold_pct:.0f}% + 参数调整 {config.threshold_adjustment_pct:+.0f}%"
+    crit_formula_detail = f"铭牌 {nameplate.critical_threshold_pct:.0f}% + 参数调整 {config.threshold_adjustment_pct:+.0f}%"
+
     formulas_applied = [
         FORMULAS["peak_hold"],
         FORMULAS["torque_ratio"],
-        FORMULAS["warning_threshold"] + f" = {nameplate.rated_torque_nm:.1f} × ({nameplate.warning_threshold_pct:.0f}% + {config.threshold_adjustment_pct:+.0f}%) = {warn_nm:.1f} N·m",
-        FORMULAS["critical_threshold"] + f" = {nameplate.rated_torque_nm:.1f} × ({nameplate.critical_threshold_pct:.0f}% + {config.threshold_adjustment_pct:+.0f}%) = {crit_nm:.1f} N·m",
+        FORMULAS["warning_threshold"] + f" = {nameplate.rated_torque_nm:.1f} × ({warn_formula_detail}) = {warn_nm:.1f} N·m",
+        FORMULAS["critical_threshold"] + f" = {nameplate.rated_torque_nm:.1f} × ({crit_formula_detail}) = {crit_nm:.1f} N·m",
         FORMULAS["extreme_detection"],
     ]
 
@@ -179,6 +185,9 @@ def process_equipment(
         units_ref=UNITS_REF,
         override_applied=override_applied,
         override_note=override_note,
+        effective_warning_threshold_nm=warn_nm,
+        effective_critical_threshold_nm=crit_nm,
+        effective_warning_threshold_pct=warn_pct,
     )
 
     confirm = None

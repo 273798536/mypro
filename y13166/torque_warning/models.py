@@ -87,6 +87,9 @@ class ProcessedRecord:
     units_ref: Dict[str, str]
     override_applied: bool = False
     override_note: str = ""
+    effective_warning_threshold_nm: float = 0.0
+    effective_critical_threshold_nm: float = 0.0
+    effective_warning_threshold_pct: float = 0.0
 
 
 @dataclass

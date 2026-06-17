@@ -72,6 +72,9 @@ def export_json_report(
             "direction_issue_desc": r.direction_issue_desc,
             "override_applied": r.override_applied,
             "override_note": r.override_note,
+            "effective_warning_threshold_nm": r.effective_warning_threshold_nm,
+            "effective_critical_threshold_nm": r.effective_critical_threshold_nm,
+            "effective_warning_threshold_pct": r.effective_warning_threshold_pct,
             "formulas_applied": r.formulas_applied,
             "units_ref": r.units_ref,
             "boundary_samples": [
@@ -145,13 +148,13 @@ def export_param_compare_markdown(
             lines.append(f"| 预警等级 | {prev.warning_level.value} | {r.warning_level.value} | {diff_lv} |")
             lines.append(f"| 峰值扭矩 | {prev.peak_torque_nm:.2f} N·m | {r.peak_torque_nm:.2f} N·m | 峰值保留策略不变 |")
             lines.append(f"| 峰值/额定比 | {prev_peak_ratio:.2f}% | {curr_peak_ratio:.2f}% |  |")
-            lines.append(f"| 预警阈值 | {prev.nameplate.rated_torque_nm * (prev.nameplate.warning_threshold_pct + prev_config.threshold_adjustment_pct)/100:.2f} N·m | {r.nameplate.rated_torque_nm * (r.nameplate.warning_threshold_pct + curr_config.threshold_adjustment_pct)/100:.2f} N·m | 阈值调整 {curr_config.threshold_adjustment_pct - prev_config.threshold_adjustment_pct:+.1f}% |")
+            lines.append(f"| 预警阈值 | {prev.effective_warning_threshold_nm:.2f} N·m {'(改判)' if prev.override_applied else ''} | {r.effective_warning_threshold_nm:.2f} N·m {'(改判)' if r.override_applied else ''} | 阈值调整 {curr_config.threshold_adjustment_pct - prev_config.threshold_adjustment_pct:+.1f}% |")
         else:
             curr_peak_ratio = r.peak_torque_nm / r.nameplate.rated_torque_nm * 100 if r.nameplate.rated_torque_nm else 0
             lines.append(f"| 预警等级 | — | {r.warning_level.value} | 首次运行 |")
             lines.append(f"| 峰值扭矩 | — | {r.peak_torque_nm:.2f} N·m | 峰值保留 |")
             lines.append(f"| 峰值/额定比 | — | {curr_peak_ratio:.2f}% |  |")
-            lines.append(f"| 预警阈值 | — | {r.nameplate.rated_torque_nm * (r.nameplate.warning_threshold_pct + curr_config.threshold_adjustment_pct)/100:.2f} N·m | 参数档 L{curr_config.param_level} |")
+            lines.append(f"| 预警阈值 | — | {r.effective_warning_threshold_nm:.2f} N·m {'(改判)' if r.override_applied else ''} | 参数档 L{curr_config.param_level} |")
         lines.append("")
 
         if r.boundary_samples:
@@ -160,10 +163,10 @@ def export_param_compare_markdown(
             for b in r.boundary_samples:
                 lines.append(f"- 读数 `{b.value_nm:.1f} N·m` ({b.timestamp}): {b.boundary_reason}")
                 if prev_config:
-                    old_warn = r.nameplate.rated_torque_nm * (r.nameplate.warning_threshold_pct + prev_config.threshold_adjustment_pct) / 100
-                    old_crit = r.nameplate.rated_torque_nm * (r.nameplate.critical_threshold_pct + prev_config.threshold_adjustment_pct) / 100
-                    new_warn = r.nameplate.rated_torque_nm * (r.nameplate.warning_threshold_pct + curr_config.threshold_adjustment_pct) / 100
-                    new_crit = r.nameplate.rated_torque_nm * (r.nameplate.critical_threshold_pct + curr_config.threshold_adjustment_pct) / 100
+                    old_warn = prev.effective_warning_threshold_nm if prev else r.nameplate.rated_torque_nm * (r.nameplate.warning_threshold_pct + prev_config.threshold_adjustment_pct) / 100
+                    old_crit = prev.effective_critical_threshold_nm if prev else r.nameplate.rated_torque_nm * (r.nameplate.critical_threshold_pct + prev_config.threshold_adjustment_pct) / 100
+                    new_warn = r.effective_warning_threshold_nm
+                    new_crit = r.effective_critical_threshold_nm
                     lines.append(f"  · 旧阈值预警={old_warn:.1f}/严重={old_crit:.1f} → 新阈值预警={new_warn:.1f}/严重={new_crit:.1f}")
                     lines.append(f"  · 差值使该样本在新旧阈值中的归属可能变化,从而拉动整体预警等级。")
             lines.append("")

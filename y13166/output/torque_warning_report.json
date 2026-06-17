@@ -7,7 +7,7 @@
     "require_confirmation": true
   },
   "terminal_summary": {
-    "timestamp": "2026-06-17 23:27:50",
+    "timestamp": "2026-06-18 00:01:44",
     "total_equipment": 6,
     "normal_count": 3,
     "caution_count": 2,
@@ -47,11 +47,14 @@
       "direction_issue_desc": "",
       "override_applied": false,
       "override_note": "",
+      "effective_warning_threshold_nm": 85.0,
+      "effective_critical_threshold_nm": 115.0,
+      "effective_warning_threshold_pct": 85.0,
       "formulas_applied": [
         "峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖",
         "扭矩比 = 当前扭矩 / 额定扭矩 × 100%",
-        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m",
-        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m",
+        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m",
+        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m",
         "极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR"
       ],
       "units_ref": {
@@ -87,11 +90,14 @@
       "direction_issue_desc": "",
       "override_applied": false,
       "override_note": "",
+      "effective_warning_threshold_nm": 85.0,
+      "effective_critical_threshold_nm": 115.0,
+      "effective_warning_threshold_pct": 85.0,
       "formulas_applied": [
         "峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖",
         "扭矩比 = 当前扭矩 / 额定扭矩 × 100%",
-        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m",
-        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m",
+        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m",
+        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m",
         "极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR"
       ],
       "units_ref": {
@@ -127,11 +133,14 @@
       "direction_issue_desc": "",
       "override_applied": false,
       "override_note": "",
+      "effective_warning_threshold_nm": 85.0,
+      "effective_critical_threshold_nm": 115.0,
+      "effective_warning_threshold_pct": 85.0,
       "formulas_applied": [
         "峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖",
         "扭矩比 = 当前扭矩 / 额定扭矩 × 100%",
-        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m",
-        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m",
+        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m",
+        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m",
         "极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR"
       ],
       "units_ref": {
@@ -208,11 +217,14 @@
       "direction_issue_desc": "同一设备读数出现双向(正/反)方向,存在方向符号写反风险",
       "override_applied": false,
       "override_note": "",
+      "effective_warning_threshold_nm": 85.0,
+      "effective_critical_threshold_nm": 115.0,
+      "effective_warning_threshold_pct": 85.0,
       "formulas_applied": [
         "峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖",
         "扭矩比 = 当前扭矩 / 额定扭矩 × 100%",
-        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m",
-        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m",
+        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m",
+        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m",
         "极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR"
       ],
       "units_ref": {
@@ -248,11 +260,14 @@
       "direction_issue_desc": "",
       "override_applied": false,
       "override_note": "",
+      "effective_warning_threshold_nm": 85.0,
+      "effective_critical_threshold_nm": 115.0,
+      "effective_warning_threshold_pct": 85.0,
       "formulas_applied": [
         "峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖",
         "扭矩比 = 当前扭矩 / 额定扭矩 × 100%",
-        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 85.0 N·m",
-        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m",
+        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (铭牌 80% + 参数调整 +5%) = 85.0 N·m",
+        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m",
         "极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR"
       ],
       "units_ref": {
@@ -288,11 +303,14 @@
       "direction_issue_desc": "",
       "override_applied": true,
       "override_note": "人工改判: 车间王主任@2026-06-12 17:30:22 → 预警阈值调至 95.0%",
+      "effective_warning_threshold_nm": 95.0,
+      "effective_critical_threshold_nm": 115.0,
+      "effective_warning_threshold_pct": 95.0,
       "formulas_applied": [
         "峰值保留: 取扭矩序列最大值而非平均值,避免风险被均值掩盖",
         "扭矩比 = 当前扭矩 / 额定扭矩 × 100%",
-        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (80% + +5%) = 95.0 N·m",
-        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (110% + +5%) = 115.0 N·m",
+        "预警阈值 = 额定扭矩 × (基础预警% + 参数调整%) = 100.0 × (人工改判值 95%) = 95.0 N·m",
+        "严重阈值 = 额定扭矩 × (基础严重% + 参数调整%) = 100.0 × (铭牌 110% + 参数调整 +5%) = 115.0 N·m",
         "极端值识别: 超出 Q3 + 1.5×IQR 或低于 Q1 - 1.5×IQR"
       ],
       "units_ref": {

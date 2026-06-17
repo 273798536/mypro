@@ -45,7 +45,7 @@ def _group_by_status(records: List[ProcessedRecord]):
     return g
 
 
-def _card(record: ProcessedRecord) -> str:
+def _card(record: ProcessedRecord, config: RunConfig) -> str:
     lv = record.warning_level
     st = record.status
     badge_bg = _LEVEL_BG[lv]
@@ -76,6 +76,11 @@ def _card(record: ProcessedRecord) -> str:
 
     note_html = f'<div class="note">{html.escape(record.status_note)}</div>' if record.status_note else ""
 
+    warn_marker = " (人工改判)" if record.override_applied else ""
+    crit_marker = " (参数调整)" if abs(config.threshold_adjustment_pct) > 1e-6 else ""
+    pct_info = f"{record.effective_warning_threshold_pct:.0f}%{warn_marker}"
+    crit_pct = (record.nameplate.critical_threshold_pct + config.threshold_adjustment_pct)
+
     return f"""
     <div class="card" style="border-left:4px solid {_STATUS_BORDER[st]};">
       <div class="card-header">
@@ -87,8 +92,8 @@ def _card(record: ProcessedRecord) -> str:
         <div class="grid">
           <div><label>额定扭矩</label><b>{record.nameplate.rated_torque_nm:.1f} N·m</b></div>
           <div><label>峰值扭矩</label><b>{record.peak_torque_nm:.1f} N·m</b> @ {record.peak_torque_rpm:.0f}rpm</div>
-          <div><label>预警阈值</label>{record.nameplate.rated_torque_nm * record.nameplate.warning_threshold_pct/100:.1f} N·m ({record.nameplate.warning_threshold_pct:.0f}%)</div>
-          <div><label>严重阈值</label>{record.nameplate.rated_torque_nm * record.nameplate.critical_threshold_pct/100:.1f} N·m ({record.nameplate.critical_threshold_pct:.0f}%)</div>
+          <div><label>预警阈值</label>{record.effective_warning_threshold_nm:.1f} N·m ({pct_info})</div>
+          <div><label>严重阈值</label>{record.effective_critical_threshold_nm:.1f} N·m ({crit_pct:.0f}%{crit_marker})</div>
           <div><label>读数条数</label>{len(record.readings)}</div>
           <div><label>出厂</label>{html.escape(record.nameplate.install_date)}</div>
         </div>
@@ -125,7 +130,7 @@ def render_page_summary(
         (MaterialStatus.PENDING_SUPPLEMENT, "待补材料 (琥珀色)"),
         (MaterialStatus.MANUAL_OVERRIDE, "人工改判 (紫色)"),
     ]:
-        cards = "".join(_card(r) for r in groups[st]) or '<p class="empty">本分区暂无记录</p>'
+        cards = "".join(_card(r, config) for r in groups[st]) or '<p class="empty">本分区暂无记录</p>'
         sections_html += f"""
         <section class="zone" style="background:{_STATUS_COLOR[st]}; border:2px solid {_STATUS_BORDER[st]};">
           <h2>{name} · {len(groups[st])}台</h2>
