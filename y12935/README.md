@@ -16,6 +16,7 @@ pip install -r requirements.txt
 ### 2. 启动服务
 
 ```bash
+cd /Users/mac/pro/solo/workspaces/y12935
 source .venv/bin/activate
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
@@ -24,9 +25,8 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ### 3. 加载第一份样例
 
-首页会自动加载样例评测题库：`data/samples/eval_benchmark_v1.json`
-
-也可以通过 API 手动触发：
+首页会自动生成样例评测题库到 `data/samples/eval_benchmark_v1.json`。
+打开页面后点击顶部 **运行样例评测** 按钮，或通过 API 触发：
 ```bash
 curl http://localhost:8000/api/run-sample
 ```
@@ -60,5 +60,5 @@ curl http://localhost:8000/api/run-sample
 | 安全规则 | 敏感类题目规则校验，检测规则漏配 |
 | 人工修正 | 审核员可把结论拉回来源材料（覆盖自动判定） |
 | 结果分类 | 标记「直接可用」与「需安全审核员复核」 |
-| 导出 | JSON + CSV + PNG 图表，确保与界面摘要一致 |
+| 导出 | JSON + CSV，摘要重算后再写出，确保导出内容与界面摘要一致 |
 | 错误提示 | 缺题库/缺向量等可操作错误（非内部错误） |

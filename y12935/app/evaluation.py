@@ -37,12 +37,11 @@ def _decide_readiness(
     final_verdict: EvaluationVerdict,
     has_misconfig: bool,
 ) -> ResultReadiness:
-    if has_misconfig or final_verdict in {
-        EvaluationVerdict.NEEDS_SECURITY_REVIEW,
-        EvaluationVerdict.PENDING_REVIEW,
-    }:
+    if has_misconfig:
         return ResultReadiness.NEEDS_SECURITY_AUDITOR
-    return ResultReadiness.DIRECTLY_USABLE
+    if final_verdict == EvaluationVerdict.PASS:
+        return ResultReadiness.DIRECTLY_USABLE
+    return ResultReadiness.NEEDS_SECURITY_AUDITOR
 
 
 SENSITIVE_CATEGORIES = {
