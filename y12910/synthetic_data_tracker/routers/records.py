@@ -12,6 +12,20 @@ from services import record_service, dedup_service
 router = APIRouter(prefix="/records", tags=["评测记录"])
 
 
+@router.post("/reset-seed", summary="【按钮触发】清空数据库并重新写入3条样例数据，恢复 ready=1/needs_review=1/rejected=1")
+def reset_seed():
+    import traceback
+    try:
+        from seed import seed
+        seed()
+        return {"ok": True, "message": "已清空并重新写入样例数据，预期分类 ready=1 / needs_review=1 / rejected=1"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail={
+            "message": f"重置样例失败: {str(e)}",
+            "traceback": traceback.format_exc(limit=5),
+        })
+
+
 @router.post("", response_model=RecordResponse, summary="导入评测记录")
 def create_record(data: RecordCreate):
     if not data.content.strip():

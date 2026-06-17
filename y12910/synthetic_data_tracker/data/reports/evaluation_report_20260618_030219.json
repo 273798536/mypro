@@ -1,0 +1,74 @@
+{
+  "ok": true,
+  "summary": {
+    "total": 3,
+    "ready": 1,
+    "needs_review": 1,
+    "rejected": 1
+  },
+  "warnings": [
+    "记录 id=3 content 为空，若未标记 rejected 请尽快处理。",
+    "记录 id=3 source_material 为空，无法追溯到来源材料。"
+  ],
+  "report": {
+    "exported_at": "2026-06-18T03:02:19.833604",
+    "total": 3,
+    "ready": [
+      {
+        "record": {
+          "id": 1,
+          "source_material": "合成数据集v2.1/prompt_v3",
+          "prompt_version": "v3",
+          "content": "请根据以下医学文献摘要，生成一份面向患者的健康科普说明，要求语言通俗易懂，不超过300字。",
+          "content_hash": "8b25c04857b8bdc83ad292fe6e1efeb1950f03798afda076aca70ff6cfab34e4",
+          "status": "confirmed",
+          "feedback": "生成质量优秀，语言通顺，信息准确",
+          "notes": "第3轮提示词优化后的结果",
+          "created_at": "2026-06-17 17:46:01",
+          "updated_at": "2026-06-17 17:46:01"
+        },
+        "category": "ready",
+        "version_count": 2,
+        "source_trace_count": 3
+      }
+    ],
+    "needs_review": [
+      {
+        "record": {
+          "id": 2,
+          "source_material": "合成数据集v2.1/prompt_v2",
+          "prompt_version": "v2",
+          "content": "请根据以下法律条文，生成一组模拟法庭辩论的问题和回答，要求覆盖正反两方观点。",
+          "content_hash": "33f888bc39cc1c5cb508cf04913c141e07d3abd951da05777782afd97e7c5395",
+          "status": "pending_review",
+          "feedback": "正方论点偏弱，需要补充反方论据",
+          "notes": "待评测负责人确认反方论据是否充分  备注：李工说可以补两条例子",
+          "created_at": "2026-06-17 17:46:01",
+          "updated_at": "2026-06-17 17:46:01"
+        },
+        "category": "needs_review",
+        "version_count": 1,
+        "source_trace_count": 2
+      }
+    ],
+    "rejected": [
+      {
+        "record": {
+          "id": 3,
+          "source_material": "",
+          "prompt_version": "",
+          "content": "",
+          "content_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "status": "rejected",
+          "feedback": "空值记录，无来源、无内容、无提示词版本",
+          "notes": "备注混写：来源不明/疑似重复/空值测试||负责人说先标坏数据",
+          "created_at": "2026-06-17 17:46:01",
+          "updated_at": "2026-06-17 17:46:01"
+        },
+        "category": "rejected",
+        "version_count": 3,
+        "source_trace_count": 4
+      }
+    ]
+  }
+}
