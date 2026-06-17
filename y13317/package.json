@@ -1,0 +1,40 @@
+{
+  "name": "industrial-visual-inspection-platform",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "工业视觉人工改判质检平台",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.0",
+    "zustand": "^4.5.4",
+    "echarts": "^5.5.1",
+    "echarts-for-react": "^3.0.2",
+    "ag-grid-community": "^32.1.0",
+    "ag-grid-react": "^32.1.0",
+    "lucide-react": "^0.424.0",
+    "@headlessui/react": "^2.1.2",
+    "xlsx": "^0.18.5",
+    "diff-match-patch": "^1.0.5",
+    "dayjs": "^1.11.12",
+    "file-saver": "^2.0.5"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/diff-match-patch": "^1.0.36",
+    "@types/file-saver": "^2.0.7",
+    "@vitejs/plugin-react": "^4.3.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0",
+    "tailwindcss": "^3.4.7",
+    "postcss": "^8.4.41",
+    "autoprefixer": "^10.4.19"
+  }
+}

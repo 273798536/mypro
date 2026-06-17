@@ -1,0 +1,54 @@
+{
+  "compilerOptions": {
+    // 目标 ECMAScript 版本
+    "target": "ES2020",
+    // 使用的模块系统
+    "module": "ESNext",
+    // 模块解析策略
+    "moduleResolution": "bundler",
+    // 启用严格类型检查
+    "strict": true,
+    // 启用 JSX 支持
+    "jsx": "react-jsx",
+    // 启用源映射
+    "sourceMap": true,
+    // 解析 JSON 文件
+    "resolveJsonModule": true,
+    // 允许合成默认导入
+    "esModuleInterop": true,
+    // 允许从没有设置默认导出的模块中默认导入
+    "allowSyntheticDefaultImports": true,
+    // 强制使用一致的大小写
+    "forceConsistentCasingInFileNames": true,
+    // 跳过库文件的类型检查
+    "skipLibCheck": true,
+    // 不输出文件，仅做类型检查
+    "noEmit": true,
+    // 隔离模块
+    "isolatedModules": true,
+    // 启用装饰器
+    "experimentalDecorators": true,
+    // 基础路径
+    "baseUrl": ".",
+    // 路径别名配置
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    // 编译时包含的库文件
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    // 不允许隐式 any 类型
+    "noImplicitAny": true,
+    // 不允许隐式 this
+    "noImplicitThis": true,
+    // 严格检查 null/undefined
+    "strictNullChecks": true,
+    // 严格检查函数类型
+    "strictFunctionTypes": true,
+    // 启用 useDefineForClassFields
+    "useDefineForClassFields": true
+  },
+  // 需要编译的文件
+  "include": ["src"],
+  // 引用 node 配置
+  "references": [{ "path": "./tsconfig.node.json" }]
+}
