@@ -1,6 +1,7 @@
 import os
+from io import BytesIO
 from datetime import datetime
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Tuple
 from docx import Document
 from docx.shared import Pt, Inches, Cm, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -114,13 +115,12 @@ def _format_issues_for_humans(rule_results: Dict) -> List[Dict]:
     return output
 
 
-def generate_word_report(
+def _build_word_doc(
     result: Dict,
     compare_result: Optional[Dict] = None,
     dataset_name: str = "未命名数据集",
-    output_dir: str = ".",
     operator: str = "user"
-) -> str:
+) -> Document:
     doc = Document()
 
     for section in doc.sections:
@@ -325,7 +325,42 @@ def generate_word_report(
     if not advice_given:
         _add_para(doc, "目前各项指标都在合理范围内，可以直接用于模型训练。后续只要有新数据进来，记得再跑一遍这个平衡器就好。")
 
-    filename = f"多语言样本平衡报告_{dataset_name}_{datetime.now().strftime('%Y%m%d_%H%M')}.docx"
+    return doc
+
+
+def _make_report_filename(dataset_name: str) -> str:
+    return f"多语言样本平衡报告_{dataset_name}_{datetime.now().strftime('%Y%m%d_%H%M')}.docx"
+
+
+def generate_word_report_bytes(
+    result: Dict,
+    compare_result: Optional[Dict] = None,
+    dataset_name: str = "未命名数据集",
+    operator: str = "user"
+) -> Tuple[str, BytesIO]:
+    """生成 Word 报告（内存中，零文件依赖）。返回 (文件名, BytesIO)。
+
+    适用于 Streamlit 等 Web 框架，直接把 BytesIO 传给下载按钮，
+    不要求应用目录可写，在只读/受限部署环境也能正常工作。
+    """
+    doc = _build_word_doc(result, compare_result, dataset_name, operator)
+    filename = _make_report_filename(dataset_name)
+    buf = BytesIO()
+    doc.save(buf)
+    buf.seek(0)
+    return filename, buf
+
+
+def generate_word_report(
+    result: Dict,
+    compare_result: Optional[Dict] = None,
+    dataset_name: str = "未命名数据集",
+    output_dir: str = ".",
+    operator: str = "user"
+) -> str:
+    """生成 Word 报告并保存到文件。返回文件路径（兼容旧接口）。"""
+    doc = _build_word_doc(result, compare_result, dataset_name, operator)
+    filename = _make_report_filename(dataset_name)
     output_path = os.path.join(output_dir, filename)
     doc.save(output_path)
     return output_path

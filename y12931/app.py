@@ -420,17 +420,14 @@ def _render_balance_result(result: dict, dataset_name: str, orig_df: pd.DataFram
         if st.button("📄 导出 Word 报告 (.docx)", use_container_width=True):
             with st.spinner("正在生成Word..."):
                 try:
-                    path = rg.generate_word_report(
+                    filename, buf = rg.generate_word_report_bytes(
                         result, compare_result=None,
                         dataset_name=dataset_name,
-                        output_dir="."
                     )
-                    with open(path, "rb") as f:
-                        data = f.read()
                     st.download_button(
                         "📥 下载 Word 报告",
-                        data=data,
-                        file_name=os.path.basename(path),
+                        data=buf,
+                        file_name=filename,
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                     )
                     st.success("✅ Word生成好了，点上面按钮下载")
@@ -555,10 +552,15 @@ def page_grayscale():
             base_result = st.session_state.get("last_compare_base", {})
             cand_result = st.session_state.get("last_compare_cand", {})
             try:
-                path = rg.generate_word_report(cand_result, compare, f"灰度对比_{base_id}vs{cand_id}", ".")
-                with open(path, "rb") as f:
-                    data = f.read()
-                st.download_button("📥 下载报告", data, file_name=os.path.basename(path))
+                filename, buf = rg.generate_word_report_bytes(
+                    cand_result, compare, f"灰度对比_{base_id}vs{cand_id}"
+                )
+                st.download_button(
+                    "📥 下载报告",
+                    data=buf,
+                    file_name=filename,
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                )
             except Exception as e:
                 st.error(f"导出失败：{e}")
 
