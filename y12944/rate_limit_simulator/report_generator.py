@@ -210,6 +210,7 @@ class ReportGenerator:
         group_metrics: List[GroupMetrics],
         review_records: Dict[str, List[ReviewRecord]],
         corrections: Dict[str, List[ManualCorrection]],
+        versions: Optional[Dict[str, List]] = None,
         include_raw_data: bool = False,
     ) -> str:
         report_parts = []
@@ -227,6 +228,8 @@ class ReportGenerator:
                     top_blocked_reasons.get(reason.value, 0) + 1
                 )
 
+        report_parts.append("一、限流模拟检查结果摘要（给业务方看的普通话版本）")
+        report_parts.append("=" * 60)
         report_parts.append(self.generate_business_summary(group_metrics, top_blocked_reasons))
         report_parts.append("")
 
@@ -258,6 +261,8 @@ class ReportGenerator:
         report_parts.append("=" * 60)
         report_parts.append("")
 
+        versions = versions or {}
+
         for sample in samples:
             result = intercept_results.get(sample.sample_id)
             if not result:
@@ -272,10 +277,28 @@ class ReportGenerator:
             report_parts.append(f"提示词版本：{sample.prompt_version}")
             if sample.model_version:
                 report_parts.append(f"模型版本：{sample.model_version}")
+            report_parts.append(f"当前检查轮次：第 {result.check_round} 轮")
+
+            sample_versions = versions.get(sample.sample_id, [])
+            if sample_versions:
+                report_parts.append(
+                    f"版本历史：共 {len(sample_versions)} 个版本，"
+                    f"当前使用最新版本"
+                )
             report_parts.append("")
-            report_parts.append(f"提示词：{sample.prompt}")
+
+            sample_corrections = corrections.get(sample.sample_id, [])
+            if sample_corrections:
+                latest_correction = sample_corrections[-1]
+                if latest_correction.is_approved:
+                    report_parts.append("⚠️  当前展示的是**已审核通过**的修正后样本")
+                else:
+                    report_parts.append("⚠️  注意：存在**待审核**的人工修正，当前检查使用的是最新修正内容")
+                report_parts.append("")
+
+            report_parts.append(f"提示词（当前版本）：{sample.prompt}")
             if sample.response:
-                report_parts.append(f"响应：{sample.response}")
+                report_parts.append(f"响应（当前版本）：{sample.response}")
             report_parts.append("")
 
             if result.is_blocked:
@@ -301,41 +324,52 @@ class ReportGenerator:
                         report_parts.append(f"  - {suggestion}")
                     report_parts.append("")
 
-            sample_corrections = corrections.get(sample.sample_id, [])
+            if sample_versions:
+                report_parts.append("版本变更历史：")
+                for i, ver in enumerate(reversed(sample_versions), 1):
+                    report_parts.append(
+                        f"  版本{i} ({ver.version_id[:12]}...): "
+                        f"{ver.change_reason} - {ver.created_by}"
+                    )
+                report_parts.append("")
+
             if sample_corrections:
                 report_parts.append("人工修正记录（保留原话）：")
-                for corr in sample_corrections:
-                    report_parts.append(f"  修正人：{corr.corrected_by}")
-                    report_parts.append(f"  时间：{corr.corrected_at.strftime('%Y-%m-%d %H:%M:%S')}")
-                    report_parts.append(f"  备注原文：「{corr.correction_note}」")
-                    if corr.corrected_prompt:
-                        report_parts.append(f"  修正后提示词：{corr.corrected_prompt}")
+                for i, corr in enumerate(sample_corrections, 1):
+                    status_text = "已审核通过" if corr.is_approved else "待审核"
+                    report_parts.append(f"  修正{i} [{status_text}]")
+                    report_parts.append(f"    修正人：{corr.corrected_by}")
                     report_parts.append(
-                        f"  状态：{'已通过' if corr.is_approved else '待审核'}"
+                        f"    时间：{corr.corrected_at.strftime('%Y-%m-%d %H:%M:%S')}"
                     )
+                    report_parts.append(f"    备注原文：「{corr.correction_note}」")
+                    if corr.corrected_prompt:
+                        report_parts.append(f"    修正前提示词：{corr.original_prompt}")
+                        report_parts.append(f"    修正后提示词：{corr.corrected_prompt}")
+                    if corr.corrected_response:
+                        report_parts.append(f"    修正前响应：{corr.original_response}")
+                        report_parts.append(f"    修正后响应：{corr.corrected_response}")
                 report_parts.append("")
 
             sample_reviews = review_records.get(sample.sample_id, [])
             if sample_reviews:
-                report_parts.append("复核记录：")
-                for review in sample_reviews:
+                report_parts.append("复核记录（模型日志/安全规则/工具调用参数 同一轮）：")
+                for i, review in enumerate(sample_reviews, 1):
                     report_parts.append(
-                        f"  第{review.review_round}轮 - {review.reviewer} - "
+                        f"  第{review.review_round}轮复核 - {review.reviewer} - "
                         f"{'通过' if review.is_approved else '未通过'}"
                     )
-                    report_parts.append(f"  复核意见原文：「{review.review_notes}」")
+                    report_parts.append(f"    复核意见原文：「{review.review_notes}」")
                     if review.safety_rules_checked:
                         report_parts.append(
-                            f"  本轮检查的安全规则：{', '.join(review.safety_rules_checked)}"
+                            f"    本轮检查安全规则：{', '.join(review.safety_rules_checked)}"
                         )
                     if review.tool_call_params:
-                        report_parts.append(
-                            f"  本轮工具调用参数：{review.tool_call_params}"
-                        )
+                        tool_name = review.tool_call_params.get("tool_name", "未知工具")
+                        report_parts.append(f"    本轮使用工具：{tool_name}")
                     if review.model_logs:
-                        report_parts.append(
-                            f"  本轮模型日志摘要：{list(review.model_logs.keys())}"
-                        )
+                        latency = review.model_logs.get("inference_latency_ms", "N/A")
+                        report_parts.append(f"    本轮推理延迟：{latency}ms")
                 report_parts.append("")
 
             if include_raw_data:

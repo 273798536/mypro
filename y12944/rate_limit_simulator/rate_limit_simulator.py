@@ -5,6 +5,7 @@ from .models import (
     GroupMetrics,
     InterceptReason,
     InterceptResult,
+    ManualCorrection,
     Sample,
     SampleStatus,
     SimulatorConfig,
@@ -129,6 +130,114 @@ class RateLimitSimulator:
         self._compute_group_metrics()
         return True
 
+    def apply_manual_correction(
+        self,
+        sample_id: str,
+        corrected_prompt: Optional[str] = None,
+        corrected_response: Optional[str] = None,
+        correction_note: str = "",
+        corrected_by: str = "",
+        auto_create_version: bool = True,
+        auto_recheck: bool = True,
+    ) -> Optional[ManualCorrection]:
+        if sample_id not in self._samples:
+            return None
+
+        original_sample = self._samples[sample_id]
+
+        new_prompt = corrected_prompt if corrected_prompt else original_sample.prompt
+        new_response = (
+            corrected_response if corrected_response else original_sample.response
+        )
+
+        correction = self.review_workflow.add_manual_correction(
+            sample=original_sample,
+            version=None,
+            original_prompt=original_sample.prompt,
+            corrected_prompt=corrected_prompt,
+            original_response=original_sample.response,
+            corrected_response=corrected_response,
+            correction_note=correction_note,
+            corrected_by=corrected_by,
+        )
+
+        if auto_create_version:
+            self.review_workflow.create_new_version(
+                sample=original_sample,
+                new_prompt=new_prompt,
+                new_response=new_response,
+                created_by=corrected_by,
+                change_reason=f"人工修正: {correction_note[:50]}",
+            )
+
+        if corrected_prompt:
+            self._samples[sample_id] = original_sample.model_copy(
+                update={"prompt": new_prompt}
+            )
+        if corrected_response:
+            self._samples[sample_id] = self._samples[sample_id].model_copy(
+                update={"response": new_response}
+            )
+
+        self._sample_status[sample_id] = SampleStatus.CORRECTED
+
+        if auto_recheck:
+            result = self.interceptor.check_sample(self._samples[sample_id])
+            self._intercept_results[sample_id] = result
+            if result.is_blocked:
+                self._sample_status[sample_id] = SampleStatus.BLOCKED
+            else:
+                self._sample_status[sample_id] = SampleStatus.PASSED
+
+        self._compute_group_metrics()
+        return correction
+
+    def approve_correction_and_apply(
+        self,
+        sample_id: str,
+        correction_id: str,
+        approved_by: str,
+    ) -> bool:
+        if sample_id not in self._samples:
+            return False
+
+        correction = None
+        for corr in self.review_workflow.get_sample_corrections(sample_id):
+            if corr.correction_id == correction_id:
+                correction = corr
+                break
+
+        if not correction:
+            return False
+
+        self.review_workflow.approve_correction(correction_id, approved_by)
+
+        original_sample = self._samples[sample_id]
+        updated = False
+        if correction.corrected_prompt:
+            self._samples[sample_id] = original_sample.model_copy(
+                update={"prompt": correction.corrected_prompt}
+            )
+            updated = True
+        if correction.corrected_response:
+            self._samples[sample_id] = self._samples[sample_id].model_copy(
+                update={"response": correction.corrected_response}
+            )
+            updated = True
+
+        if updated:
+            result = self.interceptor.check_sample(self._samples[sample_id])
+            self._intercept_results[sample_id] = result
+
+            if result.is_blocked:
+                self._sample_status[sample_id] = SampleStatus.BLOCKED
+            else:
+                self._sample_status[sample_id] = SampleStatus.PASSED
+
+            self._compute_group_metrics()
+
+        return True
+
     def get_sample(self, sample_id: str) -> Optional[Sample]:
         return self._samples.get(sample_id)
 
@@ -178,10 +287,12 @@ class RateLimitSimulator:
 
         review_records = {}
         corrections = {}
+        versions = {}
         for sample in samples:
             sid = sample.sample_id
             review_records[sid] = self.review_workflow.get_sample_reviews(sid)
             corrections[sid] = self.review_workflow.get_sample_corrections(sid)
+            versions[sid] = self.review_workflow.get_sample_versions(sid)
 
         return self.report_generator.generate_full_report(
             samples=samples,
@@ -189,6 +300,7 @@ class RateLimitSimulator:
             group_metrics=group_metrics,
             review_records=review_records,
             corrections=corrections,
+            versions=versions,
             include_raw_data=include_raw_data,
         )
 
