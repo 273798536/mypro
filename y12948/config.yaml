@@ -1,0 +1,18 @@
+seed_bench:
+  default_seed: 42
+  hash_algorithm: "xxhash64"
+  storage:
+    backend: "filesystem"
+    data_dir: "./data"
+  safety_rules:
+    require_train_val_split: true
+    max_leak_ratio: 0.001
+    min_val_size: 50
+    forbid_user_cross: true
+  review:
+    include_safety_rules: true
+    include_model_logs: true
+    include_tool_params: true
+  export:
+    formats: ["csv", "json", "markdown"]
+    sync_summary_with_file: true

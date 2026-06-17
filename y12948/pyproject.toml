@@ -1,0 +1,27 @@
+[project]
+name = "seed-bench"
+version = "0.1.0"
+description = "数据混洗随机种子台 - 面向算法产品经理的确定性数据处理平台"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+    "pandas>=2.0.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+    "xxhash>=3.0.0",
+]
+
+[project.scripts]
+seed-bench = "seed_bench.cli:main"
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["seed_bench*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

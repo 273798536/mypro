@@ -1,0 +1,2 @@
+[console_scripts]
+seed-bench = seed_bench.cli:main
