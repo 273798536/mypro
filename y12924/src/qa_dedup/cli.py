@@ -128,6 +128,13 @@ def cmd_report(args):
     return 0
 
 
+def cmd_serve(args):
+    from .web_app import start_server
+    port = args.port or 8765
+    start_server(port=port, output_dir=args.output or "./output")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="qa-dedup",
@@ -161,6 +168,11 @@ def main():
     p_rep.add_argument("--json-input", required=True, help="已有的 JSON 报告路径")
     p_rep.add_argument("--output", "-o", help="输出文本文件路径，不指定则打印到终端")
     p_rep.set_defaults(func=cmd_report)
+
+    p_serve = subparsers.add_parser("serve", help="启动本地 Web 预览服务")
+    p_serve.add_argument("--port", "-p", type=int, default=8765, help="端口号（默认 8765）")
+    p_serve.add_argument("--output", "-o", help="输出目录（默认 ./output）")
+    p_serve.set_defaults(func=cmd_serve)
 
     args = parser.parse_args()
     if not args.command:

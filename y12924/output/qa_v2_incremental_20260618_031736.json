@@ -1,0 +1,88 @@
+{
+  "report_id": "7d5b78a3-3e53-45c3-a5a6-3461132faef8",
+  "generated_at": "2026-06-18T03:17:36.630805",
+  "version_tag": "v1",
+  "is_incremental": true,
+  "report_mode": "incremental",
+  "total_processed": 2,
+  "total_usable": 1,
+  "total_blocked": 1,
+  "cumulative_total": 12,
+  "cumulative_usable": 9,
+  "cumulative_blocked": 3,
+  "group_metrics": [
+    {
+      "group_name": "NLP 进阶",
+      "total_samples": 1,
+      "usable_samples": 0,
+      "blocked_samples": 1,
+      "train_count": 0,
+      "val_count": 1,
+      "leak_count": 1,
+      "duplicate_count": 0,
+      "template_count": 1
+    },
+    {
+      "group_name": "深度学习基础",
+      "total_samples": 1,
+      "usable_samples": 1,
+      "blocked_samples": 0,
+      "train_count": 1,
+      "val_count": 0,
+      "leak_count": 0,
+      "duplicate_count": 0,
+      "template_count": 0
+    }
+  ],
+  "leak_records": [
+    {
+      "train_sample_id": "1f110994-31ab-4e90-b4d2-b8628b0f1dce",
+      "val_sample_id": "9656fcd2-e374-426b-8bbe-946361dca4b0",
+      "train_question_preview": "Transformer 模型中的自注意力机制",
+      "val_question_preview": "Transformer 模型中的自注意力机制，详细一点",
+      "similarity_score": 0.913,
+      "leak_reason": "整体相似度 91% ≥ 阈值 88%",
+      "plain_text_explanation": "【训练验证泄漏拦截说明】\n这条样本被拦下的原因是：它和训练集中的另一条样本在问题内容上相似度高达 91%，\n如果同时出现在训练集和验证集里，模型会在验证时「见过」这道题，验证分数就虚高，不能真实反映模型能力。\n\n具体情况：\n• 训练集样本 (ID: 1f110994...)，分组：NLP 进阶\n  问题摘要：Transformer 模型中的自注意力机制\n• 验证集样本 (ID: 9656fcd2...)，分组：NLP 进阶\n  问题摘要：Transformer 模型中的自注意力机制，详细一点\n\n处理建议：二选一保留即可，推荐保留来源更可靠、人工标注更完整的那条。\n\n相关人工备注（原话保留，未做改写）：\n【训练集人工备注·原话保留】这个例子是同事小李从论文里摘的，记得标注来源\n【验证集人工备注·原话保留】这是补录的，注意检查是否和训练集冲突",
+      "leak_id": "c6ad8663-94ad-42d2-b0d8-8bb356f7badd",
+      "issue_type": "train_val_leak",
+      "severity": "blocker",
+      "matched_fields": [
+        "question"
+      ],
+      "preserved_human_notes": [
+        "这个例子是同事小李从论文里摘的，记得标注来源",
+        "这是补录的，注意检查是否和训练集冲突"
+      ],
+      "created_at": "2026-06-18T03:17:36.633982",
+      "metadata": {
+        "question_similarity": 0.913,
+        "answer_similarity": 0.6889
+      }
+    }
+  ],
+  "dedup_records": [],
+  "template_removed_count": 1,
+  "blocked_sample_ids": [
+    "0165ec36-a457-4455-919b-98ee3c580b1b",
+    "9656fcd2-e374-426b-8bbe-946361dca4b0",
+    "c32ddb92-7a83-4f9d-a75b-2ce98756d124"
+  ],
+  "usable_sample_ids": [
+    "4c408bb5-6392-48ba-bf25-e392b72d5de9",
+    "a25ee2fe-524d-48a2-a664-20f10d2cbb4b",
+    "1f110994-31ab-4e90-b4d2-b8628b0f1dce",
+    "77c60b85-10a8-4a05-96ad-fe5d09ff07f7",
+    "f824861a-e028-4b36-a4e5-e388d9d3ee44",
+    "c1da7d43-7a20-4fd8-af75-5c9b7b34483d",
+    "dad3f78c-6241-482b-9243-88089e35571d",
+    "e4b49914-b3fe-453e-ba54-bccff6689f5c",
+    "6b13e0b4-1a81-4af9-b1e5-d6d6faed307e"
+  ],
+  "newly_blocked_ids": [
+    "9656fcd2-e374-426b-8bbe-946361dca4b0"
+  ],
+  "newly_usable_ids": [
+    "6b13e0b4-1a81-4af9-b1e5-d6d6faed307e"
+  ],
+  "export_summary": "增量补录样本处理汇总（版本 v1）\n本次新增补录样本：2 条\n本次新增可用：1 条\n本次新增拦截：1 条\n  - 新增训练验证泄漏：1 条\n  - 新增重复样本：0 条\n  - 本次模板化清理：1 条\n\n【累计情况】\n累计样本总数：12 条\n累计可用：9 条\n累计拦截：3 条\n\n【本次补录分组明细】\n  [NLP 进阶] 本次新增 1 条，可用 0 条，拦截 1 条（泄漏 1，重复 0）\n  [深度学习基础] 本次新增 1 条，可用 1 条，拦截 0 条（泄漏 0，重复 0）\n\n注意：本报告为增量视角，仅展示本次补录样本的情况。\n详细拦截记录见下方各条目，每条均附拦截原因和人工备注原话。"
+}

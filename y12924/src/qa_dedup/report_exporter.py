@@ -82,46 +82,94 @@ class ReportExporter:
             f"（{blocked_desc}）；训练集 {gm.train_count} 条，验证集 {gm.val_count} 条"
         )
 
+    def _build_overview_section(self) -> List[str]:
+        report = self.report
+        lines = []
+        if report.is_incremental:
+            lines += [
+                "-" * 40,
+                "一、总览（训练组先看这里：本次补录哪些能用、哪些不能用）",
+                "-" * 40,
+                "【本次新增补录】",
+                f"新增样本数：{report.total_processed} 条",
+                f"新增可用：{report.total_usable} 条（可以直接加入训练/验证集）",
+                f"新增拦截：{report.total_blocked} 条（不能用，原因见下方详情）",
+                f"  - 新增训练验证泄漏：{len(report.leak_records)} 条",
+                f"  - 新增重复样本：{len(report.dedup_records)} 条",
+                f"  - 本次模板化清理（仍可用，内容已优化）：{report.template_removed_count} 条",
+                "",
+                "【累计情况】",
+                f"累计样本总数：{report.cumulative_total} 条",
+                f"累计可用：{report.cumulative_usable} 条",
+                f"累计拦截：{report.cumulative_blocked} 条",
+                "",
+                "本次新增可用样本 ID：",
+                ", ".join(report.newly_usable_ids) if report.newly_usable_ids else "（无）",
+                "",
+                "本次新增拦截样本 ID（这些不能用）：",
+                ", ".join(report.newly_blocked_ids) if report.newly_blocked_ids else "（无）",
+                "",
+                "全部累计拦截样本 ID：",
+                ", ".join(report.blocked_sample_ids) if report.blocked_sample_ids else "（无）",
+            ]
+        else:
+            lines += [
+                "-" * 40,
+                "一、总览（训练组只需要看这里就知道哪些能用）",
+                "-" * 40,
+                f"本次处理样本总数：{report.total_processed}",
+                f"可用样本数：{report.total_usable} 条（可以直接拿去训练）",
+                f"拦截样本数：{report.total_blocked} 条（不能用，原因见下方）",
+                f"  - 因训练验证泄漏拦截：{len(report.leak_records)} 条",
+                f"  - 因重复样本拦截：{len(report.dedup_records)} 条",
+                f"  - 去模板化清理（仍可用，内容已优化）：{report.template_removed_count} 条",
+                "",
+                "可用样本 ID 列表：",
+                ", ".join(report.usable_sample_ids) if report.usable_sample_ids else "（无）",
+                "",
+                "拦截样本 ID 列表（这些不能用）：",
+                ", ".join(report.blocked_sample_ids) if report.blocked_sample_ids else "（无）",
+            ]
+        lines.append("")
+        return lines
+
     def export_text_report(self) -> str:
         report = self.report
+        title = (
+            "问答样本去模板化 - 训练组专用报告（增量补录版）"
+            if report.is_incremental
+            else "问答样本去模板化 - 训练组专用报告"
+        )
         lines = [
             "=" * 60,
-            "问答样本去模板化 - 训练组专用报告",
+            title,
             "=" * 60,
             f"报告版本：{report.version_tag}",
+            f"报告类型：{'增量补录报告' if report.is_incremental else '全量报告'}",
             f"生成时间：{report.generated_at}",
             f"报告 ID：{report.report_id}",
             "",
-            "-" * 40,
-            "一、总览（训练组只需要看这里就知道哪些能用）",
-            "-" * 40,
-            f"本次处理样本总数：{report.total_processed}",
-            f"可用样本数：{report.total_usable} 条（可以直接拿去训练）",
-            f"拦截样本数：{report.total_blocked} 条（不能用，原因见下方）",
-            f"  - 因训练验证泄漏拦截：{len(report.leak_records)} 条",
-            f"  - 因重复样本拦截：{len(report.dedup_records)} 条",
-            f"  - 去模板化清理（仍可用，内容已优化）：{report.template_removed_count} 条",
-            "",
-            "可用样本 ID 列表：",
-            ", ".join(report.usable_sample_ids) if report.usable_sample_ids else "（无）",
-            "",
-            "拦截样本 ID 列表（这些不能用）：",
-            ", ".join(report.blocked_sample_ids) if report.blocked_sample_ids else "（无）",
-            "",
         ]
+        lines += self._build_overview_section()
         if report.group_metrics:
+            group_title = "二、本次补录分组明细" if report.is_incremental else "二、分组明细"
             lines += [
                 "-" * 40,
-                "二、分组明细",
+                group_title,
                 "-" * 40,
             ]
             for gm in report.group_metrics:
                 lines.append(self._format_group_metrics(gm))
             lines.append("")
         if report.leak_records:
+            leak_title = (
+                "三、本次新增训练验证泄漏详情（必须看，这些是真正的风险点）"
+                if report.is_incremental
+                else "三、训练验证泄漏详情（必须看，这些是真正的风险点）"
+            )
             lines += [
                 "-" * 40,
-                "三、训练验证泄漏详情（必须看，这些是真正的风险点）",
+                leak_title,
                 "-" * 40,
                 "说明：每条泄漏记录下方都有一段普通话解释，产品经理可直接复制给同事。",
                 "人工备注原话保留，未做任何自动改写。",
@@ -131,17 +179,23 @@ class ReportExporter:
                 lines.append(self._format_leak_record(lr, i))
                 lines.append("")
         if report.dedup_records:
+            dedup_title = (
+                "四、本次新增重复样本详情"
+                if report.is_incremental
+                else "四、重复样本详情"
+            )
             lines += [
                 "-" * 40,
-                "四、重复样本详情",
+                dedup_title,
                 "-" * 40,
             ]
             for i, dr in enumerate(report.dedup_records, 1):
                 lines.append(self._format_dedup_record(dr, i))
                 lines.append("")
+        summary_title = "五、系统导出摘要"
         lines += [
             "-" * 40,
-            "五、系统导出摘要",
+            summary_title,
             "-" * 40,
             report.export_summary,
             "",

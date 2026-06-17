@@ -179,6 +179,8 @@ class WorkflowManager:
 
     def run_full_workflow(self) -> WorkflowReport:
         report = WorkflowReport(version_tag=self.version_tag)
+        report.is_incremental = False
+        report.report_mode = "full"
         detemp_result = self.run_detemplatize()
         report.template_removed_count = detemp_result.get("templated_count", 0)
         dedup_records, dedup_blocked = self.run_dedup(is_incremental=False)
@@ -190,9 +192,14 @@ class WorkflowManager:
         report.blocked_sample_ids = sorted(all_blocked)
         report.total_processed = len(self.samples)
         report.total_blocked = len(all_blocked)
+        report.cumulative_total = len(self.samples)
+        report.cumulative_blocked = len(all_blocked)
         usable_ids = [s.sample_id for s in self.samples if s.sample_id not in all_blocked]
         report.usable_sample_ids = usable_ids
         report.total_usable = len(usable_ids)
+        report.cumulative_usable = len(usable_ids)
+        report.newly_blocked_ids = sorted(all_blocked)
+        report.newly_usable_ids = list(usable_ids)
         report.group_metrics = self.compute_group_metrics(
             all_blocked, leak_records, dedup_records
         )
@@ -205,26 +212,44 @@ class WorkflowManager:
     ) -> WorkflowReport:
         for s in new_samples:
             s.version_tag = self.version_tag
+        baseline_sample_ids = {s.sample_id for s in self.samples}
         self.samples.extend(new_samples)
+        new_sample_ids = {s.sample_id for s in new_samples}
         report = WorkflowReport(version_tag=self.version_tag)
+        report.is_incremental = True
+        report.report_mode = "incremental"
+        report.total_processed = len(new_samples)
         detemp_result = self.detemplatizer.process_batch(new_samples)
         report.template_removed_count = detemp_result.get("templated_count", 0)
-        dedup_records, dedup_blocked = self.deduper.incremental_update(new_samples)
+        dedup_records, dedup_blocked_new = self.deduper.incremental_update(new_samples)
         report.dedup_records = dedup_records
-        leak_records = self.leak_detector.detect(self.samples)
-        report.leak_records = leak_records
-        leak_blocked = self.leak_detector.get_blocked_val_ids(leak_records)
-        all_blocked = dedup_blocked | leak_blocked
-        report.blocked_sample_ids = sorted(all_blocked)
-        report.total_processed = len(new_samples)
-        report.total_blocked = len(all_blocked)
-        usable_ids = [s.sample_id for s in new_samples if s.sample_id not in all_blocked]
-        report.usable_sample_ids = usable_ids
-        report.total_usable = len(usable_ids)
-        report.group_metrics = self.compute_group_metrics(
-            all_blocked, leak_records, dedup_records
+        all_leak_records = self.leak_detector.detect(self.samples)
+        new_leak_records = [
+            lr for lr in all_leak_records
+            if lr.val_sample_id in new_sample_ids or lr.train_sample_id in new_sample_ids
+        ]
+        report.leak_records = new_leak_records
+        new_leak_val_ids = {lr.val_sample_id for lr in new_leak_records}
+        newly_blocked = dedup_blocked_new | new_leak_val_ids
+        report.newly_blocked_ids = sorted(newly_blocked)
+        newly_usable_ids = [s.sample_id for s in new_samples if s.sample_id not in newly_blocked]
+        report.newly_usable_ids = newly_usable_ids
+        report.total_blocked = len(newly_blocked)
+        report.total_usable = len(newly_usable_ids)
+        all_leak_val_ids = {lr.val_sample_id for lr in all_leak_records}
+        all_dedup_blocked = self.deduper.get_blocked_ids()
+        cumulative_blocked = all_leak_val_ids | all_dedup_blocked
+        report.cumulative_total = len(self.samples)
+        report.cumulative_blocked = len(cumulative_blocked)
+        report.cumulative_usable = len(self.samples) - len(cumulative_blocked)
+        report.blocked_sample_ids = sorted(cumulative_blocked)
+        report.usable_sample_ids = [
+            s.sample_id for s in self.samples if s.sample_id not in cumulative_blocked
+        ]
+        report.group_metrics = self._compute_incremental_group_metrics(
+            new_samples, new_sample_ids, newly_blocked, new_leak_records, dedup_records
         )
-        report.export_summary = self._build_export_summary(report)
+        report.export_summary = self._build_incremental_export_summary(report)
         return report
 
     @staticmethod
@@ -246,5 +271,72 @@ class WorkflowManager:
                 f"拦截 {gm.blocked_samples}（泄漏 {gm.leak_count}，重复 {gm.duplicate_count}）"
             )
         lines.append("")
+        lines.append("详细拦截记录见下方各条目，每条均附拦截原因和人工备注原话。")
+        return "\n".join(lines)
+
+    def _compute_incremental_group_metrics(
+        self,
+        new_samples: List[QASample],
+        new_sample_ids: Set[str],
+        newly_blocked: Set[str],
+        new_leak_records: List[LeakRecord],
+        new_dedup_records: List[DedupRecord],
+    ) -> List[GroupMetrics]:
+        groups: Dict[str, List[QASample]] = defaultdict(list)
+        for s in new_samples:
+            g = s.group or "未分组"
+            groups[g].append(s)
+        leak_val_ids = {lr.val_sample_id for lr in new_leak_records}
+        leak_train_ids = {lr.train_sample_id for lr in new_leak_records}
+        dedup_removed_ids = {dr.removed_sample_id for dr in new_dedup_records}
+        metrics_list: List[GroupMetrics] = []
+        for group_name, group_samples in sorted(groups.items()):
+            gm = GroupMetrics(group_name=group_name)
+            gm.total_samples = len(group_samples)
+            for s in group_samples:
+                is_blocked = s.sample_id in newly_blocked
+                if is_blocked:
+                    gm.blocked_samples += 1
+                else:
+                    gm.usable_samples += 1
+                if s.split == SplitType.TRAIN:
+                    gm.train_count += 1
+                elif s.split == SplitType.VAL:
+                    gm.val_count += 1
+                if s.sample_id in leak_val_ids or s.sample_id in leak_train_ids:
+                    gm.leak_count += 1
+                if s.sample_id in dedup_removed_ids:
+                    gm.duplicate_count += 1
+                if s.template_removed:
+                    gm.template_count += 1
+            metrics_list.append(gm)
+        return metrics_list
+
+    @staticmethod
+    def _build_incremental_export_summary(report: WorkflowReport) -> str:
+        lines = [
+            f"增量补录样本处理汇总（版本 {report.version_tag}）",
+            f"本次新增补录样本：{report.total_processed} 条",
+            f"本次新增可用：{report.total_usable} 条",
+            f"本次新增拦截：{report.total_blocked} 条",
+            f"  - 新增训练验证泄漏：{len(report.leak_records)} 条",
+            f"  - 新增重复样本：{len(report.dedup_records)} 条",
+            f"  - 本次模板化清理：{report.template_removed_count} 条",
+            "",
+            f"【累计情况】",
+            f"累计样本总数：{report.cumulative_total} 条",
+            f"累计可用：{report.cumulative_usable} 条",
+            f"累计拦截：{report.cumulative_blocked} 条",
+            "",
+            f"【本次补录分组明细】",
+        ]
+        for gm in report.group_metrics:
+            lines.append(
+                f"  [{gm.group_name}] 本次新增 {gm.total_samples} 条，"
+                f"可用 {gm.usable_samples} 条，拦截 {gm.blocked_samples} 条"
+                f"（泄漏 {gm.leak_count}，重复 {gm.duplicate_count}）"
+            )
+        lines.append("")
+        lines.append("注意：本报告为增量视角，仅展示本次补录样本的情况。")
         lines.append("详细拦截记录见下方各条目，每条均附拦截原因和人工备注原话。")
         return "\n".join(lines)

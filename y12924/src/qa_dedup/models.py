@@ -181,31 +181,45 @@ class WorkflowReport:
     report_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     generated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     version_tag: str = "v1"
+    is_incremental: bool = False
     total_processed: int = 0
     total_usable: int = 0
     total_blocked: int = 0
+    cumulative_total: int = 0
+    cumulative_usable: int = 0
+    cumulative_blocked: int = 0
     group_metrics: List[GroupMetrics] = field(default_factory=list)
     leak_records: List[LeakRecord] = field(default_factory=list)
     dedup_records: List[DedupRecord] = field(default_factory=list)
     template_removed_count: int = 0
     blocked_sample_ids: List[str] = field(default_factory=list)
     usable_sample_ids: List[str] = field(default_factory=list)
+    newly_blocked_ids: List[str] = field(default_factory=list)
+    newly_usable_ids: List[str] = field(default_factory=list)
     export_summary: str = ""
+    report_mode: str = "full"
 
     def to_dict(self) -> Dict[str, Any]:
         data = {
             "report_id": self.report_id,
             "generated_at": self.generated_at,
             "version_tag": self.version_tag,
+            "is_incremental": self.is_incremental,
+            "report_mode": self.report_mode,
             "total_processed": self.total_processed,
             "total_usable": self.total_usable,
             "total_blocked": self.total_blocked,
+            "cumulative_total": self.cumulative_total,
+            "cumulative_usable": self.cumulative_usable,
+            "cumulative_blocked": self.cumulative_blocked,
             "group_metrics": [gm.to_dict() for gm in self.group_metrics],
             "leak_records": [lr.to_dict() for lr in self.leak_records],
             "dedup_records": [dr.to_dict() for dr in self.dedup_records],
             "template_removed_count": self.template_removed_count,
             "blocked_sample_ids": self.blocked_sample_ids,
             "usable_sample_ids": self.usable_sample_ids,
+            "newly_blocked_ids": self.newly_blocked_ids,
+            "newly_usable_ids": self.newly_usable_ids,
             "export_summary": self.export_summary,
         }
         return data
