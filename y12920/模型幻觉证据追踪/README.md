@@ -14,18 +14,26 @@ pip install -r requirements.txt
 ### 2. 启动服务
 
 ```bash
-python app.py
+streamlit run app.py
+```
+
+如果你的环境中 `streamlit` 命令不可用，也可以使用：
+
+```bash
+python -m streamlit run app.py
 ```
 
 服务将在 `http://localhost:8501` 启动。
 
 ### 3. 查看第一份样例
 
-启动后，首页会自动加载3条样例数据：
+启动后，首页会自动加载3条样例数据（首次打开页面时自动加载）：
 - `samples/example_records.json` - 样例记录文件
-  - 顺利记录：已确认无幻觉的正常样本
-  - 待确认记录：需要模型训练工程师复核的样本
-  - 明显坏数据：存在明显幻觉/脏数据的样本
+  - 顺利记录（REC_001_CLEAN）：已确认无幻觉的正常样本
+  - 待确认记录（REC_002_PENDING）：需要模型训练工程师复核的样本
+  - 明显坏数据（REC_003_BAD）：存在明显幻觉/脏数据的样本
+
+如果样例没有自动加载，可以点击左侧「📂 加载样例数据」按钮手动加载。
 
 ## 核心功能
 

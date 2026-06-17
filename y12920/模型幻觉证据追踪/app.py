@@ -42,6 +42,11 @@ def init_session_state():
         st.session_state.report_exporter = ReportExporter()
     if "metrics_calculator" not in st.session_state:
         st.session_state.metrics_calculator = MetricsCalculator()
+    if "examples_loaded" not in st.session_state:
+        st.session_state.examples_loaded = False
+        if len(st.session_state.records) == 0:
+            load_example_data()
+            st.session_state.examples_loaded = True
 
 
 def load_example_data():
