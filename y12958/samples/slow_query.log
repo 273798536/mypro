@@ -1,0 +1,41 @@
+# 注意：这是一份故意"不太干净"的库存库慢查询日志，用来压测解析器健壮性。
+# 缺字段、夹杂注释、空行、多语句、lock wait 超时文本都混在里面。
+/usr/sbin/mysqld, Version: 8.0.36 (MySQL Community Server). started with:
+# 这些是启动参数噪声，应被忽略
+# Time: 2026-06-18T09:00:11.000000Z
+# User@Host: inv_app[inv_app] @ [10.0.0.21]  Id: 98011
+# Query_time: 5.210000  Lock_time: 3.810000 Rows_sent: 1  Rows_examined: 482311
+use inventory_db;
+SET timestamp=1718700011;
+UPDATE stock SET qty = qty - 1 WHERE sku = 'SKU-9001' AND warehouse_id = 'WH-BJ-01';
+# Time: 2026-06-18T09:00:42.000000Z
+# User@Host: inv_app[inv_app] @ [10.0.0.22]
+# Query_time: 6.007000 Lock_time: 5.772000 Rows_sent: 0 Rows_examined: 510204
+use inventory_db;
+SET timestamp=1718700042;
+UPDATE stock SET qty = qty - 1 WHERE sku = 'SKU-7781' AND warehouse_id = 'WH-SH-02';
+# Time: 2026-06-18T09:01:05.000000Z
+# User@Host: inv_app[inv_app] @ [10.0.0.21]  Id: 98012
+# Query_time: 12.444000  Lock_time: 11.900000 Rows_sent: 0  Rows_examined: 0
+use inventory_db;
+SET timestamp=1718700065;
+DELETE FROM stock_move_log WHERE move_id = 778122;
+# Time: 2026-06-18T09:02:13.000000Z
+# User@Host: inv_app[inv_app] @ [10.0.0.23]
+# Query_time: 0.9
+use inventory_db;
+UPDATE stock SET qty = qty + 10 WHERE sku = 'SKU-0099';
+# 这条是半截噪声：缺 Lock_time/Rows 字段，解析器应兜底保留原文与行号
+# Time: 2026-06-18T09:03:01.000000Z
+# User@Host: inv_app[inv_app] @ [10.0.0.24]  Id: 98044
+# Query_time: 30.001000  Lock_time: 30.000000 Rows_sent: 0  Rows_examined: 1
+use inventory_db;
+SET timestamp=1718700181;
+UPDATE stock SET qty = qty - 1 WHERE sku = 'SKU-9001' AND warehouse_id = 'WH-BJ-01';
+# 上一条是同一指纹的锁等待复发，复核时应归并到同一 subject，不得出现两份结论
+# Time: 2026-06-18T09:04:55.000000Z
+# User@Host: inv_app[inv_app] @ [10.0.0.25]  Id: 98055
+# Query_time: 50.120000  Lock_time: 50.000000 Rows_sent: 0  Rows_examined: 0
+use inventory_db;
+SET timestamp=1718700295;
+UPDATE stock SET qty = qty - 1 WHERE warehouse_id = 'WH-BJ-01' AND sku = 'SKU-9001';
