@@ -42,7 +42,7 @@ def export(data_dir: str, params: Optional[str], output_dir: str) -> None:
     all_conf = buoy_conf + notes_conf
 
     if not buoys:
-        click.echo(f"❌ 未在 {data_dir} 找到浮标数据，请先放样例: buoy-report sample")
+        click.echo(f"❌ 未在 {data_dir} 找到浮标数据，请先放样例: python3 -m buoy_report.cli sample")
         return
 
     click.echo(f"  加载 {len(buoys)} 条浮标数据，{len(notes)} 条维修备注")
@@ -63,8 +63,8 @@ def export(data_dir: str, params: Optional[str], output_dir: str) -> None:
             click.echo(f"  • 设备 {conf.device_id}: {conf.reason}")
             click.echo(f"    → 下一步: {conf.next_step}")
 
-    click.echo(f"\n💡 调档复算: buoy-report rerun --adjustment '浪高阈值 -0.5m'")
-    click.echo(f"💡 查看接口返回: buoy-report inspect {result.report_id}")
+    click.echo(f"\n💡 调档复算: python3 -m buoy_report.cli rerun --adjustment '浪高阈值 -0.5m'")
+    click.echo(f"💡 查看接口返回: python3 -m buoy_report.cli inspect {result.report_id}")
 
 
 @cli.command()
@@ -94,8 +94,8 @@ def sample(output_dir: str) -> None:
             size = f.stat().st_size
             click.echo(f"    - {f.name} ({size} bytes)")
 
-    click.echo(f"\n🚀 先跑这条: buoy-report export")
-    click.echo(f"🔍 再看接口返回: buoy-report inspect <报告编号>")
+    click.echo(f"\n🚀 先跑这条: python3 -m buoy_report.cli export")
+    click.echo(f"🔍 再看接口返回: python3 -m buoy_report.cli inspect <报告编号>")
 
 
 @cli.command()

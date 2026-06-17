@@ -32,7 +32,9 @@ def detect_anomalies(
         values = df[metric].values
         mean = np.mean(values)
         std = np.std(values)
-        sigma_range = (mean - params.anomaly_sigma * std, mean + params.anomaly_sigma * std)
+        sigma_lower = max(fixed_ranges[metric][0], mean - params.anomaly_sigma * std)
+        sigma_upper = min(fixed_ranges[metric][1], mean + params.anomaly_sigma * std)
+        sigma_range = (sigma_lower, sigma_upper)
         fixed_range = fixed_ranges[metric]
 
         for _, row in df.iterrows():
@@ -40,6 +42,7 @@ def detect_anomalies(
             severity: Severity = "normal"
             in_sigma = sigma_range[0] <= value <= sigma_range[1]
             in_fixed = fixed_range[0] <= value <= fixed_range[1]
+            avg_masked_risk = not in_fixed and (fixed_range[0] <= mean <= fixed_range[1])
 
             if not in_fixed:
                 severity = "critical"
@@ -63,7 +66,14 @@ def detect_anomalies(
                         severity=severity,
                         linked_note_id=linked_note.note_id if linked_note else None,
                         description=_build_description(
-                            metric, value, sigma_range, fixed_range, in_sigma, in_fixed, params
+                            metric,
+                            value,
+                            sigma_range,
+                            fixed_range,
+                            in_sigma,
+                            in_fixed,
+                            avg_masked_risk,
+                            params,
                         ),
                     )
                 )
@@ -137,11 +147,13 @@ def find_boundary_samples(
 
     for a in anomalies:
         if a.severity == "warning":
-            within_10pct = (
-                abs(a.value - a.expected_range[0]) / abs(a.expected_range[0]) < 0.1
-                or abs(a.value - a.expected_range[1]) / abs(a.expected_range[1]) < 0.1
+            span = a.expected_range[1] - a.expected_range[0]
+            dist_to_boundary = min(
+                abs(a.value - a.expected_range[0]),
+                abs(a.value - a.expected_range[1]),
             )
-            if within_10pct:
+            within_10pct = span > 0 and (dist_to_boundary / span) < 0.15
+            if within_10pct or dist_to_boundary < 0.5:
                 boundaries.append(
                     {
                         "device_id": a.device_id,
@@ -149,15 +161,10 @@ def find_boundary_samples(
                         "metric": a.metric,
                         "value": a.value,
                         "threshold": f"{a.expected_range[0]:.2f}~{a.expected_range[1]:.2f}",
-                        "distance": float(
-                            min(
-                                abs(a.value - a.expected_range[0]),
-                                abs(a.value - a.expected_range[1]),
-                            )
-                        ),
+                        "distance": float(dist_to_boundary),
                         "is_over": a.value > a.expected_range[1],
                         "location": "见关联记录",
-                        "why_it_matters": f"{a.metric}={a.value:.2f} 刚越界，参数微调可能改变判定结果",
+                        "why_it_matters": f"{a.metric}={a.value:.2f} 距边界仅{dist_to_boundary:.2f}，参数微调可能改变判定结果",
                     }
                 )
 
@@ -184,6 +191,7 @@ def _build_description(
     fixed_range: tuple[float, float],
     in_sigma: bool,
     in_fixed: bool,
+    avg_masked_risk: bool,
     params: CalculationParams,
 ) -> str:
     """构建异常描述."""
@@ -196,17 +204,22 @@ def _build_description(
     unit = unit_map.get(metric, "")
 
     if not in_fixed:
+        if avg_masked_risk:
+            return (
+                f"{metric}={value:.2f}{unit} 超出物理范围 {fixed_range[0]}-{fixed_range[1]}{unit}，"
+                f"但数据均值仍落在正常区间，整体报告不显眼，需重点复核原始数据"
+            )
         return (
             f"{metric}={value:.2f}{unit} 超出物理范围 {fixed_range[0]}-{fixed_range[1]}{unit}，"
-            f"已被平均后风险不明显，需人工复核原始数据"
+            f"请确认数据是否为传感器故障"
         )
     if not in_sigma:
         return (
-            f"{metric}={value:.2f}{unit} 偏离 {params.anomaly_sigma}σ 范围 "
+            f"{metric}={value:.2f}{unit} 偏离 {params.anomaly_sigma}σ 正常范围 "
             f"{sigma_range[0]:.2f}-{sigma_range[1]:.2f}{unit}"
         )
     if metric == "wave_height" and value >= params.wave_height_threshold:
-        return f"浪高 {value:.2f}m ≥ 阈值 {params.wave_height_threshold}m"
+        return f"浪高 {value:.2f}m ≥ 阈值 {params.wave_height_threshold}m，达到高风险等级"
     if metric == "wind_speed" and value >= params.wind_speed_threshold:
-        return f"风速 {value:.2f}m/s ≥ 阈值 {params.wind_speed_threshold}m/s"
+        return f"风速 {value:.2f}m/s ≥ 阈值 {params.wind_speed_threshold}m/s，达到高风险等级"
     return ""

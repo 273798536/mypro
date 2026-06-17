@@ -91,10 +91,10 @@ def _get_param_adjustments(
     adjustments = []
 
     param_configs = [
-        ("wave_height_threshold", 0.5, "浪高阈值 -0.5m"),
-        ("wave_height_threshold", -0.5, "浪高阈值 +0.5m"),
-        ("wind_speed_threshold", 2.0, "风速阈值 +2m/s"),
+        ("wave_height_threshold", -0.5, "浪高阈值 -0.5m"),
+        ("wave_height_threshold", 0.5, "浪高阈值 +0.5m"),
         ("wind_speed_threshold", -2.0, "风速阈值 -2m/s"),
+        ("wind_speed_threshold", 2.0, "风速阈值 +2m/s"),
         ("anomaly_sigma", -0.5, "异常检测敏感度 +0.5σ"),
         ("anomaly_sigma", 0.5, "异常检测敏感度 -0.5σ"),
         ("temp_max", -3.0, "水温上限 -3°C"),
