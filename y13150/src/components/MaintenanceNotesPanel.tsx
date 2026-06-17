@@ -32,8 +32,16 @@ export function MaintenanceNotesPanel() {
   const [newNote, setNewNote] = useState({
     content: '',
     rawValue: '',
-    recorder: '小林'
+    recorder: '小林',
+    parentId: '' as string
   });
+
+  const candidateParentNotes = useMemo(() => {
+    if (!selectedObjectId) return [];
+    return notes
+      .filter(n => n.objectId === selectedObjectId)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  }, [notes, selectedObjectId]);
 
   const filteredNotes = useMemo(() => {
     let result = notes;
@@ -51,7 +59,9 @@ export function MaintenanceNotesPanel() {
 
   const handleAddNote = () => {
     if (!selectedObjectId || !newNote.content || !newNote.rawValue) return;
-    
+
+    const parentId = newNote.parentId || undefined;
+
     const note = addNote({
       objectId: selectedObjectId,
       content: newNote.content,
@@ -59,10 +69,10 @@ export function MaintenanceNotesPanel() {
       unit: '',
       convertedValue: 0,
       recorder: newNote.recorder,
-      parentId: undefined
+      parentId
     });
 
-    setNewNote({ content: '', rawValue: '', recorder: '小林' });
+    setNewNote({ content: '', rawValue: '', recorder: '小林', parentId: '' });
     setShowAddForm(false);
   };
 
@@ -182,6 +192,30 @@ export function MaintenanceNotesPanel() {
                 onChange={(e) => setNewNote({ ...newNote, recorder: e.target.value })}
                 className="w-full px-3 py-2 bg-lab-bg border border-lab-border rounded-lg text-white text-sm focus:outline-none focus:border-lab-accent"
               />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">
+                补录目标
+                <span className="text-gray-500 ml-1">（选择后作为该记录的新版本，不覆盖原记录）</span>
+              </label>
+              <select
+                value={newNote.parentId}
+                onChange={(e) => setNewNote({ ...newNote, parentId: e.target.value })}
+                className="w-full px-3 py-2 bg-lab-bg border border-lab-border rounded-lg text-white text-sm focus:outline-none focus:border-lab-accent"
+              >
+                <option value="">不补录（新建独立记录）</option>
+                {candidateParentNotes.map((n) => (
+                  <option key={n.id} value={n.id}>
+                    v{n.version} · {n.content.slice(0, 24)}{n.content.length > 24 ? '...' : ''}（{n.rawValue}）
+                  </option>
+                ))}
+              </select>
+              {newNote.parentId && (
+                <p className="text-xs text-lab-accent mt-1 flex items-center gap-1">
+                  <History size={11} />
+                  将作为所选记录的新版本保存，原记录保留不变
+                </p>
+              )}
             </div>
             <div className="flex gap-2 pt-2">
               <button

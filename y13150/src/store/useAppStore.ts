@@ -90,9 +90,14 @@ export const useAppStore = create<AppState & AppActions>()(
       addNote: (noteData: Omit<MaintenanceNote, 'id' | 'timestamp' | 'version'>) => {
         const state = get();
         const existingNotes = state.notes.filter(n => n.objectId === noteData.objectId);
-        const latestVersion = existingNotes.length > 0 
-          ? Math.max(...existingNotes.map(n => n.version)) 
-          : 0;
+
+        const parentNote = noteData.parentId
+          ? state.notes.find(n => n.id === noteData.parentId)
+          : undefined;
+
+        const newVersion = parentNote
+          ? parentNote.version + 1
+          : (existingNotes.length > 0 ? Math.max(...existingNotes.map(n => n.version)) + 1 : 1);
 
         const detected = detectUnit(noteData.rawValue);
         const normalized = normalizeToSI(detected.value, detected.unit);
@@ -103,7 +108,7 @@ export const useAppStore = create<AppState & AppActions>()(
           unit: normalized.unit || detected.unit,
           convertedValue: normalized.value,
           timestamp: new Date().toISOString(),
-          version: latestVersion + 1
+          version: newVersion
         };
 
         const object = state.objects.find(o => o.id === newNote.objectId);
