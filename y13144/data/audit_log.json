@@ -1,8 +1,8 @@
 {
   "entries": [
     {
-      "entry_id": "d65546af2cd2",
-      "timestamp": "2026-06-14T21:51:40.843944",
+      "entry_id": "5dac7b107eb2",
+      "timestamp": "2026-06-17T14:03:42.607983",
       "operator": "小岑",
       "action": "调整容差",
       "field_changed": "tolerance",
@@ -12,8 +12,8 @@
       "affected_record_ids": []
     },
     {
-      "entry_id": "5d83fb770a70",
-      "timestamp": "2026-06-14T21:51:40.843970",
+      "entry_id": "d680e363dae1",
+      "timestamp": "2026-06-17T14:03:42.608000",
       "operator": "小岑",
       "action": "修改计算规则",
       "field_changed": "rule_F001",
@@ -27,8 +27,8 @@
       "affected_record_ids": []
     },
     {
-      "entry_id": "f1744573fa8a",
-      "timestamp": "2026-06-14T21:51:40.843990",
+      "entry_id": "2426c008f833",
+      "timestamp": "2026-06-17T14:03:42.608021",
       "operator": "小岑",
       "action": "修改字段映射",
       "field_changed": "mapping_单位元",
@@ -38,8 +38,8 @@
       "affected_record_ids": []
     },
     {
-      "entry_id": "532a9783c76e",
-      "timestamp": "2026-06-14T21:51:40.852809",
+      "entry_id": "8637589c0594",
+      "timestamp": "2026-06-17T14:03:42.615921",
       "operator": "系统",
       "action": "加载并映射数据",
       "field_changed": "source_复核人A草稿",
@@ -53,8 +53,8 @@
       "affected_record_ids": []
     },
     {
-      "entry_id": "7647fd93ee06",
-      "timestamp": "2026-06-14T21:51:40.859148",
+      "entry_id": "23e6a4431910",
+      "timestamp": "2026-06-17T14:03:42.618936",
       "operator": "系统",
       "action": "加载并映射数据",
       "field_changed": "source_复核人B草稿",
@@ -68,8 +68,8 @@
       "affected_record_ids": []
     },
     {
-      "entry_id": "1e4c16ff02df",
-      "timestamp": "2026-06-14T21:51:40.864128",
+      "entry_id": "0ff3b311768a",
+      "timestamp": "2026-06-17T14:03:42.622385",
       "operator": "系统",
       "action": "加载并映射数据",
       "field_changed": "source_建模助教手动录入",
@@ -83,8 +83,8 @@
       "affected_record_ids": []
     },
     {
-      "entry_id": "d0cdee22c04e",
-      "timestamp": "2026-06-14T21:51:40.869363",
+      "entry_id": "22dcf357b19a",
+      "timestamp": "2026-06-17T14:03:42.626798",
       "operator": "系统",
       "action": "加载并映射数据",
       "field_changed": "source_系统导出",
@@ -98,8 +98,8 @@
       "affected_record_ids": []
     },
     {
-      "entry_id": "67d6e714079b",
-      "timestamp": "2026-06-14T21:51:40.873103",
+      "entry_id": "1620ae7c1018",
+      "timestamp": "2026-06-17T14:03:42.631321",
       "operator": "系统",
       "action": "加载并映射数据",
       "field_changed": "source_建模助教手动录入",
@@ -113,8 +113,8 @@
       "affected_record_ids": []
     },
     {
-      "entry_id": "b41885066164",
-      "timestamp": "2026-06-14T21:51:40.918929",
+      "entry_id": "a59da9e55784",
+      "timestamp": "2026-06-17T14:03:42.667678",
       "operator": "小岑",
       "action": "人工复核调整",
       "field_changed": "verification_status",
@@ -122,13 +122,13 @@
       "new_value": "警告",
       "reason": "边界测试记录，已知异常，转为警告",
       "affected_record_ids": [
-        "dafcbce492"
+        "7e8825c137"
       ]
     }
   ],
   "tolerance_adjustments": [
     {
-      "timestamp": "2026-06-14T21:51:40.843910",
+      "timestamp": "2026-06-17T14:03:42.607966",
       "operator": "小岑",
       "old_tolerance": 0.01,
       "new_tolerance": 0.02,
@@ -136,5 +136,5 @@
       "affected_formula": "F001"
     }
   ],
-  "export_time": "2026-06-14T21:51:40.970320"
+  "export_time": "2026-06-17T14:03:42.709096"
 }

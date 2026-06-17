@@ -1,758 +1,758 @@
 [
   {
-    "record_id": "dafcbce492",
+    "record_id": "7e8825c137",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/dafcbce492_trace.txt"
+    "trace_file": "details/7e8825c137_trace.txt"
   },
   {
-    "record_id": "f6e75b1fe6",
+    "record_id": "01c595ba43",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/f6e75b1fe6_trace.txt"
+    "trace_file": "details/01c595ba43_trace.txt"
   },
   {
-    "record_id": "239381dc55",
+    "record_id": "2825ffb42b",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/239381dc55_trace.txt"
+    "trace_file": "details/2825ffb42b_trace.txt"
   },
   {
-    "record_id": "687da206b3",
+    "record_id": "e981bdefd1",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/687da206b3_trace.txt"
+    "trace_file": "details/e981bdefd1_trace.txt"
   },
   {
-    "record_id": "00613cb2f8",
+    "record_id": "7b97b56424",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/00613cb2f8_trace.txt"
+    "trace_file": "details/7b97b56424_trace.txt"
   },
   {
-    "record_id": "98f29578d3",
+    "record_id": "54e37c843b",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/98f29578d3_trace.txt"
+    "trace_file": "details/54e37c843b_trace.txt"
   },
   {
-    "record_id": "8d0625f76b",
+    "record_id": "9a73cba976",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/8d0625f76b_trace.txt"
+    "trace_file": "details/9a73cba976_trace.txt"
   },
   {
-    "record_id": "0a7bad7d3b",
+    "record_id": "3bf7442a7c",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/0a7bad7d3b_trace.txt"
+    "trace_file": "details/3bf7442a7c_trace.txt"
   },
   {
-    "record_id": "e282689193",
+    "record_id": "9a84b9d247",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/e282689193_trace.txt"
+    "trace_file": "details/9a84b9d247_trace.txt"
   },
   {
-    "record_id": "f9f15be86a",
+    "record_id": "5068fbc363",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/f9f15be86a_trace.txt"
+    "trace_file": "details/5068fbc363_trace.txt"
   },
   {
-    "record_id": "b52008d1b3",
+    "record_id": "fec3932b5c",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/b52008d1b3_trace.txt"
+    "trace_file": "details/fec3932b5c_trace.txt"
   },
   {
-    "record_id": "da066f02c3",
+    "record_id": "abcf7a8cca",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/da066f02c3_trace.txt"
+    "trace_file": "details/abcf7a8cca_trace.txt"
   },
   {
-    "record_id": "852fdb3e2b",
+    "record_id": "5bf78c4a8d",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/852fdb3e2b_trace.txt"
+    "trace_file": "details/5bf78c4a8d_trace.txt"
   },
   {
-    "record_id": "7a69e681b0",
+    "record_id": "b8e1b05f6d",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/7a69e681b0_trace.txt"
+    "trace_file": "details/b8e1b05f6d_trace.txt"
   },
   {
-    "record_id": "321501235b",
+    "record_id": "996436e9de",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/321501235b_trace.txt"
+    "trace_file": "details/996436e9de_trace.txt"
   },
   {
-    "record_id": "51380e82cc",
+    "record_id": "2723e94c27",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/51380e82cc_trace.txt"
+    "trace_file": "details/2723e94c27_trace.txt"
   },
   {
-    "record_id": "4fade782ad",
+    "record_id": "3ce4937d18",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/4fade782ad_trace.txt"
+    "trace_file": "details/3ce4937d18_trace.txt"
   },
   {
-    "record_id": "53df368617",
+    "record_id": "3a93036b99",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/53df368617_trace.txt"
+    "trace_file": "details/3a93036b99_trace.txt"
   },
   {
-    "record_id": "7f7e4e49b2",
+    "record_id": "46cccbea71",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/7f7e4e49b2_trace.txt"
+    "trace_file": "details/46cccbea71_trace.txt"
   },
   {
-    "record_id": "14f5d833a8",
+    "record_id": "029aec422b",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/14f5d833a8_trace.txt"
+    "trace_file": "details/029aec422b_trace.txt"
   },
   {
-    "record_id": "38aa67081d",
+    "record_id": "74ca4273a0",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/38aa67081d_trace.txt"
+    "trace_file": "details/74ca4273a0_trace.txt"
   },
   {
-    "record_id": "b6ac361513",
+    "record_id": "a7a2985ffb",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/b6ac361513_trace.txt"
+    "trace_file": "details/a7a2985ffb_trace.txt"
   },
   {
-    "record_id": "b0c6e32adb",
+    "record_id": "a88c543bb0",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/b0c6e32adb_trace.txt"
+    "trace_file": "details/a88c543bb0_trace.txt"
   },
   {
-    "record_id": "023862fd24",
+    "record_id": "f0228b73d7",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/023862fd24_trace.txt"
+    "trace_file": "details/f0228b73d7_trace.txt"
   },
   {
-    "record_id": "014d03be48",
+    "record_id": "1dccf78ad8",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/014d03be48_trace.txt"
+    "trace_file": "details/1dccf78ad8_trace.txt"
   },
   {
-    "record_id": "dde8cdb45b",
+    "record_id": "747fe46d76",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/dde8cdb45b_trace.txt"
+    "trace_file": "details/747fe46d76_trace.txt"
   },
   {
-    "record_id": "b72cbae5cb",
+    "record_id": "90713f948a",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/b72cbae5cb_trace.txt"
+    "trace_file": "details/90713f948a_trace.txt"
   },
   {
-    "record_id": "f9020e8063",
+    "record_id": "4405750ae6",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/f9020e8063_trace.txt"
+    "trace_file": "details/4405750ae6_trace.txt"
   },
   {
-    "record_id": "038650e01c",
+    "record_id": "c0dbb09f12",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/038650e01c_trace.txt"
+    "trace_file": "details/c0dbb09f12_trace.txt"
   },
   {
-    "record_id": "2d2cb48095",
+    "record_id": "26bb44dc5d",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/2d2cb48095_trace.txt"
+    "trace_file": "details/26bb44dc5d_trace.txt"
   },
   {
-    "record_id": "96163a435c",
+    "record_id": "bb22cebbe0",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/96163a435c_trace.txt"
+    "trace_file": "details/bb22cebbe0_trace.txt"
   },
   {
-    "record_id": "3447f74444",
+    "record_id": "323fed584f",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/3447f74444_trace.txt"
+    "trace_file": "details/323fed584f_trace.txt"
   },
   {
-    "record_id": "2bd84937f1",
+    "record_id": "63b7a5bcb6",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/2bd84937f1_trace.txt"
+    "trace_file": "details/63b7a5bcb6_trace.txt"
   },
   {
-    "record_id": "48927921dd",
+    "record_id": "74e7440dd6",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/48927921dd_trace.txt"
+    "trace_file": "details/74e7440dd6_trace.txt"
   },
   {
-    "record_id": "33e843ffa8",
+    "record_id": "b9683c3b4a",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/33e843ffa8_trace.txt"
+    "trace_file": "details/b9683c3b4a_trace.txt"
   },
   {
-    "record_id": "febd20cfd1",
+    "record_id": "4fcc18e641",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/febd20cfd1_trace.txt"
+    "trace_file": "details/4fcc18e641_trace.txt"
   },
   {
-    "record_id": "52a5f42641",
+    "record_id": "7f1877af34",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/52a5f42641_trace.txt"
+    "trace_file": "details/7f1877af34_trace.txt"
   },
   {
-    "record_id": "f32065ca63",
+    "record_id": "119a055f0d",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/f32065ca63_trace.txt"
+    "trace_file": "details/119a055f0d_trace.txt"
   },
   {
-    "record_id": "9037ed6cdc",
+    "record_id": "d512dd58ad",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/9037ed6cdc_trace.txt"
+    "trace_file": "details/d512dd58ad_trace.txt"
   },
   {
-    "record_id": "92a768a626",
+    "record_id": "de8788470a",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/92a768a626_trace.txt"
+    "trace_file": "details/de8788470a_trace.txt"
   },
   {
-    "record_id": "960f8b024b",
+    "record_id": "9839d98d07",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/960f8b024b_trace.txt"
+    "trace_file": "details/9839d98d07_trace.txt"
   },
   {
-    "record_id": "5218f5ff32",
+    "record_id": "f1e2f2d080",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/5218f5ff32_trace.txt"
+    "trace_file": "details/f1e2f2d080_trace.txt"
   },
   {
-    "record_id": "d3a9783b84",
+    "record_id": "60ee7999f3",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/d3a9783b84_trace.txt"
+    "trace_file": "details/60ee7999f3_trace.txt"
   },
   {
-    "record_id": "a5d443cb0c",
+    "record_id": "7ad5e8ba70",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/a5d443cb0c_trace.txt"
+    "trace_file": "details/7ad5e8ba70_trace.txt"
   },
   {
-    "record_id": "3f34e2101b",
+    "record_id": "b0916fd2ef",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/3f34e2101b_trace.txt"
+    "trace_file": "details/b0916fd2ef_trace.txt"
   },
   {
-    "record_id": "96080d01a6",
+    "record_id": "65d316237b",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/96080d01a6_trace.txt"
+    "trace_file": "details/65d316237b_trace.txt"
   },
   {
-    "record_id": "23b90e3f26",
+    "record_id": "84337a1246",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/23b90e3f26_trace.txt"
+    "trace_file": "details/84337a1246_trace.txt"
   },
   {
-    "record_id": "b893e3f8d6",
+    "record_id": "c084386392",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/b893e3f8d6_trace.txt"
+    "trace_file": "details/c084386392_trace.txt"
   },
   {
-    "record_id": "2cc50a32aa",
+    "record_id": "8d68b65a6b",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/2cc50a32aa_trace.txt"
+    "trace_file": "details/8d68b65a6b_trace.txt"
   },
   {
-    "record_id": "c34f8de1e0",
+    "record_id": "0722bebc0d",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/c34f8de1e0_trace.txt"
+    "trace_file": "details/0722bebc0d_trace.txt"
   },
   {
-    "record_id": "8fc547f698",
+    "record_id": "afc067f914",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/8fc547f698_trace.txt"
+    "trace_file": "details/afc067f914_trace.txt"
   },
   {
-    "record_id": "285c7db7a0",
+    "record_id": "5e84daea04",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/285c7db7a0_trace.txt"
+    "trace_file": "details/5e84daea04_trace.txt"
   },
   {
-    "record_id": "513538cbbd",
+    "record_id": "63f34fec5a",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/513538cbbd_trace.txt"
+    "trace_file": "details/63f34fec5a_trace.txt"
   },
   {
-    "record_id": "8ec1f3f540",
+    "record_id": "4a78dc4473",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/8ec1f3f540_trace.txt"
+    "trace_file": "details/4a78dc4473_trace.txt"
   },
   {
-    "record_id": "0449862693",
+    "record_id": "ee3e62c167",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/0449862693_trace.txt"
+    "trace_file": "details/ee3e62c167_trace.txt"
   },
   {
-    "record_id": "8d67531496",
+    "record_id": "541b9ee93e",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/8d67531496_trace.txt"
+    "trace_file": "details/541b9ee93e_trace.txt"
   },
   {
-    "record_id": "89f4bdf6f7",
+    "record_id": "2529d3716f",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/89f4bdf6f7_trace.txt"
+    "trace_file": "details/2529d3716f_trace.txt"
   },
   {
-    "record_id": "cf32084ee5",
+    "record_id": "4b1c1266d5",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/cf32084ee5_trace.txt"
+    "trace_file": "details/4b1c1266d5_trace.txt"
   },
   {
-    "record_id": "783419a107",
+    "record_id": "65a9827a4f",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/783419a107_trace.txt"
+    "trace_file": "details/65a9827a4f_trace.txt"
   },
   {
-    "record_id": "5392bf2597",
+    "record_id": "17048684d7",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/5392bf2597_trace.txt"
+    "trace_file": "details/17048684d7_trace.txt"
   },
   {
-    "record_id": "eda9f690f5",
+    "record_id": "f6b9ddc521",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/eda9f690f5_trace.txt"
+    "trace_file": "details/f6b9ddc521_trace.txt"
   },
   {
-    "record_id": "35d036d455",
+    "record_id": "92d18177e5",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/35d036d455_trace.txt"
+    "trace_file": "details/92d18177e5_trace.txt"
   },
   {
-    "record_id": "f309e8f8f0",
+    "record_id": "9d7c46498b",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/f309e8f8f0_trace.txt"
+    "trace_file": "details/9d7c46498b_trace.txt"
   },
   {
-    "record_id": "43119aefc3",
+    "record_id": "e549702a8b",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/43119aefc3_trace.txt"
+    "trace_file": "details/e549702a8b_trace.txt"
   },
   {
-    "record_id": "bfa905a30b",
+    "record_id": "6d62baffd1",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/bfa905a30b_trace.txt"
+    "trace_file": "details/6d62baffd1_trace.txt"
   },
   {
-    "record_id": "767aec6733",
+    "record_id": "6fa58a4138",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/767aec6733_trace.txt"
+    "trace_file": "details/6fa58a4138_trace.txt"
   },
   {
-    "record_id": "eb90be87f1",
+    "record_id": "751d159b62",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/eb90be87f1_trace.txt"
+    "trace_file": "details/751d159b62_trace.txt"
   },
   {
-    "record_id": "154b3b57a9",
+    "record_id": "de33e20319",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/154b3b57a9_trace.txt"
+    "trace_file": "details/de33e20319_trace.txt"
   },
   {
-    "record_id": "57285950aa",
+    "record_id": "41c3b614b5",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/57285950aa_trace.txt"
+    "trace_file": "details/41c3b614b5_trace.txt"
   },
   {
-    "record_id": "7b9028b2de",
+    "record_id": "50fedae396",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/7b9028b2de_trace.txt"
+    "trace_file": "details/50fedae396_trace.txt"
   },
   {
-    "record_id": "7c62d95f18",
+    "record_id": "9ecfc3b720",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/7c62d95f18_trace.txt"
+    "trace_file": "details/9ecfc3b720_trace.txt"
   },
   {
-    "record_id": "135fb6053f",
+    "record_id": "e0a6b5a0b5",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/135fb6053f_trace.txt"
+    "trace_file": "details/e0a6b5a0b5_trace.txt"
   },
   {
-    "record_id": "959cac4853",
+    "record_id": "323419a2ff",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/959cac4853_trace.txt"
+    "trace_file": "details/323419a2ff_trace.txt"
   },
   {
-    "record_id": "02dcea5209",
+    "record_id": "7a8840e364",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/02dcea5209_trace.txt"
+    "trace_file": "details/7a8840e364_trace.txt"
   },
   {
-    "record_id": "135018520f",
+    "record_id": "f9104a8c23",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/135018520f_trace.txt"
+    "trace_file": "details/f9104a8c23_trace.txt"
   },
   {
-    "record_id": "573da3ac56",
+    "record_id": "286d77c143",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/573da3ac56_trace.txt"
+    "trace_file": "details/286d77c143_trace.txt"
   },
   {
-    "record_id": "cc751bd345",
+    "record_id": "9e8940d280",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/cc751bd345_trace.txt"
+    "trace_file": "details/9e8940d280_trace.txt"
   },
   {
-    "record_id": "05a79d2cfe",
+    "record_id": "8d76917cc5",
     "anomaly_type": "除零异常",
     "status": "异常",
     "error_message": "除零异常：分母为0",
-    "trace_file": "details/05a79d2cfe_trace.txt"
+    "trace_file": "details/8d76917cc5_trace.txt"
   },
   {
-    "record_id": "536c04fcb4",
+    "record_id": "ef7449954f",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/536c04fcb4_trace.txt"
+    "trace_file": "details/ef7449954f_trace.txt"
   },
   {
-    "record_id": "484b1ed368",
+    "record_id": "ae5022c8c7",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/484b1ed368_trace.txt"
+    "trace_file": "details/ae5022c8c7_trace.txt"
   },
   {
-    "record_id": "0463087934",
+    "record_id": "68785e6bb6",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/0463087934_trace.txt"
+    "trace_file": "details/68785e6bb6_trace.txt"
   },
   {
-    "record_id": "8b85cad33d",
+    "record_id": "f21dd71ad5",
     "anomaly_type": "负值异常",
     "status": "通过",
     "error_message": null,
-    "trace_file": "details/8b85cad33d_trace.txt"
+    "trace_file": "details/f21dd71ad5_trace.txt"
   },
   {
-    "record_id": "2a9fb6450e",
+    "record_id": "031f41749a",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/2a9fb6450e_trace.txt"
+    "trace_file": "details/031f41749a_trace.txt"
   },
   {
-    "record_id": "3ddd39f9f8",
+    "record_id": "b2500f7e0a",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/3ddd39f9f8_trace.txt"
+    "trace_file": "details/b2500f7e0a_trace.txt"
   },
   {
-    "record_id": "7b0aaae9a4",
+    "record_id": "b0e4c04eea",
     "anomaly_type": "负值异常",
     "status": "通过",
     "error_message": null,
-    "trace_file": "details/7b0aaae9a4_trace.txt"
+    "trace_file": "details/b0e4c04eea_trace.txt"
   },
   {
-    "record_id": "c7d646c24e",
+    "record_id": "d535b40942",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/c7d646c24e_trace.txt"
+    "trace_file": "details/d535b40942_trace.txt"
   },
   {
-    "record_id": "8feb004641",
+    "record_id": "f7f1e98c1b",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/8feb004641_trace.txt"
+    "trace_file": "details/f7f1e98c1b_trace.txt"
   },
   {
-    "record_id": "3a448eaa73",
+    "record_id": "76b57ae05c",
     "anomaly_type": "空值异常",
     "status": "异常",
     "error_message": "空值异常：quantity 为空",
-    "trace_file": "details/3a448eaa73_trace.txt"
+    "trace_file": "details/76b57ae05c_trace.txt"
   },
   {
-    "record_id": "b2dae46e33",
+    "record_id": "76c74f98be",
     "anomaly_type": "空值异常",
     "status": "异常",
     "error_message": "空值异常：total_price 为空",
-    "trace_file": "details/b2dae46e33_trace.txt"
+    "trace_file": "details/76c74f98be_trace.txt"
   },
   {
-    "record_id": "e8b5831bf1",
+    "record_id": "dda41b312b",
     "anomaly_type": "空值异常",
     "status": "异常",
     "error_message": "空值异常：total_price 为空",
-    "trace_file": "details/e8b5831bf1_trace.txt"
+    "trace_file": "details/dda41b312b_trace.txt"
   },
   {
-    "record_id": "10b9722f01",
+    "record_id": "fa3f5943a0",
     "anomaly_type": "空值异常",
     "status": "异常",
     "error_message": "空值异常：unit_price 为空",
-    "trace_file": "details/10b9722f01_trace.txt"
+    "trace_file": "details/fa3f5943a0_trace.txt"
   },
   {
-    "record_id": "5d7b510149",
+    "record_id": "76102166e8",
     "anomaly_type": "空值异常",
     "status": "异常",
     "error_message": "空值异常：total_price 为空",
-    "trace_file": "details/5d7b510149_trace.txt"
+    "trace_file": "details/76102166e8_trace.txt"
   },
   {
-    "record_id": "b7911bd3c2",
+    "record_id": "3645b0f9df",
     "anomaly_type": "空值异常",
     "status": "异常",
     "error_message": "空值异常：total_price 为空",
-    "trace_file": "details/b7911bd3c2_trace.txt"
+    "trace_file": "details/3645b0f9df_trace.txt"
   },
   {
-    "record_id": "09f6ab3d96",
+    "record_id": "32666cc0f7",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/09f6ab3d96_trace.txt"
+    "trace_file": "details/32666cc0f7_trace.txt"
   },
   {
-    "record_id": "a7b49246b8",
+    "record_id": "f7d0162cfd",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/a7b49246b8_trace.txt"
+    "trace_file": "details/f7d0162cfd_trace.txt"
   },
   {
-    "record_id": "419163bfa5",
+    "record_id": "479dbeee78",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/419163bfa5_trace.txt"
+    "trace_file": "details/479dbeee78_trace.txt"
   },
   {
-    "record_id": "1fce0bfc71",
+    "record_id": "23df0d907c",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/1fce0bfc71_trace.txt"
+    "trace_file": "details/23df0d907c_trace.txt"
   },
   {
-    "record_id": "e02d5640cf",
+    "record_id": "a639e81c9a",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/e02d5640cf_trace.txt"
+    "trace_file": "details/a639e81c9a_trace.txt"
   },
   {
-    "record_id": "e0ed637b50",
+    "record_id": "34e12ade34",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/e0ed637b50_trace.txt"
+    "trace_file": "details/34e12ade34_trace.txt"
   },
   {
-    "record_id": "f3b8a50a2f",
+    "record_id": "fb85896a36",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/f3b8a50a2f_trace.txt"
+    "trace_file": "details/fb85896a36_trace.txt"
   },
   {
-    "record_id": "c35f752c02",
+    "record_id": "e704b46202",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/c35f752c02_trace.txt"
+    "trace_file": "details/e704b46202_trace.txt"
   },
   {
-    "record_id": "435d938937",
+    "record_id": "0c4b25e268",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/435d938937_trace.txt"
+    "trace_file": "details/0c4b25e268_trace.txt"
   },
   {
-    "record_id": "55ff9a5665",
+    "record_id": "64c561e042",
     "anomaly_type": "除零异常",
     "status": "异常",
     "error_message": "除零异常：分母为0",
-    "trace_file": "details/55ff9a5665_trace.txt"
+    "trace_file": "details/64c561e042_trace.txt"
   },
   {
-    "record_id": "93a6edb2e4",
+    "record_id": "f0feb241aa",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/93a6edb2e4_trace.txt"
+    "trace_file": "details/f0feb241aa_trace.txt"
   },
   {
-    "record_id": "2e35e0e6a8",
+    "record_id": "e108112217",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/2e35e0e6a8_trace.txt"
+    "trace_file": "details/e108112217_trace.txt"
   },
   {
-    "record_id": "af5480dbcb",
+    "record_id": "499876ca73",
     "anomaly_type": "公式计算异常",
     "status": "异常",
     "error_message": "公式计算异常：quantity = INVALID 格式无效，无法转换为数字",
-    "trace_file": "details/af5480dbcb_trace.txt"
+    "trace_file": "details/499876ca73_trace.txt"
   },
   {
-    "record_id": "18f564f541",
+    "record_id": "b590b18d72",
     "anomaly_type": "数值偏差",
     "status": "失败",
     "error_message": null,
-    "trace_file": "details/18f564f541_trace.txt"
+    "trace_file": "details/b590b18d72_trace.txt"
   },
   {
-    "record_id": "0589903062",
+    "record_id": "3f4f53b44a",
     "anomaly_type": "公式计算异常",
     "status": "异常",
     "error_message": "公式计算异常：quantity = INVALID 格式无效，无法转换为数字",
-    "trace_file": "details/0589903062_trace.txt"
+    "trace_file": "details/3f4f53b44a_trace.txt"
   }
 ]

@@ -4,10 +4,10 @@ from pathlib import Path
 import json
 import pandas as pd
 
-workspace = Path("/Users/mac/pro/solo/workspaces/y13144")
-sys.path.insert(0, str(workspace))
+PROJECT_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(PROJECT_ROOT))
 import os
-os.chdir(str(workspace))
+os.chdir(str(PROJECT_ROOT))
 
 # 1. 读取 boundary_cases.csv 检查原始数据
 print("=" * 60)
@@ -76,13 +76,13 @@ print("3. 运行完整流水线并收集异常记录")
 print("=" * 60)
 from src.ip_checker.pipeline import VerificationPipeline
 
-examples_dir = workspace / 'examples'
+examples_dir = PROJECT_ROOT / 'examples'
 if examples_dir.exists():
     import shutil
     shutil.rmtree(examples_dir)
 examples_dir.mkdir()
 
-audit_log = workspace / 'data' / 'audit_log.json'
+audit_log = PROJECT_ROOT / 'data' / 'audit_log.json'
 if audit_log.exists():
     audit_log.unlink()
 

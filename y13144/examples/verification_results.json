@@ -1,8 +1,8 @@
 {
-  "context_id": "d3a68688",
+  "context_id": "b935995a",
   "context_trace": {
-    "context_id": "d3a68688",
-    "calculation_date": "2026-06-14T21:51:40.843898",
+    "context_id": "b935995a",
+    "calculation_date": "2026-06-17T14:03:42.607953",
     "reviewer": "建模助教小岑",
     "description": "整数规划批量验算",
     "source_documents": [
@@ -44,7 +44,7 @@
       }
     ]
   },
-  "generated_at": "2026-06-14T21:51:40.955607",
+  "generated_at": "2026-06-17T14:03:42.698229",
   "summary": {
     "通过": 44,
     "失败": 96,
@@ -53,7 +53,7 @@
   "anomaly_count": 108,
   "results": [
     {
-      "record_id": "cc7d30a052",
+      "record_id": "7e8763f5bd",
       "result_status": "通过",
       "calculated_value": 35350.0,
       "expected_value": 35000.0,
@@ -97,10 +97,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.876871"
+      "timestamp": "2026-06-17T14:03:42.657906"
     },
     {
-      "record_id": "dafcbce492",
+      "record_id": "7e8825c137",
       "result_status": "失败",
       "calculated_value": 4550.0,
       "expected_value": 35000.0,
@@ -150,10 +150,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.876940"
+      "timestamp": "2026-06-17T14:03:42.657990"
     },
     {
-      "record_id": "f6e75b1fe6",
+      "record_id": "01c595ba43",
       "result_status": "失败",
       "calculated_value": 350.0,
       "expected_value": 35000.0,
@@ -197,10 +197,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.876993"
+      "timestamp": "2026-06-17T14:03:42.658051"
     },
     {
-      "record_id": "343f241b92",
+      "record_id": "5cab3bfe52",
       "result_status": "通过",
       "calculated_value": 292900.0,
       "expected_value": 290000.0,
@@ -244,10 +244,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.877085"
+      "timestamp": "2026-06-17T14:03:42.658158"
     },
     {
-      "record_id": "239381dc55",
+      "record_id": "2825ffb42b",
       "result_status": "失败",
       "calculated_value": 37700.0,
       "expected_value": 290000.0,
@@ -297,10 +297,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877138"
+      "timestamp": "2026-06-17T14:03:42.658210"
     },
     {
-      "record_id": "687da206b3",
+      "record_id": "e981bdefd1",
       "result_status": "失败",
       "calculated_value": 5800.0,
       "expected_value": 290000.0,
@@ -344,10 +344,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877183"
+      "timestamp": "2026-06-17T14:03:42.658257"
     },
     {
-      "record_id": "23a95e134c",
+      "record_id": "8948a73fd8",
       "result_status": "通过",
       "calculated_value": 17170.0,
       "expected_value": 17000.0,
@@ -391,10 +391,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.877266"
+      "timestamp": "2026-06-17T14:03:42.658345"
     },
     {
-      "record_id": "00613cb2f8",
+      "record_id": "7b97b56424",
       "result_status": "失败",
       "calculated_value": 2210.0,
       "expected_value": 17000.0,
@@ -444,10 +444,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877316"
+      "timestamp": "2026-06-17T14:03:42.658394"
     },
     {
-      "record_id": "98f29578d3",
+      "record_id": "54e37c843b",
       "result_status": "失败",
       "calculated_value": 85.0,
       "expected_value": 17000.0,
@@ -491,10 +491,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877360"
+      "timestamp": "2026-06-17T14:03:42.658438"
     },
     {
-      "record_id": "3a97fdeff9",
+      "record_id": "81da6635bc",
       "result_status": "通过",
       "calculated_value": 18180.0,
       "expected_value": 18000.0,
@@ -538,10 +538,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.877441"
+      "timestamp": "2026-06-17T14:03:42.658519"
     },
     {
-      "record_id": "8d0625f76b",
+      "record_id": "9a73cba976",
       "result_status": "失败",
       "calculated_value": 2340.0,
       "expected_value": 18000.0,
@@ -591,10 +591,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877489"
+      "timestamp": "2026-06-17T14:03:42.658567"
     },
     {
-      "record_id": "0a7bad7d3b",
+      "record_id": "3bf7442a7c",
       "result_status": "失败",
       "calculated_value": 120.0,
       "expected_value": 18000.0,
@@ -638,10 +638,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877534"
+      "timestamp": "2026-06-17T14:03:42.658611"
     },
     {
-      "record_id": "edb3f54296",
+      "record_id": "e1d5d337aa",
       "result_status": "通过",
       "calculated_value": 22624.0,
       "expected_value": 22400.0,
@@ -685,10 +685,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.877611"
+      "timestamp": "2026-06-17T14:03:42.658691"
     },
     {
-      "record_id": "e282689193",
+      "record_id": "9a84b9d247",
       "result_status": "失败",
       "calculated_value": 2016.0,
       "expected_value": 22400.0,
@@ -738,10 +738,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877660"
+      "timestamp": "2026-06-17T14:03:42.658739"
     },
     {
-      "record_id": "f9f15be86a",
+      "record_id": "5068fbc363",
       "result_status": "失败",
       "calculated_value": 280.0,
       "expected_value": 22400.0,
@@ -785,10 +785,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877704"
+      "timestamp": "2026-06-17T14:03:42.658782"
     },
     {
-      "record_id": "2fcc7aaaad",
+      "record_id": "09f4c821e7",
       "result_status": "通过",
       "calculated_value": 22725.0,
       "expected_value": 22500.0,
@@ -832,10 +832,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.877780"
+      "timestamp": "2026-06-17T14:03:42.658863"
     },
     {
-      "record_id": "b52008d1b3",
+      "record_id": "fec3932b5c",
       "result_status": "失败",
       "calculated_value": 2025.0,
       "expected_value": 22500.0,
@@ -885,10 +885,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877827"
+      "timestamp": "2026-06-17T14:03:42.658911"
     },
     {
-      "record_id": "da066f02c3",
+      "record_id": "abcf7a8cca",
       "result_status": "失败",
       "calculated_value": 45.0,
       "expected_value": 22500.0,
@@ -932,10 +932,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.877877"
+      "timestamp": "2026-06-17T14:03:42.658958"
     },
     {
-      "record_id": "449c68904e",
+      "record_id": "c43a85c736",
       "result_status": "通过",
       "calculated_value": 36360.0,
       "expected_value": 36000.0,
@@ -979,10 +979,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.877955"
+      "timestamp": "2026-06-17T14:03:42.659041"
     },
     {
-      "record_id": "852fdb3e2b",
+      "record_id": "5bf78c4a8d",
       "result_status": "失败",
       "calculated_value": 4680.0,
       "expected_value": 36000.0,
@@ -1032,10 +1032,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.878004"
+      "timestamp": "2026-06-17T14:03:42.659089"
     },
     {
-      "record_id": "7a69e681b0",
+      "record_id": "b8e1b05f6d",
       "result_status": "失败",
       "calculated_value": 180.0,
       "expected_value": 36000.0,
@@ -1079,10 +1079,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.878047"
+      "timestamp": "2026-06-17T14:03:42.659132"
     },
     {
-      "record_id": "cb50eb6907",
+      "record_id": "7e618e1206",
       "result_status": "通过",
       "calculated_value": 28785.0,
       "expected_value": 28500.0,
@@ -1126,10 +1126,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.878122"
+      "timestamp": "2026-06-17T14:03:42.659208"
     },
     {
-      "record_id": "321501235b",
+      "record_id": "996436e9de",
       "result_status": "失败",
       "calculated_value": 3705.0,
       "expected_value": 28500.0,
@@ -1179,10 +1179,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.878169"
+      "timestamp": "2026-06-17T14:03:42.659255"
     },
     {
-      "record_id": "51380e82cc",
+      "record_id": "2723e94c27",
       "result_status": "失败",
       "calculated_value": 95.0,
       "expected_value": 28500.0,
@@ -1226,10 +1226,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.878211"
+      "timestamp": "2026-06-17T14:03:42.659302"
     },
     {
-      "record_id": "821ad45049",
+      "record_id": "54ec81f357",
       "result_status": "通过",
       "calculated_value": 12726.0,
       "expected_value": 12600.0,
@@ -1273,10 +1273,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.878289"
+      "timestamp": "2026-06-17T14:03:42.659379"
     },
     {
-      "record_id": "4fade782ad",
+      "record_id": "3ce4937d18",
       "result_status": "失败",
       "calculated_value": 1638.0,
       "expected_value": 12600.0,
@@ -1326,10 +1326,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.878336"
+      "timestamp": "2026-06-17T14:03:42.659426"
     },
     {
-      "record_id": "53df368617",
+      "record_id": "3a93036b99",
       "result_status": "失败",
       "calculated_value": 420.0,
       "expected_value": 12600.0,
@@ -1373,10 +1373,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.878378"
+      "timestamp": "2026-06-17T14:03:42.659468"
     },
     {
-      "record_id": "fc58be4bf5",
+      "record_id": "10148fadb4",
       "result_status": "通过",
       "calculated_value": 7878.0,
       "expected_value": 7800.0,
@@ -1420,10 +1420,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.878452"
+      "timestamp": "2026-06-17T14:03:42.659542"
     },
     {
-      "record_id": "7f7e4e49b2",
+      "record_id": "46cccbea71",
       "result_status": "失败",
       "calculated_value": 1014.0,
       "expected_value": 7800.0,
@@ -1473,10 +1473,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.878666"
+      "timestamp": "2026-06-17T14:03:42.659591"
     },
     {
-      "record_id": "14f5d833a8",
+      "record_id": "029aec422b",
       "result_status": "失败",
       "calculated_value": 65.0,
       "expected_value": 7800.0,
@@ -1520,10 +1520,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.878802"
+      "timestamp": "2026-06-17T14:03:42.659634"
     },
     {
-      "record_id": "973984a39f",
+      "record_id": "58f1113dfd",
       "result_status": "通过",
       "calculated_value": 13635.0,
       "expected_value": 13500.0,
@@ -1567,10 +1567,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.879015"
+      "timestamp": "2026-06-17T14:03:42.659709"
     },
     {
-      "record_id": "38aa67081d",
+      "record_id": "74ca4273a0",
       "result_status": "失败",
       "calculated_value": 1755.0,
       "expected_value": 13500.0,
@@ -1620,10 +1620,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.879090"
+      "timestamp": "2026-06-17T14:03:42.659754"
     },
     {
-      "record_id": "b6ac361513",
+      "record_id": "a7a2985ffb",
       "result_status": "失败",
       "calculated_value": 75.0,
       "expected_value": 13500.0,
@@ -1667,10 +1667,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.879150"
+      "timestamp": "2026-06-17T14:03:42.659796"
     },
     {
-      "record_id": "b5012dbed5",
+      "record_id": "50af8c9721",
       "result_status": "通过",
       "calculated_value": 13635.0,
       "expected_value": 13500.0,
@@ -1714,10 +1714,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.879430"
+      "timestamp": "2026-06-17T14:03:42.659871"
     },
     {
-      "record_id": "b0c6e32adb",
+      "record_id": "a88c543bb0",
       "result_status": "失败",
       "calculated_value": 1755.0,
       "expected_value": 13500.0,
@@ -1767,10 +1767,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.879514"
+      "timestamp": "2026-06-17T14:03:42.659916"
     },
     {
-      "record_id": "023862fd24",
+      "record_id": "f0228b73d7",
       "result_status": "失败",
       "calculated_value": 150.0,
       "expected_value": 13500.0,
@@ -1814,10 +1814,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.880114"
+      "timestamp": "2026-06-17T14:03:42.659958"
     },
     {
-      "record_id": "5a85d0083a",
+      "record_id": "9bf803a1e6",
       "result_status": "通过",
       "calculated_value": 35350.0,
       "expected_value": 35000.0,
@@ -1861,10 +1861,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.880875"
+      "timestamp": "2026-06-17T14:03:42.660034"
     },
     {
-      "record_id": "014d03be48",
+      "record_id": "1dccf78ad8",
       "result_status": "失败",
       "calculated_value": 4550.0,
       "expected_value": 35000.0,
@@ -1908,10 +1908,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.880983"
+      "timestamp": "2026-06-17T14:03:42.660078"
     },
     {
-      "record_id": "dde8cdb45b",
+      "record_id": "747fe46d76",
       "result_status": "失败",
       "calculated_value": 350.0,
       "expected_value": 35000.0,
@@ -1955,10 +1955,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.881127"
+      "timestamp": "2026-06-17T14:03:42.660119"
     },
     {
-      "record_id": "5d8b61ffbd",
+      "record_id": "fa6ab7ee53",
       "result_status": "通过",
       "calculated_value": 292900.0,
       "expected_value": 290000.0,
@@ -2002,10 +2002,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.881535"
+      "timestamp": "2026-06-17T14:03:42.660191"
     },
     {
-      "record_id": "b72cbae5cb",
+      "record_id": "90713f948a",
       "result_status": "失败",
       "calculated_value": 37700.0,
       "expected_value": 290000.0,
@@ -2049,10 +2049,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.881671"
+      "timestamp": "2026-06-17T14:03:42.660232"
     },
     {
-      "record_id": "f9020e8063",
+      "record_id": "4405750ae6",
       "result_status": "失败",
       "calculated_value": 5800.0,
       "expected_value": 290000.0,
@@ -2096,10 +2096,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.881791"
+      "timestamp": "2026-06-17T14:03:42.660273"
     },
     {
-      "record_id": "d54294a05f",
+      "record_id": "a896100feb",
       "result_status": "通过",
       "calculated_value": 17170.0,
       "expected_value": 17000.0,
@@ -2143,10 +2143,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.881992"
+      "timestamp": "2026-06-17T14:03:42.660348"
     },
     {
-      "record_id": "038650e01c",
+      "record_id": "c0dbb09f12",
       "result_status": "失败",
       "calculated_value": 2210.0,
       "expected_value": 17000.0,
@@ -2190,10 +2190,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882043"
+      "timestamp": "2026-06-17T14:03:42.660394"
     },
     {
-      "record_id": "2d2cb48095",
+      "record_id": "26bb44dc5d",
       "result_status": "失败",
       "calculated_value": 85.0,
       "expected_value": 17000.0,
@@ -2237,10 +2237,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882090"
+      "timestamp": "2026-06-17T14:03:42.660434"
     },
     {
-      "record_id": "c4e250d51b",
+      "record_id": "c00bc73825",
       "result_status": "通过",
       "calculated_value": 18180.0,
       "expected_value": 18000.0,
@@ -2284,10 +2284,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.882193"
+      "timestamp": "2026-06-17T14:03:42.660508"
     },
     {
-      "record_id": "96163a435c",
+      "record_id": "bb22cebbe0",
       "result_status": "失败",
       "calculated_value": 2340.0,
       "expected_value": 18000.0,
@@ -2331,10 +2331,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882238"
+      "timestamp": "2026-06-17T14:03:42.660548"
     },
     {
-      "record_id": "3447f74444",
+      "record_id": "323fed584f",
       "result_status": "失败",
       "calculated_value": 120.0,
       "expected_value": 18000.0,
@@ -2378,10 +2378,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882283"
+      "timestamp": "2026-06-17T14:03:42.660590"
     },
     {
-      "record_id": "163c0e1628",
+      "record_id": "e785d49457",
       "result_status": "通过",
       "calculated_value": 22624.0,
       "expected_value": 22400.0,
@@ -2425,10 +2425,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.882368"
+      "timestamp": "2026-06-17T14:03:42.660666"
     },
     {
-      "record_id": "2bd84937f1",
+      "record_id": "63b7a5bcb6",
       "result_status": "失败",
       "calculated_value": 2016.0,
       "expected_value": 22400.0,
@@ -2472,10 +2472,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882413"
+      "timestamp": "2026-06-17T14:03:42.660708"
     },
     {
-      "record_id": "48927921dd",
+      "record_id": "74e7440dd6",
       "result_status": "失败",
       "calculated_value": 280.0,
       "expected_value": 22400.0,
@@ -2519,10 +2519,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882456"
+      "timestamp": "2026-06-17T14:03:42.660749"
     },
     {
-      "record_id": "a688b8a072",
+      "record_id": "71b7f34499",
       "result_status": "通过",
       "calculated_value": 22725.0,
       "expected_value": 22500.0,
@@ -2566,10 +2566,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.882536"
+      "timestamp": "2026-06-17T14:03:42.660821"
     },
     {
-      "record_id": "33e843ffa8",
+      "record_id": "b9683c3b4a",
       "result_status": "失败",
       "calculated_value": 2025.0,
       "expected_value": 22500.0,
@@ -2613,10 +2613,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882578"
+      "timestamp": "2026-06-17T14:03:42.660863"
     },
     {
-      "record_id": "febd20cfd1",
+      "record_id": "4fcc18e641",
       "result_status": "失败",
       "calculated_value": 45.0,
       "expected_value": 22500.0,
@@ -2660,10 +2660,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882629"
+      "timestamp": "2026-06-17T14:03:42.660907"
     },
     {
-      "record_id": "64e6825aa9",
+      "record_id": "4c6211e394",
       "result_status": "通过",
       "calculated_value": 42925.0,
       "expected_value": 42500.0,
@@ -2707,10 +2707,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.882707"
+      "timestamp": "2026-06-17T14:03:42.660981"
     },
     {
-      "record_id": "52a5f42641",
+      "record_id": "7f1877af34",
       "result_status": "失败",
       "calculated_value": 5525.0,
       "expected_value": 42500.0,
@@ -2754,10 +2754,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882750"
+      "timestamp": "2026-06-17T14:03:42.661022"
     },
     {
-      "record_id": "f32065ca63",
+      "record_id": "119a055f0d",
       "result_status": "失败",
       "calculated_value": 850.0,
       "expected_value": 42500.0,
@@ -2801,10 +2801,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.882793"
+      "timestamp": "2026-06-17T14:03:42.661065"
     },
     {
-      "record_id": "47ab4923fc",
+      "record_id": "fb1e07f2a9",
       "result_status": "通过",
       "calculated_value": 11110.0,
       "expected_value": 11000.0,
@@ -2848,10 +2848,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.882868"
+      "timestamp": "2026-06-17T14:03:42.661138"
     },
     {
-      "record_id": "9037ed6cdc",
+      "record_id": "d512dd58ad",
       "result_status": "失败",
       "calculated_value": 1430.0,
       "expected_value": 11000.0,
@@ -2895,10 +2895,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883010"
+      "timestamp": "2026-06-17T14:03:42.661179"
     },
     {
-      "record_id": "92a768a626",
+      "record_id": "de8788470a",
       "result_status": "失败",
       "calculated_value": 55.0,
       "expected_value": 11000.0,
@@ -2942,10 +2942,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883069"
+      "timestamp": "2026-06-17T14:03:42.661223"
     },
     {
-      "record_id": "b157fe61a1",
+      "record_id": "a2233355b5",
       "result_status": "通过",
       "calculated_value": 24240.0,
       "expected_value": 24000.0,
@@ -2989,10 +2989,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.883171"
+      "timestamp": "2026-06-17T14:03:42.661295"
     },
     {
-      "record_id": "960f8b024b",
+      "record_id": "9839d98d07",
       "result_status": "失败",
       "calculated_value": 3120.0,
       "expected_value": 24000.0,
@@ -3036,10 +3036,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883217"
+      "timestamp": "2026-06-17T14:03:42.661337"
     },
     {
-      "record_id": "5218f5ff32",
+      "record_id": "f1e2f2d080",
       "result_status": "失败",
       "calculated_value": 1200.0,
       "expected_value": 24000.0,
@@ -3083,10 +3083,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883261"
+      "timestamp": "2026-06-17T14:03:42.661379"
     },
     {
-      "record_id": "259f966cfb",
+      "record_id": "e88f84d255",
       "result_status": "通过",
       "calculated_value": 13635.0,
       "expected_value": 13500.0,
@@ -3130,10 +3130,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.883361"
+      "timestamp": "2026-06-17T14:03:42.661456"
     },
     {
-      "record_id": "d3a9783b84",
+      "record_id": "60ee7999f3",
       "result_status": "失败",
       "calculated_value": 1755.0,
       "expected_value": 13500.0,
@@ -3177,10 +3177,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883406"
+      "timestamp": "2026-06-17T14:03:42.661498"
     },
     {
-      "record_id": "a5d443cb0c",
+      "record_id": "7ad5e8ba70",
       "result_status": "失败",
       "calculated_value": 450.0,
       "expected_value": 13500.0,
@@ -3224,10 +3224,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883456"
+      "timestamp": "2026-06-17T14:03:42.661540"
     },
     {
-      "record_id": "b1ebe6295f",
+      "record_id": "73d0881a04",
       "result_status": "通过",
       "calculated_value": 35350.0,
       "expected_value": 35000.0,
@@ -3271,10 +3271,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.883539"
+      "timestamp": "2026-06-17T14:03:42.661614"
     },
     {
-      "record_id": "3f34e2101b",
+      "record_id": "b0916fd2ef",
       "result_status": "失败",
       "calculated_value": 4550.0,
       "expected_value": 35000.0,
@@ -3324,10 +3324,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883584"
+      "timestamp": "2026-06-17T14:03:42.661659"
     },
     {
-      "record_id": "96080d01a6",
+      "record_id": "65d316237b",
       "result_status": "失败",
       "calculated_value": 350.0,
       "expected_value": 35000.0,
@@ -3371,10 +3371,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883628"
+      "timestamp": "2026-06-17T14:03:42.661732"
     },
     {
-      "record_id": "303f273aea",
+      "record_id": "32360286a9",
       "result_status": "通过",
       "calculated_value": 292900.0,
       "expected_value": 290000.0,
@@ -3418,10 +3418,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.883708"
+      "timestamp": "2026-06-17T14:03:42.661806"
     },
     {
-      "record_id": "23b90e3f26",
+      "record_id": "84337a1246",
       "result_status": "失败",
       "calculated_value": 37700.0,
       "expected_value": 290000.0,
@@ -3471,10 +3471,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883756"
+      "timestamp": "2026-06-17T14:03:42.661850"
     },
     {
-      "record_id": "b893e3f8d6",
+      "record_id": "c084386392",
       "result_status": "失败",
       "calculated_value": 5800.0,
       "expected_value": 290000.0,
@@ -3518,10 +3518,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.883799"
+      "timestamp": "2026-06-17T14:03:42.661892"
     },
     {
-      "record_id": "dd4966bb69",
+      "record_id": "8c8cb702bd",
       "result_status": "通过",
       "calculated_value": 17170.0,
       "expected_value": 17000.0,
@@ -3565,10 +3565,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.884528"
+      "timestamp": "2026-06-17T14:03:42.661977"
     },
     {
-      "record_id": "2cc50a32aa",
+      "record_id": "8d68b65a6b",
       "result_status": "失败",
       "calculated_value": 2210.0,
       "expected_value": 17000.0,
@@ -3618,10 +3618,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.884576"
+      "timestamp": "2026-06-17T14:03:42.662020"
     },
     {
-      "record_id": "c34f8de1e0",
+      "record_id": "0722bebc0d",
       "result_status": "失败",
       "calculated_value": 85.0,
       "expected_value": 17000.0,
@@ -3665,10 +3665,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.884624"
+      "timestamp": "2026-06-17T14:03:42.662066"
     },
     {
-      "record_id": "2eaed87bae",
+      "record_id": "9e69d0f2c8",
       "result_status": "通过",
       "calculated_value": 18180.0,
       "expected_value": 18000.0,
@@ -3712,10 +3712,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.884708"
+      "timestamp": "2026-06-17T14:03:42.662141"
     },
     {
-      "record_id": "8fc547f698",
+      "record_id": "afc067f914",
       "result_status": "失败",
       "calculated_value": 2340.0,
       "expected_value": 18000.0,
@@ -3765,10 +3765,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.884752"
+      "timestamp": "2026-06-17T14:03:42.662184"
     },
     {
-      "record_id": "285c7db7a0",
+      "record_id": "5e84daea04",
       "result_status": "失败",
       "calculated_value": 120.0,
       "expected_value": 18000.0,
@@ -3812,10 +3812,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.884795"
+      "timestamp": "2026-06-17T14:03:42.662229"
     },
     {
-      "record_id": "2555789cea",
+      "record_id": "7e29152b7b",
       "result_status": "通过",
       "calculated_value": 22624.0,
       "expected_value": 22400.0,
@@ -3859,10 +3859,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.884876"
+      "timestamp": "2026-06-17T14:03:42.662301"
     },
     {
-      "record_id": "513538cbbd",
+      "record_id": "63f34fec5a",
       "result_status": "失败",
       "calculated_value": 2016.0,
       "expected_value": 22400.0,
@@ -3912,10 +3912,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.884920"
+      "timestamp": "2026-06-17T14:03:42.662344"
     },
     {
-      "record_id": "8ec1f3f540",
+      "record_id": "4a78dc4473",
       "result_status": "失败",
       "calculated_value": 280.0,
       "expected_value": 22400.0,
@@ -3959,10 +3959,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.884963"
+      "timestamp": "2026-06-17T14:03:42.662385"
     },
     {
-      "record_id": "26e90d8118",
+      "record_id": "772db68b67",
       "result_status": "通过",
       "calculated_value": 22725.0,
       "expected_value": 22500.0,
@@ -4006,10 +4006,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.885042"
+      "timestamp": "2026-06-17T14:03:42.662458"
     },
     {
-      "record_id": "0449862693",
+      "record_id": "ee3e62c167",
       "result_status": "失败",
       "calculated_value": 2025.0,
       "expected_value": 22500.0,
@@ -4059,10 +4059,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885086"
+      "timestamp": "2026-06-17T14:03:42.662500"
     },
     {
-      "record_id": "8d67531496",
+      "record_id": "541b9ee93e",
       "result_status": "失败",
       "calculated_value": 45.0,
       "expected_value": 22500.0,
@@ -4106,10 +4106,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885128"
+      "timestamp": "2026-06-17T14:03:42.662544"
     },
     {
-      "record_id": "3e0d163ffc",
+      "record_id": "0f8aa216de",
       "result_status": "通过",
       "calculated_value": 151500.0,
       "expected_value": 150000.0,
@@ -4153,10 +4153,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.885205"
+      "timestamp": "2026-06-17T14:03:42.662619"
     },
     {
-      "record_id": "89f4bdf6f7",
+      "record_id": "2529d3716f",
       "result_status": "失败",
       "calculated_value": 19500.0,
       "expected_value": 150000.0,
@@ -4206,10 +4206,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885252"
+      "timestamp": "2026-06-17T14:03:42.662663"
     },
     {
-      "record_id": "38b9581a09",
+      "record_id": "ec3948bff9",
       "result_status": "通过",
       "calculated_value": 150000.0,
       "expected_value": 150000.0,
@@ -4253,10 +4253,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.885295"
+      "timestamp": "2026-06-17T14:03:42.662705"
     },
     {
-      "record_id": "91eda7d4e9",
+      "record_id": "9e903b8d57",
       "result_status": "通过",
       "calculated_value": 85850.0,
       "expected_value": 85000.0,
@@ -4300,10 +4300,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.885369"
+      "timestamp": "2026-06-17T14:03:42.662776"
     },
     {
-      "record_id": "cf32084ee5",
+      "record_id": "4b1c1266d5",
       "result_status": "失败",
       "calculated_value": 11050.0,
       "expected_value": 85000.0,
@@ -4353,10 +4353,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885413"
+      "timestamp": "2026-06-17T14:03:42.662822"
     },
     {
-      "record_id": "e5471a6990",
+      "record_id": "2fc09299ed",
       "result_status": "通过",
       "calculated_value": 85000.0,
       "expected_value": 85000.0,
@@ -4400,10 +4400,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.885455"
+      "timestamp": "2026-06-17T14:03:42.662864"
     },
     {
-      "record_id": "e1f128d302",
+      "record_id": "d724761fc2",
       "result_status": "通过",
       "calculated_value": 121200.0,
       "expected_value": 120000.0,
@@ -4447,10 +4447,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.885532"
+      "timestamp": "2026-06-17T14:03:42.662937"
     },
     {
-      "record_id": "783419a107",
+      "record_id": "65a9827a4f",
       "result_status": "失败",
       "calculated_value": 15600.0,
       "expected_value": 120000.0,
@@ -4500,10 +4500,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885576"
+      "timestamp": "2026-06-17T14:03:42.662979"
     },
     {
-      "record_id": "71892f1c38",
+      "record_id": "6731cf5436",
       "result_status": "通过",
       "calculated_value": 120000.0,
       "expected_value": 120000.0,
@@ -4547,10 +4547,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.885626"
+      "timestamp": "2026-06-17T14:03:42.663020"
     },
     {
-      "record_id": "5392bf2597",
+      "record_id": "17048684d7",
       "result_status": "失败",
       "calculated_value": 3.5350000000000006,
       "expected_value": 35000.0,
@@ -4594,10 +4594,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885702"
+      "timestamp": "2026-06-17T14:03:42.663098"
     },
     {
-      "record_id": "eda9f690f5",
+      "record_id": "f6b9ddc521",
       "result_status": "失败",
       "calculated_value": 4550.0,
       "expected_value": 35000.0,
@@ -4647,10 +4647,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885754"
+      "timestamp": "2026-06-17T14:03:42.663146"
     },
     {
-      "record_id": "35d036d455",
+      "record_id": "92d18177e5",
       "result_status": "失败",
       "calculated_value": 350.0,
       "expected_value": 35000.0,
@@ -4694,10 +4694,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885801"
+      "timestamp": "2026-06-17T14:03:42.663188"
     },
     {
-      "record_id": "f309e8f8f0",
+      "record_id": "9d7c46498b",
       "result_status": "失败",
       "calculated_value": 29.289999999999996,
       "expected_value": 290000.0,
@@ -4741,10 +4741,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885882"
+      "timestamp": "2026-06-17T14:03:42.663261"
     },
     {
-      "record_id": "43119aefc3",
+      "record_id": "e549702a8b",
       "result_status": "失败",
       "calculated_value": 37700.0,
       "expected_value": 290000.0,
@@ -4794,10 +4794,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885929"
+      "timestamp": "2026-06-17T14:03:42.663307"
     },
     {
-      "record_id": "bfa905a30b",
+      "record_id": "6d62baffd1",
       "result_status": "失败",
       "calculated_value": 5800.0,
       "expected_value": 290000.0,
@@ -4841,10 +4841,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.885973"
+      "timestamp": "2026-06-17T14:03:42.663350"
     },
     {
-      "record_id": "767aec6733",
+      "record_id": "6fa58a4138",
       "result_status": "失败",
       "calculated_value": 1.7170000000000003,
       "expected_value": 17000.0,
@@ -4888,10 +4888,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886052"
+      "timestamp": "2026-06-17T14:03:42.663430"
     },
     {
-      "record_id": "eb90be87f1",
+      "record_id": "751d159b62",
       "result_status": "失败",
       "calculated_value": 2210.0,
       "expected_value": 17000.0,
@@ -4941,10 +4941,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886099"
+      "timestamp": "2026-06-17T14:03:42.663475"
     },
     {
-      "record_id": "154b3b57a9",
+      "record_id": "de33e20319",
       "result_status": "失败",
       "calculated_value": 85.0,
       "expected_value": 17000.0,
@@ -4988,10 +4988,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886141"
+      "timestamp": "2026-06-17T14:03:42.663517"
     },
     {
-      "record_id": "57285950aa",
+      "record_id": "41c3b614b5",
       "result_status": "失败",
       "calculated_value": 1.818,
       "expected_value": 18000.0,
@@ -5035,10 +5035,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886216"
+      "timestamp": "2026-06-17T14:03:42.663592"
     },
     {
-      "record_id": "7b9028b2de",
+      "record_id": "50fedae396",
       "result_status": "失败",
       "calculated_value": 2340.0,
       "expected_value": 18000.0,
@@ -5088,10 +5088,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886263"
+      "timestamp": "2026-06-17T14:03:42.663640"
     },
     {
-      "record_id": "7c62d95f18",
+      "record_id": "9ecfc3b720",
       "result_status": "失败",
       "calculated_value": 120.0,
       "expected_value": 18000.0,
@@ -5135,10 +5135,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886305"
+      "timestamp": "2026-06-17T14:03:42.663683"
     },
     {
-      "record_id": "135fb6053f",
+      "record_id": "e0a6b5a0b5",
       "result_status": "失败",
       "calculated_value": 2.2624000000000004,
       "expected_value": 22400.0,
@@ -5182,10 +5182,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886386"
+      "timestamp": "2026-06-17T14:03:42.663759"
     },
     {
-      "record_id": "959cac4853",
+      "record_id": "323419a2ff",
       "result_status": "失败",
       "calculated_value": 2016.0,
       "expected_value": 22400.0,
@@ -5235,10 +5235,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886446"
+      "timestamp": "2026-06-17T14:03:42.663805"
     },
     {
-      "record_id": "02dcea5209",
+      "record_id": "7a8840e364",
       "result_status": "失败",
       "calculated_value": 280.0,
       "expected_value": 22400.0,
@@ -5282,10 +5282,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886489"
+      "timestamp": "2026-06-17T14:03:42.663847"
     },
     {
-      "record_id": "135018520f",
+      "record_id": "f9104a8c23",
       "result_status": "失败",
       "calculated_value": 2.2725,
       "expected_value": 22500.0,
@@ -5329,10 +5329,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886564"
+      "timestamp": "2026-06-17T14:03:42.663927"
     },
     {
-      "record_id": "573da3ac56",
+      "record_id": "286d77c143",
       "result_status": "失败",
       "calculated_value": 2025.0,
       "expected_value": 22500.0,
@@ -5382,10 +5382,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886619"
+      "timestamp": "2026-06-17T14:03:42.663978"
     },
     {
-      "record_id": "cc751bd345",
+      "record_id": "9e8940d280",
       "result_status": "失败",
       "calculated_value": 45.0,
       "expected_value": 22500.0,
@@ -5429,10 +5429,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886668"
+      "timestamp": "2026-06-17T14:03:42.664064"
     },
     {
-      "record_id": "f90e0fba43",
+      "record_id": "ad13d51be5",
       "result_status": "通过",
       "calculated_value": 0.0,
       "expected_value": 0.0,
@@ -5476,10 +5476,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.886743"
+      "timestamp": "2026-06-17T14:03:42.664295"
     },
     {
-      "record_id": "e001e8cb5e",
+      "record_id": "edbf76d96d",
       "result_status": "通过",
       "calculated_value": 0.0,
       "expected_value": 0.0,
@@ -5529,10 +5529,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.886789"
+      "timestamp": "2026-06-17T14:03:42.664362"
     },
     {
-      "record_id": "05a79d2cfe",
+      "record_id": "8d76917cc5",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": 0.0,
@@ -5570,10 +5570,10 @@
       "unit_conversions": [],
       "error_message": "除零异常：分母为0",
       "anomaly_type": "除零异常",
-      "timestamp": "2026-06-14T21:51:40.886841"
+      "timestamp": "2026-06-17T14:03:42.664457"
     },
     {
-      "record_id": "536c04fcb4",
+      "record_id": "ef7449954f",
       "result_status": "失败",
       "calculated_value": 0.10099999999999999,
       "expected_value": 1.0,
@@ -5617,10 +5617,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.886985"
+      "timestamp": "2026-06-17T14:03:42.664605"
     },
     {
-      "record_id": "484b1ed368",
+      "record_id": "ae5022c8c7",
       "result_status": "失败",
       "calculated_value": 0.13,
       "expected_value": 1.0,
@@ -5670,10 +5670,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.887061"
+      "timestamp": "2026-06-17T14:03:42.664664"
     },
     {
-      "record_id": "0463087934",
+      "record_id": "68785e6bb6",
       "result_status": "失败",
       "calculated_value": 10000000.0,
       "expected_value": 1.0,
@@ -5717,10 +5717,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.887111"
+      "timestamp": "2026-06-17T14:03:42.664712"
     },
     {
-      "record_id": "8b85cad33d",
+      "record_id": "f21dd71ad5",
       "result_status": "通过",
       "calculated_value": -1010.0,
       "expected_value": -1000.0,
@@ -5770,10 +5770,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "负值异常",
-      "timestamp": "2026-06-14T21:51:40.887243"
+      "timestamp": "2026-06-17T14:03:42.664810"
     },
     {
-      "record_id": "2a9fb6450e",
+      "record_id": "031f41749a",
       "result_status": "失败",
       "calculated_value": -130.0,
       "expected_value": -1000.0,
@@ -5829,10 +5829,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.887298"
+      "timestamp": "2026-06-17T14:03:42.664861"
     },
     {
-      "record_id": "3ddd39f9f8",
+      "record_id": "b2500f7e0a",
       "result_status": "失败",
       "calculated_value": 100.0,
       "expected_value": -1000.0,
@@ -5888,10 +5888,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.887343"
+      "timestamp": "2026-06-17T14:03:42.664905"
     },
     {
-      "record_id": "7b0aaae9a4",
+      "record_id": "b0e4c04eea",
       "result_status": "通过",
       "calculated_value": -1010.0,
       "expected_value": -1000.0,
@@ -5941,10 +5941,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "负值异常",
-      "timestamp": "2026-06-14T21:51:40.887475"
+      "timestamp": "2026-06-17T14:03:42.664989"
     },
     {
-      "record_id": "c7d646c24e",
+      "record_id": "d535b40942",
       "result_status": "失败",
       "calculated_value": -130.0,
       "expected_value": -1000.0,
@@ -6000,10 +6000,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.887527"
+      "timestamp": "2026-06-17T14:03:42.665036"
     },
     {
-      "record_id": "8feb004641",
+      "record_id": "f7f1e98c1b",
       "result_status": "失败",
       "calculated_value": -100.0,
       "expected_value": -1000.0,
@@ -6053,10 +6053,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.887572"
+      "timestamp": "2026-06-17T14:03:42.665078"
     },
     {
-      "record_id": "3a448eaa73",
+      "record_id": "76b57ae05c",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": null,
@@ -6081,10 +6081,10 @@
       "unit_conversions": [],
       "error_message": "空值异常：quantity 为空",
       "anomaly_type": "空值异常",
-      "timestamp": "2026-06-14T21:51:40.887647"
+      "timestamp": "2026-06-17T14:03:42.665135"
     },
     {
-      "record_id": "b2dae46e33",
+      "record_id": "76c74f98be",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": null,
@@ -6109,10 +6109,10 @@
       "unit_conversions": [],
       "error_message": "空值异常：total_price 为空",
       "anomaly_type": "空值异常",
-      "timestamp": "2026-06-14T21:51:40.887669"
+      "timestamp": "2026-06-17T14:03:42.665158"
     },
     {
-      "record_id": "e8b5831bf1",
+      "record_id": "dda41b312b",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": null,
@@ -6137,10 +6137,10 @@
       "unit_conversions": [],
       "error_message": "空值异常：total_price 为空",
       "anomaly_type": "空值异常",
-      "timestamp": "2026-06-14T21:51:40.887690"
+      "timestamp": "2026-06-17T14:03:42.665180"
     },
     {
-      "record_id": "10b9722f01",
+      "record_id": "fa3f5943a0",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": null,
@@ -6166,10 +6166,10 @@
       "unit_conversions": [],
       "error_message": "空值异常：unit_price 为空",
       "anomaly_type": "空值异常",
-      "timestamp": "2026-06-14T21:51:40.887756"
+      "timestamp": "2026-06-17T14:03:42.665237"
     },
     {
-      "record_id": "5d7b510149",
+      "record_id": "76102166e8",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": null,
@@ -6194,10 +6194,10 @@
       "unit_conversions": [],
       "error_message": "空值异常：total_price 为空",
       "anomaly_type": "空值异常",
-      "timestamp": "2026-06-14T21:51:40.887777"
+      "timestamp": "2026-06-17T14:03:42.665258"
     },
     {
-      "record_id": "b7911bd3c2",
+      "record_id": "3645b0f9df",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": null,
@@ -6222,10 +6222,10 @@
       "unit_conversions": [],
       "error_message": "空值异常：total_price 为空",
       "anomaly_type": "空值异常",
-      "timestamp": "2026-06-14T21:51:40.887800"
+      "timestamp": "2026-06-17T14:03:42.665279"
     },
     {
-      "record_id": "319ab487cd",
+      "record_id": "0a6996e73a",
       "result_status": "通过",
       "calculated_value": 1010.0,
       "expected_value": 1000.0,
@@ -6269,10 +6269,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.887881"
+      "timestamp": "2026-06-17T14:03:42.665356"
     },
     {
-      "record_id": "09f6ab3d96",
+      "record_id": "32666cc0f7",
       "result_status": "失败",
       "calculated_value": 130.0,
       "expected_value": 1000.0,
@@ -6322,10 +6322,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.887932"
+      "timestamp": "2026-06-17T14:03:42.665401"
     },
     {
-      "record_id": "a7b49246b8",
+      "record_id": "f7d0162cfd",
       "result_status": "失败",
       "calculated_value": 100.0,
       "expected_value": 1000.0,
@@ -6369,10 +6369,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.887975"
+      "timestamp": "2026-06-17T14:03:42.665441"
     },
     {
-      "record_id": "b545c4c728",
+      "record_id": "666f218811",
       "result_status": "通过",
       "calculated_value": 1010.0,
       "expected_value": 1000.0,
@@ -6416,10 +6416,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.888054"
+      "timestamp": "2026-06-17T14:03:42.665518"
     },
     {
-      "record_id": "419163bfa5",
+      "record_id": "479dbeee78",
       "result_status": "失败",
       "calculated_value": 1130.0,
       "expected_value": 1000.0,
@@ -6469,10 +6469,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.888100"
+      "timestamp": "2026-06-17T14:03:42.665565"
     },
     {
-      "record_id": "1fce0bfc71",
+      "record_id": "23df0d907c",
       "result_status": "失败",
       "calculated_value": 100.0,
       "expected_value": 1000.0,
@@ -6516,10 +6516,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.888146"
+      "timestamp": "2026-06-17T14:03:42.665609"
     },
     {
-      "record_id": "415d45803a",
+      "record_id": "776b414e62",
       "result_status": "通过",
       "calculated_value": 1009.899,
       "expected_value": 999.9,
@@ -6563,10 +6563,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.888257"
+      "timestamp": "2026-06-17T14:03:42.665715"
     },
     {
-      "record_id": "e02d5640cf",
+      "record_id": "a639e81c9a",
       "result_status": "失败",
       "calculated_value": 129.987,
       "expected_value": 999.9,
@@ -6616,10 +6616,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.888313"
+      "timestamp": "2026-06-17T14:03:42.665758"
     },
     {
-      "record_id": "e0ed637b50",
+      "record_id": "34e12ade34",
       "result_status": "失败",
       "calculated_value": 99.99,
       "expected_value": 999.9,
@@ -6663,10 +6663,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.888358"
+      "timestamp": "2026-06-17T14:03:42.665798"
     },
     {
-      "record_id": "f3b8a50a2f",
+      "record_id": "fb85896a36",
       "result_status": "失败",
       "calculated_value": 1010.0,
       "expected_value": 950.0,
@@ -6710,10 +6710,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.916829"
+      "timestamp": "2026-06-17T14:03:42.665871"
     },
     {
-      "record_id": "c35f752c02",
+      "record_id": "e704b46202",
       "result_status": "失败",
       "calculated_value": 123.5,
       "expected_value": 950.0,
@@ -6763,10 +6763,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.916922"
+      "timestamp": "2026-06-17T14:03:42.665916"
     },
     {
-      "record_id": "435d938937",
+      "record_id": "0c4b25e268",
       "result_status": "失败",
       "calculated_value": 95.0,
       "expected_value": 950.0,
@@ -6810,10 +6810,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.916975"
+      "timestamp": "2026-06-17T14:03:42.665957"
     },
     {
-      "record_id": "5e6f802a06",
+      "record_id": "69b5461e31",
       "result_status": "通过",
       "calculated_value": 0.0,
       "expected_value": 0.0,
@@ -6857,10 +6857,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.917135"
+      "timestamp": "2026-06-17T14:03:42.666031"
     },
     {
-      "record_id": "8ce0dd6387",
+      "record_id": "9a7460d3b1",
       "result_status": "通过",
       "calculated_value": 0.0,
       "expected_value": 0.0,
@@ -6910,10 +6910,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.917232"
+      "timestamp": "2026-06-17T14:03:42.666075"
     },
     {
-      "record_id": "55ff9a5665",
+      "record_id": "64c561e042",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": 0.0,
@@ -6951,10 +6951,10 @@
       "unit_conversions": [],
       "error_message": "除零异常：分母为0",
       "anomaly_type": "除零异常",
-      "timestamp": "2026-06-14T21:51:40.917293"
+      "timestamp": "2026-06-17T14:03:42.666115"
     },
     {
-      "record_id": "52e0daa718",
+      "record_id": "8fc618e423",
       "result_status": "通过",
       "calculated_value": 1009998990.0,
       "expected_value": 999999000.0,
@@ -6998,10 +6998,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": null,
-      "timestamp": "2026-06-14T21:51:40.917417"
+      "timestamp": "2026-06-17T14:03:42.666189"
     },
     {
-      "record_id": "93a6edb2e4",
+      "record_id": "f0feb241aa",
       "result_status": "失败",
       "calculated_value": 129999870.0,
       "expected_value": 999999000.0,
@@ -7051,10 +7051,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.917467"
+      "timestamp": "2026-06-17T14:03:42.666237"
     },
     {
-      "record_id": "2e35e0e6a8",
+      "record_id": "e108112217",
       "result_status": "失败",
       "calculated_value": 999999.0,
       "expected_value": 999999000.0,
@@ -7098,10 +7098,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.917511"
+      "timestamp": "2026-06-17T14:03:42.666279"
     },
     {
-      "record_id": "af5480dbcb",
+      "record_id": "499876ca73",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": 1000.0,
@@ -7126,10 +7126,10 @@
       "unit_conversions": [],
       "error_message": "公式计算异常：quantity = INVALID 格式无效，无法转换为数字",
       "anomaly_type": "公式计算异常",
-      "timestamp": "2026-06-14T21:51:40.917578"
+      "timestamp": "2026-06-17T14:03:42.666341"
     },
     {
-      "record_id": "18f564f541",
+      "record_id": "b590b18d72",
       "result_status": "失败",
       "calculated_value": 130.0,
       "expected_value": 1000.0,
@@ -7179,10 +7179,10 @@
       "unit_conversions": [],
       "error_message": null,
       "anomaly_type": "数值偏差",
-      "timestamp": "2026-06-14T21:51:40.917635"
+      "timestamp": "2026-06-17T14:03:42.666385"
     },
     {
-      "record_id": "0589903062",
+      "record_id": "3f4f53b44a",
       "result_status": "异常",
       "calculated_value": null,
       "expected_value": 1000.0,
@@ -7208,7 +7208,7 @@
       "unit_conversions": [],
       "error_message": "公式计算异常：quantity = INVALID 格式无效，无法转换为数字",
       "anomaly_type": "公式计算异常",
-      "timestamp": "2026-06-14T21:51:40.917674"
+      "timestamp": "2026-06-17T14:03:42.666419"
     }
   ]
 }

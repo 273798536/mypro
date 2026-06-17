@@ -3,9 +3,9 @@ import sys
 import os
 from pathlib import Path
 
-workspace = Path("/Users/mac/pro/solo/workspaces/y13144")
-sys.path.insert(0, str(workspace))
-os.chdir(str(workspace))
+PROJECT_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(PROJECT_ROOT))
+os.chdir(str(PROJECT_ROOT))
 
 print("=" * 70)
 print("整数规划批量验算系统 - 完整异常复核链路演示")
@@ -16,7 +16,7 @@ print("[Step 1/5] 运行完整验算流水线 (pipeline.run_full_demo)")
 print("-" * 70)
 from src.ip_checker.pipeline import VerificationPipeline
 
-examples_dir = workspace / 'examples'
+examples_dir = PROJECT_ROOT / 'examples'
 examples_dir.mkdir(exist_ok=True)
 
 pipeline = VerificationPipeline(output_dir=str(examples_dir))
