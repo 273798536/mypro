@@ -173,7 +173,6 @@ export function exportReportToCSV(reportId: number): string {
       '复核意见',
     ],
     encoding: 'utf-8',
-    bom: true,
   });
 }
 
