@@ -292,3 +292,11 @@ def _preserve_human_note(*notes: str) -> str:
     if not non_empty:
         return ""
     return "；".join(non_empty)
+
+
+def get_unresolved_blocking_results(db: Session, task_id: int) -> List[CheckResult]:
+    return db.query(CheckResult).filter(
+        CheckResult.task_id == task_id,
+        CheckResult.is_blocking == True,
+        CheckResult.resolved == False,
+    ).all()

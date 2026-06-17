@@ -8,7 +8,7 @@ from app.schemas import (
     CheckTaskCreate, CheckTaskOut, CheckTaskStatusUpdate,
     CheckResultOut, CheckResultResolve, AuditLogOut,
 )
-from app.services.check_service import run_bias_check
+from app.services.check_service import run_bias_check, get_unresolved_blocking_results
 
 router = APIRouter(prefix="/api/tasks", tags=["检查任务"])
 
@@ -77,6 +77,18 @@ def update_status(task_id: int, data: CheckTaskStatusUpdate, db: Session = Depen
             status_code=400,
             detail=f"当前状态「{task.status.value}」不能直接转为「{data.status.value}」，允许的下一状态：{[s.value for s in allowed]}",
         )
+
+    if data.status in (TaskStatus.APPROVED, TaskStatus.REPORTED):
+        blocking_results = get_unresolved_blocking_results(db, task_id)
+        if blocking_results:
+            detail_items = []
+            for r in blocking_results:
+                qid = r.question_id or "全局"
+                detail_items.append(f"[{r.check_type.value}] {qid}: {r.detail[:60]}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"存在 {len(blocking_results)} 条未解决的阻断项，不能推进到「{data.status.value}」。未解决项：{'; '.join(detail_items)}",
+            )
 
     old_status = task.status
     task.status = data.status

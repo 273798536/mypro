@@ -1,12 +1,12 @@
-import os
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Dict, Optional
 from sqlalchemy.orm import Session
 
 from app.models import (
     QuestionBank, Question, CheckTask, CheckResult, TaskStatus,
     CheckType, SeverityLevel, AuditLog, ActionType,
 )
+from app.services.check_service import get_unresolved_blocking_results
 
 SEVERITY_LABELS = {
     SeverityLevel.INFO: "ℹ️ 信息",
@@ -151,89 +151,164 @@ def generate_markdown_report(db: Session, task_id: int) -> str:
 
 def generate_html_report(db: Session, task_id: int) -> str:
     task, bank, results = _load_report_data(db, task_id)
-    md = generate_markdown_report(db, task_id)
+    from html import escape as html_escape
 
-    html = """<!DOCTYPE html>
+    blocking_results = [r for r in results if r.is_blocking and not r.resolved]
+    leakage_results = [r for r in results if r.check_type == CheckType.LEAKAGE]
+    other_results = [r for r in results if r.check_type != CheckType.LEAKAGE]
+    other_by_type: Dict[str, List[CheckResult]] = {}
+    for r in other_results:
+        ct_label = CHECK_TYPE_LABELS.get(r.check_type, r.check_type.value)
+        if ct_label not in other_by_type:
+            other_by_type[ct_label] = []
+        other_by_type[ct_label].append(r)
+
+    logs = db.query(AuditLog).filter(
+        (AuditLog.task_id == task_id) | (AuditLog.bank_id == task.bank_id)
+    ).order_by(AuditLog.created_at).all()
+
+    def esc(s: str) -> str:
+        return html_escape(s or "")
+
+    def sev_html(sev) -> str:
+        cls = f"severity-{sev.value}"
+        return f'<span class="{cls}">{SEVERITY_LABELS.get(sev, sev.value)}</span>'
+
+    def sev_block(r: CheckResult) -> str:
+        if r.severity == SeverityLevel.BLOCKER:
+            cls = "blocker"
+        elif r.severity == SeverityLevel.ERROR:
+            cls = "error"
+        elif r.severity == SeverityLevel.WARNING:
+            cls = "warning"
+        else:
+            cls = "info"
+        return cls
+
+    html = f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>模型评测题库偏科检查报告</title>
+<title>模型评测题库偏科检查报告 — {esc(task.task_name)}</title>
 <style>
-body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; max-width: 960px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.8; }
-h1 { border-bottom: 2px solid #1a73e8; padding-bottom: 8px; color: #1a73e8; }
-h2 { border-bottom: 1px solid #ddd; padding-bottom: 6px; margin-top: 32px; }
-h3 { margin-top: 20px; }
-table { border-collapse: collapse; width: 100%; margin: 12px 0; }
-th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
-th { background: #f5f5f5; }
-.blocker { background: #ffe0e0; border-left: 4px solid #dc3545; padding: 12px 16px; margin: 12px 0; }
-.error { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 16px; margin: 12px 0; }
-.warning { background: #fff8e1; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 12px 0; }
-.info { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 16px; margin: 12px 0; }
-.human-note { background: #f9f9f9; border: 1px dashed #999; padding: 8px 12px; font-style: italic; margin: 8px 0; }
-.severity-blocker { color: #6c0a0a; font-weight: bold; }
-.severity-error { color: #dc3545; font-weight: bold; }
-.severity-warning { color: #e67e00; font-weight: bold; }
-.severity-info { color: #17a2b8; }
-.action-hint { background: #e8f5e9; border: 1px solid #4caf50; padding: 8px 12px; margin: 8px 0; }
-.plain-explanation { background: #f0f4ff; border: 1px solid #90b0ff; padding: 8px 12px; margin: 8px 0; }
-hr { border: none; border-top: 1px solid #eee; margin: 24px 0; }
-code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+body {{ font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; max-width: 960px; margin: 0 auto; padding: 20px; color: #333; line-height: 1.8; }}
+h1 {{ border-bottom: 2px solid #1a73e8; padding-bottom: 8px; color: #1a73e8; }}
+h2 {{ border-bottom: 1px solid #ddd; padding-bottom: 6px; margin-top: 32px; }}
+h3 {{ margin-top: 20px; }}
+.meta-table {{ border-collapse: collapse; width: 100%; margin: 12px 0; }}
+.meta-table th, .meta-table td {{ border: 1px solid #ddd; padding: 8px 12px; text-align: left; }}
+.meta-table th {{ background: #f5f5f5; width: 120px; }}
+.result-table {{ border-collapse: collapse; width: 100%; margin: 12px 0; }}
+.result-table th, .result-table td {{ border: 1px solid #ddd; padding: 8px 12px; text-align: left; vertical-align: top; }}
+.result-table th {{ background: #f5f5f5; }}
+.blocker {{ background: #ffe0e0; border-left: 4px solid #dc3545; padding: 12px 16px; margin: 12px 0; }}
+.error {{ background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px 16px; margin: 12px 0; }}
+.warning {{ background: #fff8e1; border-left: 4px solid #ff9800; padding: 12px 16px; margin: 12px 0; }}
+.info {{ background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px 16px; margin: 12px 0; }}
+.human-note {{ background: #f9f9f9; border: 1px dashed #999; padding: 8px 12px; font-style: italic; margin: 8px 0; }}
+.severity-blocker {{ color: #6c0a0a; font-weight: bold; }}
+.severity-error {{ color: #dc3545; font-weight: bold; }}
+.severity-warning {{ color: #e67e00; font-weight: bold; }}
+.severity-info {{ color: #17a2b8; }}
+.action-hint {{ background: #e8f5e9; border: 1px solid #4caf50; padding: 8px 12px; margin: 8px 0; border-radius: 4px; }}
+.plain-explanation {{ background: #f0f4ff; border: 1px solid #90b0ff; padding: 8px 12px; margin: 8px 0; border-radius: 4px; }}
+.plain-summary {{ background: #f8fbff; border: 1px solid #b0c4de; padding: 12px 16px; margin: 12px 0; border-radius: 6px; }}
+hr {{ border: none; border-top: 1px solid #eee; margin: 24px 0; }}
+code {{ background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }}
+ul {{ padding-left: 20px; }}
+.resolved {{ text-decoration: line-through; opacity: 0.6; }}
 </style>
 </head>
 <body>
-"""
-    import re
-    lines = md.split("\n")
-    in_table = False
-    for line in lines:
-        stripped = line.strip()
-        if stripped.startswith("# "):
-            html += f"<h1>{stripped[2:]}</h1>\n"
-        elif stripped.startswith("## "):
-            html += f"<h2>{stripped[3:]}</h2>\n"
-        elif stripped.startswith("### "):
-            html += f"<h3>{stripped[4:]}</h3>\n"
-        elif stripped.startswith("**阻断原因**:"):
-            val = stripped.replace("**阻断原因**:", "").strip()
-            html += f'<div class="blocker"><strong>阻断原因</strong>: {val}</div>\n'
-        elif stripped.startswith("**下一步操作**:"):
-            val = stripped.replace("**下一步操作**:", "").strip()
-            html += f'<div class="action-hint"><strong>下一步操作</strong>: {val}</div>\n'
-        elif stripped.startswith("**通俗解释**:"):
-            val = stripped.replace("**通俗解释**:", "").strip()
-            html += f'<div class="plain-explanation"><strong>通俗解释</strong>: {val}</div>\n'
-        elif stripped.startswith("**人工备注（原文）**:"):
-            val = stripped.replace("**人工备注（原文）**:", "").strip().strip('"')
-            html += f'<div class="human-note"><strong>人工备注（原文）</strong>: "{val}"</div>\n'
-        elif stripped.startswith("| ") and "---" not in stripped:
-            cells = [c.strip() for c in stripped.split("|")[1:-1]]
-            if not in_table:
-                html += "<table>\n<tr>"
-                for c in cells:
-                    html += f"<th>{c}</th>"
-                html += "</tr>\n"
-                in_table = True
-            else:
-                html += "<tr>"
-                for c in cells:
-                    html += f"<td>{c}</td>"
-                html += "</tr>\n"
-        elif stripped.startswith("|") and "---" in stripped:
-            continue
-        elif not stripped.startswith("|") and in_table:
-            html += "</table>\n"
-            in_table = False
-        elif stripped.startswith("- "):
-            content = stripped[2:]
-            html += f"<li>{content}</li>\n"
-        elif stripped == "---":
-            html += "<hr>\n"
-        elif stripped:
-            html += f"<p>{stripped}</p>\n"
 
-    if in_table:
-        html += "</table>\n"
+<h1>模型评测题库偏科检查报告</h1>
+
+<table class="meta-table">
+  <tr><th>题库名称</th><td>{esc(bank.name)}</td></tr>
+  <tr><th>检查任务</th><td>{esc(task.task_name)}</td></tr>
+  <tr><th>任务状态</th><td>{esc(_status_label(task.status))}</td></tr>
+  <tr><th>生成时间</th><td>{esc(datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'))}</td></tr>
+"""
+    if task.reviewer:
+        html += f'  <tr><th>复核人</th><td>{esc(task.reviewer)}</td></tr>\n'
+    if task.review_comment:
+        html += f'  <tr><th>复核意见</th><td>{esc(task.review_comment)}</td></tr>\n'
+    html += "</table>\n"
+
+    html += "<hr>\n"
+    html += "<h2>概述（普通话说明）</h2>\n"
+    html += f'<div class="plain-summary">{esc(_generate_plain_summary(task, results))}</div>\n'
+
+    if blocking_results:
+        html += "<hr>\n"
+        html += "<h2>🚫 阻断项（必须处理）</h2>\n"
+        html += "<p>以下问题必须在通过复核前解决：</p>\n"
+        for i, r in enumerate(blocking_results, 1):
+            html += f'<div class="{sev_block(r)}">\n'
+            html += f'<h3>阻断项 {i}: {esc(CHECK_TYPE_LABELS.get(r.check_type, r.check_type.value))} — {sev_html(r.severity)}</h3>\n'
+            html += f'<table class="meta-table">\n'
+            html += f'  <tr><th>涉及题目</th><td>{esc(r.question_id or "全局")}</td></tr>\n'
+            html += f'  <tr><th>问题详情</th><td>{esc(r.detail)}</td></tr>\n'
+            html += f"</table>\n"
+            html += f'<div class="plain-explanation"><strong>通俗解释</strong>: {esc(r.plain_explanation)}</div>\n'
+            html += f'<div class="action-hint"><strong>下一步操作</strong>: {esc(r.action_hint)}</div>\n'
+            if r.original_human_note:
+                html += f'<div class="human-note"><strong>人工备注（原文）</strong>: "{esc(r.original_human_note)}"</div>\n'
+            if r.metadata_json and "blocking_reason" in r.metadata_json:
+                html += f'<div class="blocker"><strong>阻断原因</strong>: {esc(r.metadata_json["blocking_reason"])}</div>\n'
+            if r.resolved:
+                html += f'<p class="resolved"><strong>已解决</strong>: {esc(r.resolution)}</p>\n'
+            html += "</div>\n"
+
+    if leakage_results:
+        html += "<hr>\n"
+        html += "<h2>训练验证泄漏详情</h2>\n"
+        html += "<p>以下是训练集、验证集和测试集之间存在的数据泄漏记录。每条记录都附有通俗解释和处理建议，帮助判断下一步该补材料还是改口径。</p>\n"
+        for i, r in enumerate(leakage_results, 1):
+            html += f'<div class="{sev_block(r)}">\n'
+            html += f'<h3>泄漏记录 {i}</h3>\n'
+            html += '<table class="result-table">\n'
+            html += f'  <tr><th>严重级别</th><td>{sev_html(r.severity)}</td></tr>\n'
+            html += f'  <tr><th>涉及题目</th><td>{esc(r.question_id or "全局")}</td></tr>\n'
+            html += f'  <tr><th>问题详情</th><td>{esc(r.detail)}</td></tr>\n'
+            html += f'  <tr><th>通俗解释</th><td>{esc(r.plain_explanation)}</td></tr>\n'
+            html += f'  <tr><th>下一步操作</th><td>{esc(r.action_hint)}</td></tr>\n'
+            if r.original_human_note:
+                html += f'  <tr><th>人工备注（原文）</th><td>"{esc(r.original_human_note)}"</td></tr>\n'
+            if r.metadata_json and "blocking_reason" in r.metadata_json:
+                html += f'  <tr><th>阻断原因</th><td>{esc(r.metadata_json["blocking_reason"])}</td></tr>\n'
+            html += f'  <tr><th>是否阻断</th><td>{"是" if r.is_blocking else "否"}</td></tr>\n'
+            if r.resolved:
+                html += f'  <tr><th>已解决</th><td>是 — {esc(r.resolution)}</td></tr>\n'
+            else:
+                html += '  <tr><th>已解决</th><td>否</td></tr>\n'
+            html += "</table>\n"
+            html += "</div>\n"
+
+    if other_by_type:
+        html += "<hr>\n"
+        html += "<h2>其他检查结果</h2>\n"
+        for ct_label, ct_results in other_by_type.items():
+            html += f"<h3>{esc(ct_label)}</h3>\n"
+            for r in ct_results:
+                html += f'<div class="{sev_block(r)}">\n'
+                html += f'<p><strong>{sev_html(r.severity)}</strong> {esc(r.detail)}</p>\n'
+                if r.plain_explanation:
+                    html += f'<div class="plain-explanation"><strong>通俗解释</strong>: {esc(r.plain_explanation)}</div>\n'
+                if r.action_hint:
+                    html += f'<div class="action-hint"><strong>处理建议</strong>: {esc(r.action_hint)}</div>\n'
+                if r.original_human_note:
+                    html += f'<div class="human-note"><strong>人工备注（原文）</strong>: "{esc(r.original_human_note)}"</div>\n'
+                if r.resolved:
+                    html += f'<p class="resolved"><strong>已解决</strong>: {esc(r.resolution)}</p>\n'
+                html += "</div>\n"
+
+    html += "<hr>\n"
+    html += "<h2>操作历史</h2>\n"
+    html += "<ul>\n"
+    for log in logs:
+        html += f'<li><code>{esc(log.created_at.strftime("%Y-%m-%d %H:%M"))}</code> [{esc(log.action.value)}] {esc(log.actor)}: {esc(log.detail)}</li>\n'
+    html += "</ul>\n"
 
     html += "</body>\n</html>"
     return html
@@ -244,13 +319,32 @@ def export_report(db: Session, task_id: int, fmt: str = "markdown") -> str:
     if not task:
         raise ValueError(f"检查任务 {task_id} 不存在")
 
+    if task.status not in (TaskStatus.REVIEWING, TaskStatus.APPROVED, TaskStatus.REPORTED):
+        if task.status == TaskStatus.CHECKED:
+            raise ValueError(f"任务当前状态为「{task.status.value}」，还未进入复核阶段，请先推进到「reviewing」后再导出")
+        raise ValueError(f"任务当前状态为「{task.status.value}」，不满足导出条件（需处于复核中、已通过或已导出报告）")
+
+    if task.status in (TaskStatus.REVIEWING, TaskStatus.REPORTED):
+        blocking_results = get_unresolved_blocking_results(db, task_id)
+        if blocking_results:
+            detail_items = []
+            for r in blocking_results:
+                qid = r.question_id or "全局"
+                detail_items.append(f"[{r.check_type.value}] {qid}: {r.detail[:60]}")
+            raise ValueError(
+                f"存在 {len(blocking_results)} 条未解决的阻断项，不能导出报告。"
+                f"未解决项：{'; '.join(detail_items)}。"
+                f"请先在「results/resolve」接口标记为已解决后再导出。"
+            )
+
     if fmt == "html":
         content = generate_html_report(db, task_id)
     else:
         content = generate_markdown_report(db, task_id)
 
-    task.status = TaskStatus.REPORTED
-    db.commit()
+    if task.status != TaskStatus.REPORTED:
+        task.status = TaskStatus.REPORTED
+        db.commit()
 
     log = AuditLog(
         task_id=task_id,
