@@ -1,0 +1,134 @@
+[
+  {
+    "session_id": "T001",
+    "customer_text": "商品质量有问题，要求全额退款！",
+    "robot_text": "非常抱歉，我们会尽快为您处理退款",
+    "annotation": "refund",
+    "confidence": 0.96,
+    "remark": "【旧备注】2026-05-10 王主管已审核，确认质量问题",
+    "operator": "标注员A",
+    "date": "2026-05-10",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T002",
+    "customer_text": "请问这个商品支持7天无理由退换吗？",
+    "robot_text": "是的，支持7天无理由退换货",
+    "annotation": "inquiry",
+    "confidence": 0.99,
+    "remark": "【旧备注】2026-05-11 注意：用户虽然问的是退换货政策，但实际没有发生退换行为",
+    "operator": "标注员B",
+    "date": "2026-05-11",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T003",
+    "customer_text": "发货太慢了，等了五天还没到，什么服务态度！",
+    "robot_text": "非常抱歉让您久等了，我帮您催促快递",
+    "annotation": "complaint",
+    "confidence": 0.93,
+    "remark": "【旧备注】2026-05-12 用户主要是投诉物流速度，不是要退款。注意区分投诉和退款",
+    "operator": "标注员C",
+    "date": "2026-05-12",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T004",
+    "customer_text": "申请换货，颜色发错了",
+    "robot_text": "好的，请将原商品寄回，收到后为您发出正确颜色",
+    "annotation": "exchange",
+    "confidence": 0.98,
+    "remark": "",
+    "operator": "标注员A",
+    "date": "2026-05-13",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T005",
+    "customer_text": "网页一直加载不出来，一直转圈，换了浏览器也不行",
+    "robot_text": "请尝试清除浏览器缓存或者使用无痕模式访问",
+    "annotation": "technical_support",
+    "confidence": 0.97,
+    "remark": "【旧备注】2026-05-14 这是技术问题，不是咨询。已转技术团队处理",
+    "operator": "标注员B",
+    "date": "2026-05-14",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T006",
+    "customer_text": "算了，就这样吧，以后不买了",
+    "robot_text": "非常抱歉给您带来不好的体验，欢迎您再次光临",
+    "annotation": "other",
+    "confidence": 0.72,
+    "remark": "【旧备注】2026-05-15 用户没有明确诉求，但有不满情绪。标注other但需要注意后续跟进",
+    "operator": "标注员C",
+    "date": "2026-05-15",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T007",
+    "customer_text": "我买的手机屏幕有划痕，要求退款！！！",
+    "robot_text": "非常抱歉，请问您是否已签收？可以申请退换货",
+    "annotation": "refund",
+    "confidence": 0.99,
+    "remark": "【旧备注】2026-05-16 高价值商品，已标记为高优先级处理",
+    "operator": "标注员A",
+    "date": "2026-05-16",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T008",
+    "customer_text": "想换个尺码，M码太大了",
+    "robot_text": "可以的，请寄回M码，我们收到后为您发出L码",
+    "annotation": "exchange",
+    "confidence": 0.95,
+    "remark": "【旧备注】2026-05-17 用户说的是M换L，不是退货。已确认库存有L码",
+    "operator": "标注员B",
+    "date": "2026-05-17",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T009",
+    "customer_text": "你们客服电话是多少？",
+    "robot_text": "我们的客服热线是400-888-8888",
+    "annotation": "inquiry",
+    "confidence": 1.0,
+    "remark": "",
+    "operator": "标注员C",
+    "date": "2026-05-18",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T010",
+    "customer_text": "这已经是第三次出问题了！你们到底能不能解决？",
+    "robot_text": "非常抱歉，这次一定帮您彻底解决问题",
+    "annotation": "complaint",
+    "confidence": 0.94,
+    "remark": "【旧备注】2026-05-19 重复问题，用户非常不满。已升级处理",
+    "operator": "标注员A",
+    "date": "2026-05-19",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T011",
+    "customer_text": "APP闪退，一打开就崩溃，手机是iPhone 15",
+    "robot_text": "请尝试更新到最新版本，如果还是有问题请告知具体系统版本",
+    "annotation": "technical_support",
+    "confidence": 0.98,
+    "remark": "【旧备注】2026-05-20 已知问题，新版本已修复。引导用户更新",
+    "operator": "标注员B",
+    "date": "2026-05-20",
+    "source": "training_sample"
+  },
+  {
+    "session_id": "T012",
+    "customer_text": "随便问问，没什么事",
+    "robot_text": "好的，有问题随时联系我们~",
+    "annotation": "other",
+    "confidence": 0.81,
+    "remark": "",
+    "operator": "标注员C",
+    "date": "2026-05-21",
+    "source": "training_sample"
+  }
+]
