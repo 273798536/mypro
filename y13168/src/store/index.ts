@@ -56,7 +56,8 @@ const applyFilters = (
   }
   if (selectedComponent) {
     result = result.filter((r) => r.componentId === selectedComponent.id)
-  } else if (filters.componentType) {
+  }
+  if (!selectedComponent && filters.componentType) {
     result = result.filter(
       (r) => compTypeById.get(r.componentId) === filters.componentType
     )
@@ -81,8 +82,24 @@ export const useAttributionStore = create<AttributionStore>((set, get) => ({
 
   selectComponent: (component) => {
     const state = get()
-    const newRecords = applyFilters(torqueRecords, state.timeWindow, state.filters, component)
-    set({ selectedComponent: component, filteredRecords: newRecords })
+    const nextFilters = state.filters
+    const clearComponentType =
+      component !== null && state.filters.componentType !== null
+    const appliedFilters = clearComponentType
+      ? { ...nextFilters, componentType: null }
+      : nextFilters
+    const newRecords = applyFilters(
+      torqueRecords,
+      state.timeWindow,
+      appliedFilters,
+      component
+    )
+    const patch: Partial<AttributionStore> = {
+      selectedComponent: component,
+      filteredRecords: newRecords,
+    }
+    if (clearComponentType) patch.filters = appliedFilters
+    set(patch)
   },
 
   setTimeWindow: (timeWindow) => {
@@ -93,8 +110,21 @@ export const useAttributionStore = create<AttributionStore>((set, get) => ({
 
   setFilters: (filters) => {
     const state = get()
-    const newRecords = applyFilters(torqueRecords, state.timeWindow, filters, state.selectedComponent)
-    set({ filters, filteredRecords: newRecords })
+    const clearSelected =
+      filters.componentType !== null && state.selectedComponent !== null
+    const appliedComponent = clearSelected ? null : state.selectedComponent
+    const newRecords = applyFilters(
+      torqueRecords,
+      state.timeWindow,
+      filters,
+      appliedComponent
+    )
+    const patch: Partial<AttributionStore> = {
+      filters,
+      filteredRecords: newRecords,
+    }
+    if (clearSelected) patch.selectedComponent = appliedComponent
+    set(patch)
   },
 
   updateParameterSet: (params) => {

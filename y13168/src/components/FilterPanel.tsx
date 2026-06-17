@@ -81,7 +81,8 @@ export default function FilterPanel() {
               {SEVERITY_OPTIONS.map((opt) => (
                 <label
                   key={opt.value}
-                  className="flex items-center gap-2 cursor-pointer group"
+                  onClick={() => toggleSeverity(opt.value)}
+                  className="flex items-center gap-2 cursor-pointer group select-none"
                 >
                   <span
                     className={cn(
