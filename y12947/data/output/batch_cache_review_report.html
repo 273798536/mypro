@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>批量推理缓存复盘报告 · 2026年06月18日</title>
+<style>
+  :root {
+    --c-primary: #1e40af;
+    --c-bg: #f8fafc;
+    --c-card: #ffffff;
+    --c-border: #e2e8f0;
+    --c-text: #0f172a;
+    --c-sub: #475569;
+    --c-sev-critical: #dc2626;
+    --c-sev-high: #ea580c;
+    --c-sev-medium: #d97706;
+    --c-sev-low: #65a30d;
+    --c-ok: #16a34a;
+    --c-tag-bg: #eff6ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    line-height: 1.7;
+    font-size: 14px;
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 36px 40px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    box-shadow: 0 10px 25px -12px rgba(30,64,175,.4);
+  }
+  header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  header .sub { opacity: .92; font-size: 14px; display: flex; flex-wrap: wrap; gap: 24px; margin-top: 14px; }
+  header .tag {
+    display: inline-block; background: rgba(255,255,255,.18);
+    padding: 3px 12px; border-radius: 999px; font-size: 12px; margin-right: 8px;
+  }
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 28px;
+  }
+  .kpi {
+    background: var(--c-card); border: 1px solid var(--c-border);
+    border-radius: 12px; padding: 20px; text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .kpi .n { font-size: 30px; font-weight: 700; color: var(--c-primary); }
+  .kpi .l { color: var(--c-sub); font-size: 13px; margin-top: 4px; }
+  .kpi.danger .n { color: var(--c-sev-critical); }
+  .kpi.warn .n { color: var(--c-sev-high); }
+  .kpi.ok .n { color: var(--c-ok); }
+  section {
+    background: var(--c-card); border: 1px solid var(--c-border);
+    border-radius: 12px; padding: 28px 32px; margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  section h2 {
+    font-size: 19px; font-weight: 700; color: var(--c-primary);
+    border-left: 4px solid var(--c-primary); padding-left: 12px; margin-bottom: 20px;
+  }
+  section h3 {
+    font-size: 15px; font-weight: 600; margin: 22px 0 12px; color: var(--c-text);
+  }
+  .plain-talk {
+    background: #fef3c7; border-left: 4px solid #f59e0b;
+    padding: 16px 20px; border-radius: 8px; margin: 14px 0 22px;
+    font-size: 14px; line-height: 1.8;
+  }
+  .plain-talk b { color: #92400e; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin: 18px 0; }
+  .chart-box {
+    background: #fafafa; border: 1px solid var(--c-border); border-radius: 10px; padding: 14px;
+    text-align: center;
+  }
+  .chart-box img { max-width: 100%; height: auto; border-radius: 6px; }
+  .chart-box .cap { font-size: 12px; color: var(--c-sub); margin-top: 8px; }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 18px;
+  }
+  table th, table td {
+    border: 1px solid var(--c-border); padding: 9px 12px; text-align: left; vertical-align: top;
+  }
+  table th {
+    background: #f1f5f9; font-weight: 600; color: var(--c-sub);
+    position: sticky; top: 0;
+  }
+  table tr:hover { background: #f8fafc; }
+  .sev {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; color: white;
+  }
+  .sev-critical { background: var(--c-sev-critical); }
+  .sev-high { background: var(--c-sev-high); }
+  .sev-medium { background: var(--c-sev-medium); }
+  .sev-low { background: var(--c-sev-low); }
+  .badge {
+    background: var(--c-tag-bg); color: var(--c-primary);
+    padding: 2px 10px; border-radius: 6px; font-size: 12px; font-weight: 500;
+  }
+  .trace-box {
+    background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px;
+    padding: 20px 24px; margin: 16px 0;
+  }
+  .trace-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed #cbd5e1;
+  }
+  .trace-head .rid { font-size: 15px; font-weight: 700; color: var(--c-primary); }
+  .step { display: flex; gap: 12px; margin: 12px 0; }
+  .step .dot {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-primary); color: white; display: flex;
+    align-items: center; justify-content: center; font-weight: 700; font-size: 13px;
+  }
+  .step .dot.red { background: var(--c-sev-critical); }
+  .step .dot.orange { background: var(--c-sev-high); }
+  .step .dot.green { background: var(--c-ok); }
+  .step .content { flex: 1; }
+  .step .content .t { font-weight: 600; margin-bottom: 3px; }
+  .step .content .d { color: var(--c-sub); font-size: 13px; }
+  .ver-timeline {
+    border-left: 2px solid #cbd5e1; padding-left: 20px; margin-left: 12px;
+  }
+  .ver-timeline .v {
+    position: relative; margin: 14px 0;
+  }
+  .ver-timeline .v::before {
+    content: ''; position: absolute; left: -27px; top: 6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #3b82f6; border: 2px solid white;
+    box-shadow: 0 0 0 2px #3b82f6;
+  }
+  .ver-timeline .vm { font-size: 12px; color: var(--c-sub); }
+  .ver-timeline .vc { margin-top: 3px; font-size: 13px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .action-card {
+    background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
+    padding: 16px 20px; margin: 10px 0;
+  }
+  .action-card .title { font-weight: 700; color: #166534; margin-bottom: 6px; }
+  .action-card .body { font-size: 13px; color: #15803d; }
+  footer {
+    text-align: center; color: var(--c-sub); font-size: 12px;
+    margin-top: 40px; padding: 20px;
+  }
+  .split-info {
+    display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px;
+  }
+  .split-info .chip {
+    background: #faf5ff; color: #6b21a8; border: 1px solid #e9d5ff;
+    padding: 5px 14px; border-radius: 999px; font-size: 13px;
+  }
+  .note-box {
+    background: #eff6ff; border-left: 4px solid var(--c-primary);
+    padding: 14px 18px; border-radius: 6px; font-size: 13px; color: #1e40af;
+    margin: 14px 0;
+  }
+  @media (max-width: 860px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .chart-row, .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>📊 批量推理缓存复盘报告</h1>
+  <div>本轮复核覆盖 A/B/C 三个批次，含切分清单、评测题库、脏样本，数据来源：人工录入(52条)、旧表迁移(47条)、接口同步(21条)、旧表迁移-Excel2003版(15条)、重复录入-人工复核发现(5条)</div>
+  <div class="sub">
+    <div>📅 生成日期：2026年06月18日</div>
+    <div>🔍 复核批次：<span class="tag">A批次</span><span class="tag">B批次</span><span class="tag">C批次</span></div>
+    <div>📋 处理记录总数：140 条</div>
+    <div>✅ 校验通过率：<b>5.7%</b></div>
+  </div>
+</header>
+
+<div class="kpi-row">
+  <div class="kpi ok">
+    <div class="n">5</div><div class="l">完全通过（无问题）</div>
+  </div>
+  <div class="kpi warn">
+    <div class="n">132</div><div class="l">触发安全规则</div>
+  </div>
+  <div class="kpi warn">
+    <div class="n">45</div><div class="l">存在标签冲突</div>
+  </div>
+  <div class="kpi danger">
+    <div class="n">42</div><div class="l">安全+标签双问题</div>
+  </div>
+  <div class="kpi">
+    <div class="n">20</div><div class="l">需人工升级裁定</div>
+  </div>
+</div>
+
+<!-- ===== 普通话解读 ===== -->
+<section>
+  <h2>📝 一句话说清这轮复盘（直接复制发群就行）</h2>
+  <div class="plain-talk">
+    <b>各位同事：</b>这次复盘的 140 条合同记录里，有 <b>5</b> 条完全没问题，
+    其余 <b>135</b> 条存在不同程度的小问题。最常见的问题前三名是：
+    <b>日期格式规范性校验(108次)、金额单位必填校验(48次)、数值范围合理性校验(34次)</b>。
+    特别要提醒大家的是：旧表迁移过来的数据出错率最高，补录时一定要写清楚补录原因，
+    合同金额后面务必带上单位（元/万元/亿元）。标签冲突里大部分系统能自动判断，
+    还有 <b>20</b> 条需要复核主管打开原始合同看一下再定。
+    评测题库里的 <b>24</b> 道题也同步用同一套规则跑过了，样例和实际数据表现一致。
+  </div>
+</section>
+
+<!-- ===== 切分清单 & 评测题库 ===== -->
+<section>
+  <h2>📦 本轮复核覆盖说明（切分清单 + 评测题库 + 脏样本 三合一）</h2>
+  <div class="split-info">
+    <div class="chip">📊 切分清单：50 条 (A批)</div>
+    <div class="chip">📊 切分清单：50 条 (B批)</div>
+    <div class="chip">📊 切分清单：50 条 (C批)</div>
+    <div class="chip">📝 评测题库：24 道</div>
+    <div class="chip">⚠️ 故意注入脏样本：15条旧表 + 5条重复合同</div>
+  </div>
+  <div class="note-box">
+    💡 说明：本次不是用的通用演示样例，<b>切分清单、评测题库、脏样本</b>都放在同一轮复核里处理，
+    所有分布统计和版本追踪共用<code>unified_processing_records.xlsx</code>这同一份处理记录，
+    保证界面上看到的、报告里写的、导出的Excel三方对得上。
+  </div>
+  <h3>评测题库覆盖场景一览</h3>
+  <table>
+    <thead><tr><th>题目编号</th><th>场景名称</th><th>对应安全规则</th><th>难度</th></tr></thead>
+    <tbody>
+      
+      <tr>
+        <td><span class="badge">EVAL-01-简</span></td>
+        <td>金额漏填单位：合同金额写着&#34;320&#34;，后面没写万元还是元</td>
+        <td>R001</td>
+        <td>简单</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">EVAL-02-简</span></td>
+        <td>日期写成中文：签署日期写的&#34;3月15号&#34;不是标准格式</td>
+        <td>R002</td>
+        <td>简单</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">EVAL-03-简</span></td>
+        <td>只填名字没电话：写了联系人张伟，但手机号那栏空着</td>
+        <td>R003</td>
+        <td>简单</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">EVAL-04-简</span></td>
+        <td>合同编号重复：同一批里两份合同都是HT20240015</td>
+        <td>R004</td>
+        <td>简单</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">EVAL-05-简</span></td>
+        <td>没打业务标签：三个业务标签全空着</td>
+        <td>R005</td>
+        <td>简单</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">EVAL-06-简</span></td>
+        <td>补录没写原因：标了补录但补录原因没填</td>
+        <td>R006</td>
+        <td>简单</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">EVAL-07-简</span></td>
+        <td>期限超过合理值：合同期限写了99年</td>
+        <td>R007</td>
+        <td>简单</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">EVAL-08-简</span></td>
+        <td>甲方名称空着：甲方那栏没填公司名</td>
+        <td>R008</td>
+        <td>简单</td>
+      </tr>
+      
+    </tbody>
+  </table>
+</section>
+
+<!-- ===== 总体分布图 ===== -->
+<section>
+  <h2>📈 整体分布统计（与界面同源）</h2>
+  <div class="plain-talk">
+    <b>图表对应说明：</b>下面每张图的数字都来自 <code>unified_processing_records.xlsx</code>，
+    如果您在系统界面上看到的和报告不一致，以这份处理记录为准，因为三方都从它取数。
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <img src="chart_severity_distribution.png" alt="严重程度分布">
+      <div class="cap">图1：记录最高违规严重程度分布（饼图）</div>
+    </div>
+    <div class="chart-box">
+      <img src="chart_rule_violations.png" alt="规则违规排行">
+      <div class="cap">图2：各安全规则违规次数排行（横向柱状图）</div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <img src="chart_source_comparison.png" alt="来源对比">
+      <div class="cap">图3：不同数据来源的校验通过情况对比</div>
+    </div>
+    <div class="chart-box">
+      <img src="chart_label_conflict.png" alt="标签冲突">
+      <div class="cap">图4：标签冲突自动复核置信度分布</div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <img src="chart_version_trend.png" alt="版本趋势">
+      <div class="cap">图5：5-6月数据修改趋势（折线图）</div>
+    </div>
+    <div class="chart-box">
+      <img src="chart_operator_performance.png" alt="录入人对比">
+      <div class="cap">图6：各录入人处理量与违规率对比（双轴）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 安全规则详情 ===== -->
+<section>
+  <h2>🛡️ 安全规则违规详情 + 漏配原因（人话版）</h2>
+  <div class="plain-talk">
+    <b>怎么看这张表：</b>"违反的原因"列我都翻译成大白话了，没写 contract_amount、biz_tag_1
+    这种字段缩写，不懂代码的同事直接看就行。"规则到底是什么意思"列是规则本身的普通话解释，
+    数据标注负责人可以直接复制粘贴给新人做培训材料。
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>规则编号</th><th>规则名称</th><th>严重等级</th>
+        <th>违规次数</th><th>违规占比</th><th>规则到底是什么意思</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td><span class="badge">R002</span></td>
+        <td>日期格式规范性校验</td>
+        <td><span class="sev sev-medium">中</span></td>
+        <td><b>108</b></td>
+        <td>77.1%</td>
+        <td>日期要统一写成&#34;2024-03-15&#34;这种格式，别写&#34;3月15号&#34;或者&#34;2024.3.15&#34;，不然系统识别不出来，排序也会乱。</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">R001</span></td>
+        <td>金额单位必填校验</td>
+        <td><span class="sev sev-high">高</span></td>
+        <td><b>48</b></td>
+        <td>34.3%</td>
+        <td>金额数字后面必须明确写清楚是&#34;元&#34;、&#34;万元&#34;还是&#34;亿元&#34;，否则不同人理解会差一万倍，对账的时候会出大问题。</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">R007</span></td>
+        <td>数值范围合理性校验</td>
+        <td><span class="sev sev-low">低</span></td>
+        <td><b>34</b></td>
+        <td>24.3%</td>
+        <td>合同期限一般不会超过50年，如果填了100年这种数字，大概率是多写了个零，回头核对一下原始合同。</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">R003</span></td>
+        <td>负责人联系方式校验</td>
+        <td><span class="sev sev-high">高</span></td>
+        <td><b>27</b></td>
+        <td>19.3%</td>
+        <td>既然写了对接人的名字，就一定要留下手机号，不然出了问题找不到人，卡在那里谁也动不了。</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">R005</span></td>
+        <td>业务标签完整性校验</td>
+        <td><span class="sev sev-medium">中</span></td>
+        <td><b>26</b></td>
+        <td>18.6%</td>
+        <td>每条数据都要标清楚属于哪类业务，不然后面分类统计的时候，这批数据就像没挂门牌的房间，找不到归属。</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">R008</span></td>
+        <td>关键字段非空校验</td>
+        <td><span class="sev sev-critical">严重</span></td>
+        <td><b>24</b></td>
+        <td>17.1%</td>
+        <td>合同编号、甲乙双方、合同金额这几项是&#34;骨架字段&#34;，少了任何一个，这份合同记录基本就是废的，必须补齐才能入库。</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">R006</span></td>
+        <td>备注补录标识校验</td>
+        <td><span class="sev sev-medium">中</span></td>
+        <td><b>19</b></td>
+        <td>13.6%</td>
+        <td>如果这条记录是后来补录进去的，必须说明为什么之前没录，是原始单据丢了还是漏记了，审计的时候要能说清楚来龙去脉。</td>
+      </tr>
+      
+      <tr>
+        <td><span class="badge">R004</span></td>
+        <td>合同编号唯一性校验</td>
+        <td><span class="sev sev-critical">严重</span></td>
+        <td><b>14</b></td>
+        <td>10.0%</td>
+        <td>每份合同的编号是唯一的，如果出现重复，说明要么录错了，要么把同一份合同算了两遍，汇总金额肯定对不上。</td>
+      </tr>
+      
+    </tbody>
+  </table>
+</section>
+
+<!-- ===== 典型案例：异常回溯链 ===== -->
+<section>
+  <h2>🔗 典型案例 · 顺着一条异常往回查（验收演示用）</h2>
+  <div class="plain-talk">
+    <b>验收时怎么用：</b>从下方任一条"异常记录"点进去，依次能看到
+    <b>①触发了哪些安全规则 → ②每条规则为什么没通过（人话） → ③建议怎么处理 → ④这条记录修改过几次、谁改的、改了啥</b>。
+    四个环节都能对上才算这条链路打通了。
+  </div>
+
+  
+  <div class="trace-box">
+    <div class="trace-head">
+      <div>
+        <span class="rid">OLD0012</span>
+        <span style="margin-left:12px; color:var(--c-sub); font-size:13px;">
+          合同编号：（缺失）
+           · 甲方：（见附件）
+        </span>
+      </div>
+      <div>
+        
+        <span class="sev sev-critical">严重</span>
+        
+        
+        <span class="badge" style="margin-left:8px;">来源：旧表迁移-Excel2003版</span>
+        
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">1</div>
+      <div class="content">
+        <div class="t">处理快照</div>
+        <div class="d">
+          触发安全规则 <b>6</b> 条，
+          
+          处理记录编号：<code>OLD0012</code>，
+          录入人：历史数据，
+          复核时间：2026-06-18 04:07:25。
+        </div>
+      </div>
+    </div>
+
+    <h3>🛑 安全规则违反明细（能查到原因 + 处理意见）</h3>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R004</span>
+          <span class="sev sev-critical"
+                style="margin-left:6px;">严重</span>
+          <b style="margin-left:8px;">合同编号唯一性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>合同编号&#34;None&#34;出现了不止一次，要么是重复录入，要么编号写错了，得查原始合同。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>每份合同的编号是唯一的，如果出现重复，说明要么录错了，要么把同一份合同算了两遍，汇总金额肯定对不上。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">立即驳回，退回录入人补齐核心字段，不允许进入下一环节</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R008</span>
+          <span class="sev sev-critical"
+                style="margin-left:6px;">严重</span>
+          <b style="margin-left:8px;">关键字段非空校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>合同编号、合同金额这些是核心必填项，空着的话这条合同记录基本没法用，得对照原始单据补齐。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>合同编号、甲乙双方、合同金额这几项是&#34;骨架字段&#34;，少了任何一个，这份合同记录基本就是废的，必须补齐才能入库。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">立即驳回，退回录入人补齐核心字段，不允许进入下一环节</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R003</span>
+          <span class="sev sev-high"
+                style="margin-left:6px;">高</span>
+          <b style="margin-left:8px;">负责人联系方式校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>只写了联系电话的一半信息，另一半没填，出了事找不到对接人。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>既然写了对接人的名字，就一定要留下手机号，不然出了问题找不到人，卡在那里谁也动不了。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">限期整改，24小时内修正后重新提交复核</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R002</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">日期格式规范性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>签署日期写成了&#34;2020年11月&#34;；录入日期写成了&#34;见备注&#34;，要统一写成YYYY-MM-DD格式才能识别。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>日期要统一写成&#34;2024-03-15&#34;这种格式，别写&#34;3月15号&#34;或者&#34;2024.3.15&#34;，不然系统识别不出来，排序也会乱。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R005</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">业务标签完整性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>三个业务标签全空着，这条数据没分类，后面做业务统计的时候找不到归属。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>每条数据都要标清楚属于哪类业务，不然后面分类统计的时候，这批数据就像没挂门牌的房间，找不到归属。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R006</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">备注补录标识校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>这条记录标的是&#34;补录&#34;状态，按规定必须写清楚补录原因，审计的时候要能说清来龙去脉。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>如果这条记录是后来补录进去的，必须说明为什么之前没录，是原始单据丢了还是漏记了，审计的时候要能说清楚来龙去脉。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+
+    
+
+    
+    <h3>📜 版本追踪（这条记录改过几次、谁改的）</h3>
+    <div class="ver-timeline">
+      
+      <div class="v">
+        <div class="vm">
+          <b>V1.0</b> · 2024-05-03 14:00 · 修改人：李晓红
+        </div>
+        <div class="vc">
+          变更摘要：<b>更新业务标签</b>
+          
+        </div>
+      </div>
+      
+      <div class="v">
+        <div class="vm">
+          <b>V3.0</b> · 2024-05-05 08:00 · 修改人：系统自动
+        </div>
+        <div class="vc">
+          变更摘要：<b>补充签署日期</b>
+          
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：record_status）</span>
+          
+        </div>
+      </div>
+      
+      <div class="v">
+        <div class="vm">
+          <b>V2.0</b> · 2024-05-30 18:00 · 修改人：张军
+        </div>
+        <div class="vc">
+          变更摘要：<b>补充签署日期</b>
+          
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：supplement_reason）</span>
+          
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+  <div class="trace-box">
+    <div class="trace-head">
+      <div>
+        <span class="rid">REC0004</span>
+        <span style="margin-left:12px; color:var(--c-sub); font-size:13px;">
+          合同编号：HT20240003
+           · 甲方：重庆山城物流集团有限公司
+        </span>
+      </div>
+      <div>
+        
+        <span class="sev sev-critical">严重</span>
+        
+        
+        <span class="badge" style="margin-left:8px;">来源：接口同步</span>
+        
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">1</div>
+      <div class="content">
+        <div class="t">处理快照</div>
+        <div class="d">
+          触发安全规则 <b>5</b> 条，
+          
+          处理记录编号：<code>REC0004</code>，
+          录入人：陈志明，
+          复核时间：2026-06-18 04:07:25。
+        </div>
+      </div>
+    </div>
+
+    <h3>🛑 安全规则违反明细（能查到原因 + 处理意见）</h3>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R008</span>
+          <span class="sev sev-critical"
+                style="margin-left:6px;">严重</span>
+          <b style="margin-left:8px;">关键字段非空校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>合同金额这些是核心必填项，空着的话这条合同记录基本没法用，得对照原始单据补齐。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>合同编号、甲乙双方、合同金额这几项是&#34;骨架字段&#34;，少了任何一个，这份合同记录基本就是废的，必须补齐才能入库。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">立即驳回，退回录入人补齐核心字段，不允许进入下一环节</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R001</span>
+          <span class="sev sev-high"
+                style="margin-left:6px;">高</span>
+          <b style="margin-left:8px;">金额单位必填校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>付款金额里只写了数字，没写是&#34;元&#34;、&#34;万元&#34;还是&#34;亿元&#34;，别人拿不准到底是多少钱。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>金额数字后面必须明确写清楚是&#34;元&#34;、&#34;万元&#34;还是&#34;亿元&#34;，否则不同人理解会差一万倍，对账的时候会出大问题。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">限期整改，24小时内修正后重新提交复核</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R002</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">日期格式规范性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>签署日期写成了&#34;2022.05.11&#34;，要统一写成YYYY-MM-DD格式才能识别。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>日期要统一写成&#34;2024-03-15&#34;这种格式，别写&#34;3月15号&#34;或者&#34;2024.3.15&#34;，不然系统识别不出来，排序也会乱。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R006</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">备注补录标识校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>这条记录标的是&#34;补录&#34;状态，按规定必须写清楚补录原因，审计的时候要能说清来龙去脉。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>如果这条记录是后来补录进去的，必须说明为什么之前没录，是原始单据丢了还是漏记了，审计的时候要能说清楚来龙去脉。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R007</span>
+          <span class="sev sev-low"
+                style="margin-left:6px;">低</span>
+          <b style="margin-left:8px;">数值范围合理性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>合同期限填的是65.0年，明显超出正常范围（0-50年），大概率是多写了个零或者单位搞错了。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>合同期限一般不会超过50年，如果填了100年这种数字，大概率是多写了个零，回头核对一下原始合同。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">记录在案，下轮复核时重点关注即可</div>
+        </div>
+      </div>
+    </div>
+    
+
+    
+
+    
+    <h3>📜 版本追踪（这条记录改过几次、谁改的）</h3>
+    <div class="ver-timeline">
+      
+      <div class="v">
+        <div class="vm">
+          <b>V3.0</b> · 2024-05-26 18:00 · 修改人：系统自动
+        </div>
+        <div class="vc">
+          变更摘要：<b>修正合同编号</b>
+          
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：sign_date,start_date）</span>
+          
+        </div>
+      </div>
+      
+      <div class="v">
+        <div class="vm">
+          <b>V1.0</b> · 2024-05-27 13:00 · 修改人：张军
+        </div>
+        <div class="vc">
+          变更摘要：<b>复核通过</b>
+          
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：contract_amount）</span>
+          
+        </div>
+      </div>
+      
+      <div class="v">
+        <div class="vm">
+          <b>V2.0</b> · 2024-06-14 12:00 · 修改人：王建国
+        </div>
+        <div class="vc">
+          变更摘要：<b>添加补录原因</b>
+          
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：sign_date,start_date）</span>
+          
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+  <div class="trace-box">
+    <div class="trace-head">
+      <div>
+        <span class="rid">OLD0001</span>
+        <span style="margin-left:12px; color:var(--c-sub); font-size:13px;">
+          合同编号：（缺失）
+           · 甲方：南京绿洲环保科技有限公司
+        </span>
+      </div>
+      <div>
+        
+        <span class="sev sev-critical">严重</span>
+        
+        
+        <span class="badge" style="margin-left:8px;">来源：旧表迁移-Excel2003版</span>
+        
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">1</div>
+      <div class="content">
+        <div class="t">处理快照</div>
+        <div class="d">
+          触发安全规则 <b>5</b> 条，
+          
+          处理记录编号：<code>OLD0001</code>，
+          录入人：历史数据，
+          复核时间：2026-06-18 04:07:25。
+        </div>
+      </div>
+    </div>
+
+    <h3>🛑 安全规则违反明细（能查到原因 + 处理意见）</h3>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R004</span>
+          <span class="sev sev-critical"
+                style="margin-left:6px;">严重</span>
+          <b style="margin-left:8px;">合同编号唯一性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>合同编号&#34;None&#34;出现了不止一次，要么是重复录入，要么编号写错了，得查原始合同。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>每份合同的编号是唯一的，如果出现重复，说明要么录错了，要么把同一份合同算了两遍，汇总金额肯定对不上。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">立即驳回，退回录入人补齐核心字段，不允许进入下一环节</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R008</span>
+          <span class="sev sev-critical"
+                style="margin-left:6px;">严重</span>
+          <b style="margin-left:8px;">关键字段非空校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>合同编号这些是核心必填项，空着的话这条合同记录基本没法用，得对照原始单据补齐。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>合同编号、甲乙双方、合同金额这几项是&#34;骨架字段&#34;，少了任何一个，这份合同记录基本就是废的，必须补齐才能入库。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">立即驳回，退回录入人补齐核心字段，不允许进入下一环节</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R002</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">日期格式规范性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>签署日期写成了&#34;2022年12月&#34;；录入日期写成了&#34;见备注&#34;，要统一写成YYYY-MM-DD格式才能识别。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>日期要统一写成&#34;2024-03-15&#34;这种格式，别写&#34;3月15号&#34;或者&#34;2024.3.15&#34;，不然系统识别不出来，排序也会乱。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R005</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">业务标签完整性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>三个业务标签全空着，这条数据没分类，后面做业务统计的时候找不到归属。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>每条数据都要标清楚属于哪类业务，不然后面分类统计的时候，这批数据就像没挂门牌的房间，找不到归属。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R006</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">备注补录标识校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>这条记录标的是&#34;补录&#34;状态，按规定必须写清楚补录原因，审计的时候要能说清来龙去脉。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>如果这条记录是后来补录进去的，必须说明为什么之前没录，是原始单据丢了还是漏记了，审计的时候要能说清楚来龙去脉。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+
+    
+
+    
+    <h3>📜 版本追踪（这条记录改过几次、谁改的）</h3>
+    <div class="ver-timeline">
+      
+      <div class="v">
+        <div class="vm">
+          <b>V1.0</b> · 2024-05-19 12:00 · 修改人：王建国
+        </div>
+        <div class="vc">
+          变更摘要：<b>首次录入</b>
+          
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：contract_amount）</span>
+          
+        </div>
+      </div>
+      
+      <div class="v">
+        <div class="vm">
+          <b>V2.0</b> · 2024-06-09 09:00 · 修改人：李晓红
+        </div>
+        <div class="vc">
+          变更摘要：<b>更新业务标签</b>
+          
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：sign_date,start_date）</span>
+          
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+  <div class="trace-box">
+    <div class="trace-head">
+      <div>
+        <span class="rid">OLD0004</span>
+        <span style="margin-left:12px; color:var(--c-sub); font-size:13px;">
+          合同编号：（缺失）
+           · 甲方：（见附件）
+        </span>
+      </div>
+      <div>
+        
+        <span class="sev sev-critical">严重</span>
+        
+        
+        <span class="badge" style="margin-left:8px;">来源：旧表迁移-Excel2003版</span>
+        
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">1</div>
+      <div class="content">
+        <div class="t">处理快照</div>
+        <div class="d">
+          触发安全规则 <b>5</b> 条，
+          
+          处理记录编号：<code>OLD0004</code>，
+          录入人：历史数据，
+          复核时间：2026-06-18 04:07:25。
+        </div>
+      </div>
+    </div>
+
+    <h3>🛑 安全规则违反明细（能查到原因 + 处理意见）</h3>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R004</span>
+          <span class="sev sev-critical"
+                style="margin-left:6px;">严重</span>
+          <b style="margin-left:8px;">合同编号唯一性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>合同编号&#34;None&#34;出现了不止一次，要么是重复录入，要么编号写错了，得查原始合同。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>每份合同的编号是唯一的，如果出现重复，说明要么录错了，要么把同一份合同算了两遍，汇总金额肯定对不上。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">立即驳回，退回录入人补齐核心字段，不允许进入下一环节</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R008</span>
+          <span class="sev sev-critical"
+                style="margin-left:6px;">严重</span>
+          <b style="margin-left:8px;">关键字段非空校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>合同编号这些是核心必填项，空着的话这条合同记录基本没法用，得对照原始单据补齐。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>合同编号、甲乙双方、合同金额这几项是&#34;骨架字段&#34;，少了任何一个，这份合同记录基本就是废的，必须补齐才能入库。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">立即驳回，退回录入人补齐核心字段，不允许进入下一环节</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R002</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">日期格式规范性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>签署日期写成了&#34;2020年7月&#34;；录入日期写成了&#34;见备注&#34;，要统一写成YYYY-MM-DD格式才能识别。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>日期要统一写成&#34;2024-03-15&#34;这种格式，别写&#34;3月15号&#34;或者&#34;2024.3.15&#34;，不然系统识别不出来，排序也会乱。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R005</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">业务标签完整性校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>三个业务标签全空着，这条数据没分类，后面做业务统计的时候找不到归属。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>每条数据都要标清楚属于哪类业务，不然后面分类统计的时候，这批数据就像没挂门牌的房间，找不到归属。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">R006</span>
+          <span class="sev sev-medium"
+                style="margin-left:6px;">中</span>
+          <b style="margin-left:8px;">备注补录标识校验</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>这条记录标的是&#34;补录&#34;状态，按规定必须写清楚补录原因，审计的时候要能说清来龙去脉。
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>如果这条记录是后来补录进去的，必须说明为什么之前没录，是原始单据丢了还是漏记了，审计的时候要能说清楚来龙去脉。
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">标注提醒，可先流转但需在本周内完成修正</div>
+        </div>
+      </div>
+    </div>
+    
+
+    
+
+    
+    <h3>📜 版本追踪（这条记录改过几次、谁改的）</h3>
+    <div class="ver-timeline">
+      
+      <div class="v">
+        <div class="vm">
+          <b>V1.0</b> · 2024-06-10 15:00 · 修改人：陈志明
+        </div>
+        <div class="vc">
+          变更摘要：<b>补充联系方式</b>
+          
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：contact_phone）</span>
+          
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+  
+</section>
+
+<!-- ===== 处理建议汇总 ===== -->
+<section>
+  <h2>✅ 下一步处理建议（按优先级）</h2>
+  <div class="two-col">
+    <div>
+      <h3>P0 · 今天必须做</h3>
+      <div class="action-card">
+        <div class="title">严重违规 33 条立即驳回</div>
+        <div class="body">
+          合同编号为空、甲方名称缺失等骨架字段出错的记录，
+          退回给 <b>陈志明、刘美玲、王建国、张军、李晓红、历史数据</b> 等录入人对照原始合同补齐，
+          不允许进入评测环节。
+        </div>
+      </div>
+      <div class="action-card">
+        <div class="title">重复合同编号 7 组核对</div>
+        <div class="body">
+          同一合同出现多次的，对比金额字段是否一致，确认是重复录入还是编号写错，
+          保留一份正确的，其余标记作废。
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>P1 · 本周内完成</h3>
+      <div class="action-card">
+        <div class="title">补录原因补齐 19 条</div>
+        <div class="body">状态标了"补录"但没写原因的，本周内补说明，审计要用到。</div>
+      </div>
+      <div class="action-card">
+        <div class="title">人工裁定标签冲突 20 条</div>
+        <div class="body">分配给李明/王芳/赵刚三位复核主管，24号前完成即可。</div>
+      </div>
+      <div class="action-card">
+        <div class="title">旧表迁移专项整改</div>
+        <div class="body">旧表来源的出错率是人工录入的2倍以上，建议下周安排专项清洗。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  批量推理缓存复盘系统 · 评测周专项报告 · 生成时间 2026-06-18 04:07:41
+  <br>本报告所有数据均基于 <code>unified_processing_records.xlsx</code> 统一处理记录生成
+</footer>
+
+</div>
+</body>
+</html>

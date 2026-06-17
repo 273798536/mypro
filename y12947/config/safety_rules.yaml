@@ -1,0 +1,94 @@
+safety_rules:
+  - rule_id: R001
+    rule_name: 金额单位必填校验
+    description: 涉及金额的字段必须填写单位（元/万元/亿元）
+    affected_fields: [contract_amount, payment_amount, penalty_amount]
+    check_logic: unit_not_empty
+    severity: high
+    chinese_explanation: 金额数字后面必须明确写清楚是"元"、"万元"还是"亿元"，否则不同人理解会差一万倍，对账的时候会出大问题。
+
+  - rule_id: R002
+    rule_name: 日期格式规范性校验
+    description: 所有日期字段必须使用 YYYY-MM-DD 格式
+    affected_fields: [sign_date, start_date, end_date, record_date]
+    check_logic: date_format_yyyy_mm_dd
+    severity: medium
+    chinese_explanation: 日期要统一写成"2024-03-15"这种格式，别写"3月15号"或者"2024.3.15"，不然系统识别不出来，排序也会乱。
+
+  - rule_id: R003
+    rule_name: 负责人联系方式校验
+    description: 填写了负责人就必须填手机号
+    affected_fields: [contact_name, contact_phone]
+    check_logic: paired_fields_not_empty
+    severity: high
+    chinese_explanation: 既然写了对接人的名字，就一定要留下手机号，不然出了问题找不到人，卡在那里谁也动不了。
+
+  - rule_id: R004
+    rule_name: 合同编号唯一性校验
+    description: 同一批次内合同编号不能重复
+    affected_fields: [contract_no]
+    check_logic: unique_within_batch
+    severity: critical
+    chinese_explanation: 每份合同的编号是唯一的，如果出现重复，说明要么录错了，要么把同一份合同算了两遍，汇总金额肯定对不上。
+
+  - rule_id: R005
+    rule_name: 业务标签完整性校验
+    description: 每条记录至少要打一个业务标签
+    affected_fields: [biz_tag_1, biz_tag_2, biz_tag_3]
+    check_logic: at_least_one_not_empty
+    severity: medium
+    chinese_explanation: 每条数据都要标清楚属于哪类业务，不然后面分类统计的时候，这批数据就像没挂门牌的房间，找不到归属。
+
+  - rule_id: R006
+    rule_name: 备注补录标识校验
+    description: 标记为"补录"的记录必须填写补录原因
+    affected_fields: [record_status, supplement_reason]
+    check_logic: conditional_required
+    condition: record_status == '补录'
+    severity: medium
+    chinese_explanation: 如果这条记录是后来补录进去的，必须说明为什么之前没录，是原始单据丢了还是漏记了，审计的时候要能说清楚来龙去脉。
+
+  - rule_id: R007
+    rule_name: 数值范围合理性校验
+    description: 合同期限不能超过50年
+    affected_fields: [contract_duration_years]
+    check_logic: numeric_range
+    min_value: 0
+    max_value: 50
+    severity: low
+    chinese_explanation: 合同期限一般不会超过50年，如果填了100年这种数字，大概率是多写了个零，回头核对一下原始合同。
+
+  - rule_id: R008
+    rule_name: 关键字段非空校验
+    description: 核心业务字段不能为空
+    affected_fields: [contract_no, party_a, party_b, contract_amount]
+    check_logic: required_not_empty
+    severity: critical
+    chinese_explanation: 合同编号、甲乙双方、合同金额这几项是"骨架字段"，少了任何一个，这份合同记录基本就是废的，必须补齐才能入库。
+
+tag_definitions:
+  primary_tags:
+    - code: BT01
+      name: 采购合同
+      description: 物资采购类
+    - code: BT02
+      name: 服务外包
+      description: 外包服务类
+    - code: BT03
+      name: 工程建设
+      description: 工程项目类
+    - code: BT04
+      name: 技术合作
+      description: 技术开发/转让类
+    - code: BT05
+      name: 咨询服务
+      description: 咨询顾问类
+  secondary_tags:
+    - code: ST01
+      name: 紧急
+    - code: ST02
+      name: 常规
+    - code: ST03
+      name: 年度框架
+    - code: ST04
+      name: 单次执行

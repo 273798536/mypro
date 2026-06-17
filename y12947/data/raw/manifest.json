@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-06-18 04:07:25",
+  "contract_records_count": 140,
+  "split_list_count": 150,
+  "eval_questions_count": 24,
+  "label_conflicts_count": 18,
+  "version_history_count": 356,
+  "batches_included": "A批次+B批次+C批次（切分清单、评测题库、脏样本同在本轮复核）",
+  "special_notes": "包含旧表迁移不规范格式、补录未填原因、漏填金额单位、重复合同编号、标签冲突等日常常见问题"
+}

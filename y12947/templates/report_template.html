@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>批量推理缓存复盘报告 · {{ report_date }}</title>
+<style>
+  :root {
+    --c-primary: #1e40af;
+    --c-bg: #f8fafc;
+    --c-card: #ffffff;
+    --c-border: #e2e8f0;
+    --c-text: #0f172a;
+    --c-sub: #475569;
+    --c-sev-critical: #dc2626;
+    --c-sev-high: #ea580c;
+    --c-sev-medium: #d97706;
+    --c-sev-low: #65a30d;
+    --c-ok: #16a34a;
+    --c-tag-bg: #eff6ff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--c-bg);
+    color: var(--c-text);
+    line-height: 1.7;
+    font-size: 14px;
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    padding: 36px 40px;
+    border-radius: 14px;
+    margin-bottom: 28px;
+    box-shadow: 0 10px 25px -12px rgba(30,64,175,.4);
+  }
+  header h1 { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+  header .sub { opacity: .92; font-size: 14px; display: flex; flex-wrap: wrap; gap: 24px; margin-top: 14px; }
+  header .tag {
+    display: inline-block; background: rgba(255,255,255,.18);
+    padding: 3px 12px; border-radius: 999px; font-size: 12px; margin-right: 8px;
+  }
+  .kpi-row {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 28px;
+  }
+  .kpi {
+    background: var(--c-card); border: 1px solid var(--c-border);
+    border-radius: 12px; padding: 20px; text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .kpi .n { font-size: 30px; font-weight: 700; color: var(--c-primary); }
+  .kpi .l { color: var(--c-sub); font-size: 13px; margin-top: 4px; }
+  .kpi.danger .n { color: var(--c-sev-critical); }
+  .kpi.warn .n { color: var(--c-sev-high); }
+  .kpi.ok .n { color: var(--c-ok); }
+  section {
+    background: var(--c-card); border: 1px solid var(--c-border);
+    border-radius: 12px; padding: 28px 32px; margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  section h2 {
+    font-size: 19px; font-weight: 700; color: var(--c-primary);
+    border-left: 4px solid var(--c-primary); padding-left: 12px; margin-bottom: 20px;
+  }
+  section h3 {
+    font-size: 15px; font-weight: 600; margin: 22px 0 12px; color: var(--c-text);
+  }
+  .plain-talk {
+    background: #fef3c7; border-left: 4px solid #f59e0b;
+    padding: 16px 20px; border-radius: 8px; margin: 14px 0 22px;
+    font-size: 14px; line-height: 1.8;
+  }
+  .plain-talk b { color: #92400e; }
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin: 18px 0; }
+  .chart-box {
+    background: #fafafa; border: 1px solid var(--c-border); border-radius: 10px; padding: 14px;
+    text-align: center;
+  }
+  .chart-box img { max-width: 100%; height: auto; border-radius: 6px; }
+  .chart-box .cap { font-size: 12px; color: var(--c-sub); margin-top: 8px; }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px; margin: 12px 0 18px;
+  }
+  table th, table td {
+    border: 1px solid var(--c-border); padding: 9px 12px; text-align: left; vertical-align: top;
+  }
+  table th {
+    background: #f1f5f9; font-weight: 600; color: var(--c-sub);
+    position: sticky; top: 0;
+  }
+  table tr:hover { background: #f8fafc; }
+  .sev {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 600; color: white;
+  }
+  .sev-critical { background: var(--c-sev-critical); }
+  .sev-high { background: var(--c-sev-high); }
+  .sev-medium { background: var(--c-sev-medium); }
+  .sev-low { background: var(--c-sev-low); }
+  .badge {
+    background: var(--c-tag-bg); color: var(--c-primary);
+    padding: 2px 10px; border-radius: 6px; font-size: 12px; font-weight: 500;
+  }
+  .trace-box {
+    background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px;
+    padding: 20px 24px; margin: 16px 0;
+  }
+  .trace-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px dashed #cbd5e1;
+  }
+  .trace-head .rid { font-size: 15px; font-weight: 700; color: var(--c-primary); }
+  .step { display: flex; gap: 12px; margin: 12px 0; }
+  .step .dot {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--c-primary); color: white; display: flex;
+    align-items: center; justify-content: center; font-weight: 700; font-size: 13px;
+  }
+  .step .dot.red { background: var(--c-sev-critical); }
+  .step .dot.orange { background: var(--c-sev-high); }
+  .step .dot.green { background: var(--c-ok); }
+  .step .content { flex: 1; }
+  .step .content .t { font-weight: 600; margin-bottom: 3px; }
+  .step .content .d { color: var(--c-sub); font-size: 13px; }
+  .ver-timeline {
+    border-left: 2px solid #cbd5e1; padding-left: 20px; margin-left: 12px;
+  }
+  .ver-timeline .v {
+    position: relative; margin: 14px 0;
+  }
+  .ver-timeline .v::before {
+    content: ''; position: absolute; left: -27px; top: 6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #3b82f6; border: 2px solid white;
+    box-shadow: 0 0 0 2px #3b82f6;
+  }
+  .ver-timeline .vm { font-size: 12px; color: var(--c-sub); }
+  .ver-timeline .vc { margin-top: 3px; font-size: 13px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .action-card {
+    background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;
+    padding: 16px 20px; margin: 10px 0;
+  }
+  .action-card .title { font-weight: 700; color: #166534; margin-bottom: 6px; }
+  .action-card .body { font-size: 13px; color: #15803d; }
+  footer {
+    text-align: center; color: var(--c-sub); font-size: 12px;
+    margin-top: 40px; padding: 20px;
+  }
+  .split-info {
+    display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 18px;
+  }
+  .split-info .chip {
+    background: #faf5ff; color: #6b21a8; border: 1px solid #e9d5ff;
+    padding: 5px 14px; border-radius: 999px; font-size: 13px;
+  }
+  .note-box {
+    background: #eff6ff; border-left: 4px solid var(--c-primary);
+    padding: 14px 18px; border-radius: 6px; font-size: 13px; color: #1e40af;
+    margin: 14px 0;
+  }
+  @media (max-width: 860px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .chart-row, .two-col { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>📊 批量推理缓存复盘报告</h1>
+  <div>本轮复核覆盖 A/B/C 三个批次，含切分清单、评测题库、脏样本，数据来源：{{ data_sources_note }}</div>
+  <div class="sub">
+    <div>📅 生成日期：{{ report_date }}</div>
+    <div>🔍 复核批次：<span class="tag">A批次</span><span class="tag">B批次</span><span class="tag">C批次</span></div>
+    <div>📋 处理记录总数：{{ stats.total }} 条</div>
+    <div>✅ 校验通过率：<b>{{ stats.pass_rate }}%</b></div>
+  </div>
+</header>
+
+<div class="kpi-row">
+  <div class="kpi ok">
+    <div class="n">{{ summary.clean_records }}</div><div class="l">完全通过（无问题）</div>
+  </div>
+  <div class="kpi warn">
+    <div class="n">{{ summary.with_safety_violations }}</div><div class="l">触发安全规则</div>
+  </div>
+  <div class="kpi warn">
+    <div class="n">{{ summary.with_label_conflicts }}</div><div class="l">存在标签冲突</div>
+  </div>
+  <div class="kpi danger">
+    <div class="n">{{ summary.both_issues }}</div><div class="l">安全+标签双问题</div>
+  </div>
+  <div class="kpi">
+    <div class="n">{{ summary.conflict_need_manual }}</div><div class="l">需人工升级裁定</div>
+  </div>
+</div>
+
+<!-- ===== 普通话解读 ===== -->
+<section>
+  <h2>📝 一句话说清这轮复盘（直接复制发群就行）</h2>
+  <div class="plain-talk">
+    <b>各位同事：</b>这次复盘的 {{ stats.total }} 条合同记录里，有 <b>{{ summary.clean_records }}</b> 条完全没问题，
+    其余 <b>{{ stats.total - summary.clean_records }}</b> 条存在不同程度的小问题。最常见的问题前三名是：
+    <b>{{ top_problems_text }}</b>。
+    特别要提醒大家的是：旧表迁移过来的数据出错率最高，补录时一定要写清楚补录原因，
+    合同金额后面务必带上单位（元/万元/亿元）。标签冲突里大部分系统能自动判断，
+    还有 <b>{{ summary.conflict_need_manual }}</b> 条需要复核主管打开原始合同看一下再定。
+    评测题库里的 <b>{{ eval_count }}</b> 道题也同步用同一套规则跑过了，样例和实际数据表现一致。
+  </div>
+</section>
+
+<!-- ===== 切分清单 & 评测题库 ===== -->
+<section>
+  <h2>📦 本轮复核覆盖说明（切分清单 + 评测题库 + 脏样本 三合一）</h2>
+  <div class="split-info">
+    <div class="chip">📊 切分清单：{{ split_counts.A批次 or 0 }} 条 (A批)</div>
+    <div class="chip">📊 切分清单：{{ split_counts.B批次 or 0 }} 条 (B批)</div>
+    <div class="chip">📊 切分清单：{{ split_counts.C批次 or 0 }} 条 (C批)</div>
+    <div class="chip">📝 评测题库：{{ eval_count }} 道</div>
+    <div class="chip">⚠️ 故意注入脏样本：15条旧表 + 5条重复合同</div>
+  </div>
+  <div class="note-box">
+    💡 说明：本次不是用的通用演示样例，<b>切分清单、评测题库、脏样本</b>都放在同一轮复核里处理，
+    所有分布统计和版本追踪共用<code>unified_processing_records.xlsx</code>这同一份处理记录，
+    保证界面上看到的、报告里写的、导出的Excel三方对得上。
+  </div>
+  <h3>评测题库覆盖场景一览</h3>
+  <table>
+    <thead><tr><th>题目编号</th><th>场景名称</th><th>对应安全规则</th><th>难度</th></tr></thead>
+    <tbody>
+      {% for q in eval_table %}
+      <tr>
+        <td><span class="badge">{{ q.qid }}</span></td>
+        <td>{{ q.scenario_title }}：{{ q.scenario_description }}</td>
+        <td>{{ q.related_rule }}</td>
+        <td>{{ q.difficulty }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<!-- ===== 总体分布图 ===== -->
+<section>
+  <h2>📈 整体分布统计（与界面同源）</h2>
+  <div class="plain-talk">
+    <b>图表对应说明：</b>下面每张图的数字都来自 <code>unified_processing_records.xlsx</code>，
+    如果您在系统界面上看到的和报告不一致，以这份处理记录为准，因为三方都从它取数。
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <img src="{{ chart_paths.severity_pie }}" alt="严重程度分布">
+      <div class="cap">图1：记录最高违规严重程度分布（饼图）</div>
+    </div>
+    <div class="chart-box">
+      <img src="{{ chart_paths.rules_bar }}" alt="规则违规排行">
+      <div class="cap">图2：各安全规则违规次数排行（横向柱状图）</div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <img src="{{ chart_paths.source_compare }}" alt="来源对比">
+      <div class="cap">图3：不同数据来源的校验通过情况对比</div>
+    </div>
+    <div class="chart-box">
+      <img src="{{ chart_paths.label_conflict }}" alt="标签冲突">
+      <div class="cap">图4：标签冲突自动复核置信度分布</div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <img src="{{ chart_paths.version_trend }}" alt="版本趋势">
+      <div class="cap">图5：5-6月数据修改趋势（折线图）</div>
+    </div>
+    <div class="chart-box">
+      <img src="{{ chart_paths.operator_perf }}" alt="录入人对比">
+      <div class="cap">图6：各录入人处理量与违规率对比（双轴）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 安全规则详情 ===== -->
+<section>
+  <h2>🛡️ 安全规则违规详情 + 漏配原因（人话版）</h2>
+  <div class="plain-talk">
+    <b>怎么看这张表：</b>"违反的原因"列我都翻译成大白话了，没写 contract_amount、biz_tag_1
+    这种字段缩写，不懂代码的同事直接看就行。"规则到底是什么意思"列是规则本身的普通话解释，
+    数据标注负责人可以直接复制粘贴给新人做培训材料。
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>规则编号</th><th>规则名称</th><th>严重等级</th>
+        <th>违规次数</th><th>违规占比</th><th>规则到底是什么意思</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rule_rows %}
+      <tr>
+        <td><span class="badge">{{ r.rule_id }}</span></td>
+        <td>{{ r.rule_name }}</td>
+        <td><span class="sev sev-{{ r.severity }}">{{ r.severity_cn }}</span></td>
+        <td><b>{{ r.violation_count }}</b></td>
+        <td>{{ r.violation_rate_pct }}%</td>
+        <td>{{ r.chinese_explanation }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<!-- ===== 典型案例：异常回溯链 ===== -->
+<section>
+  <h2>🔗 典型案例 · 顺着一条异常往回查（验收演示用）</h2>
+  <div class="plain-talk">
+    <b>验收时怎么用：</b>从下方任一条"异常记录"点进去，依次能看到
+    <b>①触发了哪些安全规则 → ②每条规则为什么没通过（人话） → ③建议怎么处理 → ④这条记录修改过几次、谁改的、改了啥</b>。
+    四个环节都能对上才算这条链路打通了。
+  </div>
+
+  {% for case in showcase_cases %}
+  <div class="trace-box">
+    <div class="trace-head">
+      <div>
+        <span class="rid">{{ case.record_id }}</span>
+        <span style="margin-left:12px; color:var(--c-sub); font-size:13px;">
+          合同编号：{{ case.contract_no or '（缺失）' }}
+          {% if case.party_a %} · 甲方：{{ case.party_a }}{% endif %}
+        </span>
+      </div>
+      <div>
+        {% if case.worst_severity %}
+        <span class="sev sev-{{ case.worst_severity }}">{{ case.worst_severity_cn }}</span>
+        {% endif %}
+        {% if case.data_source %}
+        <span class="badge" style="margin-left:8px;">来源：{{ case.data_source }}</span>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">1</div>
+      <div class="content">
+        <div class="t">处理快照</div>
+        <div class="d">
+          触发安全规则 <b>{{ case.violation_count }}</b> 条，
+          {% if case.has_label_conflict %}
+          <span style="color:var(--c-sev-high);">同时存在标签冲突</span>，
+          {% endif %}
+          处理记录编号：<code>{{ case.record_id }}</code>，
+          录入人：{{ case.operator }}，
+          复核时间：{{ case.checked_at }}。
+        </div>
+      </div>
+    </div>
+
+    <h3>🛑 安全规则违反明细（能查到原因 + 处理意见）</h3>
+    {% for act in case.handling_actions %}
+    <div class="step">
+      <div class="dot red">!</div>
+      <div class="content">
+        <div class="t">
+          <span class="badge">{{ act.rule_id }}</span>
+          <span class="sev sev-{{ {'严重':'critical','高':'high','中':'medium','低':'low'}[act.severity_cn] }}"
+                style="margin-left:6px;">{{ act.severity_cn }}</span>
+          <b style="margin-left:8px;">{{ act.rule_name }}</b>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>为什么没通过：</b>{{ act.why_it_failed }}
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>这条规则到底是啥意思：</b>{{ act.what_the_rule_means }}
+        </div>
+        <div class="action-card">
+          <div class="title">💡 建议处理方式</div>
+          <div class="body">{{ act.suggested_fix }}</div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% if case.label_info %}
+    <h3>🏷️ 标签冲突复核情况</h3>
+    <div class="step">
+      <div class="dot orange">L</div>
+      <div class="content">
+        <div class="t">{{ case.label_info.conflict_type }}</div>
+        <div class="d">
+          方案A：{{ case.label_info.tag_a }} &nbsp;&nbsp; vs &nbsp;&nbsp;
+          方案B：{{ case.label_info.tag_b }} &nbsp;&nbsp;
+          <span class="badge">来源：{{ case.label_info.source }}</span>
+        </div>
+        <div class="d" style="margin-top:6px;">
+          <b>自动建议：</b>{{ case.label_info.suggested_final_tag_name or '（需人工确认）' }}
+          （置信度 <b>{{ case.label_info.confidence_level }}</b>）
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>判断依据：</b>{{ case.label_info.auto_review_reason }}
+        </div>
+        <div class="d" style="margin-top:4px;">
+          <b>复核状态：</b>
+          <span class="sev sev-{{ 'low' if case.label_info.review_status=='建议采纳' else 'medium' }}">
+            {{ case.label_info.review_status }}
+          </span>
+          &nbsp;&nbsp;分配给：<b>{{ case.label_info.reviewer_assigned }}</b>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if case.version_chain %}
+    <h3>📜 版本追踪（这条记录改过几次、谁改的）</h3>
+    <div class="ver-timeline">
+      {% for v in case.version_chain %}
+      <div class="v">
+        <div class="vm">
+          <b>{{ v.version_no }}</b> · {{ v.time }} · 修改人：{{ v.who }}
+        </div>
+        <div class="vc">
+          变更摘要：<b>{{ v.what }}</b>
+          {% if v.fields and v.fields != '（未记录字段）' %}
+          &nbsp;&nbsp;<span style="color:var(--c-sub);">（影响字段：{{ v.fields }}）</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</section>
+
+<!-- ===== 处理建议汇总 ===== -->
+<section>
+  <h2>✅ 下一步处理建议（按优先级）</h2>
+  <div class="two-col">
+    <div>
+      <h3>P0 · 今天必须做</h3>
+      <div class="action-card">
+        <div class="title">严重违规 {{ critical_count }} 条立即驳回</div>
+        <div class="body">
+          合同编号为空、甲方名称缺失等骨架字段出错的记录，
+          退回给 <b>{{ p0_operators }}</b> 等录入人对照原始合同补齐，
+          不允许进入评测环节。
+        </div>
+      </div>
+      <div class="action-card">
+        <div class="title">重复合同编号 {{ dup_count }} 组核对</div>
+        <div class="body">
+          同一合同出现多次的，对比金额字段是否一致，确认是重复录入还是编号写错，
+          保留一份正确的，其余标记作废。
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>P1 · 本周内完成</h3>
+      <div class="action-card">
+        <div class="title">补录原因补齐 {{ p1_supplement }} 条</div>
+        <div class="body">状态标了"补录"但没写原因的，本周内补说明，审计要用到。</div>
+      </div>
+      <div class="action-card">
+        <div class="title">人工裁定标签冲突 {{ summary.conflict_need_manual }} 条</div>
+        <div class="body">分配给李明/王芳/赵刚三位复核主管，24号前完成即可。</div>
+      </div>
+      <div class="action-card">
+        <div class="title">旧表迁移专项整改</div>
+        <div class="body">旧表来源的出错率是人工录入的2倍以上，建议下周安排专项清洗。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  批量推理缓存复盘系统 · 评测周专项报告 · 生成时间 {{ report_full_time }}
+  <br>本报告所有数据均基于 <code>unified_processing_records.xlsx</code> 统一处理记录生成
+</footer>
+
+</div>
+</body>
+</html>

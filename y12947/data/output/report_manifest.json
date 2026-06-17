@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-06-18 04:07:41",
+  "report_path": "/Users/mac/pro/solo/workspaces/y12947/data/output/batch_cache_review_report.html",
+  "total_records": 140,
+  "pass_rate": 5.7,
+  "showcase_case_ids": [
+    "OLD0012",
+    "REC0004",
+    "OLD0001",
+    "OLD0004"
+  ],
+  "chart_files": {
+    "severity_pie": "chart_severity_distribution.png",
+    "rules_bar": "chart_rule_violations.png",
+    "source_compare": "chart_source_comparison.png",
+    "label_conflict": "chart_label_conflict.png",
+    "version_trend": "chart_version_trend.png",
+    "operator_perf": "chart_operator_performance.png"
+  },
+  "data_sources": {
+    "人工录入": 52,
+    "旧表迁移": 47,
+    "接口同步": 21,
+    "旧表迁移-Excel2003版": 15,
+    "重复录入-人工复核发现": 5
+  },
+  "split_batches": {
+    "A批次": 50,
+    "B批次": 50,
+    "C批次": 50
+  },
+  "unified_record_source": "data/processed/unified_processing_records.xlsx"
+}
