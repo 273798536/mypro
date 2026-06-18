@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: #f6f8fb;
+    color: #0f172a;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-card shadow-card p-5 transition-all duration-200 hover:shadow-card-hover;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-md font-medium text-sm transition-all duration-150;
+  }
+  .btn-primary {
+    @apply btn bg-navy-600 text-white hover:bg-navy-700 active:scale-[0.98];
+  }
+  .btn-secondary {
+    @apply btn bg-slatex-100 text-slatex-800 hover:bg-slatex-200;
+  }
+  .btn-amber {
+    @apply btn bg-amber text-white hover:bg-amber-600;
+  }
+  .btn-jade {
+    @apply btn bg-jade text-white hover:bg-jade-600;
+  }
+  .btn-ghost {
+    @apply btn text-slatex-600 hover:bg-slatex-100;
+  }
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-pending {
+    @apply badge;
+    background-color: #fde68a;
+    color: #b45309;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+  .badge-reviewing {
+    @apply badge;
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    border: 1px solid #93c5fd;
+  }
+  .badge-resolved {
+    @apply badge;
+    background-color: #a7f3d0;
+    color: #047857;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+  .badge-confirmed {
+    @apply badge;
+    background-color: #dce8f2;
+    color: #1e3a5f;
+    border: 1px solid #b6d0e3;
+  }
+  .page-title {
+    @apply font-serif text-2xl font-bold text-navy-800 tracking-wide;
+  }
+  .section-title {
+    @apply font-serif text-lg font-semibold text-navy-700;
+  }
+  .label {
+    @apply text-xs font-medium text-slatex-500 uppercase tracking-wider;
+  }
+  .mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  .muted {
+    @apply text-slatex-500;
+  }
+  .scroll-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+}
