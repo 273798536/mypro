@@ -1,0 +1,16 @@
+{
+  "name": "opinion-clustering-manual-review",
+  "version": "1.0.0",
+  "description": "舆情聚类人工改判系统",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "start": "cd backend && npm start"
+  },
+  "keywords": ["舆情", "聚类", "人工改判"],
+  "author": "",
+  "license": "ISC"
+}
