@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+
+:root {
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #1e293b;
+  background-color: #f8fafc;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1280px;
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 text-sm font-medium border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition-colors;
+  }
+  .btn-primary {
+    @apply px-4 py-2 text-sm font-medium bg-brand text-white hover:bg-brand-light transition-colors border border-brand;
+  }
+  .btn-danger {
+    @apply px-4 py-2 text-sm font-medium bg-white text-anomaly-critical border border-anomaly-critical hover:bg-red-50 transition-colors;
+  }
+  .card {
+    @apply bg-white border border-slate-200;
+  }
+  .input-field {
+    @apply px-3 py-2 text-sm border border-slate-300 bg-white focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand;
+  }
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 text-xs font-medium;
+  }
+  .table-cell {
+    @apply px-3 py-2 text-sm text-slate-700 border-b border-slate-100;
+  }
+  .section-title {
+    @apply font-serif text-base font-semibold text-brand mb-3;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
