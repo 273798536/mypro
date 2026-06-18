@@ -1,0 +1,373 @@
+{
+  "report_id": "report_41dbf3efd07c",
+  "generated_at": "2026-06-18T13:53:53.033384",
+  "case_id": "test_full_workflow",
+  "material_versions": [
+    {
+      "version_id": "mat_e5d2a952c677",
+      "material_hash": "45cabb2a8e2aeb8016455359b1cf0bb99c6265da5b61274754418e531dc01402",
+      "file_name": "V202401150001__add_user_index.sql",
+      "imported_at": "2026-06-18T13:53:52.242960",
+      "material_type": "migration_script",
+      "source_ref": {
+        "file_name": "V202401150001__add_user_index.sql",
+        "line_number": null,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "自动导入: migration_script",
+        "raw_content": null
+      },
+      "metadata": {}
+    },
+    {
+      "version_id": "mat_3c6f6075e6c7",
+      "material_hash": "1d3ec5a7189be093603176cc22305d250aade93e68447b9f4a526ab40acb5eaf",
+      "file_name": "chat_backup.json",
+      "imported_at": "2026-06-18T13:53:52.354945",
+      "material_type": "chat_history",
+      "source_ref": {
+        "file_name": "chat_backup.json",
+        "line_number": null,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "自动导入: chat_history",
+        "raw_content": null
+      },
+      "metadata": {}
+    },
+    {
+      "version_id": "mat_753042f98f10",
+      "material_hash": "8879d646cf31a5f9534bce6bd048f7db2dce09f11b9837c73c9b0f464542b674",
+      "file_name": "index_suggestions.txt",
+      "imported_at": "2026-06-18T13:53:52.407159",
+      "material_type": "index_suggestion",
+      "source_ref": {
+        "file_name": "index_suggestions.txt",
+        "line_number": null,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "自动导入: index_suggestion",
+        "raw_content": null
+      },
+      "metadata": {}
+    },
+    {
+      "version_id": "mat_e1ce9638edbd",
+      "material_hash": "989c20a87f4d3e20b8833e09206502ce06d9a6c1435ba379151628d2fc463296",
+      "file_name": "rollback_log.txt",
+      "imported_at": "2026-06-18T13:53:52.604861",
+      "material_type": "rollback_log",
+      "source_ref": {
+        "file_name": "rollback_log.txt",
+        "line_number": null,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "自动导入: rollback_log",
+        "raw_content": null
+      },
+      "metadata": {}
+    },
+    {
+      "version_id": "mat_2dc4b95b73d6",
+      "material_hash": "a80ff0f99088a63e44c65585a5b75b3c860f26b51ee3e7d802147bfc200106d8",
+      "file_name": "slow_query.log",
+      "imported_at": "2026-06-18T13:53:52.614432",
+      "material_type": "slow_query_log",
+      "source_ref": {
+        "file_name": "slow_query.log",
+        "line_number": null,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "自动导入: slow_query_log",
+        "raw_content": null
+      },
+      "metadata": {}
+    }
+  ],
+  "slow_query_findings": [
+    {
+      "finding_id": "sq_068e80b071e1",
+      "query": "SELECT * FROM orders WHERE user_name LIKE '%zhang%' AND status = 'paid' ORDER BY created_at DESC;",
+      "execution_time_ms": 12567.8,
+      "rows_examined": 1500000,
+      "root_cause": "前导通配符导致索引失效",
+      "severity": "critical",
+      "source_ref": {
+        "file_name": "slow_query.log",
+        "line_number": 2,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "慢查询, 执行时间: 12568ms",
+        "raw_content": "SELECT * FROM orders WHERE user_name LIKE '%zhang%' AND status = 'paid' ORDER BY created_at DESC;"
+      },
+      "related_migration": "mig_e045b3eb739b",
+      "confidence": 0.95,
+      "sre_review_required": true
+    },
+    {
+      "finding_id": "sq_920896df62ed",
+      "query": "SELECT o.id, o.amount, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.status = 'paid' ORDER BY o.created_at DESC;",
+      "execution_time_ms": 5234.5,
+      "rows_examined": 500000,
+      "root_cause": "全量排序未分页",
+      "severity": "high",
+      "source_ref": {
+        "file_name": "slow_query.log",
+        "line_number": 7,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "慢查询, 执行时间: 5234ms",
+        "raw_content": "SELECT o.id, o.amount, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.status = 'paid' ORDER BY o.created_at DESC;"
+      },
+      "related_migration": "mig_e045b3eb739b",
+      "confidence": 0.9,
+      "sre_review_required": true
+    },
+    {
+      "finding_id": "sq_dc019fba417a",
+      "query": "SELECT id, name, email FROM users WHERE id = 12345 OR email = 'test@example.com';",
+      "execution_time_ms": 1234.5,
+      "rows_examined": 50000,
+      "root_cause": "OR条件可能导致索引失效",
+      "severity": "medium",
+      "source_ref": {
+        "file_name": "slow_query.log",
+        "line_number": 12,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "慢查询, 执行时间: 1234ms",
+        "raw_content": "SELECT id, name, email FROM users WHERE id = 12345 OR email = 'test@example.com';"
+      },
+      "related_migration": "mig_e045b3eb739b",
+      "confidence": 0.85,
+      "sre_review_required": false
+    },
+    {
+      "finding_id": "sq_8184fff937fd",
+      "query": "SELECT * FROM products WHERE category = 'electronics' AND price < 1000 ORDER BY price ASC LIMIT 20;",
+      "execution_time_ms": 800.0,
+      "rows_examined": 10000,
+      "root_cause": "OR条件可能导致索引失效",
+      "severity": "medium",
+      "source_ref": {
+        "file_name": "slow_query.log",
+        "line_number": 17,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "慢查询, 执行时间: 800ms",
+        "raw_content": "SELECT * FROM products WHERE category = 'electronics' AND price < 1000 ORDER BY price ASC LIMIT 20;"
+      },
+      "related_migration": null,
+      "confidence": 0.85,
+      "sre_review_required": false
+    }
+  ],
+  "rollback_records": [
+    {
+      "record_id": "rb_a09808683a4e",
+      "migration_script_id": "V202401150001__add_user_index",
+      "rollback_reason": "00:01] INFO: Reason: 索引创建后导致查询性能急剧下降，部分查询扫描行数增加10倍",
+      "rollback_time": "2024-01-15T09:00:00",
+      "affected_queries": [
+        "00:02] INFO: Affected query: SELECT * FROM users WHERE name LIKE '%wang%'",
+        "00:03] INFO: Affected query: SELECT id, name FROM users WHERE status = 'active' ORDER BY created_at DESC"
+      ],
+      "source_ref": {
+        "file_name": "rollback_log.txt",
+        "line_number": 1,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "回滚记录: 00:01] INFO: Reason: 索引创建后导致查询性能急剧下降，部分查询扫描行数增加10倍",
+        "raw_content": "00:02] INFO: Affected query: SELECT * FROM users WHERE name LIKE '%wang%'\n00:03] INFO: Affected query: SELECT id, name FROM users WHERE status = 'active' ORDER BY created_at DESC"
+      },
+      "sre_review_required": true
+    },
+    {
+      "record_id": "rb_a1fa4e5e6218",
+      "migration_script_id": "V202401150002__modify_orders_schema",
+      "rollback_reason": "30:01] INFO: Reason: 数据丢失风险 - 字段类型变更可能导致原有数据截断",
+      "rollback_time": "2024-01-15T14:30:00",
+      "affected_queries": [
+        "30:02] INFO: Affected query: INSERT INTO orders (user_id, amount, status) VALUES (123, 99.99, 'pending')",
+        "30:03] INFO: Affected query: UPDATE orders SET status = 'paid' WHERE id = 456",
+        "30:04] INFO: Affected query: SELECT * FROM orders WHERE created_at > '2024-01-01'",
+        "30:05] INFO: Affected query: DELETE FROM orders WHERE status = 'cancelled' AND created_at < '2023-01-01'",
+        "30:06] INFO: Affected query: SELECT COUNT(*) FROM orders GROUP BY status",
+        "30:07] INFO: Affected query: SELECT o.*, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.amount > 1000"
+      ],
+      "source_ref": {
+        "file_name": "rollback_log.txt",
+        "line_number": 7,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "回滚记录: 30:01] INFO: Reason: 数据丢失风险 - 字段类型变更可能导致原有数据截断",
+        "raw_content": "30:02] INFO: Affected query: INSERT INTO orders (user_id, amount, status) VALUES (123, 99.99, 'pending')\n30:03] INFO: Affected query: UPDATE orders SET status = 'paid' WHERE id = 456\n30:04] INFO: Affected query: SELECT * FROM orders WHERE created_at > '2024-01-01'\n30:05] INFO: Affected query: DELETE FROM orders WHERE status = 'cancelled' AND created_at < '2023-01-01'\n30:06] INFO: Affected query: SELECT COUNT(*) FROM orders GROUP BY status\n30:07] INFO: Affected query: SELECT o.*, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.amount > 1000"
+      },
+      "sre_review_required": true
+    }
+  ],
+  "index_suggestions": [
+    {
+      "suggestion_id": "idx_8d5d2bf6740b",
+      "table_name": "orders",
+      "suggested_index": "Suggested Index: CREATE INDEX idx_orders_status_created ON orders (status, created_at DESC)",
+      "benefit_description": "可将状态+时间范围查询性能提升5-10倍，避免全表扫描",
+      "source_ref": {
+        "file_name": "index_suggestions.txt",
+        "line_number": 1,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "索引建议: orders",
+        "raw_content": "Suggested Index: CREATE INDEX idx_orders_status_created ON orders (status, created_at DESC)"
+      },
+      "evidence_source_refs": [
+        {
+          "file_name": "slow_query.log",
+          "line_number": 2,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "慢查询, 执行时间: 12568ms",
+          "raw_content": "SELECT * FROM orders WHERE user_name LIKE '%zhang%' AND status = 'paid' ORDER BY created_at DESC;"
+        },
+        {
+          "file_name": "slow_query.log",
+          "line_number": 7,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "慢查询, 执行时间: 5234ms",
+          "raw_content": "SELECT o.id, o.amount, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.status = 'paid' ORDER BY o.created_at DESC;"
+        },
+        {
+          "file_name": "slow_query.log",
+          "line_number": 4,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "查询证据",
+          "raw_content": "SELECT * FROM orders WHERE user_name LIKE '%zhang%' AND status = 'paid' ORDER BY created_at DESC;"
+        },
+        {
+          "file_name": "slow_query.log",
+          "line_number": 9,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "查询证据",
+          "raw_content": "SELECT o.id, o.amount, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.status = 'paid' ORDER BY o.created_at DESC;"
+        }
+      ],
+      "sre_review_required": false
+    },
+    {
+      "suggestion_id": "idx_a8548a4aab42",
+      "table_name": "users",
+      "suggested_index": "Suggested Index: CREATE INDEX idx_users_email_status ON users (email, status)",
+      "benefit_description": "解决OR条件导致的索引失效问题，查询可走复合索引",
+      "source_ref": {
+        "file_name": "index_suggestions.txt",
+        "line_number": 6,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "索引建议: users",
+        "raw_content": "Suggested Index: CREATE INDEX idx_users_email_status ON users (email, status)"
+      },
+      "evidence_source_refs": [
+        {
+          "file_name": "slow_query.log",
+          "line_number": 7,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "慢查询, 执行时间: 5234ms",
+          "raw_content": "SELECT o.id, o.amount, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.status = 'paid' ORDER BY o.created_at DESC;"
+        },
+        {
+          "file_name": "slow_query.log",
+          "line_number": 12,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "慢查询, 执行时间: 1234ms",
+          "raw_content": "SELECT id, name, email FROM users WHERE id = 12345 OR email = 'test@example.com';"
+        },
+        {
+          "file_name": "slow_query.log",
+          "line_number": 9,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "查询证据",
+          "raw_content": "SELECT o.id, o.amount, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.status = 'paid' ORDER BY o.created_at DESC;"
+        },
+        {
+          "file_name": "slow_query.log",
+          "line_number": 14,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "查询证据",
+          "raw_content": "SELECT id, name, email FROM users WHERE id = 12345 OR email = 'test@example.com';"
+        }
+      ],
+      "sre_review_required": false
+    },
+    {
+      "suggestion_id": "idx_a92fc9031db0",
+      "table_name": "products",
+      "suggested_index": "Suggested Index: CREATE INDEX idx_products_category_price ON products (category, price)",
+      "benefit_description": "覆盖常用的分类+价格查询场景，无需回表",
+      "source_ref": {
+        "file_name": "index_suggestions.txt",
+        "line_number": 12,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "索引建议: products",
+        "raw_content": "Suggested Index: CREATE INDEX idx_products_category_price ON products (category, price)"
+      },
+      "evidence_source_refs": [
+        {
+          "file_name": "slow_query.log",
+          "line_number": 17,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "慢查询, 执行时间: 800ms",
+          "raw_content": "SELECT * FROM products WHERE category = 'electronics' AND price < 1000 ORDER BY price ASC LIMIT 20;"
+        },
+        {
+          "file_name": "slow_query.log",
+          "line_number": 19,
+          "sheet_name": null,
+          "image_name": null,
+          "note": "查询证据",
+          "raw_content": "SELECT * FROM products WHERE category = 'electronics' AND price < 1000 ORDER BY price ASC LIMIT 20;"
+        }
+      ],
+      "sre_review_required": false
+    }
+  ],
+  "migration_scripts": [
+    {
+      "script_id": "mig_e045b3eb739b",
+      "file_name": "V202401150001__add_user_index.sql",
+      "version": "202401150001",
+      "sql_content": "-- 为users表添加性能优化索引\n-- 版本: V202401150001\n-- 作者: SRE Team\n-- 日期: 2024-01-15\n\nCREATE INDEX idx_users_name ON users (name);\nCREATE INDEX idx_users_email ON users (email);\nCREATE INDEX idx_users_status_created ON users (status, created_at DESC);\n\n-- 为orders表添加复合索引\nCREATE INDEX idx_orders_user_status ON orders (user_id, status);\nCREATE INDEX idx_orders_created_amount ON orders (created_at, amount DESC);\n\nANALYZE TABLE users;\nANALYZE TABLE orders;\n",
+      "source_ref": {
+        "file_name": "V202401150001__add_user_index.sql",
+        "line_number": null,
+        "sheet_name": null,
+        "image_name": null,
+        "note": "迁移脚本版本: 202401150001",
+        "raw_content": "-- 为users表添加性能优化索引\n-- 版本: V202401150001\n-- 作者: SRE Team\n-- 日期: 2024-01-15\n\nCREATE INDEX idx_users_name ON users (name);\nCREATE INDEX idx_users_email ON users (email);\nCREATE INDEX idx_users_status_created ON users (status, created_at DESC);\n\n-- 为orders表添加复合索引\nCREATE INDEX idx_orders_user_status ON orders (user_id, status);\nCREATE INDEX idx_orders_created_amount ON orders (created_at, amount DESC);\n\nANALYZE TABLE users;\nANALYZE TABLE orders;\n"
+      },
+      "linked_findings": [
+        "sq_068e80b071e1",
+        "sq_920896df62ed",
+        "sq_dc019fba417a"
+      ],
+      "linked_rollbacks": []
+    }
+  ],
+  "summary": {
+    "total_findings": 9,
+    "safe_to_use_count": 5,
+    "needs_sre_review_count": 4,
+    "slow_queries_analyzed": 4,
+    "rollbacks_found": 2,
+    "index_suggestions_count": 3,
+    "migrations_reviewed": 1
+  }
+}

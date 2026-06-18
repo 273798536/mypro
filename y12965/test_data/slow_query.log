@@ -1,0 +1,19 @@
+# Time: 2024-01-15T10:30:00.123456
+# User@Host: app_user[app_user] @ localhost []
+# Query_time: 12.5678  Lock_time: 0.0001 Rows_sent: 100  Rows_examined: 1500000
+SELECT * FROM orders WHERE user_name LIKE '%zhang%' AND status = 'paid' ORDER BY created_at DESC;
+
+# Time: 2024-01-15T10:35:00.654321
+# User@Host: app_user[app_user] @ localhost []
+# Query_time: 5.2345  Lock_time: 0.0002 Rows_sent: 50  Rows_examined: 500000
+SELECT o.id, o.amount, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.status = 'paid' ORDER BY o.created_at DESC;
+
+# Time: 2024-01-15T10:40:00.987654
+# User@Host: app_user[app_user] @ localhost []
+# Query_time: 1.2345  Lock_time: 0.0001 Rows_sent: 10  Rows_examined: 50000
+SELECT id, name, email FROM users WHERE id = 12345 OR email = 'test@example.com';
+
+# Time: 2024-01-15T10:45:00.111111
+# User@Host: app_user[app_user] @ localhost []
+# Query_time: 0.8000  Lock_time: 0.0000 Rows_sent: 20  Rows_examined: 10000
+SELECT * FROM products WHERE category = 'electronics' AND price < 1000 ORDER BY price ASC LIMIT 20;

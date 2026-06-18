@@ -1,0 +1,2 @@
+[console_scripts]
+sql-regression = sql_injection_regression.cli:app

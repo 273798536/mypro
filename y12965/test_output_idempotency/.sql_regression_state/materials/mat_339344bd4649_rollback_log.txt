@@ -1,0 +1,15 @@
+[2024-01-15 09:00:00] INFO: Rollback started - script_id: V202401150001__add_user_index
+[2024-01-15 09:00:01] INFO: Reason: 索引创建后导致查询性能急剧下降，部分查询扫描行数增加10倍
+[2024-01-15 09:00:02] INFO: Affected query: SELECT * FROM users WHERE name LIKE '%wang%'
+[2024-01-15 09:00:03] INFO: Affected query: SELECT id, name FROM users WHERE status = 'active' ORDER BY created_at DESC
+[2024-01-15 09:00:05] INFO: Rollback completed successfully
+
+[2024-01-15 14:30:00] INFO: Rollback started - script_id: V202401150002__modify_orders_schema
+[2024-01-15 14:30:01] INFO: Reason: 数据丢失风险 - 字段类型变更可能导致原有数据截断
+[2024-01-15 14:30:02] INFO: Affected query: INSERT INTO orders (user_id, amount, status) VALUES (123, 99.99, 'pending')
+[2024-01-15 14:30:03] INFO: Affected query: UPDATE orders SET status = 'paid' WHERE id = 456
+[2024-01-15 14:30:04] INFO: Affected query: SELECT * FROM orders WHERE created_at > '2024-01-01'
+[2024-01-15 14:30:05] INFO: Affected query: DELETE FROM orders WHERE status = 'cancelled' AND created_at < '2023-01-01'
+[2024-01-15 14:30:06] INFO: Affected query: SELECT COUNT(*) FROM orders GROUP BY status
+[2024-01-15 14:30:07] INFO: Affected query: SELECT o.*, u.name FROM orders o JOIN users u ON o.user_id = u.id WHERE o.amount > 1000
+[2024-01-15 14:30:10] INFO: Rollback completed successfully

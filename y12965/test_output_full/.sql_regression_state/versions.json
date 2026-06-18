@@ -1,0 +1,82 @@
+[
+  {
+    "version_id": "mat_e5d2a952c677",
+    "material_hash": "45cabb2a8e2aeb8016455359b1cf0bb99c6265da5b61274754418e531dc01402",
+    "file_name": "V202401150001__add_user_index.sql",
+    "imported_at": "2026-06-18T13:53:52.242960",
+    "material_type": "migration_script",
+    "source_ref": {
+      "file_name": "V202401150001__add_user_index.sql",
+      "line_number": null,
+      "sheet_name": null,
+      "image_name": null,
+      "note": "自动导入: migration_script",
+      "raw_content": null
+    },
+    "metadata": {}
+  },
+  {
+    "version_id": "mat_3c6f6075e6c7",
+    "material_hash": "1d3ec5a7189be093603176cc22305d250aade93e68447b9f4a526ab40acb5eaf",
+    "file_name": "chat_backup.json",
+    "imported_at": "2026-06-18T13:53:52.354945",
+    "material_type": "chat_history",
+    "source_ref": {
+      "file_name": "chat_backup.json",
+      "line_number": null,
+      "sheet_name": null,
+      "image_name": null,
+      "note": "自动导入: chat_history",
+      "raw_content": null
+    },
+    "metadata": {}
+  },
+  {
+    "version_id": "mat_753042f98f10",
+    "material_hash": "8879d646cf31a5f9534bce6bd048f7db2dce09f11b9837c73c9b0f464542b674",
+    "file_name": "index_suggestions.txt",
+    "imported_at": "2026-06-18T13:53:52.407159",
+    "material_type": "index_suggestion",
+    "source_ref": {
+      "file_name": "index_suggestions.txt",
+      "line_number": null,
+      "sheet_name": null,
+      "image_name": null,
+      "note": "自动导入: index_suggestion",
+      "raw_content": null
+    },
+    "metadata": {}
+  },
+  {
+    "version_id": "mat_e1ce9638edbd",
+    "material_hash": "989c20a87f4d3e20b8833e09206502ce06d9a6c1435ba379151628d2fc463296",
+    "file_name": "rollback_log.txt",
+    "imported_at": "2026-06-18T13:53:52.604861",
+    "material_type": "rollback_log",
+    "source_ref": {
+      "file_name": "rollback_log.txt",
+      "line_number": null,
+      "sheet_name": null,
+      "image_name": null,
+      "note": "自动导入: rollback_log",
+      "raw_content": null
+    },
+    "metadata": {}
+  },
+  {
+    "version_id": "mat_2dc4b95b73d6",
+    "material_hash": "a80ff0f99088a63e44c65585a5b75b3c860f26b51ee3e7d802147bfc200106d8",
+    "file_name": "slow_query.log",
+    "imported_at": "2026-06-18T13:53:52.614432",
+    "material_type": "slow_query_log",
+    "source_ref": {
+      "file_name": "slow_query.log",
+      "line_number": null,
+      "sheet_name": null,
+      "image_name": null,
+      "note": "自动导入: slow_query_log",
+      "raw_content": null
+    },
+    "metadata": {}
+  }
+]

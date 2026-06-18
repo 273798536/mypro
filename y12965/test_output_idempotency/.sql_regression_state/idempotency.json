@@ -1,0 +1,7 @@
+{
+  "migration_script:V202401150001__add_user_index.sql:45cabb2a8e2aeb8016455359b1cf0bb99c6265da5b61274754418e531dc01402": "mat_8864f2c495b8",
+  "chat_history:chat_backup.json:1d3ec5a7189be093603176cc22305d250aade93e68447b9f4a526ab40acb5eaf": "mat_58340f5f0e7c",
+  "index_suggestion:index_suggestions.txt:8879d646cf31a5f9534bce6bd048f7db2dce09f11b9837c73c9b0f464542b674": "mat_f62b29dd72ac",
+  "rollback_log:rollback_log.txt:989c20a87f4d3e20b8833e09206502ce06d9a6c1435ba379151628d2fc463296": "mat_339344bd4649",
+  "slow_query_log:slow_query.log:a80ff0f99088a63e44c65585a5b75b3c860f26b51ee3e7d802147bfc200106d8": "mat_7d837f0c706b"
+}

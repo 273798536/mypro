@@ -1,0 +1,15 @@
+Table: orders
+Suggested Index: CREATE INDEX idx_orders_status_created ON orders (status, created_at DESC)
+Benefit: 可将状态+时间范围查询性能提升5-10倍，避免全表扫描
+Evidence: SELECT * FROM orders WHERE status = 'paid' ORDER BY created_at DESC
+
+Table: users
+Suggested Index: CREATE INDEX idx_users_email_status ON users (email, status)
+Benefit: 解决OR条件导致的索引失效问题，查询可走复合索引
+Evidence: SELECT id, name, email FROM users WHERE id = 12345 OR email = 'test@example.com'
+Evidence: SELECT * FROM users WHERE email LIKE 'user%@example.com' AND status = 'active'
+
+Table: products
+Suggested Index: CREATE INDEX idx_products_category_price ON products (category, price)
+Benefit: 覆盖常用的分类+价格查询场景，无需回表
+Evidence: SELECT * FROM products WHERE category = 'electronics' AND price < 1000 ORDER BY price ASC
