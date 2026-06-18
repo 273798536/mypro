@@ -110,10 +110,10 @@ def process_uploaded_file(uploaded_file, data_category=None, is_old_version=Fals
 
 
 def _parse_channel_rows(rows, columns, uploaded_file, is_old_version):
-    ch_col = find_column(columns, ['通道', 'channel', '声道', 'CH', 'ch'])
-    track_col = find_column(columns, ['曲目', 'track', '歌曲', '名称', 'name'])
-    tc_col = find_column(columns, ['时码', '时间码', 'timecode', 'TC', 'tc', '起始', 'start'])
-    note_col = find_column(columns, ['备注', '说明', 'note', 'remark'])
+    ch_col = find_column(columns, ['通道名称', '通道名', 'channel_name', 'channel', '通道', '声道', 'CH', 'ch'])
+    track_col = find_column(columns, ['对应曲目', '曲目名称', '曲目名', '曲目', 'track_name', 'track', '歌曲名', '歌曲', '名称', 'name'], exclude=[ch_col] if ch_col else None)
+    tc_col = find_column(columns, ['起始时码', '起始时间', '时码', '时间码', 'timecode', 'TC', 'tc', '起始', 'start'], exclude=[ch_col, track_col])
+    note_col = find_column(columns, ['备注', '说明', 'note', 'remark'], exclude=[ch_col, track_col, tc_col])
 
     for row_data in rows:
         channel_name = row_data.get(ch_col, '') if ch_col else ''
@@ -143,10 +143,10 @@ def _parse_channel_rows(rows, columns, uploaded_file, is_old_version):
 
 
 def _parse_track_rows(rows, columns, uploaded_file):
-    name_col = find_column(columns, ['曲目', 'track', '歌曲', '名称', 'name', '曲名'])
-    num_col = find_column(columns, ['编号', '序号', 'number', 'no', 'track_num', '序号'])
-    dur_col = find_column(columns, ['时长', 'duration', '长度', '时间'])
-    note_col = find_column(columns, ['备注', '说明', 'note', 'remark'])
+    name_col = find_column(columns, ['曲目名称', '曲目名', '曲名', '曲目', 'track_name', 'track', '歌曲名', '歌曲', '名称', 'name'])
+    num_col = find_column(columns, ['曲目编号', '曲目序号', 'track_num', '编号', '序号', 'number', 'no'], exclude=[name_col] if name_col else None)
+    dur_col = find_column(columns, ['曲目时长', '时长', 'duration', '长度', '时间'], exclude=[name_col, num_col])
+    note_col = find_column(columns, ['备注', '说明', 'note', 'remark'], exclude=[name_col, num_col, dur_col])
 
     for row_data in rows:
         track_name = row_data.get(name_col, '') if name_col else ''
@@ -175,10 +175,10 @@ def _parse_track_rows(rows, columns, uploaded_file):
 
 
 def _parse_timecode_rows(rows, columns, uploaded_file):
-    name_col = find_column(columns, ['名称', 'name', '条目', '标题', 'title', '曲目'])
-    tc_col = find_column(columns, ['时码', '时间码', 'timecode', 'TC', 'tc', '时间'])
-    ch_col = find_column(columns, ['通道', 'channel', '声道', '关联'])
-    note_col = find_column(columns, ['备注', '说明', 'note', 'remark'])
+    tc_col = find_column(columns, ['起始时码', '时码', '时间码', 'timecode', 'TC', 'tc', '时间'])
+    name_col = find_column(columns, ['条目名称', '条目', '名称', 'name', '标题', 'title', '曲目'], exclude=[tc_col] if tc_col else None)
+    ch_col = find_column(columns, ['关联通道', '对应通道', '通道', 'channel', '声道', '关联'], exclude=[tc_col, name_col])
+    note_col = find_column(columns, ['备注', '说明', 'note', 'remark'], exclude=[tc_col, name_col, ch_col])
 
     for row_data in rows:
         entry_name = row_data.get(name_col, '') if name_col else ''
@@ -207,9 +207,9 @@ def _parse_timecode_rows(rows, columns, uploaded_file):
 
 
 def _parse_note_rows_from_spreadsheet(rows, columns, uploaded_file):
-    content_col = find_column(columns, ['内容', 'content', '备注', '说明', 'note', '正文'])
-    type_col = find_column(columns, ['类型', 'type', '类别'])
-    auth_col = find_column(columns, ['授权', 'authorization', 'auth', '是否授权'])
+    content_col = find_column(columns, ['备注内容', '备注正文', '内容', 'content', '正文', '备注', '说明', 'note'])
+    type_col = find_column(columns, ['备注类型', '类型', 'type', '类别'], exclude=[content_col] if content_col else None)
+    auth_col = find_column(columns, ['是否授权', '授权标记', '授权', 'authorization', 'auth'], exclude=[content_col, type_col])
 
     for row_data in rows:
         content = row_data.get(content_col, '') if content_col else ''

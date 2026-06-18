@@ -149,10 +149,26 @@ def run_matching(session):
 
         track_match = None
         track_score = 0.0
-        if channel_match:
-            track_match, track_score = find_best_track_match(
-                channel_match.track_name, track_rows
-            )
+        track_names_to_check = []
+        if channel_match and channel_match.track_name:
+            track_names_to_check.append(channel_match.track_name)
+        if entry.entry_name:
+            track_names_to_check.append(entry.entry_name)
+
+        for tn in track_names_to_check:
+            tm, ts = find_best_track_match(tn, unmatched_tracks)
+            if tm and ts > track_score:
+                track_match = tm
+                track_score = ts
+                break
+
+        if not track_match and track_names_to_check:
+            for tn in track_names_to_check:
+                tm, ts = find_best_track_match(tn, track_rows)
+                if tm and ts > track_score:
+                    track_match = tm
+                    track_score = ts
+                    break
 
         if channel_match:
             match_result.channel_row_id = channel_match.id
@@ -218,6 +234,11 @@ def run_matching(session):
             conclusion=f'通道「{ch.channel_name}」未在时码清单中找到对应记录',
             sources=f'通道表第{ch.source_row}行',
         )
+        if ch.track_name:
+            tm, ts = find_best_track_match(ch.track_name, unmatched_tracks)
+            if tm and ts >= 0.5:
+                mr.track_row_id = tm.id
+                unmatched_tracks.remove(tm)
         results.append(mr)
 
     for tr in unmatched_tracks:

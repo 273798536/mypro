@@ -132,9 +132,72 @@ def create_app():
 
         file_path = save_report_to_file(session, app.config['REPORT_FOLDER'])
         filename = os.path.basename(file_path)
+        safe_name = session.name.replace('/', '_').replace(' ', '_')
         return send_from_directory(
             app.config['REPORT_FOLDER'], filename,
-            as_attachment=True, download_name=f'{session.name}_报告.md'
+            as_attachment=True, download_name=f'{safe_name}_报告.md'
+        )
+
+    @app.route('/session/<int:session_id>/export/csv')
+    def export_csv(session_id):
+        import csv
+        from io import StringIO
+        from flask import Response
+        from models import ArchiveSession, MatchResult, ChannelRow, TrackRow, TimecodeEntry
+
+        session = ArchiveSession.query.get(session_id)
+        if not session:
+            flash('归档不存在', 'danger')
+            return redirect(url_for('index'))
+
+        results = MatchResult.query.filter_by(session_id=session.id).all()
+
+        output = StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['ID', '状态', '状态标签', '结论', '来源', '时码差(秒)',
+                         '匹配置信度', '通道名称', '曲目名称', '条目名称', '备注'])
+
+        for r in results:
+            channel_name = ''
+            track_name = ''
+            entry_name = ''
+            if r.channel_row_id:
+                ch = db.session.get(ChannelRow, r.channel_row_id)
+                if ch:
+                    channel_name = ch.channel_name
+                    track_name = ch.track_name
+            if r.track_row_id and not track_name:
+                tr = db.session.get(TrackRow, r.track_row_id)
+                if tr:
+                    track_name = tr.track_name
+            if r.timecode_entry_id:
+                te = db.session.get(TimecodeEntry, r.timecode_entry_id)
+                if te:
+                    entry_name = te.entry_name
+
+            from models import STATUS_LABELS
+            writer.writerow([
+                r.id,
+                r.status,
+                STATUS_LABELS.get(r.status, r.status),
+                r.conclusion,
+                r.sources,
+                f'{r.time_diff_seconds:.3f}' if r.time_diff_seconds else '',
+                f'{r.match_confidence:.2f}' if r.match_confidence else '',
+                channel_name,
+                track_name,
+                entry_name,
+                r.notes or '',
+            ])
+
+        safe_name = session.name.replace('/', '_').replace(' ', '_')
+        output.seek(0)
+        return Response(
+            output.getvalue(),
+            mimetype='text/csv; charset=utf-8-sig',
+            headers={
+                'Content-Disposition': f'attachment; filename="{safe_name}_匹配结果.csv"'
+            }
         )
 
     @app.route('/session/<int:session_id>/delete', methods=['POST'])
@@ -156,6 +219,99 @@ def create_app():
         if not data:
             return jsonify({'error': 'not found'}), 404
         return jsonify(data)
+
+    @app.route('/api/verify')
+    def api_verify():
+        import sys
+        from io import StringIO
+        from models import (
+            ChannelRow, TrackRow, UploadedFile, STATUS_LABELS,
+        )
+        from matcher import run_matching
+        from report_generator import generate_report
+
+        SAMPLE_DIR = os.path.join(app.root_path, 'sample_data')
+
+        old_stdout = sys.stdout
+        sys.stdout = mystdout = StringIO()
+
+        try:
+            session = create_session('API验证', '通过接口触发的验证')
+
+            test_files = [
+                ('舞台通道表.csv', 'channel', False),
+                ('舞台通道表_旧版.csv', 'channel', True),
+                ('曲目表.csv', 'track', False),
+                ('时码清单.txt', 'timecode', False),
+                ('现场备注.txt', 'note', False),
+            ]
+
+            for filename, category, is_old in test_files:
+                filepath = os.path.join(SAMPLE_DIR, filename)
+                uploaded_file = UploadedFile(
+                    session_id=session.id,
+                    filename=filename,
+                    file_type='spreadsheet' if filename.endswith('.csv') else 'text',
+                    file_path=filepath,
+                )
+                db.session.add(uploaded_file)
+                db.session.commit()
+                row_count, error = process_uploaded_file(uploaded_file, category, is_old)
+                tag = ' [旧版]' if is_old else ''
+                print(f'✅ {filename}{tag}: {row_count} 条')
+
+            print()
+            print('=== 通道表 track_name 验证 ===')
+            channel_rows = ChannelRow.query.filter_by(session_id=session.id, is_old_version=False).all()
+            bad_count = 0
+            for ch in channel_rows:
+                is_bad = ch.track_name.startswith('CH') or '通道' in ch.track_name
+                if is_bad:
+                    print(f'  ❌ 错误：{ch.channel_name} → track_name={ch.track_name!r}')
+                    bad_count += 1
+                else:
+                    print(f'  ✅ 正确：{ch.channel_name} → {ch.track_name}')
+            print(f'  结果：{len(channel_rows) - bad_count}/{len(channel_rows)} 正确')
+            print()
+
+            results = run_matching(session)
+            status_counts = {}
+            for r in results:
+                status_counts[r.status] = status_counts.get(r.status, 0) + 1
+
+            print('=== 匹配结果 ===')
+            for s, c in sorted(status_counts.items()):
+                print(f'  {STATUS_LABELS.get(s, s)}: {c}')
+            print()
+
+            print('=== 曲目关联 ===')
+            track_rows = TrackRow.query.filter_by(session_id=session.id).all()
+            matched_track_ids = set(r.track_row_id for r in results if r.track_row_id)
+            for tr in track_rows:
+                tag = '✅' if tr.id in matched_track_ids else '❌'
+                print(f'  {tag} {tr.track_name}')
+            print(f'  已关联 {len(matched_track_ids)}/{len(track_rows)}')
+            print()
+
+            report = generate_report(session)
+            print(f'=== 报告: {len(report)} 字符 ===')
+
+            output = mystdout.getvalue()
+            return jsonify({
+                'session_id': session.id,
+                'output': output,
+                'bad_track_name_count': bad_count,
+                'unmatched_tracks': len(track_rows) - len(matched_track_ids),
+            })
+        except Exception as e:
+            import traceback
+            return jsonify({
+                'error': str(e),
+                'traceback': traceback.format_exc(),
+                'output': mystdout.getvalue(),
+            }), 500
+        finally:
+            sys.stdout = old_stdout
 
     return app
 

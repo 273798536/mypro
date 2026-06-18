@@ -141,11 +141,16 @@ def parse_text_file(file_path):
     return rows, ['content']
 
 
-def find_column(columns, keywords):
-    for col in columns:
-        col_lower = col.lower()
-        for kw in keywords:
-            if kw.lower() in col_lower:
+def find_column(columns, keywords, exclude=None):
+    exclude = exclude or []
+    available = [c for c in columns if c not in exclude]
+    for kw in keywords:
+        kw_lower = kw.lower()
+        for col in available:
+            if kw_lower == col.lower():
+                return col
+        for col in available:
+            if kw_lower in col.lower():
                 return col
     return None
 
