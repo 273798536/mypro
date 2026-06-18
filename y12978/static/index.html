@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>时区字段统一审计</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #303133; }
+.header { background: #409eff; color: #fff; padding: 16px 24px; }
+.header h1 { font-size: 20px; font-weight: 500; }
+.header p { opacity: 0.85; font-size: 13px; margin-top: 4px; }
+.container { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+.btns { margin-bottom: 20px; }
+.btns button { padding: 8px 18px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; margin-right: 10px; }
+.btn-primary { background: #409eff; color: #fff; }
+.btn-success { background: #67c23a; color: #fff; }
+.btn-warning { background: #e6a23c; color: #fff; }
+.btn-danger { background: #f56c6c; color: #fff; }
+.btn-default { background: #fff; border: 1px solid #dcdfe6; color: #606266; }
+.card { background: #fff; border-radius: 6px; padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+.card h2 { font-size: 16px; margin-bottom: 12px; color: #303133; border-bottom: 1px solid #ebeef5; padding-bottom: 8px; }
+.tabs { display: flex; border-bottom: 2px solid #ebeef5; margin-bottom: 16px; }
+.tab { padding: 10px 20px; cursor: pointer; font-size: 14px; color: #606266; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.tab.active { color: #409eff; border-bottom-color: #409eff; font-weight: 500; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #ebeef5; }
+th { background: #fafafa; font-weight: 500; color: #606266; }
+tr:hover td { background: #f5f7fa; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+.badge-pass { background: #f0f9eb; color: #67c23a; }
+.badge-invalid { background: #fef0f0; color: #f56c6c; }
+.badge-mismatch { background: #fdf6ec; color: #e6a23c; }
+.badge-duplicate { background: #f4f4f5; color: #909399; }
+.badge-pending { background: #ecf5ff; color: #409eff; }
+.link { color: #409eff; cursor: pointer; text-decoration: underline; }
+.kv { display: grid; grid-template-columns: 120px 1fr; gap: 8px; font-size: 13px; }
+.kv div:first-child { color: #909399; }
+.summary { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.stat { flex: 1; min-width: 140px; background: #fafafa; border-left: 3px solid #409eff; padding: 12px 16px; border-radius: 4px; }
+.stat-num { font-size: 24px; font-weight: 500; color: #303133; }
+.stat-label { font-size: 12px; color: #909399; margin-top: 4px; }
+.trace-step { background: #f5f7fa; border-radius: 4px; padding: 12px 16px; margin-bottom: 10px; position: relative; }
+.trace-step::before { content: ""; position: absolute; left: 24px; top: 100%; width: 2px; height: 10px; background: #dcdfe6; }
+.trace-step:last-child::before { display: none; }
+.trace-step h4 { font-size: 14px; color: #409eff; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>时区字段统一审计</h1>
+  <p>日常入口: 备份校验 &nbsp;|&nbsp; 月底/课前: 权限审计 &nbsp;|&nbsp; 支持结论↔字典↔来源双向追溯</p>
+</div>
+
+<div class="container">
+  <div class="btns">
+    <button class="btn-primary" onclick="runBackupCheck()">日常: 备份校验</button>
+    <button class="btn-warning" onclick="runPermissionAudit()">月底/课前: 权限审计</button>
+    <button class="btn-danger" onclick="runDeduplicate()">执行去重检测</button>
+    <button class="btn-default" onclick="location.reload()">刷新</button>
+  </div>
+
+  <div class="card">
+    <div class="summary" id="summary"></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <div class="tab active" data-tab="conclusions">审计结论</div>
+      <div class="tab" data-tab="dictionary">数据字典</div>
+      <div class="tab" data-tab="sources">源数据记录</div>
+      <div class="tab" data-tab="trace">追溯链路</div>
+    </div>
+
+    <div class="tab-content active" id="tab-conclusions">
+      <div style="margin-bottom:10px">
+        <label>状态筛选: </label>
+        <select id="filter-status" onchange="renderConclusions()">
+          <option value="">全部</option>
+          <option value="pass">通过</option>
+          <option value="index_invalid">索引失效</option>
+          <option value="timezone_mismatch">时区不匹配</option>
+          <option value="duplicate">重复</option>
+          <option value="pending">待复核</option>
+        </select>
+        <label style="margin-left:16px">类型: </label>
+        <select id="filter-type" onchange="renderConclusions()">
+          <option value="">全部</option>
+          <option value="backup">备份校验</option>
+          <option value="permission">权限审计</option>
+          <option value="timezone">时区比对</option>
+        </select>
+      </div>
+      <table>
+        <thead><tr>
+          <th>ID</th><th>类型</th><th>状态</th><th>结论</th><th>索引有效</th><th>重复</th>
+          <th>源记录ID</th><th>字典ID</th><th>审计人</th><th>操作</th>
+        </tr></thead>
+        <tbody id="conclusions-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="tab-content" id="tab-dictionary">
+      <table>
+        <thead><tr>
+          <th>ID</th><th>表名</th><th>字段名</th><th>类型</th><th>期望时区</th><th>备注</th><th>操作</th>
+        </tr></thead>
+        <tbody id="dictionary-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="tab-content" id="tab-sources">
+      <table>
+        <thead><tr>
+          <th>ID</th><th>来源表</th><th>原始行号</th><th>文件名</th><th>来源备注</th><th>批次</th>
+          <th>字段</th><th>值</th><th>检测时区</th><th>补录</th>
+        </tr></thead>
+        <tbody id="sources-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="tab-content" id="tab-trace">
+      <div id="trace-empty" style="color:#909399;text-align:center;padding:40px">
+        请从"审计结论"表中点击"追溯"按钮查看完整链路
+      </div>
+      <div id="trace-content"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000/api";
+let conclusions = [], dictionary = [], sources = [];
+
+function statusBadge(s) {
+  const map = { pass:['通过','badge-pass'], index_invalid:['索引失效','badge-invalid'],
+    timezone_mismatch:['时区不匹配','badge-mismatch'], duplicate:['重复','badge-duplicate'],
+    pending:['待复核','badge-pending'] };
+  const [t,c] = map[s] || [s,''];
+  return `<span class="badge ${c}">${t}</span>`;
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active', c.id==='tab-'+name));
+}
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>switchTab(t.dataset.tab));
+
+async function loadAll() {
+  conclusions = await fetch(`${API}/audit/records`).then(r=>r.json());
+  dictionary = await fetch(`${API}/dictionary`).then(r=>r.json());
+  sources = await fetch(`${API}/source/records`).then(r=>r.json());
+  renderSummary();
+  renderConclusions();
+  renderDictionary();
+  renderSources();
+}
+
+function renderSummary() {
+  const total = conclusions.length;
+  const inv = conclusions.filter(c=>c.status==='index_invalid').length;
+  const mismatch = conclusions.filter(c=>c.status==='timezone_mismatch').length;
+  const dup = conclusions.filter(c=>c.is_duplicate).length;
+  const supp = sources.filter(s=>s.is_supplement).length;
+  document.getElementById('summary').innerHTML = `
+    <div class="stat"><div class="stat-num">${total}</div><div class="stat-label">审计结论总数</div></div>
+    <div class="stat" style="border-left-color:#f56c6c"><div class="stat-num">${inv}</div><div class="stat-label">索引失效</div></div>
+    <div class="stat" style="border-left-color:#e6a23c"><div class="stat-num">${mismatch}</div><div class="stat-label">时区不匹配</div></div>
+    <div class="stat" style="border-left-color:#909399"><div class="stat-num">${dup}</div><div class="stat-label">重复结论</div></div>
+    <div class="stat" style="border-left-color:#67c23a"><div class="stat-num">${supp}</div><div class="stat-label">补录记录</div></div>`;
+}
+
+function renderConclusions() {
+  const fs = document.getElementById('filter-status').value;
+  const ft = document.getElementById('filter-type').value;
+  const list = conclusions.filter(c=>(!fs||c.status===fs)&&(!ft||c.audit_type===ft));
+  const typeMap = { backup:'备份校验', permission:'权限审计', timezone:'时区比对' };
+  document.getElementById('conclusions-tbody').innerHTML = list.map(c=>`
+    <tr>
+      <td>#${c.id}</td>
+      <td>${typeMap[c.audit_type]||c.audit_type}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td title="${c.conclusion||''}">${(c.conclusion||'').substring(0,50)}</td>
+      <td>${c.index_valid?'✅':'❌'}</td>
+      <td>${c.is_duplicate?`<span class="badge badge-duplicate">重复(#${c.duplicate_of_id})</span>`:'—'}</td>
+      <td>${c.source_record_id?`<span class="link" onclick="gotoSource(${c.source_record_id})">#${c.source_record_id}</span>`:'—'}</td>
+      <td>${c.dictionary_id?`<span class="link" onclick="gotoDict(${c.dictionary_id})">#${c.dictionary_id}</span>`:'—'}</td>
+      <td>${c.auditor||'—'}</td>
+      <td><span class="link" onclick="showTrace(${c.id})">追溯</span></td>
+    </tr>`).join('');
+}
+
+function renderDictionary() {
+  document.getElementById('dictionary-tbody').innerHTML = dictionary.map(d=>`
+    <tr>
+      <td>#${d.id}</td>
+      <td>${d.table_name}</td>
+      <td>${d.column_name}</td>
+      <td>${d.data_type||'—'}</td>
+      <td>${d.expected_timezone||'—'}</td>
+      <td title="${d.description||''}">${(d.description||'').substring(0,40)}</td>
+      <td><span class="link" onclick="gotoDictConclusions(${d.id},'${d.table_name}','${d.column_name}')">查看结论</span></td>
+    </tr>`).join('');
+}
+
+function renderSources() {
+  document.getElementById('sources-tbody').innerHTML = sources.map(s=>`
+    <tr>
+      <td>#${s.id}</td>
+      <td>${s.source_table}</td>
+      <td>${s.source_row_number!==null?s.source_row_number:'<span style="color:#f56c6c">缺失</span>'}</td>
+      <td title="${s.source_file||''}">${(s.source_file||'—').substring(0,25)}</td>
+      <td title="${s.source_remark||''}">${(s.source_remark||'—').substring(0,30)}</td>
+      <td>${s.import_batch||'—'}</td>
+      <td>${s.column_name||'—'}</td>
+      <td title="${s.column_value||''}">${(s.column_value||'—').substring(0,25)}</td>
+      <td>${s.detected_timezone||'—'}</td>
+      <td>${s.is_supplement?'<span class="badge badge-pending">补录</span>':'—'}</td>
+    </tr>`).join('');
+}
+
+async function showTrace(id) {
+  switchTab('trace');
+  document.getElementById('trace-empty').style.display = 'none';
+  const chain = await fetch(`${API}/audit/trace/${id}`).then(r=>r.json());
+  const { conclusion, source_record, dictionary, process_logs } = chain;
+  document.getElementById('trace-content').innerHTML = `
+    <div class="trace-step">
+      <h4>① 审计结论 #${conclusion.id}</h4>
+      <div class="kv">
+        <div>类型</div><div>${conclusion.audit_type}</div>
+        <div>状态</div><div>${statusBadge(conclusion.status)}</div>
+        <div>结论</div><div>${conclusion.conclusion||'—'}</div>
+        <div>索引有效</div><div>${conclusion.index_valid?'是':'否'}</div>
+        <div>重复结论</div><div>${conclusion.is_duplicate?('是, 原始ID #'+conclusion.duplicate_of_id):'否'}</div>
+        <div>审计人</div><div>${conclusion.auditor||'—'}</div>
+        <div>时间</div><div>${conclusion.created_at}</div>
+      </div>
+    </div>
+    <div class="trace-step">
+      <h4>② 源数据记录 #${source_record.id}（保留原始行号与来源备注）</h4>
+      <div class="kv">
+        <div>来源表</div><div>${source_record.source_table}</div>
+        <div>原始行号</div><div>${source_record.source_row_number!==null?source_record.source_row_number:'<span style="color:#f56c6c">缺失(索引失效)</span>'}</div>
+        <div>文件/图片</div><div>${source_record.source_file||'—'}</div>
+        <div>来源备注</div><div>${source_record.source_remark||'—'}</div>
+        <div>导入批次</div><div>${source_record.import_batch||'—'}</div>
+        <div>字段</div><div>${source_record.column_name||'—'}</div>
+        <div>值</div><div>${source_record.column_value||'—'}</div>
+        <div>检测时区</div><div>${source_record.detected_timezone||'—'}</div>
+        <div>是否补录</div><div>${source_record.is_supplement?'是':'否'}</div>
+      </div>
+    </div>
+    ${dictionary?`
+    <div class="trace-step">
+      <h4>③ 数据字典 #${dictionary.id}（点回去看字段定义）</h4>
+      <div class="kv">
+        <div>表名</div><div>${dictionary.table_name}</div>
+        <div>字段名</div><div>${dictionary.column_name}</div>
+        <div>字段类型</div><div>${dictionary.data_type||'—'}</div>
+        <div>期望时区</div><div>${dictionary.expected_timezone||'—'}</div>
+        <div>字段备注</div><div>${dictionary.description||'—'}</div>
+      </div>
+    </div>`:''}
+    <div class="trace-step">
+      <h4>④ 处理记录日志（${process_logs.length}条）</h4>
+      ${process_logs.length?`<table>
+        <thead><tr><th>ID</th><th>类型</th><th>批次</th><th>操作人</th><th>处理前</th><th>处理后</th><th>备注</th><th>时间</th></tr></thead>
+        <tbody>${process_logs.map(p=>`
+          <tr>
+            <td>#${p.id}</td><td>${p.process_type}</td><td>${p.process_batch||'—'}</td>
+            <td>${p.operator||'—'}</td>
+            <td title="${p.before_value||''}">${(p.before_value||'—').substring(0,20)}</td>
+            <td title="${p.after_value||''}">${(p.after_value||'—').substring(0,20)}</td>
+            <td title="${p.remark||''}">${(p.remark||'—').substring(0,30)}</td>
+            <td>${p.created_at}</td>
+          </tr>`).join('')}</tbody>
+      </table>`:'<span style="color:#909399">无处理日志</span>'}
+    </div>`;
+}
+
+function gotoSource(id) { switchTab('sources'); alert(`已定位源记录 #${id}，请在源数据记录中查看`); }
+function gotoDict(id) { switchTab('dictionary'); alert(`已定位数据字典 #${id}，请在数据字典中查看`); }
+function gotoDictConclusions(id, tbl, col) {
+  document.getElementById('filter-status').value = '';
+  document.getElementById('filter-type').value = '';
+  switchTab('conclusions');
+  const list = conclusions.filter(c=>c.dictionary_id===id);
+  alert(`数据字典 ${tbl}.${col} 关联 ${list.length} 条结论`);
+  renderConclusions();
+}
+
+async function runBackupCheck() {
+  const r = await fetch(`${API}/audit/backup-check`).then(r=>r.json());
+  alert(`备份校验完成:\n总记录 ${r.total_records}\n索引失效 ${r.index_invalid_count}\n时区不匹配 ${r.timezone_mismatch_count}\n重复结论 ${r.duplicate_count}\n补录记录 ${r.supplement_count}`);
+  loadAll();
+}
+
+async function runPermissionAudit() {
+  const r = await fetch(`${API}/audit/permission`).then(r=>r.json());
+  alert(`权限审计完成:\n总记录 ${r.total_records}\n未授权批次: ${r.unauthorized_batches.join(', ')||'无'}\n待复核补录: ${r.unverified_supplements}\n审计覆盖: ${JSON.stringify(r.auditor_coverage)}`);
+  loadAll();
+}
+
+async function runDeduplicate() {
+  const r = await fetch(`${API}/audit/deduplicate`,{method:'POST'}).then(r=>r.json());
+  alert(`去重完成: 共标记 ${r.marked_duplicates} 条重复结论`);
+  loadAll();
+}
+
+loadAll();
+</script>
+</body>
+</html>
