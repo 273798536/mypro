@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { getDb, initDatabase } from '../api/db/connection';
-import type { Intent, RiskLevel, MaterialSource, VersionType } from '../shared/types';
+import type { Intent, RiskLevel, MaterialSource, VersionType } from '../shared/types.ts';
 
 interface SampleRecord {
   sessionId: string;

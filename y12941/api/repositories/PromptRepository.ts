@@ -1,6 +1,6 @@
-import { getDb } from '../db/connection';
+import { getDb } from '../db/connection.ts';
 import { nanoid } from 'nanoid';
-import type { PromptVersion } from '../../shared/types';
+import type { PromptVersion } from '../../shared/types.ts';
 
 interface PromptVersionRow {
   id: string;

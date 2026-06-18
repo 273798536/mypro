@@ -1,6 +1,6 @@
-import { getDb } from '../db/connection';
+import { getDb } from '../db/connection.ts';
 import { nanoid } from 'nanoid';
-import type { MaterialBatch, MaterialSource, BatchStatus } from '../../shared/types';
+import type { MaterialBatch, MaterialSource, BatchStatus } from '../../shared/types.ts';
 
 interface MaterialBatchRow {
   id: string;
@@ -87,6 +87,36 @@ export class MaterialRepository {
       WHERE id = ?
     `);
     stmt.run(status, errorMessage || null, id);
+  }
+
+  updateCounts(id: string, data: { totalRecords?: number; processedRecords?: number; errorRecords?: number; status?: BatchStatus }): void {
+    const fields: string[] = [];
+    const params: (string | number | null)[] = [];
+
+    if (data.totalRecords !== undefined) {
+      fields.push('total_records = ?');
+      params.push(data.totalRecords);
+    }
+    if (data.processedRecords !== undefined) {
+      fields.push('processed_records = ?');
+      params.push(data.processedRecords);
+    }
+    if (data.errorRecords !== undefined) {
+      fields.push('error_records = ?');
+      params.push(data.errorRecords);
+    }
+    if (data.status !== undefined) {
+      fields.push('status = ?');
+      params.push(data.status);
+    }
+
+    if (fields.length === 0) return;
+
+    params.push(id);
+    const stmt = this.db.prepare(`
+      UPDATE material_batches SET ${fields.join(', ')} WHERE id = ?
+    `);
+    stmt.run(...params);
   }
 
   incrementProcessed(id: string, success: boolean): void {

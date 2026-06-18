@@ -1,6 +1,6 @@
-import { getDb } from '../db/connection';
+import { getDb } from '../db/connection.ts';
 import { nanoid } from 'nanoid';
-import type { VersionRecord, VersionType, Intent, VersionDiff } from '../../shared/types';
+import type { VersionRecord, VersionType, Intent, VersionDiff } from '../../shared/types.ts';
 
 interface VersionRecordRow {
   id: string;

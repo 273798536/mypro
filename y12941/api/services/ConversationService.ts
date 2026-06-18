@@ -1,8 +1,8 @@
-import { ConversationRepository, ConversationQueryOptions, ConversationListResult } from '../repositories/ConversationRepository';
-import { VersionRepository } from '../repositories/VersionRepository';
-import { ReviewRepository } from '../repositories/ReviewRepository';
-import { PromptRepository } from '../repositories/PromptRepository';
-import type { Conversation, ReviewRequest, ReviewResponse, VersionRecord, DashboardStats, Intent, TruncationInfo, ToolCallError } from '../../shared/types';
+import { ConversationRepository, ConversationQueryOptions, ConversationListResult } from '../repositories/ConversationRepository.ts';
+import { VersionRepository } from '../repositories/VersionRepository.ts';
+import { ReviewRepository } from '../repositories/ReviewRepository.ts';
+import { PromptRepository } from '../repositories/PromptRepository.ts';
+import type { Conversation, ReviewRequest, ReviewResponse, VersionRecord, DashboardStats, Intent, TruncationInfo, ToolCallError } from '../../shared/types.ts';
 
 export class ConversationService {
   private convRepo = new ConversationRepository();

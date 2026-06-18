@@ -1,6 +1,6 @@
 import express, { type Request, type Response } from 'express';
-import { ReportService } from '../services/ReportService';
-import type { ReportRequest } from '../../shared/types';
+import { ReportService } from '../services/ReportService.ts';
+import type { ReportRequest } from '../../shared/types.ts';
 import fs from 'fs';
 
 const router = express.Router();

@@ -1,11 +1,9 @@
-import { ConversationRepository } from '../repositories/ConversationRepository';
-import { ReviewRepository } from '../repositories/ReviewRepository';
-import { MaterialRepository } from '../repositories/MaterialRepository';
-import { PromptRepository } from '../repositories/PromptRepository';
-import type { ReportRequest, ReportResponse, TruncationInfo, ToolCallError } from '../../shared/types';
-import { INTENT_LABELS, SOURCE_TYPE_LABELS, RISK_LEVEL_LABELS } from '../../shared/types';
-import ExcelJS from 'exceljs';
-import PdfPrinter from 'pdfmake';
+import { ConversationRepository } from '../repositories/ConversationRepository.ts';
+import { ReviewRepository } from '../repositories/ReviewRepository.ts';
+import { MaterialRepository } from '../repositories/MaterialRepository.ts';
+import { PromptRepository } from '../repositories/PromptRepository.ts';
+import type { ReportRequest, ReportResponse, TruncationInfo, ToolCallError } from '../../shared/types.ts';
+import { INTENT_LABELS, SOURCE_TYPE_LABELS, RISK_LEVEL_LABELS } from '../../shared/types.ts';
 import fs from 'fs';
 import path from 'path';
 import { nanoid } from 'nanoid';
@@ -40,9 +38,11 @@ export class ReportService {
     const toolCallErrors = this.getToolCallErrors();
 
     if (format === 'excel') {
-      await this.generateExcel(filePath, stats, reviews, batches, prompts, activePrompt, truncationInfos, toolCallErrors, includeTechnicalDetails);
+      const { default: ExcelJS } = await import('exceljs');
+      await this.generateExcel(ExcelJS, filePath, stats, reviews, batches, prompts, activePrompt, truncationInfos, toolCallErrors, includeTechnicalDetails);
     } else if (format === 'pdf') {
-      await this.generatePdf(filePath, stats, reviews, batches, prompts, activePrompt, truncationInfos, toolCallErrors, includeTechnicalDetails);
+      const { default: PdfPrinter } = await import('pdfmake');
+      await this.generatePdf(PdfPrinter, filePath, stats, reviews, batches, prompts, activePrompt, truncationInfos, toolCallErrors, includeTechnicalDetails);
     } else {
       await this.generateWord(filePath, stats, reviews, batches, prompts, activePrompt, truncationInfos, toolCallErrors, includeTechnicalDetails);
     }
@@ -59,6 +59,7 @@ export class ReportService {
   }
 
   private async generateExcel(
+    ExcelJS: any,
     filePath: string,
     stats: any,
     reviews: any,
@@ -140,6 +141,7 @@ export class ReportService {
   }
 
   private async generatePdf(
+    PdfPrinter: any,
     filePath: string,
     stats: any,
     reviews: any,

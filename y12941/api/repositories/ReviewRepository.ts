@@ -1,6 +1,6 @@
-import { getDb } from '../db/connection';
+import { getDb } from '../db/connection.ts';
 import { nanoid } from 'nanoid';
-import type { ReviewRecord, Intent, ReviewStatus } from '../../shared/types';
+import type { ReviewRecord, Intent, ReviewStatus } from '../../shared/types.ts';
 
 interface ReviewRecordRow {
   id: string;

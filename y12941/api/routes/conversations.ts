@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from 'express';
-import { ConversationService } from '../services/ConversationService';
-import type { ConversationQueryOptions } from '../repositories/ConversationRepository';
-import type { ReviewRequest } from '../../shared/types';
+import { ConversationService } from '../services/ConversationService.ts';
+import type { ConversationQueryOptions } from '../repositories/ConversationRepository.ts';
+import type { ReviewRequest } from '../../shared/types.ts';
 
 const router = express.Router();
 const conversationService = new ConversationService();

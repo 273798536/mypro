@@ -2,8 +2,8 @@ import express, { type Request, type Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { MaterialService } from '../services/MaterialService';
-import type { MaterialSource } from '../../shared/types';
+import { MaterialService } from '../services/MaterialService.ts';
+import type { MaterialSource } from '../../shared/types.ts';
 
 const router = express.Router();
 const materialService = new MaterialService();

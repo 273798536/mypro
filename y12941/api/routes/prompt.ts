@@ -1,6 +1,6 @@
 import express, { type Request, type Response } from 'express';
-import { PromptService } from '../services/PromptService';
-import type { PromptVersion } from '../../shared/types';
+import { PromptService } from '../services/PromptService.ts';
+import type { PromptVersion } from '../../shared/types.ts';
 
 const router = express.Router();
 const promptService = new PromptService();

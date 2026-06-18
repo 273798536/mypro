@@ -1,5 +1,6 @@
-import { getDb } from '../db/connection';
-import type { Conversation, RiskLevel, MaterialSource, Intent } from '../../shared/types';
+import { getDb } from '../db/connection.ts';
+import { nanoid } from 'nanoid';
+import type { Conversation, RiskLevel, MaterialSource, Intent } from '../../shared/types.ts';
 
 interface ConversationRow {
   id: string;
@@ -134,6 +135,36 @@ export class ConversationRepository {
     const stmt = this.db.prepare('SELECT * FROM conversations WHERE id = ?');
     const row = stmt.get(id) as ConversationRow | undefined;
     return row ? mapRowToConversation(row) : null;
+  }
+
+  create(data: Omit<Conversation, 'id' | 'createdAt' | 'updatedAt'>): Conversation {
+    const id = 'conv_' + nanoid(8);
+    const stmt = this.db.prepare(`
+      INSERT INTO conversations
+      (id, session_id, customer_text, robot_text, full_context, truncated, truncation_reason,
+       source_file, source_row, source_type, original_annotation, ai_prediction, ai_confidence,
+       risk_level, drift_score, batch_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    stmt.run(
+      id,
+      data.sessionId,
+      data.customerText,
+      data.robotText || null,
+      data.fullContext || null,
+      data.truncated ? 1 : 0,
+      data.truncationReason || null,
+      data.sourceFile,
+      data.sourceRow,
+      data.sourceType,
+      data.originalAnnotation,
+      data.aiPrediction,
+      data.aiConfidence,
+      data.riskLevel,
+      data.driftScore,
+      data.batchId
+    );
+    return this.findById(id)!;
   }
 
   update(id: string, data: Partial<Conversation>): void {

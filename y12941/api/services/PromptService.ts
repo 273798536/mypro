@@ -1,5 +1,5 @@
-import { PromptRepository } from '../repositories/PromptRepository';
-import type { PromptVersion } from '../../shared/types';
+import { PromptRepository } from '../repositories/PromptRepository.ts';
+import type { PromptVersion } from '../../shared/types.ts';
 
 export class PromptService {
   private promptRepo = new PromptRepository();

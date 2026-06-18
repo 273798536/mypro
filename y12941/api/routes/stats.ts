@@ -1,5 +1,5 @@
 import express, { type Request, type Response } from 'express';
-import { ConversationService } from '../services/ConversationService';
+import { ConversationService } from '../services/ConversationService.ts';
 
 const router = express.Router();
 const conversationService = new ConversationService();
