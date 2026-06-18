@@ -1,0 +1,47 @@
+{
+  "record_id": "28fa419b9429d148",
+  "batch_id": "batch_20260618141927_d503dba4",
+  "record_type": "migration_duplicate",
+  "status": "confirmed",
+  "table_name": null,
+  "migration_name": "V1__init.sql",
+  "schema_diff": null,
+  "duplicate_info": {
+    "migration_name": "V1__init.sql",
+    "executions": [
+      {
+        "migration_name": "V1__init.sql",
+        "execution_time": "2025-01-15T09:00:00",
+        "checksum": "abc123",
+        "execution_order": 1,
+        "success": true,
+        "error_message": null
+      },
+      {
+        "migration_name": "V1__init.sql",
+        "execution_time": "2025-01-15T09:05:00",
+        "checksum": "abc123",
+        "execution_order": 1,
+        "success": true,
+        "error_message": null
+      }
+    ],
+    "first_execution": "2025-01-15T09:00:00",
+    "last_execution": "2025-01-15T09:05:00",
+    "execution_count": 2
+  },
+  "pagination_config": null,
+  "snapshot_refs": [],
+  "related_record_ids": [],
+  "opinions": [
+    {
+      "handler": "dba_alice",
+      "opinion": "V1__init 重复执行影响不大，表已存在不会重复建表",
+      "handle_time": "2026-06-18T14:19:27.370079",
+      "suggestion": "建议在迁移脚本开头加幂等判断"
+    }
+  ],
+  "create_time": "2026-06-18T14:19:27.354966",
+  "update_time": "2026-06-18T14:19:27.354972",
+  "creator": "tester"
+}

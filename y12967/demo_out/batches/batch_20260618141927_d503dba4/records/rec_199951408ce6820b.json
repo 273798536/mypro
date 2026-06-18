@@ -1,0 +1,28 @@
+{
+  "record_id": "199951408ce6820b",
+  "batch_id": "batch_20260618141927_d503dba4",
+  "record_type": "pagination_order",
+  "status": "review_passed",
+  "table_name": "orders",
+  "migration_name": null,
+  "schema_diff": null,
+  "duplicate_info": null,
+  "pagination_config": {
+    "table_name": "orders",
+    "order_by_columns": [
+      "created_at"
+    ],
+    "is_stable": false,
+    "review_status": "review_passed",
+    "reviewer": "team_lead",
+    "review_time": "2026-06-18T14:19:27.367217",
+    "review_comment": "已确认加 id 作为次级排序字段后可稳定",
+    "change_reason": "配合联调修复，加 id 次级排序"
+  },
+  "snapshot_refs": [],
+  "related_record_ids": [],
+  "opinions": [],
+  "create_time": "2026-06-18T14:19:27.365710",
+  "update_time": "2026-06-18T14:19:27.367217",
+  "creator": "tester"
+}

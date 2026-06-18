@@ -1,0 +1,35 @@
+{
+  "log_id": "a6e1e17df5403f96",
+  "batch_id": "batch_20260618141927_d503dba4",
+  "action": "pagination_reviewed",
+  "operator": "team_lead",
+  "action_time": "2026-06-18T14:19:27.367275",
+  "target_type": "processing_record",
+  "target_id": "199951408ce6820b",
+  "old_value": {
+    "table_name": "orders",
+    "order_by_columns": [
+      "created_at"
+    ],
+    "is_stable": false,
+    "review_status": "pending",
+    "reviewer": null,
+    "review_time": null,
+    "review_comment": null,
+    "change_reason": "最初未意识到需要稳定排序"
+  },
+  "new_value": {
+    "table_name": "orders",
+    "order_by_columns": [
+      "created_at"
+    ],
+    "is_stable": false,
+    "review_status": "review_passed",
+    "reviewer": "team_lead",
+    "review_time": "2026-06-18T14:19:27.367217",
+    "review_comment": "已确认加 id 作为次级排序字段后可稳定",
+    "change_reason": "配合联调修复，加 id 次级排序"
+  },
+  "reason": "配合联调修复，加 id 次级排序",
+  "comment": "分页顺序复核通过，原状态: pending"
+}

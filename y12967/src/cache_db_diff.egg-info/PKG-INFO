@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: cache-db-diff
+Version: 1.0.0
+Summary: 缓存与数据库差异分析工具 - 处理迁移重复执行、表结构快照对比、审计追溯等
+Requires-Python: >=3.8
+Requires-Dist: click>=8.0
+Requires-Dist: pydantic>=1.10
+Requires-Dist: rich>=13.0
+Requires-Dist: tabulate>=0.9

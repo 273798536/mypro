@@ -1,0 +1,40 @@
+{
+  "record_id": "b1c3b24e330a202b",
+  "batch_id": "batch_20260618142120_a40c097f",
+  "record_type": "migration_duplicate",
+  "status": "pending",
+  "table_name": null,
+  "migration_name": "V1__init.sql",
+  "schema_diff": null,
+  "duplicate_info": {
+    "migration_name": "V1__init.sql",
+    "executions": [
+      {
+        "migration_name": "V1__init.sql",
+        "execution_time": "2025-01-15T09:00:00",
+        "checksum": "abc123",
+        "execution_order": 1,
+        "success": true,
+        "error_message": null
+      },
+      {
+        "migration_name": "V1__init.sql",
+        "execution_time": "2025-01-15T09:05:00",
+        "checksum": "abc123",
+        "execution_order": 1,
+        "success": true,
+        "error_message": null
+      }
+    ],
+    "first_execution": "2025-01-15T09:00:00",
+    "last_execution": "2025-01-15T09:05:00",
+    "execution_count": 2
+  },
+  "pagination_config": null,
+  "snapshot_refs": [],
+  "related_record_ids": [],
+  "opinions": [],
+  "create_time": "2026-06-18T14:21:20.518188",
+  "update_time": "2026-06-18T14:21:20.518194",
+  "creator": "tester"
+}

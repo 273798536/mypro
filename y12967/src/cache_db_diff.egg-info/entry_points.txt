@@ -1,0 +1,2 @@
+[console_scripts]
+cache-db-diff = cache_db_diff.cli:main

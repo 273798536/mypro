@@ -1,0 +1,66 @@
+{
+  "record_id": "e7115695b9189d13",
+  "batch_id": "batch_20260618141927_d503dba4",
+  "record_type": "schema_diff",
+  "status": "pending",
+  "table_name": "orders",
+  "migration_name": null,
+  "schema_diff": {
+    "cache_snapshot_id": "12abd7a4c28748fb",
+    "db_snapshot_id": "5e38182aa1dfc6c4",
+    "table_name": "orders",
+    "conclusion": "multiple_diffs",
+    "diffs": [
+      {
+        "diff_type": "type_mismatch",
+        "column_name": "amount",
+        "field": "data_type",
+        "cache_value": "DECIMAL(10,2)",
+        "db_value": "DECIMAL(12,2)",
+        "description": "列 'amount' 的 data_type 不一致: cache=DECIMAL(10,2) vs db=DECIMAL(12,2)"
+      },
+      {
+        "diff_type": "column_extra",
+        "column_name": "status",
+        "field": null,
+        "cache_value": null,
+        "db_value": {
+          "name": "status",
+          "data_type": "TINYINT",
+          "is_nullable": false,
+          "default": "0",
+          "comment": null,
+          "extra": null
+        },
+        "description": "DB 存在列 'status'，但缓存中缺失"
+      },
+      {
+        "diff_type": "index_mismatch",
+        "column_name": "idx_user",
+        "field": null,
+        "cache_value": null,
+        "db_value": {
+          "name": "idx_user",
+          "columns": [
+            "user_id"
+          ],
+          "is_unique": false,
+          "index_type": "BTREE"
+        },
+        "description": "索引 'idx_user' 仅存在于 DB"
+      }
+    ],
+    "compare_time": "2026-06-18T14:19:27.358402"
+  },
+  "duplicate_info": null,
+  "pagination_config": null,
+  "snapshot_refs": [
+    "12abd7a4c28748fb",
+    "5e38182aa1dfc6c4"
+  ],
+  "related_record_ids": [],
+  "opinions": [],
+  "create_time": "2026-06-18T14:19:27.359050",
+  "update_time": "2026-06-18T14:19:27.359053",
+  "creator": "tester"
+}

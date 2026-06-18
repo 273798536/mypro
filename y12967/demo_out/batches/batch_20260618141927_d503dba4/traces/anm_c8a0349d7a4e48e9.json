@@ -1,0 +1,18 @@
+{
+  "anomaly_id": "c8a0349d7a4e48e9",
+  "batch_id": "batch_20260618141927_d503dba4",
+  "anomaly_description": "线上部分用户读取到空邮箱字段",
+  "anomaly_type": "data_mismatch",
+  "root_record_id": "e7115695b9189d13",
+  "snapshot_chain": [
+    "12abd7a4c28748fb",
+    "5e38182aa1dfc6c4"
+  ],
+  "record_chain": [
+    "e7115695b9189d13"
+  ],
+  "discovered_time": "2026-06-18T14:19:27.373292",
+  "is_resolved": false,
+  "resolution_summary": null,
+  "resolver": null
+}

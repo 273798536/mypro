@@ -1,0 +1,21 @@
+[project]
+name = "cache-db-diff"
+version = "1.0.0"
+description = "缓存与数据库差异分析工具 - 处理迁移重复执行、表结构快照对比、审计追溯等"
+requires-python = ">=3.8"
+dependencies = [
+    "click>=8.0",
+    "pydantic>=1.10",
+    "rich>=13.0",
+    "tabulate>=0.9",
+]
+
+[project.scripts]
+cache-db-diff = "cache_db_diff.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

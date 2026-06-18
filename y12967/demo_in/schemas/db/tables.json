@@ -1,0 +1,124 @@
+[
+  {
+    "table_name": "users",
+    "columns": [
+      {
+        "name": "id",
+        "data_type": "BIGINT",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "name",
+        "data_type": "VARCHAR(64)",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "email",
+        "data_type": "VARCHAR(256)",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "created_at",
+        "data_type": "DATETIME",
+        "is_nullable": false,
+        "default": "CURRENT_TIMESTAMP",
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "phone",
+        "data_type": "VARCHAR(20)",
+        "is_nullable": true,
+        "default": null,
+        "comment": null,
+        "extra": null
+      }
+    ],
+    "primary_key": [
+      "id"
+    ],
+    "indexes": [
+      {
+        "name": "idx_name",
+        "columns": [
+          "name"
+        ],
+        "is_unique": true,
+        "index_type": "BTREE"
+      },
+      {
+        "name": "uk_email",
+        "columns": [
+          "email"
+        ],
+        "is_unique": true,
+        "index_type": "BTREE"
+      }
+    ],
+    "engine": "InnoDB",
+    "charset": "utf8mb4",
+    "comment": null
+  },
+  {
+    "table_name": "orders",
+    "columns": [
+      {
+        "name": "id",
+        "data_type": "BIGINT",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "user_id",
+        "data_type": "BIGINT",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "amount",
+        "data_type": "DECIMAL(12,2)",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "status",
+        "data_type": "TINYINT",
+        "is_nullable": false,
+        "default": "0",
+        "comment": null,
+        "extra": null
+      }
+    ],
+    "primary_key": [
+      "id"
+    ],
+    "indexes": [
+      {
+        "name": "idx_user",
+        "columns": [
+          "user_id"
+        ],
+        "is_unique": false,
+        "index_type": "BTREE"
+      }
+    ],
+    "engine": null,
+    "charset": null,
+    "comment": null
+  }
+]

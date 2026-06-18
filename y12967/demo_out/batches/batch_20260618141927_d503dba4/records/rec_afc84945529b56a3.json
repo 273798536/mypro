@@ -1,0 +1,82 @@
+{
+  "record_id": "afc84945529b56a3",
+  "batch_id": "batch_20260618141927_d503dba4",
+  "record_type": "schema_diff",
+  "status": "pending",
+  "table_name": "users",
+  "migration_name": null,
+  "schema_diff": {
+    "cache_snapshot_id": "1e5f2fea3f49493e",
+    "db_snapshot_id": "200477242cbc3636",
+    "table_name": "users",
+    "conclusion": "multiple_diffs",
+    "diffs": [
+      {
+        "diff_type": "type_mismatch",
+        "column_name": "email",
+        "field": "data_type",
+        "cache_value": "VARCHAR(128)",
+        "db_value": "VARCHAR(256)",
+        "description": "列 'email' 的 data_type 不一致: cache=VARCHAR(128) vs db=VARCHAR(256)"
+      },
+      {
+        "diff_type": "type_mismatch",
+        "column_name": "email",
+        "field": "is_nullable",
+        "cache_value": true,
+        "db_value": false,
+        "description": "列 'email' 的 is_nullable 不一致: cache=True vs db=False"
+      },
+      {
+        "diff_type": "column_extra",
+        "column_name": "phone",
+        "field": null,
+        "cache_value": null,
+        "db_value": {
+          "name": "phone",
+          "data_type": "VARCHAR(20)",
+          "is_nullable": true,
+          "default": null,
+          "comment": null,
+          "extra": null
+        },
+        "description": "DB 存在列 'phone'，但缓存中缺失"
+      },
+      {
+        "diff_type": "index_mismatch",
+        "column_name": "idx_name",
+        "field": "is_unique",
+        "cache_value": false,
+        "db_value": true,
+        "description": "索引 'idx_name' 的 is_unique 不一致"
+      },
+      {
+        "diff_type": "index_mismatch",
+        "column_name": "uk_email",
+        "field": null,
+        "cache_value": null,
+        "db_value": {
+          "name": "uk_email",
+          "columns": [
+            "email"
+          ],
+          "is_unique": true,
+          "index_type": "BTREE"
+        },
+        "description": "索引 'uk_email' 仅存在于 DB"
+      }
+    ],
+    "compare_time": "2026-06-18T14:19:27.361775"
+  },
+  "duplicate_info": null,
+  "pagination_config": null,
+  "snapshot_refs": [
+    "1e5f2fea3f49493e",
+    "200477242cbc3636"
+  ],
+  "related_record_ids": [],
+  "opinions": [],
+  "create_time": "2026-06-18T14:19:27.363224",
+  "update_time": "2026-06-18T14:19:27.363229",
+  "creator": "tester"
+}

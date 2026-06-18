@@ -1,0 +1,61 @@
+{
+  "snapshot_id": "0a4eb8093108a362",
+  "batch_id": "batch_20260618142120_a40c097f",
+  "table_schema": {
+    "table_name": "users",
+    "columns": [
+      {
+        "name": "id",
+        "data_type": "BIGINT",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "name",
+        "data_type": "VARCHAR(64)",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "email",
+        "data_type": "VARCHAR(128)",
+        "is_nullable": true,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "created_at",
+        "data_type": "DATETIME",
+        "is_nullable": false,
+        "default": "CURRENT_TIMESTAMP",
+        "comment": null,
+        "extra": null
+      }
+    ],
+    "primary_key": [
+      "id"
+    ],
+    "indexes": [
+      {
+        "name": "idx_name",
+        "columns": [
+          "name"
+        ],
+        "is_unique": false,
+        "index_type": "BTREE"
+      }
+    ],
+    "engine": "InnoDB",
+    "charset": "utf8mb4",
+    "comment": null
+  },
+  "snapshot_time": "2026-06-18T14:21:20.524723",
+  "source": "cache_input",
+  "operator": "tester",
+  "remark": null
+}

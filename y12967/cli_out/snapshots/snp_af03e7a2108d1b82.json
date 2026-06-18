@@ -1,0 +1,61 @@
+{
+  "snapshot_id": "af03e7a2108d1b82",
+  "batch_id": "batch_20260618142120_a40c097f",
+  "table_schema": {
+    "table_name": "orders",
+    "columns": [
+      {
+        "name": "id",
+        "data_type": "BIGINT",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "user_id",
+        "data_type": "BIGINT",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "amount",
+        "data_type": "DECIMAL(12,2)",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "status",
+        "data_type": "TINYINT",
+        "is_nullable": false,
+        "default": "0",
+        "comment": null,
+        "extra": null
+      }
+    ],
+    "primary_key": [
+      "id"
+    ],
+    "indexes": [
+      {
+        "name": "idx_user",
+        "columns": [
+          "user_id"
+        ],
+        "is_unique": false,
+        "index_type": "BTREE"
+      }
+    ],
+    "engine": null,
+    "charset": null,
+    "comment": null
+  },
+  "snapshot_time": "2026-06-18T14:21:20.521009",
+  "source": "db_input",
+  "operator": "tester",
+  "remark": null
+}

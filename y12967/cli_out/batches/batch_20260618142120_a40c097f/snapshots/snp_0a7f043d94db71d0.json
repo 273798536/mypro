@@ -1,0 +1,77 @@
+{
+  "snapshot_id": "0a7f043d94db71d0",
+  "batch_id": "batch_20260618142120_a40c097f",
+  "table_schema": {
+    "table_name": "users",
+    "columns": [
+      {
+        "name": "id",
+        "data_type": "BIGINT",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "name",
+        "data_type": "VARCHAR(64)",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "email",
+        "data_type": "VARCHAR(256)",
+        "is_nullable": false,
+        "default": null,
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "created_at",
+        "data_type": "DATETIME",
+        "is_nullable": false,
+        "default": "CURRENT_TIMESTAMP",
+        "comment": null,
+        "extra": null
+      },
+      {
+        "name": "phone",
+        "data_type": "VARCHAR(20)",
+        "is_nullable": true,
+        "default": null,
+        "comment": null,
+        "extra": null
+      }
+    ],
+    "primary_key": [
+      "id"
+    ],
+    "indexes": [
+      {
+        "name": "idx_name",
+        "columns": [
+          "name"
+        ],
+        "is_unique": true,
+        "index_type": "BTREE"
+      },
+      {
+        "name": "uk_email",
+        "columns": [
+          "email"
+        ],
+        "is_unique": true,
+        "index_type": "BTREE"
+      }
+    ],
+    "engine": "InnoDB",
+    "charset": "utf8mb4",
+    "comment": null
+  },
+  "snapshot_time": "2026-06-18T14:21:20.524766",
+  "source": "db_input",
+  "operator": "tester",
+  "remark": null
+}

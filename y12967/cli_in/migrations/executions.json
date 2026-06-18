@@ -1,0 +1,31 @@
+[
+  {
+    "migration_name": "V1__init.sql",
+    "execution_order": 1,
+    "execution_time": "2025-01-15T09:00:00",
+    "checksum": "abc123",
+    "success": true
+  },
+  {
+    "migration_name": "V1__init.sql",
+    "execution_order": 1,
+    "execution_time": "2025-01-15T09:05:00",
+    "checksum": "abc123",
+    "success": true
+  },
+  {
+    "migration_name": "V2__add_user.sql",
+    "execution_order": 2,
+    "execution_time": "2025-01-15T09:10:00",
+    "checksum": "def456",
+    "success": true
+  },
+  {
+    "migration_name": "V2__add_user.sql",
+    "execution_order": 2,
+    "execution_time": "2025-01-15T09:12:00",
+    "checksum": "def456",
+    "success": false,
+    "error_message": "duplicate entry"
+  }
+]

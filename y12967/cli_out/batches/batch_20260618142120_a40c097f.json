@@ -1,0 +1,12 @@
+{
+  "batch_id": "batch_20260618142120_a40c097f",
+  "input_dir": "/Users/mac/pro/solo/workspaces/y12967/cli_in",
+  "output_dir": "/Users/mac/pro/solo/workspaces/y12967/cli_out",
+  "start_time": "2026-06-18T14:21:20.513254",
+  "end_time": "2026-06-18T14:21:20.528334",
+  "record_count": 4,
+  "is_rerun": false,
+  "rerun_of_batch": null,
+  "operator": "tester",
+  "remark": "CLI 集成测试"
+}

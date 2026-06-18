@@ -1,0 +1,66 @@
+[
+  {
+    "table_name": "users",
+    "columns": [
+      {
+        "name": "id",
+        "data_type": "BIGINT",
+        "is_nullable": false
+      },
+      {
+        "name": "name",
+        "data_type": "VARCHAR(64)",
+        "is_nullable": false
+      },
+      {
+        "name": "email",
+        "data_type": "VARCHAR(128)",
+        "is_nullable": true
+      },
+      {
+        "name": "created_at",
+        "data_type": "DATETIME",
+        "is_nullable": false,
+        "default": "CURRENT_TIMESTAMP"
+      }
+    ],
+    "primary_key": [
+      "id"
+    ],
+    "indexes": [
+      {
+        "name": "idx_name",
+        "columns": [
+          "name"
+        ],
+        "is_unique": false
+      }
+    ],
+    "engine": "InnoDB",
+    "charset": "utf8mb4"
+  },
+  {
+    "table_name": "orders",
+    "columns": [
+      {
+        "name": "id",
+        "data_type": "BIGINT",
+        "is_nullable": false
+      },
+      {
+        "name": "user_id",
+        "data_type": "BIGINT",
+        "is_nullable": false
+      },
+      {
+        "name": "amount",
+        "data_type": "DECIMAL(10,2)",
+        "is_nullable": false
+      }
+    ],
+    "primary_key": [
+      "id"
+    ],
+    "indexes": []
+  }
+]

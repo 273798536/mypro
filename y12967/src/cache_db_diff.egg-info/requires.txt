@@ -1,0 +1,4 @@
+click>=8.0
+pydantic>=1.10
+rich>=13.0
+tabulate>=0.9

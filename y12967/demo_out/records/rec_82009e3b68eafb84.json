@@ -1,0 +1,22 @@
+{
+  "record_id": "82009e3b68eafb84",
+  "batch_id": "batch_20260618141927_d503dba4",
+  "record_type": "anomaly_trace",
+  "status": "pending",
+  "table_name": "orders",
+  "migration_name": null,
+  "schema_diff": null,
+  "duplicate_info": null,
+  "pagination_config": null,
+  "snapshot_refs": [
+    "12abd7a4c28748fb",
+    "5e38182aa1dfc6c4"
+  ],
+  "related_record_ids": [
+    "e7115695b9189d13"
+  ],
+  "opinions": [],
+  "create_time": "2026-06-18T14:19:27.373805",
+  "update_time": "2026-06-18T14:19:27.373806",
+  "creator": "oncall_bob"
+}
