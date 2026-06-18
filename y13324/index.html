@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>作文批改指标看板 · 复盘版</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#faf7f1; --paper-2:#f4ede0; --paper-3:#ede4d3;
+  --ink:#1b1916; --ink-2:#514c43; --muted:#8c857a;
+  --line:#e3dac8; --line-2:#d4c8b0;
+  --oxblood:#9c3340; --oxblood-bg:#f7e9e7; --oxblood-line:#e3b9b6;
+  --teal:#2c6b66; --teal-bg:#e6efed; --teal-line:#b3d2ce;
+  --amber:#a8740f; --amber-bg:#f7ecd2; --amber-line:#e6cf7a;
+  --bad:#9a9388; --bad-bg:#ece8e0;
+  --missing-bg:#fbf2d6; --missing-line:#e6cf7a;
+  --shadow:0 1px 0 rgba(27,25,22,.04), 0 8px 24px -16px rgba(27,25,22,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.10 0 0 0 0 0.09 0 0 0 0.04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  color:var(--ink);
+  font-family:'Noto Sans SC',system-ui,'PingFang SC','Microsoft YaHei',sans-serif;
+  font-size:14px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'JetBrains Mono','SF Mono',Menlo,ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.serif{font-family:'Noto Serif SC',Georgia,'Songti SC',serif}
+a{color:inherit}
+.wrap{max-width:1240px;margin:0 auto;padding:0 28px 96px}
+
+/* Masthead */
+.mast{padding:34px 0 18px;border-bottom:3px double var(--ink);margin-bottom:0}
+.mast .kicker{display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--oxblood);font-weight:700}
+.mast .kicker .dot{width:8px;height:8px;background:var(--oxblood);border-radius:50%;display:inline-block}
+.mast h1{font-family:'Noto Serif SC',Georgia,serif;font-weight:700;font-size:46px;line-height:1.08;margin:10px 0 6px;letter-spacing:-.5px}
+.mast .sub{color:var(--ink-2);font-size:15px;max-width:760px}
+.meta{display:flex;flex-wrap:wrap;gap:18px 28px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--ink-2)}
+.meta b{color:var(--ink);font-weight:600}
+.meta .pill{display:inline-flex;align-items:center;gap:6px}
+.meta .pill i{width:7px;height:7px;border-radius:50%;display:inline-block}
+
+/* Section */
+.sec{margin-top:46px}
+.sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--oxblood);letter-spacing:.05em}
+.sec-title{font-family:'Noto Serif SC',Georgia,serif;font-weight:600;font-size:23px;letter-spacing:-.2px}
+.sec-desc{margin-left:auto;font-size:12px;color:var(--muted);max-width:440px;text-align:right}
+
+/* Guide */
+.guide{background:var(--paper-2);border:1px solid var(--line-2);border-left:4px solid var(--oxblood);border-radius:6px;padding:18px 22px;margin-top:20px}
+.guide h3{margin:0 0 8px;font-family:'Noto Serif SC',serif;font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+.guide .grid{display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
+.guide ol{margin:6px 0 0;padding-left:18px}
+.guide li{margin:3px 0}
+.guide .mat{font-size:13px}
+.guide .mat .row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line-2)}
+.guide .mat .row:last-child{border-bottom:0}
+.guide .mat b{color:var(--ink)}
+.tag-version{display:inline-block;background:var(--ink);color:var(--paper);font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.03em}
+
+/* Filters */
+.filters{position:sticky;top:0;z-index:30;background:rgba(244,237,224,.92);backdrop-filter:blur(8px);border:1px solid var(--line-2);border-radius:8px;padding:14px 18px;margin-top:24px;box-shadow:var(--shadow)}
+.filters .frow{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+.fg select{font-family:inherit;font-size:13.5px;padding:7px 26px 7px 10px;border:1px solid var(--line-2);border-radius:5px;background:var(--paper) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%23514c43' stroke-width='1.4' stroke-linecap='round'/></svg>") no-repeat right 9px center;cursor:pointer;color:var(--ink);appearance:none}
+.fg select:hover{border-color:var(--ink-2)}
+.switch{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none}
+.switch input{display:none}
+.switch .track{width:38px;height:21px;border-radius:11px;background:var(--line-2);position:relative;transition:.18s}
+.switch .track::after{content:"";position:absolute;top:2px;left:2px;width:17px;height:17px;border-radius:50%;background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.2);transition:.18s}
+.switch input:checked+.track{background:var(--amber)}
+.switch input:checked+.track::after{left:19px}
+.filters .reset{margin-left:auto;font-size:12.5px;color:var(--oxblood);background:none;border:1px solid var(--oxblood-line);padding:6px 12px;border-radius:5px;cursor:pointer;font-family:inherit}
+.filters .reset:hover{background:var(--oxblood-bg)}
+.fresult{font-size:12.5px;color:var(--ink-2);margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.fresult b{color:var(--ink)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:6px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 15px;position:relative;overflow:hidden}
+.stat .lab{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:.04em;display:flex;align-items:center;gap:7px}
+.stat .lab i{width:8px;height:8px;border-radius:50%}
+.stat .val{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:700;line-height:1.15;margin-top:8px;color:var(--ink)}
+.stat .sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+.stat.s-normal{border-color:var(--teal-line)} .stat.s-normal .val{color:var(--teal)}
+.stat.s-leak{border-color:var(--oxblood-line);background:var(--oxblood-bg)} .stat.s-leak .val{color:var(--oxblood)}
+.stat.s-bound{border-color:var(--amber-line);background:var(--amber-bg)} .stat.s-bound .val{color:var(--amber)}
+.stat.s-bad .val{color:var(--bad)}
+.stat.s-corr{border-color:var(--oxblood-line)} .stat.s-corr .val{color:var(--oxblood)}
+.stat.s-miss{border-color:var(--missing-line);background:var(--missing-bg)} .stat.s-miss .val{color:var(--amber)}
+.stat.span2{grid-column:span 2}
+.caveat{margin-top:14px;background:var(--missing-bg);border:1px solid var(--missing-line);border-left:4px solid var(--amber);border-radius:6px;padding:11px 16px;font-size:13px;color:var(--ink);display:flex;align-items:center;gap:10px}
+.caveat .ic{flex:0 0 auto}
+.caveat.hide{display:none}
+.confident{margin-top:14px;background:var(--teal-bg);border:1px solid var(--teal-line);border-left:4px solid var(--teal);border-radius:6px;padding:11px 16px;font-size:13px;color:var(--teal);display:flex;align-items:center;gap:10px}
+.confident.hide{display:none}
+
+/* Table */
+.tablebox{border:1px solid var(--line-2);border-radius:8px;overflow:hidden;background:var(--paper)}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:980px}
+thead th{position:sticky;top:0;background:var(--paper-3);color:var(--ink-2);font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line-2);font-size:12px;letter-spacing:.02em;white-space:nowrap;cursor:pointer;user-select:none}
+thead th .arr{opacity:.3;font-size:10px;margin-left:3px}
+thead th.sorted .arr{opacity:1;color:var(--oxblood)}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:nth-child(even){background:rgba(244,237,224,.4)}
+tbody tr:hover{background:var(--paper-2)}
+tbody tr.flash{animation:flash 1.4s ease}
+@keyframes flash{0%{background:var(--amber-bg)}100%{background:transparent}}
+td.numeric{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+td .dims{font-size:10.5px;color:var(--muted);margin-top:2px}
+td .essay{font-weight:600} td .stu{font-size:11.5px;color:var(--muted)}
+.cite{font-size:12px;color:var(--ink-2);max-width:230px}
+.cite .snip{display:block;font-size:11.5px;color:var(--muted);font-style:italic;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bad-row td .essay{text-decoration:line-through;color:var(--bad)}
+.bad-row td{color:var(--ink-2)}
+.miss-row{background:var(--missing-bg)!important}
+.miss-row:hover{background:var(--amber-bg)!important}
+.leak-row{box-shadow:inset 3px 0 0 var(--oxblood)}
+/* badges */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:10px;border:1px solid;white-space:nowrap}
+.b-normal{color:var(--teal);background:var(--teal-bg);border-color:var(--teal-line)}
+.b-leak{color:var(--oxblood);background:var(--oxblood-bg);border-color:var(--oxblood-line)}
+.b-bound{color:var(--amber);background:var(--amber-bg);border-color:var(--amber-line)}
+.b-bad{color:var(--bad);background:var(--bad-bg);border-color:#d8d2c6}
+.b-corr{color:var(--oxblood);background:var(--paper);border-color:var(--oxblood-line)}
+.b-miss{color:var(--amber);background:var(--missing-bg);border-color:var(--missing-line)}
+.lock{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--oxblood);background:var(--oxblood-bg);border:1px solid var(--oxblood-line);padding:1px 6px;border-radius:4px;font-weight:600}
+.linkrow{color:var(--oxblood);font-weight:600;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px}
+.linkrow:hover{color:var(--ink)}
+.empty{padding:30px;text-align:center;color:var(--muted);font-size:13px}
+
+/* Corrections */
+.corr-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.corr-card{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--oxblood);border-radius:7px;padding:14px 16px}
+.corr-card .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.corr-card .note{font-size:13px;color:var(--ink);line-height:1.55}
+.corr-card .meta2{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px 14px;font-size:11.5px;color:var(--ink-2);padding-top:9px;border-top:1px dashed var(--line-2)}
+.corr-card .meta2 b{color:var(--ink)}
+.tobj{display:inline-flex;align-items:center;gap:5px;font-size:11px;background:var(--paper-3);border:1px solid var(--line-2);border-radius:4px;padding:2px 7px;color:var(--ink-2);font-weight:600}
+
+/* Version compare */
+.vc{display:flex;flex-direction:column;gap:12px}
+.vc-row{display:grid;grid-template-columns:200px 1fr 1fr;gap:0;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;background:var(--paper)}
+.vc-label{padding:14px 16px;background:var(--paper-3);border-right:1px solid var(--line-2);display:flex;flex-direction:column;justify-content:center}
+.vc-label .eid{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px}
+.vc-label .einfo{font-size:11.5px;color:var(--muted);margin-top:3px}
+.vc-cell{padding:12px 16px;border-right:1px solid var(--line)}
+.vc-cell:last-child{border-right:0}
+.vc-cell .vh{font-size:11px;font-weight:700;letter-spacing:.05em;color:var(--muted);text-transform:uppercase}
+.vc-cell .sc{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;margin-top:2px}
+.vc-cell .dims{font-size:11px;color:var(--muted);margin-top:3px}
+.vc-cell .hu{margin-top:7px;font-size:12px;color:var(--ink-2);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.vc-note{font-size:11.5px;color:var(--oxblood);background:var(--oxblood-bg);border:1px solid var(--oxblood-line);border-radius:5px;padding:7px 10px;margin-top:16px;display:flex;align-items:center;gap:8px}
+
+/* export */
+.export-bar{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.btn{font-family:inherit;font-size:13.5px;font-weight:600;padding:10px 20px;border-radius:6px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:var(--paper);display:inline-flex;align-items:center;gap:8px}
+.btn:hover{background:var(--oxblood);border-color:var(--oxblood)}
+.btn.ghost{background:var(--paper);color:var(--ink)}
+.btn.ghost:hover{background:var(--paper-2);color:var(--oxblood);border-color:var(--oxblood)}
+.export-info{font-size:12.5px;color:var(--muted)}
+
+footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+@media(max-width:980px){
+  .stats{grid-template-columns:repeat(3,1fr)}
+  .stat.span2{grid-column:span 3}
+  .corr-grid{grid-template-columns:1fr}
+  .guide .grid{grid-template-columns:1fr}
+  .vc-row{grid-template-columns:1fr}
+  .vc-label{border-right:0;border-bottom:1px solid var(--line-2)}
+  .vc-cell{border-right:0;border-bottom:1px solid var(--line)}
+  .mast h1{font-size:34px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="kicker"><span class="dot"></span> 评测复盘 · 作文批改模型</div>
+    <h1 class="serif">作文批改指标看板</h1>
+    <div class="sub">筛选条件、统计数字、明细表与 CSV 明细由同一套结果生成；泄漏样本单独隔离；模型换版本后旧的人工判断不被覆盖；坏数据可溯源到原始行。</div>
+    <div class="meta">
+      <span class="pill"><b>负责人</b>&nbsp;周姐</span>
+      <span class="pill"><i style="background:var(--oxblood)"></i>复盘版本&nbsp;<span class="tag-version">v1.3</span></span>
+      <span class="pill"><b>日期</b>&nbsp;2026-06-18</span>
+      <span class="pill"><b>样本</b>&nbsp;<span class="mono" id="meta-total">—</span> 条</span>
+      <span class="pill"><b>模型版本</b>&nbsp;v1.2 / v1.3</span>
+    </div>
+  </header>
+
+  <!-- 01 使用说明 + 材料清单 -->
+  <section class="sec" id="guide">
+    <div class="guide">
+      <div class="grid">
+        <div>
+          <h3>使用说明</h3>
+          <ol>
+            <li>本看板为<b>自包含单文件</b>，双击 <span class="mono">index.html</span> 即可在浏览器打开，<b>无需安装任何环境</b>。</li>
+            <li>用下方筛选栏选择「模型版本 / 年级 / 题型 / 数据状态 / 仅看缺引用」，统计、明细表、CSV 会<b>同步同源刷新</b>。</li>
+            <li>缺引用样本会以黄底标注，统计区显示「结论待补」，<b>不展示无保留的肯定结论</b>。</li>
+            <li>点击「人工修正区」里的<b>原始行号</b>，可定位到明细表对应行并高亮。</li>
+            <li>点「导出 CSV」下载<b>当前筛选结果</b>（与明细表同源）。</li>
+          </ol>
+        </div>
+        <div class="mat">
+          <h3>材料清单</h3>
+          <div class="row"><span>① 主交付物</span><b>index.html（本看板，双击打开）</b></div>
+          <div class="row"><span>② 产品需求</span><span class="mono">.trae/documents/prd.md</span></div>
+          <div class="row"><span>③ 技术架构</span><span class="mono">.trae/documents/tech-architecture.md</span></div>
+          <div class="row"><span>④ 样例数据</span><span>内嵌于 index.html（<span class="mono">RECORDS</span> 数组）</span></div>
+          <div class="row"><span>⑤ CSV 导出</span><span>看板内「导出」按钮即时生成</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 筛选 -->
+  <section class="sec" id="filters">
+    <div class="sec-head">
+      <span class="sec-num">02</span><span class="sec-title serif">筛选条件</span>
+      <span class="sec-desc">所有视图共用同一筛选结果（同源）</span>
+    </div>
+    <div class="filters">
+      <div class="frow">
+        <div class="fg"><label>模型版本</label><select id="f-version"></select></div>
+        <div class="fg"><label>年级</label><select id="f-grade"></select></div>
+        <div class="fg"><label>题目类型</label><select id="f-type"></select></div>
+        <div class="fg"><label>数据状态</label><select id="f-status">
+          <option value="all">全部</option>
+          <option value="normal">正常</option>
+          <option value="corrected">已修正</option>
+          <option value="boundary">边界</option>
+          <option value="bad_data">坏数据</option>
+          <option value="leakage">泄漏</option>
+        </select></div>
+        <label class="switch"><input type="checkbox" id="f-miss"><span class="track"></span>仅看缺引用</label>
+        <button class="reset" id="f-reset">重置筛选</button>
+      </div>
+      <div class="fresult" id="f-result"></div>
+    </div>
+  </section>
+
+  <!-- 03 统计 -->
+  <section class="sec" id="stats">
+    <div class="sec-head">
+      <span class="sec-num">03</span><span class="sec-title serif">统计数字</span>
+      <span class="sec-desc">由筛选结果直接计算；泄漏/坏数据已隔离，不计入平均分与一致性</span>
+    </div>
+    <div class="stats" id="stats-grid"></div>
+    <div class="caveat" id="caveat"></div>
+    <div class="confident hide" id="confident"></div>
+  </section>
+
+  <!-- 04 明细 -->
+  <section class="sec" id="detail">
+    <div class="sec-head">
+      <span class="sec-num">04</span><span class="sec-title serif">明细表</span>
+      <span class="sec-desc">与统计、CSV 同源；点击表头排序；缺引用黄底，泄漏红边，坏数据删除线</span>
+    </div>
+    <div class="tablebox">
+      <table id="detail-table">
+        <thead><tr>
+          <th data-k="row_id">行号<span class="arr">↕</span></th>
+          <th data-k="student_label">作文 / 学生<span class="arr">↕</span></th>
+          <th>年级</th><th>题型</th>
+          <th data-k="model_version">版本<span class="arr">↕</span></th>
+          <th data-k="model_total">模型分<span class="arr">↕</span></th>
+          <th>引用</th>
+          <th data-k="human_total">人工分<span class="arr">↕</span></th>
+          <th data-k="status">状态<span class="arr">↕</span></th>
+          <th>修正 / 说明</th>
+        </tr></thead>
+        <tbody id="detail-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 05 人工修正 -->
+  <section class="sec" id="corrections">
+    <div class="sec-head">
+      <span class="sec-num">05</span><span class="sec-title serif">人工修正区</span>
+      <span class="sec-desc">坏数据溯源：每条修正指向「原始行 + 具体对象」；点击原始行号可定位</span>
+    </div>
+    <div class="corr-grid" id="corr-grid"></div>
+    <div class="vc-note">
+      <span class="ic">⎘</span>
+      <span>全量审计视图：本区列出所有人工修正，<b>不随筛选变化</b>，作为复核与溯源依据。其中行 6 / 行 14 为同源问题（语言维度异常），v1.3 仍未修复。</span>
+    </div>
+  </section>
+
+  <!-- 06 版本对比 -->
+  <section class="sec" id="version-compare">
+    <div class="sec-head">
+      <span class="sec-num">06</span><span class="sec-title serif">版本对比</span>
+      <span class="sec-desc">模型版本换了，旧的人工判断保留显示，不被覆盖</span>
+    </div>
+    <div class="vc" id="vc-list"></div>
+    <div class="vc-note">
+      <span class="ic">🔒</span>
+      <span>人工判断标注「保留(v1.2)」锁标，表示该判断在模型升级到 v1.3 后<b>原样保留、未覆盖</b>，便于老师对照两次结果差异。</span>
+    </div>
+  </section>
+
+  <!-- 07 导出 -->
+  <section class="sec" id="export">
+    <div class="sec-head">
+      <span class="sec-num">07</span><span class="sec-title serif">CSV 导出</span>
+      <span class="sec-desc">导出当前筛选结果，与明细表同源</span>
+    </div>
+    <div class="export-bar">
+      <button class="btn" id="btn-csv">⬇ 导出 CSV（当前筛选结果）</button>
+      <button class="btn ghost" id="btn-csv-all">导出全量 CSV</button>
+      <span class="export-info" id="export-info"></span>
+    </div>
+  </section>
+
+  <footer>
+    <span>作文批改指标看板 · 复盘版 · 单文件自包含 · 双击即用</span>
+    <span>负责人 周姐 · 2026-06-18 · 同源 / 隔离 / 不可覆盖 / 可溯源 / 缺引用不肯定</span>
+  </footer>
+</div>
+
+<script>
+const RECORDS = [
+  {row_id:1,essay_id:"E-101",student_label:"学生A01",grade:"七年级",prompt_type:"记叙文",model_version:"v1.2",model_total:43,model_dim:{content:18,structure:9,language:12,handwriting:4},has_citation:true,citation_snippet:"那天雨下得很大，我撑着伞站在校门口……",human_total:42,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-10",status:"normal",correction:null,supplement_note:null},
+  {row_id:2,essay_id:"E-102",student_label:"学生A02",grade:"八年级",prompt_type:"议论文",model_version:"v1.2",model_total:40,model_dim:{content:17,structure:8,language:11,handwriting:4},has_citation:true,citation_snippet:"正如朱熹所言：'读书有三到'……",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:null},
+  {row_id:3,essay_id:"E-103",student_label:"学生A03",grade:"七年级",prompt_type:"记叙文",model_version:"v1.2",model_total:46,model_dim:{content:19,structure:9,language:14,handwriting:4},has_citation:true,citation_snippet:"窗外的梧桐叶一片片落下……",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"leakage",correction:null,supplement_note:"疑似训练集泄漏样本，已隔离，不计入正常统计"},
+  {row_id:4,essay_id:"E-104",student_label:"学生A04",grade:"九年级",prompt_type:"应用文",model_version:"v1.2",model_total:38,model_dim:{content:16,structure:7,language:11,handwriting:4},has_citation:false,citation_snippet:null,human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:"模型未给出引用片段，结论待补"},
+  {row_id:5,essay_id:"E-105",student_label:"学生A05",grade:"八年级",prompt_type:"议论文",model_version:"v1.2",model_total:42,model_dim:{content:18,structure:8,language:12,handwriting:4},has_citation:true,citation_snippet:"'业精于勤荒于嬉'——韩愈",human_total:41,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-11",status:"boundary",correction:null,supplement_note:"边界样本：模型分42，人工分41，临界于一致性阈值，单独标注"},
+  {row_id:6,essay_id:"E-106",student_label:"学生A06",grade:"七年级",prompt_type:"说明文",model_version:"v1.2",model_total:35,model_dim:{content:18,structure:9,language:4,handwriting:4},has_citation:true,citation_snippet:"水的沸点在标准大气压下为100℃",human_total:30,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-11",status:"bad_data",correction:{note:"模型把语言维度评成4分，明显异常（实际应≥10），疑似解析错误，已标记坏数据并隔离",original_row:6,target_object:"模型评分.语言维度",corrected_by:"周姐",corrected_at_version:"v1.2"},supplement_note:null},
+  {row_id:7,essay_id:"E-107",student_label:"学生A07",grade:"八年级",prompt_type:"记叙文",model_version:"v1.2",model_total:39,model_dim:{content:17,structure:8,language:10,handwriting:4},has_citation:true,citation_snippet:"那天下课后，我鼓起勇气走向老师……",human_total:41,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-11",status:"corrected",correction:{note:"原模型总分39偏低，人工复核为41；结构维度由8修正为9",original_row:7,target_object:"模型评分.结构维度",corrected_by:"周姐",corrected_at_version:"v1.2"},supplement_note:null},
+  {row_id:8,essay_id:"E-108",student_label:"学生A08",grade:"九年级",prompt_type:"议论文",model_version:"v1.2",model_total:44,model_dim:{content:19,structure:9,language:12,handwriting:4},has_citation:true,citation_snippet:"'千里之行，始于足下'——《道德经》",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:null},
+  {row_id:17,essay_id:"E-117",student_label:"学生A17",grade:"七年级",prompt_type:"记叙文",model_version:"v1.2",model_total:41,model_dim:{content:17,structure:8,language:12,handwriting:4},has_citation:false,citation_snippet:null,human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:"缺引用，结论待补"},
+  {row_id:19,essay_id:"E-119",student_label:"学生A19",grade:"九年级",prompt_type:"说明文",model_version:"v1.2",model_total:45,model_dim:{content:19,structure:9,language:13,handwriting:4},has_citation:true,citation_snippet:"光合作用是植物利用光能合成有机物的过程",human_total:44,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-12",status:"normal",correction:null,supplement_note:null},
+  {row_id:22,essay_id:"E-122",student_label:"学生A22",grade:"七年级",prompt_type:"应用文",model_version:"v1.2",model_total:37,model_dim:{content:16,structure:7,language:10,handwriting:4},has_citation:true,citation_snippet:"兹证明该同学在我校就读",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:null},
+  {row_id:25,essay_id:"E-125",student_label:"学生A25",grade:"八年级",prompt_type:"记叙文",model_version:"v1.2",model_total:36,model_dim:{content:17,structure:8,language:7,handwriting:4},has_citation:false,citation_snippet:null,human_total:32,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-12",status:"bad_data",correction:{note:"缺引用且语言维度7分异常，疑似评分模型在该样本上崩溃，已隔离坏数据",original_row:25,target_object:"模型评分.语言维度",corrected_by:"周姐",corrected_at_version:"v1.2"},supplement_note:null},
+
+  {row_id:9,essay_id:"E-101",student_label:"学生A01",grade:"七年级",prompt_type:"记叙文",model_version:"v1.3",model_total:44,model_dim:{content:18,structure:9,language:13,handwriting:4},has_citation:true,citation_snippet:"那天雨下得很大，我撑着伞站在校门口……",human_total:42,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-10",status:"normal",correction:null,supplement_note:"模型升级至v1.3；人工判断仍为v1.2所做，保留不覆盖"},
+  {row_id:10,essay_id:"E-112",student_label:"学生A12",grade:"八年级",prompt_type:"议论文",model_version:"v1.3",model_total:41,model_dim:{content:18,structure:8,language:11,handwriting:4},has_citation:true,citation_snippet:"'学而不思则罔'——《论语》",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:null},
+  {row_id:11,essay_id:"E-113",student_label:"学生A13",grade:"七年级",prompt_type:"记叙文",model_version:"v1.3",model_total:47,model_dim:{content:19,structure:9,language:15,handwriting:4},has_citation:true,citation_snippet:"窗外的梧桐叶一片片落下……",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"leakage",correction:null,supplement_note:"疑似训练集泄漏样本，已隔离"},
+  {row_id:12,essay_id:"E-114",student_label:"学生A14",grade:"九年级",prompt_type:"应用文",model_version:"v1.3",model_total:39,model_dim:{content:16,structure:8,language:11,handwriting:4},has_citation:true,citation_snippet:"建议书正文应包含背景、建议、结语",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:null},
+  {row_id:13,essay_id:"E-115",student_label:"学生A15",grade:"八年级",prompt_type:"议论文",model_version:"v1.3",model_total:42,model_dim:{content:18,structure:8,language:12,handwriting:4},has_citation:false,citation_snippet:null,human_total:39,human_judged_version:"v1.3",judged_by:"周姐",judged_at:"2026-06-15",status:"boundary",correction:null,supplement_note:"边界样本且缺引用：模型42，人工39，差3超阈值，结论待补"},
+  {row_id:14,essay_id:"E-116",student_label:"学生A16",grade:"七年级",prompt_type:"说明文",model_version:"v1.3",model_total:34,model_dim:{content:18,structure:9,language:3,handwriting:4},has_citation:true,citation_snippet:"昆虫的身体分为头、胸、腹三部分",human_total:31,human_judged_version:"v1.3",judged_by:"周姐",judged_at:"2026-06-15",status:"bad_data",correction:{note:"v1.3在该样本语言维度仍异常(3分)，与v1.2行6同类问题，已标记坏数据并溯源",original_row:14,target_object:"模型评分.语言维度",corrected_by:"周姐",corrected_at_version:"v1.3"},supplement_note:"与v1.2行6同源问题，v1.3未修复"},
+  {row_id:15,essay_id:"E-107",student_label:"学生A07",grade:"八年级",prompt_type:"记叙文",model_version:"v1.3",model_total:40,model_dim:{content:17,structure:9,language:10,handwriting:4},has_citation:true,citation_snippet:"那天下课后，我鼓起勇气走向老师……",human_total:41,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-11",status:"corrected",correction:{note:"v1.3结构维度已采纳人工修正为9；人工判断仍锁定v1.2，保留不覆盖",original_row:7,target_object:"模型评分.结构维度",corrected_by:"周姐",corrected_at_version:"v1.2"},supplement_note:null},
+  {row_id:16,essay_id:"E-118",student_label:"学生A18",grade:"九年级",prompt_type:"议论文",model_version:"v1.3",model_total:45,model_dim:{content:19,structure:9,language:13,handwriting:4},has_citation:true,citation_snippet:"'天行健，君子以自强不息'——《周易》",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:null},
+  {row_id:18,essay_id:"E-128",student_label:"学生A28",grade:"八年级",prompt_type:"应用文",model_version:"v1.3",model_total:38,model_dim:{content:16,structure:8,language:10,handwriting:4},has_citation:true,citation_snippet:"活动通知应写明时间、地点、参与人",human_total:38,human_judged_version:"v1.3",judged_by:"周姐",judged_at:"2026-06-15",status:"normal",correction:null,supplement_note:null},
+  {row_id:20,essay_id:"E-119",student_label:"学生A19",grade:"九年级",prompt_type:"说明文",model_version:"v1.3",model_total:45,model_dim:{content:19,structure:9,language:13,handwriting:4},has_citation:true,citation_snippet:"光合作用是植物利用光能合成有机物的过程",human_total:44,human_judged_version:"v1.2",judged_by:"周姐",judged_at:"2026-06-12",status:"normal",correction:null,supplement_note:"v1.3复评；人工判断锁定v1.2(44分)，保留不覆盖"},
+  {row_id:21,essay_id:"E-121",student_label:"学生A21",grade:"八年级",prompt_type:"议论文",model_version:"v1.3",model_total:43,model_dim:{content:18,structure:9,language:12,handwriting:4},has_citation:false,citation_snippet:null,human_total:42,human_judged_version:"v1.3",judged_by:"周姐",judged_at:"2026-06-15",status:"corrected",correction:{note:"缺引用样本，模型总分43偏高，人工复核42；结构由9回退至8",original_row:21,target_object:"模型评分.结构维度",corrected_by:"周姐",corrected_at_version:"v1.3"},supplement_note:null},
+  {row_id:23,essay_id:"E-123",student_label:"学生A23",grade:"九年级",prompt_type:"议论文",model_version:"v1.3",model_total:46,model_dim:{content:19,structure:9,language:14,handwriting:4},has_citation:true,citation_snippet:"'路漫漫其修远兮'——屈原",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"leakage",correction:null,supplement_note:"疑似泄漏样本，已隔离"},
+  {row_id:24,essay_id:"E-124",student_label:"学生A24",grade:"七年级",prompt_type:"记叙文",model_version:"v1.3",model_total:42,model_dim:{content:18,structure:8,language:12,handwriting:4},has_citation:true,citation_snippet:"那个夏天，我第一次独自坐火车……",human_total:43,human_judged_version:"v1.3",judged_by:"周姐",judged_at:"2026-06-15",status:"boundary",correction:null,supplement_note:"边界样本：模型42，人工43，临界"},
+  {row_id:26,essay_id:"E-126",student_label:"学生A26",grade:"九年级",prompt_type:"应用文",model_version:"v1.3",model_total:40,model_dim:{content:17,structure:8,language:11,handwriting:4},has_citation:true,citation_snippet:"感谢信应先致谢再说明事由",human_total:null,human_judged_version:null,judged_by:null,judged_at:null,status:"normal",correction:null,supplement_note:null}
+];
+
+const STATUS_META={
+  normal:{label:"正常",cls:"b-normal",dot:"var(--teal)"},
+  leakage:{label:"泄漏",cls:"b-leak",dot:"var(--oxblood)"},
+  boundary:{label:"边界",cls:"b-bound",dot:"var(--amber)"},
+  bad_data:{label:"坏数据",cls:"b-bad",dot:"var(--bad)"},
+  corrected:{label:"已修正",cls:"b-corr",dot:"var(--oxblood)"}
+};
+const CONS_THRESHOLD=2;
+
+const state={filter:{model_version:"all",grade:"all",prompt_type:"all",status:"all",only_missing_citation:false},sort:{key:"row_id",dir:"asc"}};
+
+function getFilteredRecords(){
+  const f=state.filter;
+  let rows=RECORDS.filter(r=>{
+    if(f.model_version!=="all"&&r.model_version!==f.model_version)return false;
+    if(f.grade!=="all"&&r.grade!==f.grade)return false;
+    if(f.prompt_type!=="all"&&r.prompt_type!==f.prompt_type)return false;
+    if(f.status!=="all"&&r.status!==f.status)return false;
+    if(f.only_missing_citation&&r.has_citation)return false;
+    return true;
+  });
+  const {key,dir}=state.sort;
+  rows.sort((a,b)=>{
+    let va,vb;
+    if(key==="row_id"){va=a.row_id;vb=b.row_id;}
+    else if(key==="student_label"){va=a.student_label;vb=b.student_label;}
+    else if(key==="model_version"){va=a.model_version;vb=b.model_version;}
+    else if(key==="model_total"){va=a.model_total;vb=b.model_total;}
+    else if(key==="human_total"){va=a.human_total==null?-1:a.human_total;vb=b.human_total==null?-1:b.human_total;}
+    else if(key==="status"){const o=Object.keys(STATUS_META);va=o.indexOf(a.status);vb=o.indexOf(b.status);}
+    else{va=a.row_id;vb=b.row_id;}
+    if(typeof va==="string")return dir==="asc"?va.localeCompare(vb):vb.localeCompare(va);
+    return dir==="asc"?va-vb:vb-va;
+  });
+  return rows;
+}
+
+function computeStats(rows){
+  const all=rows.length;
+  const by=s=>rows.filter(r=>r.status===s).length;
+  const normal=by("normal"),leakage=by("leakage"),boundary=by("boundary"),bad=by("bad_data"),corrected=by("corrected");
+  const avgBase=rows.filter(r=>r.status==="normal"||r.status==="corrected");
+  const avg=avgBase.length?avgBase.reduce((s,r)=>s+r.model_total,0)/avgBase.length:null;
+  const missing=rows.filter(r=>!r.has_citation).length;
+  const consBase=rows.filter(r=>r.human_total!=null&&r.status!=="leakage"&&r.status!=="bad_data");
+  const consOk=consBase.filter(r=>Math.abs(r.model_total-r.human_total)<=CONS_THRESHOLD).length;
+  const consistency=consBase.length?Math.round(consOk/consBase.length*100):null;
+  return{all,normal,leakage,boundary,bad,corrected,avg,missing,consistency,consDen:consBase.length,consOk};
+}
+
+function el(id){return document.getElementById(id);}
+
+function buildFilterOptions(){
+  const uniq=key=>["all",...Array.from(new Set(RECORDS.map(r=>r[key])))];
+  const fill=(id,key,allLabel)=>{
+    const sel=el(id);sel.innerHTML="";
+    const opts=uniq(key);
+    opts.forEach(v=>{
+      const o=document.createElement("option");o.value=v;o.textContent=v==="all"?allLabel:v;sel.appendChild(o);
+    });
+    sel.value="all";
+  };
+  fill("f-version","model_version","全部版本");
+  fill("f-grade","grade","全部年级");
+  fill("f-type","prompt_type","全部题型");
+}
+
+function renderStats(){
+  const rows=getFilteredRecords();
+  const s=computeStats(rows);
+  const cards=[
+    {lab:"样本总数",val:s.all,sub:"当前筛选结果",cls:""},
+    {lab:"正常样本",val:s.normal,sub:"计入平均分",cls:"s-normal"},
+    {lab:"泄漏样本",val:s.leakage,sub:"已隔离，不计入统计",cls:"s-leak"},
+    {lab:"边界样本",val:s.boundary,sub:"临界，单独标注",cls:"s-bound"},
+    {lab:"坏数据",val:s.bad,sub:"已隔离，可溯源",cls:"s-bad"},
+    {lab:"已修正",val:s.corrected,sub:"含原始行溯源",cls:"s-corr"},
+    {lab:"平均分",val:s.avg==null?"—":s.avg.toFixed(1),sub:"仅正常+已修正",cls:"span2"},
+    {lab:"缺引用",val:s.missing,sub:s.missing>0?"结论待补":"无",cls:"s-miss"},
+    {lab:"模型-人工一致性",val:s.consistency==null?"—":s.consistency+"%",sub:s.consDen?`一致 ${s.consOk}/${s.consDen}（阈值±${CONS_THRESHOLD}）`:"暂无人工判断",cls:"span2"},
+  ];
+  el("stats-grid").innerHTML=cards.map(c=>`
+    <div class="stat ${c.cls}">
+      <div class="lab">${c.lab}</div>
+      <div class="val mono">${c.val}</div>
+      <div class="sub">${c.sub}</div>
+    </div>`).join("");
+
+  const cav=el("caveat"),conf=el("confident");
+  if(s.missing>0){
+    cav.classList.remove("hide");
+    cav.innerHTML=`<span class="ic">⚠</span><span>当前结果中 <b class="mono">${s.missing}</b> 条<b>缺引用</b>，相关结论（平均分 / 一致性）<b>标注「结论待补」</b>，不作为无保留的肯定结论。请周姐在复盘前补齐引用或加注说明。</span>`;
+    conf.classList.add("hide");
+  }else{
+    cav.classList.add("hide");
+    if(s.all>0){
+      conf.classList.remove("hide");
+      conf.innerHTML=`<span class="ic">✓</span><span>当前结果无缺引用，统计结论可信。</span>`;
+    }else{
+      conf.classList.add("hide");
+    }
+  }
+  el("meta-total").textContent=RECORDS.length;
+}
+
+function badge(status){const m=STATUS_META[status];return `<span class="badge ${m.cls}"><span style="width:6px;height:6px;border-radius:50%;background:${m.dot};display:inline-block"></span>${m.label}</span>`;}
+
+function renderDetail(){
+  const rows=getFilteredRecords();
+  const body=el("detail-body");
+  if(!rows.length){body.innerHTML=`<tr><td colspan="10" class="empty">当前筛选无结果</td></tr>`;return;}
+  body.innerHTML=rows.map(r=>{
+    const d=r.model_dim;
+    const dims=`内${d.content} · 结${d.structure} · 语${d.language} · 书${d.handwriting}`;
+    const clsArr=[];
+    if(r.status==="bad_data")clsArr.push("bad-row");
+    if(!r.has_citation)clsArr.push("miss-row");
+    if(r.status==="leakage")clsArr.push("leak-row");
+    const trCls=clsArr.length?' class="'+clsArr.join(" ")+'"':"";
+    const cite=r.has_citation
+      ? `<span class="badge b-normal">有引用</span><span class="snip">"${escHtml(r.citation_snippet)}"</span>`
+      : `<span class="badge b-miss">缺引用</span><span class="snip">未给出引用片段</span>`;
+    const human=r.human_total==null
+      ? `<span class="muted" style="color:var(--muted)">—</span>`
+      : `<span class="mono">${r.human_total}</span> ${r.human_judged_version&&r.human_judged_version!==r.model_version?`<span class="lock">🔒 保留(${escHtml(r.human_judged_version)})</span>`:`<span style="font-size:11px;color:var(--muted)">@${escHtml(r.human_judged_version)}</span>`}`;
+    const corr=r.correction?`<span class="linkrow" onclick="scrollToRow(${r.correction.original_row})">→ 行 #${r.correction.original_row}</span> <span class="tobj">${escHtml(r.correction.target_object)}</span>`:(r.supplement_note?`<span style="font-size:11.5px;color:var(--muted)">${escHtml(r.supplement_note)}</span>`:`<span style="color:var(--muted)">—</span>`);
+    return `<tr id="row-${r.row_id}"${trCls}>
+      <td class="numeric mono">#${r.row_id}</td>
+      <td><div class="essay">${escHtml(r.essay_id)}</div><div class="stu">${escHtml(r.student_label)}</div></td>
+      <td>${escHtml(r.grade)}</td>
+      <td>${escHtml(r.prompt_type)}</td>
+      <td><span class="tag-version">${escHtml(r.model_version)}</span></td>
+      <td class="numeric mono">${r.model_total}<div class="dims">${dims}</div></td>
+      <td class="cite">${cite}</td>
+      <td class="numeric">${human}</td>
+      <td>${badge(r.status)}</td>
+      <td>${corr}</td>
+    </tr>`;
+  }).join("");
+  // sort indicators
+  document.querySelectorAll("#detail-table thead th").forEach(th=>{
+    th.classList.toggle("sorted",th.dataset.k===state.sort.key);
+    const arr=th.querySelector(".arr");
+    if(arr){arr.textContent=th.dataset.k===state.sort.key?(state.sort.dir==="asc"?"↑":"↓"):"↕";}
+  });
+}
+
+function renderCorrections(){
+  const list=RECORDS.filter(r=>r.correction);
+  el("corr-grid").innerHTML=list.map(r=>{
+    const c=r.correction;
+    return `<div class="corr-card">
+      <div class="top">
+        ${badge(r.status)}
+        <span class="tag-version">${escHtml(r.model_version)}</span>
+        <span style="font-size:11.5px;color:var(--muted)">${escHtml(r.essay_id)} · 行 #${r.row_id}</span>
+      </div>
+      <div class="note">${escHtml(c.note)}</div>
+      <div class="meta2">
+        <span>原始行：<b class="linkrow" onclick="scrollToRow(${c.original_row})">#${c.original_row}</b></span>
+        <span>具体对象：<span class="tobj">${escHtml(c.target_object)}</span></span>
+        <span>修正人：<b>${escHtml(c.corrected_by)}</b></span>
+        <span>修正时版本：<b>${escHtml(c.corrected_at_version)}</b></span>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderVersionCompare(){
+  const byEssay={};
+  RECORDS.forEach(r=>{(byEssay[r.essay_id]=byEssay[r.essay_id]||[]).push(r)});
+  const pairs=[];
+  Object.values(byEssay).forEach(arr=>{
+    const v12=arr.find(r=>r.model_version==="v1.2");
+    const v13=arr.find(r=>r.model_version==="v1.3");
+    if(v12&&v13)pairs.push({essay_id:v12.essay_id,student_label:v12.student_label,grade:v12.grade,prompt_type:v12.prompt_type,v12,v13});
+  });
+  el("vc-list").innerHTML=pairs.map(p=>{
+    const cell=(r)=>{
+      const d=r.model_dim;
+      const hu=r.human_total==null?`<span style="color:var(--muted)">未人工判断</span>`:
+        `人工 <b class="mono">${r.human_total}</b> ${r.human_judged_version!==r.model_version?`<span class="lock">🔒 保留(${escHtml(r.human_judged_version)})</span>`:`<span style="color:var(--muted)">@${escHtml(r.human_judged_version)}</span>`}`;
+      return `<div class="vc-cell">
+        <div class="vh">${escHtml(r.model_version)} 模型分</div>
+        <div class="sc mono">${r.model_total}</div>
+        <div class="dims">内${d.content} · 结${d.structure} · 语${d.language} · 书${d.handwriting}</div>
+        <div class="hu">${hu}</div>
+      </div>`;
+    };
+    const delta=p.v13.model_total-p.v12.model_total;
+    const deltaTxt=delta===0?"持平":(delta>0?`+${delta}`:`${delta}`);
+    return `<div class="vc-row">
+      <div class="vc-label">
+        <div class="eid">${escHtml(p.essay_id)}</div>
+        <div class="einfo">${escHtml(p.student_label)} · ${escHtml(p.grade)} · ${escHtml(p.prompt_type)}</div>
+        <div class="einfo">模型分变化 <b class="mono" style="color:${delta>0?'var(--teal)':delta<0?'var(--oxblood)':'var(--muted)'}">${deltaTxt}</b></div>
+      </div>
+      ${cell(p.v12)}
+      ${cell(p.v13)}
+    </div>`;
+  }).join("");
+}
+
+function renderFilterResult(){
+  const rows=getFilteredRecords();
+  const s=computeStats(rows);
+  const f=state.filter;
+  const parts=[];
+  parts.push(`版本=<b>${f.model_version}</b>`);
+  parts.push(`年级=<b>${f.grade}</b>`);
+  parts.push(`题型=<b>${f.prompt_type}</b>`);
+  parts.push(`状态=<b>${f.status}</b>`);
+  parts.push(`仅缺引用=<b>${f.only_missing_citation?"是":"否"}</b>`);
+  parts.push(`命中 <b class="mono">${rows.length}</b> 条`);
+  parts.push(`其中泄漏 <b class="mono">${s.leakage}</b> · 坏数据 <b class="mono">${s.bad}</b> · 缺引用 <b class="mono">${s.missing}</b>`);
+  el("f-result").innerHTML=parts.join(" &nbsp;|&nbsp; ");
+  el("export-info").textContent=`当前筛选命中 ${rows.length} 条（全量 ${RECORDS.length} 条）`;
+}
+
+function escHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+
+window.scrollToRow=function(rowId){
+  const target=document.getElementById("row-"+rowId);
+  if(!target){
+    // row hidden by current filter: reset all filters so the original row is locatable
+    state.filter={model_version:"all",grade:"all",prompt_type:"all",status:"all",only_missing_citation:false};
+    ["f-version","f-grade","f-type"].forEach(id=>{if(el(id))el(id).value="all";});
+    el("f-status").value="all";el("f-miss").checked=false;
+    renderAll();
+    setTimeout(()=>doFlash(rowId),60);
+    return;
+  }
+  doFlash(rowId);
+};
+function doFlash(rowId){
+  const target=document.getElementById("row-"+rowId);
+  if(!target)return;
+  target.scrollIntoView({behavior:"smooth",block:"center"});
+  target.classList.remove("flash");void target.offsetWidth;target.classList.add("flash");
+}
+
+function exportCSV(useAll){
+  const rows=useAll?RECORDS:getFilteredRecords();
+  const headers=["原始行号","作文ID","学生","年级","题型","模型版本","模型总分","内容","结构","语言","书写","有无引用","引用片段","人工总分","人工判断版本","标注人","标注时间","数据状态","修正说明","修正原始行","修正具体对象","后补说明"];
+  const esc=v=>{v=v==null?"":String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+  const lines=[headers.join(",")];
+  rows.forEach(r=>{
+    const d=r.model_dim;
+    lines.push([
+      r.row_id,r.essay_id,r.student_label,r.grade,r.prompt_type,r.model_version,r.model_total,
+      d.content,d.structure,d.language,d.handwriting,
+      r.has_citation?"有":"缺",r.citation_snippet||"",
+      r.human_total==null?"":r.human_total,r.human_judged_version||"",r.judged_by||"",r.judged_at||"",
+      STATUS_META[r.status].label,
+      r.correction?r.correction.note:"",r.correction?r.correction.original_row:"",r.correction?r.correction.target_object:"",
+      r.supplement_note||""
+    ].map(esc).join(","));
+  });
+  const blob=new Blob(["\ufeff"+lines.join("\r\n")],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=(useAll?"作文批改指标看板_全量":"作文批改指标看板_筛选结果")+".csv";
+  document.body.appendChild(a);a.click();a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function renderAll(){renderStats();renderDetail();renderFilterResult();}
+
+function bindEvents(){
+  el("f-version").addEventListener("change",e=>{state.filter.model_version=e.target.value;renderAll();});
+  el("f-grade").addEventListener("change",e=>{state.filter.grade=e.target.value;renderAll();});
+  el("f-type").addEventListener("change",e=>{state.filter.prompt_type=e.target.value;renderAll();});
+  el("f-status").addEventListener("change",e=>{state.filter.status=e.target.value;renderAll();});
+  el("f-miss").addEventListener("change",e=>{state.filter.only_missing_citation=e.target.checked;renderAll();});
+  el("f-reset").addEventListener("click",()=>{
+    state.filter={model_version:"all",grade:"all",prompt_type:"all",status:"all",only_missing_citation:false};
+    ["f-version","f-grade","f-type"].forEach(id=>el(id).value="all");
+    el("f-status").value="all";el("f-miss").checked=false;
+    renderAll();
+  });
+  document.querySelectorAll("#detail-table thead th[data-k]").forEach(th=>{
+    th.addEventListener("click",()=>{
+      const k=th.dataset.k;
+      if(state.sort.key===k)state.sort.dir=state.sort.dir==="asc"?"desc":"asc";
+      else{state.sort.key=k;state.sort.dir="asc";}
+      renderDetail();
+    });
+  });
+  el("btn-csv").addEventListener("click",()=>exportCSV(false));
+  el("btn-csv-all").addEventListener("click",()=>exportCSV(true));
+}
+
+function init(){
+  buildFilterOptions();
+  bindEvents();
+  renderAll();
+  renderCorrections();
+  renderVersionCompare();
+}
+init();
+</script>
+</body>
+</html>
