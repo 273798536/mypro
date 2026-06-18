@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #0F172A;
+  color: #E2E8F0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1E293B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748B;
+}
+
+@layer utilities {
+  .glow-border {
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
+  }
+
+  .glow-border-red {
+    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.4), 0 0 20px rgba(239, 68, 68, 0.15);
+  }
+
+  .glow-border-green {
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.4), 0 0 20px rgba(16, 185, 129, 0.15);
+  }
+
+  .diagonal-pattern {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(239, 68, 68, 0.05) 10px,
+      rgba(239, 68, 68, 0.05) 20px
+    );
+  }
+
+  .animate-breathe {
+    animation: breathe 2s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+}
