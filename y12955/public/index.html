@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>表结构漂移对比系统</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+      color: white;
+      padding: 16px 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .header .subtitle {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-top: 2px;
+    }
+    
+    .container {
+      max-width: 1280px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: white;
+      border-radius: 8px;
+      padding: 4px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #666;
+      transition: all 0.2s;
+    }
+    
+    .tab:hover {
+      background: #f3f4f6;
+      color: #333;
+    }
+    
+    .tab.active {
+      background: #4f46e5;
+      color: white;
+      font-weight: 500;
+    }
+    
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .btn-primary {
+      background: #4f46e5;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #4338ca;
+    }
+    
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    
+    .btn-secondary:hover {
+      background: #d1d5db;
+    }
+    
+    .btn-success {
+      background: #059669;
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background: #047857;
+    }
+    
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #b91c1c;
+    }
+    
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    tr:hover {
+      background: #f9fafb;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    
+    .badge-draft { background: #f3f4f6; color: #6b7280; }
+    .badge-importing { background: #dbeafe; color: #1e40af; }
+    .badge-reviewing { background: #fef3c7; color: #92400e; }
+    .badge-comparing { background: #ede9fe; color: #5b21b6; }
+    .badge-auditing { background: #ffedd5; color: #9a3412; }
+    .badge-completed { background: #d1fae5; color: #065f46; }
+    .badge-failed { background: #fee2e2; color: #991b1b; }
+    
+    .badge-can-use { background: #d1fae5; color: #065f46; }
+    .badge-need-review { background: #fee2e2; color: #991b1b; }
+    .badge-high { background: #fee2e2; color: #991b1b; }
+    .badge-medium { background: #fef3c7; color: #92400e; }
+    .badge-low { background: #e0e7ff; color: #3730a3; }
+    
+    .alert {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    
+    .alert-error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+    
+    .alert-info {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e40af;
+    }
+    
+    .alert-warning {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #92400e;
+    }
+    
+    .alert-success {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+    
+    .alert-actionable {
+      margin-top: 8px;
+      padding: 8px 12px;
+      background: #fff;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #374151;
+    }
+    
+    .form-group {
+      margin-bottom: 14px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+    
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+    
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .form-row .form-group {
+      flex: 1;
+    }
+    
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .stat-card {
+      background: #f9fafb;
+      padding: 14px;
+      border-radius: 8px;
+      border-left: 4px solid #4f46e5;
+    }
+    
+    .stat-card.green { border-left-color: #059669; }
+    .stat-card.red { border-left-color: #dc2626; }
+    .stat-card.yellow { border-left-color: #d97706; }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1f2937;
+    }
+    
+    .hidden { display: none; }
+    
+    .detail-panel {
+      background: #f9fafb;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+      font-size: 12px;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    .link-btn {
+      background: none;
+      border: none;
+      color: #4f46e5;
+      cursor: pointer;
+      font-size: 13px;
+      padding: 0;
+      text-decoration: underline;
+    }
+    
+    .link-btn:hover {
+      color: #4338ca;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    
+    .empty-state p {
+      margin-top: 8px;
+      font-size: 13px;
+    }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    
+    .modal-footer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    
+    .timeline {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .timeline li {
+      position: relative;
+      padding-left: 24px;
+      padding-bottom: 16px;
+      border-left: 2px solid #e5e7eb;
+    }
+    
+    .timeline li:before {
+      content: '';
+      position: absolute;
+      left: -7px;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      background: #4f46e5;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px #e5e7eb;
+    }
+    
+    .timeline .time {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+    
+    .timeline .status {
+      font-weight: 500;
+      font-size: 14px;
+      margin: 2px 0;
+    }
+    
+    .timeline .remark {
+      font-size: 13px;
+      color: #6b7280;
+    }
+    
+    .tag-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    
+    .drift-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    
+    .filter-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .filter-bar select,
+    .filter-bar input {
+      padding: 6px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>表结构漂移对比系统</h1>
+    <div class="subtitle">Schema Drift Compare System - 财务系统维护工具</div>
+  </div>
+  
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('orders')">工单管理</button>
+      <button class="tab" onclick="showTab('compare')">漂移对比</button>
+      <button class="tab" onclick="showTab('audit')">权限审计</button>
+      <button class="tab" onclick="showTab('slowquery')">慢查询日志</button>
+      <button class="tab" onclick="showTab('reports')">报告</button>
+    </div>
+    
+    <div id="tab-orders">
+      <div class="card">
+        <div class="card-title">
+          <span>业务工单</span>
+          <button class="btn btn-primary btn-sm" onclick="showCreateOrderModal()">+ 新建工单</button>
+        </div>
+        <div id="order-list"></div>
+      </div>
+      
+      <div id="order-detail-section" class="hidden">
+        <div class="card">
+          <div class="card-title">
+            <span>工单详情</span>
+            <button class="btn btn-secondary btn-sm" onclick="hideOrderDetail()">返回列表</button>
+          </div>
+          <div id="order-detail"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="tab-compare" class="hidden">
+      <div class="card">
+        <div class="card-title">表结构漂移对比</div>
+        <div id="compare-empty" class="empty-state">
+          <p>请先在「工单管理」中选择一个工单</p>
+        </div>
+        <div id="compare-content" class="hidden">
+          <div class="filter-bar">
+            <select id="compare-select" onchange="loadComparison()"></select>
+            <button class="btn btn-primary btn-sm" onclick="executeCompare()">执行对比</button>
+          </div>
+          <div id="compare-result"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="tab-audit" class="hidden">
+      <div class="card">
+        <div class="card-title">权限审计</div>
+        <div id="audit-empty" class="empty-state">
+          <p>请先在「工单管理」中选择一个工单</p>
+        </div>
+        <div id="audit-content" class="hidden">
+          <div id="audit-result"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="tab-slowquery" class="hidden">
+      <div class="card">
+        <div class="card-title">慢查询日志</div>
+        <div id="slowquery-empty" class="empty-state">
+          <p>请先在「工单管理」中选择一个工单</p>
+        </div>
+        <div id="slowquery-content" class="hidden">
+          <div id="slowquery-result"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="tab-reports" class="hidden">
+      <div class="card">
+        <div class="card-title">报告导出</div>
+        <div id="reports-empty" class="empty-state">
+          <p>请先在「工单管理」中选择一个工单</p>
+        </div>
+        <div id="reports-content" class="hidden">
+          <div id="reports-result"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="modal-container"></div>
+  
+  <script>
+    let currentWorkOrder = null;
+    let currentComparisonId = null;
+    
+    const STATUS_LABELS = {
+      draft: '草稿',
+      importing: '导入中',
+      reviewing: '复核中',
+      comparing: '对比中',
+      auditing: '审计中',
+      completed: '已完成',
+      failed: '失败'
+    };
+    
+    const CHANGE_TYPE_LABELS = {
+      TABLE_ADD: '新增表',
+      TABLE_DROP: '删除表',
+      COLUMN_ADD: '新增字段',
+      COLUMN_MODIFY: '修改字段',
+      COLUMN_DROP: '删除字段'
+    };
+    
+    function showTab(name) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      ['orders', 'compare', 'audit', 'slowquery', 'reports'].forEach(t => {
+        document.getElementById('tab-' + t).classList.add('hidden');
+      });
+      document.getElementById('tab-' + name).classList.remove('hidden');
+      
+      if (name === 'compare' && currentWorkOrder) {
+        loadCompareTab();
+      }
+      if (name === 'audit' && currentWorkOrder) {
+        loadAuditTab();
+      }
+      if (name === 'slowquery' && currentWorkOrder) {
+        loadSlowQueryTab();
+      }
+      if (name === 'reports' && currentWorkOrder) {
+        loadReportsTab();
+      }
+    }
+    
+    async function apiRequest(url, method = 'GET', body = null) {
+      const options = { method, headers: { 'Content-Type': 'application/json' } };
+      if (body) options.body = JSON.stringify(body);
+      
+      const res = await fetch(url, options);
+      const data = await res.json();
+      
+      if (!data.success) {
+        const err = new Error(data.error?.message || '请求失败');
+        err.actionableInfo = data.error?.actionable_info;
+        err.statusCode = data.error?.code;
+        throw err;
+      }
+      return data.data;
+    }
+    
+    function showError(title, err) {
+      let html = `<div class="alert alert-error"><strong>${title}</strong><br>${err.message}`;
+      if (err.actionableInfo) {
+        html += `<div class="alert-actionable">`;
+        if (err.actionableInfo.suggestion) {
+          html += `<strong>建议：</strong>${err.actionableInfo.suggestion}<br>`;
+        }
+        if (err.actionableInfo.missing_fields) {
+          html += `<strong>缺少字段：</strong>${err.actionableInfo.missing_fields.join(', ')}<br>`;
+        }
+        if (err.actionableInfo.duplicate_import_time) {
+          html += `<strong>上次导入时间：</strong>${err.actionableInfo.duplicate_import_time}`;
+        }
+        html += `</div>`;
+      }
+      html += `</div>`;
+      return html;
+    }
+    
+    async function loadOrders() {
+      try {
+        const result = await apiRequest('/api/work-orders');
+        renderOrderList(result.list);
+      } catch (err) {
+        document.getElementById('order-list').innerHTML = showError('加载工单列表失败', err);
+      }
+    }
+    
+    function renderOrderList(orders) {
+      if (orders.length === 0) {
+        document.getElementById('order-list').innerHTML = 
+          '<div class="empty-state">暂无工单，点击右上角新建</div>';
+        return;
+      }
+      
+      let html = `<table>
+        <thead><tr>
+          <th>工单号</th>
+          <th>标题</th>
+          <th>状态</th>
+          <th>来源</th>
+          <th>创建时间</th>
+          <th>操作</th>
+        </tr></thead><tbody>`;
+      
+      for (const order of orders) {
+        html += `<tr>
+          <td><code>${order.order_no}</code></td>
+          <td>${order.title}</td>
+          <td><span class="badge badge-${order.status}">${STATUS_LABELS[order.status] || order.status}</span></td>
+          <td>${order.source || '-'}</td>
+          <td>${order.created_at}</td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="selectOrder(${order.id})">进入</button>
+          </td>
+        </tr>`;
+      }
+      
+      html += '</tbody></table>';
+      document.getElementById('order-list').innerHTML = html;
+    }
+    
+    function showCreateOrderModal() {
+      const html = `
+        <div class="modal-overlay" onclick="closeModal(event)">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">新建工单</div>
+            <div class="form-group">
+              <label>工单标题 *</label>
+              <input type="text" id="new-order-title" placeholder="请输入工单标题">
+            </div>
+            <div class="form-group">
+              <label>描述</label>
+              <textarea id="new-order-desc" rows="3" placeholder="请输入工单描述"></textarea>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>来源</label>
+                <input type="text" id="new-order-source" placeholder="如：业务工单#123">
+              </div>
+              <div class="form-group">
+                <label>工单号</label>
+                <input type="text" id="new-order-no" placeholder="留空自动生成">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+              <button class="btn btn-primary" onclick="createOrder()">创建</button>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById('modal-container').innerHTML = html;
+    }
+    
+    function closeModal() {
+      document.getElementById('modal-container').innerHTML = '';
+    }
+    
+    async function createOrder() {
+      const title = document.getElementById('new-order-title').value;
+      const description = document.getElementById('new-order-desc').value;
+      const source = document.getElementById('new-order-source').value;
+      const order_no = document.getElementById('new-order-no').value;
+      
+      try {
+        const order = await apiRequest('/api/work-orders', 'POST', { 
+          title, description, source, order_no 
+        });
+        closeModal();
+        loadOrders();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+    
+    async function selectOrder(id) {
+      try {
+        const order = await apiRequest(`/api/work-orders/${id}`);
+        currentWorkOrder = order;
+        renderOrderDetail(order);
+        document.getElementById('order-detail-section').classList.remove('hidden');
+        
+        document.getElementById('compare-empty').classList.add('hidden');
+        document.getElementById('compare-content').classList.remove('hidden');
+        
+        document.getElementById('audit-empty').classList.add('hidden');
+        document.getElementById('audit-content').classList.remove('hidden');
+        
+        document.getElementById('slowquery-empty').classList.add('hidden');
+        document.getElementById('slowquery-content').classList.remove('hidden');
+        
+        document.getElementById('reports-empty').classList.add('hidden');
+        document.getElementById('reports-content').classList.remove('hidden');
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+    
+    function hideOrderDetail() {
+      document.getElementById('order-detail-section').classList.add('hidden');
+    }
+    
+    function renderOrderDetail(order) {
+      let html = `<div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">工单号</div>
+          <div class="stat-value" style="font-size: 16px;">${order.order_no}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">当前状态</div>
+          <div class="stat-value" style="font-size: 16px;">
+            <span class="badge badge-${order.status}">${STATUS_LABELS[order.status] || order.status}</span>
+          </div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">字典版本数</div>
+          <div class="stat-value">${order.dictionary_versions?.length || 0}</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">导入批次</div>
+          <div class="stat-value">${order.import_batches?.length || 0}</div>
+        </div>
+      </div>`;
+      
+      if (order.description) {
+        html += `<p style="color:#6b7280; margin-bottom:16px;">${order.description}</p>`;
+      }
+      
+      html += `<div style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+        <button class="btn btn-primary btn-sm" onclick="showImportDictionaryModal()">导入数据字典</button>
+        <button class="btn btn-secondary btn-sm" onclick="showStatusTransitionModal()">推进状态</button>
+      </div>`;
+      
+      html += `<h4 style="margin-bottom:10px; font-size:14px;">状态流转历史</h4>`;
+      html += `<ul class="timeline">`;
+      for (const t of order.status_transitions || []) {
+        html += `<li>
+          <div class="time">${t.created_at} · ${t.operator || 'system'}</div>
+          <div class="status">${t.from_status ? STATUS_LABELS[t.from_status] + ' → ' : ''}${STATUS_LABELS[t.to_status] || t.to_status}</div>
+          ${t.remark ? `<div class="remark">${t.remark}</div>` : ''}
+        </li>`;
+      }
+      html += `</ul>`;
+      
+      if (order.dictionary_versions && order.dictionary_versions.length > 0) {
+        html += `<h4 style="margin:20px 0 10px; font-size:14px;">已导入的数据字典版本</h4>`;
+        html += `<table><thead><tr><th>版本</th><th>记录数</th><th>导入时间</th></tr></thead><tbody>`;
+        for (const v of order.dictionary_versions) {
+          html += `<tr><td><code>${v.version}</code></td><td>${v.record_count}</td><td>${v.import_time}</td></tr>`;
+        }
+        html += `</tbody></table>`;
+      }
+      
+      document.getElementById('order-detail').innerHTML = html;
+    }
+    
+    function showImportDictionaryModal() {
+      const html = `
+        <div class="modal-overlay" onclick="closeModal(event)">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">导入数据字典</div>
+            <div class="form-group">
+              <label>版本号 *</label>
+              <input type="text" id="dict-version" placeholder="如：v1.0.0 或 2024-01-15">
+            </div>
+            <div class="form-group">
+              <label>字典数据 (JSON数组) *</label>
+              <textarea id="dict-data" rows="10" placeholder='[{"table_name":"users","column_name":"id","data_type":"int","is_nullable":"NO","comment":"主键"}]'></textarea>
+              <div style="font-size:11px; color:#9ca3af; margin-top:4px;">
+                字段说明：table_name, column_name 为必填；data_type, is_nullable, default_value, comment 为可选
+              </div>
+            </div>
+            <div class="form-group">
+              <label>文件名 (可选)</label>
+              <input type="text" id="dict-filename" placeholder="如：schema_v2.json">
+            </div>
+            <div class="alert alert-info" style="margin-bottom:0;">
+              <strong>提示：</strong>系统会自动检测重复导入。相同内容重复导入会被拒绝。
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+              <button class="btn btn-primary" onclick="importDictionary()">导入</button>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById('modal-container').innerHTML = html;
+    }
+    
+    async function importDictionary() {
+      const version = document.getElementById('dict-version').value;
+      const dataStr = document.getElementById('dict-data').value;
+      const fileName = document.getElementById('dict-filename').value;
+      
+      try {
+        const records = JSON.parse(dataStr);
+        const result = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/import/dictionary`, 'POST', {
+          version,
+          records,
+          file_name: fileName
+        });
+        
+        closeModal();
+        selectOrder(currentWorkOrder.id);
+        alert('导入成功：' + result.message);
+      } catch (err) {
+        alert('导入失败：' + err.message + '\n' + (err.actionableInfo?.suggestion || ''));
+      }
+    }
+    
+    function showStatusTransitionModal() {
+      const nextStatuses = {
+        draft: ['reviewing', 'importing'],
+        importing: ['reviewing', 'failed'],
+        reviewing: ['comparing', 'failed'],
+        comparing: ['auditing', 'reviewing', 'failed'],
+        auditing: ['completed', 'reviewing', 'failed'],
+        completed: ['reviewing'],
+        failed: ['draft', 'reviewing']
+      };
+      
+      const options = (nextStatuses[currentWorkOrder.status] || []).map(
+        s => `<option value="${s}">${STATUS_LABELS[s] || s}</option>`
+      ).join('');
+      
+      const html = `
+        <div class="modal-overlay" onclick="closeModal(event)">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">推进工单状态</div>
+            <p style="margin-bottom:12px; font-size:13px; color:#6b7280;">
+              当前状态：<span class="badge badge-${currentWorkOrder.status}">${STATUS_LABELS[currentWorkOrder.status]}</span>
+            </p>
+            <div class="form-group">
+              <label>目标状态</label>
+              <select id="target-status">${options}</select>
+            </div>
+            <div class="form-group">
+              <label>备注</label>
+              <input type="text" id="status-remark" placeholder="状态变更说明">
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+              <button class="btn btn-primary" onclick="transitionStatus()">确认</button>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById('modal-container').innerHTML = html;
+    }
+    
+    async function transitionStatus() {
+      const status = document.getElementById('target-status').value;
+      const remark = document.getElementById('status-remark').value;
+      
+      try {
+        await apiRequest(`/api/work-orders/${currentWorkOrder.id}/status`, 'POST', {
+          status,
+          remark,
+          operator: 'user'
+        });
+        closeModal();
+        selectOrder(currentWorkOrder.id);
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+    
+    async function loadCompareTab() {
+      try {
+        const comparisons = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/comparisons`);
+        
+        const select = document.getElementById('compare-select');
+        select.innerHTML = '';
+        
+        if (comparisons.length === 0) {
+          select.innerHTML = '<option value="">暂无对比记录，请先执行对比</option>';
+          document.getElementById('compare-result').innerHTML = 
+            '<div class="empty-state">暂无对比记录<br><p>请导入两个版本的数据字典后点击「执行对比」</p></div>';
+        } else {
+          for (const c of comparisons) {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = `${c.baseline_version} → ${c.target_version} (${c.status})`;
+            select.appendChild(opt);
+          }
+          currentComparisonId = comparisons[0].id;
+          loadComparison();
+        }
+      } catch (err) {
+        document.getElementById('compare-result').innerHTML = showError('加载对比记录失败', err);
+      }
+    }
+    
+    async function loadComparison() {
+      const id = document.getElementById('compare-select').value;
+      if (!id) return;
+      
+      currentComparisonId = id;
+      
+      try {
+        const data = await apiRequest(`/api/comparisons/${id}`);
+        renderComparisonResult(data);
+      } catch (err) {
+        document.getElementById('compare-result').innerHTML = showError('加载对比详情失败', err);
+      }
+    }
+    
+    function renderComparisonResult(data) {
+      const comp = data.comparison;
+      const details = data.details;
+      const rollbacks = data.rollbacks;
+      const indexSuggestions = data.index_suggestions;
+      
+      const summary = JSON.parse(comp.result_summary || '{}');
+      
+      let html = `<div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">总变更数</div>
+          <div class="stat-value">${summary.total || details.total}</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">可直接使用</div>
+          <div class="stat-value">${summary.can_use_directly || 0}</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">需人工复核</div>
+          <div class="stat-value">${summary.need_review || 0}</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">索引建议</div>
+          <div class="stat-value">${indexSuggestions.length}</div>
+        </div>
+      </div>`;
+      
+      html += `<div class="drift-header"><h3 style="font-size:15px;">漂移详情</h3>`;
+      html += `<div class="filter-bar" style="margin-bottom:0;">
+        <select onchange="filterDetails(this.value, 'can_use')">
+          <option value="">全部变更</option>
+          <option value="true">可直接使用</option>
+          <option value="false">需复核</option>
+        </select>
+        <select onchange="filterDetails(this.value, 'type')">
+          <option value="">全部类型</option>
+          <option value="TABLE_ADD">新增表</option>
+          <option value="TABLE_DROP">删除表</option>
+          <option value="COLUMN_ADD">新增字段</option>
+          <option value="COLUMN_MODIFY">修改字段</option>
+          <option value="COLUMN_DROP">删除字段</option>
+        </select>
+      </div></div>`;
+      
+      html += `<table id="details-table">
+        <thead><tr>
+          <th>类型</th>
+          <th>表名</th>
+          <th>字段</th>
+          <th>状态</th>
+          <th>复核说明</th>
+          <th>操作</th>
+        </tr></thead><tbody>`;
+      
+      for (const d of details.list) {
+        const canUseClass = d.can_use_directly ? 'badge-can-use' : 'badge-need-review';
+        const canUseLabel = d.can_use_directly ? '可直接使用' : '需复核';
+        html += `<tr data-can-use="${d.can_use_directly}" data-type="${d.change_type}">
+          <td><span class="badge badge-${d.change_type === 'ADD' || d.change_type.includes('ADD') ? 'completed' : d.change_type.includes('DROP') ? 'failed' : 'reviewing'}" style="background:${d.change_type.includes('ADD') ? '#d1fae5; color:#065f46' : d.change_type.includes('DROP') ? '#fee2e2; color:#991b1b' : '#fef3c7; color:#92400e'}">${CHANGE_TYPE_LABELS[d.change_type] || d.change_type}</span></td>
+          <td><code>${d.table_name}</code></td>
+          <td>${d.column_name || '-'}</td>
+          <td><span class="badge ${canUseClass}">${canUseLabel}</span></td>
+          <td style="font-size:12px; color:#6b7280;">${d.need_review_reason || '-'}</td>
+          <td><button class="link-btn" onclick="showDetailInfo(${d.id})">详情</button></td>
+        </tr>`;
+      }
+      
+      html += '</tbody></table>';
+      
+      if (rollbacks.length > 0) {
+        html += `<h3 style="font-size:15px; margin:20px 0 12px;">回滚记录</h3>`;
+        html += `<table><thead><tr>
+          <th>表名</th>
+          <th>变更类型</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr></thead><tbody>`;
+        
+        for (const r of rollbacks) {
+          html += `<tr>
+            <td><code>${r.table_name}</code></td>
+            <td>${CHANGE_TYPE_LABELS[r.change_type] || r.change_type}</td>
+            <td><span class="badge badge-${r.status}">${r.status === 'pending' ? '待执行' : r.status === 'executed' ? '已执行' : r.status}</span></td>
+            <td><button class="link-btn" onclick="showRollbackSql(${r.id})">查看SQL</button></td>
+          </tr>`;
+        }
+        html += '</tbody></table>';
+      }
+      
+      if (indexSuggestions.length > 0) {
+        html += `<h3 style="font-size:15px; margin:20px 0 12px;">索引建议</h3>`;
+        html += `<table><thead><tr>
+          <th>优先级</th>
+          <th>表名</th>
+          <th>索引</th>
+          <th>类型</th>
+          <th>建议原因</th>
+          <th>状态</th>
+        </tr></thead><tbody>`;
+        
+        for (const idx of indexSuggestions) {
+          html += `<tr>
+            <td><span class="badge badge-${idx.priority}">${idx.priority === 'high' ? '高' : idx.priority === 'medium' ? '中' : '低'}</span></td>
+            <td><code>${idx.table_name}</code></td>
+            <td>${idx.index_name || '-'}</td>
+            <td>${idx.index_type || 'NORMAL'}</td>
+            <td style="font-size:12px;">${idx.suggestion_reason || '-'}</td>
+            <td>${idx.is_adopted ? '<span class="badge badge-can-use">已采纳</span>' : '<span class="badge badge-need-review">待评估</span>'}</td>
+          </tr>`;
+        }
+        html += '</tbody></table>';
+      }
+      
+      document.getElementById('compare-result').innerHTML = html;
+    }
+    
+    function filterDetails(value, type) {
+      const rows = document.querySelectorAll('#details-table tbody tr');
+      rows.forEach(row => {
+        let show = true;
+        if (type === 'can_use' && value !== '') {
+          const canUse = row.getAttribute('data-can-use') === '1';
+          show = (value === 'true') ? canUse : !canUse;
+        }
+        if (type === 'type' && value !== '') {
+          show = row.getAttribute('data-type') === value;
+        }
+        row.style.display = show ? '' : 'none';
+      });
+    }
+    
+    async function showDetailInfo(detailId) {
+      alert('功能开发中：查看详情 ' + detailId);
+    }
+    
+    async function showRollbackSql(rollbackId) {
+      try {
+        const rollbacks = await apiRequest(`/api/comparisons/${currentComparisonId}/rollback`);
+        const r = rollbacks.find(x => x.id === rollbackId);
+        if (r) {
+          alert(`回滚 SQL：\n\n${r.rollback_sql}`);
+        }
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+    
+    async function executeCompare() {
+      const versions = currentWorkOrder.dictionary_versions || [];
+      if (versions.length < 2) {
+        alert('需要至少两个版本的数据字典才能对比');
+        return;
+      }
+      
+      const baseline = versions[versions.length - 1].version;
+      const target = versions[0].version;
+      
+      try {
+        const result = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/compare`, 'POST', {
+          baseline_version: baseline,
+          target_version: target
+        });
+        loadCompareTab();
+        if (result.is_new) {
+          alert('对比完成，共 ' + result.total_changes + ' 项变更');
+        } else {
+          alert('该版本对比已存在');
+        }
+      } catch (err) {
+        alert('对比失败：' + err.message + '\n' + (err.actionableInfo?.suggestion || ''));
+      }
+    }
+    
+    async function loadAuditTab() {
+      try {
+        const audits = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/permission-audits`);
+        const permLists = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/permission-lists`);
+        
+        let html = '';
+        
+        html += `<div style="display:flex; gap:8px; margin-bottom:16px;">
+          <button class="btn btn-primary btn-sm" onclick="showImportPermModal()">导入权限清单</button>
+          <button class="btn btn-success btn-sm" onclick="runAudit()">执行权限审计</button>
+        </div>`;
+        
+        if (permLists.length > 0) {
+          html += `<h4 style="font-size:14px; margin-bottom:10px;">权限清单 (${permLists.length})</h4>`;
+          html += `<table><thead><tr><th>ID</th><th>来源类型</th><th>导入时间</th></tr></thead><tbody>`;
+          for (const p of permLists) {
+            html += `<tr>
+              <td>#${p.id}</td>
+              <td>${p.source_type || '-'}</td>
+              <td>${p.import_time}</td>
+            </tr>`;
+          }
+          html += '</tbody></table>';
+        }
+        
+        if (audits.length > 0) {
+          html += `<h4 style="font-size:14px; margin:20px 0 10px;">审计记录 (${audits.length})</h4>`;
+          for (const a of audits) {
+            html += `<div class="card" style="margin-bottom:10px; padding:14px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <strong>审计 #${a.id}</strong>
+                <span class="badge badge-${a.status}">${a.status}</span>
+              </div>
+              <p style="font-size:13px; color:#374151; margin-bottom:8px;">${a.conclusion || '-'}</p>
+              ${a.source_material_ref ? `<p style="font-size:12px; color:#6b7280;">来源材料：${a.source_material_ref}</p>` : ''}
+              ${a.issues && a.issues.length > 0 ? `
+                <div style="margin-top:8px;">
+                  <div style="font-size:12px; font-weight:500; margin-bottom:4px;">问题列表：</div>
+                  ${a.issues.map(i => `
+                    <div class="alert alert-warning" style="margin-bottom:6px; padding:8px 12px;">
+                      <strong>[${i.severity === 'high' ? '高' : '中'}]</strong> ${i.description}<br>
+                      <span style="font-size:11px; color:#92400e;">建议：${i.suggestion}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>`;
+          }
+        }
+        
+        if (audits.length === 0 && permLists.length === 0) {
+          html += '<div class="empty-state">暂无权限清单和审计记录</div>';
+        }
+        
+        document.getElementById('audit-result').innerHTML = html;
+      } catch (err) {
+        document.getElementById('audit-result').innerHTML = showError('加载审计数据失败', err);
+      }
+    }
+    
+    function showImportPermModal() {
+      const html = `
+        <div class="modal-overlay" onclick="closeModal(event)">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">导入权限清单</div>
+            <div class="form-group">
+              <label>来源类型</label>
+              <input type="text" id="perm-source-type" placeholder="如：财务系统维护组">
+            </div>
+            <div class="form-group">
+              <label>来源参考</label>
+              <input type="text" id="perm-source-ref" placeholder="如：工单 #2024-001">
+            </div>
+            <div class="form-group">
+              <label>权限清单内容 *</label>
+              <textarea id="perm-content" rows="6" placeholder="请输入权限清单的文本内容，包含各表的访问权限说明"></textarea>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+              <button class="btn btn-primary" onclick="importPermList()">导入</button>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById('modal-container').innerHTML = html;
+    }
+    
+    async function importPermList() {
+      const source_type = document.getElementById('perm-source-type').value;
+      const source_ref = document.getElementById('perm-source-ref').value;
+      const content = document.getElementById('perm-content').value;
+      
+      try {
+        await apiRequest(`/api/work-orders/${currentWorkOrder.id}/permission-lists`, 'POST', {
+          source_type, source_ref, content
+        });
+        closeModal();
+        loadAuditTab();
+        alert('权限清单导入成功');
+      } catch (err) {
+        alert('导入失败：' + err.message);
+      }
+    }
+    
+    async function runAudit() {
+      try {
+        const result = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/permission-audit`, 'POST', {
+          operator: 'user',
+          source_material_ref: '业务工单'
+        });
+        loadAuditTab();
+        alert(`审计完成，发现 ${result.issues_count} 个问题`);
+      } catch (err) {
+        alert('审计失败：' + err.message + '\n' + (err.actionableInfo?.suggestion || ''));
+      }
+    }
+    
+    async function loadSlowQueryTab() {
+      let html = `<div style="display:flex; gap:8px; margin-bottom:16px;">
+        <button class="btn btn-primary btn-sm" onclick="showImportSlowQueryModal()">导入慢查询日志</button>
+        <button class="btn btn-secondary btn-sm" onclick="analyzeSlowQueries()">关联对比分析</button>
+      </div>`;
+      
+      try {
+        const result = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/slow-queries`);
+        
+        if (result.total === 0) {
+          html += '<div class="empty-state">暂无慢查询日志</div>';
+        } else {
+          html += `<h4 style="font-size:14px; margin-bottom:10px;">慢查询日志 (${result.total})</h4>`;
+          html += `<table><thead><tr>
+            <th>执行时间(s)</th>
+            <th>相关表</th>
+            <th>查询语句</th>
+            <th>扫描行数</th>
+          </tr></thead><tbody>`;
+          
+          for (const q of result.list) {
+            const queryPreview = q.query_text.length > 80 ? q.query_text.substring(0, 80) + '...' : q.query_text;
+            html += `<tr>
+              <td><span class="badge ${q.execution_time > 10 ? 'badge-high' : q.execution_time > 2 ? 'badge-medium' : 'badge-low'}">${q.execution_time || '-'}</span></td>
+              <td>${q.related_table || '-'}</td>
+              <td style="font-size:12px; font-family:monospace; max-width:400px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${q.query_text}">${queryPreview}</td>
+              <td>${q.rows_examined || '-'}</td>
+            </tr>`;
+          }
+          html += '</tbody></table>';
+        }
+        
+        document.getElementById('slowquery-result').innerHTML = html;
+      } catch (err) {
+        document.getElementById('slowquery-result').innerHTML = showError('加载慢查询日志失败', err);
+      }
+    }
+    
+    function showImportSlowQueryModal() {
+      const html = `
+        <div class="modal-overlay" onclick="closeModal(event)">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">导入慢查询日志</div>
+            <div class="form-group">
+              <label>日志数据 (JSON数组)</label>
+              <textarea id="slowquery-data" rows="8" placeholder='[{"query_text":"SELECT * FROM users","execution_time":5.2,"related_table":"users","rows_examined":1000}]'></textarea>
+            </div>
+            <div class="form-group">
+              <label>来源文件 (可选)</label>
+              <input type="text" id="slowquery-file" placeholder="如：slow-query-2024-01.log">
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+              <button class="btn btn-primary" onclick="importSlowQueries()">导入</button>
+            </div>
+          </div>
+        </div>`;
+      document.getElementById('modal-container').innerHTML = html;
+    }
+    
+    async function importSlowQueries() {
+      const dataStr = document.getElementById('slowquery-data').value;
+      const sourceFile = document.getElementById('slowquery-file').value;
+      
+      try {
+        const records = JSON.parse(dataStr);
+        const result = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/slow-queries`, 'POST', {
+          records,
+          source_file: sourceFile
+        });
+        closeModal();
+        loadSlowQueryTab();
+        alert(result.message);
+      } catch (err) {
+        alert('导入失败：' + err.message);
+      }
+    }
+    
+    async function analyzeSlowQueries() {
+      if (!currentComparisonId) {
+        alert('请先执行表结构对比');
+        return;
+      }
+      
+      try {
+        const result = await apiRequest(
+          `/api/work-orders/${currentWorkOrder.id}/slow-queries/analyze/${currentComparisonId}`
+        );
+        
+        let msg = `分析完成\n受影响表数：${result.affected_tables}\n慢查询总数：${result.total_slow_queries}\n\n`;
+        for (const d of result.details) {
+          msg += `表 ${d.table_name}: ${d.slow_query_count} 条慢查询，平均 ${d.avg_execution_time}s\n`;
+        }
+        alert(msg);
+      } catch (err) {
+        alert('分析失败：' + err.message);
+      }
+    }
+    
+    async function loadReportsTab() {
+      let html = `<div style="display:flex; gap:8px; margin-bottom:16px;">
+        <button class="btn btn-primary btn-sm" onclick="generateReport()">生成报告</button>
+      </div>`;
+      
+      try {
+        const reports = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/reports`);
+        
+        if (reports.length === 0) {
+          html += '<div class="empty-state">暂无报告，点击上方按钮生成</div>';
+        } else {
+          html += `<table><thead><tr>
+            <th>ID</th>
+            <th>类型</th>
+            <th>状态</th>
+            <th>创建时间</th>
+            <th>操作</th>
+          </tr></thead><tbody>`;
+          
+          for (const r of reports) {
+            html += `<tr>
+              <td>#${r.id}</td>
+              <td>${r.report_type}</td>
+              <td><span class="badge badge-${r.status === 'generated' ? 'completed' : 'draft'}">${r.status === 'generated' ? '已生成' : r.status}</span></td>
+              <td>${r.created_at}</td>
+              <td>
+                <button class="link-btn" onclick="viewReport(${r.id})">查看</button>
+                <button class="link-btn" onclick="exportReport(${r.id})">导出</button>
+              </td>
+            </tr>`;
+          }
+          html += '</tbody></table>';
+        }
+        
+        document.getElementById('reports-result').innerHTML = html;
+      } catch (err) {
+        document.getElementById('reports-result').innerHTML = showError('加载报告列表失败', err);
+      }
+    }
+    
+    async function generateReport() {
+      try {
+        const result = await apiRequest(`/api/work-orders/${currentWorkOrder.id}/report`, 'POST', {});
+        loadReportsTab();
+        alert('报告生成成功');
+      } catch (err) {
+        alert('生成失败：' + err.message + '\n' + (err.actionableInfo?.suggestion || ''));
+      }
+    }
+    
+    async function viewReport(id) {
+      try {
+        const report = await apiRequest(`/api/reports/${id}`);
+        const s = report.content?.summary;
+        
+        const html = `
+          <div class="modal-overlay" onclick="closeModal(event)">
+            <div class="modal" style="max-width:800px;" onclick="event.stopPropagation()">
+              <div class="modal-header">报告 #${id} - ${s?.work_order?.title || ''}</div>
+              
+              <div class="stat-grid">
+                <div class="stat-card">
+                  <div class="stat-label">总变更</div>
+                  <div class="stat-value">${s?.drift_summary?.total || 0}</div>
+                </div>
+                <div class="stat-card green">
+                  <div class="stat-label">可直接使用</div>
+                  <div class="stat-value">${s?.drift_summary?.can_use_directly || 0}</div>
+                </div>
+                <div class="stat-card red">
+                  <div class="stat-label">需复核</div>
+                  <div class="stat-value">${s?.drift_summary?.need_review || 0}</div>
+                </div>
+              </div>
+              
+              <div class="alert alert-success">
+                <strong>审计组使用说明：</strong>
+                <ul style="margin-left:20px; margin-top:4px;">
+                  <li><span class="badge badge-can-use">可直接使用</span>：标记的变更经过自动校验，风险较低</li>
+                  <li><span class="badge badge-need-review">需复核</span>：标记的变更需要财务系统维护组人工确认</li>
+                </ul>
+              </div>
+              
+              ${s?.permission_audit ? `
+                <h4 style="font-size:14px; margin:12px 0 8px;">权限审计</h4>
+                <p style="font-size:13px;">结论：${s.permission_audit.conclusion}</p>
+                <p style="font-size:13px;">问题数：${s.permission_audit.issues_count}</p>
+              ` : ''}
+              
+              ${s?.slow_query_impact ? `
+                <h4 style="font-size:14px; margin:12px 0 8px;">慢查询影响</h4>
+                <p style="font-size:13px;">受影响表：${s.slow_query_impact.affected_tables} 个</p>
+                <p style="font-size:13px;">慢查询总数：${s.slow_query_impact.total_slow_queries} 条</p>
+              ` : ''}
+              
+              <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+                <button class="btn btn-primary" onclick="exportReport(${id})">导出报告</button>
+              </div>
+            </div>
+          </div>`;
+        
+        document.getElementById('modal-container').innerHTML = html;
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+    
+    async function exportReport(id) {
+      try {
+        const result = await apiRequest(`/api/reports/${id}/export?format=summary`);
+        const blob = new Blob([result.data], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `report-${id}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('导出失败：' + err.message);
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      loadOrders();
+    });
+  </script>
+</body>
+</html>
