@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper-grain: rgba(23, 21, 17, 0.018);
+}
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-paper-100 text-ink-900 font-sans;
+    background-image:
+      radial-gradient(var(--paper-grain) 1px, transparent 0),
+      linear-gradient(180deg, #FBF9F4 0%, #F4F0E8 100%);
+    background-size: 3px 3px, 100% 100%;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: #171511;
+    color: #F7F4EE;
+  }
+
+  h1, h2, h3 {
+    @apply font-serif;
+    font-feature-settings: 'ss01';
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(23, 21, 17, 0.18);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(23, 21, 17, 0.32);
+    background-clip: padding-box;
+  }
+}
+
+@layer components {
+  .grid-rule {
+    background-image: linear-gradient(to right, rgba(23, 21, 17, 0.05) 1px, transparent 1px);
+    background-size: 8px 100%;
+  }
+
+  .num {
+    @apply font-mono tabular-nums;
+    font-feature-settings: 'tnum', 'zero';
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-xs border px-1.5 py-0.5 text-[11px] font-medium leading-none;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-sm border border-ink-900/15 px-3 py-1.5 text-sm font-medium transition-all duration-150;
+  }
+  .btn:hover {
+    @apply -translate-y-px shadow-lift;
+  }
+  .btn-primary {
+    @apply border-ink-900 bg-ink-900 text-paper-100;
+  }
+  .btn-primary:hover {
+    @apply bg-ink-800;
+  }
+  .btn-ghost {
+    @apply border-transparent bg-transparent text-ink-700;
+  }
+  .btn-ghost:hover {
+    @apply bg-ink-900/5 text-ink-900;
+  }
+
+  .panel {
+    @apply rounded-md border border-ink-900/10 bg-paper-50 shadow-edge;
+  }
+
+  .row-hover:hover {
+    @apply bg-ink-900/[0.025];
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .deco-underline {
+    background-image: linear-gradient(transparent 62%, rgba(180, 83, 9, 0.28) 62%);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+}
+
+/* 截图说明导出：打印样式，保证文件与屏幕一致 */
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-block {
+    box-shadow: none !important;
+    border-color: #d2c8b4 !important;
+    break-inside: avoid;
+  }
+}
