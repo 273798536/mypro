@@ -112,6 +112,64 @@ class FileSystemStorage:
         self._save_versions(batch_id, versions)
         return new_written
 
+    def update_records_fields(self, batch_id: str, updates: dict[str, dict[str, Any]],
+                              source_version: str, target_version: str,
+                              force_overwrite: bool = False) -> int:
+        """按 record_id 幂等更新部分字段（如 split_type）
+
+        Args:
+            batch_id: 批次号
+            updates: {record_id: {field_name: new_value, ...}} 字典
+            source_version: 期望当前版本（用于乐观锁校验）
+            target_version: 更新后的新版本号
+            force_overwrite: 是否跳过版本校验强制覆盖
+
+        Returns:
+            实际更新的记录条数
+        """
+        versions = self.load_record_versions(batch_id)
+        records_meta: dict[str, Any] = versions.get("records", {})
+        existing = {r.record_id: r for r in self.load_records(batch_id)}
+
+        updated_count = 0
+        for rid, fields in updates.items():
+            if rid not in existing:
+                continue
+            rec = existing[rid]
+            cur_version = records_meta.get(rid, {}).get("version")
+
+            # 版本一致性检查（幂等保护）
+            if cur_version == target_version:
+                continue  # 已经是目标版本，幂等跳过
+            if not force_overwrite and cur_version != source_version:
+                raise DuplicateRecordError(
+                    record_id=rid,
+                    existing_version=cur_version or "unknown",
+                    new_version=target_version,
+                )
+
+            # 应用字段更新
+            for field_name, new_val in fields.items():
+                if hasattr(rec, field_name):
+                    setattr(rec, field_name, new_val)
+                else:
+                    rec.raw_content[field_name] = new_val
+
+            records_meta[rid] = {
+                "version": target_version,
+                "content_hash": rec.content_hash,
+                "saved_at": datetime.now().isoformat(),
+                "updated_from": cur_version,
+                "updated_fields": list(fields.keys()),
+            }
+            updated_count += 1
+
+        if updated_count > 0:
+            self._write_jsonl(self._batch_dir(batch_id) / "records.jsonl", existing.values())
+            versions["records"] = records_meta
+            self._save_versions(batch_id, versions)
+        return updated_count
+
     @staticmethod
     def _write_jsonl(path: Path, records: Iterator[Any]) -> None:
         with open(path, "w", encoding="utf-8") as f:

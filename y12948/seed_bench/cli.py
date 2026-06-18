@@ -149,7 +149,7 @@ def cmd_dedup(ctx: click.Context, input_dir: str, output_dir: str | None, batch_
     console.print(f"\n[bold]下一步:[/bold]  seed-bench shuffle --batch-id {batch_id}")
 
 
-@main.command("shuffle", help="数据混洗 + 划分，固定 seed 保证可重复")
+@main.command("shuffle", help="数据混洗 + 划分，固定 seed 保证可重复，并回写 records")
 @click.option("--batch-id", required=True, help="已去重的批次号")
 @click.option("--output-dir", "-o", default=None, type=click.Path(file_okay=False),
               help="可选，导出划分结果到外部目录")
@@ -158,24 +158,66 @@ def cmd_dedup(ctx: click.Context, input_dir: str, output_dir: str | None, batch_
 @click.option("--val-ratio", type=float, default=0.15, show_default=True)
 @click.option("--test-ratio", type=float, default=0.15, show_default=True)
 @click.option("--by-user", is_flag=True, default=False, help="按 user_id 作为划分单元")
+@click.option("--source-version", default="v1", show_default=True,
+              help="期望的 records 当前版本（去重后的版本号，用于幂等校验）")
+@click.option("--target-version", default=None,
+              help="shuffle 后的版本号（默认 shuffle_seed{seed}）")
+@click.option("--force-write", is_flag=True, default=False,
+              help="强制回写 split_type 到 records，跳过源版本校验")
 @click.pass_context
 def cmd_shuffle(ctx: click.Context, batch_id: str, output_dir: str | None, seed: int | None,
-                train_ratio: float, val_ratio: float, test_ratio: float, by_user: bool) -> None:
+                train_ratio: float, val_ratio: float, test_ratio: float, by_user: bool,
+                source_version: str, target_version: str | None, force_write: bool) -> None:
     cfg: SeedBenchConfig = ctx.obj["cfg"]
     storage = _make_storage(cfg)
     actual_seed = seed if seed is not None else cfg.default_seed
+    target_v = target_version or f"shuffle_seed{actual_seed}"
 
-    _print_banner("数据混洗", f"seed={actual_seed} · 保证同 seed+同材料结果一致")
+    _print_banner("数据混洗 + 回写",
+                  f"seed={actual_seed} · 划分后回写 records.split_type（版本 {source_version} → {target_v}）")
 
     records = storage.load_records(batch_id)
     if not records:
         console.print(f"[yellow]![/yellow] 批次 {batch_id} 还没有记录，请先运行 'seed-bench dedup'")
         sys.exit(1)
 
-    shuffler = Shuffler(seed=actual_seed, train_ratio=train_ratio, val_ratio=val_ratio,
-                        test_ratio=test_ratio, by_user=by_user)
-    result = shuffler.run(records, batch_id=batch_id)
-    storage.save_shuffle_result(batch_id, result)
+    # 幂等短路：已存在相同 seed 的 shuffle 结果 + records 已是目标版本 → 直接返回
+    prev_shuffle = storage.load_shuffle_result(batch_id)
+    version_data = storage.load_record_versions(batch_id)
+    records_meta = version_data.get("records", {})
+    all_at_target = records_meta and all(
+        meta.get("version") == target_v for meta in records_meta.values()
+    )
+    if prev_shuffle and prev_shuffle.seed == actual_seed and all_at_target:
+        console.print(f"[dim]* 已存在 seed={actual_seed} 的划分结果，records 已是版本 {target_v}，跳过。[/dim]")
+        result = prev_shuffle
+    else:
+        shuffler = Shuffler(seed=actual_seed, train_ratio=train_ratio, val_ratio=val_ratio,
+                            test_ratio=test_ratio, by_user=by_user)
+        result = shuffler.run(records, batch_id=batch_id)
+        storage.save_shuffle_result(batch_id, result)
+
+        # 关键：把 split_type 回写到 records.jsonl（保证后续 leak-check 能读到正确划分）
+        updates: dict[str, dict[str, Any]] = {}
+        for rid in result.record_ids_train:
+            updates[rid] = {"split_type": SplitType.TRAIN}
+        for rid in result.record_ids_val:
+            updates[rid] = {"split_type": SplitType.VAL}
+        for rid in result.record_ids_test:
+            updates[rid] = {"split_type": SplitType.TEST}
+
+        try:
+            updated = storage.update_records_fields(
+                batch_id, updates,
+                source_version=source_version,
+                target_version=target_v,
+                force_overwrite=force_write,
+            )
+        except SeedBenchError as exc:
+            console.print(f"[red]✗ 回写 records 失败:[/red] {exc}")
+            console.print(f"[dim]提示：可加 --force-write 强制覆盖，或确认 --source-version 是否正确。[/dim]")
+            sys.exit(3)
+        console.print(f"[dim]* 已回写 {updated}/{len(records)} 条记录的 split_type 到 records.jsonl[/dim]")
 
     if output_dir:
         exporter = Exporter(cfg.export.sync_summary_with_file)
@@ -191,6 +233,7 @@ def cmd_shuffle(ctx: click.Context, batch_id: str, output_dir: str | None, seed:
         {"key": "val", "value": f"{summary['val_count']} ({summary['val_ratio']*100:.2f}%)"},
         {"key": "test", "value": f"{summary['test_count']} ({summary['test_ratio']*100:.2f}%)"},
         {"key": "种子", "value": f"{summary['seed']} (可复现)"},
+        {"key": "records 版本", "value": target_v},
     ])
     console.print(f"\n[bold]下一步:[/bold]  seed-bench leak-check --batch-id {batch_id}")
 

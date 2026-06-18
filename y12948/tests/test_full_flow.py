@@ -153,6 +153,43 @@ class TestIdempotentStorage(unittest.TestCase):
         self.assertEqual(len(loaded), 1)
         self.assertEqual(loaded[0].raw_content["text"], "b")
 
+    def test_update_records_fields_idempotent(self):
+        batch = "b004"
+        recs = [self._rec("r1", "a", SplitType.UNASSIGNED),
+                self._rec("r2", "b", SplitType.UNASSIGNED)]
+        self.storage.save_records(batch, recs, version="v1")
+
+        # 第一次更新
+        updates = {"r1": {"split_type": SplitType.TRAIN},
+                   "r2": {"split_type": SplitType.VAL}}
+        n = self.storage.update_records_fields(batch, updates, "v1", "v2")
+        self.assertEqual(n, 2)
+        loaded = self.storage.load_records(batch)
+        self.assertEqual(loaded[0].split_type if loaded[0].record_id == "r1" else loaded[1].split_type,
+                         SplitType.TRAIN)
+
+        # 第二次相同更新：幂等，返回 0
+        n2 = self.storage.update_records_fields(batch, updates, "v1", "v2")
+        self.assertEqual(n2, 0)
+
+    def test_update_records_fields_version_check(self):
+        batch = "b005"
+        self.storage.save_records(batch, [self._rec("r1", "a")], version="v1")
+        # 期望源版本是 v2，但实际是 v1，应该报错
+        with self.assertRaises(DuplicateRecordError):
+            self.storage.update_records_fields(
+                batch, {"r1": {"split_type": SplitType.TRAIN}},
+                source_version="v2", target_version="v3",
+            )
+        # force 就能过
+        n = self.storage.update_records_fields(
+            batch, {"r1": {"split_type": SplitType.TRAIN}},
+            source_version="v2", target_version="v3", force_overwrite=True,
+        )
+        self.assertEqual(n, 1)
+        loaded = self.storage.load_records(batch)
+        self.assertEqual(loaded[0].split_type, SplitType.TRAIN)
+
 
 class TestLeakDetection(unittest.TestCase):
     """训练验证泄漏 + 友好错误提示"""
@@ -329,7 +366,7 @@ class TestReviewPipelineEndToEnd(unittest.TestCase):
         self.storage = FileSystemStorage(self.cfg.storage.data_dir)
 
     def test_full_pipeline(self):
-        # 1) 读输入 + 去重
+        # 1) 读输入 + 去重 + 写入存储
         records = self.storage.read_input_files(self.input_dir, self.cfg.hash_algorithm)
         dedup = Deduplicator(self.cfg.hash_algorithm)
         dres = dedup.run(records)
@@ -338,22 +375,60 @@ class TestReviewPipelineEndToEnd(unittest.TestCase):
         self.storage.save_dedup_results(self.batch_id, dres["results"])
         self.assertGreater(dres["summary"]["total_input"], 0)
 
-        # 2) 混洗
+        # 验证：去重后存储中的记录都是 UNASSIGNED
+        stored_after_dedup = self.storage.load_records(self.batch_id)
+        self.assertEqual(len(stored_after_dedup), len(kept))
+        self.assertTrue(
+            all(r.split_type == SplitType.UNASSIGNED for r in stored_after_dedup),
+            "去重刚写入时 split_type 应该都是 UNASSIGNED",
+        )
+
+        # 2) 混洗 + 回写 split_type 到 records（模拟 CLI shuffle 行为）
         shuffle = Shuffler(seed=self.cfg.default_seed)
-        sres = shuffle.run(kept, batch_id=self.batch_id)
+        sres = shuffle.run(stored_after_dedup, batch_id=self.batch_id)
         self.storage.save_shuffle_result(self.batch_id, sres)
         self.assertGreater(sres.train_count, 0)
         self.assertGreater(sres.val_count, 0)
 
-        # 3) 泄漏检测（可能因为故意注入的跨集用户而 REJECTED）
+        # 关键：回写 split_type 到 records.jsonl（模拟 CLI shuffle 命令）
+        updates: dict[str, dict[str, Any]] = {}
+        for rid in sres.record_ids_train:
+            updates[rid] = {"split_type": SplitType.TRAIN}
+        for rid in sres.record_ids_val:
+            updates[rid] = {"split_type": SplitType.VAL}
+        for rid in sres.record_ids_test:
+            updates[rid] = {"split_type": SplitType.TEST}
+        updated = self.storage.update_records_fields(
+            self.batch_id, updates, source_version="v1", target_version="shuffle_seed42",
+        )
+        self.assertEqual(updated, len(stored_after_dedup),
+                         "应该把所有记录的 split_type 都回写")
+
+        # 验证：从存储重新读取，split_type 分布应与 shuffle_result 一致
+        stored_after_shuffle = self.storage.load_records(self.batch_id)
+        train_cnt = sum(1 for r in stored_after_shuffle if r.split_type == SplitType.TRAIN)
+        val_cnt = sum(1 for r in stored_after_shuffle if r.split_type == SplitType.VAL)
+        test_cnt = sum(1 for r in stored_after_shuffle if r.split_type == SplitType.TEST)
+        self.assertEqual(train_cnt, sres.train_count,
+                         "存储中 train 数应等于 shuffle_result.train_count")
+        self.assertEqual(val_cnt, sres.val_count)
+        self.assertEqual(test_cnt, sres.test_count)
+
+        # 3) 泄漏检测：从存储读取 records（模拟 CLI leak-check 行为，不是直接用内存 kept）
         detector = LeakDetector(self.cfg.safety_rules)
-        lres = detector.run(kept, raise_on_leak=False)
+        records_for_leak = self.storage.load_records(self.batch_id)
+        lres = detector.run(records_for_leak, raise_on_leak=False)
+
+        # 关键验证：能检测到故意注入的用户跨集泄漏（说明 split_type 被正确读取）
+        self.assertIn("rule_forbid_user_cross", lres.leak_type or "",
+                      "从存储读取带 split_type 的记录，应能检测到用户跨集泄漏")
+        self.assertGreater(lres.leak_count, 0)
 
         # 4) 统一复核
         reviewer = Reviewer(self.cfg.review)
         review = reviewer.create_review(
             batch_id=self.batch_id,
-            records=kept,
+            records=records_for_leak,
             safety_rules=detector._build_default_safety_rules(),
             safety_rule_violations=[],
             model_logs=[ModelLogEntry(module="pipeline", message="end-to-end run")],
