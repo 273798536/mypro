@@ -1,0 +1,21 @@
+{
+  "name": "yuqing-cluster-dashboard",
+  "version": "1.0.0",
+  "description": "舆情聚类指标看板 - 值班脚本友好的 CLI 工具，追踪模型输出、来源归因、引用缺失、历史改判",
+  "main": "dist/index.js",
+  "bin": {
+    "yuqing": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "demo": "node dist/demo.js",
+    "cli": "node dist/cli.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}
