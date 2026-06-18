@@ -65,20 +65,39 @@ class MigrationExecutor:
                 scripts.append(MigrationScript(name=name, path=fpath, sql=sql))
         return scripts
 
-    def _is_already_success(self, migration_name: str, batch_id: str) -> bool:
-        """检查同一批次下是否已成功执行过。"""
+    def _is_already_success(self, migration_name: str, batch_id: Optional[str] = None) -> dict:
+        """检查迁移是否已成功执行过（全局按迁移名判断，可选按批次判断。
+
+        返回信息：{'success': 是否已成功, 'in_current_batch': 是否在当前批次已成功, 'first_success_batch': 首次成功的批次}
+        """
         with get_conn() as conn:
             cur = conn.cursor()
+
             cur.execute(
                 """
-                SELECT status FROM migration_runs
-                WHERE migration_name = ? AND batch_id = ?
-                ORDER BY id DESC LIMIT 1
+                SELECT status, batch_id FROM migration_runs
+                WHERE migration_name = ? AND status = 'success'
+                ORDER BY id ASC LIMIT 1
                 """,
-                (migration_name, batch_id),
+                (migration_name,),
             )
             row = cur.fetchone()
-            return row is not None and row["status"] == "success"
+
+            if row is None:
+                return {
+                    "success": False,
+                    "in_current_batch": False,
+                    "first_success_batch": None,
+                }
+
+            first_batch = row["batch_id"]
+            in_current = (batch_id is not None) and (first_batch == batch_id)
+
+            return {
+                "success": True,
+                "in_current_batch": in_current,
+                "first_success_batch": first_batch,
+            }
 
     def _record_start(self, migration_name: str, batch_id: str) -> int:
         """记录开始执行。"""
@@ -149,8 +168,10 @@ class MigrationExecutor:
     ) -> List[MigrationRunResult]:
         """执行一批迁移。
 
-        幂等保证：同一 batch_id 下已成功的迁移会被跳过。
-        如果不传 batch_id，自动生成一个新的。
+        幂等保证（全局去重）：
+        - 只要该迁移名曾经在任何批次下成功执行过，就会被跳过
+        - 即使不传 batch_id 自动生成新批次，已执行过的迁移也不会重跑
+        - 同 batch 下的重复执行同样跳过
         """
         if batch_id is None:
             batch_id = f"batch_{uuid.uuid4().hex[:8]}"
@@ -171,13 +192,18 @@ class MigrationExecutor:
         """执行单个迁移脚本。"""
         started_at = now_iso()
 
-        if self._is_already_success(script.name, batch_id):
+        success_info = self._is_already_success(script.name, batch_id)
+        if success_info["success"]:
+            if success_info["in_current_batch"]:
+                reason = "same batch already succeeded"
+            else:
+                reason = f"already succeeded in batch {success_info['first_success_batch']}"
             result = MigrationRunResult(
                 migration_name=script.name,
                 status="skipped",
                 started_at=started_at,
                 finished_at=started_at,
-                skipped_reason="same batch already succeeded",
+                skipped_reason=reason,
             )
             return result
 
@@ -214,7 +240,7 @@ class MigrationExecutor:
         )
 
     def rerun_failed(self, batch_id: str) -> List[MigrationRunResult]:
-        """重跑指定批次中失败的迁移。"""
+        """重跑指定批次中失败的迁移（排除全局已成功的）。"""
         with get_conn() as conn:
             cur = conn.cursor()
             cur.execute(
@@ -222,11 +248,11 @@ class MigrationExecutor:
                 SELECT DISTINCT migration_name FROM migration_runs
                 WHERE batch_id = ? AND status = 'failed'
                 AND migration_name NOT IN (
-                    SELECT migration_name FROM migration_runs
-                    WHERE batch_id = ? AND status = 'success'
+                    SELECT DISTINCT migration_name FROM migration_runs
+                    WHERE status = 'success'
                 )
                 """,
-                (batch_id, batch_id),
+                (batch_id,),
             )
             failed_names = [row["migration_name"] for row in cur.fetchall()]
 

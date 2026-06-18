@@ -477,9 +477,9 @@ def cmd_demo(args):
     print(f"  迁移状态总览: {status_report}")
     print("")
     print("你可以用以下命令继续探索：")
-    print(f"  python -m db_migration_replayer status list -o {output_dir}")
-    print(f"  python -m db_migration_replayer audit list -o {output_dir}")
-    print(f"  python -m db_migration_replayer lock-wait scenarios -o {output_dir}")
+    print(f"  python -m db_migration_replayer status -o {output_dir} list")
+    print(f"  python -m db_migration_replayer audit -o {output_dir}")
+    print(f"  python -m db_migration_replayer lock-wait -o {output_dir} scenarios")
 
 
 def main():
