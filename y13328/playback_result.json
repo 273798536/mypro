@@ -1,0 +1,118 @@
+{
+  "run_time": "2026-06-18 10:30:00",
+  "duplicate_samples": [
+    {
+      "sample_id": "S002",
+      "content": "这家机构跑路了，我交的学费怎么办？",
+      "repeat_count": 2,
+      "review_times": [
+        "2026-06-16 14:20:00",
+        "2026-06-16 14:20:00"
+      ],
+      "blocked_at": "review_count=2, status=confirmed, 未去重入库",
+      "next_step": "1. 合并同一样本的多次评测记录\n2. 保留最新一次评测结果\n3. 更新 review_count=1\n4. 若为pending状态补充证据后改为confirmed"
+    },
+    {
+      "sample_id": "S004",
+      "content": "理财产品到期无法兑付，疑似非法集资",
+      "repeat_count": 2,
+      "review_times": [
+        "2026-06-17 09:10:00",
+        "2026-06-17 11:25:00"
+      ],
+      "blocked_at": "review_count=3, status=pending, 未去重入库",
+      "next_step": "1. 合并同一样本的多次评测记录\n2. 保留最新一次评测结果\n3. 更新 review_count=1\n4. 若为pending状态补充证据后改为confirmed"
+    }
+  ],
+  "withdrawn_samples": [
+    {
+      "sample_id": "S005",
+      "content": "平台擅自修改用户协议，私自扣除服务费",
+      "reason": "用户已和解，申请撤回"
+    }
+  ],
+  "version_changes": [
+    {
+      "sample_id": "S002",
+      "label": "跑路风险",
+      "cluster_v1": "C002",
+      "cluster_v2": "C002",
+      "cluster_changed": false,
+      "threshold_v1": 0.72,
+      "threshold_v2": 0.81,
+      "threshold_changed": true,
+      "manual_correction": "v1阈值偏低，人工确认属于跑路风险",
+      "status": "confirmed"
+    },
+    {
+      "sample_id": "S004",
+      "label": "兑付风险",
+      "cluster_v1": "C004",
+      "cluster_v2": "C999",
+      "cluster_changed": true,
+      "threshold_v1": 0.68,
+      "threshold_v2": 0.55,
+      "threshold_changed": true,
+      "manual_correction": "聚类结果变动，需要重新评估",
+      "status": "pending"
+    },
+    {
+      "sample_id": "S005",
+      "label": "违规扣费",
+      "cluster_v1": "C005",
+      "cluster_v2": "C005",
+      "cluster_changed": false,
+      "threshold_v1": 0.78,
+      "threshold_v2": 0.83,
+      "threshold_changed": true,
+      "manual_correction": "用户已和解，申请撤回",
+      "status": "withdrawn"
+    },
+    {
+      "sample_id": "S006",
+      "label": "系统故障",
+      "cluster_v1": "C006",
+      "cluster_v2": "C006",
+      "cluster_changed": false,
+      "threshold_v1": 0.82,
+      "threshold_v2": 0.86,
+      "threshold_changed": true,
+      "manual_correction": null,
+      "status": "confirmed"
+    }
+  ],
+  "metrics_v1": {
+    "total_samples": 10,
+    "unique_clusters": 7,
+    "avg_threshold": 0.801,
+    "cluster_sizes": {
+      "C001": 2,
+      "C002": 2,
+      "C003": 1,
+      "C004": 2,
+      "C005": 1,
+      "C006": 1,
+      "C007": 1
+    }
+  },
+  "metrics_v2": {
+    "total_samples": 10,
+    "unique_clusters": 7,
+    "avg_threshold": 0.81,
+    "cluster_sizes": {
+      "C001": 2,
+      "C002": 2,
+      "C003": 1,
+      "C999": 2,
+      "C005": 1,
+      "C006": 1,
+      "C007": 1
+    }
+  },
+  "summary": {
+    "confirmed": 5,
+    "pending": 2,
+    "duplicate": 2,
+    "withdrawn": 1
+  }
+}

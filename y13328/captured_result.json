@@ -1,0 +1,124 @@
+{
+  "stdout": "\n============================================================\n  舆情聚类误判回放\n============================================================\n  样例文件: /Users/mac/pro/solo/workspaces/y13328/samples.json\n  运行时间: 2026-06-18 10:30:00\n  总记录数: 10 条（去重后: 8 条）\n\n============================================================\n  一、重复评测检测\n============================================================\n  发现 2 个样本被重复评测:\n\n    样本ID: S002\n    内容: 这家机构跑路了，我交的学费怎么办？...\n    重复次数: 2 次\n    评测时间: 2026-06-16 14:20:00, 2026-06-16 14:20:00\n    当前状态: confirmed\n    卡在: review_count=2，状态仍为 confirmed，未去重入库\n\n    样本ID: S004\n    内容: 理财产品到期无法兑付，疑似非法集资...\n    重复次数: 2 次\n    评测时间: 2026-06-17 09:10:00, 2026-06-17 11:25:00\n    当前状态: pending\n    卡在: review_count=3，状态仍为 pending，未去重入库\n\n============================================================\n  二、撤回记录检测\n============================================================\n  发现 1 条撤回记录:\n\n    样本ID: S005\n    内容: 平台擅自修改用户协议，私自扣除服务费...\n    撤回原因: 用户已和解，申请撤回\n    评测时间: 2026-06-16 16:00:00\n\n============================================================\n  三、版本对比 (v1 → v2)\n============================================================\n  指标                          v1         v2       变化\n  --------------------------------------------------\n  总样本数                        10         10        -\n  聚类簇数                         7          7       +0\n  平均阈值                     0.801      0.810    +0.009\n\n  聚类大小变化:\n    C001: 2 → 2 (+0)\n    C002: 2 → 2 (+0)\n    C003: 1 → 1 (+0)\n    C004: 2 → 0 (-2)\n    C005: 1 → 1 (+0)\n    C006: 1 → 1 (+0)\n    C007: 1 → 1 (+0)\n    C999: 0 → 2 (+2)\n\n  样本级变化 (共 4 条):\n\n    S002 [跑路风险] - 阈值变动(0.72→0.81), 有人工修正\n      修正备注: v1阈值偏低，人工确认属于跑路风险\n\n    S004 [兑付风险] - 聚类变动(C004→C999), 阈值变动(0.68→0.55), 有人工修正\n      修正备注: 聚类结果变动，需要重新评估\n\n    S005 [违规扣费] - 阈值变动(0.78→0.83), 有人工修正\n      修正备注: 用户已和解，申请撤回\n\n    S006 [系统故障] - 阈值变动(0.82→0.86)\n\n============================================================\n  四、处理状态汇总\n============================================================\n  已处理 (confirmed): 5 条\n    ✓ S001 - 虚假宣传\n    ✓ S003 - 服务态度\n    ✓ S006 - 系统故障\n    ✓ S007 - 虚假宣传\n\n  待补证据 (pending): 2 条\n    ? S008 - 诈骗风险 - 需补充证据\n\n  需去重 (重复评测): 2 条\n    ! S002 - 重复 2 次，需合并评测记录\n    ! S004 - 重复 2 次，需合并评测记录\n\n  已撤回 (withdrawn): 1 条\n    × S005 - 不计入统计\n\n============================================================\n  五、导出结果\n============================================================\n  结果文件: /Users/mac/pro/solo/workspaces/y13328/playback_result.json\n\n============================================================\n  六、退出提示\n============================================================\n  重复评测卡在哪:\n    样本 S002 的 review_count=2，但实际重复评测了 2 次\n    原因: 入库时未按 sample_id 去重，导致同一条样本多次写入\n\n  下一步怎么处理 (照着做):\n    1. 打开样本表，按 sample_id 排序找到重复行\n    2. 保留 last_review_time 最新的那一条，删除其余重复项\n    3. 将保留的那条的 review_count 改为实际评测次数\n    4. 如果状态是 pending，补充完证据后改为 confirmed\n    5. 重新运行本脚本验证\n\n  老唐接班须知:\n    样例在哪 → /Users/mac/pro/solo/workspaces/y13328/samples.json\n    异常在哪 → 上面 '一、二、三' 节已标出\n    结果怎么导出 → 已自动导出到 /Users/mac/pro/solo/workspaces/y13328/playback_result.json\n\n  退出码: 1 (存在重复评测，需处理)\n",
+  "stderr": "",
+  "exit_code": 1,
+  "playback_result_json_exists": true,
+  "playback_result_json": {
+    "run_time": "2026-06-18 10:30:00",
+    "duplicate_samples": [
+      {
+        "sample_id": "S002",
+        "content": "这家机构跑路了，我交的学费怎么办？",
+        "repeat_count": 2,
+        "review_times": [
+          "2026-06-16 14:20:00",
+          "2026-06-16 14:20:00"
+        ],
+        "blocked_at": "review_count=2, status=confirmed, 未去重入库",
+        "next_step": "1. 合并同一样本的多次评测记录\n2. 保留最新一次评测结果\n3. 更新 review_count=1\n4. 若为pending状态补充证据后改为confirmed"
+      },
+      {
+        "sample_id": "S004",
+        "content": "理财产品到期无法兑付，疑似非法集资",
+        "repeat_count": 2,
+        "review_times": [
+          "2026-06-17 09:10:00",
+          "2026-06-17 11:25:00"
+        ],
+        "blocked_at": "review_count=3, status=pending, 未去重入库",
+        "next_step": "1. 合并同一样本的多次评测记录\n2. 保留最新一次评测结果\n3. 更新 review_count=1\n4. 若为pending状态补充证据后改为confirmed"
+      }
+    ],
+    "withdrawn_samples": [
+      {
+        "sample_id": "S005",
+        "content": "平台擅自修改用户协议，私自扣除服务费",
+        "reason": "用户已和解，申请撤回"
+      }
+    ],
+    "version_changes": [
+      {
+        "sample_id": "S002",
+        "label": "跑路风险",
+        "cluster_v1": "C002",
+        "cluster_v2": "C002",
+        "cluster_changed": false,
+        "threshold_v1": 0.72,
+        "threshold_v2": 0.81,
+        "threshold_changed": true,
+        "manual_correction": "v1阈值偏低，人工确认属于跑路风险",
+        "status": "confirmed"
+      },
+      {
+        "sample_id": "S004",
+        "label": "兑付风险",
+        "cluster_v1": "C004",
+        "cluster_v2": "C999",
+        "cluster_changed": true,
+        "threshold_v1": 0.68,
+        "threshold_v2": 0.55,
+        "threshold_changed": true,
+        "manual_correction": "聚类结果变动，需要重新评估",
+        "status": "pending"
+      },
+      {
+        "sample_id": "S005",
+        "label": "违规扣费",
+        "cluster_v1": "C005",
+        "cluster_v2": "C005",
+        "cluster_changed": false,
+        "threshold_v1": 0.78,
+        "threshold_v2": 0.83,
+        "threshold_changed": true,
+        "manual_correction": "用户已和解，申请撤回",
+        "status": "withdrawn"
+      },
+      {
+        "sample_id": "S006",
+        "label": "系统故障",
+        "cluster_v1": "C006",
+        "cluster_v2": "C006",
+        "cluster_changed": false,
+        "threshold_v1": 0.82,
+        "threshold_v2": 0.86,
+        "threshold_changed": true,
+        "manual_correction": null,
+        "status": "confirmed"
+      }
+    ],
+    "metrics_v1": {
+      "total_samples": 10,
+      "unique_clusters": 7,
+      "avg_threshold": 0.801,
+      "cluster_sizes": {
+        "C001": 2,
+        "C002": 2,
+        "C003": 1,
+        "C004": 2,
+        "C005": 1,
+        "C006": 1,
+        "C007": 1
+      }
+    },
+    "metrics_v2": {
+      "total_samples": 10,
+      "unique_clusters": 7,
+      "avg_threshold": 0.81,
+      "cluster_sizes": {
+        "C001": 2,
+        "C002": 2,
+        "C003": 1,
+        "C999": 2,
+        "C005": 1,
+        "C006": 1,
+        "C007": 1
+      }
+    },
+    "summary": {
+      "confirmed": 5,
+      "pending": 2,
+      "duplicate": 2,
+      "withdrawn": 1
+    }
+  }
+}
