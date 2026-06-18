@@ -1,0 +1,89 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: #f4efe3;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(26, 24, 20, 0.045) 1px, transparent 0),
+    radial-gradient(1200px 600px at 85% -10%, rgba(40, 65, 91, 0.06), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(178, 58, 72, 0.05), transparent 60%);
+  background-size: 22px 22px, auto, auto;
+  background-attachment: fixed;
+  color: #1a1814;
+  font-family: 'Noto Sans SC', 'Source Han Sans SC', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+@layer components {
+  .dossier-surface {
+    @apply bg-paper-50/80 border border-ink-900/10 backdrop-blur-sm;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.4),
+      0 1px 2px rgba(26, 24, 20, 0.06);
+  }
+
+  .field-rule {
+    background-image: linear-gradient(to bottom, transparent calc(100% - 1px), rgba(26, 24, 20, 0.08) 100%);
+    background-size: 100% 1.85rem;
+  }
+
+  .stamp {
+    @apply inline-flex items-center gap-1 rounded-[3px] px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider;
+    border: 1.5px solid currentColor;
+    letter-spacing: 0.06em;
+  }
+
+  .corner-tick::before,
+  .corner-tick::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-color: rgba(26, 24, 20, 0.35);
+  }
+  .corner-tick::before {
+    top: 6px;
+    left: 6px;
+    border-top: 1.5px solid;
+    border-left: 1.5px solid;
+  }
+  .corner-tick::after {
+    bottom: 6px;
+    right: 6px;
+    border-bottom: 1.5px solid;
+    border-right: 1.5px solid;
+  }
+
+  .hairline {
+    @apply border-ink-900/10;
+  }
+}
+
+/* slim case-file scrollbars */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(26, 24, 20, 0.18);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 24, 20, 0.3);
+  background-clip: padding-box;
+}

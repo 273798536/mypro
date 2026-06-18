@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="10" fill="#F4EFE3"/>
+  <rect x="14" y="10" width="32" height="44" rx="3" fill="#FAF7EF" stroke="#1A1814" stroke-width="2"/>
+  <path d="M20 22h20M20 30h20M20 38h12" stroke="#1A1814" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="48" cy="46" r="12" fill="#B23A48"/>
+  <text x="48" y="52" font-family="Georgia, serif" font-size="13" font-weight="700" fill="#FAF7EF" text-anchor="middle">改</text>
+</svg>
