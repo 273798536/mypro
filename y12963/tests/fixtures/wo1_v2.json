@@ -1,0 +1,38 @@
+{
+  "work_order": {
+    "work_order_id": "WO-2026-0618-001",
+    "ticket_title": "迁移前脱敏核验-用户模块（补录修正email）",
+    "ticket_url": "https://tickets.example.com/WO-2026-0618-001",
+    "assignee": "alice",
+    "created_at": "2026-06-18T09:00:00Z"
+  },
+  "batch_id": "MIGR-PRE-001",
+  "operator": "alice",
+  "field_checks": [
+    {
+      "field_path": "user.email",
+      "expected_mask_level": "PARTIAL",
+      "actual_sample": "zhang***@example.com",
+      "source_file": "audit_logs/user_20260618_02_corrected.log",
+      "source_line_start": 5,
+      "source_line_end": 8,
+      "raw_excerpt": "[AUDIT-CORRECTED] user.email = zhang***@example.com (补录：原样本抽样错误)",
+      "slow_query": {
+        "slow_log_id": "SQ-BB0012",
+        "slow_log_file": "mysql-slow-20260618.log",
+        "slow_log_line": 891,
+        "sql_excerpt": "SELECT id, email FROM user FORCE INDEX(idx_email) WHERE email LIKE '%@example.com'",
+        "query_time_ms": 4200
+      }
+    },
+    {
+      "field_path": "user.real_name",
+      "expected_mask_level": "PARTIAL",
+      "actual_sample": "张*",
+      "source_file": "audit_logs/user_20260618_02_corrected.log",
+      "source_line_start": 10,
+      "source_line_end": 12,
+      "raw_excerpt": "[AUDIT-CORRECTED] user.real_name = 张* (补录新增字段)"
+    }
+  ]
+}

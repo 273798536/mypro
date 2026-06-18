@@ -1,0 +1,38 @@
+{
+  "work_order": {
+    "work_order_id": "WO-2026-0618-002",
+    "ticket_title": "迁移重复执行核验-订单模块（第1次）",
+    "ticket_url": "https://tickets.example.com/WO-2026-0618-002",
+    "assignee": "bob",
+    "created_at": "2026-06-18T10:00:00Z"
+  },
+  "batch_id": "MIGR-ORDER-RETRY",
+  "operator": "bob",
+  "field_checks": [
+    {
+      "field_path": "order.ship_addr.receiver_phone",
+      "expected_mask_level": "PARTIAL",
+      "actual_sample": "139****9988",
+      "source_file": "audit_logs/order_migrate_run1.log",
+      "source_line_start": 330,
+      "source_line_end": 335,
+      "raw_excerpt": "[MIGRATE RUN #1] order_id=1001 ship_addr.phone=139****9988",
+      "slow_query": {
+        "slow_log_id": "SQ-MIGR-001",
+        "slow_log_file": "mysql-slow-migrate.log",
+        "slow_log_line": 12,
+        "sql_excerpt": "INSERT INTO order_new SELECT * FROM order_old",
+        "query_time_ms": 8821
+      }
+    },
+    {
+      "field_path": "order.pay.card_no",
+      "expected_mask_level": "FULL",
+      "actual_sample": "****-****-****-****",
+      "source_file": "audit_logs/order_migrate_run1.log",
+      "source_line_start": 440,
+      "source_line_end": 445,
+      "raw_excerpt": "[MIGRATE RUN #1] order_id=1001 pay.card_no=****-****-****-****"
+    }
+  ]
+}

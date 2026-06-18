@@ -1,0 +1,54 @@
+{
+  "work_order": {
+    "work_order_id": "WO-2026-0618-001",
+    "ticket_title": "迁移前脱敏核验-用户模块",
+    "ticket_url": "https://tickets.example.com/WO-2026-0618-001",
+    "assignee": "alice",
+    "created_at": "2026-06-18T09:00:00Z"
+  },
+  "batch_id": "MIGR-PRE-001",
+  "operator": "alice",
+  "field_checks": [
+    {
+      "field_path": "user.profile.phone",
+      "expected_mask_level": "PARTIAL",
+      "actual_sample": "138****1234",
+      "source_file": "audit_logs/user_20260618_01.log",
+      "source_line_start": 12,
+      "source_line_end": 15,
+      "raw_excerpt": "[AUDIT] update user set profile.phone=138****1234 by uid=42",
+      "slow_query": {
+        "slow_log_id": "SQ-9F3A21",
+        "slow_log_file": "mysql-slow-20260618.log",
+        "slow_log_line": 442,
+        "sql_excerpt": "SELECT id, profile->>'$.phone' AS phone FROM user WHERE updated_at > '2026-06-18'",
+        "query_time_ms": 1280
+      }
+    },
+    {
+      "field_path": "user.profile.id_card",
+      "expected_mask_level": "FULL",
+      "actual_sample": "****************",
+      "source_file": "audit_logs/user_20260618_01.log",
+      "source_line_start": 18,
+      "source_line_end": 20,
+      "raw_excerpt": "[AUDIT] update user set profile.id_card=**************** by uid=42",
+      "slow_query": {
+        "slow_log_id": "SQ-9F3A21",
+        "slow_log_file": "mysql-slow-20260618.log",
+        "slow_log_line": 442,
+        "sql_excerpt": "SELECT id, profile->>'$.id_card' FROM user WHERE updated_at > '2026-06-18'",
+        "query_time_ms": 1280
+      }
+    },
+    {
+      "field_path": "user.email",
+      "expected_mask_level": "PARTIAL",
+      "actual_sample": "z****@example.com",
+      "source_file": "audit_logs/user_20260618_01.log",
+      "source_line_start": 22,
+      "source_line_end": 24,
+      "raw_excerpt": "[AUDIT] select email from user where id=7"
+    }
+  ]
+}
