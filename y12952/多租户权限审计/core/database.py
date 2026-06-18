@@ -156,6 +156,20 @@ class Database:
         cur = conn.execute("SELECT COUNT(*) as cnt FROM tenants")
         return cur.fetchone()["cnt"] == 0
 
+    def reset_all(self):
+        with self.transaction() as conn:
+            conn.execute("PRAGMA foreign_keys = OFF")
+            for table in [
+                "review_histories",
+                "audit_findings",
+                "processing_records",
+                "permission_rules",
+                "migration_scripts",
+                "tenants",
+            ]:
+                conn.execute(f"DELETE FROM {table}")
+            conn.execute("PRAGMA foreign_keys = ON")
+
     # ----- tenants -----
     def insert_tenant(self, t: Tenant):
         with self.transaction() as conn:

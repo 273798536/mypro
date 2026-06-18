@@ -457,6 +457,8 @@ def _mk_audit_findings() -> List[AuditFinding]:
 def load_sample_data(db: Database, force: bool = False):
     if not force and not db.is_empty():
         return False
+    if force:
+        db.reset_all()
     for t in _mk_tenants():
         db.insert_tenant(t)
     for m in _mk_migration_scripts():

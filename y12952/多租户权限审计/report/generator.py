@@ -292,7 +292,7 @@ class ReportGenerator:
         lines.append("【概览】")
         lines.append(f"  异常总数：{summary['total_findings']}")
         lines.append(f"  待复核：{summary['pending_review']}")
-        lines.append(f"  严重+高危：{summary['needs_attention'][0]}")
+        lines.append(f"  严重+高危：{summary['needs_attention']}")
         lines.append("")
         lines.append("  按类型：")
         for k, v in summary["by_type_labeled"].items():
@@ -338,8 +338,8 @@ class ReportGenerator:
             lines.append("  🔍 溯源：顺着异常可查到迁移脚本/处理记录")
             trace = self.tracer.trace_finding(f["finding_id"])
             for step in trace["timeline"]:
-                who = step.get("who", "系统")
-                when = step.get("when", step.get("detail", "")[:19])
+                who = step.get("who") or "系统"
+                when = (step.get("when") or step.get("detail") or "")[:19]
                 lines.append(f"    · {step['step']}  ——  {step['detail']}  [{who} @ {when}]")
         lines.append("")
         lines.append("=" * 70)
@@ -451,7 +451,7 @@ class ReportGenerator:
             for step in trace["timeline"]:
                 lines.append(
                     f"- **{step['step']}** — {step['detail']}  "
-                    f"(`{step.get('who','-')}` @ `{step.get('when','-')[:19]}`)"
+                    f"(`{step.get('who') or '-'}` @ `{(step.get('when') or '-')[:19]}`)"
                 )
             return "\n".join(lines)
         lines = [f"===== 异常追溯报告：{finding_id} ====="]
@@ -469,14 +469,14 @@ class ReportGenerator:
         for step in trace["timeline"]:
             lines.append(
                 f"  · {step['step']}  —  {step['detail']}"
-                f"  [{step.get('who','-')} @ {step.get('when','-')[:19]}]"
+                f"  [{step.get('who') or '-'} @ {(step.get('when') or '-')[:19]}]"
             )
         if trace.get("migration_script"):
             m = trace["migration_script"]
             lines.append("")
             lines.append("📄 关联迁移脚本关键内容：")
             lines.append(f"  {m['version']} {m['name']} ({m['filepath']})")
-            lines.append(f"  状态：{m['status']}  执行人：{m.get('applied_by','-')}  执行时间：{m.get('applied_at','-')}")
+            lines.append(f"  状态：{m['status']}  执行人：{m.get('applied_by') or '-'}  执行时间：{m.get('applied_at') or '-'}")
             if m.get("error_message"):
                 lines.append(f"  错误信息：{m['error_message']}")
         if trace.get("review_histories"):

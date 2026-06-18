@@ -92,7 +92,7 @@ class TraceEngine:
         parts = []
         parts.append(f"异常 {finding['finding_id']}: {finding['title']}")
         if tenant:
-            parts.append(f"租户: {tenant['tenant_name']} ({tenant['tenant_id']}, 环境 {tenant['environment']}")
+            parts.append(f"租户: {tenant['tenant_name']} ({tenant['tenant_id']}, 环境 {tenant['environment']})")
         if proc:
             parts.append(f"处理记录: {proc['record_id']}, 批次 {proc['batch_no']}, 操作员 {proc.get('processed_by') or 'N/A'}")
         if mig:
