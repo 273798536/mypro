@@ -1,0 +1,46 @@
+[
+  {
+    "migration_id": "MIG20250601001",
+    "migration_name": "库存汇总表口径调整 - 增加在途库存",
+    "migration_type": "caliber_change",
+    "source_sql": "SELECT report_date, warehouse_code, SUM(stock_qty) as total_stock FROM warehouse.inventory WHERE status = 'IN_STOCK' GROUP BY report_date, warehouse_code",
+    "target_sql": "SELECT report_date, warehouse_code, SUM(stock_qty) as total_stock FROM warehouse.inventory WHERE status IN ('IN_STOCK', 'IN_TRANSIT') GROUP BY report_date, warehouse_code",
+    "manual_remark": "业务需求：2025年6月起库存统计口径调整，在途库存纳入统计",
+    "status": "pending",
+    "executor": "etl_admin",
+    "affected_rows": 0
+  },
+  {
+    "migration_id": "MIG20250605002",
+    "migration_name": "出入库汇总表字段重命名",
+    "migration_type": "rename",
+    "source_sql": "SELECT report_date, SUM(in_qty) as inbound, SUM(out_qty) as outbound FROM warehouse.movement GROUP BY report_date",
+    "target_sql": "SELECT report_date, SUM(inbound_qty) as inbound_total, SUM(outbound_qty) as outbound_total FROM warehouse.daily_movement GROUP BY report_date",
+    "manual_remark": "表结构变更：movement表拆分为daily_movement，字段名标准化",
+    "status": "pending",
+    "executor": "etl_admin",
+    "affected_rows": 0
+  },
+  {
+    "migration_id": "MIG20250610003",
+    "migration_name": "库存价值计算逻辑修复",
+    "migration_type": "bug_fix",
+    "source_sql": "SELECT sku, stock_qty * cost as stock_value FROM warehouse.inventory",
+    "target_sql": "SELECT sku, stock_qty * unit_cost as stock_value FROM warehouse.inventory",
+    "manual_remark": "Bug修复：字段名错误，cost应为unit_cost，导致5月下旬报表数据异常",
+    "status": "pending",
+    "executor": "etl_admin",
+    "affected_rows": 0
+  },
+  {
+    "migration_id": "MIG20250615004",
+    "migration_name": "周转率分母口径调整",
+    "migration_type": "caliber_change",
+    "source_sql": "SELECT sku, stock_qty / daily_sales as turnover_days FROM warehouse.inventory",
+    "target_sql": "SELECT sku, stock_qty / NULLIF(avg_daily_sales_30d, 0) as turnover_days FROM warehouse.inventory",
+    "manual_remark": "优化：使用30天均值避免单日销量波动影响，处理除零错误",
+    "status": "pending",
+    "executor": "etl_admin",
+    "affected_rows": 0
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "user_id": "U001",
+    "user_name": "张三",
+    "role": "admin",
+    "permission_scope": "all",
+    "allowed_actions": "import,analyze,confirm,migrate,rollback,override_permission"
+  },
+  {
+    "user_id": "U002",
+    "user_name": "李四",
+    "role": "engineer",
+    "permission_scope": "warehouse",
+    "allowed_actions": "import,analyze,confirm"
+  },
+  {
+    "user_id": "U003",
+    "user_name": "王五",
+    "role": "analyst",
+    "permission_scope": "report",
+    "allowed_actions": "analyze,view"
+  },
+  {
+    "user_id": "U004",
+    "user_name": "赵六",
+    "role": "auditor",
+    "permission_scope": "audit",
+    "allowed_actions": "view,audit,override_permission"
+  }
+]

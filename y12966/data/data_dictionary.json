@@ -1,0 +1,102 @@
+[
+  {
+    "table_name": "warehouse.inventory",
+    "column_name": "stock_qty",
+    "data_type": "INT",
+    "business_caliber": "仓库库存数量，包含在库和在途",
+    "technical_definition": "SUM(CASE WHEN status = 'active' THEN qty ELSE 0 END)",
+    "owner_department": "仓储部",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "warehouse.inventory",
+    "column_name": "report_date",
+    "data_type": "DATE",
+    "business_caliber": "数据统计日期，自然日",
+    "technical_definition": "DATE(created_at)",
+    "owner_department": "数据组",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "warehouse.inventory",
+    "column_name": "warehouse_code",
+    "data_type": "VARCHAR(32)",
+    "business_caliber": "仓库编码，WH+两位数字",
+    "technical_definition": "直接取自仓储系统编码",
+    "owner_department": "仓储部",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "warehouse.inventory",
+    "column_name": "sku",
+    "data_type": "VARCHAR(64)",
+    "business_caliber": "商品SKU编码，全球唯一",
+    "technical_definition": "商品主数据SKU",
+    "owner_department": "商品部",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "warehouse.daily_movement",
+    "column_name": "inbound_qty",
+    "data_type": "INT",
+    "business_caliber": "当日入库数量，含采购入库和调拨入库",
+    "technical_definition": "SUM(CASE WHEN movement_type IN ('PURCHASE_IN', 'TRANSFER_IN') THEN qty ELSE 0 END)",
+    "owner_department": "仓储部",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "warehouse.daily_movement",
+    "column_name": "outbound_qty",
+    "data_type": "INT",
+    "business_caliber": "当日出库数量，含销售出库和调拨出库",
+    "technical_definition": "SUM(CASE WHEN movement_type IN ('SALES_OUT', 'TRANSFER_OUT') THEN qty ELSE 0 END)",
+    "owner_department": "仓储部",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "warehouse.inventory_value",
+    "column_name": "stock_value",
+    "data_type": "DECIMAL(18,2)",
+    "business_caliber": "库存价值，按移动加权平均计算",
+    "technical_definition": "stock_qty * unit_cost",
+    "owner_department": "财务部",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "warehouse.inventory_turnover",
+    "column_name": "turnover_days",
+    "data_type": "DECIMAL(10,2)",
+    "business_caliber": "库存周转天数，按最近30天日均销量计算",
+    "technical_definition": "stock_qty / NULLIF(avg_daily_sales_30d, 0)",
+    "owner_department": "运营部",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "report.daily_stock_summary",
+    "column_name": "total_stock",
+    "data_type": "INT",
+    "business_caliber": "仓库总库存，不包含在途",
+    "technical_definition": "SUM(warehouse.inventory.stock_qty WHERE status = 'IN_STOCK')",
+    "owner_department": "数据组",
+    "is_obsolete": 0,
+    "version": 1
+  },
+  {
+    "table_name": "report.daily_stock_summary",
+    "column_name": "total_stock",
+    "data_type": "INT",
+    "business_caliber": "仓库总库存，包含在途（v2口径变更）",
+    "technical_definition": "SUM(warehouse.inventory.stock_qty WHERE status IN ('IN_STOCK', 'IN_TRANSIT'))",
+    "owner_department": "数据组",
+    "is_obsolete": 0,
+    "version": 2
+  }
+]
