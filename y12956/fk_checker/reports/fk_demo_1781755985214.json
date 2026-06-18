@@ -1,0 +1,33 @@
+{
+  "snapshot_id": "fk_demo_1781755985214",
+  "created_at": "2026-06-18T13:13:05.214688",
+  "schema_name": "fk_demo",
+  "fk_total": 5,
+  "broken_count": 2,
+  "total_broken_rows": 2,
+  "broken_links": [
+    {
+      "table_name": "audit_log",
+      "column_name": "user_id",
+      "referenced_table": "users",
+      "referenced_column": "id",
+      "broken_value": "99",
+      "broken_count": 1,
+      "sample_ids": [
+        "4"
+      ]
+    },
+    {
+      "table_name": "order_items",
+      "column_name": "product_id",
+      "referenced_table": "products",
+      "referenced_column": "id",
+      "broken_value": "99",
+      "broken_count": 1,
+      "sample_ids": [
+        "8"
+      ]
+    }
+  ],
+  "notes": "修复后-还剩2条断链"
+}

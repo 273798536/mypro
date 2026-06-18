@@ -1,0 +1,45 @@
+{
+  "id": "orders_id_gap_1781756079",
+  "table_name": "orders",
+  "gap_type": "id_gap",
+  "description": "订单ID跳号，ID=6,7,8,9丢失",
+  "gap_size": 4,
+  "severity": "high",
+  "status": "confirmed",
+  "first_detected": "2026-06-18T13:14:39.719090",
+  "last_checked": "2026-06-18T13:15:01.329984",
+  "recheck_count": 1,
+  "supplement_notes": [
+    "核对2023-06-15迁移日志，脚本中断后没重跑，丢了ID=6,7,8,9共4条，对应明细还在order_items里"
+  ],
+  "confirm_notes": [
+    {
+      "time": "2026-06-18T13:15:01.914376",
+      "note": "确认迁移丢失，已补录数据，对业务无影响，归档关闭",
+      "confirmed_by": "dba_zhang"
+    }
+  ],
+  "history": [
+    {
+      "time": "2026-06-18T13:14:39.719090",
+      "action": "detected",
+      "detail": "首次发现备份缺口"
+    },
+    {
+      "time": "2026-06-18T13:15:01.329984",
+      "action": "recheck",
+      "detail": "第 1 次复检，缺口从 4 变为 4",
+      "note": "再查一遍，ID跳号确实还在"
+    },
+    {
+      "time": "2026-06-18T13:15:01.719008",
+      "action": "supplement",
+      "detail": "核对2023-06-15迁移日志，脚本中断后没重跑，丢了ID=6,7,8,9共4条，对应明细还在order_items里"
+    },
+    {
+      "time": "2026-06-18T13:15:01.914376",
+      "action": "confirm",
+      "detail": "dba_zhang 人工确认: 确认迁移丢失，已补录数据，对业务无影响，归档关闭"
+    }
+  ]
+}

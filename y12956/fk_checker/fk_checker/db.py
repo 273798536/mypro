@@ -28,6 +28,7 @@ class Database:
                 database=self.config.database,
                 charset=self.config.charset,
                 cursorclass=pymysql.cursors.DictCursor,
+                autocommit=True,
             )
         return self._conn
 

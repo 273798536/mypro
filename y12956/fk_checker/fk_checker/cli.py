@@ -5,7 +5,14 @@ from tabulate import tabulate
 
 from .db import Database, DBConfig
 from .core import FKChecker
-from .sample_data import get_sample_sql, SAMPLE_BROKEN_LINKS_DESC
+from .sample_data import (
+    get_sample_sql,
+    get_sample_statements,
+    SAMPLE_BROKEN_LINKS_DESC,
+    EXPECTED_ROW_COUNTS,
+    EXPECTED_FK_COUNT,
+    EXPECTED_BROKEN_LINKS,
+)
 from .backup_check import BackupChecker
 from .gap_handler import GapHandler, GapStatus
 from .report import ReportManager
@@ -176,6 +183,8 @@ def sample_init(ctx, schema, drop_if_exists):
     - 订单项引用已删除的商品
     - 审计日志引用不存在的用户
     - 订单ID跳号（数据迁移常见问题）
+
+    初始化完成后会实际查询验证，确保坏数据真的落库。
     """
     db_cfg = ctx.obj["db_config"]
     db_cfg.database = ""
@@ -184,46 +193,168 @@ def sample_init(ctx, schema, drop_if_exists):
     click.echo(f"正在初始化样例数据库 [{schema}]...")
     click.echo("")
 
+    statements = get_sample_statements(schema)
+    executed_ok = 0
+    failed_list = []
+
     try:
         if drop_if_exists:
             db.execute(f"DROP DATABASE IF EXISTS `{schema}`")
-            click.echo(f"  已删除旧数据库 {schema}")
+            click.echo(click.style(f"  ✓ 已删除旧数据库 {schema}", fg="green"))
 
-        sql_script = get_sample_sql()
+        click.echo(f"  共 {len(statements)} 步，开始执行：")
+        click.echo("")
 
-        statements = [s.strip() for s in sql_script.split(";") if s.strip()]
-        for stmt in statements:
-            if stmt.upper().startswith("USE "):
-                db.execute(stmt)
-            elif stmt.strip():
-                try:
-                    db.execute(stmt)
-                except Exception as e:
-                    pass
+        for i, (desc, sql) in enumerate(statements, 1):
+            try:
+                db.execute(sql)
+                executed_ok += 1
+                click.echo(f"  [{i:>2}/{len(statements)}] {click.style('OK', fg='green')}  {desc}")
+            except Exception as e:
+                failed_list.append((i, desc, str(e)))
+                click.echo(f"  [{i:>2}/{len(statements)}] {click.style('FAIL', fg='red')}  {desc}")
+                click.echo(f"            错误: {str(e)[:80]}")
+                click.echo(f"            SQL: {sql[:100]}...")
+                click.echo("")
+                click.echo(click.style(
+                    "  初始化终止：关键步骤执行失败，可能是 MySQL 连接或权限问题",
+                    fg="red", bold=True
+                ))
+                sys.exit(1)
+
+        click.echo("")
+        click.echo(click.style("  ✓ SQL 全部执行完毕", fg="green", bold=True))
+        click.echo(f"    成功: {executed_ok} 步, 失败: {len(failed_list)} 步")
+        click.echo("")
 
         db_cfg.database = schema
         db2 = Database(db_cfg)
-        tables = db2.execute("SHOW TABLES")
-        table_count = len(tables)
-        table_names = [list(t.values())[0] for t in tables]
+        click.echo(click.style("  [验证] 开始实际查询验证数据是否真的落库...", fg="cyan", bold=True))
+        click.echo("")
 
-        click.echo(click.style("  ✓ 样例数据库初始化完成", fg="green", bold=True))
-        click.echo(f"    数据库名: {schema}")
-        click.echo(f"    表数量:   {table_count}")
-        click.echo(f"    表列表:   {', '.join(table_names)}")
+        all_ok = True
+
+        click.echo("  1. 验证各表行数：")
+        row_check_ok = True
+        for table, expected in EXPECTED_ROW_COUNTS.items():
+            row = db2.execute_one(f"SELECT COUNT(*) as cnt FROM `{table}`")
+            actual = row["cnt"] if row else 0
+            status = "OK" if actual == expected else "MISMATCH"
+            color = "green" if actual == expected else "red"
+            if actual != expected:
+                row_check_ok = False
+                all_ok = False
+            click.echo(f"     {table:>12s}: {actual:>4d} 行 (预期 {expected:>4d})  {click.style(status, fg=color)}")
+        if not row_check_ok:
+            click.echo(click.style("     ⚠ 行数不匹配，坏数据可能未落库", fg="red"))
+        else:
+            click.echo(click.style("     ✓ 所有表行数正确", fg="green"))
         click.echo("")
-        click.echo(click.style("  样例数据包含的断链类型：", fg="yellow"))
-        click.echo(SAMPLE_BROKEN_LINKS_DESC)
+
+        click.echo("  2. 验证外键约束是否在 information_schema 中：")
+        fk_rows = db2.execute("""
+            SELECT COUNT(*) as cnt
+            FROM information_schema.KEY_COLUMN_USAGE
+            WHERE TABLE_SCHEMA = %s
+              AND REFERENCED_TABLE_NAME IS NOT NULL
+        """, (schema,))
+        actual_fk_count = fk_rows[0]["cnt"] if fk_rows else 0
+        fk_ok = actual_fk_count == EXPECTED_FK_COUNT
+        if not fk_ok:
+            all_ok = False
+        status = "OK" if fk_ok else "MISMATCH"
+        color = "green" if fk_ok else "red"
+        click.echo(f"     外键数: {actual_fk_count} 个 (预期 {EXPECTED_FK_COUNT} 个)  {click.style(status, fg=color)}")
+        if fk_ok:
+            fk_detail = db2.execute("""
+                SELECT TABLE_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+                FROM information_schema.KEY_COLUMN_USAGE
+                WHERE TABLE_SCHEMA = %s
+                  AND REFERENCED_TABLE_NAME IS NOT NULL
+                ORDER BY TABLE_NAME
+            """, (schema,))
+            for fk in fk_detail:
+                click.echo(f"       · {fk['TABLE_NAME']}.{fk['COLUMN_NAME']} → {fk['REFERENCED_TABLE_NAME']}.{fk['REFERENCED_COLUMN_NAME']}")
+            click.echo(click.style("     ✓ 外键约束定义完整", fg="green"))
+        else:
+            click.echo(click.style("     ⚠ 外键约束缺失，工具可能查不到断链", fg="red"))
         click.echo("")
-        click.echo("  快速体验命令：")
-        click.echo(f"    fk-checker -d {schema} check")
+
+        click.echo("  3. 直接 LEFT JOIN 查询，验证断链数据真的存在：")
+        broken_found = []
+        for exp in EXPECTED_BROKEN_LINKS:
+            tbl = exp["table"]
+            col = exp["column"]
+            ref_tbl = exp["referenced_table"]
+            ref_col = exp["referenced_column"]
+            expected_count = exp["broken_count"]
+            expected_pks = [str(p) for p in exp["sample_pks"]]
+
+            sql = f"""
+                SELECT COUNT(*) as cnt, GROUP_CONCAT(t.id ORDER BY t.id) as sample_pks
+                FROM `{tbl}` t
+                LEFT JOIN `{ref_tbl}` r ON t.`{col}` = r.`{ref_col}`
+                WHERE r.`{ref_col}` IS NULL
+                  AND t.`{col}` IS NOT NULL
+            """
+            row = db2.execute_one(sql)
+            actual_count = row["cnt"] if row else 0
+            sample_str = row["sample_pks"] if row else ""
+            sample_pks = sample_str.split(",") if sample_str else []
+            match_count = actual_count == expected_count
+            match_pks = all(p in sample_pks for p in expected_pks) if expected_pks else True
+            ok = match_count and match_pks
+            if not ok:
+                all_ok = False
+            status = "OK" if ok else "MISMATCH"
+            color = "green" if ok else "red"
+            broken_found.append((tbl, col, ref_tbl, actual_count, expected_count, sample_str, ok))
+            click.echo(
+                f"     {tbl:>12s}.{col:<12s} → {ref_tbl:<12s}: "
+                f"{actual_count:>3d} 条 (预期 {expected_count:>3d})  "
+                f"样例ID: {sample_str or '(无)':<20s}  {click.style(status, fg=color)}"
+            )
+
+        broken_total = sum(b[3] for b in broken_found)
+        expected_total = sum(exp["broken_count"] for exp in EXPECTED_BROKEN_LINKS)
         click.echo("")
+        if broken_total == expected_total and all(b[6] for b in broken_found):
+            click.echo(click.style(f"     ✓ 断链验证通过！共发现 {broken_total} 条断链，与预期一致", fg="green", bold=True))
+        else:
+            click.echo(click.style(f"     ⚠ 断链不匹配：实查 {broken_total} 条，预期 {expected_total} 条", fg="red", bold=True))
+            all_ok = False
+
+        click.echo("")
+        click.echo("=" * 70)
+        if all_ok:
+            click.echo(click.style("  ✓ 样例数据库初始化并验证通过", fg="green", bold=True))
+            click.echo(f"    数据库: {schema}")
+            click.echo(f"    表数量: {len(EXPECTED_ROW_COUNTS)}")
+            click.echo(f"    外键数: {actual_fk_count}")
+            click.echo(f"    断链数: {broken_total}")
+            click.echo("")
+            click.echo(click.style("  样例数据包含的断链类型：", fg="yellow"))
+            click.echo(SAMPLE_BROKEN_LINKS_DESC)
+            click.echo("  快速体验命令：")
+            click.echo(f"    fk-checker -d {schema} check")
+            click.echo(f"    fk-checker -d {schema} check --save-snapshot --notes \"修复前\"")
+            click.echo("")
+        else:
+            click.echo(click.style("  ⚠ 初始化完成但验证未完全通过，请检查上方输出", fg="red", bold=True))
+            click.echo("  常见原因：MySQL 配置问题、权限不足、或连接参数错误")
+            sys.exit(1)
 
     except Exception as e:
         click.echo(click.style(f"初始化失败: {str(e)}", fg="red"))
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
     finally:
         db.close()
+        try:
+            db2.close()
+        except Exception:
+            pass
 
 
 @sample.command("describe")
