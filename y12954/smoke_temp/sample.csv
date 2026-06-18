@@ -1,0 +1,5 @@
+database_name,table_name,index_name,index_columns,covered_columns,coverage_rate,execution_count,avg_latency_ms,is_invalid,invalid_reason,source_system,lock_wait_seconds
+trade_db,orders,idx_orders_customer_id,customer_id,"id,customer_id,status",0.78,15234,12.5,false,,mysql_prod,5
+trade_db,orders,idx_orders_date,created_at,"id,created_at",0.15,823,45.2,false,,mysql_prod,45
+user_db,users,idx_users_email,email,"id,email,status",0.92,45210,3.8,false,,mysql_prod,2
+log_db,access_log,idx_log_old_id,old_id,"id,old_id",0.0,0,0.0,true,列old_id已被删除,mysql_prod,0

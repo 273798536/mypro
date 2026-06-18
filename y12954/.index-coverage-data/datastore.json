@@ -1,0 +1,1058 @@
+{
+  "runs": [
+    {
+      "operator": "smoke_user",
+      "source": "smoke_test",
+      "description": "冒烟测试",
+      "runId": "run_mqizzxqg_fc530a57",
+      "timestamp": 1781756805256,
+      "status": "PENDING"
+    },
+    {
+      "operator": "smoke_user",
+      "source": "smoke_import",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "timestamp": 1781756805258,
+      "status": "COMPLETED"
+    }
+  ],
+  "suggestions": [
+    {
+      "id": "idx_mqizzxqg_f003ff05",
+      "runId": "run_mqizzxqg_fc530a57",
+      "tableName": "users",
+      "databaseName": "app_db",
+      "indexName": "idx_users_email",
+      "indexColumns": [
+        "email"
+      ],
+      "coveredColumns": [
+        "id",
+        "email",
+        "status"
+      ],
+      "coverageRate": 0.95,
+      "executionCount": 10000,
+      "avgLatencyMs": 5.2,
+      "isInvalid": false,
+      "sourceSystem": "mysql_prod",
+      "createdAt": 1781756805256
+    },
+    {
+      "id": "idx_mqizzxqg_7c2d441e",
+      "runId": "run_mqizzxqg_fc530a57",
+      "tableName": "logs",
+      "databaseName": "log_db",
+      "indexName": "idx_log_old_id",
+      "indexColumns": [
+        "old_id"
+      ],
+      "coveredColumns": [
+        "id"
+      ],
+      "coverageRate": 0,
+      "executionCount": 0,
+      "avgLatencyMs": 0,
+      "isInvalid": true,
+      "invalidReason": "列 old_id 已被删除",
+      "sourceSystem": "mysql_prod",
+      "createdAt": 1781756805256
+    },
+    {
+      "id": "idx_mqizzxqj_b56aac79",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "tableName": "orders",
+      "databaseName": "trade_db",
+      "indexName": "idx_orders_customer_id",
+      "indexColumns": [
+        "customer_id"
+      ],
+      "coveredColumns": [
+        "id",
+        "customer_id",
+        "status"
+      ],
+      "coverageRate": 0.78,
+      "executionCount": 15234,
+      "avgLatencyMs": 12.5,
+      "isInvalid": false,
+      "invalidReason": "",
+      "sourceSystem": "mysql_prod",
+      "createdAt": 1781756805259
+    },
+    {
+      "id": "idx_mqizzxqj_2e4715c6",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "tableName": "orders",
+      "databaseName": "trade_db",
+      "indexName": "idx_orders_date",
+      "indexColumns": [
+        "created_at"
+      ],
+      "coveredColumns": [
+        "id",
+        "created_at"
+      ],
+      "coverageRate": 0.15,
+      "executionCount": 823,
+      "avgLatencyMs": 45.2,
+      "isInvalid": false,
+      "invalidReason": "",
+      "sourceSystem": "mysql_prod",
+      "createdAt": 1781756805259
+    },
+    {
+      "id": "idx_mqizzxqj_065ba456",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "tableName": "users",
+      "databaseName": "user_db",
+      "indexName": "idx_users_email",
+      "indexColumns": [
+        "email"
+      ],
+      "coveredColumns": [
+        "id",
+        "email",
+        "status"
+      ],
+      "coverageRate": 0.92,
+      "executionCount": 45210,
+      "avgLatencyMs": 3.8,
+      "isInvalid": false,
+      "invalidReason": "",
+      "sourceSystem": "mysql_prod",
+      "createdAt": 1781756805259
+    },
+    {
+      "id": "idx_mqizzxqj_5d10b049",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "tableName": "access_log",
+      "databaseName": "log_db",
+      "indexName": "idx_log_old_id",
+      "indexColumns": [
+        "old_id"
+      ],
+      "coveredColumns": [
+        "id",
+        "old_id"
+      ],
+      "coverageRate": 0,
+      "executionCount": 0,
+      "avgLatencyMs": 0,
+      "isInvalid": true,
+      "invalidReason": "列old_id已被删除",
+      "sourceSystem": "mysql_prod",
+      "createdAt": 1781756805259
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anom_mqizzxqg_1ca36cd2",
+      "runId": "run_mqizzxqg_fc530a57",
+      "suggestionId": "idx_mqizzxqg_7c2d441e",
+      "type": "INDEX_INVALID",
+      "severity": "CRITICAL",
+      "title": "索引失效: logs.idx_log_old_id",
+      "description": "索引 [idx_log_old_id] 在表 [logs] 中已失效。原因: 列 old_id 已被删除。该索引建议将被拦截，需研发团队确认后决定是否重新设计。",
+      "sourceRef": "mysql_prod:logs.idx_log_old_id",
+      "nextAction": "REVIEW_INDEX",
+      "handlingOpinion": "索引失效已被自动拦截。请研发团队检查: 1) 索引列是否仍存在 2) 数据分布是否发生显著变化 3) 是否有替代索引方案。确认后决定删除或重建索引。",
+      "materialsRequired": [
+        "索引历史执行统计（近30天）",
+        "表结构变更记录",
+        "数据分布直方图",
+        "相关慢查询日志"
+      ],
+      "isResolved": false,
+      "createdAt": 1781756805256,
+      "updatedAt": 1781756805256
+    },
+    {
+      "id": "anom_mqizzxqg_004d0816",
+      "runId": "run_mqizzxqg_fc530a57",
+      "suggestionId": "idx_mqizzxqg_f003ff05",
+      "type": "LOCK_WAIT_TIMEOUT",
+      "severity": "CRITICAL",
+      "title": "锁等待超时: orders (65s)",
+      "description": "表 [orders] 在索引分析过程中出现锁等待 65s，超过阈值 30s。数据采集可能不完整，结果准确性受影响。",
+      "sourceRef": "mysql_prod:lock-monitor:orders",
+      "nextAction": "PROVIDE_MATERIALS",
+      "handlingOpinion": "锁等待导致采样数据不完整。需要补充: 1) 低峰时段重新采集的数据 2) 锁等待期间的事务日志 3) 表级锁冲突分析报告。参考上次审计返工记录（run_id 关联历史数据），避免重复问题。",
+      "materialsRequired": [
+        "低峰时段索引采样数据",
+        "锁等待事务日志",
+        "表级锁冲突分析"
+      ],
+      "isResolved": false,
+      "createdAt": 1781756805256,
+      "updatedAt": 1781756805256
+    },
+    {
+      "id": "anom_mqizzxqj_4a2e222f",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "suggestionId": "idx_mqizzxqj_2e4715c6",
+      "type": "LOCK_WAIT_TIMEOUT",
+      "severity": "CRITICAL",
+      "title": "锁等待超时: orders (45s)",
+      "description": "表 [orders] 在索引分析过程中出现锁等待 45s，超过阈值 30s。数据采集可能不完整，结果准确性受影响。",
+      "sourceRef": "mysql_prod:lock-monitor:orders",
+      "nextAction": "PROVIDE_MATERIALS",
+      "handlingOpinion": "锁等待导致采样数据不完整。需要补充: 1) 低峰时段重新采集的数据 2) 锁等待期间的事务日志 3) 表级锁冲突分析报告。参考上次审计返工记录（run_id 关联历史数据），避免重复问题。",
+      "materialsRequired": [
+        "低峰时段索引采样数据",
+        "锁等待事务日志",
+        "表级锁冲突分析"
+      ],
+      "isResolved": false,
+      "createdAt": 1781756805259,
+      "updatedAt": 1781756805259
+    },
+    {
+      "id": "anom_mqizzxqj_aa4e304d",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "suggestionId": "idx_mqizzxqj_2e4715c6",
+      "type": "COVERAGE_LOW",
+      "severity": "CRITICAL",
+      "title": "覆盖率不足: orders.idx_orders_date (15.0%)",
+      "description": "索引覆盖率为 15.0%，低于 50% 阈值。需确认索引是否仍有业务价值。",
+      "sourceRef": "mysql_prod:orders.idx_orders_date",
+      "nextAction": "PROVIDE_MATERIALS",
+      "handlingOpinion": "覆盖率较低需补充业务场景说明。请提供: 1) 索引关联的SQL语句样例 2) 该索引服务的业务功能 3) 是否存在可合并的同类索引。",
+      "materialsRequired": [
+        "关联SQL样例",
+        "业务功能说明",
+        "同类索引列表"
+      ],
+      "isResolved": false,
+      "createdAt": 1781756805259,
+      "updatedAt": 1781756805259
+    },
+    {
+      "id": "anom_mqizzxqk_2e969773",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "suggestionId": "idx_mqizzxqj_5d10b049",
+      "type": "INDEX_INVALID",
+      "severity": "CRITICAL",
+      "title": "索引失效: access_log.idx_log_old_id",
+      "description": "索引 [idx_log_old_id] 在表 [access_log] 中已失效。原因: 列old_id已被删除。该索引建议将被拦截，需研发团队确认后决定是否重新设计。",
+      "sourceRef": "mysql_prod:access_log.idx_log_old_id",
+      "nextAction": "REVIEW_INDEX",
+      "handlingOpinion": "索引失效已被自动拦截。请研发团队检查: 1) 索引列是否仍存在 2) 数据分布是否发生显著变化 3) 是否有替代索引方案。确认后决定删除或重建索引。",
+      "materialsRequired": [
+        "索引历史执行统计（近30天）",
+        "表结构变更记录",
+        "数据分布直方图",
+        "相关慢查询日志"
+      ],
+      "isResolved": false,
+      "createdAt": 1781756805260,
+      "updatedAt": 1781756805260
+    },
+    {
+      "id": "anom_mqizzxqk_b0f5cd24",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "suggestionId": "idx_mqizzxqj_5d10b049",
+      "type": "COVERAGE_LOW",
+      "severity": "CRITICAL",
+      "title": "覆盖率不足: access_log.idx_log_old_id (0.0%)",
+      "description": "索引覆盖率为 0.0%，低于 50% 阈值。需确认索引是否仍有业务价值。",
+      "sourceRef": "mysql_prod:access_log.idx_log_old_id",
+      "nextAction": "PROVIDE_MATERIALS",
+      "handlingOpinion": "覆盖率较低需补充业务场景说明。请提供: 1) 索引关联的SQL语句样例 2) 该索引服务的业务功能 3) 是否存在可合并的同类索引。",
+      "materialsRequired": [
+        "关联SQL样例",
+        "业务功能说明",
+        "同类索引列表"
+      ],
+      "isResolved": false,
+      "createdAt": 1781756805260,
+      "updatedAt": 1781756805260
+    }
+  ],
+  "schemas": [
+    {
+      "id": "sch_mqizzxqk_77b8ae7d",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "tableName": "orders",
+      "databaseName": "trade_db",
+      "schemaHash": "a94e02e8f8ccd827",
+      "columnDefinitions": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false
+        },
+        {
+          "name": "customer_id",
+          "type": "BIGINT",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(32)",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "DATETIME",
+          "nullable": false,
+          "defaultValue": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "amount",
+          "type": "DECIMAL(12,2)",
+          "nullable": false
+        }
+      ],
+      "indexDefinitions": [
+        {
+          "name": "PRIMARY",
+          "columns": [
+            "id"
+          ],
+          "isUnique": true,
+          "isPrimary": true
+        },
+        {
+          "name": "idx_orders_customer_id",
+          "columns": [
+            "customer_id"
+          ],
+          "isUnique": false,
+          "isPrimary": false
+        },
+        {
+          "name": "idx_orders_date",
+          "columns": [
+            "created_at"
+          ],
+          "isUnique": false,
+          "isPrimary": false
+        }
+      ],
+      "capturedAt": 1781756805260
+    },
+    {
+      "id": "sch_mqizzxqk_f94ca4f4",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "tableName": "users",
+      "databaseName": "user_db",
+      "schemaHash": "9422abdb03d6ca44",
+      "columnDefinitions": [
+        {
+          "name": "id",
+          "type": "BIGINT",
+          "nullable": false
+        },
+        {
+          "name": "email",
+          "type": "VARCHAR(255)",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "VARCHAR(32)",
+          "nullable": false
+        }
+      ],
+      "indexDefinitions": [
+        {
+          "name": "PRIMARY",
+          "columns": [
+            "id"
+          ],
+          "isUnique": true,
+          "isPrimary": true
+        },
+        {
+          "name": "idx_users_email",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true,
+          "isPrimary": false
+        }
+      ],
+      "capturedAt": 1781756805260
+    }
+  ],
+  "supplements": [
+    {
+      "runId": "run_mqizzxqg_fc530a57",
+      "suggestionId": "idx_mqizzxqg_f003ff05",
+      "metricName": "coverage_rate",
+      "metricValue": 0.95,
+      "source": "manual",
+      "supplementedBy": "smoke_user",
+      "id": "met_mqizzxqh_cb64893e",
+      "supplementedAt": 1781756805257
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "audit_mqizzxqg_e222da37",
+      "runId": "run_mqizzxqg_fc530a57",
+      "entityType": "RUN",
+      "entityId": "run_mqizzxqg_fc530a57",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "status": "PENDING",
+        "operator": "smoke_user",
+        "source": "smoke_test",
+        "description": "冒烟测试"
+      },
+      "note": "冒烟测试",
+      "timestamp": 1781756805256
+    },
+    {
+      "id": "audit_mqizzxqg_9f80f4b4",
+      "runId": "run_mqizzxqg_fc530a57",
+      "entityType": "SUGGESTION",
+      "entityId": "idx_mqizzxqg_f003ff05",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "idx_mqizzxqg_f003ff05",
+        "runId": "run_mqizzxqg_fc530a57",
+        "tableName": "users",
+        "databaseName": "app_db",
+        "indexName": "idx_users_email",
+        "indexColumns": [
+          "email"
+        ],
+        "coveredColumns": [
+          "id",
+          "email",
+          "status"
+        ],
+        "coverageRate": 0.95,
+        "executionCount": 10000,
+        "avgLatencyMs": 5.2,
+        "isInvalid": false,
+        "sourceSystem": "mysql_prod",
+        "createdAt": 1781756805256
+      },
+      "note": "创建索引建议: app_db.users.idx_users_email",
+      "timestamp": 1781756805256
+    },
+    {
+      "id": "audit_mqizzxqg_52f4bad4",
+      "runId": "run_mqizzxqg_fc530a57",
+      "entityType": "SUGGESTION",
+      "entityId": "idx_mqizzxqg_7c2d441e",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "idx_mqizzxqg_7c2d441e",
+        "runId": "run_mqizzxqg_fc530a57",
+        "tableName": "logs",
+        "databaseName": "log_db",
+        "indexName": "idx_log_old_id",
+        "indexColumns": [
+          "old_id"
+        ],
+        "coveredColumns": [
+          "id"
+        ],
+        "coverageRate": 0,
+        "executionCount": 0,
+        "avgLatencyMs": 0,
+        "isInvalid": true,
+        "invalidReason": "列 old_id 已被删除",
+        "sourceSystem": "mysql_prod",
+        "createdAt": 1781756805256
+      },
+      "note": "创建索引建议: log_db.logs.idx_log_old_id",
+      "timestamp": 1781756805256
+    },
+    {
+      "id": "audit_mqizzxqg_fbfda5fc",
+      "runId": "run_mqizzxqg_fc530a57",
+      "entityType": "ANOMALY",
+      "entityId": "anom_mqizzxqg_1ca36cd2",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "anom_mqizzxqg_1ca36cd2",
+        "runId": "run_mqizzxqg_fc530a57",
+        "suggestionId": "idx_mqizzxqg_7c2d441e",
+        "type": "INDEX_INVALID",
+        "severity": "CRITICAL",
+        "title": "索引失效: logs.idx_log_old_id",
+        "description": "索引 [idx_log_old_id] 在表 [logs] 中已失效。原因: 列 old_id 已被删除。该索引建议将被拦截，需研发团队确认后决定是否重新设计。",
+        "sourceRef": "mysql_prod:logs.idx_log_old_id",
+        "nextAction": "REVIEW_INDEX",
+        "handlingOpinion": "索引失效已被自动拦截。请研发团队检查: 1) 索引列是否仍存在 2) 数据分布是否发生显著变化 3) 是否有替代索引方案。确认后决定删除或重建索引。",
+        "materialsRequired": [
+          "索引历史执行统计（近30天）",
+          "表结构变更记录",
+          "数据分布直方图",
+          "相关慢查询日志"
+        ],
+        "isResolved": false,
+        "createdAt": 1781756805256,
+        "updatedAt": 1781756805256
+      },
+      "note": "发现异常 [INDEX_INVALID]: 索引失效: logs.idx_log_old_id",
+      "timestamp": 1781756805256
+    },
+    {
+      "id": "audit_mqizzxqg_011c9394",
+      "runId": "run_mqizzxqg_fc530a57",
+      "entityType": "ANOMALY",
+      "entityId": "anom_mqizzxqg_004d0816",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "anom_mqizzxqg_004d0816",
+        "runId": "run_mqizzxqg_fc530a57",
+        "suggestionId": "idx_mqizzxqg_f003ff05",
+        "type": "LOCK_WAIT_TIMEOUT",
+        "severity": "CRITICAL",
+        "title": "锁等待超时: orders (65s)",
+        "description": "表 [orders] 在索引分析过程中出现锁等待 65s，超过阈值 30s。数据采集可能不完整，结果准确性受影响。",
+        "sourceRef": "mysql_prod:lock-monitor:orders",
+        "nextAction": "PROVIDE_MATERIALS",
+        "handlingOpinion": "锁等待导致采样数据不完整。需要补充: 1) 低峰时段重新采集的数据 2) 锁等待期间的事务日志 3) 表级锁冲突分析报告。参考上次审计返工记录（run_id 关联历史数据），避免重复问题。",
+        "materialsRequired": [
+          "低峰时段索引采样数据",
+          "锁等待事务日志",
+          "表级锁冲突分析"
+        ],
+        "isResolved": false,
+        "createdAt": 1781756805256,
+        "updatedAt": 1781756805256
+      },
+      "note": "发现异常 [LOCK_WAIT_TIMEOUT]: 锁等待超时: orders (65s)",
+      "timestamp": 1781756805256
+    },
+    {
+      "id": "audit_mqizzxqh_5e1eb003",
+      "runId": "run_mqizzxqg_fc530a57",
+      "entityType": "METRICS",
+      "entityId": "met_mqizzxqh_cb64893e",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "runId": "run_mqizzxqg_fc530a57",
+        "suggestionId": "idx_mqizzxqg_f003ff05",
+        "metricName": "coverage_rate",
+        "metricValue": 0.95,
+        "source": "manual",
+        "supplementedBy": "smoke_user",
+        "id": "met_mqizzxqh_cb64893e",
+        "supplementedAt": 1781756805257
+      },
+      "note": "补录指标: coverage_rate=0.95 for idx_mqizzxqg_f003ff05",
+      "timestamp": 1781756805257
+    },
+    {
+      "id": "audit_mqizzxqh_e9d2dd59",
+      "runId": "run_mqizzxqg_fc530a57",
+      "entityType": "SUGGESTION",
+      "entityId": "idx_mqizzxqg_f003ff05",
+      "action": "UPDATE",
+      "operator": "smoke_user",
+      "beforeState": {
+        "id": "idx_mqizzxqg_f003ff05",
+        "runId": "run_mqizzxqg_fc530a57",
+        "tableName": "users",
+        "databaseName": "app_db",
+        "indexName": "idx_users_email",
+        "indexColumns": [
+          "email"
+        ],
+        "coveredColumns": [
+          "id",
+          "email",
+          "status"
+        ],
+        "coverageRate": 0.95,
+        "executionCount": 10000,
+        "avgLatencyMs": 5.2,
+        "isInvalid": false,
+        "sourceSystem": "mysql_prod",
+        "createdAt": 1781756805256
+      },
+      "afterState": {
+        "id": "idx_mqizzxqg_f003ff05",
+        "runId": "run_mqizzxqg_fc530a57",
+        "tableName": "users",
+        "databaseName": "app_db",
+        "indexName": "idx_users_email",
+        "indexColumns": [
+          "email"
+        ],
+        "coveredColumns": [
+          "id",
+          "email",
+          "status"
+        ],
+        "coverageRate": 0.95,
+        "executionCount": 10000,
+        "avgLatencyMs": 5.2,
+        "isInvalid": false,
+        "sourceSystem": "mysql_prod",
+        "createdAt": 1781756805256
+      },
+      "note": "更新索引指标数据",
+      "timestamp": 1781756805257
+    },
+    {
+      "id": "audit_mqizzxqj_151d40a1",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "RUN",
+      "entityId": "run_mqizzxqi_c74b60c3",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "status": "PENDING",
+        "operator": "smoke_user",
+        "source": "smoke_import"
+      },
+      "note": "创建运行: smoke_import",
+      "timestamp": 1781756805259
+    },
+    {
+      "id": "audit_mqizzxqj_2f85b445",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "RUN",
+      "entityId": "run_mqizzxqi_c74b60c3",
+      "action": "IMPORT",
+      "operator": "smoke_user",
+      "afterState": {
+        "rowsCount": 4
+      },
+      "note": "开始导入数据: /Users/mac/pro/solo/workspaces/y12954/smoke_temp/sample.csv",
+      "timestamp": 1781756805259
+    },
+    {
+      "id": "audit_mqizzxqj_f92c73ef",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "SUGGESTION",
+      "entityId": "idx_mqizzxqj_b56aac79",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "idx_mqizzxqj_b56aac79",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "tableName": "orders",
+        "databaseName": "trade_db",
+        "indexName": "idx_orders_customer_id",
+        "indexColumns": [
+          "customer_id"
+        ],
+        "coveredColumns": [
+          "id",
+          "customer_id",
+          "status"
+        ],
+        "coverageRate": 0.78,
+        "executionCount": 15234,
+        "avgLatencyMs": 12.5,
+        "isInvalid": false,
+        "invalidReason": "",
+        "sourceSystem": "mysql_prod",
+        "createdAt": 1781756805259
+      },
+      "note": "创建索引建议: trade_db.orders.idx_orders_customer_id",
+      "timestamp": 1781756805259
+    },
+    {
+      "id": "audit_mqizzxqj_762b71d8",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "SUGGESTION",
+      "entityId": "idx_mqizzxqj_2e4715c6",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "idx_mqizzxqj_2e4715c6",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "tableName": "orders",
+        "databaseName": "trade_db",
+        "indexName": "idx_orders_date",
+        "indexColumns": [
+          "created_at"
+        ],
+        "coveredColumns": [
+          "id",
+          "created_at"
+        ],
+        "coverageRate": 0.15,
+        "executionCount": 823,
+        "avgLatencyMs": 45.2,
+        "isInvalid": false,
+        "invalidReason": "",
+        "sourceSystem": "mysql_prod",
+        "createdAt": 1781756805259
+      },
+      "note": "创建索引建议: trade_db.orders.idx_orders_date",
+      "timestamp": 1781756805259
+    },
+    {
+      "id": "audit_mqizzxqj_b4b0e843",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "ANOMALY",
+      "entityId": "anom_mqizzxqj_4a2e222f",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "anom_mqizzxqj_4a2e222f",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "suggestionId": "idx_mqizzxqj_2e4715c6",
+        "type": "LOCK_WAIT_TIMEOUT",
+        "severity": "CRITICAL",
+        "title": "锁等待超时: orders (45s)",
+        "description": "表 [orders] 在索引分析过程中出现锁等待 45s，超过阈值 30s。数据采集可能不完整，结果准确性受影响。",
+        "sourceRef": "mysql_prod:lock-monitor:orders",
+        "nextAction": "PROVIDE_MATERIALS",
+        "handlingOpinion": "锁等待导致采样数据不完整。需要补充: 1) 低峰时段重新采集的数据 2) 锁等待期间的事务日志 3) 表级锁冲突分析报告。参考上次审计返工记录（run_id 关联历史数据），避免重复问题。",
+        "materialsRequired": [
+          "低峰时段索引采样数据",
+          "锁等待事务日志",
+          "表级锁冲突分析"
+        ],
+        "isResolved": false,
+        "createdAt": 1781756805259,
+        "updatedAt": 1781756805259
+      },
+      "note": "发现异常 [LOCK_WAIT_TIMEOUT]: 锁等待超时: orders (45s)",
+      "timestamp": 1781756805259
+    },
+    {
+      "id": "audit_mqizzxqj_6bdbc407",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "ANOMALY",
+      "entityId": "anom_mqizzxqj_aa4e304d",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "anom_mqizzxqj_aa4e304d",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "suggestionId": "idx_mqizzxqj_2e4715c6",
+        "type": "COVERAGE_LOW",
+        "severity": "CRITICAL",
+        "title": "覆盖率不足: orders.idx_orders_date (15.0%)",
+        "description": "索引覆盖率为 15.0%，低于 50% 阈值。需确认索引是否仍有业务价值。",
+        "sourceRef": "mysql_prod:orders.idx_orders_date",
+        "nextAction": "PROVIDE_MATERIALS",
+        "handlingOpinion": "覆盖率较低需补充业务场景说明。请提供: 1) 索引关联的SQL语句样例 2) 该索引服务的业务功能 3) 是否存在可合并的同类索引。",
+        "materialsRequired": [
+          "关联SQL样例",
+          "业务功能说明",
+          "同类索引列表"
+        ],
+        "isResolved": false,
+        "createdAt": 1781756805259,
+        "updatedAt": 1781756805259
+      },
+      "note": "发现异常 [COVERAGE_LOW]: 覆盖率不足: orders.idx_orders_date (15.0%)",
+      "timestamp": 1781756805259
+    },
+    {
+      "id": "audit_mqizzxqj_e31135b3",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "SUGGESTION",
+      "entityId": "idx_mqizzxqj_065ba456",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "idx_mqizzxqj_065ba456",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "tableName": "users",
+        "databaseName": "user_db",
+        "indexName": "idx_users_email",
+        "indexColumns": [
+          "email"
+        ],
+        "coveredColumns": [
+          "id",
+          "email",
+          "status"
+        ],
+        "coverageRate": 0.92,
+        "executionCount": 45210,
+        "avgLatencyMs": 3.8,
+        "isInvalid": false,
+        "invalidReason": "",
+        "sourceSystem": "mysql_prod",
+        "createdAt": 1781756805259
+      },
+      "note": "创建索引建议: user_db.users.idx_users_email",
+      "timestamp": 1781756805259
+    },
+    {
+      "id": "audit_mqizzxqk_53d7038e",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "SUGGESTION",
+      "entityId": "idx_mqizzxqj_5d10b049",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "idx_mqizzxqj_5d10b049",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "tableName": "access_log",
+        "databaseName": "log_db",
+        "indexName": "idx_log_old_id",
+        "indexColumns": [
+          "old_id"
+        ],
+        "coveredColumns": [
+          "id",
+          "old_id"
+        ],
+        "coverageRate": 0,
+        "executionCount": 0,
+        "avgLatencyMs": 0,
+        "isInvalid": true,
+        "invalidReason": "列old_id已被删除",
+        "sourceSystem": "mysql_prod",
+        "createdAt": 1781756805259
+      },
+      "note": "创建索引建议: log_db.access_log.idx_log_old_id",
+      "timestamp": 1781756805260
+    },
+    {
+      "id": "audit_mqizzxqk_39926b13",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "ANOMALY",
+      "entityId": "anom_mqizzxqk_2e969773",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "anom_mqizzxqk_2e969773",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "suggestionId": "idx_mqizzxqj_5d10b049",
+        "type": "INDEX_INVALID",
+        "severity": "CRITICAL",
+        "title": "索引失效: access_log.idx_log_old_id",
+        "description": "索引 [idx_log_old_id] 在表 [access_log] 中已失效。原因: 列old_id已被删除。该索引建议将被拦截，需研发团队确认后决定是否重新设计。",
+        "sourceRef": "mysql_prod:access_log.idx_log_old_id",
+        "nextAction": "REVIEW_INDEX",
+        "handlingOpinion": "索引失效已被自动拦截。请研发团队检查: 1) 索引列是否仍存在 2) 数据分布是否发生显著变化 3) 是否有替代索引方案。确认后决定删除或重建索引。",
+        "materialsRequired": [
+          "索引历史执行统计（近30天）",
+          "表结构变更记录",
+          "数据分布直方图",
+          "相关慢查询日志"
+        ],
+        "isResolved": false,
+        "createdAt": 1781756805260,
+        "updatedAt": 1781756805260
+      },
+      "note": "发现异常 [INDEX_INVALID]: 索引失效: access_log.idx_log_old_id",
+      "timestamp": 1781756805260
+    },
+    {
+      "id": "audit_mqizzxqk_01dd09e7",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "ANOMALY",
+      "entityId": "anom_mqizzxqk_b0f5cd24",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "anom_mqizzxqk_b0f5cd24",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "suggestionId": "idx_mqizzxqj_5d10b049",
+        "type": "COVERAGE_LOW",
+        "severity": "CRITICAL",
+        "title": "覆盖率不足: access_log.idx_log_old_id (0.0%)",
+        "description": "索引覆盖率为 0.0%，低于 50% 阈值。需确认索引是否仍有业务价值。",
+        "sourceRef": "mysql_prod:access_log.idx_log_old_id",
+        "nextAction": "PROVIDE_MATERIALS",
+        "handlingOpinion": "覆盖率较低需补充业务场景说明。请提供: 1) 索引关联的SQL语句样例 2) 该索引服务的业务功能 3) 是否存在可合并的同类索引。",
+        "materialsRequired": [
+          "关联SQL样例",
+          "业务功能说明",
+          "同类索引列表"
+        ],
+        "isResolved": false,
+        "createdAt": 1781756805260,
+        "updatedAt": 1781756805260
+      },
+      "note": "发现异常 [COVERAGE_LOW]: 覆盖率不足: access_log.idx_log_old_id (0.0%)",
+      "timestamp": 1781756805260
+    },
+    {
+      "id": "audit_mqizzxqk_649a6a68",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "SCHEMA",
+      "entityId": "sch_mqizzxqk_77b8ae7d",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "sch_mqizzxqk_77b8ae7d",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "tableName": "orders",
+        "databaseName": "trade_db",
+        "schemaHash": "a94e02e8f8ccd827",
+        "columnDefinitions": [
+          {
+            "name": "id",
+            "type": "BIGINT",
+            "nullable": false
+          },
+          {
+            "name": "customer_id",
+            "type": "BIGINT",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(32)",
+            "nullable": false
+          },
+          {
+            "name": "created_at",
+            "type": "DATETIME",
+            "nullable": false,
+            "defaultValue": "CURRENT_TIMESTAMP"
+          },
+          {
+            "name": "amount",
+            "type": "DECIMAL(12,2)",
+            "nullable": false
+          }
+        ],
+        "indexDefinitions": [
+          {
+            "name": "PRIMARY",
+            "columns": [
+              "id"
+            ],
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "name": "idx_orders_customer_id",
+            "columns": [
+              "customer_id"
+            ],
+            "isUnique": false,
+            "isPrimary": false
+          },
+          {
+            "name": "idx_orders_date",
+            "columns": [
+              "created_at"
+            ],
+            "isUnique": false,
+            "isPrimary": false
+          }
+        ],
+        "capturedAt": 1781756805260
+      },
+      "note": "保存 schema 快照: trade_db.orders",
+      "timestamp": 1781756805260
+    },
+    {
+      "id": "audit_mqizzxql_23c18227",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "SCHEMA",
+      "entityId": "sch_mqizzxqk_f94ca4f4",
+      "action": "CREATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "id": "sch_mqizzxqk_f94ca4f4",
+        "runId": "run_mqizzxqi_c74b60c3",
+        "tableName": "users",
+        "databaseName": "user_db",
+        "schemaHash": "9422abdb03d6ca44",
+        "columnDefinitions": [
+          {
+            "name": "id",
+            "type": "BIGINT",
+            "nullable": false
+          },
+          {
+            "name": "email",
+            "type": "VARCHAR(255)",
+            "nullable": false
+          },
+          {
+            "name": "status",
+            "type": "VARCHAR(32)",
+            "nullable": false
+          }
+        ],
+        "indexDefinitions": [
+          {
+            "name": "PRIMARY",
+            "columns": [
+              "id"
+            ],
+            "isUnique": true,
+            "isPrimary": true
+          },
+          {
+            "name": "idx_users_email",
+            "columns": [
+              "email"
+            ],
+            "isUnique": true,
+            "isPrimary": false
+          }
+        ],
+        "capturedAt": 1781756805260
+      },
+      "note": "保存 schema 快照: user_db.users",
+      "timestamp": 1781756805261
+    },
+    {
+      "id": "audit_mqizzxql_c5e8d30e",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "RUN",
+      "entityId": "run_mqizzxqi_c74b60c3",
+      "action": "UPDATE",
+      "operator": "smoke_user",
+      "beforeState": {
+        "status": "PENDING"
+      },
+      "afterState": {
+        "status": "COMPLETED"
+      },
+      "note": "运行状态更新为 COMPLETED",
+      "timestamp": 1781756805261
+    },
+    {
+      "id": "audit_mqizzxql_6f1690c4",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "RUN",
+      "entityId": "run_mqizzxqi_c74b60c3",
+      "action": "UPDATE",
+      "operator": "smoke_user",
+      "afterState": {
+        "run": {
+          "operator": "smoke_user",
+          "source": "smoke_import",
+          "runId": "run_mqizzxqi_c74b60c3",
+          "timestamp": 1781756805258,
+          "status": "COMPLETED"
+        },
+        "suggestionsCreated": 4,
+        "anomaliesCreated": 4,
+        "schemaSnapshotsSaved": 2,
+        "schemaDiffsFound": 0,
+        "warnings": [],
+        "errors": []
+      },
+      "note": "导入完成: 4 条建议, 4 条异常, 0 个 schema 差异",
+      "timestamp": 1781756805261
+    },
+    {
+      "id": "audit_mqizzxr1_71dc7e9a",
+      "runId": "run_mqizzxqi_c74b60c3",
+      "entityType": "RUN",
+      "entityId": "run_mqizzxqi_c74b60c3",
+      "action": "EXPORT",
+      "operator": "tuotuo",
+      "afterState": {
+        "filePath": "/Users/mac/pro/solo/workspaces/y12954/smoke_temp/exports/index_coverage_20260618_1326_c74b60.xlsx",
+        "format": "xlsx"
+      },
+      "note": "导出运行报告: /Users/mac/pro/solo/workspaces/y12954/smoke_temp/exports/index_coverage_20260618_1326_c74b60.xlsx",
+      "timestamp": 1781756805277
+    }
+  ]
+}
