@@ -1,0 +1,11 @@
+样本ID,商品名,模型预测属性,confidence,threshold,旧人工属性,新人工属性,data_source,process_status,operator,comment,异常标记,漂移说明
+S001,男士纯棉短袖T恤,服装|上衣|短袖,0.94,0.85,服装|上衣|短袖,服装|上衣|T恤,现场老师A,confirmed,teacher-A,,false,
+S002,女士真丝连衣裙夏,服装|裙装,0.96,0.85,服装|裙装|连衣裙,服装|裙装|连衣裙|真丝,现场老师B,confirmed,teacher-B,,false,
+S003,儿童运动鞋男童鞋,鞋靴|运动鞋,0.84,0.85,鞋靴|运动鞋|儿童,鞋靴|运动鞋|男童,现场老师C,pending,teacher-C,置信度接近阈值,true,置信度接近阈值
+S004,蓝牙耳机入耳式TWS,数码|耳机,0.86,0.85,数码|耳机,数码|耳机|TWS,模型复核,confirmed,system,,false,
+S005,不锈钢保温杯大容量,家居|杯子,0.85,0.85,家居|杯子,家居|杯子|保温杯,现场老师A,pending,teacher-A,疑似阈值漂移,true,置信度等于阈值
+S006,小米智能手表运动版,数码|手表,0.99,0.85,数码|智能穿戴,数码|智能穿戴|手表,现场老师B,confirmed,teacher-B,,false,
+S007,真皮钱包男款长款,服饰|钱包,0.77,0.85,服饰|钱包,服饰|钱包|男士|长款,现场老师A,rejected,teacher-A,AI预测对了 驳回,false,
+S008,婴儿纸尿裤XL码,母婴|尿裤,0.98,0.85,母婴|尿裤,母婴|尿裤|纸尿裤|XL,现场老师C,confirmed,teacher-C,,false,
+S011,坚果零食大礼包每日坚果,食品|零食,0.91,0.85,食品|零食,食品|零食|坚果|每日坚果,现场老师A,confirmed,teacher-A,v1.3新增样本,,false
+S012,瑜伽垫加厚防滑女士,运动|瑜伽,0.93,0.85,运动|瑜伽垫,运动|瑜伽垫|加厚|防滑,现场老师B,confirmed,teacher-B,v1.3新增样本,,false

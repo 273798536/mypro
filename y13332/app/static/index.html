@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>商品属性人工改判</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f6f8; color: #333; font-size: 14px; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+header { background: linear-gradient(135deg, #2d5ef6 0%, #5a8ef7 100%); color: white; padding: 18px 24px; border-radius: 10px; margin-bottom: 20px; }
+header h1 { font-size: 20px; margin-bottom: 4px; }
+header p { opacity: 0.9; font-size: 13px; }
+.tabs { display: flex; gap: 4px; margin-bottom: 16px; background: white; padding: 6px; border-radius: 8px; }
+.tab { padding: 10px 20px; cursor: pointer; border-radius: 6px; color: #666; font-weight: 500; transition: all 0.2s; }
+.tab.active { background: #2d5ef6; color: white; }
+.tab:hover:not(.active) { background: #eef2ff; }
+.panel { display: none; background: white; border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+.panel.active { display: block; }
+.card { background: #fafbfe; border: 1px solid #eef0f5; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+.card h3 { font-size: 15px; color: #2d5ef6; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.card h3::before { content: ''; width: 4px; height: 16px; background: #2d5ef6; border-radius: 2px; }
+.row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.row > div { flex: 1; min-width: 180px; }
+label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 500; }
+input, select, textarea { width: 100%; padding: 8px 12px; border: 1px solid #d9dde5; border-radius: 6px; font-size: 13px; font-family: inherit; background: white; transition: border 0.2s; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #2d5ef6; box-shadow: 0 0 0 3px rgba(45,94,246,0.1); }
+button { padding: 8px 18px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; font-family: inherit; }
+.btn-primary { background: #2d5ef6; color: white; }
+.btn-primary:hover { background: #1e4bdb; }
+.btn-secondary { background: #eef2ff; color: #2d5ef6; }
+.btn-secondary:hover { background: #dbe4ff; }
+.btn-success { background: #16a34a; color: white; }
+.btn-success:hover { background: #15803d; }
+.btn-danger { background: #ef4444; color: white; }
+.btn-warn { background: #f59e0b; color: white; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stat-card { background: white; border: 1px solid #eef0f5; border-radius: 8px; padding: 14px; }
+.stat-card .num { font-size: 24px; font-weight: 600; color: #2d5ef6; }
+.stat-card.drift .num { color: #f59e0b; }
+.stat-card.confirmed .num { color: #16a34a; }
+.stat-card.rejected .num { color: #ef4444; }
+.stat-card .label { font-size: 12px; color: #666; margin-top: 4px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th, td { border: 1px solid #eef0f5; padding: 8px 10px; text-align: left; vertical-align: top; }
+th { background: #f5f7fb; font-weight: 600; color: #555; position: sticky; top: 0; }
+tr:hover td { background: #fafbfe; }
+tr.drift td { background: #fffbeb; }
+tr.drift:hover td { background: #fef3c7; }
+.table-wrap { max-height: 520px; overflow: auto; border: 1px solid #eef0f5; border-radius: 6px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; }
+.badge-confirmed { background: #dcfce7; color: #166534; }
+.badge-rejected { background: #fee2e2; color: #991b1b; }
+.badge-pending { background: #e0e7ff; color: #3730a3; }
+.badge-drift { background: #fef3c7; color: #92400e; }
+.badge-merged { background: #d1fae5; color: #065f46; }
+.badge-source { background: #eef2ff; color: #4338ca; }
+.batch-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border: 1px solid #eef0f5; border-radius: 8px; margin-bottom: 8px; background: white; }
+.batch-item:hover { border-color: #2d5ef6; }
+.batch-meta { font-size: 12px; color: #666; margin-top: 4px; }
+.mini-stats { display: inline-flex; gap: 8px; margin-left: 8px; }
+.mini-stats span { font-size: 11px; padding: 2px 6px; border-radius: 4px; background: #f1f5f9; color: #475569; }
+.summary-box { background: #f8fafc; border-left: 4px solid #2d5ef6; padding: 14px 16px; border-radius: 0 6px 6px 0; white-space: pre-wrap; font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 12px; line-height: 1.7; max-height: 400px; overflow: auto; }
+.toast { position: fixed; top: 20px; right: 20px; padding: 12px 20px; border-radius: 8px; color: white; z-index: 9999; animation: slideIn 0.3s ease; }
+.toast.success { background: #16a34a; }
+.toast.error { background: #ef4444; }
+.toast.info { background: #2d5ef6; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.hidden { display: none !important; }
+.compare-table td.diff { background: #fef2f2; }
+.compare-table td.same { background: #f0fdf4; }
+.empty { text-align: center; padding: 40px; color: #999; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.gap-8 { gap: 8px; }
+.help-text { font-size: 12px; color: #888; margin-top: 4px; line-height: 1.6; }
+.field-map { font-size: 11px; color: #666; background: #f5f7fb; padding: 6px 10px; border-radius: 4px; margin-top: 4px; display: inline-block; }
+.modal-mask { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 9000; }
+.modal { background: white; border-radius: 10px; padding: 24px; width: 600px; max-width: 90vw; max-height: 85vh; overflow: auto; }
+.modal h3 { margin-bottom: 16px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.trace-grid { display: grid; grid-template-columns: 110px 1fr; gap: 8px; font-size: 12px; }
+.trace-grid .k { color: #888; font-weight: 500; }
+.trace-grid .v { color: #222; word-break: break-all; }
+.diff-bar { display: flex; gap: 4px; height: 12px; border-radius: 6px; overflow: hidden; margin: 8px 0; }
+.diff-bar > div { display: flex; align-items: center; justify-content: center; font-size: 10px; color: white; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>商品属性人工改判 · 处理中心</h1>
+  <p>筛选条件、统计数字、明细表、页面摘要 —— 全部从同一套结果生成 | 阈值漂移单独拎出 | 多版本留存不覆盖</p>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="import">① 导入与批次</div>
+  <div class="tab" data-tab="list">② 明细与改判</div>
+  <div class="tab" data-tab="summary">③ 页面摘要</div>
+  <div class="tab" data-tab="compare">④ 版本对比</div>
+</div>
+
+<!-- Tab 1: 导入与批次 -->
+<div class="panel active" id="panel-import">
+  <div class="card">
+    <h3>模型版本管理</h3>
+    <div class="row">
+      <div><label>版本标签</label><input id="mv-tag" placeholder="例如: v1.2.0"></div>
+      <div><label>描述（可选）</label><input id="mv-desc" placeholder="例如: 2026年Q2属性模型"></div>
+      <div style="flex:0; align-self:end;"><button class="btn-primary" onclick="createModelVersion()">新建模型版本</button></div>
+    </div>
+    <div id="mv-list" class="mt-8"></div>
+  </div>
+
+  <div class="card">
+    <h3>新建批次 & 导入人工修正 CSV</h3>
+    <div class="help-text">
+      批次对应一次具体的「商品属性人工改判」评测。<b>不同模型版本必须建不同批次</b>，旧批次的人工判断不会被覆盖。<br>
+      CSV 字段名前后不一没关系，系统会自动匹配别名（如「人工改判」「新人工属性」「manual_new」均会被识别为新人工属性）。<br>
+      <b>来源</b>和<b>处理状态</b>两个字段无论叫什么名字都会被优先保住。
+    </div>
+    <div class="row mt-16">
+      <div><label>批次名称</label><input id="batch-name" placeholder="例如: 服饰品类6月改判"></div>
+      <div><label>关联模型版本</label><select id="batch-mv"></select></div>
+      <div><label>备注（可选）</label><input id="batch-remark"></div>
+      <div style="flex:0; align-self:end;"><button class="btn-secondary" onclick="createBatch()">先建批次</button></div>
+    </div>
+    <div class="row mt-8">
+      <div>
+        <label>选择已有批次</label>
+        <select id="batch-select" onchange="onBatchSelect()"></select>
+      </div>
+      <div>
+        <label>上传 CSV / Excel</label>
+        <input type="file" id="import-file" accept=".csv,.xlsx,.xls">
+      </div>
+      <div style="flex:0; align-self:end;"><button class="btn-primary" onclick="doImport()">导入当前批次</button></div>
+    </div>
+    <div id="import-result" class="mt-8"></div>
+  </div>
+
+  <div class="card">
+    <h3>批次列表</h3>
+    <div id="batch-list"></div>
+  </div>
+</div>
+
+<!-- Tab 2: 明细与改判 -->
+<div class="panel" id="panel-list">
+  <div class="card">
+    <h3>筛选条件（与统计、摘要、导出共用同一套）</h3>
+    <div class="row">
+      <div><label>批次</label><select id="f-batch" onchange="refreshAll()"></select></div>
+      <div><label>最终状态</label>
+        <select id="f-status" onchange="refreshAll()">
+          <option value="">全部</option>
+          <option value="confirmed">已确认</option>
+          <option value="rejected">已驳回</option>
+          <option value="pending">待处理</option>
+          <option value="drift">阈值漂移</option>
+          <option value="merged">已合并</option>
+        </select>
+      </div>
+      <div><label>是否阈值漂移</label>
+        <select id="f-drift" onchange="refreshAll()">
+          <option value="">全部</option>
+          <option value="true">仅阈值漂移</option>
+          <option value="false">排除阈值漂移</option>
+        </select>
+      </div>
+      <div><label>人工处理状态</label><input id="f-process" placeholder="例如: 已确认" onchange="refreshAll()"></div>
+      <div><label>样本ID</label><input id="f-sid" placeholder="模糊匹配" onchange="refreshAll()"></div>
+      <div><label>商品ID</label><input id="f-pid" placeholder="模糊匹配" onchange="refreshAll()"></div>
+      <div><label>关键词</label><input id="f-kw" placeholder="商品名/属性内容" onchange="refreshAll()"></div>
+    </div>
+    <div class="row mt-8">
+      <button class="btn-primary" onclick="refreshAll()">刷新结果</button>
+      <button class="btn-secondary" onclick="resetFilters()">重置筛选</button>
+      <button class="btn-success" onclick="exportCSV()">导出明细 CSV</button>
+      <button class="btn-success" onclick="exportXLSX()">导出明细 Excel</button>
+      <button class="btn-warn" onclick="exportSummary()">导出页面摘要 TXT</button>
+    </div>
+  </div>
+
+  <div id="stats-block"></div>
+
+  <div class="card">
+    <h3>明细表 <span id="sample-count-tip" style="font-weight:400; color:#888; font-size:12px; margin-left:8px;"></span></h3>
+    <div class="table-wrap">
+      <table id="sample-table">
+        <thead>
+          <tr>
+            <th>样本ID</th>
+            <th>商品名</th>
+            <th>AI预测</th>
+            <th>原人工</th>
+            <th>新人工</th>
+            <th>来源</th>
+            <th>处理状态</th>
+            <th>漂移</th>
+            <th>最终状态</th>
+            <th>最终属性</th>
+            <th style="width:180px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="sample-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Tab 3: 页面摘要 -->
+<div class="panel" id="panel-summary">
+  <div class="card">
+    <h3>筛选条件（与明细表一致）</h3>
+    <div class="row">
+      <div><label>批次</label><select id="s-batch" onchange="loadSummary()"></select></div>
+      <div><label>最终状态</label>
+        <select id="s-status" onchange="loadSummary()">
+          <option value="">全部</option>
+          <option value="confirmed">已确认</option>
+          <option value="rejected">已驳回</option>
+          <option value="pending">待处理</option>
+          <option value="drift">阈值漂移</option>
+          <option value="merged">已合并</option>
+        </select>
+      </div>
+      <div><label>是否阈值漂移</label>
+        <select id="s-drift" onchange="loadSummary()">
+          <option value="">全部</option>
+          <option value="true">仅阈值漂移</option>
+          <option value="false">排除阈值漂移</option>
+        </select>
+      </div>
+      <div style="flex:0; align-self:end;"><button class="btn-warn" onclick="exportSummaryFromSummaryTab()">导出摘要TXT</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>页面摘要（与导出文件内容一致）</h3>
+    <div id="summary-content" class="summary-box">请先选择批次...</div>
+  </div>
+</div>
+
+<!-- Tab 4: 版本对比 -->
+<div class="panel" id="panel-compare">
+  <div class="card">
+    <h3>两次改判结果对比</h3>
+    <div class="help-text">模型版本换了，旧人工判断也不会被盖掉。选择两个批次对比同一条样本在不同版本下的最终属性差异。</div>
+    <div class="row mt-16">
+      <div><label>左侧批次</label><select id="c-left"></select></div>
+      <div><label>右侧批次</label><select id="c-right"></select></div>
+      <div style="flex:0; align-self:end;"><button class="btn-primary" onclick="doCompare()">开始对比</button></div>
+    </div>
+  </div>
+  <div id="compare-result"></div>
+</div>
+
+</div>
+
+<div id="modal-root"></div>
+<div id="toast-root"></div>
+
+<script>
+const API = "/api";
+let currentSamples = [];
+
+function toast(msg, type="info") {
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById("toast-root").appendChild(el);
+  setTimeout(() => el.remove(), 2800);
+}
+
+async function get(url) { const r = await fetch(url); if (!r.ok) throw new Error(await r.text()); return r.json(); }
+async function post(url, body, isFile=false) {
+  const opts = { method: "POST" };
+  if (isFile) { opts.body = body; }
+  else { opts.headers = {"Content-Type":"application/json"}; opts.body = JSON.stringify(body); }
+  const r = await fetch(url, opts);
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function patch(url, body) {
+  const r = await fetch(url, { method: "PATCH", headers: {"Content-Type":"application/json"}, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+function statusBadge(code) {
+  const map = { confirmed:["已确认","badge-confirmed"], rejected:["已驳回","badge-rejected"], pending:["待处理","badge-pending"], drift:["阈值漂移","badge-drift"], merged:["已合并","badge-merged"] };
+  const [t, c] = map[code] || [code||"未定义", "badge-pending"];
+  return `<span class="badge ${c}">${t}</span>`;
+}
+
+function filterParams(prefix) {
+  const g = id => document.getElementById(id)?.value;
+  const batch_id = g(prefix + "batch") ? parseInt(g(prefix + "batch")) : null;
+  const drift_raw = g(prefix + "drift");
+  const is_threshold_drift = drift_raw === "" ? null : (drift_raw === "true");
+  return {
+    batch_id,
+    final_status: g(prefix + "status") || null,
+    is_threshold_drift,
+    manual_process_status: g(prefix + "process") || g(prefix + "process-status") || null,
+    sample_id: g(prefix + "sid") || g(prefix + "sample-id") || null,
+    product_id: g(prefix + "pid") || g(prefix + "product-id") || null,
+    keyword: g(prefix + "kw") || g(prefix + "keyword") || null,
+  };
+}
+
+function queryString(p) {
+  return Object.entries(p).filter(([k,v]) => v !== null && v !== "").map(([k,v]) => `${k}=${encodeURIComponent(v)}`).join("&");
+}
+
+// ===== Tabs =====
+document.querySelectorAll(".tab").forEach(t => {
+  t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(x => x.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(x => x.classList.remove("active"));
+    t.classList.add("active");
+    document.getElementById("panel-" + t.dataset.tab).classList.add("active");
+    if (t.dataset.tab === "list") refreshAll();
+    if (t.dataset.tab === "summary") syncSummaryFilters(), loadSummary();
+    if (t.dataset.tab === "compare") loadCompareBatches();
+  });
+});
+
+// ===== Model Versions =====
+async function loadModelVersions() {
+  const list = await get(API + "/model-versions");
+  const opts = list.map(m => `<option value="${m.id}">${m.version_tag}${m.description ? ' — ' + m.description : ''}</option>`).join("");
+  document.getElementById("batch-mv").innerHTML = opts || '<option value="">(请先新建模型版本)</option>';
+  document.getElementById("mv-list").innerHTML = list.length ? list.map(m => `
+    <div class="batch-item">
+      <div><b>${m.version_tag}</b><div class="batch-meta">${m.description || '无描述'} · 创建于 ${new Date(m.created_at).toLocaleString()}</div></div>
+    </div>`).join("") : '<div class="empty">暂无模型版本</div>';
+}
+async function createModelVersion() {
+  const tag = document.getElementById("mv-tag").value.trim();
+  const desc = document.getElementById("mv-desc").value.trim();
+  if (!tag) return toast("请填写版本标签", "error");
+  try { await post(API + "/model-versions", { version_tag: tag, description: desc }); toast("已创建模型版本", "success"); document.getElementById("mv-tag").value=""; document.getElementById("mv-desc").value=""; await loadModelVersions(); await loadBatches(); }
+  catch(e) { toast(e.message, "error"); }
+}
+
+// ===== Batches =====
+async function loadBatches() {
+  const list = await get(API + "/batches");
+  const opts = list.map(b => `<option value="${b.id}">${b.batch_name} (${b.model_version?.version_tag || '?'})</option>`).join("");
+  ["batch-select","f-batch","s-batch"].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts || '<option value="">(暂无批次)</option>'; });
+  ["c-left","c-right"].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
+  document.getElementById("batch-list").innerHTML = list.length ? list.map(b => `
+    <div class="batch-item">
+      <div>
+        <b>${b.batch_name}</b>
+        <div class="batch-meta">模型: ${b.model_version?.version_tag || '-'} · 来源: ${b.source_file || '-'} · ${new Date(b.created_at).toLocaleString()}</div>
+        <div class="mini-stats">
+          <span>共 ${b.sample_count}</span>
+          <span style="background:#fee2e2;color:#991b1b;">漂移 ${b.drift_count}</span>
+          <span style="background:#dcfce7;color:#166534;">确认 ${b.confirmed_count}</span>
+          <span style="background:#e0e7ff;color:#3730a3;">驳回 ${b.rejected_count}</span>
+        </div>
+      </div>
+      <div>
+        <button class="btn-secondary" onclick="viewBatch(${b.id})">查看明细</button>
+      </div>
+    </div>`).join("") : '<div class="empty">暂无批次。请先新建模型版本，再建批次并导入CSV。</div>';
+}
+
+async function createBatch() {
+  const name = document.getElementById("batch-name").value.trim();
+  const mvid = parseInt(document.getElementById("batch-mv").value);
+  const remark = document.getElementById("batch-remark").value.trim();
+  if (!name || !mvid) return toast("请填写批次名并选择模型版本", "error");
+  try { await post(API + "/batches", { batch_name: name, model_version_id: mvid, remark }); toast("批次已创建", "success"); await loadBatches(); }
+  catch(e) { toast(e.message, "error"); }
+}
+
+function onBatchSelect() {
+  // sync to filter
+}
+
+async function doImport() {
+  const bid = document.getElementById("batch-select").value;
+  const file = document.getElementById("import-file").files[0];
+  if (!bid) return toast("请选择批次", "error");
+  if (!file) return toast("请选择 CSV/Excel 文件", "error");
+  const fd = new FormData();
+  fd.append("file", file);
+  try {
+    const r = await post(API + `/batches/${bid}/import`, fd, true);
+    const fields = Object.entries(r.field_mapping || {}).map(([c, o]) => `${o} → ${c}`).join(", ");
+    document.getElementById("import-result").innerHTML = `
+      <div class="card" style="background:#f0fdf4; border-color:#86efac;">
+        <div><b>导入成功！</b> ${r.imported} 条样本，其中阈值漂移 ${r.drifted} 条。</div>
+        ${r.warnings?.length ? `<div style="color:#92400e;margin-top:6px;">提示: ${r.warnings.join("; ")}</div>` : ""}
+        <div class="field-map">字段识别: ${fields || '无（使用默认字段）'}</div>
+      </div>`;
+    toast(`导入 ${r.imported} 条`, "success");
+    await loadBatches();
+  } catch(e) { toast(e.message, "error"); }
+}
+
+function viewBatch(id) {
+  document.querySelector('.tab[data-tab="list"]').click();
+  setTimeout(() => { document.getElementById("f-batch").value = id; refreshAll(); }, 50);
+}
+
+// ===== Samples / Stats =====
+async function refreshAll() {
+  await Promise.all([loadStats(), loadSamples()]);
+  syncSummaryFilters();
+}
+
+function syncSummaryFilters() {
+  ["batch","status","drift"].forEach(k => {
+    const src = document.getElementById("f-" + k);
+    const dst = document.getElementById("s-" + k);
+    if (src && dst) dst.value = src.value;
+  });
+  ["process","sid","pid","kw"].forEach(k => {
+    const f = document.getElementById("f-" + k);
+    if (f) f.dataset.syncVal = f.value;
+  });
+}
+
+async function loadStats() {
+  const p = filterParams("f-");
+  const s = await get(API + "/statistics?" + queryString(p));
+  document.getElementById("stats-block").innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num">${s.total}</div><div class="label">样本总数</div></div>
+      <div class="stat-card confirmed"><div class="num">${s.confirmed}</div><div class="label">已确认（改判有效）</div></div>
+      <div class="stat-card rejected"><div class="num">${s.rejected}</div><div class="label">已驳回（改判无效）</div></div>
+      <div class="stat-card"><div class="num">${s.pending}</div><div class="label">待处理</div></div>
+      <div class="stat-card drift"><div class="num">${s.drift}</div><div class="label">⚠ 阈值漂移（单独）</div></div>
+      <div class="stat-card"><div class="num">${s.merged}</div><div class="label">已合并</div></div>
+    </div>
+    ${Object.keys(s.by_source || {}).length ? `<div class="card" style="padding:12px 16px;"><b>按来源分布：</b> ${Object.entries(s.by_source).map(([k,v]) => `<span class="badge badge-source">${k} ${v}</span>`).join(" ")}</div>` : ""}
+    ${Object.keys(s.by_process_status || {}).length ? `<div class="card" style="padding:12px 16px;"><b>按人工处理状态分布：</b> ${Object.entries(s.by_process_status).map(([k,v]) => `<span class="badge badge-pending">${k} ${v}</span>`).join(" ")}</div>` : ""}
+  `;
+}
+
+async function loadSamples() {
+  const p = filterParams("f-");
+  const list = await get(API + "/samples?" + queryString(p) + "&limit=500");
+  currentSamples = list;
+  document.getElementById("sample-count-tip").textContent = `共 ${list.length} 条（最多显示500条，可导出查看全部）`;
+  document.getElementById("sample-tbody").innerHTML = list.length ? list.map(s => `
+    <tr class="${s.is_threshold_drift ? 'drift' : ''}">
+      <td><code>${s.sample_id}</code></td>
+      <td>${s.product_name || '-'}</td>
+      <td>${s.ai_predicted_attr || '-'}${s.ai_confidence != null ? `<br><span style="color:#888;">置信度 ${(s.ai_confidence*100).toFixed(1)}%${s.ai_threshold != null ? ' / 阈值 '+(s.ai_threshold*100).toFixed(1)+'%' : ''}</span>` : ''}</td>
+      <td>${s.manual_attr_old || '-'}</td>
+      <td>${s.manual_attr_new || '-'}</td>
+      <td>${s.manual_revision_source ? `<span class="badge badge-source">${s.manual_revision_source}</span>` : '-'}</td>
+      <td>${s.manual_process_status || '-'}</td>
+      <td>${s.is_threshold_drift ? `<span class="badge badge-drift">是${s.drift_reason ? ' · '+s.drift_reason : ''}</span>` : '否'}</td>
+      <td>${statusBadge(s.final_status)}</td>
+      <td><b>${s.final_attr || '-'}</b></td>
+      <td>
+        <button class="btn-secondary" style="padding:4px 10px;" onclick="showTrace(${s.id})">追溯</button>
+        <button class="btn-primary" style="padding:4px 10px;" onclick="editSample(${s.id})">改判</button>
+      </td>
+    </tr>
+  `).join("") : '<tr><td colspan="11" class="empty">暂无数据</td></tr>';
+}
+
+function resetFilters() {
+  ["f-status","f-drift","f-process","f-sid","f-pid","f-kw"].forEach(id => document.getElementById(id).value = "");
+  refreshAll();
+}
+
+function exportCSV() { downloadExport("csv"); }
+function exportXLSX() { downloadExport("xlsx"); }
+function downloadExport(fmt) {
+  const p = filterParams("f-");
+  window.open(API + "/export?" + queryString(p) + `&format=${fmt}`, "_blank");
+}
+
+function exportSummary() {
+  const p = filterParams("f-");
+  if (!p.batch_id) return toast("请先选择批次", "error");
+  window.open(API + "/export-summary?" + queryString(p), "_blank");
+}
+function exportSummaryFromSummaryTab() {
+  const p = filterParams("s-");
+  if (!p.batch_id) return toast("请先选择批次", "error");
+  window.open(API + "/export-summary?" + queryString(p), "_blank");
+}
+
+// ===== Sample trace / edit =====
+async function showTrace(id) {
+  const s = currentSamples.find(x => x.id === id) || await get(API + "/samples/" + id);
+  let rawFields = {};
+  try { rawFields = s.raw_fields_json ? JSON.parse(s.raw_fields_json) : {}; } catch(e) {}
+  const rawHtml = Object.entries(rawFields).map(([k,v]) => `<div class="k">${k}</div><div class="v">${v ?? '(空)'}</div>`).join("");
+  showModal("样本追溯 · 原始说法 vs 处理结果", `
+    <div class="card"><h3>处理链结果</h3>
+      <div class="trace-grid">
+        <div class="k">样本ID</div><div class="v"><code>${s.sample_id}</code></div>
+        <div class="k">商品名称</div><div class="v">${s.product_name || '-'}</div>
+        <div class="k">AI预测属性</div><div class="v">${s.ai_predicted_attr || '-'}${s.ai_confidence != null ? ' (置信度 '+ (s.ai_confidence*100).toFixed(1)+'%)' : ''}</div>
+        <div class="k">原人工属性</div><div class="v">${s.manual_attr_old || '-'}</div>
+        <div class="k">新人工属性（改判）</div><div class="v" style="color:#2d5ef6;"><b>${s.manual_attr_new || '-'}</b></div>
+        <div class="k">人工修正来源</div><div class="v">${s.manual_revision_source ? `<span class="badge badge-source">${s.manual_revision_source}</span>` : '-'}</div>
+        <div class="k">人工处理状态</div><div class="v">${s.manual_process_status || '-'}</div>
+        <div class="k">操作人</div><div class="v">${s.manual_operator || '-'}</div>
+        <div class="k">阈值漂移</div><div class="v">${s.is_threshold_drift ? `<span class="badge badge-drift">是 · ${s.drift_reason || ''}</span>` : '否'}</div>
+        <div class="k">最终状态</div><div class="v">${statusBadge(s.final_status)}</div>
+        <div class="k">最终属性</div><div class="v"><b>${s.final_attr || '-'}</b></div>
+        <div class="k">人工备注</div><div class="v">${s.manual_remark || '-'}</div>
+      </div>
+    </div>
+    <div class="card"><h3>原始 CSV 字段（来自人工修正文件）</h3>
+      <div class="help-text">这是老师交来的原始字段，无论列名怎么变都会被完整保留，用来追溯「原始说法」。</div>
+      <div class="trace-grid mt-8">${rawHtml || '<div class="v">无原始字段记录</div>'}</div>
+    </div>
+  `);
+}
+
+async function editSample(id) {
+  const s = currentSamples.find(x => x.id === id) || await get(API + "/samples/" + id);
+  showModal("人工改判 · " + s.sample_id, `
+    <div class="row">
+      <div><label>新人工属性</label><input id="e-manual_new" value="${s.manual_attr_new || ''}"></div>
+      <div><label>人工处理状态</label><input id="e-process" value="${s.manual_process_status || ''}"></div>
+    </div>
+    <div class="row mt-8">
+      <div><label>修正来源</label><input id="e-source" value="${s.manual_revision_source || ''}"></div>
+      <div><label>操作人</label><input id="e-op" value="${s.manual_operator || ''}"></div>
+    </div>
+    <div class="row mt-8">
+      <div><label>最终状态</label>
+        <select id="e-final_status">
+          ${["pending","confirmed","rejected","drift","merged"].map(c => `<option value="${c}" ${s.final_status===c?'selected':''}>${c}</option>`).join("")}
+        </select>
+      </div>
+      <div><label>最终属性</label><input id="e-final_attr" value="${s.final_attr || ''}"></div>
+    </div>
+    <div class="row mt-8">
+      <div><label>是否阈值漂移</label>
+        <select id="e-drift">
+          <option value="false" ${!s.is_threshold_drift?'selected':''}>否</option>
+          <option value="true" ${s.is_threshold_drift?'selected':''}>是</option>
+        </select>
+      </div>
+      <div><label>漂移原因</label><input id="e-drift_reason" value="${s.drift_reason || ''}"></div>
+    </div>
+    <div class="row mt-8">
+      <div style="flex:2;"><label>备注</label><input id="e-remark" value="${s.manual_remark || ''}"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn-primary" onclick="saveEdit(${id})">保存</button>
+    </div>
+  `);
+}
+async function saveEdit(id) {
+  const g = i => document.getElementById(i).value;
+  const body = {
+    manual_attr_new: g("e-manual_new") || null,
+    manual_process_status: g("e-process") || null,
+    manual_revision_source: g("e-source") || null,
+    manual_operator: g("e-op") || null,
+    final_status: g("e-final_status"),
+    final_attr: g("e-final_attr") || null,
+    is_threshold_drift: g("e-drift") === "true",
+    drift_reason: g("e-drift_reason") || null,
+    manual_remark: g("e-remark") || null,
+  };
+  try { await patch(API + "/samples/" + id, body); toast("已保存", "success"); closeModal(); await refreshAll(); }
+  catch(e) { toast(e.message, "error"); }
+}
+
+// ===== Summary =====
+async function loadSummary() {
+  const p = filterParams("s-");
+  if (!p.batch_id) { document.getElementById("summary-content").textContent = "请先选择批次..."; return; }
+  const s = await get(API + "/page-summary?" + queryString(p));
+  const st = s.statistics;
+  const fc = Object.entries(s.filter_condition).filter(([k,v]) => v !== null && v !== "" && v !== undefined).map(([k,v]) => `  ${k}: ${v}`).join("\n") || "  (无额外筛选)";
+  const bySrc = Object.entries(st.by_source || {}).map(([k,v]) => `  ${k}: ${v}`).join("\n");
+  const byPs = Object.entries(st.by_process_status || {}).map(([k,v]) => `  ${k}: ${v}`).join("\n");
+  const statusLines = Object.entries(s.status_text).map(([k,v]) => `  ${k} -> ${v}`).join("\n");
+  const text = `==================================================
+商品属性人工改判 - 页面摘要
+==================================================
+生成时间: ${new Date(s.generated_at).toLocaleString()}
+批次名称: ${s.batch_name}
+批次ID: ${s.batch_id}
+模型版本: ${s.model_version}
+
+--- 筛选条件 ---
+${fc}
+
+--- 统计数字 ---
+  样本总数: ${st.total}
+  已确认（人工改判有效）: ${st.confirmed}
+  已驳回（人工改判无效）: ${st.rejected}
+  待处理: ${st.pending}
+  阈值漂移（单独处理）: ${st.drift}
+  已合并入最终结果: ${st.merged}
+${bySrc ? `\n--- 按来源分布 ---\n${bySrc}\n` : ""}${byPs ? `\n--- 按人工处理状态分布 ---\n${byPs}\n` : ""}
+--- 状态说明 ---
+${statusLines}
+
+注: 本摘要与导出明细表使用同一套结果生成，页面状态与文件内容一致。
+    阈值漂移记录已单独标识，可通过'是否阈值漂移'列为'是'筛选查看。
+    不同模型版本的批次相互独立，旧人工判断不会被覆盖。`;
+  document.getElementById("summary-content").textContent = text;
+}
+
+// ===== Compare =====
+function loadCompareBatches() { /* already populated via loadBatches */ }
+
+async function doCompare() {
+  const l = document.getElementById("c-left").value;
+  const r = document.getElementById("c-right").value;
+  if (!l || !r || l === r) return toast("请选择两个不同批次", "error");
+  const c = await get(API + `/compare?left_batch_id=${l}&right_batch_id=${r}`);
+  const pct = n => c.total_compared ? ((n/c.total_compared)*100).toFixed(1)+"%" : "0%";
+  document.getElementById("compare-result").innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card"><div class="num">${c.total_compared}</div><div class="label">对比样本数</div></div>
+      <div class="stat-card confirmed"><div class="num">${c.same_count}</div><div class="label">一致 ${pct(c.same_count)}</div></div>
+      <div class="stat-card rejected"><div class="num">${c.diff_count}</div><div class="label">属性/状态不同 ${pct(c.diff_count)}</div></div>
+      <div class="stat-card drift"><div class="num">${c.only_left_count}</div><div class="label">仅在 ${c.left_batch_name}</div></div>
+      <div class="stat-card"><div class="num">${c.only_right_count}</div><div class="label">仅在 ${c.right_batch_name}</div></div>
+    </div>
+    <div class="diff-bar">
+      <div style="flex:${c.same_count};background:#16a34a;">${c.same_count}</div>
+      <div style="flex:${c.diff_count};background:#ef4444;">${c.diff_count}</div>
+      <div style="flex:${c.only_left_count};background:#f59e0b;">${c.only_left_count}</div>
+      <div style="flex:${c.only_right_count};background:#6366f1;">${c.only_right_count}</div>
+    </div>
+    <div class="card">
+      <h3>对比明细</h3>
+      <div class="table-wrap">
+        <table class="compare-table">
+          <thead><tr><th>样本ID</th><th>商品名</th><th>${c.left_batch_name} 状态</th><th>${c.left_batch_name} 属性</th><th>${c.right_batch_name} 状态</th><th>${c.right_batch_name} 属性</th><th>差异</th></tr></thead>
+          <tbody>
+            ${c.items.map(it => {
+              const cls = it.diff_type === "same" ? "same" : (it.diff_type === "diff" ? "diff" : "");
+              const diffText = { same: "✅ 一致", diff: "❌ 不同", only_left: "◀ 仅左侧", only_right: "仅右侧 ▶" }[it.diff_type];
+              return `<tr>
+                <td><code>${it.sample_id}</code></td>
+                <td>${it.product_name || '-'}</td>
+                <td class="${cls}">${it.left_final_status ? statusBadge(it.left_final_status) : '-'}</td>
+                <td class="${cls}">${it.left_final_attr || '-'}</td>
+                <td class="${cls}">${it.right_final_status ? statusBadge(it.right_final_status) : '-'}</td>
+                <td class="${cls}">${it.right_final_attr || '-'}</td>
+                <td>${diffText}</td>
+              </tr>`;
+            }).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ===== Modal =====
+function showModal(title, bodyHtml) {
+  document.getElementById("modal-root").innerHTML = `<div class="modal-mask" onclick="if(event.target===this)closeModal()">
+    <div class="modal"><h3>${title}</h3>${bodyHtml}</div></div>`;
+}
+function closeModal() { document.getElementById("modal-root").innerHTML = ""; }
+
+// ===== Bootstrap =====
+(async function init() {
+  try {
+    await loadModelVersions();
+    await loadBatches();
+  } catch(e) { console.error(e); toast("加载失败: " + e.message, "error"); }
+})();
+</script>
+</body>
+</html>
