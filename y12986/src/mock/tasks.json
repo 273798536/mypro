@@ -1,0 +1,57 @@
+[
+  {
+    "id": "TASK-20260618-001",
+    "name": "订单服务 6月18日 重放校验",
+    "importTime": "2026-06-18T09:15:32+08:00",
+    "totalRecords": 12847,
+    "exceptionCount": 23,
+    "reviewedCount": 8,
+    "status": "processing",
+    "progress": 35,
+    "description": "订单主库迁移后的回放验证任务，覆盖2026-06-17全量事件"
+  },
+  {
+    "id": "TASK-20260617-004",
+    "name": "支付回调事件一致性校验",
+    "importTime": "2026-06-17T16:42:18+08:00",
+    "totalRecords": 4521,
+    "exceptionCount": 7,
+    "reviewedCount": 7,
+    "status": "completed",
+    "progress": 100,
+    "description": "支付中心回调事件与订单状态对账"
+  },
+  {
+    "id": "TASK-20260617-002",
+    "name": "用户画像权限审计",
+    "importTime": "2026-06-17T11:20:05+08:00",
+    "totalRecords": 8932,
+    "exceptionCount": 15,
+    "reviewedCount": 3,
+    "status": "processing",
+    "progress": 20,
+    "description": "新版本权限清单上线后的全量回放"
+  },
+  {
+    "id": "TASK-20260616-008",
+    "name": "库存扣减幂等性验证",
+    "importTime": "2026-06-16T14:55:43+08:00",
+    "totalRecords": 6720,
+    "exceptionCount": 11,
+    "reviewedCount": 0,
+    "status": "pending",
+    "progress": 0,
+    "description": "大促前库存服务幂等性专项验证"
+  },
+  {
+    "id": "TASK-20260615-003",
+    "name": "优惠券核销异常回溯",
+    "importTime": "2026-06-15T10:08:22+08:00",
+    "totalRecords": 2134,
+    "exceptionCount": 5,
+    "reviewedCount": 5,
+    "status": "completed",
+    "progress": 100,
+    "description": "618活动优惠券系统异常核销记录排查"
+  }
+]

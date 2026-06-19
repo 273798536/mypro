@@ -1,0 +1,98 @@
+[
+  {
+    "id": "AUDIT-V-001",
+    "version": "PERM-V2026.06.10 → PERM-V2026.06.15",
+    "publishTime": "2026-06-15T09:30:00+08:00",
+    "operator": "李华",
+    "operatorAvatar": "LH",
+    "changeSummary": "618 大促前安全合规专项权限收缩，移除了 3 项高风险 UPDATE 权限，新增 1 个审计角色",
+    "affectedTasks": ["TASK-20260618-001", "TASK-20260617-002"],
+    "affectedRecordCount": 5,
+    "oldSnapshotId": "PERM-SNAP-001",
+    "newSnapshotId": "PERM-SNAP-002",
+    "conclusionBefore": "基线权限：各业务角色权限充足，未发现越权配置，授权符合最小化原则",
+    "conclusionAfter": "收缩后结论：1 项误操作（order_detail UPDATE 被误收）导致报表任务失败，1 项合规变更（敏感字段读权限收回）需同步更新 ETL 白名单",
+    "changeDetails": [
+      {
+        "id": "CD-001",
+        "type": "modify",
+        "category": "permission",
+        "description": "order_operator 角色的 order_detail 表操作权限缩减",
+        "oldValue": "[SELECT, INSERT, UPDATE]",
+        "newValue": "[SELECT, INSERT]"
+      },
+      {
+        "id": "CD-002",
+        "type": "modify",
+        "category": "permission",
+        "description": "data_analyst 对 user_profile_sensitive 的 SELECT 授权关闭",
+        "oldValue": "granted=true",
+        "newValue": "granted=false"
+      },
+      {
+        "id": "CD-003",
+        "type": "modify",
+        "category": "permission",
+        "description": "log_audit 角色的 order_log INSERT 权限移除",
+        "oldValue": "[SELECT, INSERT]",
+        "newValue": "[SELECT]"
+      },
+      {
+        "id": "CD-004",
+        "type": "add",
+        "category": "role",
+        "description": "新增 coupon_auditor 角色并授予优惠券使用审计权限",
+        "oldValue": "（无）",
+        "newValue": "coupon_auditor: coupon_usage.SELECT"
+      }
+    ]
+  },
+  {
+    "id": "AUDIT-V-002",
+    "version": "PERM-V2026.06.15 → PERM-V2026.06.18",
+    "publishTime": "2026-06-18T10:00:00+08:00",
+    "operator": "李华",
+    "operatorAvatar": "LH",
+    "changeSummary": "修复 6/15 版本的误收缩权限，回滚 2 项误操作并新增库存操作员角色",
+    "affectedTasks": ["TASK-20260618-001", "TASK-20260617-002", "TASK-20260616-008"],
+    "affectedRecordCount": 7,
+    "oldSnapshotId": "PERM-SNAP-002",
+    "newSnapshotId": "PERM-SNAP-003",
+    "conclusionBefore": "存在 2 项影响生产的权限误操作：订单明细 UPDATE 缺失、敏感字段读取被误收",
+    "conclusionAfter": "修复验证通过：所有受影响任务已恢复正常，建议后续引入权限变更前自动回归测试机制",
+    "changeDetails": [
+      {
+        "id": "CD-005",
+        "type": "modify",
+        "category": "permission",
+        "description": "恢复 order_operator 的 order_detail UPDATE 权限",
+        "oldValue": "[SELECT, INSERT]",
+        "newValue": "[SELECT, INSERT, UPDATE]"
+      },
+      {
+        "id": "CD-006",
+        "type": "modify",
+        "category": "permission",
+        "description": "恢复 data_analyst 对 user_profile_sensitive 的 SELECT",
+        "oldValue": "granted=false",
+        "newValue": "granted=true"
+      },
+      {
+        "id": "CD-007",
+        "type": "modify",
+        "category": "permission",
+        "description": "恢复 log_audit 的 order_log INSERT 权限",
+        "oldValue": "[SELECT]",
+        "newValue": "[SELECT, INSERT]"
+      },
+      {
+        "id": "CD-008",
+        "type": "add",
+        "category": "role",
+        "description": "新增 stock_operator 角色（618 库存专项）",
+        "oldValue": "（无）",
+        "newValue": "stock_operator: stock_sku.SELECT, stock_sku.UPDATE"
+      }
+    ]
+  }
+]

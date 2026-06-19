@@ -1,0 +1,65 @@
+[
+  {
+    "id": "PERM-SNAP-001",
+    "recordId": "EXC-20260618-0002",
+    "version": "PERM-V2026.06.10",
+    "snapshotTime": "2026-06-10T08:00:00+08:00",
+    "isBaseline": true,
+    "description": "Q2权限基线版本",
+    "matrix": [
+      { "id": "M-001", "role": "order_operator", "resource": "order_main", "operations": ["SELECT", "INSERT", "UPDATE"], "granted": true },
+      { "id": "M-002", "role": "order_operator", "resource": "order_detail", "operations": ["SELECT", "INSERT", "UPDATE"], "granted": true },
+      { "id": "M-003", "role": "order_operator", "resource": "order_payment", "operations": ["SELECT"], "granted": true },
+      { "id": "M-004", "role": "order_reader", "resource": "order_main", "operations": ["SELECT"], "granted": true },
+      { "id": "M-005", "role": "order_reader", "resource": "order_detail", "operations": ["SELECT"], "granted": true },
+      { "id": "M-006", "role": "data_analyst", "user": "u-analyst-01", "resource": "user_profile_sensitive", "operations": ["SELECT"], "granted": true },
+      { "id": "M-007", "role": "data_analyst", "resource": "user_profile_public", "operations": ["SELECT"], "granted": true },
+      { "id": "M-008", "role": "log_audit", "resource": "order_log", "operations": ["SELECT", "INSERT"], "granted": true },
+      { "id": "M-009", "role": "payment_operator", "resource": "payment_callback", "operations": ["SELECT", "INSERT", "UPDATE"], "granted": true },
+      { "id": "M-010", "role": "payment_operator", "resource": "order_payment", "operations": ["SELECT", "UPDATE"], "granted": true }
+    ]
+  },
+  {
+    "id": "PERM-SNAP-002",
+    "recordId": "EXC-20260618-0002",
+    "version": "PERM-V2026.06.15",
+    "snapshotTime": "2026-06-15T09:30:00+08:00",
+    "isBaseline": false,
+    "description": "618专项权限收缩版本（事故前版本）",
+    "matrix": [
+      { "id": "M-001", "role": "order_operator", "resource": "order_main", "operations": ["SELECT", "INSERT", "UPDATE"], "granted": true },
+      { "id": "M-002", "role": "order_operator", "resource": "order_detail", "operations": ["SELECT", "INSERT"], "granted": true },
+      { "id": "M-003", "role": "order_operator", "resource": "order_payment", "operations": ["SELECT"], "granted": true },
+      { "id": "M-004", "role": "order_reader", "resource": "order_main", "operations": ["SELECT"], "granted": true },
+      { "id": "M-005", "role": "order_reader", "resource": "order_detail", "operations": ["SELECT"], "granted": true },
+      { "id": "M-006", "role": "data_analyst", "user": "u-analyst-01", "resource": "user_profile_sensitive", "operations": ["SELECT"], "granted": false },
+      { "id": "M-007", "role": "data_analyst", "resource": "user_profile_public", "operations": ["SELECT"], "granted": true },
+      { "id": "M-008", "role": "log_audit", "resource": "order_log", "operations": ["SELECT"], "granted": true },
+      { "id": "M-009", "role": "payment_operator", "resource": "payment_callback", "operations": ["SELECT", "INSERT", "UPDATE"], "granted": true },
+      { "id": "M-010", "role": "payment_operator", "resource": "order_payment", "operations": ["SELECT", "UPDATE"], "granted": true },
+      { "id": "M-011", "role": "coupon_auditor", "resource": "coupon_usage", "operations": ["SELECT"], "granted": true }
+    ]
+  },
+  {
+    "id": "PERM-SNAP-003",
+    "recordId": "EXC-20260618-0002",
+    "version": "PERM-V2026.06.18",
+    "snapshotTime": "2026-06-18T10:00:00+08:00",
+    "isBaseline": false,
+    "description": "事故修复后版本",
+    "matrix": [
+      { "id": "M-001", "role": "order_operator", "resource": "order_main", "operations": ["SELECT", "INSERT", "UPDATE"], "granted": true },
+      { "id": "M-002", "role": "order_operator", "resource": "order_detail", "operations": ["SELECT", "INSERT", "UPDATE"], "granted": true },
+      { "id": "M-003", "role": "order_operator", "resource": "order_payment", "operations": ["SELECT"], "granted": true },
+      { "id": "M-004", "role": "order_reader", "resource": "order_main", "operations": ["SELECT"], "granted": true },
+      { "id": "M-005", "role": "order_reader", "resource": "order_detail", "operations": ["SELECT"], "granted": true },
+      { "id": "M-006", "role": "data_analyst", "user": "u-analyst-01", "resource": "user_profile_sensitive", "operations": ["SELECT"], "granted": true },
+      { "id": "M-007", "role": "data_analyst", "resource": "user_profile_public", "operations": ["SELECT"], "granted": true },
+      { "id": "M-008", "role": "log_audit", "resource": "order_log", "operations": ["SELECT", "INSERT"], "granted": true },
+      { "id": "M-009", "role": "payment_operator", "resource": "payment_callback", "operations": ["SELECT", "INSERT", "UPDATE"], "granted": true },
+      { "id": "M-010", "role": "payment_operator", "resource": "order_payment", "operations": ["SELECT", "UPDATE"], "granted": true },
+      { "id": "M-011", "role": "coupon_auditor", "resource": "coupon_usage", "operations": ["SELECT"], "granted": true },
+      { "id": "M-012", "role": "stock_operator", "resource": "stock_sku", "operations": ["SELECT", "UPDATE"], "granted": true }
+    ]
+  }
+]
