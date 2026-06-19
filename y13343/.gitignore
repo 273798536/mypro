@@ -1,0 +1,8 @@
+node_modules/
+data/*.json
+data_test/
+.DS_Store
+npm-debug.log*
+.vscode/
+src/_storage_test.js
+src/_service_test.js

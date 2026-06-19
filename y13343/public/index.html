@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>排班推荐误判回放</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f5f6fa;
+    color: #2c3e50;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  header {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: #fff;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  header h1 { font-size: 20px; font-weight: 600; }
+  header .meta { font-size: 12px; opacity: 0.85; display: flex; gap: 18px; }
+  main { padding: 24px 32px; max-width: 1440px; margin: 0 auto; }
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid #e0e4ec;
+    margin-bottom: 20px;
+    gap: 4px;
+  }
+  .tab {
+    padding: 10px 22px;
+    cursor: pointer;
+    font-weight: 500;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    color: #6b7280;
+    transition: all 0.2s;
+  }
+  .tab:hover { color: #2a5298; }
+  .tab.active { color: #2a5298; border-bottom-color: #2a5298; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border-left: 4px solid #2a5298;
+  }
+  .stat-card.warn { border-left-color: #f59e0b; }
+  .stat-card.err { border-left-color: #ef4444; }
+  .stat-card.ok { border-left-color: #10b981; }
+  .stat-card .label { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+  .stat-card .value { font-size: 26px; font-weight: 700; }
+  .card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    margin-bottom: 18px;
+  }
+  .card h3 {
+    font-size: 15px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eef0f4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    align-items: center;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+    background: #fff;
+  }
+  .btn-primary { background: #2a5298; color: #fff; }
+  .btn-primary:hover { background: #1e3c72; }
+  .btn-success { background: #10b981; color: #fff; }
+  .btn-success:hover { background: #059669; }
+  .btn-warn { background: #f59e0b; color: #fff; }
+  .btn-warn:hover { background: #d97706; }
+  .btn-danger { background: #ef4444; color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-default { border-color: #d1d5db; color: #374151; }
+  .btn-default:hover { background: #f9fafb; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  select, input[type=text], textarea {
+    padding: 7px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    background: #fff;
+    font-family: inherit;
+  }
+  select:focus, input:focus, textarea:focus { border-color: #2a5298; }
+  textarea { resize: vertical; min-height: 72px; width: 100%; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td {
+    padding: 11px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eef0f4;
+    vertical-align: top;
+  }
+  th {
+    background: #f8f9fc;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  tbody tr:hover { background: #fafbfd; }
+  .tag {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .tag-pending { background: #fef3c7; color: #92400e; }
+  .tag-confirmed { background: #d1fae5; color: #065f46; }
+  .tag-withdrawn { background: #e5e7eb; color: #374151; }
+  .tag-exception { background: #fee2e2; color: #991b1b; }
+  .tag-need { background: #dbeafe; color: #1e40af; }
+  .tag-late { background: #fecaca; color: #991b1b; }
+  .tag-drift { background: #ede9fe; color: #5b21b6; }
+  .conf-bar {
+    display: inline-block;
+    width: 80px;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .conf-bar > div {
+    height: 100%;
+    transition: width 0.3s;
+  }
+  .conf-high { background: #10b981; }
+  .conf-mid { background: #f59e0b; }
+  .conf-low { background: #ef4444; }
+  .action-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .detail-modal-wrap {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 100;
+    padding: 40px 20px;
+    overflow-y: auto;
+  }
+  .detail-modal-wrap.show { display: flex; }
+  .detail-modal {
+    background: #fff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 960px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    overflow: hidden;
+  }
+  .detail-modal .dm-header {
+    padding: 18px 24px;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .detail-modal .dm-header h2 { font-size: 17px; }
+  .detail-modal .dm-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .detail-modal .dm-body { padding: 22px 24px; max-height: 70vh; overflow-y: auto; }
+  .dm-section { margin-bottom: 22px; }
+  .dm-section h4 {
+    font-size: 13px;
+    color: #4b5563;
+    margin-bottom: 10px;
+    padding-left: 10px;
+    border-left: 3px solid #2a5298;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .kv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px 18px;
+  }
+  .kv { display: flex; flex-direction: column; }
+  .kv .k { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
+  .kv .v { font-size: 13px; font-weight: 500; }
+  .reclass-card, .confirm-card {
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 14px 16px;
+    border: 1px solid #e5e7eb;
+  }
+  .reclass-card.changed { border-left: 4px solid #f59e0b; }
+  .confirm-card.needed { border-left: 4px solid #ef4444; background: #fef2f2; }
+  .reason-list, .step-list, .explain-list {
+    margin: 8px 0 0 4px;
+    padding-left: 18px;
+  }
+  .reason-list li, .step-list li, .explain-list li { margin-bottom: 5px; font-size: 13px; }
+  .step-list li { color: #065f46; }
+  .timeline { border-left: 2px solid #e5e7eb; padding-left: 16px; margin-left: 6px; }
+  .tl-item { position: relative; padding-bottom: 14px; }
+  .tl-item::before {
+    content: '';
+    position: absolute;
+    left: -22px;
+    top: 3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #2a5298;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #dbeafe;
+  }
+  .tl-confirm::before { background: #10b981; box-shadow: 0 0 0 2px #d1fae5; }
+  .tl-withdraw::before { background: #6b7280; box-shadow: 0 0 0 2px #e5e7eb; }
+  .tl-exception::before { background: #ef4444; box-shadow: 0 0 0 2px #fee2e2; }
+  .tl-remark::before { background: #8b5cf6; box-shadow: 0 0 0 2px #ede9fe; }
+  .tl-time { font-size: 11px; color: #6b7280; }
+  .tl-action { font-weight: 600; font-size: 13px; }
+  .tl-op { color: #2a5298; font-size: 12px; }
+  .tl-remark-text { font-size: 12px; color: #4b5563; margin-top: 2px; }
+  .feature-row {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr 70px 1fr;
+    gap: 10px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eef0f4;
+    font-size: 12px;
+    align-items: center;
+  }
+  .feature-row.header { font-weight: 600; background: #f8f9fc; color: #4b5563; font-size: 11px; }
+  .impact-pos { color: #059669; }
+  .impact-neg { color: #dc2626; }
+  .impact-neu { color: #6b7280; }
+  .empty { padding: 40px 20px; text-align: center; color: #9ca3af; font-size: 13px; }
+  .operator-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 10px 14px; background: #f0f4ff; border-radius: 8px; }
+  .operator-row label { font-weight: 600; font-size: 12px; color: #4b5563; }
+  .consistency { padding: 10px 14px; border-radius: 8px; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; }
+  .consistency.ok { background: #d1fae5; color: #065f46; }
+  .consistency.bad { background: #fee2e2; color: #991b1b; }
+  .diff-cell { font-size: 12px; color: #6b7280; }
+  .badge-num { display: inline-block; min-width: 20px; padding: 0 6px; background: #ef4444; color: #fff; border-radius: 10px; font-size: 10px; text-align: center; margin-left: 4px;}
+  .modal-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+  }
+  .modal-mask.show { display: flex; }
+  .mini-modal {
+    background: #fff;
+    border-radius: 10px;
+    padding: 22px 24px;
+    width: 460px;
+    max-width: 90%;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  }
+  .mini-modal h3 { margin-bottom: 12px; font-size: 15px; }
+  .mini-modal .mm-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>📋 排班推荐误判回放</h1>
+  </div>
+  <div class="meta" id="headerMeta">
+    <span>模型 v2.3.1</span>
+    <span>|</span>
+    <span id="lastModified">数据：-</span>
+  </div>
+</header>
+<main>
+  <div class="tabs">
+    <div class="tab active" data-tab="records">📝 记录列表</div>
+    <div class="tab" data-tab="exceptions">⚠️ 异常队列 <span id="excBadge" class="badge-num" style="display:none">0</span></div>
+    <div class="tab" data-tab="import">📥 导入</div>
+    <div class="tab" data-tab="check">🔍 一致性校验</div>
+  </div>
+
+  <div class="operator-row">
+    <label>当前操作人：</label>
+    <input type="text" id="operatorName" placeholder="请输入姓名" value="阿宁" style="width:140px"/>
+    <span style="color:#9ca3af; font-size:12px">（写入历史记录）</span>
+  </div>
+
+  <div id="tab-records" class="tab-panel">
+    <div class="stats" id="statsPanel"></div>
+
+    <div class="card">
+      <h3>
+        <span>排班记录</span>
+        <div>
+          <button class="btn btn-default" onclick="refreshAll()">🔄 刷新</button>
+        </div>
+      </h3>
+      <div class="toolbar">
+        <select id="filterStatus">
+          <option value="">全部状态</option>
+          <option value="pending">待确认</option>
+          <option value="confirmed">已确认</option>
+          <option value="withdrawn">已撤回</option>
+          <option value="exception">异常</option>
+        </select>
+        <select id="filterNeed">
+          <option value="">是否需人工确认</option>
+          <option value="1">需人工确认</option>
+          <option value="0">无需</option>
+        </select>
+        <select id="filterBatch">
+          <option value="">全部批次</option>
+        </select>
+        <input type="text" id="filterText" placeholder="搜索员工/日期/ID" style="width:200px"/>
+      </div>
+      <div id="recordsTableWrap"></div>
+    </div>
+  </div>
+
+  <div id="tab-exceptions" class="tab-panel" style="display:none">
+    <div class="card">
+      <h3>
+        <span>异常队列</span>
+        <div>
+          <select id="excResolved">
+            <option value="0">未解决</option>
+            <option value="1">已解决</option>
+            <option value="">全部</option>
+          </select>
+          <button class="btn btn-default" onclick="loadExceptions()" style="margin-left:8px">🔄 刷新</button>
+        </div>
+      </h3>
+      <div id="exceptionsWrap"></div>
+    </div>
+  </div>
+
+  <div id="tab-import" class="tab-panel" style="display:none">
+    <div class="card">
+      <h3>📥 导入人工修正数据包</h3>
+      <p style="color:#6b7280; margin-bottom:14px; font-size:13px">
+        支持两种导入方式：① 使用内置测试样本（含晚到附件异常 / 阈值漂移 / 旧模型误判改判）；② 上传自定义 JSON 文件。
+        所有数据统一存入 <code>./data/*.json</code>，重启后不丢失。
+      </p>
+
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
+        <div style="padding:16px; background:#f8f9fc; border-radius:8px; border:1px dashed #d1d5db">
+          <h4 style="font-size:13px; margin-bottom:10px; color:#4b5563">方式一：内置样本</h4>
+          <select id="sampleSelect" style="width:100%; margin-bottom:10px">
+            <option value="">加载中…</option>
+          </select>
+          <button class="btn btn-primary" onclick="importSample()" style="width:100%">🎯 导入此样本包</button>
+          <p style="font-size:11px; color:#6b7280; margin-top:10px">
+            样本包包含：干净记录 × 2、阈值漂移 × 1、晚到附件异常 × 1、旧模型误判改判 × 1、低置信度 × 1
+          </p>
+        </div>
+        <div style="padding:16px; background:#f8f9fc; border-radius:8px; border:1px dashed #d1d5db">
+          <h4 style="font-size:13px; margin-bottom:10px; color:#4b5563">方式二：上传 JSON</h4>
+          <input type="file" id="fileInput" accept=".json" style="margin-bottom:10px; font-size:12px"/>
+          <button class="btn btn-warn" onclick="importFile()" style="width:100%">📤 上传并导入</button>
+          <p style="font-size:11px; color:#6b7280; margin-top:10px">
+            格式：<code>{ records: [ {id, employeeId, date, confidence, ...} ] }</code>
+          </p>
+        </div>
+      </div>
+
+      <div id="importResult" style="margin-top:18px"></div>
+    </div>
+
+    <div class="card">
+      <h3>📚 历史导入批次</h3>
+      <div id="batchList"></div>
+    </div>
+  </div>
+
+  <div id="tab-check" class="tab-panel" style="display:none">
+    <div class="card">
+      <h3>
+        <span>🔍 数据一致性校验</span>
+        <button class="btn btn-primary" onclick="runCheck()">▶ 立即校验</button>
+      </h3>
+      <p style="color:#6b7280; margin-bottom:14px; font-size:13px">
+        校验点：状态 ↔ 历史记录 对应、异常/历史 关联记录存在、已确认必含 confirmedAt 等。
+        重启或重跑后请先执行本校验。
+      </p>
+      <div id="checkResult"></div>
+    </div>
+  </div>
+</main>
+
+<div class="detail-modal-wrap" id="detailModal" onclick="if(event.target===this) closeDetail()">
+  <div class="detail-modal">
+    <div class="dm-header">
+      <h2 id="dmTitle">记录详情</h2>
+      <button class="dm-close" onclick="closeDetail()">×</button>
+    </div>
+    <div class="dm-body" id="dmBody"></div>
+  </div>
+</div>
+
+<div class="modal-mask" id="remarkModal">
+  <div class="mini-modal">
+    <h3 id="remarkModalTitle">备注</h3>
+    <textarea id="remarkText" placeholder="（可选）输入备注…"></textarea>
+    <div class="mm-actions">
+      <button class="btn btn-default" onclick="closeRemark()">取消</button>
+      <button class="btn btn-primary" id="remarkConfirmBtn">确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = path => fetch(path).then(r => r.json());
+const POST = (path, body) => fetch(path, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body)
+}).then(r => r.json());
+
+function getOp() {
+  return document.getElementById('operatorName').value.trim() || 'anonymous';
+}
+
+function statusTag(s) {
+  const map = {
+    pending: ['待确认', 'tag-pending'],
+    confirmed: ['已确认', 'tag-confirmed'],
+    withdrawn: ['已撤回', 'tag-withdrawn'],
+    exception: ['异常', 'tag-exception']
+  };
+  const [text, cls] = map[s] || [s, ''];
+  return `<span class="tag ${cls}">${text}</span>`;
+}
+
+function confBar(c) {
+  const pct = Math.round(c * 100);
+  const cls = c >= 0.75 ? 'conf-high' : (c >= 0.6 ? 'conf-mid' : 'conf-low');
+  return `<span class="conf-bar"><div class="${cls}" style="width:${pct}%"></div></span><b>${pct}%</b>`;
+}
+
+function formatTime(t) {
+  if (!t) return '-';
+  try { return new Date(t).toLocaleString('zh-CN'); } catch { return t; }
+}
+
+/* ======= 统计 ======= */
+async function loadStats() {
+  const s = await API('/api/stats');
+  document.getElementById('headerMeta').innerHTML = `
+    <span>模型 ${s.modelVersion}（对比 ${s.oldModelVersion}）</span>
+    <span>|</span>
+    <span>置信阈值 ${(s.thresholds.confidence * 100).toFixed(0)}% · 漂移阈值 ${(s.thresholds.drift * 100).toFixed(0)}%</span>
+    <span>|</span>
+    <span>最近修改：${formatTime(s.lastModified)}</span>
+  `;
+  document.getElementById('statsPanel').innerHTML = `
+    <div class="stat-card"><div class="label">记录总数</div><div class="value">${s.counts.total}</div></div>
+    <div class="stat-card warn"><div class="label">待确认</div><div class="value">${s.counts.pending}</div></div>
+    <div class="stat-card ok"><div class="label">已确认</div><div class="value">${s.counts.confirmed}</div></div>
+    <div class="stat-card"><div class="label">已撤回</div><div class="value">${s.counts.withdrawn}</div></div>
+    <div class="stat-card err"><div class="label">异常中</div><div class="value">${s.counts.exception}</div></div>
+    <div class="stat-card warn"><div class="label">需人工确认</div><div class="value">${s.counts.needsManualConfirm}</div></div>
+    <div class="stat-card err"><div class="label">未解决异常</div><div class="value">${s.exceptionCount.unresolved}</div></div>
+    <div class="stat-card"><div class="label">导入批次</div><div class="value">${s.batchCount}</div></div>
+  `;
+  const bdg = document.getElementById('excBadge');
+  if (s.exceptionCount.unresolved > 0) {
+    bdg.style.display = 'inline-block';
+    bdg.textContent = s.exceptionCount.unresolved;
+  } else bdg.style.display = 'none';
+}
+
+/* ======= 记录列表 ======= */
+async function loadRecords() {
+  const params = new URLSearchParams();
+  const st = document.getElementById('filterStatus').value;
+  const need = document.getElementById('filterNeed').value;
+  const batch = document.getElementById('filterBatch').value;
+  const kw = document.getElementById('filterText').value.trim();
+  if (st) params.set('status', st);
+  if (need) params.set('needsConfirm', need);
+  if (batch) params.set('batchId', batch);
+  let list = await API('/api/records?' + params.toString());
+  if (kw) {
+    const k = kw.toLowerCase();
+    list = list.filter(r =>
+      (r.employeeName || '').toLowerCase().includes(k) ||
+      (r.employeeId || '').toLowerCase().includes(k) ||
+      (r.date || '').includes(k) ||
+      (r.id || '').toLowerCase().includes(k)
+    );
+  }
+  const wrap = document.getElementById('recordsTableWrap');
+  if (!list.length) { wrap.innerHTML = '<div class="empty">暂无记录，请先到「导入」页面导入样本包</div>'; return; }
+  wrap.innerHTML = `<table>
+    <thead><tr>
+      <th>员工</th><th>日期</th><th>班次</th><th>推荐</th>
+      <th>置信度</th><th>状态</th><th>标记</th><th>当前备注</th><th>操作</th>
+    </tr></thead>
+    <tbody>${list.map(r => {
+      const tags = [];
+      if (r.needsManualConfirm) tags.push('<span class="tag tag-need">需确认</span>');
+      if (r.hasLateAttachment) tags.push('<span class="tag tag-late">晚到附件</span>');
+      if (r.oldConfidence !== undefined && r.oldConfidence !== null) {
+        const d = Math.abs(r.confidence - r.oldConfidence);
+        if (d >= 0.15) tags.push('<span class="tag tag-drift">漂移 ' + (d >= 0 ? '+' : '') + Math.round((r.confidence - r.oldConfidence) * 100) + '%</span>');
+      }
+      if (r.recommendationChanged) tags.push('<span class="tag tag-drift">改判</span>');
+      const rec = r.newRecommendation || r.recommendation;
+      return `<tr>
+        <td><b>${r.employeeName}</b><br><span style="color:#9ca3af;font-size:11px">${r.employeeId}</span></td>
+        <td>${r.date || '-'}</td>
+        <td>${r.shiftType || '-'}</td>
+        <td>${rec ? rec.label : '-'}${r.oldRecommendation && r.recommendationChanged ? '<div class="diff-cell">原：'+r.oldRecommendation.label+'</div>' : ''}</td>
+        <td>${confBar(r.confidence)}${r.oldConfidence !== undefined && r.oldConfidence !== null ? '<div class="diff-cell">旧 '+Math.round(r.oldConfidence*100)+'%</div>' : ''}</td>
+        <td>${statusTag(r.status)}</td>
+        <td style="min-width:150px">${tags.join(' ') || '<span style="color:#d1d5db">-</span>'}</td>
+        <td style="max-width:220px"><div style="color:#4b5563; font-size:12px; line-height:1.5">${r.currentRemark || '<span style="color:#d1d5db">-</span>'}</div></td>
+        <td>
+          <div class="action-row">
+            <button class="btn btn-primary" style="padding:5px 10px;font-size:12px" onclick="openDetail('${r.id}')">详情/回放</button>
+            ${r.status === 'pending' || r.status === 'exception' ? `<button class="btn btn-success" style="padding:5px 10px;font-size:12px" onclick="doConfirm('${r.id}')">确认</button>` : ''}
+            ${r.status === 'confirmed' ? `<button class="btn btn-warn" style="padding:5px 10px;font-size:12px" onclick="doWithdraw('${r.id}')">撤回</button>` : ''}
+            <button class="btn btn-default" style="padding:5px 10px;font-size:12px" onclick="doRemark('${r.id}')">备注</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('')}</tbody></table>`;
+}
+
+async function loadBatchOptions() {
+  const meta = await API('/api/metadata');
+  const sel = document.getElementById('filterBatch');
+  sel.innerHTML = '<option value="">全部批次</option>' +
+    (meta.importBatches || []).map(b => `<option value="${b.id}">${b.id} (${formatTime(b.importedAt).split(' ')[0]}, ${b.success}/${b.total})</option>`).join('');
+
+  const bl = document.getElementById('batchList');
+  if (!meta.importBatches || !meta.importBatches.length) { bl.innerHTML = '<div class="empty">暂无批次</div>'; return; }
+  bl.innerHTML = `<table>
+    <thead><tr><th>批次ID</th><th>导入时间</th><th>操作人</th><th>总数</th><th>成功</th><th>失败</th></tr></thead>
+    <tbody>${meta.importBatches.slice().reverse().map(b => `<tr>
+      <td><code>${b.id}</code></td><td>${formatTime(b.importedAt)}</td><td>${b.operator || '-'}</td>
+      <td>${b.total}</td><td style="color:#10b981">${b.success}</td><td style="color:#ef4444">${b.failed}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+/* ======= 异常队列 ======= */
+async function loadExceptions() {
+  const rv = document.getElementById('excResolved').value;
+  const params = new URLSearchParams();
+  if (rv !== '') params.set('resolved', rv);
+  const list = await API('/api/exceptions?' + params.toString());
+  const wrap = document.getElementById('exceptionsWrap');
+  if (!list.length) { wrap.innerHTML = '<div class="empty">暂无异常</div>'; return; }
+  wrap.innerHTML = `<table>
+    <thead><tr><th>类型</th><th>严重度</th><th>关联记录</th><th>消息</th><th>创建时间</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody>${list.map(e => `<tr>
+      <td><code>${e.type}</code></td>
+      <td><span class="tag ${e.severity === 'error' ? 'tag-exception' : 'tag-pending'}">${e.severity}</span></td>
+      <td>${e.recordId ? `<a href="javascript:void(0)" onclick="openDetail('${e.recordId}')">${e.recordId}</a>` : '-'}</td>
+      <td style="max-width:340px">${e.message}${e.attachments && e.attachments.length ? '<div style="margin-top:4px">' + e.attachments.map(a => `<span class="tag tag-late">📎 ${a.name} · ${a.status}</span>`).join(' ') + '</div>' : ''}</td>
+      <td>${formatTime(e.createdAt)}</td>
+      <td>${e.resolved ? `<span class="tag tag-confirmed">已解决 · ${e.resolvedBy || ''}</span><div style="font-size:11px;color:#6b7280">${formatTime(e.resolvedAt)}</div>` : '<span class="tag tag-exception">未解决</span>'}</td>
+      <td>${!e.resolved ? `<button class="btn btn-success" style="padding:5px 10px;font-size:12px" onclick="resolveExc('${e.id}')">标记解决</button>` : '-'}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+/* ======= 详情 / 回放 ======= */
+async function openDetail(id) {
+  const d = await API('/api/records/' + id + '/replay');
+  const r = d.record;
+  document.getElementById('dmTitle').textContent = `${r.employeeName} · ${r.date || ''} 详情回放`;
+
+  const reclass = d.reclassification;
+  const conf = d.manualConfirm;
+  const hist = d.history || [];
+  const exc = d.exceptions || [];
+
+  const histActionClass = {
+    'import': '', 'update_import': '',
+    'confirm': 'tl-confirm', 'withdraw': 'tl-withdraw',
+    'exception_resolved': 'tl-exception', 'update_remark': 'tl-remark'
+  };
+  const histActionText = {
+    'import': '首次导入', 'update_import': '重新导入覆盖',
+    'update_import_preserve': '重新导入（保留人工结论）',
+    'confirm': '人工确认', 'withdraw': '撤回确认',
+    'exception_resolved': '异常解决', 'update_remark': '更新备注'
+  };
+
+  let reclassHtml = '<div class="reclass-card"><div style="color:#6b7280; font-size:13px">本记录未发生推荐变更（或无旧模型对比）</div></div>';
+  if (reclass.changed) {
+    reclassHtml = `<div class="reclass-card changed">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px">
+        <b>🔀 改判回放 · ${reclass.oldModelVersion} → ${reclass.newModelVersion}</b>
+        <span style="font-size:12px; color:#92400e">${reclass.summary}</span>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr auto 1fr; gap:14px; align-items:center; margin-bottom:12px">
+        <div style="padding:10px 14px; background:#fff; border:1px solid #e5e7eb; border-radius:6px">
+          <div style="font-size:11px; color:#6b7280">旧模型推荐</div>
+          <div style="font-size:15px; font-weight:600; margin-top:4px">${reclass.oldRecommendation.label}</div>
+        </div>
+        <div style="font-size:22px; color:#f59e0b">→</div>
+        <div style="padding:10px 14px; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px">
+          <div style="font-size:11px; color:#065f46">新模型推荐</div>
+          <div style="font-size:15px; font-weight:600; color:#065f46; margin-top:4px">${reclass.newRecommendation.label}</div>
+        </div>
+      </div>
+      ${reclass.featureDiffs && reclass.featureDiffs.length ? `
+      <div style="margin-top:10px">
+        <div style="font-size:12px; color:#4b5563; margin-bottom:6px; font-weight:600">特征变化明细：</div>
+        <div class="feature-row header">
+          <div>特征名</div><div>旧值</div><div>新值</div><div>权重</div><div>影响</div>
+        </div>
+        ${reclass.featureDiffs.map(f => `<div class="feature-row">
+          <div><b>${f.name}</b></div><div>${f.oldValue}</div><div>${f.newValue}</div>
+          <div>${(f.weight * 100).toFixed(1)}%</div>
+          <div class="${f.impact === 'positive' ? 'impact-pos' : f.impact === 'negative' ? 'impact-neg' : 'impact-neu'}">
+            ${f.impact === 'positive' ? '↑ 拉高' : f.impact === 'negative' ? '↓ 拉低' : '→ 无'}
+          </div>
+        </div>`).join('')}
+      </div>` : ''}
+      <div style="margin-top:12px">
+        <div style="font-size:12px; color:#4b5563; margin-bottom:6px; font-weight:600">改判解释：</div>
+        <ul class="explain-list">${reclass.explanations.map(x => `<li>${x}</li>`).join('')}</ul>
+      </div>
+    </div>`;
+  }
+
+  let confHtml = '<div class="confirm-card"><div style="color:#10b981; font-size:13px">✅ 本记录符合阈值要求，无需人工确认</div></div>';
+  if (conf.needed) {
+    confHtml = `<div class="confirm-card needed">
+      <div style="color:#991b1b; font-weight:600; margin-bottom:8px">
+        ⚠️ 需人工确认（置信阈值 ${(conf.threshold*100).toFixed(0)}%，漂移阈值 ${(conf.driftThreshold*100).toFixed(0)}%）
+      </div>
+      <div style="margin-bottom:8px">
+        <div style="font-size:12px; font-weight:600; color:#7f1d1d; margin-bottom:4px">触发原因：</div>
+        <ul class="reason-list">${conf.reasons.map(x => `<li>${x}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:600; color:#065f46; margin-bottom:4px">建议下一步：</div>
+        <ul class="step-list">${conf.nextSteps.map(x => `<li>${x}</li>`).join('')}</ul>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('dmBody').innerHTML = `
+    <div class="dm-section">
+      <h4>基本信息</h4>
+      <div class="kv-grid">
+        <div class="kv"><span class="k">记录ID</span><span class="v"><code>${r.id}</code></span></div>
+        <div class="kv"><span class="k">批次ID</span><span class="v"><code style="font-size:11px">${r.batchId || '-'}</code></span></div>
+        <div class="kv"><span class="k">员工</span><span class="v">${r.employeeName} (${r.employeeId})</span></div>
+        <div class="kv"><span class="k">排班日期</span><span class="v">${r.date || '-'}</span></div>
+        <div class="kv"><span class="k">班次类型</span><span class="v">${r.shiftType || '-'}</span></div>
+        <div class="kv"><span class="k">状态</span><span class="v">${statusTag(r.status)}</span></div>
+        <div class="kv"><span class="k">新模型置信度</span><span class="v">${confBar(r.confidence)}</span></div>
+        <div class="kv"><span class="k">旧模型置信度</span><span class="v">${r.oldConfidence !== undefined && r.oldConfidence !== null ? confBar(r.oldConfidence) : '<span style="color:#d1d5db">-</span>'}</span></div>
+        <div class="kv"><span class="k">导入时间</span><span class="v">${formatTime(r.importedAt)}</span></div>
+        <div class="kv"><span class="k">确认人/时间</span><span class="v">${r.confirmedBy ? r.confirmedBy + ' · ' + formatTime(r.confirmedAt) : '-'}</span></div>
+        <div class="kv"><span class="k">撤回人/时间</span><span class="v">${r.withdrawnBy ? r.withdrawnBy + ' · ' + formatTime(r.withdrawnAt) : '-'}</span></div>
+        <div class="kv"><span class="k">数据版本</span><span class="v">v${r._version || 1}</span></div>
+      </div>
+    </div>
+
+    <div class="dm-section">
+      <h4>🔀 改判解释（旧模型误判回放）</h4>
+      ${reclassHtml}
+    </div>
+
+    <div class="dm-section">
+      <h4>⚠️ 人工确认触发 & 下一步</h4>
+      ${confHtml}
+    </div>
+
+    <div class="dm-section">
+      <h4>📎 附件 / 异常</h4>
+      ${r.hasLateAttachment || exc.length ? `
+        <table>
+          <thead><tr><th>类型</th><th>名称</th><th>状态</th><th>说明</th></tr></thead>
+          <tbody>
+            ${(r.attachments || []).map(a => `<tr>
+              <td><span class="tag tag-late">晚到</span></td>
+              <td>${a.name}</td><td>${a.status}</td><td>${a.note || ''}${a.expectedAt ? ' · 预计到达：' + formatTime(a.expectedAt) : ''}</td>
+            </tr>`).join('')}
+            ${exc.map(e => `<tr>
+              <td><span class="tag tag-exception">异常</span></td>
+              <td>${e.type}</td><td>${e.resolved ? '已解决' : '未解决'}</td><td>${e.message}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      ` : '<div style="color:#9ca3af; font-size:13px">无附件或异常</div>'}
+    </div>
+
+    <div class="dm-section">
+      <h4>📝 当前备注</h4>
+      <div style="padding:10px 14px; background:#f8f9fc; border-radius:6px; font-size:13px; white-space:pre-wrap; min-height:40px">${r.currentRemark || '<span style="color:#d1d5db">（空）</span>'}</div>
+    </div>
+
+    <div class="dm-section">
+      <h4>🕘 操作历史（重启不丢失）</h4>
+      ${hist.length ? `<div class="timeline">${hist.slice().reverse().map(h => `
+        <div class="tl-item ${histActionClass[h.action] || ''}">
+          <div style="display:flex; align-items:baseline; gap:8px; flex-wrap:wrap">
+            <span class="tl-action">${histActionText[h.action] || h.action}</span>
+            <span class="tl-op">${h.operator || '-'}</span>
+            <span class="tl-time">${formatTime(h.timestamp)}</span>
+            ${h.oldStatus && h.newStatus ? `<span style="font-size:11px;color:#6b7280">${h.oldStatus} → ${h.newStatus}</span>` : ''}
+          </div>
+          ${h.remark ? `<div class="tl-remark-text">📌 ${h.remark}</div>` : ''}
+          ${h.extra && Object.keys(h.extra).length ? `<div class="tl-remark-text" style="color:#9ca3af">${JSON.stringify(h.extra)}</div>` : ''}
+        </div>
+      `).join('')}</div>` : '<div style="color:#9ca3af">暂无历史</div>'}
+    </div>
+
+    <div style="border-top:1px solid #eef0f4; padding-top:16px; display:flex; gap:10px; justify-content:flex-end">
+      ${r.status === 'pending' || r.status === 'exception' ? `<button class="btn btn-success" onclick="doConfirm('${r.id}'); closeDetail();">✅ 确认通过</button>` : ''}
+      ${r.status === 'confirmed' ? `<button class="btn btn-warn" onclick="doWithdraw('${r.id}'); closeDetail();">↩️ 撤回确认</button>` : ''}
+      <button class="btn btn-default" onclick="doRemark('${r.id}')">📝 修改备注</button>
+      <button class="btn btn-default" onclick="closeDetail()">关闭</button>
+    </div>
+  `;
+  document.getElementById('detailModal').classList.add('show');
+}
+function closeDetail() { document.getElementById('detailModal').classList.remove('show'); }
+
+/* ======= 操作 ======= */
+let _remarkCallback = null;
+function openRemarkModal(title, cb, defaultValue = '') {
+  document.getElementById('remarkModalTitle').textContent = title;
+  document.getElementById('remarkText').value = defaultValue;
+  _remarkCallback = cb;
+  document.getElementById('remarkModal').classList.add('show');
+  setTimeout(() => document.getElementById('remarkText').focus(), 50);
+}
+function closeRemark() {
+  document.getElementById('remarkModal').classList.remove('show');
+  _remarkCallback = null;
+}
+document.getElementById('remarkConfirmBtn').onclick = () => {
+  const val = document.getElementById('remarkText').value;
+  if (_remarkCallback) _remarkCallback(val);
+  closeRemark();
+};
+
+function doConfirm(id) {
+  openRemarkModal('确认通过（可选备注）', async (remark) => {
+    const r = await POST('/api/records/' + id + '/confirm', { operator: getOp(), remark });
+    if (r.success) { alert('已确认'); refreshAll(); } else alert(r.error);
+  });
+}
+function doWithdraw(id) {
+  openRemarkModal('撤回确认（可选备注）', async (remark) => {
+    const r = await POST('/api/records/' + id + '/withdraw', { operator: getOp(), remark });
+    if (r.success) { alert('已撤回'); refreshAll(); } else alert(r.error);
+  });
+}
+function doRemark(id) {
+  API('/api/records/' + id).then(d => {
+    openRemarkModal('修改备注', async (remark) => {
+      const r = await POST('/api/records/' + id + '/remark', { operator: getOp(), remark });
+      if (r.success) { alert('备注已更新'); refreshAll(); } else alert(r.error);
+    }, d.record ? d.record.currentRemark || '' : '');
+  });
+}
+function resolveExc(id) {
+  openRemarkModal('标记异常已解决（备注）', async (remark) => {
+    const r = await POST('/api/exceptions/' + id + '/resolve', { operator: getOp(), remark });
+    if (r.success) { alert('异常已标记解决'); refreshAll(); } else alert(r.error);
+  });
+}
+
+/* ======= 导入 ======= */
+async function loadSamples() {
+  const list = await API('/api/samples/list');
+  const sel = document.getElementById('sampleSelect');
+  sel.innerHTML = list.length ? list.map(f => `<option value="${f}">${f}</option>`).join('') : '<option value="">（无样本文件）</option>';
+}
+async function importSample() {
+  const f = document.getElementById('sampleSelect').value;
+  if (!f) return;
+  const data = await fetch('/samples/' + f).then(r => r.json());
+  doImport(data.records || data);
+}
+function importFile() {
+  const fi = document.getElementById('fileInput');
+  if (!fi.files.length) { alert('请先选择 JSON 文件'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      doImport(data.records || data);
+    } catch (err) { alert('JSON 解析失败: ' + err.message); }
+  };
+  reader.readAsText(fi.files[0]);
+}
+async function doImport(data) {
+  const r = await POST('/api/records/import', { operator: getOp(), data });
+  const wrap = document.getElementById('importResult');
+  if (r.success) {
+    wrap.innerHTML = `<div style="padding:14px 18px; background:#ecfdf5; border-radius:8px; border:1px solid #a7f3d0">
+      <b style="color:#065f46">✅ 导入成功</b>
+      <div style="margin-top:6px; font-size:13px">批次：<code>${r.batchId}</code> · 共 ${r.total} 条，成功 ${r.success}，失败 ${r.failed}，产生异常 ${r.exceptionCount}</div>
+      <div style="margin-top:8px"><button class="btn btn-primary" onclick="switchTab('records')">→ 查看记录列表</button></div>
+    </div>`;
+    refreshAll();
+  } else {
+    wrap.innerHTML = `<div style="padding:14px 18px; background:#fef2f2; border-radius:8px; border:1px solid #fecaca; color:#991b1b">❌ ${r.error}</div>`;
+  }
+}
+
+/* ======= 一致性校验 ======= */
+async function runCheck() {
+  const c = await API('/api/consistency');
+  const wrap = document.getElementById('checkResult');
+  wrap.innerHTML = `
+    <div class="consistency ${c.ok ? 'ok' : 'bad'}">
+      <span style="font-size:16px">${c.ok ? '✅' : '❌'}</span>
+      <b>${c.ok ? '数据一致性正常' : '发现问题'}</b>
+    </div>
+    <div style="margin-top:12px; font-size:13px; color:#4b5563">
+      记录数：<b>${c.counts.records}</b> · 异常数：<b>${c.counts.exceptions}</b> · 历史数：<b>${c.counts.history}</b>
+    </div>
+    ${c.issues.length ? `
+      <div style="margin-top:14px">
+        <h4 style="font-size:13px; color:#991b1b; margin-bottom:8px">发现 ${c.issues.length} 个问题：</h4>
+        <ul style="padding-left:20px; color:#991b1b; font-size:12px">${c.issues.map(i => `<li style="margin-bottom:4px">${i}</li>`).join('')}</ul>
+      </div>
+    ` : ''}
+  `;
+}
+
+/* ======= Tabs / 刷新 ======= */
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  ['records', 'exceptions', 'import', 'check'].forEach(n => {
+    document.getElementById('tab-' + n).style.display = (n === name) ? '' : 'none';
+  });
+  if (name === 'exceptions') loadExceptions();
+  if (name === 'import') { loadSamples(); loadBatchOptions(); }
+  if (name === 'check') runCheck();
+}
+document.querySelectorAll('.tab').forEach(t => t.onclick = () => switchTab(t.dataset.tab));
+
+async function refreshAll() {
+  await Promise.all([loadStats(), loadRecords(), loadBatchOptions()]);
+}
+
+['filterStatus', 'filterNeed', 'filterBatch'].forEach(id => {
+  document.getElementById(id).onchange = loadRecords;
+});
+document.getElementById('filterText').oninput = (() => { let t; return () => { clearTimeout(t); t = setTimeout(loadRecords, 200); }; })();
+document.getElementById('excResolved').onchange = loadExceptions;
+
+/* init */
+(async function init() {
+  await refreshAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+{
+  "batchName": "人工修正小包_2026_06_19",
+  "description": "排班推荐误判回放主流程压测样本，含1条晚到附件异常 + 阈值漂移 + 旧模型误判改判样本",
+  "operator": "阿宁",
+  "records": [
+    {
+      "id": "rec_001_clean",
+      "employeeId": "E10086",
+      "employeeName": "张三",
+      "date": "2026-06-18",
+      "shiftType": "日班",
+      "oldRecommendation": { "code": "REST", "label": "休息" },
+      "newRecommendation": { "code": "DAY", "label": "日班 09:00-18:00" },
+      "recommendationChanged": true,
+      "oldConfidence": 0.62,
+      "confidence": 0.88,
+      "features": {
+        "weekly_hours": 38,
+        "consecutive_days": 2,
+        "leave_balance": 5.5,
+        "skill_match": 0.92
+      },
+      "featureDiffs": [
+        { "name": "周工时", "oldValue": 42, "newValue": 38, "impact": "positive", "weight": 0.18 },
+        { "name": "技能匹配度", "oldValue": 0.75, "newValue": 0.92, "impact": "positive", "weight": 0.12 },
+        { "name": "连续上班天数", "oldValue": 4, "newValue": 2, "impact": "positive", "weight": 0.08 },
+        { "name": "调休余额", "oldValue": 5.5, "newValue": 5.5, "impact": "neutral", "weight": 0.0 }
+      ],
+      "hasLateAttachment": false,
+      "attachments": [],
+      "remark": "周三订单高峰已提前安排，人工确认推荐改为日班"
+    },
+    {
+      "id": "rec_002_drift",
+      "employeeId": "E10099",
+      "employeeName": "李四",
+      "date": "2026-06-18",
+      "shiftType": "夜班",
+      "oldRecommendation": { "code": "NIGHT", "label": "夜班 22:00-07:00" },
+      "newRecommendation": { "code": "SWING", "label": "中班 14:00-23:00" },
+      "recommendationChanged": true,
+      "oldConfidence": 0.81,
+      "confidence": 0.58,
+      "features": {
+        "weekly_hours": 36,
+        "consecutive_days": 5,
+        "night_shift_this_month": 3,
+        "availability": 0.6
+      },
+      "featureDiffs": [
+        { "name": "连续上班天数", "oldValue": 2, "newValue": 5, "impact": "negative", "weight": 0.16 },
+        { "name": "本月夜班次数", "oldValue": 1, "newValue": 3, "impact": "negative", "weight": 0.14 },
+        { "name": "可用度评分", "oldValue": 0.88, "newValue": 0.6, "impact": "negative", "weight": 0.1 }
+      ],
+      "hasLateAttachment": false,
+      "attachments": [],
+      "remark": "阈值漂移样本：置信度大幅下降，需人工确认是否改中班"
+    },
+    {
+      "id": "rec_003_late_attachment",
+      "employeeId": "E10155",
+      "employeeName": "王五",
+      "date": "2026-06-18",
+      "shiftType": "日班",
+      "oldRecommendation": { "code": "DAY", "label": "日班 09:00-18:00" },
+      "newRecommendation": { "code": "DAY", "label": "日班 09:00-18:00" },
+      "recommendationChanged": false,
+      "oldConfidence": 0.76,
+      "confidence": 0.74,
+      "features": {
+        "weekly_hours": 40,
+        "consecutive_days": 3,
+        "leave_balance": 2
+      },
+      "featureDiffs": [],
+      "hasLateAttachment": true,
+      "attachments": [
+        {
+          "name": "打卡记录_20260617_晚到.csv",
+          "status": "pending",
+          "expectedAt": "2026-06-19T02:00:00Z",
+          "note": "第三方考勤系统回传延迟，预计凌晨2点补全，当前推荐未含昨日实际下班时间"
+        }
+      ],
+      "remark": "⚠️ 晚到附件样本：昨日打卡数据尚未到齐，当前推荐可信度存疑，等附件后重跑"
+    },
+    {
+      "id": "rec_004_old_misjudge",
+      "employeeId": "E10211",
+      "employeeName": "赵六",
+      "date": "2026-06-17",
+      "shiftType": "休息",
+      "oldRecommendation": { "code": "REST", "label": "休息" },
+      "newRecommendation": { "code": "DAY", "label": "日班 09:00-18:00" },
+      "recommendationChanged": true,
+      "oldConfidence": 0.55,
+      "confidence": 0.82,
+      "features": {
+        "weekly_hours": 32,
+        "consecutive_rest": 2,
+        "overtime_approval": true,
+        "skill_match": 0.88
+      },
+      "featureDiffs": [
+        { "name": "周工时", "oldValue": 40, "newValue": 32, "impact": "positive", "weight": 0.15 },
+        { "name": "加班审批", "oldValue": false, "newValue": true, "impact": "positive", "weight": 0.22 },
+        { "name": "技能匹配度", "oldValue": 0.88, "newValue": 0.88, "impact": "neutral", "weight": 0.0 }
+      ],
+      "hasLateAttachment": false,
+      "attachments": [],
+      "remark": "旧模型误判样本：v1.8.0误判为休息，v2.3.1识别到加班审批通过+工时充足，改判日班"
+    },
+    {
+      "id": "rec_005_low_confidence",
+      "employeeId": "E10288",
+      "employeeName": "钱七",
+      "date": "2026-06-19",
+      "shiftType": "中班",
+      "oldRecommendation": { "code": "SWING", "label": "中班 14:00-23:00" },
+      "newRecommendation": { "code": "DAY", "label": "日班 09:00-18:00" },
+      "recommendationChanged": true,
+      "oldConfidence": 0.63,
+      "confidence": 0.61,
+      "features": {
+        "weekly_hours": 44,
+        "consecutive_days": 6,
+        "child_care": true,
+        "commute_time_min": 90
+      },
+      "featureDiffs": [
+        { "name": "周工时", "oldValue": 44, "newValue": 44, "impact": "neutral", "weight": 0.0 },
+        { "name": "育儿假冲突", "oldValue": "未知", "newValue": true, "impact": "negative", "weight": 0.08 }
+      ],
+      "hasLateAttachment": false,
+      "attachments": [],
+      "remark": "低置信度 + 需人工确认：育儿假安排尚未明确"
+    },
+    {
+      "id": "rec_006_clean_confirm",
+      "employeeId": "E10300",
+      "employeeName": "孙八",
+      "date": "2026-06-19",
+      "shiftType": "日班",
+      "oldRecommendation": null,
+      "newRecommendation": { "code": "DAY", "label": "日班 09:00-18:00" },
+      "recommendationChanged": false,
+      "oldConfidence": null,
+      "confidence": 0.94,
+      "features": {
+        "weekly_hours": 36,
+        "consecutive_days": 1,
+        "skill_match": 0.96,
+        "availability": 1.0
+      },
+      "featureDiffs": [],
+      "hasLateAttachment": false,
+      "attachments": [],
+      "remark": "干净样本：首次推荐，置信度高，无异常"
+    }
+  ]
+}
