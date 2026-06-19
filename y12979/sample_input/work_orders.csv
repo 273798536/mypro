@@ -1,0 +1,4 @@
+work_order_id,order_type,expected_amount,created_date,status,approver
+WO001,payment,1000.00,2026-05-31,completed,manager_a
+WO002,refund,2600.00,2026-06-01,processing,manager_b
+WO003,transfer,5000.00,2026-06-02,completed,manager_c

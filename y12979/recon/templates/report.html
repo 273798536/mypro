@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>账务流水对账查询报告</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --color-matched: #52c41a;
+    --color-pending: #faad14;
+    --color-anomaly: #ff4d4f;
+    --color-blocked: #722ed1;
+    --bg: #f5f7fa;
+    --card-bg: #ffffff;
+    --text: #1f2937;
+    --text-secondary: #6b7280;
+    --border: #e5e7eb;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .header { background: linear-gradient(135deg, #1e3a5f, #2d5986); color: #fff; padding: 32px 40px; }
+  .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+  .header .meta { font-size: 14px; opacity: 0.85; }
+  .header .meta span { margin-right: 24px; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  .card { background: var(--card-bg); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 24px; overflow: hidden; }
+  .card-title { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .card-title .icon { width: 6px; height: 24px; border-radius: 3px; }
+  .card-body { padding: 24px; }
+  .chart-with-explain { display: flex; gap: 24px; align-items: flex-start; }
+  .chart-area { flex: 0 0 480px; min-height: 340px; }
+  .explain-area { flex: 1; min-width: 280px; }
+  .explain-area h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+  .explain-area p { font-size: 14px; color: var(--text-secondary); margin-bottom: 6px; }
+  .explain-area .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 14px; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: var(--card-bg); border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); text-align: center; }
+  .stat-card .num { font-size: 36px; font-weight: 700; }
+  .stat-card .label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: #f8fafc; padding: 10px 12px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f0f7ff; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+  .badge-matched { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+  .badge-pending { background: #fffbe6; color: #d48806; border: 1px solid #ffe58f; }
+  .badge-anomaly { background: #fff2f0; color: #cf1322; border: 1px solid #ffccc7; }
+  .badge-blocked { background: #f9f0ff; color: #531dab; border: 1px solid #d3adf7; }
+  .section-note { background: #fffbe6; border-left: 4px solid #faad14; padding: 12px 16px; margin: 12px 0; border-radius: 0 4px 4px 0; font-size: 14px; }
+  .block-reason-box { background: #f9f0ff; border-left: 4px solid #722ed1; padding: 16px; margin: 12px 0; border-radius: 0 4px 4px 0; }
+  .block-reason-box h4 { color: #531dab; margin-bottom: 8px; }
+  .block-reason-box p { font-size: 14px; color: var(--text-secondary); }
+  .idempotent-note { background: #e6f7ff; border-left: 4px solid #1890ff; padding: 12px 16px; margin: 12px 0; border-radius: 0 4px 4px 0; font-size: 14px; }
+  .footer { text-align: center; padding: 24px; color: var(--text-secondary); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>账务流水对账查询报告</h1>
+  <div class="meta">
+    <span>会话: {{ session_id }}</span>
+    <span>输入目录: {{ input_dir }}</span>
+    <span>生成时间: {{ started_at }}</span>
+    {% if is_rerun %}
+    <span style="color:#ffd666;">⚠ 本次为重复执行（第 {{ run_count }} 次）</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 概览统计 -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="num" style="color:var(--color-matched)">{{ stats.matched }}</div>
+      <div class="label">顺利对账</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:var(--color-pending)">{{ stats.pending }}</div>
+      <div class="label">待确认</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:var(--color-anomaly)">{{ stats.anomaly }}</div>
+      <div class="label">异常数据</div>
+    </div>
+    <div class="stat-card">
+      <div class="num" style="color:var(--color-blocked)">{{ stats.blocked }}</div>
+      <div class="label">拦截-迁移重复</div>
+    </div>
+  </div>
+
+  <!-- 幂等性说明 -->
+  {% if is_rerun %}
+  <div class="idempotent-note">
+    <strong>幂等性保证：</strong>本次输入材料与上次完全一致（指纹: {{ fingerprint[:12] }}…），
+    系统识别为重复执行。对账结果已覆盖更新，回滚日志追加保留，不会产生重复记录或混乱。
+    第 {{ run_count }} 次执行。
+  </div>
+  {% endif %}
+
+  <!-- 对账结果分布图 + 明细解释 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="icon" style="background:var(--color-blocked)"></div>
+      对账结果分布
+    </div>
+    <div class="card-body">
+      <div class="chart-with-explain">
+        <div class="chart-area" id="chart-distribution"></div>
+        <div class="explain-area">
+          <h4>图表含义说明</h4>
+          <p>饼图展示本次对账四种结果的数量占比：</p>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--color-matched)"></div><strong>顺利对账</strong>：流水与工单完全匹配</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--color-pending)"></div><strong>待确认</strong>：存在偏差需人工确认，但未达异常标准</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--color-anomaly)"></div><strong>异常数据</strong>：明显坏数据（金额非正/严重偏离/字段缺失），不可直接对账</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--color-blocked)"></div><strong>拦截-迁移重复执行</strong>：同一迁移批次被二次执行，系统已拦截</div>
+          {% if stats.blocked > 0 %}
+          <div class="block-reason-box">
+            <h4>为何拦截迁移重复执行？</h4>
+            <p>当同一迁移批次（migration_batch）出现多条流水时，说明该批次的数据迁移被执行了多次。
+            如果不拦截，账务金额会被重复累加，造成账面虚增。系统在首次执行后记录批次号，
+            后续同一批次的流水自动标记为「拦截」，并生成可追加的回滚记录供后续处理。</p>
+          </div>
+          {% else %}
+          <p style="margin-top:8px;">本次无迁移重复执行拦截记录。</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 业务工单金额对比图 + 明细解释 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="icon" style="background:var(--color-pending)"></div>
+      业务工单金额对比
+    </div>
+    <div class="card-body">
+      <div class="chart-with-explain">
+        <div class="chart-area" id="chart-amount-compare"></div>
+        <div class="explain-area">
+          <h4>图表含义说明</h4>
+          <p>柱状图对比每条流水的实际金额与对应工单的预期金额：</p>
+          <p><strong>绿色柱</strong> = 流水实际金额 &nbsp; <strong>蓝色柱</strong> = 工单预期金额</p>
+          <p>两根柱子高度越接近，说明对账越顺利。若绿色柱明显低于/高于蓝色柱，需关注是否存在异常。</p>
+          <p>柱子上方的标签标注了对账状态：<strong>✓ 顺利</strong>、<strong>? 待确认</strong>、<strong>✗ 异常</strong>、<strong>⛔ 拦截</strong>。</p>
+          <div class="section-note">
+            注意：被拦截的迁移重复执行流水因无法匹配工单，仅显示流水金额，预期金额标记为 0。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 对账明细表 -->
+  <div class="card">
+    <div class="card-title">
+      <div class="icon" style="background:var(--color-matched)"></div>
+      对账明细（按业务工单为主线）
+    </div>
+    <div class="card-body" style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>流水号</th>
+            <th>工单号</th>
+            <th>迁移批次</th>
+            <th>流水金额</th>
+            <th>工单预期金额</th>
+            <th>状态</th>
+            <th>原因</th>
+            <th>详细说明</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for r in results %}
+          <tr>
+            <td>{{ r.transaction.transaction_id }}</td>
+            <td>{{ r.transaction.work_order_id }}</td>
+            <td>{{ r.transaction.migration_batch or "-" }}</td>
+            <td style="text-align:right">{{ "%.2f"|format(r.transaction.amount) }}</td>
+            <td style="text-align:right">{{ "%.2f"|format(r.work_order.expected_amount) if r.work_order else "-" }}</td>
+            <td><span class="badge badge-{{ r.status.value }}">{{ r.display_label }}</span></td>
+            <td>{{ r.reason }}</td>
+            <td style="max-width:360px; font-size:13px; color:var(--text-secondary);">{{ r.display_detail }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 回滚记录 -->
+  {% if rollbacks %}
+  <div class="card">
+    <div class="card-title">
+      <div class="icon" style="background:var(--color-anomaly)"></div>
+      回滚记录（可追加，非一次性判断）
+    </div>
+    <div class="card-body" style="overflow-x:auto;">
+      <div class="section-note" style="margin-bottom:16px;">
+        <strong>关于回滚机制：</strong>每条回滚记录不是一次性判定，而是可追加、可补充的活记录。
+        初始状态为「待处理」，补录说明后变为「已补充」，最终确认为「已解决」。
+        这保证了审计追踪的连续性——每一步操作都有据可查。
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>记录ID</th>
+            <th>会话ID</th>
+            <th>流水号</th>
+            <th>工单号</th>
+            <th>原因</th>
+            <th>动作</th>
+            <th>状态</th>
+            <th>补充说明</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for rb in rollbacks %}
+          <tr>
+            <td>{{ rb.record_id }}</td>
+            <td style="font-size:12px; font-family:monospace;">{{ rb.session_id or "-" }}</td>
+            <td>{{ rb.transaction_id }}</td>
+            <td>{{ rb.work_order_id }}</td>
+            <td>{{ rb.reason }}</td>
+            <td>{{ rb.action }}</td>
+            <td><span class="badge badge-{{ 'matched' if rb.status.value == 'resolved' else ('pending' if rb.status.value == 'supplemented' else 'anomaly') }}">{{ rb.status.value }}</span></td>
+            <td style="max-width:300px; font-size:13px; color:var(--text-secondary);">
+              {% if rb.supplement_notes %}{{ rb.supplement_notes | join('；') }}{% else %}无{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- 数据字典变更 -->
+  {% if data_dict_changes %}
+  <div class="card">
+    <div class="card-title">
+      <div class="icon" style="background:#1890ff"></div>
+      数据字典补录
+    </div>
+    <div class="card-body" style="overflow-x:auto;">
+      <div class="section-note" style="margin-bottom:16px;">
+        <strong>关于数据字典：</strong>以下字段在本次对账中被自动发现并录入数据字典。
+        补录完成后，权限审计已自动更新（见下节）。
+      </div>
+      <table>
+        <thead>
+          <tr><th>字段名</th><th>类型</th><th>来源</th><th>说明</th><th>是否新增</th></tr>
+        </thead>
+        <tbody>
+        {% for dd in data_dict_changes %}
+          <tr>
+            <td>{{ dd.field_name }}</td>
+            <td>{{ dd.field_type }}</td>
+            <td>{{ dd.source }}</td>
+            <td>{{ dd.description or "待补充" }}</td>
+            <td>{% if dd.is_new %}<span class="badge badge-pending">新增</span>{% else %}否{% endif %}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- 权限审计 -->
+  {% if perm_audits %}
+  <div class="card">
+    <div class="card-title">
+      <div class="icon" style="background:#eb2f96"></div>
+      权限审计（数据字典补录后自动联动）
+    </div>
+    <div class="card-body" style="overflow-x:auto;">
+      <div class="section-note" style="margin-bottom:16px;">
+        <strong>关于权限审计联动：</strong>数据字典每次补录后，系统自动生成权限审计条目，
+        提示相关字段是否涉及敏感信息、是否需要调整角色权限。此机制确保数据字典变更不会绕过权限管控。
+      </div>
+      <table>
+        <thead>
+          <tr><th>审计ID</th><th>关联字段</th><th>变更类型</th><th>权限影响评估</th><th>动作</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+        {% for pa in perm_audits %}
+          <tr>
+            <td>{{ pa.audit_id }}</td>
+            <td>{{ pa.data_dict_field }}</td>
+            <td>{{ pa.change_type }}</td>
+            <td style="max-width:400px; font-size:13px;">{{ pa.permission_impact }}</td>
+            <td>{{ pa.action.value }}</td>
+            <td><span class="badge badge-{{ 'pending' if pa.status == 'pending' else 'matched' }}">{{ pa.status }}</span></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+<div class="footer">
+  账务流水对账查询报告 · 会话 {{ session_id }} · 由 recon CLI 自动生成
+</div>
+
+<script>
+var chartDist = echarts.init(document.getElementById('chart-distribution'));
+chartDist.setOption({
+  tooltip: { trigger: 'item', formatter: '{b}: {c} 条 ({d}%)' },
+  legend: { bottom: 0, textStyle: { fontSize: 13 } },
+  series: [{
+    type: 'pie',
+    radius: ['40%', '70%'],
+    avoidLabelOverlap: true,
+    itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
+    label: { show: true, formatter: '{b}\n{c} 条', fontSize: 13 },
+    emphasis: { label: { show: true, fontSize: 16, fontWeight: 'bold' } },
+    data: [
+      { value: {{ stats.matched }}, name: '顺利对账', itemStyle: { color: '#52c41a' } },
+      { value: {{ stats.pending }}, name: '待确认', itemStyle: { color: '#faad14' } },
+      { value: {{ stats.anomaly }}, name: '异常数据', itemStyle: { color: '#ff4d4f' } },
+      { value: {{ stats.blocked }}, name: '拦截-迁移重复', itemStyle: { color: '#722ed1' } }
+    ]
+  }]
+});
+
+var chartAmt = echarts.init(document.getElementById('chart-amount-compare'));
+var woIds = {{ wo_ids | tojson }};
+var txnAmounts = {{ txn_amounts | tojson }};
+var woAmounts = {{ wo_amounts | tojson }};
+var statusLabels = {{ status_labels | tojson }};
+chartAmt.setOption({
+  tooltip: { trigger: 'axis' },
+  legend: { data: ['流水实际金额', '工单预期金额'], bottom: 0 },
+  grid: { left: 60, right: 20, top: 40, bottom: 60 },
+  xAxis: { type: 'category', data: woIds, axisLabel: { rotate: 30, fontSize: 11 } },
+  yAxis: { type: 'value', name: '金额' },
+  series: [
+    {
+      name: '流水实际金额', type: 'bar',
+      data: txnAmounts,
+      itemStyle: { color: '#52c41a', borderRadius: [4,4,0,0] },
+      label: { show: true, position: 'top', formatter: function(p){ return statusLabels[p.dataIndex]; }, fontSize: 11, color: '#333' }
+    },
+    {
+      name: '工单预期金额', type: 'bar',
+      data: woAmounts,
+      itemStyle: { color: '#1890ff', borderRadius: [4,4,0,0] },
+      label: { show: true, position: 'top', fontSize: 11, color: '#333' }
+    }
+  ]
+});
+
+window.addEventListener('resize', function(){ chartDist.resize(); chartAmt.resize(); });
+</script>
+
+</body>
+</html>

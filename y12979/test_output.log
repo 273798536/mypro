@@ -1,0 +1,13 @@
+Test 1: supplement_rollback
+[OK] 回滚记录 8641c976de81 已追加说明，状态: resolved
+rc= 0
+Test 2: supplement_datadict
+[OK] 数据字典字段「remark」已补录，权限审计已联动更新
+     审计ID: c59896fe52b5
+rc= 0
+Test 3: resolve_audit
+[OK] 权限审计 5942b68c4727 已处理，动作: review
+rc= 0
+Test 4: resolve_rollback
+[OK] 回滚记录 8641c976de81 已解决
+rc= 0

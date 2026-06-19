@@ -1,0 +1,5 @@
+transaction_id,work_order_id,amount,transaction_date,account_from,account_to,status,migration_batch,operator_name
+TXN001,WO001,1000.00,2026-06-01,ACC-SRC-001,ACC-DST-001,success,BATCH001,zhangsan
+TXN002,WO002,2580.00,2026-06-02,ACC-SRC-002,ACC-DST-002,processing,BATCH002,lisi
+TXN003,WO003,0.00,2026-06-03,,,failed,BATCH003,wangwu
+TXN004,WO001,1000.00,2026-06-01,ACC-SRC-001,ACC-DST-001,success,BATCH001,zhangsan

@@ -1,0 +1,37 @@
+[
+  {
+    "record_id": "6c3b4e0d023b",
+    "session_id": "cabadeb2881c4821",
+    "transaction_id": "TXN004",
+    "work_order_id": "WO001",
+    "reason": "迁移批次 BATCH001 已有 1 条记录，本次为重复执行",
+    "action": "blocked",
+    "timestamp": "2026-06-19T14:28:24.100547",
+    "status": "supplemented",
+    "supplement_notes": [
+      "[2026-06-19T14:31:48.962603] 已与业务方确认，该批数据需要手工冲正后重导，预计下周一完成"
+    ]
+  },
+  {
+    "record_id": "0d1fb3040d7a",
+    "session_id": "0fa631e181d24e98",
+    "transaction_id": "TXN003",
+    "work_order_id": "WO003",
+    "reason": "金额异常：0.0",
+    "action": "flagged",
+    "timestamp": "2026-06-19T14:48:41.548980",
+    "status": "open",
+    "supplement_notes": []
+  },
+  {
+    "record_id": "67181169f30e",
+    "session_id": "0fa631e181d24e98",
+    "transaction_id": "TXN004",
+    "work_order_id": "WO001",
+    "reason": "迁移批次 BATCH001 已有 1 条记录，本次为重复执行",
+    "action": "blocked",
+    "timestamp": "2026-06-19T14:48:41.548989",
+    "status": "open",
+    "supplement_notes": []
+  }
+]
