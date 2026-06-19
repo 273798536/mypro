@@ -1,0 +1,93 @@
+
+=== 1. Health Check ===
+  [PASS] health.status.200 
+  [PASS] health.status.ok 
+
+=== 2. 重复导入去重测试（核心：data_hash 机制）===
+  2.1 第一次导入（slow_query 日常入口）
+  [PASS] first_import.action.created 
+  [PASS] first_import.batch_id_present 
+  [PASS] first_import.table_count.3 
+  [INFO] 第一次 batch_id=1, batch_no=SNAP-20260619141235-E413, hash=3562c73c0f2bc757…
+  2.2 相同数据第二次导入（人工误操作）→ 应去重，不产生新批次
+  [PASS] second_import.action.skipped 
+  [PASS] second_import.same_batch_id 
+  [PASS] second_import.same_data_hash 
+  [INFO] 第二次返回 batch_id=1 (与第一次相同=True)
+  2.3 调整 schema 顺序 + 相同内容第三次导入 → 哈希仍应一致（排序归一化）
+  [PASS] shuffled_import.action.skipped 
+  [PASS] shuffled_import.same_batch_id 
+  [INFO] 乱序导入返回 batch_id=1 (哈希归一化)
+  2.4 修改一条 schema → 应产生新批次（哈希不同）
+  [PASS] modified_import.action.created 
+  [PASS] modified_import.different_batch 
+  [PASS] modified_import.different_hash 
+  [INFO] 修改后产生新批次 batch_id=2, hash=0be4648c3f2cd8bf…
+
+=== 3. 复核结论 & 补录/修正历史链测试 ===
+  3.1 对第一个批次创建初始结论（表级：缺失账套分区）
+  [PASS] conclusion.create.ok 
+  [PASS] conclusion.id_present 
+  [INFO] 初始结论 ID=1
+  3.2 先注册迁移脚本（用于后续关联）
+  [PASS] migration.created 
+  [PASS] migration.hash_present 
+  [INFO] 迁移脚本 hash=b153058a3e85abf2f070…
+  3.3 补录/修正第一条结论（数据字典更新后，旧结论升级为确认 + 关联迁移脚本 + 修正原因）
+  [PASS] correction.create.ok 
+  [PASS] correction.new_id 
+  [INFO] 修正后新结论 ID=2 (parent=1)
+  3.4 验证 is_latest 标志：父结论自动降为 0，新结论为 1，且批次详情仅展示最新结论（避免两份打架）
+  [PASS] latest.only_shows_new 可见=[2] 预期=[2] 不含=1
+  3.5 验证结论历史链（点回追溯）
+  [PASS] chain.has_both_ids 历史链=[2, 1]
+  [PASS] chain.old_is_not_latest 
+  [PASS] chain.new_is_latest 
+  [PASS] chain.correction_reason_recorded 
+  [INFO] 历史链长度=2, ids=[2, 1]
+  3.6 再次修正一次（共三级链）验证历史链不断裂
+  [PASS] chain3.all_present 三级链=[3, 2, 1]
+  [INFO] 三级链长度=3, ids=[3, 2, 1]
+
+=== 4. 迁移脚本 <-> 结论 双向点回测试 ===
+  [PASS] migration.points_back_to_conclusions 迁移脚本关联结论数=2, ids=[3, 2]
+
+=== 5. 同批次统一数据：图表、明细、下载一致性 ===
+  5.1 批次详情：表数一致
+  [PASS] batch_detail.tables.3 
+  [PASS] batch_detail.entry.slow_query 
+  5.2 列表 API 数据与详情一致
+  [PASS] list_table_count.matches 
+  [PASS] list_conclusion_count.matches 
+  5.3 dashboard stats 与批次详情一致
+  [PASS] dashboard.total_batches.ge.2 
+  [PASS] dashboard.recent_batches.contains_batch1 
+  5.4 下载 CSV（返回内容不为空）
+  [PASS] download.csv.not_empty 
+  [PASS] download.csv.contains_batchno 
+  [PASS] download.csv.contains_tables 
+  [PASS] download.csv.contains_conclusions 
+  [INFO] CSV 导出 2797 字节，含 batch_no、表快照、结论三块
+  5.5 下载 XLSX
+  [PASS] download.xlsx.not_empty 
+  [PASS] download.xlsx.is_valid_zip 
+  [INFO] XLSX 导出 7512 字节 (ZIP签名校验通过)
+
+=== 6. 双入口分流：slow_query vs backup_check ===
+  [PASS] entry.slow_contains_batch1 
+  [PASS] entry.backup_contains_batch2 
+  [PASS] entry.no_cross_contamination 
+  [INFO] slow_query 入口批次=[1], backup_check 入口批次=[2]
+
+=== 7. 批次对比 API（测试结构差异检测）===
+  [PASS] compare.summary.modified.ge.1 
+  [PASS] compare.diffs.contains_t_order 
+  [INFO] 对比摘要={'added': 0, 'modified': 1, 'removed': 0, 'same': 2}
+
+=== 8. 再一次补录（极端场景：重复补录同一件事）→ 仍只保留一条最新 ===
+  [PASS] latest_count_after_dup_review 补录前 latest_count=1, 补录后=1 (应相等)
+  [INFO] 重复补录后：latest_count 未增加（仍然只有一张表的最新结论）
+
+============================================================
+测试结果：44/44 通过 ✅
+============================================================
