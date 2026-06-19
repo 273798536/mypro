@@ -1,0 +1,56 @@
+[
+  {
+    "sample_id": "S001",
+    "conclusion": "通过",
+    "confidence": 0.95,
+    "reason": "流程合规，主管审批齐全",
+    "tags": ["通过", "正常"],
+    "model_version": "v1.0",
+    "generated_at": "2026-06-01T10:00:00"
+  },
+  {
+    "sample_id": "S002",
+    "conclusion": "拒绝",
+    "confidence": 0.88,
+    "reason": "旷工天数超阈值，无有效请假",
+    "tags": ["拒绝", "旷工"],
+    "model_version": "v1.0",
+    "generated_at": "2026-06-01T10:00:00"
+  },
+  {
+    "sample_id": "S003",
+    "conclusion": "拒绝",
+    "confidence": 0.62,
+    "reason": "调休记录不匹配，疑似异常",
+    "tags": ["拒绝", "待复核"],
+    "model_version": "v1.0",
+    "generated_at": "2026-06-01T10:00:00"
+  },
+  {
+    "sample_id": "S004",
+    "conclusion": "通过",
+    "confidence": 0.55,
+    "reason": "材料虽不全但属于常规情况",
+    "tags": ["通过", "低置信"],
+    "model_version": "v1.0",
+    "generated_at": "2026-06-01T10:00:00"
+  },
+  {
+    "sample_id": "S005",
+    "conclusion": "通过",
+    "confidence": 0.92,
+    "reason": "年假余额充足，申请有效",
+    "tags": ["通过", "年假"],
+    "model_version": "v1.0",
+    "generated_at": "2026-06-01T10:00:00"
+  },
+  {
+    "sample_id": "S006",
+    "conclusion": "通过",
+    "confidence": 0.80,
+    "reason": "调班双方确认有效",
+    "tags": ["通过", "调班"],
+    "model_version": "v1.0",
+    "generated_at": "2026-06-01T10:00:00"
+  }
+]
