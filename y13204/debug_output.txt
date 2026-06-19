@@ -1,0 +1,92 @@
+============================================================
+步骤1：验证 data/state.json 确实存在并正确
+============================================================
+
+ls -la data/
+644     27139  state.json
+---
+wc -l data/state.json
+423 data/state.json
+---
+Python3 JSON 验证:
+materials count: 5
+notes count: 3
+sessions count: 2
+current_session: session-uuid-s2
+material IDs: ['mat-uuid-001', 'mat-uuid-002', 'mat-uuid-003', 'mat-uuid-004', 'mat-uuid-005']
+note IDs: ['note-uuid-001', 'note-uuid-002', 'note-uuid-003']
+
+============================================================
+步骤2：直接跑 status 命令
+============================================================
+
+=== RUNNING STATUS COMMAND ===
+🎵 巡演耳返分账对齐 - 系统状态
+==================================================
+
+🛠️  数据文件: /Users/mac/pro/solo/workspaces/y13204/data/state.json
+
+📊 处理概览:
+   材料总数: 5
+   备注总数: 3
+   会话次数: 2
+   对齐率: 100.0% (5/5)
+   严格对齐（双向引用）: 100.0% (5)
+   待对齐项: 0
+
+🏷️  材料类型分布:
+   screenshot: 2
+   auth_doc: 1
+   conclusion: 1
+   attachment: 1
+
+🔄 处理状态分布:
+   reviewed: 5
+
+🕐 时间记录:
+   最后扫描: 2026-06-18T12:01:30.000000
+   最后报告: 2026-06-18T12:01:40.000000
+
+✅ 已对齐 (5):
+   - 排练群截图_20260610.txt
+   - 排练群截图_20260612.txt
+   - ⚠️ 授权文件_耳返设备.txt
+   - 分账结论_最终版.txt [结论]
+   - 补充附件_学生A额外奖励.txt [晚到]
+
+💡 提示: 对缺少人工批注的材料，运行 'note --type rehearsal "备注内容"' 可自动匹配关联。
+
+============================================================
+步骤3：更深入的调试，直接调用 storage
+============================================================
+
+=== DIRECT STORAGE DEBUG ===
+StateStore initialized
+data_dir: /Users/mac/pro/solo/workspaces/y13204/data
+state_file: /Users/mac/pro/solo/workspaces/y13204/data/state.json
+state_file exists: True
+
+get_all_materials() count: 5
+  - mat-uuid-001: 排练群截图_20260610.txt (1 notes)
+  - mat-uuid-002: 排练群截图_20260612.txt (1 notes)
+  - mat-uuid-003: 授权文件_耳返设备.txt (1 notes)
+  - mat-uuid-004: 分账结论_最终版.txt (1 notes)
+  - mat-uuid-005: 补充附件_学生A额外奖励.txt (1 notes)
+
+get_all_notes() count: 3
+  - note-uuid-001: [rehearsal] 排练时学生A的高音比上次稳多了，节奏也明显变准
+  - note-uuid-002: [authorization] 授权到期日确认到2026-07-20，双方已确认
+  - note-uuid-003: [general] 学生A的额外奖励单独备注，分账结论里暂未包含
+
+get_processing_state():
+  current_session_id: session-uuid-s2
+  last_scan_at: 2026-06-18T12:01:30.000000
+  last_report_at: 2026-06-18T12:01:40.000000
+  total_materials: 5
+  total_notes: 3
+  total_sessions: 2
+  materials_by_state: {'reviewed': 5}
+  materials_by_type: {'screenshot': 2, 'auth_doc': 1, 'conclusion': 1, 'attachment': 1}
+  auth_marked_count: 1
+  late_attachment_count: 1
+  current_session: {'session_id': 'session-uuid-s2', 'started_at': '2026-06-18T12:01:20.000000', 'finished_at': '2026-06-18T12:01:30.000000', 'material_ids': ['mat-uuid-001', 'mat-uuid-002', 'mat-uuid-003', 'mat-uuid-004', 'mat-uuid-005'], 'note_ids': [], 'final_conclusion_material_id': 'mat-uuid-004', 'late_attachment_ids': ['mat-uuid-005'], 'reports_generated': []}

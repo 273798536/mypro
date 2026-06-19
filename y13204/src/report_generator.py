@@ -1,13 +1,15 @@
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from .models import Material, Note, StudentProgress, AuthStatus
-from .storage import StateStore
+from .storage import StateStore, get_project_root
 
 
 class MarkdownReportGenerator:
-    def __init__(self, store: StateStore, reports_dir: str = "./reports"):
+    def __init__(self, store: StateStore, reports_dir: Optional[str] = None):
+        if reports_dir is None:
+            reports_dir = str(get_project_root() / "reports")
         self.store = store
         self.reports_dir = Path(reports_dir).resolve()
         self.reports_dir.mkdir(parents=True, exist_ok=True)

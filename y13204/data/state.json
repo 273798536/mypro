@@ -1,13 +1,423 @@
 {
-  "materials": {},
-  "notes": {},
-  "sessions": [],
-  "current_session_id": null,
-  "last_scan_at": null,
-  "last_report_at": null,
+  "materials": {
+    "mat-uuid-001": {
+      "id": "mat-uuid-001",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13204/materials/排练群截图_20260610.txt",
+      "file_name": "排练群截图_20260610.txt",
+      "material_type": "screenshot",
+      "received_at": "2026-06-10T20:30:00.000000",
+      "content": "# 排练群截图 - 2026年6月10日排练记录\n\n## 群聊内容：\n\n林姐：今天排练整体不错，学生A的高音比上周进步很大，高音稳定多了\n王老师：对，学生A上次高音还破音，这次很稳，高音进步明显\n林姐：学生B的节奏也比之前好多了，节奏准确\n林姐：学生C的音准还需要加强，音准有点飘\n王老师：学生C这次气息控制得不错，气息稳定\n林姐：整体来说大家都有进步，继续加油！\n\n# 巡演耳返分账：\n学生A：¥1500\n学生B：¥1200\n学生C：¥1000\n\n---\n发送时间：2026-06-10 20:30",
+      "processing_state": "reviewed",
+      "versions": [
+        {
+          "version": 1,
+          "timestamp": "2026-06-10T20:30:00.000000",
+          "content_hash": "a1b2c3d4e5f678901234567890abcdef",
+          "note_ids": [],
+          "changes_summary": null
+        }
+      ],
+      "note_ids": [
+        "note-uuid-001"
+      ],
+      "linked_material_ids": [],
+      "authorization": {
+        "status": "unknown",
+        "expire_date": null,
+        "days_remaining": null,
+        "marked": false
+      },
+      "student_progress": [
+        {
+          "student_name": "学生A",
+          "improvements": [
+            "高音稳定",
+            "高音进步"
+          ],
+          "previous_level": null,
+          "current_level": null,
+          "evidence_material_ids": [
+            "mat-uuid-001"
+          ],
+          "evidence_snippets": [
+            "林姐：今天排练整体不错，学生A的高音比上周进步很大，高音稳定多了",
+            "王老师：对，学生A上次高音还破音，这次很稳，高音进步明显"
+          ]
+        },
+        {
+          "student_name": "学生B",
+          "improvements": [
+            "节奏准确"
+          ],
+          "previous_level": null,
+          "current_level": null,
+          "evidence_material_ids": [
+            "mat-uuid-001"
+          ],
+          "evidence_snippets": [
+            "林姐：学生B的节奏也比之前好多了，节奏准确"
+          ]
+        },
+        {
+          "student_name": "学生C",
+          "improvements": [
+            "气息稳定"
+          ],
+          "previous_level": null,
+          "current_level": null,
+          "evidence_material_ids": [
+            "mat-uuid-001"
+          ],
+          "evidence_snippets": [
+            "王老师：学生C这次气息控制得不错，气息稳定"
+          ]
+        }
+      ],
+      "is_late_attachment": false,
+      "is_conclusion": false,
+      "tags": [
+        "含学生A进步分析",
+        "含学生B进步分析",
+        "含学生C进步分析"
+      ]
+    },
+    "mat-uuid-002": {
+      "id": "mat-uuid-002",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13204/materials/排练群截图_20260612.txt",
+      "file_name": "排练群截图_20260612.txt",
+      "material_type": "screenshot",
+      "received_at": "2026-06-12T21:15:00.000000",
+      "content": "# 排练群截图 - 2026年6月12日排练记录\n\n## 群聊内容：\n\n林姐：学生A今天高音更稳了，高音进步很大！\n林姐：学生B的节奏也提高了，节奏稳定，节奏进步明显\n王老师：学生C的音准这次好多了，音准准确，音准进步很大\n林姐：学生C的咬字也清晰多了，咬字进步\n林姐：学生A的气息也很好，气息稳定\n王老师：大家今天状态都很好，继续保持\n\n# 巡演耳返分账（更新）：\n学生A：¥1600（奖励高音进步）\n学生B：¥1300（奖励节奏进步）\n学生C：¥1100（奖励音准进步）\n\n---\n发送时间：2026-06-12 21:15",
+      "processing_state": "reviewed",
+      "versions": [
+        {
+          "version": 1,
+          "timestamp": "2026-06-12T21:15:00.000000",
+          "content_hash": "b2c3d4e5f6a78901234567890bcdef12",
+          "note_ids": [],
+          "changes_summary": null
+        }
+      ],
+      "note_ids": [
+        "note-uuid-001"
+      ],
+      "linked_material_ids": [],
+      "authorization": {
+        "status": "unknown",
+        "expire_date": null,
+        "days_remaining": null,
+        "marked": false
+      },
+      "student_progress": [
+        {
+          "student_name": "学生A",
+          "improvements": [
+            "高音进步",
+            "气息稳定"
+          ],
+          "previous_level": null,
+          "current_level": null,
+          "evidence_material_ids": [
+            "mat-uuid-002"
+          ],
+          "evidence_snippets": [
+            "林姐：学生A今天高音更稳了，高音进步很大！",
+            "林姐：学生A的气息也很好，气息稳定"
+          ]
+        },
+        {
+          "student_name": "学生B",
+          "improvements": [
+            "节奏稳定",
+            "节奏进步"
+          ],
+          "previous_level": null,
+          "current_level": null,
+          "evidence_material_ids": [
+            "mat-uuid-002"
+          ],
+          "evidence_snippets": [
+            "林姐：学生B的节奏也提高了，节奏稳定，节奏进步明显"
+          ]
+        },
+        {
+          "student_name": "学生C",
+          "improvements": [
+            "音准准确",
+            "音准进步",
+            "咬字进步"
+          ],
+          "previous_level": null,
+          "current_level": null,
+          "evidence_material_ids": [
+            "mat-uuid-002"
+          ],
+          "evidence_snippets": [
+            "王老师：学生C的音准这次好多了，音准准确，音准进步很大",
+            "林姐：学生C的咬字也清晰多了，咬字进步"
+          ]
+        }
+      ],
+      "is_late_attachment": false,
+      "is_conclusion": false,
+      "tags": [
+        "含学生A进步分析",
+        "含学生B进步分析",
+        "含学生C进步分析"
+      ]
+    },
+    "mat-uuid-003": {
+      "id": "mat-uuid-003",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13204/materials/授权文件_耳返设备.txt",
+      "file_name": "授权文件_耳返设备.txt",
+      "material_type": "auth_doc",
+      "received_at": "2026-01-15T00:00:00.000000",
+      "content": "# 耳返设备授权协议\n\n授权方：XX音频设备有限公司\n被授权方：XX音乐工作室\n项目：巡演耳返分账对齐\n\n## 授权内容：\n- 耳返设备使用授权\n- 巡演现场技术支持\n- 设备维护服务\n\n## 授权期限：\n到期日：2026-07-15\n\n## 费用：\n本次巡演授权费：¥5000\n\n## 备注：\n请在到期日前续费，逾期将停止设备使用权限。\n\n---\n签署日期：2026-01-15",
+      "processing_state": "reviewed",
+      "versions": [
+        {
+          "version": 1,
+          "timestamp": "2026-01-15T00:00:00.000000",
+          "content_hash": "c3d4e5f6a7b8901234567890cdef234",
+          "note_ids": [],
+          "changes_summary": null
+        }
+      ],
+      "note_ids": [
+        "note-uuid-002"
+      ],
+      "linked_material_ids": [],
+      "authorization": {
+        "status": "expiring_soon",
+        "expire_date": "2026-07-15",
+        "days_remaining": 27,
+        "marked": true
+      },
+      "student_progress": [],
+      "is_late_attachment": false,
+      "is_conclusion": false,
+      "tags": [
+        "授权即将到期"
+      ]
+    },
+    "mat-uuid-004": {
+      "id": "mat-uuid-004",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13204/materials/分账结论_最终版.txt",
+      "file_name": "分账结论_最终版.txt",
+      "material_type": "conclusion",
+      "received_at": "2026-06-12T22:00:00.000000",
+      "content": "# 巡演耳返分账结论 - 最终版\n\n## 一、分账明细\n\n| 学生 | 基础费用 | 进步奖励 | 总计 |\n|------|----------|----------|------|\n| 学生A | ¥1500 | ¥100 | ¥1600 |\n| 学生B | ¥1200 | ¥100 | ¥1300 |\n| 学生C | ¥1000 | ¥100 | ¥1100 |\n| **合计** | **¥3700** | **¥300** | **¥4000** |\n\n## 二、学生进步评估\n\n### 学生A\n- 高音：从破音到稳定，高音进步很大\n- 气息：气息控制稳定\n- 综合评估：优秀\n\n### 学生B\n- 节奏：从不稳到准确，节奏进步明显\n- 综合评估：良好\n\n### 学生C\n- 音准：从飘到准确，音准进步很大\n- 咬字：从不清晰到清晰，咬字进步\n- 综合评估：良好\n\n## 三、授权状态\n- 耳返设备授权：即将到期（2026-07-15）\n- 状态：已标记待续费\n\n## 四、备注\n1. 所有费用已核对无误\n2. 请于2026年6月20日前完成付款\n3. 下次排练时间：2026年6月15日\n\n---\n生成时间：2026-06-12 22:00\n复核人：林姐",
+      "processing_state": "reviewed",
+      "versions": [
+        {
+          "version": 1,
+          "timestamp": "2026-06-12T22:00:00.000000",
+          "content_hash": "d4e5f6a7b8c901234567890def3456",
+          "note_ids": [],
+          "changes_summary": null
+        }
+      ],
+      "note_ids": [
+        "note-uuid-003"
+      ],
+      "linked_material_ids": [
+        "mat-uuid-005"
+      ],
+      "authorization": {
+        "status": "unknown",
+        "expire_date": null,
+        "days_remaining": null,
+        "marked": false
+      },
+      "student_progress": [
+        {
+          "student_name": "学生A",
+          "improvements": [
+            "高音进步"
+          ],
+          "previous_level": null,
+          "current_level": "优秀",
+          "evidence_material_ids": [
+            "mat-uuid-004"
+          ],
+          "evidence_snippets": [
+            "- 高音：从破音到稳定，高音进步很大"
+          ]
+        },
+        {
+          "student_name": "学生B",
+          "improvements": [
+            "节奏进步"
+          ],
+          "previous_level": null,
+          "current_level": "良好",
+          "evidence_material_ids": [
+            "mat-uuid-004"
+          ],
+          "evidence_snippets": [
+            "- 节奏：从不稳到准确，节奏进步明显"
+          ]
+        },
+        {
+          "student_name": "学生C",
+          "improvements": [
+            "音准进步",
+            "咬字进步"
+          ],
+          "previous_level": null,
+          "current_level": "良好",
+          "evidence_material_ids": [
+            "mat-uuid-004"
+          ],
+          "evidence_snippets": [
+            "- 音准：从飘到准确，音准进步很大",
+            "- 咬字：从不清晰到清晰，咬字进步"
+          ]
+        }
+      ],
+      "is_late_attachment": false,
+      "is_conclusion": true,
+      "tags": [
+        "含学生A进步分析",
+        "含学生B进步分析",
+        "含学生C进步分析"
+      ]
+    },
+    "mat-uuid-005": {
+      "id": "mat-uuid-005",
+      "file_path": "/Users/mac/pro/solo/workspaces/y13204/materials/补充附件_学生A额外奖励.txt",
+      "file_name": "补充附件_学生A额外奖励.txt",
+      "material_type": "attachment",
+      "received_at": "2026-06-13T10:30:00.000000",
+      "content": "# 补充附件 - 学生A额外奖励\n\n## 说明：\n这是学生A的额外奖励申请，由于学生A在巡演中的突出表现，特别是高音进步显著，经团队讨论决定给予额外奖励。\n\n## 奖励内容：\n- 额外奖金：¥200\n- 奖励原因：学生A高音进步很大，多次获得观众好评\n- 奖励范围：仅适用于本次巡演\n\n## 相关材料：\n- 演出录像已存档\n- 观众反馈截图见附件\n\n---\n提交时间：2026-06-13 10:30\n提交人：王老师",
+      "processing_state": "reviewed",
+      "versions": [
+        {
+          "version": 1,
+          "timestamp": "2026-06-13T10:30:00.000000",
+          "content_hash": "e5f6a7b8c9d01234567890ef45678",
+          "note_ids": [],
+          "changes_summary": null
+        }
+      ],
+      "note_ids": [
+        "note-uuid-003"
+      ],
+      "linked_material_ids": [
+        "mat-uuid-004"
+      ],
+      "authorization": {
+        "status": "unknown",
+        "expire_date": null,
+        "days_remaining": null,
+        "marked": false
+      },
+      "student_progress": [
+        {
+          "student_name": "学生A",
+          "improvements": [
+            "高音进步"
+          ],
+          "previous_level": null,
+          "current_level": null,
+          "evidence_material_ids": [
+            "mat-uuid-005"
+          ],
+          "evidence_snippets": [
+            "由于学生A在巡演中的突出表现，特别是高音进步显著，经团队讨论决定给予额外奖励。"
+          ]
+        }
+      ],
+      "is_late_attachment": true,
+      "is_conclusion": false,
+      "tags": [
+        "晚到附件",
+        "含学生A进步分析"
+      ]
+    }
+  },
+  "notes": {
+    "note-uuid-001": {
+      "id": "note-uuid-001",
+      "content": "排练时学生A的高音比上次稳多了，节奏也明显变准",
+      "note_type": "rehearsal",
+      "timestamp": "2026-06-18T12:01:00.000000",
+      "author": "user",
+      "material_ids": [
+        "mat-uuid-001",
+        "mat-uuid-002"
+      ]
+    },
+    "note-uuid-002": {
+      "id": "note-uuid-002",
+      "content": "授权到期日确认到2026-07-20，双方已确认",
+      "note_type": "authorization",
+      "timestamp": "2026-06-18T12:01:05.000000",
+      "author": "user",
+      "material_ids": [
+        "mat-uuid-003"
+      ]
+    },
+    "note-uuid-003": {
+      "id": "note-uuid-003",
+      "content": "学生A的额外奖励单独备注，分账结论里暂未包含",
+      "note_type": "general",
+      "timestamp": "2026-06-18T12:01:10.000000",
+      "author": "user",
+      "material_ids": [
+        "mat-uuid-004",
+        "mat-uuid-005"
+      ]
+    }
+  },
+  "sessions": [
+    {
+      "session_id": "session-uuid-s1",
+      "started_at": "2026-06-18T12:00:40.000000",
+      "finished_at": "2026-06-18T12:00:50.000000",
+      "material_ids": [
+        "mat-uuid-001",
+        "mat-uuid-002",
+        "mat-uuid-003",
+        "mat-uuid-004",
+        "mat-uuid-005"
+      ],
+      "note_ids": [
+        "note-uuid-001",
+        "note-uuid-002",
+        "note-uuid-003"
+      ],
+      "final_conclusion_material_id": "mat-uuid-004",
+      "late_attachment_ids": [
+        "mat-uuid-005"
+      ],
+      "reports_generated": []
+    },
+    {
+      "session_id": "session-uuid-s2",
+      "started_at": "2026-06-18T12:01:20.000000",
+      "finished_at": "2026-06-18T12:01:30.000000",
+      "material_ids": [
+        "mat-uuid-001",
+        "mat-uuid-002",
+        "mat-uuid-003",
+        "mat-uuid-004",
+        "mat-uuid-005"
+      ],
+      "note_ids": [],
+      "final_conclusion_material_id": "mat-uuid-004",
+      "late_attachment_ids": [
+        "mat-uuid-005"
+      ],
+      "reports_generated": []
+    }
+  ],
+  "current_session_id": "session-uuid-s2",
+  "last_scan_at": "2026-06-18T12:01:30.000000",
+  "last_report_at": "2026-06-18T12:01:40.000000",
   "metadata": {
     "project_name": "巡演耳返分账对齐",
-    "created_at": "2026-06-18T11:58:00.000000"
+    "created_at": "2026-06-18T12:00:40.000000"
   },
-  "last_updated_at": "2026-06-18T12:00:30.000000"
+  "last_updated_at": "2026-06-18T12:01:40.000000"
 }

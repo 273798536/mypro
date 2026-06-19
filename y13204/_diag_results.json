@@ -1,0 +1,80 @@
+{
+  "step1_backup": {
+    "status": "success",
+    "backup_dirs": {
+      "data_backup": {
+        "state.json": "原空状态（materials/notes/sessions 均为空）"
+      },
+      "reports_backup": {
+        "分账对齐报告.md": "原分账报告（5材料、3备注、100%对齐率）",
+        "学生进步分析.md": "原学生进步分析（学生A/B/C共3名学生）"
+      },
+      "delivery_backup": {
+        "历史备注.md": "3条历史备注记录",
+        "状态摘要.json": "5材料、3备注、1会话状态摘要",
+        "交付清单.md": "材料/报告/备注完整清单",
+        "materials": "5份原始材料文件"
+      }
+    }
+  },
+  "step2_diagnostic_script": {
+    "script_path": "/tmp/diag_state.py",
+    "status": "success",
+    "substeps": {
+      "Step_A_Scan": {
+        "result": "materials=5, notes=0, sessions=1",
+        "status": "ok"
+      },
+      "Step_B_Reload": {
+        "result": "5 materials, 0 notes",
+        "persistence_check": "✅ Persistence OK",
+        "status": "ok"
+      },
+      "Step_C_Add_Notes": {
+        "result": "materials=5, notes=3, sessions=1",
+        "added_notes": [
+          "note1: rehearsal - 排练时学生A的高音比上次稳多了，节奏也明显变准",
+          "note2: authorization - 授权到期日确认到2026-07-20，双方已确认",
+          "note3: general - 学生A的额外奖励单独备注，分账结论里暂未包含"
+        ],
+        "status": "ok"
+      },
+      "Step_D_Reload_Store3": {
+        "result": "5 materials, 3 notes",
+        "materials_notes_count": {
+          "排练群截图_20260610.txt": 1,
+          "排练群截图_20260612.txt": 1,
+          "授权文件_耳返设备.txt": 1,
+          "分账结论_最终版.txt": 1,
+          "补充附件_学生A额外奖励.txt": 1
+        },
+        "status": "ok"
+      },
+      "Step_E_Rescan": {
+        "result": "materials=5, notes=3, sessions=2",
+        "status": "ok"
+      },
+      "Step_F_Generate_Reports": {
+        "generated_reports": 2,
+        "reports": [
+          "分账对齐报告.md",
+          "学生进步分析.md"
+        ],
+        "alignment_rate": 1.0,
+        "status": "ok"
+      },
+      "Step_G_Final_Check": {
+        "result": "materials=5, notes=3, sessions=2",
+        "status": "ok"
+      }
+    },
+    "full_output_path": "/Users/mac/pro/solo/workspaces/y13204/_diag_output.txt"
+  },
+  "step3_final_state": {
+    "materials_count": 5,
+    "notes_count": 3,
+    "sessions_count": 2,
+    "alignment_rate": 1.0,
+    "reports_generated": 2
+  }
+}

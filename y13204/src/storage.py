@@ -11,8 +11,14 @@ from .models import (
 )
 
 
+def get_project_root() -> Path:
+    return Path(__file__).resolve().parent.parent
+
+
 class StateStore:
-    def __init__(self, data_dir: str = "./data"):
+    def __init__(self, data_dir: Optional[str] = None):
+        if data_dir is None:
+            data_dir = str(get_project_root() / "data")
         self.data_dir = Path(data_dir).resolve()
         self.state_file = self.data_dir / "state.json"
         self.data_dir.mkdir(parents=True, exist_ok=True)

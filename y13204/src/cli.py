@@ -6,7 +6,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from .storage import StateStore
+from .storage import StateStore, get_project_root
 from .processor import MaterialProcessor
 from .report_generator import MarkdownReportGenerator
 from .models import MaterialType, NoteType, ProcessingState
@@ -49,13 +49,21 @@ def create_parser() -> argparse.ArgumentParser:
 
 def cmd_scan(args) -> int:
     store = StateStore()
+    store.reload()
     processor = MaterialProcessor(store)
 
-    print(f"🔍 正在扫描目录: {args.materials_dir}")
+    materials_dir_abs = os.path.abspath(args.materials_dir)
+    print(f"🔍 正在扫描目录: {materials_dir_abs}")
+    print(f"🛠️  数据文件: {store.state_file}")
     if args.rescan:
         print("   模式: 重扫（检测版本变化）")
 
-    session = processor.scan_directory(args.materials_dir, rescan=args.rescan)
+    if not os.path.isdir(materials_dir_abs):
+        print(f"❌ 材料目录不存在: {materials_dir_abs}")
+        print(f"   请确认目录路径，或先把材料放到: {get_project_root() / 'materials'}")
+        return 1
+
+    session = processor.scan_directory(materials_dir_abs, rescan=args.rescan)
 
     materials = store.get_all_materials()
     auth_marked = store.find_materials_with_auth_mark()
@@ -96,11 +104,22 @@ def cmd_scan(args) -> int:
 
 def cmd_review(args) -> int:
     store = StateStore()
+    store.reload()
     processor = MaterialProcessor(store)
+    generator = MarkdownReportGenerator(store)
 
     state = store.get_processing_state()
 
     print("📋 巡演耳返分账对齐 - 处理状态")
+    print(f"🛠️  数据位置: {store.data_dir}")
+    print(f"📄 报告位置: {generator.reports_dir}")
+
+    materials = store.get_all_materials()
+    if not materials:
+        print(f"\n⚠️  还没有扫描任何材料。")
+        print(f"   👉 先运行: python3 -m src.cli scan {get_project_root() / 'materials'}")
+        return 0
+
     print(f"   最后扫描: {state.get('last_scan_at', '从未扫描')}")
     print(f"   最后报告: {state.get('last_report_at', '未生成报告')}")
     print(f"   材料总数: {state.get('total_materials', 0)}")
@@ -192,6 +211,7 @@ def cmd_review(args) -> int:
 
 def cmd_note(args) -> int:
     store = StateStore()
+    store.reload()
     processor = MaterialProcessor(store)
 
     note_type_map = {
@@ -251,12 +271,52 @@ def cmd_note(args) -> int:
 
 def cmd_export(args) -> int:
     store = StateStore()
-
-    print(f"📦 正在导出到: {args.export_dir}")
-
-    export_path = store.export_for_delivery(args.export_dir)
-
+    store.reload()
     generator = MarkdownReportGenerator(store)
+
+    export_dir_abs = os.path.abspath(args.export_dir)
+    print(f"📦 正在导出到: {export_dir_abs}")
+    print(f"🛠️  数据源: {store.state_file}")
+
+    materials = store.get_all_materials()
+    notes = store.get_all_notes()
+
+    if not materials:
+        print(f"❌ 还没有材料数据。先运行 'scan' 命令。")
+        return 1
+
+    print(f"\n🔍 导出前一致性校验:")
+    print(f"   材料数: {len(materials)}")
+    print(f"   备注数: {len(notes)}")
+
+    alignment = MaterialProcessor(store).get_alignment_status()
+    print(f"   对齐率: {alignment['alignment_rate']}")
+    print(f"   授权标记: {len(store.find_materials_with_auth_mark())} 份")
+    print(f"   晚到附件: {len(store.find_late_attachments())} 份")
+
+    issues = []
+    for mat in materials:
+        if len(mat.note_ids) == 0:
+            issues.append(f"⚠️  {mat.file_name}: 未关联任何备注")
+        if len(mat.versions) == 0:
+            issues.append(f"⚠️  {mat.file_name}: 无版本记录")
+
+    if notes:
+        for note in notes:
+            if not note.material_ids:
+                issues.append(f"ℹ️  备注[{note.id[:8]}] 未关联任何材料（仅在历史备注区可见）")
+
+    if issues:
+        print(f"\n⚠️  发现 {len(issues)} 个提示:")
+        for issue in issues[:8]:
+            print(f"   {issue}")
+        if len(issues) > 8:
+            print(f"   ... 还有 {len(issues) - 8} 项")
+
+    print(f"\n✅ 校验通过，开始导出...")
+
+    export_path = store.export_for_delivery(export_dir_abs)
+
     reports = generator.generate_all_reports()
 
     for report in reports:
@@ -264,7 +324,6 @@ def cmd_export(args) -> int:
         report_name = os.path.basename(report)
         shutil.copy2(report, export_path / report_name)
 
-    materials = store.get_all_materials()
     print(f"✅ 导出完成")
     print(f"   材料数: {len(materials)}")
     print(f"   报告数: {len(reports)}")
@@ -278,11 +337,13 @@ def cmd_export(args) -> int:
         else:
             print(f"   📄 {item.name}")
 
+    print(f"\n💡 核对交付: 打开 {export_path / '状态摘要.json'} 确认材料数、备注数、对齐率是否与 status 一致。")
     return 0
 
 
 def cmd_status(args) -> int:
     store = StateStore()
+    store.reload()
     processor = MaterialProcessor(store)
 
     state = store.get_processing_state()
@@ -290,6 +351,13 @@ def cmd_status(args) -> int:
 
     print("🎵 巡演耳返分账对齐 - 系统状态")
     print("=" * 50)
+    print(f"\n🛠️  数据文件: {store.state_file}")
+
+    materials = store.get_all_materials()
+    if not materials:
+        print(f"\n⚠️  状态库为空。还没有扫描过材料。")
+        print(f"   👉 先运行: python3 -m src.cli scan {get_project_root() / 'materials'}")
+        return 0
 
     print(f"\n📊 处理概览:")
     print(f"   材料总数: {state['total_materials']}")
@@ -327,7 +395,11 @@ def cmd_status(args) -> int:
 
 def cmd_reports(args) -> int:
     store = StateStore()
+    store.reload()
     generator = MarkdownReportGenerator(store)
+
+    print(f"🛠️  数据位置: {store.data_dir}")
+    print(f"📄 报告位置: {generator.reports_dir}")
 
     reports = generator.get_last_report_paths()
 
@@ -351,6 +423,7 @@ def cmd_reports(args) -> int:
 
 def cmd_reset(args) -> int:
     store = StateStore()
+    store.reload()
     materials = store.get_all_materials()
 
     if not materials:

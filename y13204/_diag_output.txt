@@ -1,0 +1,31 @@
+[start] state.json does not exist yet
+
+--- Step A: Scan ---
+[after_scan] materials=5, notes=0, sessions=1
+
+--- Step B: Reload with new store ---
+New store read: 5 materials, 0 notes
+  ✅ Persistence OK
+
+--- Step C: Add 3 notes via store2 ---
+[after_notes] materials=5, notes=3, sessions=1
+
+--- Step D: Reload store3 and check ---
+Store3: 5 materials, 3 notes
+  - 排练群截图_20260610.txt: 1 notes
+  - 排练群截图_20260612.txt: 1 notes
+  - 授权文件_耳返设备.txt: 1 notes
+  - 分账结论_最终版.txt: 1 notes
+  - 补充附件_学生A额外奖励.txt: 1 notes
+
+--- Step E: Rescan with store3 ---
+[after_rescan] materials=5, notes=3, sessions=2
+
+--- Step F: Generate reports with store4 (new instance) ---
+Generated 2 reports
+Store4 status: 5 materials, 3 notes, alignment=1.0
+
+--- Step G: FINAL CHECK - state.json on disk
+[FINAL] materials=5, notes=3, sessions=2
+
+Final materials on disk: ['mat-uuid-001', 'mat-uuid-002', 'mat-uuid-003']
