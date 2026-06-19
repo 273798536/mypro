@@ -1,0 +1,69 @@
+{
+  "source_name": "生产库备份20260615",
+  "target_name": "审计导入库",
+  "source_schema": {
+    "user_order": {
+      "columns": {
+        "id": {"type": "bigint", "nullable": false, "primary_key": true},
+        "user_id": {"type": "bigint", "nullable": false},
+        "amount": {"type": "decimal(18,2)", "nullable": false},
+        "status": {"type": "varchar(20)", "nullable": false},
+        "created_at": {"type": "datetime", "nullable": false}
+      }
+    },
+    "finance_salary": {
+      "columns": {
+        "id": {"type": "bigint", "nullable": false, "primary_key": true},
+        "emp_id": {"type": "bigint", "nullable": false},
+        "base_salary": {"type": "decimal(18,2)", "nullable": false},
+        "bonus": {"type": "decimal(18,2)", "nullable": true}
+      }
+    },
+    "customer_pii": {
+      "columns": {
+        "id": {"type": "bigint", "nullable": false, "primary_key": true},
+        "name": {"type": "varchar(100)", "nullable": false},
+        "id_card": {"type": "varchar(18)", "nullable": false}
+      }
+    },
+    "product_catalog": {
+      "columns": {
+        "id": {"type": "bigint", "nullable": false, "primary_key": true},
+        "product_name": {"type": "varchar(200)", "nullable": false}
+      }
+    }
+  },
+  "target_schema": {
+    "user_order": {
+      "columns": {
+        "id": {"type": "bigint", "nullable": false, "primary_key": true},
+        "user_id": {"type": "bigint", "nullable": false},
+        "amount": {"type": "decimal(18,2)", "nullable": false},
+        "status": {"type": "varchar(20)", "nullable": false},
+        "created_at": {"type": "datetime", "nullable": false},
+        "remark": {"type": "varchar(500)", "nullable": true}
+      }
+    },
+    "finance_salary": {
+      "columns": {
+        "id": {"type": "bigint", "nullable": false, "primary_key": true},
+        "emp_id": {"type": "bigint", "nullable": false},
+        "base_salary": {"type": "decimal(10,2)", "nullable": false},
+        "bonus": {"type": "decimal(18,2)", "nullable": true}
+      }
+    },
+    "customer_pii": {
+      "columns": {
+        "id": {"type": "bigint", "nullable": false, "primary_key": true},
+        "name": {"type": "varchar(100)", "nullable": false},
+        "id_card": {"type": "varchar(18)", "nullable": false}
+      }
+    },
+    "bank_card_info": {
+      "columns": {
+        "id": {"type": "bigint", "nullable": false, "primary_key": true},
+        "card_no": {"type": "varchar(32)", "nullable": false}
+      }
+    }
+  }
+}

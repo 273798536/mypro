@@ -1,0 +1,110 @@
+{
+  "source_system": "core_db_prod",
+  "operator": "data_platform_zhang",
+  "records": [
+    {
+      "permission_id": "PERM-001",
+      "user_account": "zhangsan",
+      "user_name": "张三",
+      "department": "研发部",
+      "resource": "user_order",
+      "resource_type": "table",
+      "permission_level": "read",
+      "action": "select",
+      "grant_time": "2026-01-01T00:00:00",
+      "expire_time": "2026-12-31T23:59:59",
+      "granted_by": "admin_li"
+    },
+    {
+      "permission_id": "PERM-002",
+      "user_account": "lisi",
+      "user_name": "李四",
+      "department": "市场部",
+      "resource": "finance_salary",
+      "resource_type": "table",
+      "permission_level": "write",
+      "action": "delete",
+      "grant_time": "2026-03-01T00:00:00",
+      "expire_time": "2026-12-31T23:59:59",
+      "granted_by": "admin_wang"
+    },
+    {
+      "permission_id": "PERM-003",
+      "user_account": "wangwu",
+      "user_name": "王五",
+      "department": "财务部",
+      "resource": "finance_salary",
+      "resource_type": "table",
+      "permission_level": "read",
+      "action": "select",
+      "grant_time": "2026-01-01T00:00:00",
+      "expire_time": "2026-06-01T23:59:59",
+      "granted_by": "admin_li"
+    },
+    {
+      "permission_id": "PERM-004",
+      "user_account": "zhaoliu",
+      "user_name": "赵六",
+      "department": "运维部",
+      "resource": "customer_pii",
+      "resource_type": "table",
+      "permission_level": "super_admin",
+      "action": "grant",
+      "grant_time": "2026-02-01T00:00:00",
+      "expire_time": "2026-12-31T23:59:59",
+      "granted_by": ""
+    },
+    {
+      "permission_id": "PERM-005",
+      "user_account": "sunqi",
+      "user_name": "孙七",
+      "department": "销售部",
+      "resource": "bank_card_info",
+      "resource_type": "table",
+      "permission_level": "read",
+      "action": "export_all",
+      "grant_time": "2026-04-01T00:00:00",
+      "expire_time": "2026-12-31T23:59:59",
+      "granted_by": "admin_wang"
+    },
+    {
+      "permission_id": "PERM-006",
+      "user_account": "zhouba",
+      "user_name": "周八",
+      "department": "审计部",
+      "resource": "tax_records",
+      "resource_type": "table",
+      "permission_level": "read",
+      "action": "select",
+      "grant_time": "2026-01-01T00:00:00",
+      "expire_time": "2026-12-31T23:59:59",
+      "granted_by": "admin_li"
+    },
+    {
+      "permission_id": "PERM-007",
+      "user_account": "wujiu",
+      "user_name": "吴九",
+      "department": "研发部",
+      "resource": "product_catalog",
+      "resource_type": "table",
+      "permission_level": "read",
+      "action": "select",
+      "grant_time": "2026-01-01T00:00:00",
+      "expire_time": "2026-12-31T23:59:59",
+      "granted_by": "admin_li"
+    },
+    {
+      "permission_id": "PERM-008",
+      "user_account": "zhengshi",
+      "user_name": "郑十",
+      "department": "研发部",
+      "resource": "system_config",
+      "resource_type": "table",
+      "permission_level": "read",
+      "action": "select",
+      "grant_time": "2026-01-01T00:00:00",
+      "expire_time": "2026-12-31T23:59:59",
+      "granted_by": "admin_li"
+    }
+  ]
+}
