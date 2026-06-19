@@ -1,0 +1,25 @@
+version: "1.0"
+features:
+  - feature_id: "user_active_days"
+    feature_name: "用户活跃天数"
+    threshold: 7.0
+    sample_ids: ["U001", "U002", "U003", "U004", "U005"]
+    notes: "初始灰度配置，活跃天数阈值7天"
+
+  - feature_id: "user_purchase_amount"
+    feature_name: "用户消费金额"
+    threshold: 1000.0
+    sample_ids: ["U001", "U003", "U006", "U007"]
+    notes: "初始灰度配置，消费金额阈值1000元"
+
+  - feature_id: "user_click_rate"
+    feature_name: "用户点击率"
+    threshold: 0.05
+    sample_ids: []
+    notes: "初始灰度配置，点击率阈值5%，无样本限制"
+
+  - feature_id: "user_stay_duration"
+    feature_name: "用户停留时长"
+    threshold: 300.0
+    sample_ids: ["U001", "U002", "U008", "U009", "U010"]
+    notes: "初始灰度配置，停留时长阈值300秒"

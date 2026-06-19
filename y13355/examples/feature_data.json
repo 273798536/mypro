@@ -1,0 +1,10 @@
+[
+  {"feature_id": "user_active_days", "feature_name": "用户活跃天数", "object_id": "U001", "value": 8.5, "sample_id": "U001", "timestamp": "2026-06-01 10:00:00"},
+  {"feature_id": "user_active_days", "feature_name": "用户活跃天数", "object_id": "U002", "value": 5.0, "sample_id": "U002", "timestamp": "2026-06-01 10:01:00"},
+  {"feature_id": "user_purchase_amount", "feature_name": "用户消费金额", "object_id": "U001", "value": 1250.50, "sample_id": "U001", "timestamp": "2026-06-01 10:03:00"},
+  {"feature_id": "user_click_rate", "feature_name": "用户点击率", "object_id": "U020", "value": 0.035, "sample_id": "U020", "timestamp": "2026-06-01 10:05:00"},
+  {"feature_id": "user_stay_duration", "feature_name": "用户停留时长", "object_id": "U008", "value": 450.0, "sample_id": "U008", "timestamp": "2026-06-01 10:07:00"},
+  {"feature_id": "", "feature_name": "未知特征", "object_id": "U022", "value": 10.0, "sample_id": "U022", "timestamp": "2026-06-01 10:10:00"},
+  {"feature_id": "user_active_days", "feature_name": "用户活跃天数", "object_id": "U050", "value": null, "sample_id": "U050", "timestamp": "2026-06-01 10:11:00"},
+  {"feature_id": "user_unknown_feature", "feature_name": "未知特征", "object_id": "U030", "value": 5.0, "sample_id": "U030", "timestamp": "2026-06-01 10:13:00"}
+]

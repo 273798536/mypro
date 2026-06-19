@@ -1,0 +1,17 @@
+version: "2.0"
+features:
+  - feature_id: "user_active_days"
+    feature_name: "用户活跃天数"
+    threshold: 10.0
+    sample_ids: ["U001", "U002", "U003", "U004", "U005", "U011", "U012"]
+    notes: "增量更新：阈值提高到10天，新增2个样本"
+
+  - feature_id: "user_purchase_amount"
+    threshold: 1500.0
+    notes: "增量更新：消费金额阈值提高到1500元"
+
+  - feature_id: "user_conversion_rate"
+    feature_name: "用户转化率"
+    threshold: 0.02
+    sample_ids: ["U001", "U003", "U006"]
+    notes: "新增特征：用户转化率，阈值2%"

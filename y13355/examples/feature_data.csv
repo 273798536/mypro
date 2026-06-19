@@ -1,0 +1,17 @@
+feature_id,feature_name,object_id,value,sample_id,timestamp
+user_active_days,用户活跃天数,U001,8.5,U001,2026-06-01 10:00:00
+user_active_days,用户活跃天数,U002,5.0,U002,2026-06-01 10:01:00
+user_active_days,用户活跃天数,U003,12.3,U003,2026-06-01 10:02:00
+user_purchase_amount,用户消费金额,U001,1250.50,U001,2026-06-01 10:03:00
+user_purchase_amount,用户消费金额,U006,890.00,U006,2026-06-01 10:04:00
+user_click_rate,用户点击率,U020,0.035,U020,2026-06-01 10:05:00
+user_click_rate,用户点击率,U021,0.072,U021,2026-06-01 10:06:00
+user_stay_duration,用户停留时长,U008,450.0,U008,2026-06-01 10:07:00
+user_stay_duration,用户停留时长,U100,180.0,U100,2026-06-01 10:08:00
+user_conversion_rate,用户转化率,U001,0.025,U001,2026-06-01 10:09:00
+,未知特征,U022,10.0,U022,2026-06-01 10:10:00
+user_active_days,用户活跃天数,U050,,U050,2026-06-01 10:11:00
+user_purchase_amount,用户消费金额,U007,1800.00,U007,2026-06-01 10:12:00
+user_unknown_feature,未知特征,U030,5.0,U030,2026-06-01 10:13:00
+user_active_days,用户活跃天数,U004,invalid,U004,2026-06-01 10:14:00
+user_stay_duration,用户停留时长,U009,320.0,U009,2026-06-01 10:15:00
