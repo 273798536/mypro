@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>知识库召回指标看板 - 运行详情</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f7fa;color:#2c3e50;line-height:1.6}
+header{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;padding:18px 36px;box-shadow:0 2px 10px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center}
+header h1{font-size:20px;font-weight:600}
+header .nav a{color:#fff;opacity:.85;margin-left:18px;text-decoration:none;font-size:14px}
+header .nav a:hover{opacity:1;text-decoration:underline}
+main{padding:24px 32px;max-width:1440px;margin:0 auto}
+.card{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);padding:22px 26px;margin-bottom:20px}
+.card h2{font-size:16px;font-weight:600;margin-bottom:14px;color:#1e293b;border-left:4px solid #2563eb;padding-left:10px;display:flex;align-items:center;gap:8px}
+.btn{display:inline-block;padding:8px 18px;border:none;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer;font-size:14px;transition:all .2s;text-decoration:none}
+.btn:hover{background:#1d4ed8;transform:translateY(-1px)}
+.btn.secondary{background:#64748b}.btn.secondary:hover{background:#475569}
+.btn.warn{background:#f59e0b}.btn.danger{background:#dc2626}.btn.success{background:#16a34a}
+.btn.small{padding:5px 12px;font-size:12px}
+.btn:disabled{background:#cbd5e1;cursor:not-allowed;transform:none}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th,table td{text-align:left;padding:9px 11px;border-bottom:1px solid #eef2f7;vertical-align:top}
+table th{background:#f8fafc;font-weight:600;color:#475569;font-size:12px}
+table tr:hover{background:#f8fafc}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:500;margin-right:4px}
+.badge.green{background:#dcfce7;color:#166534}
+.badge.red{background:#fee2e2;color:#991b1b}
+.badge.yellow{background:#fef9c3;color:#854d0e}
+.badge.blue{background:#dbeafe;color:#1e40af}
+.badge.gray{background:#f1f5f9;color:#475569}
+.badge.purple{background:#f3e8ff;color:#6b21a8}
+.tag{display:inline-block;padding:1px 7px;border-radius:4px;font-size:11px;margin-right:4px;margin-top:2px}
+.tag.leak{background:#fee2e2;color:#991b1b}
+.tag.outlier{background:#fef9c3;color:#854d0e}
+.tag.edge{background:#dbeafe;color:#1e40af}
+.tag.manual{background:#f3e8ff;color:#6b21a8}
+form label{display:block;font-size:13px;color:#475569;margin:9px 0 4px}
+form input,form textarea,form select{width:100%;padding:7px 11px;border:1px solid #e2e8f0;border-radius:6px;font-size:13px;font-family:inherit}
+form textarea{min-height:70px;resize:vertical}
+.grid{display:grid;gap:14px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-5{grid-template-columns:repeat(5,1fr)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.alert{padding:13px 17px;border-radius:8px;margin-bottom:12px;font-size:13px}
+.alert.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.alert.danger{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+.alert.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.alert.success{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:10px;flex-wrap:wrap}
+.empty{text-align:center;padding:36px 20px;color:#94a3b8;font-size:13px}
+.small{font-size:12px;color:#64748b}
+hr{border:none;border-top:1px solid #eef2f7;margin:16px 0}
+.status-banner{padding:15px 20px;border-radius:8px;margin-bottom:18px;font-size:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.status-pending{background:#f1f5f9;color:#475569;border:1px solid #cbd5e1}
+.status-processing{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd}
+.status-paused_leak{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.status-done{background:#dcfce7;color:#166534;border:1px solid #86efac}
+.status-error{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.metric-card{background:#fff;border-radius:10px;padding:18px 20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.metric-card .label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.metric-card .value{font-size:30px;font-weight:700}
+.v-good{color:#16a34a}.v-mid{color:#f59e0b}.v-bad{color:#dc2626}
+.progress-track{width:100%;height:9px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-top:7px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#22c55e,#2563eb);border-radius:6px;transition:width .4s}
+.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.modal.show{display:flex}
+.modal-inner{background:#fff;border-radius:12px;max-width:840px;width:100%;max-height:88vh;overflow-y:auto;padding:26px 30px}
+.modal-inner h3{font-size:17px;margin-bottom:16px;color:#1e293b}
+.tabs{display:flex;gap:4px;border-bottom:2px solid #e2e8f0;margin-bottom:18px}
+.tabs button{padding:9px 16px;background:transparent;border:none;cursor:pointer;font-size:13px;color:#64748b;border-bottom:2px solid transparent;margin-bottom:-2px;font-weight:500}
+.tabs button.active{color:#2563eb;border-bottom-color:#2563eb}
+.checkbox-row{display:flex;gap:8px;align-items:center;margin-top:10px}
+.checkbox-row input{width:auto;margin:0}
+.checkbox-row label{margin:0;color:#475569}
+code{background:#f1f5f9;padding:2px 7px;border-radius:4px;font-size:12px;font-family:ui-monospace,Consolas,monospace}
+.pre-box{background:#f8fafc;padding:12px;border-radius:6px;font-family:ui-monospace,Consolas,monospace;font-size:12px;color:#334155;white-space:pre-wrap;word-break:break-all;border:1px solid #e2e8f0}
+.fold-btn{background:none;border:none;color:#2563eb;cursor:pointer;font-size:12px;padding:2px 6px}
+.fold-btn:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1 id="runTitle">📊 知识库召回指标看板</h1>
+    <div class="small" style="opacity:.8;margin-top:3px;font-size:12px" id="runMeta"></div>
+  </div>
+  <div class="nav"><a href="/">← 返回列表</a></div>
+</header>
+<main>
+
+<div id="statusBanner"></div>
+
+<div id="metricBox" class="grid grid-4" style="margin-bottom:20px"></div>
+
+<div id="summaryCard" class="card" style="display:none">
+  <div class="section-title"><h2>🧾 处理进度追踪（这就是最后看的清单）</h2></div>
+  <div class="grid grid-2">
+    <div>
+      <h3 style="font-size:14px;margin-bottom:10px;color:#991b1b">⚠️ 待补证据 / 待确认</h3>
+      <div id="pendingList" class="empty">无</div>
+    </div>
+    <div>
+      <h3 style="font-size:14px;margin-bottom:10px;color:#166534">✅ 已处理</h3>
+      <div id="processedList" class="empty">无</div>
+    </div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="active" onclick="switchTab('tabMaterial')">📚 材料管理（入口）</button>
+  <button onclick="switchTab('tabRecall')">🎯 召回结果</button>
+  <button onclick="switchTab('tabCompute')">⚙️ 指标计算</button>
+  <button onclick="switchTab('tabAbnormal')">🔍 异常样本（下钻）</button>
+</div>
+
+<div id="tabMaterial" class="tab-content">
+  <div class="card">
+    <div class="section-title">
+      <h2>📚 录入知识库材料</h2>
+      <button class="btn small" onclick="openMaterialModal()">+ 添加材料</button>
+    </div>
+    <div class="alert info">
+      <strong>材料入口说明：</strong>材料名不一致时请在「别名」里填其它叫法（如全称/简称/口头说法）。<br>
+      同一材料口径变更时系统会自动记录版本，在「待补证据」里列出，不会覆盖人工修正。
+    </div>
+    <div id="materialList"><div class="empty">暂无材料</div></div>
+  </div>
+</div>
+
+<div id="tabRecall" class="tab-content" style="display:none">
+  <div class="card">
+    <div class="section-title">
+      <h2>🎯 上传召回结果</h2>
+      <button class="btn small warn" onclick="openRecallModal()">+ 批量上传</button>
+    </div>
+    <div class="alert info">
+      支持直接填 <code>expected_material_name</code>，系统会根据材料名/别名自动匹配 ID。<br>
+      材料名不一致的场景：先在「材料管理」里录入别名再上传。
+    </div>
+    <div id="recallList"><div class="empty">暂无召回结果</div></div>
+  </div>
+</div>
+
+<div id="tabCompute" class="tab-content" style="display:none">
+  <div class="card">
+    <div class="section-title"><h2>⚙️ 执行指标计算</h2></div>
+    <div class="alert warn" id="leakAlertBox" style="display:none"></div>
+    <div class="row">
+      <button class="btn success" id="btnCompute" onclick="doCompute(false)">🚀 开始计算</button>
+      <span class="small">样本数: <strong id="cntSamples">0</strong>，材料数: <strong id="cntMaterials">0</strong></span>
+    </div>
+    <hr>
+    <div id="computeResult"></div>
+  </div>
+</div>
+
+<div id="tabAbnormal" class="tab-content" style="display:none">
+  <div class="card">
+    <div class="section-title"><h2>🔍 异常样本 / 拉偏结论的样本</h2></div>
+    <div id="leakBox"></div>
+    <div id="outlierBox"></div>
+    <div id="changedBox"></div>
+  </div>
+</div>
+
+</main>
+
+<div class="modal" id="materialModal">
+  <div class="modal-inner">
+    <h3>添加 / 更新材料</h3>
+    <label>材料名称 *</label>
+    <input id="mName" placeholder="正式名称">
+    <label>材料内容（文本）</label>
+    <textarea id="mContent" placeholder="材料正文内容"></textarea>
+    <label>来源类型</label>
+    <select id="mSource">
+      <option value="model">模型输出</option>
+      <option value="manual">人工修正</option>
+      <option value="oral">口头说明</option>
+    </select>
+    <label>别名（用英文逗号分隔，处理名称不一致）</label>
+    <input id="mAlias" placeholder="别名1,别名2,别名3">
+    <label>本次口径变更说明</label>
+    <input id="mNote" placeholder="如：v2根据最新评审口径修改">
+    <div class="checkbox-row">
+      <input type="checkbox" id="mManual">
+      <label for="mManual">这是人工修正（保护不被模型结果覆盖）</label>
+    </div>
+    <label>人工修正说明（若勾选）</label>
+    <input id="mOverrideNote" placeholder="修正原因说明">
+    <hr>
+    <div class="row">
+      <button class="btn" onclick="submitMaterial()">保存</button>
+      <button class="btn secondary" onclick="closeModal('materialModal')">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="recallModal">
+  <div class="modal-inner">
+    <h3>批量上传召回结果（JSON数组）</h3>
+    <div class="alert info">
+      格式示例：
+      <div class="pre-box">[
+  {
+    "sample_id": "s001",
+    "query": "用户问的问题",
+    "recalled_material_ids": ["mat1", "mat2"],
+    "recalled_scores": [0.95, 0.78],
+    "expected_material_name": "某条材料名称"
+  }
+]</div>
+    </div>
+    <label>JSON 内容</label>
+    <textarea id="recallJson" style="min-height:220px;font-family:ui-monospace,Consolas,monospace;font-size:12px" placeholder="粘贴 JSON 数组"></textarea>
+    <hr>
+    <div class="row">
+      <button class="btn" onclick="submitRecalls()">上传</button>
+      <button class="btn secondary" onclick="closeModal('recallModal')">取消</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="sampleModal">
+  <div class="modal-inner">
+    <div id="sampleDetail"></div>
+    <hr>
+    <div class="row">
+      <button class="btn secondary" onclick="closeModal('sampleModal')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const RUN_ID = "{{ run_id }}";
+const API = "/api";
+let currentData = null;
+
+function escapeHtml(s){if(s==null)return"";return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+
+function switchTab(id){
+  document.querySelectorAll(".tab-content").forEach(e=>e.style.display="none");
+  document.querySelectorAll(".tabs button").forEach(e=>e.classList.remove("active"));
+  document.getElementById(id).style.display="block";
+  event.target.classList.add("active");
+}
+
+function openMaterialModal(){
+  ["mName","mContent","mAlias","mNote","mOverrideNote"].forEach(i=>document.getElementById(i).value="");
+  document.getElementById("mSource").value="model";
+  document.getElementById("mManual").checked=false;
+  showModal("materialModal");
+}
+function openRecallModal(){document.getElementById("recallJson").value="";showModal("recallModal");}
+function showModal(id){document.getElementById(id).classList.add("show");}
+function closeModal(id){document.getElementById(id).classList.remove("show");}
+
+async function load(){
+  const r=await fetch(API+"/runs/"+RUN_ID);
+  const j=await r.json();
+  if(j.error_code!=="E000"){alert(j.error_msg);return;}
+  currentData=j.data;
+  renderAll();
+}
+
+function renderAll(){
+  const d=currentData;
+  document.getElementById("runTitle").textContent="📊 "+escapeHtml(d.run_name);
+  document.getElementById("runMeta").textContent=`RunID: ${d.run_id} · 创建于 ${d.created_at}`;
+  renderStatus();
+  renderMetrics();
+  renderSummary();
+  renderMaterials();
+  renderRecalls();
+  renderAbnormal();
+  document.getElementById("cntSamples").textContent=d.recall_results.length;
+  document.getElementById("cntMaterials").textContent=Object.keys(d.materials).length;
+}
+
+function renderStatus(){
+  const d=currentData;
+  const map={
+    pending:["status-pending","⏳ 待开始：先录入材料并上传召回结果"],
+    processing:["status-processing","🔄 计算中..."],
+    paused_leak:["status-paused_leak","⚠️ 样本泄漏检测：请在「指标计算」标签确认后继续"],
+    done:["status-done","✅ 计算完成：请查看下方清单"],
+    error:["status-error","❌ 计算出错："+(d.status_note||"")]
+  };
+  const [cls,txt]=map[d.status]||["status-pending",""];
+  let extra="";
+  if(d.status==="paused_leak"){
+    extra=`<button class="btn small warn" onclick="switchTab('tabCompute')">去处理泄漏 →</button>`;
+  }
+  document.getElementById("statusBanner").innerHTML=`<div class="status-banner ${cls}"><div>${txt}</div>${extra}</div>`;
+}
+
+function renderMetrics(){
+  const d=currentData;
+  if(d.total_samples===0 && d.status!=="done"){
+    document.getElementById("metricBox").innerHTML=`<div class="metric-card" style="grid-column:1/-1"><div class="label">指标</div><div class="value small" style="font-size:16px;color:#94a3b8">还未计算，完成材料+召回结果后在「指标计算」标签执行</div></div>`;
+    return;
+  }
+  const mk=(label,val,good,mid)=>({label,val:val*100,good,mid});
+  const items=[mk("Recall@1",d.recall_at_1,.8,.5),mk("Recall@3",d.recall_at_3,.9,.6),mk("Recall@5",d.recall_at_5,.95,.7),mk("MRR",d.mrr,.7,.4)];
+  let html="";
+  items.forEach(it=>{
+    const cls=it.val>=it.good*100?"v-good":it.val>=it.mid*100?"v-mid":"v-bad";
+    html+=`<div class="metric-card"><div class="label">${it.label}</div><div class="value ${cls}">${it.val.toFixed(1)}%</div><div class="progress-track"><div class="progress-fill" style="width:${Math.min(100,it.val)}%"></div></div><div class="sub small" style="margin-top:6px">样本总数：${d.total_samples}</div></div>`;
+  });
+  document.getElementById("metricBox").innerHTML=html;
+}
+
+function renderSummary(){
+  const d=currentData;
+  const card=document.getElementById("summaryCard");
+  if(d.status==="pending"&&!d.pending_evidences.length&&!d.processed_items.length){card.style.display="none";return;}
+  card.style.display="block";
+
+  const pending=d.pending_evidences||[];
+  if(!pending.length){
+    document.getElementById("pendingList").innerHTML=`<div class="empty">🎉 全部处理完毕</div>`;
+  }else{
+    let html=`<table><thead><tr><th>类型</th><th>对象</th><th>说明</th><th style="width:140px">操作</th></tr></thead><tbody>`;
+    pending.forEach(k=>{
+      const [type,id]=k.split(":",2);
+      const typeMap={leak:["样本泄漏","red"],outlier:["异常样本","yellow"],changed:["材料改口径","purple"],material:["新材料待确认","blue"],override_check:["人工修正冲突","red"]};
+      const [tName,tCls]=typeMap[type]||[type,"gray"];
+      html+=`<tr><td><span class="badge ${tCls}">${tName}</span></td><td><code>${escapeHtml(id)}</code></td><td class="small">${descPending(type,id)}</td><td><div class="row"><input type="text" placeholder="补证据说明" id="note_${btoa(k).replace(/=/g,"")}" style="width:140px;padding:4px 8px;font-size:12px"><button class="btn small success" onclick="markProcessed('${escapeHtml(k)}')">标记已处理</button></div></td></tr>`;
+    });
+    html+="</tbody></table>";
+    document.getElementById("pendingList").innerHTML=html;
+  }
+
+  const processed=d.processed_items||[];
+  if(!processed.length){
+    document.getElementById("processedList").innerHTML=`<div class="empty">还没有处理过的条目</div>`;
+  }else{
+    let html=`<table><thead><tr><th>类型</th><th>对象</th><th>处理备注</th><th style="width:100px">操作</th></tr></thead><tbody>`;
+    processed.forEach(p=>{
+      const [kp,note=""]=p.split("|",2);
+      const [type,id]=kp.split(":",2);
+      const typeMap={leak:["样本泄漏","green"],outlier:["异常样本","green"],changed:["材料改口径","green"],material:["材料确认","green"],override_check:["修正冲突","green"]};
+      const [tName,tCls]=typeMap[type]||[type,"gray"];
+      html+=`<tr><td><span class="badge ${tCls}">${tName}</span></td><td><code>${escapeHtml(id)}</code></td><td class="small">${escapeHtml(note)}</td><td><button class="btn small secondary" onclick="unmarkProcessed('${escapeHtml(kp)}')">撤销</button></td></tr>`;
+    });
+    html+="</tbody></table>";
+    document.getElementById("processedList").innerHTML=html;
+  }
+}
+
+function descPending(type,id){
+  const d=currentData;
+  if(type==="leak"){
+    const r=d.recall_results.find(x=>x.sample_id===id);
+    return r?`query: ${escapeHtml(r.query.slice(0,40))}...`:"";
+  }
+  if(type==="outlier"){
+    const r=d.recall_results.find(x=>x.sample_id===id);
+    return r?r.match_details:"";
+  }
+  if(type==="changed"){
+    const m=d.materials[id];
+    return m?`v${m.version} ${escapeHtml(m.change_note||"口径变更"}`:"";
+  }
+  if(type==="material"){
+    const m=d.materials[id];
+    return m?`名称：${escapeHtml(m.material_name)}`:"";
+  }
+  if(type==="override_check"){
+    const m=d.materials[id];
+    return m?`人工修正：${escapeHtml(m.override_note||"已存在人工修正"}`:"";
+  }
+  return "";
+}
+
+async function markProcessed(key){
+  const noteId="note_"+btoa(key).replace(/=/g,"");
+  const noteEl=document.getElementById(noteId);
+  const note=noteEl?noteEl.value:"";
+  const r=await fetch(`${API}/runs/${RUN_ID}/status`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({item_key:key,action:"mark_processed",note:note})});
+  const j=await r.json();
+  if(j.error_code==="E000"){currentData.pending_evidences=j.data.pending_evidences;currentData.processed_items=j.data.processed_items;renderSummary();}
+  else alert(j.error_msg);
+}
+async function unmarkProcessed(key){
+  const r=await fetch(`${API}/runs/${RUN_ID}/status`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({item_key:key,action:"unmark_processed"})});
+  const j=await r.json();
+  if(j.error_code==="E000"){currentData.pending_evidences=j.data.pending_evidences;currentData.processed_items=j.data.processed_items;renderSummary();}
+  else alert(j.error_msg);
+}
+
+function renderMaterials(){
+  const d=currentData;const mats=Object.values(d.materials);
+  const box=document.getElementById("materialList");
+  if(!mats.length){box.innerHTML='<div class="empty">暂无材料，点右上角「添加材料」</div>';return;}
+  let html=`<table><thead><tr><th>材料名</th><th>版本</th><th>别名</th><th>来源</th><th>变更说明</th><th>更新时间</th></tr></thead><tbody>`;
+  mats.sort((a,b)=>b.updated_at.localeCompare(a.updated_at));
+  mats.forEach(m=>{
+    const srcCls={model:"blue",manual:"purple",oral:"yellow"}[m.source_type]||"gray";
+    const srcName={model:"模型",manual:"人工",oral:"口头"}[m.source_type]||m.source_type;
+    const isChanged=d.changed_materials.includes(m.material_id);
+    html+=`<tr>
+      <td><strong>${escapeHtml(m.material_name)}</strong>${m.is_manual_override?' <span class="tag manual">人工修正</span>':""}${isChanged?' <span class="badge yellow">改口径</span>':""}<br><span class="small">${escapeHtml(m.material_id)}</span></td>
+      <td>v${m.version}</td>
+      <td class="small">${m.aliases.length?m.aliases.map(a=>`<code>${escapeHtml(a)}</code>`).join(" "):"-"}</td>
+      <td><span class="badge ${srcCls}">${srcName}</span></td>
+      <td class="small">${escapeHtml(m.change_note||m.override_note||"-")}</td>
+      <td class="small">${escapeHtml(m.updated_at)}</td>
+    </tr>`;
+  });
+  html+="</tbody></table>";
+  box.innerHTML=html;
+}
+
+async function submitMaterial(){
+  const name=document.getElementById("mName").value.trim();
+  if(!name){alert("请填写材料名称");return;}
+  const aliases=document.getElementById("mAlias").value.split(",").map(s=>s.trim()).filter(Boolean);
+  const body={
+    material_name:name,
+    material_content:document.getElementById("mContent").value,
+    source_type:document.getElementById("mSource").value,
+    aliases,
+    change_note:document.getElementById("mNote").value,
+    is_manual_override:document.getElementById("mManual").checked,
+    override_note:document.getElementById("mOverrideNote").value,
+  };
+  const r=await fetch(`${API}/runs/${RUN_ID}/materials`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  const j=await r.json();
+  if(j.error_code==="E000"||j.error_code==="E302"||j.error_code==="E303"){
+    closeModal("materialModal");
+    if(j.error_code==="E302")alert("检测到口径已记录新版本：\n"+j.error_msg+"\n已加入待补证据清单");
+    if(j.error_code==="E303")alert("该材料已有"+j.error_msg);
+    await load();
+  } else { alert(j.error_msg); }
+}
+
+function renderRecalls(){
+  const d=currentData;const rs=d.recall_results;
+  const box=document.getElementById("recallList");
+  if(!rs.length){box.innerHTML='<div class="empty">暂无召回结果，点右上角「批量上传」</div>';return;}
+  let html=`<div style="margin-bottom:10px"><span class="small">共 ${rs.length} 条结果 · 点击样本ID查看详情</span></div>`;
+  html+=`<table><thead><tr><th>样本ID</th><th>Query</th><th>期望匹配</th><th>召回Top3材料</th><th>结果</th><th>标签</th></tr></thead><tbody>`;
+  rs.forEach(r=>{
+    const top3=r.recalled_material_ids.slice(0,3).map((mid,i)=>{
+      const m=currentData.materials[mid];
+      const name=m?m.material_name:"(未知)";
+      const score=r.recalled_scores[i]?.toFixed(3)||"";
+      const hit=r.expected_material_id===mid?" ✅":"";
+      return `<div><code>${escapeHtml(name)}</code> <span class="small">${score}${hit}</span></div>`;
+    }).join("");
+    let expectName=r.expected_material_name||(currentData.materials[r.expected_material_id]?.material_name)||"(未标注)";
+    const tags=(r.tags||[]).map(t=>{const cls={leak:"leak",outlier:"outlier",edge_case:"edge"}[t]||"";return `<span class="tag ${cls}">${t}</span>`).join("");
+    const mCls=r.matched===true?"green":r.matched===false?"red":"gray";
+    const mText=r.matched===true?"命中":r.matched===false?"未中":"-";
+    html+=`<tr>
+      <td><a class="link" onclick="showSample('${escapeHtml(r.sample_id)}')"><code>${escapeHtml(r.sample_id)}</code></a></td>
+      <td style="max-width:260px">${escapeHtml(r.query.slice(0,60))}${r.query.length>60?"...":""}</td>
+      <td class="small">${escapeHtml(expectName)}</td>
+      <td class="small">${top3||"-"}</td>
+      <td><span class="badge ${mCls}">${mText}</span><br><span class="small">${escapeHtml(r.match_details)}</span></td>
+      <td>${tags}</td>
+    </tr>`;
+  });
+  html+="</tbody></table>";
+  box.innerHTML=html;
+}
+
+async function submitRecalls(){
+  let data;try{data=JSON.parse(document.getElementById("recallJson").value);}catch(e){alert("JSON 解析失败: "+e.message);return;}
+  if(!Array.isArray(data)){alert("顶层必须是数组");return;}
+  const r=await fetch(`${API}/runs/${RUN_ID}/recalls`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({recalls:data})});
+  const j=await r.json();
+  if(j.error_code==="E000"){
+    closeModal("recallModal");
+    if(j.data.warnings?.length){alert("上传完成，警告:\n"+j.data.warnings.join("\n"));}
+    await load();
+  }else alert(j.error_msg);
+}
+
+async function showSample(sid){
+  const r=await fetch(`${API}/runs/${RUN_ID}/samples/${sid}`);
+  const j=await r.json();
+  if(j.error_code!=="E000"){alert(j.error_msg);return;}
+  const s=j.data.sample;
+  let html=`<h3>样本详情 <code>${escapeHtml(s.sample_id)}</code></h3>`;
+  html+=`<div style="margin-bottom:12px"><label style="font-weight:600;font-size:13px;color:#475569;margin-bottom:4px">Query</label><div class="pre-box">${escapeHtml(s.query)}</div></div>`;
+  if(s.expected_material){
+    const m=s.expected_material;
+    html+=`<div class="alert info"><strong>期望匹配：</strong>${escapeHtml(m.material_name)} (v${m.version}) <code>${escapeHtml(m.material_id)}</code>`;
+    if(m.change_note)html+=`<br><span class="small">口径说明：${escapeHtml(m.change_note)}</span>`;
+    html+=`</div>`;
+  }
+  html+=`<h4 style="margin:14px 0 8px">召回结果（按分数排序）</h4><table><thead><tr><th>排名</th><th>材料</th><th>分数</th><th>内容预览</th></tr></thead><tbody>`;
+  s.recalled_materials.forEach((m,i)=>{
+    const isHit=s.expected_material_id===m.material_id;
+    html+=`<tr><td>#${i+1}</td><td>${isHit?'<span class="badge green">期望 ✔️</span> ':''}<strong>${escapeHtml(m.material_name||"(未知)")}</strong><br><span class="small"><code>${escapeHtml(m.material_id)}</code>${m.version>1?` · v${m.version}`:""}${m.is_manual_override?' <span class="tag manual">人工</span>':""}</span></td><td>${(s.recalled_scores[i]?.toFixed(4)||"")}</td><td class="small">${escapeHtml((m.material_content||"").slice(0,120))}${(m.material_content||"").length>120?"...":""}</td></tr>`;
+  });
+  html+="</tbody></table>";
+  if(s.tags?.length)html+=`<div style="margin-top:12px"><strong>标签：</strong>${s.tags.map(t=>`<span class="tag">${t}</span>`).join(" ")}</div>`;
+  html+=`<div style="margin-top:12px"><span class="small">匹配详情：${escapeHtml(s.match_details)}</span></div>`;
+  document.getElementById("sampleDetail").innerHTML=html;
+  showModal("sampleModal");
+}
+
+async function doCompute(confirm){
+  const r=await fetch(`${API}/runs/${RUN_ID}/compute`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({confirm_leak:confirm,leak_note:document.getElementById("leakNote")?.value||""})});
+  const j=await r.json();
+  if(j.error_code==="E301"){
+    const li=j.data.leak_info;
+    const box=document.getElementById("leakAlertBox");
+    box.style.display="block";
+    box.className="alert danger";
+    box.innerHTML=`<strong>⚠️ ${j.error_msg}</strong><br><br>
+      <strong>影响范围：</strong>${escapeHtml(li.impact_scope)}<br>
+      <strong>可能原因：</strong><ul style="margin-left:18px;margin-top:6px">${li.reasons.map(x=>`<li>${escapeHtml(x)}</li>").join("")}</ul>
+      <div style="margin-top:10px"><label style="font-size:13px;color:#475569">确认说明（必填）</label><input id="leakNote" placeholder="人工确认泄漏或排除说明"><div class="row" style="margin-top:8px"><button class="btn warn" onclick="doCompute(true)">确认后继续计算</button> <button class="btn secondary" onclick="document.getElementById('leakAlertBox').style.display='none'">稍后处理</button></div></div>`;
+    await load();
+    return;
+  }
+  if(j.error_code==="E000"){
+    const m=j.data.metrics;
+    document.getElementById("computeResult").innerHTML=`<div class="alert success"><strong>✅ 计算完成</strong><br>Recall@1=${(m.recall_at_1*100).toFixed(2)}% · Recall@3=${(m.recall_at_3*100).toFixed(2)}% · Recall@5=${(m.recall_at_5*100).toFixed(2)}% · MRR=${(m.mrr*100).toFixed(2)}%<br><span class="small">拉偏样本：${j.data.outlier_samples.length?j.data.outlier_samples.map(s=>`<code>${escapeHtml(s)}</code>`).join(" "):"无"}</span></div>`;
+    await load();
+  } else {
+    alert(j.error_msg);
+  }
+}
+
+function renderAbnormal(){
+  const d=currentData;
+  const leak=d.leak_info||{};
+  let html="";
+  if(leak.detected){
+    html+=`<div class="alert danger" style="margin-bottom:14px"><h3 style="font-size:14px;margin-bottom:8px">🔴 疑似样本泄漏</h3>
+      <div>影响范围：${escapeHtml(leak.impact_scope)}<br>
+      原因：<ul style="margin-left:18px;margin-top:4px">${(leak.reasons||[]).map(r=>`<li>${escapeHtml(r)}</li>").join("")}</ul>
+      涉及样本：${(leak.suspected_samples||[]).map(s=>`<a class="link" onclick="showSample('${escapeHtml(s)}')"><code>${escapeHtml(s)}</code></a> `).join(" ")}</div>
+      ${leak.confirmed?`<div style="margin-top:6px"><span class="badge green">已确认</span> ${escapeHtml(leak.confirmed_note||"")}</div>`:""}</div>`;
+  }
+  document.getElementById("leakBox").innerHTML=html||'<div class="alert success" style="margin-bottom:14px">✅ 未检测到样本泄漏</div>';
+
+  const outs=d.outlier_samples||[];
+  let oHtml=`<h3 style="font-size:14px;margin-bottom:10px">🟡 拉偏结论的异常样本（${outs.length}条）</h3>`;
+  if(!outs.length){oHtml+='<div class="empty" style="padding:16px">无异常样本</div>';}
+  else{
+    oHtml+=`<table><thead><tr><th>样本ID</th><th>Query</th><th>详情</th><th>操作</th></tr></thead><tbody>`;
+    outs.forEach(sid=>{
+      const r=d.recall_results.find(x=>x.sample_id===sid);
+      if(!r)return;
+      oHtml+=`<tr><td><code>${escapeHtml(sid)}</code></td><td style="max-width:360px">${escapeHtml((r.query||"").slice(0,80))}</td><td class="small">${escapeHtml(r.match_details||"")}</td><td><a class="link" onclick="showSample('${escapeHtml(sid)}')">查看详情</a></td></tr>`;
+    });
+    oHtml+="</tbody></table>";
+  }
+  document.getElementById("outlierBox").innerHTML=oHtml;
+
+  const ch=d.changed_materials||[];
+  let cHtml=`<h3 style="font-size:14px;margin:18px 0 10px">🟣 改过口径的材料（${ch.length}份）</h3>`;
+  if(!ch.length){cHtml+='<div class="empty" style="padding:16px">无材料变更</div>';}
+  else{
+    cHtml+=`<table><thead><tr><th>材料名</th><th>版本</th><th>变更说明</th></tr></thead><tbody>`;
+    ch.forEach(mid=>{
+      const m=d.materials[mid];
+      if(!m)return;
+      cHtml+=`<tr><td><strong>${escapeHtml(m.material_name)}</strong>${m.is_manual_override?' <span class="tag manual">人工</span>':""}</td><td>v${m.version}</td><td class="small">${escapeHtml(m.change_note||"-")}</td></tr>`;
+    });
+    cHtml+="</tbody></table>";
+  }
+  document.getElementById("changedBox").innerHTML=cHtml;
+}
+
+load();
+</script>
+</body>
+</html>

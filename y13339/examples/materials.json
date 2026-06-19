@@ -1,0 +1,36 @@
+[
+  {
+    "material_name": "用户实名认证流程规范",
+    "material_content": "用户实名认证需提供身份证正反面照片、人脸活体检测、手机号验证码。未成年人需监护人同意。",
+    "aliases": ["实名流程", "身份认证规范", "实名认证指引"],
+    "source_type": "model",
+    "change_note": ""
+  },
+  {
+    "material_name": "风控交易拦截处理标准",
+    "material_content": "触发高危规则后自动拦截交易，冻结账户48小时，通知用户提交申诉材料，人工审核时限24小时。",
+    "aliases": ["交易拦截标准", "风控拦截规则", "交易冻结处理"],
+    "source_type": "manual",
+    "is_manual_override": true,
+    "override_note": "老唐2026-06-18评审会确认，人工修正了冻结时长"
+  },
+  {
+    "material_name": "反欺诈样本特征提取指南",
+    "material_content": "样本特征包括：设备指纹异同性、IP地址地理位置、操作行为序列熵值、交易金额分布偏离度。",
+    "aliases": ["特征提取指南", "样本特征", "反欺诈特征"],
+    "source_type": "model"
+  },
+  {
+    "material_name": "知识图谱节点关联度计算方法",
+    "material_content": "使用Personalized PageRank计算节点关联度，衰减因子0.85，迭代次数50，收敛阈值1e-6。",
+    "aliases": ["PPR计算", "图谱关联度", "节点关联算法"],
+    "source_type": "model"
+  },
+  {
+    "material_name": "模型线上A/B实验准入标准",
+    "material_content": "A/B实验需满足：样本量≥10万、指标置信度≥95%、p值<0.05、实验周期≥7天覆盖工作日周末。",
+    "aliases": ["AB实验标准", "实验准入规范", "AB测试要求"],
+    "source_type": "oral",
+    "change_note": "老唐口头说明，未正式文档化"
+  }
+]

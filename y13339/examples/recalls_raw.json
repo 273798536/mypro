@@ -1,0 +1,87 @@
+[
+  {
+    "sample_id": "s001",
+    "query": "我要做实名认证，需要准备什么材料？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "用户实名认证流程规范"
+  },
+  {
+    "sample_id": "s002",
+    "query": "交易被冻结了怎么办？风控拦截处理流程是啥？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "风控交易拦截处理标准"
+  },
+  {
+    "sample_id": "s003",
+    "query": "反欺诈模型训练时怎么提取特征比较好？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "反欺诈样本特征提取指南"
+  },
+  {
+    "sample_id": "s004",
+    "query": "知识图谱里怎么算两个节点的关联程度？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "知识图谱节点关联度计算方法"
+  },
+  {
+    "sample_id": "s005",
+    "query": "我们要做线上AB测试，满足什么条件才能上线？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "模型线上A/B实验准入标准"
+  },
+  {
+    "sample_id": "s006",
+    "query": "实名认证的具体步骤和要求",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "实名流程"
+  },
+  {
+    "sample_id": "s007",
+    "query": "账户被冻结48小时是什么规则？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "交易冻结处理"
+  },
+  {
+    "sample_id": "s008",
+    "query": "设备指纹和IP在反欺诈里怎么用？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "反欺诈特征"
+  },
+  {
+    "sample_id": "s009",
+    "query": "PPR算法收敛阈值是多少？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "PPR计算"
+  },
+  {
+    "sample_id": "s010",
+    "query": "AB实验置信度要求多少？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "AB实验标准"
+  },
+  {
+    "sample_id": "s011",
+    "query": "用户实名认证需提供身份证正反面照片人脸活体检测手机号验证码未成年人需监护人同意",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "用户实名认证流程规范",
+    "tags": ["edge_case"]
+  },
+  {
+    "sample_id": "s012",
+    "query": "请问怎么找回密码？",
+    "recalled_material_ids": [],
+    "recalled_scores": [],
+    "expected_material_name": "用户实名认证流程规范"
+  }
+]

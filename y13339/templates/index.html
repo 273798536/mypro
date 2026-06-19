@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>知识库召回指标看板</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;background:#f5f7fa;color:#2c3e50;line-height:1.6}
+header{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;padding:22px 36px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+header h1{font-size:22px;font-weight:600}
+header p{opacity:.85;font-size:13px;margin-top:4px}
+main{padding:28px 36px;max-width:1280px;margin:0 auto}
+.card{background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.05);padding:22px 26px;margin-bottom:22px}
+.card h2{font-size:17px;font-weight:600;margin-bottom:14px;color:#1e293b;border-left:4px solid #2563eb;padding-left:10px}
+.btn{display:inline-block;padding:8px 18px;border:none;border-radius:6px;background:#2563eb;color:#fff;cursor:pointer;font-size:14px;transition:all .2s;text-decoration:none}
+.btn:hover{background:#1d4ed8;transform:translateY(-1px)}
+.btn.secondary{background:#64748b}
+.btn.secondary:hover{background:#475569}
+.btn.danger{background:#dc2626}
+.btn.warn{background:#f59e0b}
+.btn.small{padding:5px 12px;font-size:12px}
+.btn:disabled{background:#cbd5e1;cursor:not-allowed;transform:none}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th,table td{text-align:left;padding:10px 12px;border-bottom:1px solid #eef2f7}
+table th{background:#f8fafc;font-weight:600;color:#475569;font-size:12px;text-transform:uppercase;letter-spacing:.3px}
+table tr:hover{background:#f8fafc}
+.badge{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:500}
+.badge.green{background:#dcfce7;color:#166534}
+.badge.red{background:#fee2e2;color:#991b1b}
+.badge.yellow{background:#fef9c3;color:#854d0e}
+.badge.blue{background:#dbeafe;color:#1e40af}
+.badge.gray{background:#f1f5f9;color:#475569}
+.badge.purple{background:#f3e8ff;color:#6b21a8}
+.tag{display:inline-block;padding:1px 7px;border-radius:4px;font-size:11px;margin-right:4px}
+.tag.leak{background:#fee2e2;color:#991b1b}
+.tag.outlier{background:#fef9c3;color:#854d0e}
+.tag.edge{background:#dbeafe;color:#1e40af}
+form label{display:block;font-size:13px;color:#475569;margin:10px 0 4px}
+form input,form textarea,form select{width:100%;padding:8px 12px;border:1px solid #e2e8f0;border-radius:6px;font-size:14px;font-family:inherit}
+form input:focus,form textarea:focus,form select:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.metric-card{background:#fff;border-radius:10px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.metric-card .label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.metric-card .value{font-size:28px;font-weight:700;color:#1e293b}
+.metric-card .sub{font-size:12px;color:#94a3b8;margin-top:4px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.alert{padding:14px 18px;border-radius:8px;margin-bottom:14px;font-size:13px}
+.alert.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.alert.danger{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}
+.alert.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.alert.success{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.empty{text-align:center;padding:40px 20px;color:#94a3b8;font-size:14px}
+.link{color:#2563eb;cursor:pointer;text-decoration:none}
+.link:hover{text-decoration:underline}
+.small{font-size:12px;color:#64748b}
+hr{border:none;border-top:1px solid #eef2f7;margin:18px 0}
+a{color:#2563eb}
+.status-banner{padding:16px 20px;border-radius:8px;margin-bottom:20px;font-weight:500}
+.status-pending{background:#f1f5f9;color:#475569}
+.status-processing{background:#dbeafe;color:#1e40af}
+.status-paused_leak{background:#fee2e2;color:#991b1b}
+.status-done{background:#dcfce7;color:#166534}
+.status-error{background:#fee2e2;color:#991b1b}
+.sample-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;padding:20px}
+.sample-modal.show{display:flex}
+.modal-inner{background:#fff;border-radius:12px;max-width:780px;width:100%;max-height:88vh;overflow-y:auto;padding:26px}
+.progress-track{width:100%;height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-top:8px}
+.progress-fill{height:100%;background:linear-gradient(90deg,#22c55e,#2563eb);border-radius:6px;transition:width .4s}
+</style>
+</head>
+<body>
+<header>
+  <h1>📊 知识库召回指标看板</h1>
+  <p>稳定的指标计算 · 材料口径追踪 · 样本泄漏检测 · 下钻分析</p>
+</header>
+<main>
+
+<div class="card">
+  <div class="section-title">
+    <h2>开始一次新的看板运行</h2>
+  </div>
+  <div class="grid grid-2">
+    <div>
+      <label>运行名称（必填）</label>
+      <input id="newRunName" placeholder="例如：2026-06-19 公示版本v1">
+      <div style="margin-top:14px">
+        <button class="btn" onclick="createRun()">创建运行</button>
+      </div>
+    </div>
+    <div style="background:#f8fafc;padding:16px;border-radius:8px;font-size:13px;color:#475569">
+      <strong style="color:#1e293b">🧭 使用入口（四步）：</strong><br>
+      1️⃣ 创建运行 → 填写名称<br>
+      2️⃣ 进入运行 → 录入材料（支持别名）<br>
+      3️⃣ 上传召回结果（支持名称自动匹配）<br>
+      4️⃣ 执行计算（自动检测样本泄漏）
+      <hr>
+      <strong style="color:#1e293b">🚪 异常出口：</strong><br>
+      材料口径变更、人工修正冲突、样本泄漏、指标异常样本 → 都会在「待补证据」列出
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="section-title">
+    <h2>历史运行记录</h2>
+    <span class="small" id="runCount"></span>
+  </div>
+  <div id="runList">
+    <div class="empty">暂无记录，先创建一个运行开始吧</div>
+  </div>
+</div>
+
+</main>
+
+<script>
+const API = "/api";
+
+async function createRun(){
+  const name = document.getElementById("newRunName").value.trim();
+  if(!name){ alert("请填写运行名称"); return; }
+  const r = await fetch(API+"/runs",{
+    method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({run_name:name})
+  });
+  const j = await r.json();
+  if(j.error_code==="E000"){
+    location.href = "/run/"+j.data.run_id;
+  } else {
+    alert(j.error_msg);
+  }
+}
+
+function statusBadge(s){
+  const m = {
+    pending:["待开始","gray"],
+    processing:["计算中","blue"],
+    paused_leak:["泄漏待确认","red"],
+    done:["已完成","green"],
+    error:["出错","red"]
+  };
+  const [text,cls] = m[s]||[s,"gray"];
+  return `<span class="badge ${cls}">${text}</span>`;
+}
+
+async function loadRuns(){
+  const r = await fetch(API+"/runs");
+  const j = await r.json();
+  const list = j.data.runs || [];
+  document.getElementById("runCount").textContent = `共 ${list.length} 条`;
+  const box = document.getElementById("runList");
+  if(!list.length){ box.innerHTML='<div class="empty">暂无记录</div>'; return; }
+  let html = `<table><thead><tr>
+    <th>运行名称</th><th>创建时间</th><th>状态</th><th>样本数</th><th>Recall@1</th><th>操作</th>
+  </tr></thead><tbody>`;
+  list.forEach(r=>{
+    html += `<tr>
+      <td><a class="link" href="/run/${r.run_id}"><strong>${escapeHtml(r.run_name)}</strong></a></td>
+      <td>${escapeHtml(r.created_at)}</td>
+      <td>${statusBadge(r.status)}</td>
+      <td>${r.total_samples||0}</td>
+      <td>${(r.recall_at_1*100).toFixed(1)}%</td>
+      <td><a class="btn small" href="/run/${r.run_id}">进入看板</a></td>
+    </tr>`;
+  });
+  html += "</tbody></table>";
+  box.innerHTML = html;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+loadRuns();
+</script>
+</body>
+</html>
