@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码审查指标看板</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>代码审查指标看板</h1>
+            <div class="header-actions">
+                <button id="btnRerun" class="btn btn-secondary" onclick="rerun()">
+                    🔄 重跑
+                </button>
+                <button id="btnReport" class="btn btn-primary" onclick="viewReport()">
+                    📄 查看Markdown报告
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <section class="filters">
+            <h2 class="section-title">筛选口径</h2>
+            <div class="filter-grid">
+                <div class="filter-item">
+                    <label>版本</label>
+                    <select id="filterVersion" multiple onchange="loadData()">
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>分类</label>
+                    <select id="filterCategory" multiple onchange="loadData()">
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>状态</label>
+                    <select id="filterStatus" multiple onchange="loadData()">
+                        <option value="pass">通过</option>
+                        <option value="fail">未通过</option>
+                        <option value="pending">待处理</option>
+                        <option value="duplicate">重复</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>来源</label>
+                    <select id="filterSource" multiple onchange="loadData()">
+                        <option value="version_note">版本说明</option>
+                        <option value="review_record">审查记录</option>
+                        <option value="oral_note">口头说明</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>缺失引用</label>
+                    <select id="filterMissingRef" onchange="loadData()">
+                        <option value="">全部</option>
+                        <option value="true">有</option>
+                        <option value="false">无</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>重复评测</label>
+                    <select id="filterDuplicate" onchange="loadData()">
+                        <option value="">全部</option>
+                        <option value="true">是</option>
+                        <option value="false">否</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="metrics">
+            <h2 class="section-title">总体指标</h2>
+            <div class="metric-cards">
+                <div class="metric-card">
+                    <div class="metric-value" id="metricTotal">0</div>
+                    <div class="metric-label">总样本数</div>
+                </div>
+                <div class="metric-card metric-pass">
+                    <div class="metric-value" id="metricPass">0</div>
+                    <div class="metric-label">通过</div>
+                </div>
+                <div class="metric-card metric-fail">
+                    <div class="metric-value" id="metricFail">0</div>
+                    <div class="metric-label">未通过</div>
+                </div>
+                <div class="metric-card metric-pending">
+                    <div class="metric-value" id="metricPending">0</div>
+                    <div class="metric-label">待处理</div>
+                </div>
+                <div class="metric-card metric-rate">
+                    <div class="metric-value" id="metricPassRate">0%</div>
+                    <div class="metric-label">通过率</div>
+                </div>
+                <div class="metric-card metric-warning">
+                    <div class="metric-value" id="metricMissingRef">0</div>
+                    <div class="metric-label">缺引用样本</div>
+                </div>
+                <div class="metric-card metric-duplicate">
+                    <div class="metric-value" id="metricDuplicate">0</div>
+                    <div class="metric-label">重复评测</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="metricAvgRef">0</div>
+                    <div class="metric-label">平均引用数</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="influential">
+            <h2 class="section-title">
+                影响结论的关键样本
+                <span class="subtitle">以下样本拉低了整体结论，评审时重点关注</span>
+            </h2>
+            <div class="influential-list" id="influentialList">
+                <div class="loading">加载中...</div>
+            </div>
+        </section>
+
+        <section class="version-diff">
+            <h2 class="section-title">版本对比</h2>
+            <div class="diff-controls">
+                <select id="diffOldVersion" onchange="loadVersionDiff()">
+                    <option value="">选择旧版本</option>
+                </select>
+                <span class="diff-arrow">→</span>
+                <select id="diffNewVersion" onchange="loadVersionDiff()">
+                    <option value="">选择新版本</option>
+                </select>
+            </div>
+            <div class="diff-result" id="diffResult">
+                <p class="placeholder">请选择两个版本进行对比</p>
+            </div>
+        </section>
+
+        <section class="samples">
+            <h2 class="section-title">样本明细</h2>
+            <div class="samples-table-wrapper">
+                <table class="samples-table">
+                    <thead>
+                        <tr>
+                            <th>样本</th>
+                            <th>版本</th>
+                            <th>分类</th>
+                            <th>状态</th>
+                            <th>来源</th>
+                            <th>引用数</th>
+                            <th>缺引用</th>
+                            <th>重复</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="samplesBody">
+                        <tr><td colspan="9" class="loading">加载中...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">样本详情</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+        </div>
+    </div>
+
+    <div id="reportModal" class="modal">
+        <div class="modal-content modal-wide">
+            <div class="modal-header">
+                <h3>Markdown审查报告</h3>
+                <div class="modal-header-actions">
+                    <button class="btn btn-secondary" onclick="downloadReport()">⬇️ 下载</button>
+                    <button class="modal-close" onclick="closeReportModal()">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <pre id="reportContent" class="report-content"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/app.js"></script>
+</body>
+</html>
