@@ -1,0 +1,43 @@
+{
+  "records": [
+    {
+      "name": "RAG-召回率-阈值0.75",
+      "evidence_path": "evidence/rag_recall_075.csv",
+      "aliases": ["RAG召回率阈值0.75", "rag-recall-threshold-0.75"],
+      "notes": "v1版本基线数据，召回率0.75阈值下的误判样本。后补备注：需关注长尾query。",
+      "screenshots": ["screenshots/rag_v1_075.png"],
+      "values": {
+        "precision": 0.82,
+        "recall": 0.75,
+        "f1": 0.78,
+        "threshold": 0.75
+      }
+    },
+    {
+      "name": "FAQ-语义匹配-误报集",
+      "evidence_path": "evidence/faq_semantic_fp.csv",
+      "aliases": ["FAQ语义匹配误报"],
+      "notes": "FAQ模块语义匹配误报样本集合。旧版本截图已归档。",
+      "screenshots": ["screenshots/faq_fp_v1.png", "screenshots/faq_fp_v1_detail.png"],
+      "values": {
+        "precision": 0.71,
+        "recall": 0.89,
+        "false_positive_rate": 0.18,
+        "threshold": 0.70
+      }
+    },
+    {
+      "name": "意图识别-漏判-高温场景",
+      "evidence_path": "evidence/intent_miss_high_temp.csv",
+      "aliases": ["意图识别漏判高温"],
+      "notes": "高温场景下意图识别漏判样本。备注：与环境温度无关，指高混淆度场景。",
+      "screenshots": ["screenshots/intent_miss_v1.png"],
+      "values": {
+        "precision": 0.90,
+        "recall": 0.65,
+        "miss_rate": 0.35,
+        "threshold": 0.80
+      }
+    }
+  ]
+}

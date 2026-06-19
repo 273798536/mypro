@@ -1,0 +1,16 @@
+[project]
+name = "kb-recall-replay"
+version = "0.1.0"
+description = "Knowledge base recall misjudgment replay system"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1",
+    "rich>=13.0",
+]
+
+[project.scripts]
+replay = "kb_recall_replay.cli:cli"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends._legacy:_Backend"
