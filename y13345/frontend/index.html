@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码审查证据复核</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f5f7fa;
+            color: #1f2937;
+            font-size: 14px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 32px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .header h1 { font-size: 24px; font-weight: 600; }
+        .header p { opacity: 0.9; margin-top: 4px; font-size: 13px; }
+
+        .toolbar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a67d8; }
+        .btn-secondary { background: #e5e7eb; color: #374151; }
+        .btn-secondary:hover { background: #d1d5db; }
+        .btn-outline { background: white; border: 1px solid #d1d5db; color: #374151; }
+        .btn-outline:hover { border-color: #667eea; color: #667eea; }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+        }
+        .file-upload input[type="file"] { display: none; }
+        .file-label {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #10b981;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .file-label:hover { background: #059669; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .stat-card .label { color: #6b7280; font-size: 13px; margin-bottom: 8px; }
+        .stat-card .value { font-size: 28px; font-weight: 600; color: #1f2937; }
+        .stat-card.processed .value { color: #10b981; }
+        .stat-card.pending .value { color: #f59e0b; }
+        .stat-card.manual .value { color: #ef4444; }
+        .stat-card.conflict .value { color: #8b5cf6; }
+
+        .filter-bar {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .filter-title { font-weight: 600; margin-bottom: 12px; color: #374151; }
+        .filter-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+        .filter-item { display: flex; flex-direction: column; gap: 4px; }
+        .filter-item label { font-size: 12px; color: #6b7280; }
+        .filter-item select, .filter-item input {
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            min-width: 140px;
+            background: white;
+        }
+        .filter-item select:focus, .filter-item input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 16px;
+            background: white;
+            border-radius: 10px;
+            padding: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b7280;
+            transition: all 0.2s;
+        }
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        .tab .count {
+            display: inline-block;
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+        .tab.active .count { background: rgba(255,255,255,0.2); }
+
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #f9fafb;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 13px;
+        }
+        tr:hover { background: #f9fafb; }
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .tag-processed { background: #d1fae5; color: #065f46; }
+        .tag-pending { background: #fef3c7; color: #92400e; }
+        .tag-manual { background: #fee2e2; color: #991b1b; }
+        .tag-conflict { background: #ede9fe; color: #5b21b6; }
+        .tag-source { background: #e0e7ff; color: #3730a3; }
+        .tag-risk-high { background: #fee2e2; color: #991b1b; }
+        .tag-risk-medium { background: #fef3c7; color: #92400e; }
+        .tag-risk-low { background: #d1fae5; color: #065f46; }
+        .tag-risk-none { background: #e5e7eb; color: #4b5563; }
+
+        .link-btn {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .link-btn:hover { text-decoration: underline; }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 60px;
+            overflow-y: auto;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 { font-size: 18px; font-weight: 600; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9ca3af;
+        }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e5e7eb;
+            text-align: right;
+        }
+
+        .detail-section { margin-bottom: 20px; }
+        .detail-section h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 10px 16px;
+            font-size: 13px;
+        }
+        .detail-label { color: #6b7280; }
+        .detail-value { color: #1f2937; word-break: break-all; }
+
+        .conflict-banner {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+        }
+        .conflict-banner strong { color: #92400e; }
+
+        .change-list { list-style: none; }
+        .change-item {
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        .change-item .field { font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .change-item .values { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+        .change-item .old-value { color: #ef4444; text-decoration: line-through; }
+        .change-item .arrow { color: #9ca3af; }
+        .change-item .new-value { color: #10b981; font-weight: 500; }
+        .change-item .reason { margin-top: 8px; color: #6b7280; font-size: 12px; }
+
+        .raw-fields {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .raw-fields .field-line { margin-bottom: 4px; }
+        .raw-fields .field-name { color: #60a5fa; }
+
+        .mapping-info {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+        .mapping-info strong { color: #1e40af; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>代码审查证据复核</h1>
+            <p>统一结果生成 · 字段兼容映射 · 标签冲突追踪 · 异常队列分类</p>
+        </div>
+
+        <div class="toolbar">
+            <span style="color: #6b7280; font-size: 13px;">演示数据：</span>
+            <button class="btn btn-outline" onclick="loadDemo('new_model')">新模型样本</button>
+            <button class="btn btn-outline" onclick="loadDemo('old_model')">旧模型样本</button>
+            <button class="btn btn-outline" onclick="loadDemo('alt_fields')">字段名不同的样本</button>
+            <div class="file-upload">
+                <label class="file-label">
+                    上传样本表
+                    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" onchange="uploadFile(event)">
+                </label>
+            </div>
+            <div id="mappingInfo" class="mapping-info" style="display: none; margin-left: auto;"></div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="label">样本总数</div>
+                <div class="value" id="statTotal">0</div>
+            </div>
+            <div class="stat-card processed">
+                <div class="label">已处理</div>
+                <div class="value" id="statProcessed">0</div>
+            </div>
+            <div class="stat-card pending">
+                <div class="label">待补材料</div>
+                <div class="value" id="statPending">0</div>
+            </div>
+            <div class="stat-card manual">
+                <div class="label">人工改判</div>
+                <div class="value" id="statManual">0</div>
+            </div>
+            <div class="stat-card conflict">
+                <div class="label">标签冲突</div>
+                <div class="value" id="statConflict">0</div>
+            </div>
+        </div>
+
+        <div class="filter-bar">
+            <div class="filter-title">筛选条件</div>
+            <div class="filter-row">
+                <div class="filter-item">
+                    <label>来源</label>
+                    <select id="filterSource" onchange="loadData()">
+                        <option value="">全部</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>状态分类</label>
+                    <select id="filterStatus" onchange="loadData()">
+                        <option value="">全部</option>
+                        <option value="processed">已处理</option>
+                        <option value="pending_material">待补材料</option>
+                        <option value="manual_review">人工改判</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>标签冲突</label>
+                    <select id="filterConflict" onchange="loadData()">
+                        <option value="">全部</option>
+                        <option value="true">有冲突</option>
+                        <option value="false">无冲突</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>风险等级</label>
+                    <select id="filterRisk" onchange="loadData()">
+                        <option value="">全部</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>关键词</label>
+                    <input type="text" id="filterKeyword" placeholder="搜索内容、理由..." onkeyup="if(event.key==='Enter')loadData()">
+                </div>
+                <button class="btn btn-secondary" onclick="resetFilters()">重置</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-tab="detail" onclick="switchTab('detail')">
+                明细表格 <span class="count" id="tabDetailCount">0</span>
+            </div>
+            <div class="tab" data-tab="queue" onclick="switchTab('queue')">
+                异常队列 <span class="count" id="tabQueueCount">0</span>
+            </div>
+        </div>
+
+        <div id="detailPanel" class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>样本ID</th>
+                        <th>来源</th>
+                        <th>状态</th>
+                        <th>原标签</th>
+                        <th>新标签</th>
+                        <th>风险等级</th>
+                        <th>标签冲突</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="detailTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="queuePanel" class="table-container" style="display: none;">
+            <div style="padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; gap: 12px;">
+                <button class="btn btn-outline" onclick="filterQueue('all')">全部异常</button>
+                <button class="btn btn-outline" onclick="filterQueue('processed')">已处理</button>
+                <button class="btn btn-outline" onclick="filterQueue('pending_material')">待补材料</button>
+                <button class="btn btn-outline" onclick="filterQueue('manual_review')">人工改判</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>样本ID</th>
+                        <th>来源</th>
+                        <th>状态</th>
+                        <th>异常说明</th>
+                        <th>证据引用</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="queueTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>样本详情</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+        let currentTab = 'detail';
+        let currentQueueFilter = 'all';
+
+        function loadData() {
+            const params = new URLSearchParams();
+            const source = document.getElementById('filterSource').value;
+            const status = document.getElementById('filterStatus').value;
+            const conflict = document.getElementById('filterConflict').value;
+            const risk = document.getElementById('filterRisk').value;
+            const keyword = document.getElementById('filterKeyword').value;
+
+            if (source) params.append('source', source);
+            if (status) params.append('status_category', status);
+            if (conflict) params.append('has_conflict', conflict);
+            if (risk) params.append('risk_level', risk);
+            if (keyword) params.append('keyword', keyword);
+
+            fetch(`/api/samples?${params.toString()}`)
+                .then(r => r.json())
+                .then(data => {
+                    currentData = data;
+                    renderStats(data.statistics);
+                    renderDetailTable(data.records);
+                    renderQueueTable(data.queues[currentQueueFilter] || []);
+                    updateFilterOptions(data.statistics);
+                    updateCounts(data);
+                    renderMappingInfo(data);
+                })
+                .catch(e => console.error('加载数据失败:', e));
+        }
+
+        function renderStats(stats) {
+            document.getElementById('statTotal').textContent = stats.total_count;
+            document.getElementById('statProcessed').textContent = stats.processed_count;
+            document.getElementById('statPending').textContent = stats.pending_material_count;
+            document.getElementById('statManual').textContent = stats.manual_review_count;
+            document.getElementById('statConflict').textContent = stats.conflict_count;
+        }
+
+        function renderDetailTable(records) {
+            const tbody = document.getElementById('detailTableBody');
+            tbody.innerHTML = records.map(r => `
+                <tr>
+                    <td><code>${r.sample_id}</code></td>
+                    <td><span class="tag tag-source">${r.source}</span></td>
+                    <td>${statusTag(r.status_category)}</td>
+                    <td>${r.original_label || '-'}</td>
+                    <td>${r.new_label || '-'}</td>
+                    <td>${riskTag(r.risk_level)}</td>
+                    <td>${r.conflict_flag ? '<span class="tag tag-conflict">有冲突</span>' : '-'}</td>
+                    <td>
+                        <a class="link-btn" onclick="showDetail('${r.sample_id}')">详情</a>
+                        <a class="link-btn" style="margin-left:8px;" onclick="showChange('${r.sample_id}')">改判解释</a>
+                    </td>
+                </tr>
+            `).join('');
+            document.getElementById('tabDetailCount').textContent = records.length;
+        }
+
+        function renderQueueTable(records) {
+            const tbody = document.getElementById('queueTableBody');
+            tbody.innerHTML = records.map(r => `
+                <tr>
+                    <td><code>${r.sample_id}</code></td>
+                    <td><span class="tag tag-source">${r.source}</span></td>
+                    <td>${statusTag(r.status_category)}</td>
+                    <td>${r.conflict_detail || r.reason || '-'}</td>
+                    <td>${r.evidence_ref || '<span style="color:#ef4444;">缺引用</span>'}</td>
+                    <td>
+                        <a class="link-btn" onclick="showDetail('${r.sample_id}')">查看</a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function statusTag(category) {
+            const map = {
+                processed: ['已处理', 'tag-processed'],
+                pending_material: ['待补材料', 'tag-pending'],
+                manual_review: ['人工改判', 'tag-manual'],
+            };
+            const [text, cls] = map[category] || [category || '未知', ''];
+            return `<span class="tag ${cls}">${text}</span>`;
+        }
+
+        function riskTag(level) {
+            const map = {
+                '高': ['高', 'tag-risk-high'],
+                '中': ['中', 'tag-risk-medium'],
+                '低': ['低', 'tag-risk-low'],
+                '无': ['无', 'tag-risk-none'],
+            };
+            const [text, cls] = map[level] || [level || '-', ''];
+            return `<span class="tag ${cls}">${text}</span>`;
+        }
+
+        function updateFilterOptions(stats) {
+            const sourceSel = document.getElementById('filterSource');
+            const currentSource = sourceSel.value;
+            sourceSel.innerHTML = '<option value="">全部</option>' +
+                Object.keys(stats.source_distribution).map(s =>
+                    `<option value="${s}" ${s === currentSource ? 'selected' : ''}>${s}</option>`
+                ).join('');
+
+            const riskSel = document.getElementById('filterRisk');
+            const currentRisk = riskSel.value;
+            riskSel.innerHTML = '<option value="">全部</option>' +
+                Object.keys(stats.risk_distribution).map(r =>
+                    `<option value="${r}" ${r === currentRisk ? 'selected' : ''}>${r}</option>`
+                ).join('');
+        }
+
+        function updateCounts(data) {
+            document.getElementById('tabDetailCount').textContent = data.records.length;
+            document.getElementById('tabQueueCount').textContent = (data.queues.all || []).length;
+        }
+
+        function renderMappingInfo(data) {
+            const info = document.getElementById('mappingInfo');
+            const hasIssues = data.unmapped_columns.length > 0 || data.ambiguous_fields.length > 0;
+            if (!hasIssues) {
+                info.style.display = 'none';
+                return;
+            }
+            info.style.display = 'inline-block';
+            let html = '<strong>字段映射提示：</strong>';
+            if (data.ambiguous_fields.length > 0) {
+                html += ` ${data.ambiguous_fields.length}个字段存在歧义匹配`;
+            }
+            if (data.unmapped_columns.length > 0) {
+                html += ` ${data.unmapped_columns.length}个列未映射`;
+            }
+            info.innerHTML = html;
+            info.title = `未映射列: ${data.unmapped_columns.join(', ')}\n歧义字段: ${data.ambiguous_fields.map(a => a[0]).join(', ')}`;
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+            document.getElementById('detailPanel').style.display = tab === 'detail' ? 'block' : 'none';
+            document.getElementById('queuePanel').style.display = tab === 'queue' ? 'block' : 'none';
+        }
+
+        function filterQueue(category) {
+            currentQueueFilter = category;
+            if (currentData) {
+                renderQueueTable(currentData.queues[category] || []);
+            }
+        }
+
+        function showDetail(sampleId) {
+            fetch(`/api/sample/${sampleId}`)
+                .then(r => r.json())
+                .then(data => {
+                    const body = document.getElementById('modalBody');
+                    let html = '';
+
+                    if (data.conflict_flag) {
+                        html += `<div class="conflict-banner">
+                            <strong>⚠️ 标签冲突</strong>：${data.conflict_detail || '原始标签与新标签不一致'}
+                        </div>`;
+                    }
+
+                    html += `<div class="detail-section">
+                        <h4>基本信息</h4>
+                        <div class="detail-grid">
+                            <div class="detail-label">样本ID</div>
+                            <div class="detail-value"><code>${data.sample_id}</code></div>
+                            <div class="detail-label">来源</div>
+                            <div class="detail-value">${data.source}</div>
+                            <div class="detail-label">状态</div>
+                            <div class="detail-value">${data.status}</div>
+                            <div class="detail-label">原始标签</div>
+                            <div class="detail-value">${data.original_label || '-'}</div>
+                            <div class="detail-label">新标签</div>
+                            <div class="detail-value">${data.new_label || '-'}</div>
+                            <div class="detail-label">风险等级</div>
+                            <div class="detail-value">${data.risk_level || '-'}</div>
+                        </div>
+                    </div>`;
+
+                    html += `<div class="detail-section">
+                        <h4>内容与理由</h4>
+                        <div class="detail-grid">
+                            <div class="detail-label">内容</div>
+                            <div class="detail-value"><code>${data.content || '-'}</code></div>
+                            <div class="detail-label">理由</div>
+                            <div class="detail-value">${data.reason || '-'}</div>
+                            <div class="detail-label">证据引用</div>
+                            <div class="detail-value">${data.evidence_ref || '<span style="color:#ef4444;">缺引用</span>'}</div>
+                        </div>
+                    </div>`;
+
+                    html += `<div class="detail-section">
+                        <h4>样本表原始字段（追到原始说法）</h4>
+                        <div class="raw-fields">
+                            ${Object.entries(data.raw_fields).map(([k, v]) =>
+                                `<div class="field-line"><span class="field-name">${k}:</span> ${v || '(空)'}</div>`
+                            ).join('')}
+                        </div>
+                    </div>`;
+
+                    body.innerHTML = html;
+                    document.getElementById('detailModal').classList.add('active');
+                });
+        }
+
+        function showChange(sampleId) {
+            fetch(`/api/explain-change/${sampleId}`)
+                .then(r => r.json())
+                .then(data => {
+                    const body = document.getElementById('modalBody');
+                    let html = '';
+
+                    if (!data.found) {
+                        html = `<div class="conflict-banner">${data.message}</div>`;
+                    } else {
+                        html += `<div class="detail-section">
+                            <h4>改判解释 - ${data.sample_id}</h4>
+                            <p style="margin-bottom: 12px; color: #6b7280;">来源: ${data.source}</p>
+                        </div>`;
+
+                        if (data.changes.length > 0) {
+                            html += `<div class="detail-section">
+                                <h4>变更明细</h4>
+                                <ul class="change-list">
+                                    ${data.changes.map(c => `
+                                        <li class="change-item">
+                                            <div class="field">${c.field}</div>
+                                            <div class="values">
+                                                <span class="old-value">${c.old || '(空)'}</span>
+                                                <span class="arrow">→</span>
+                                                <span class="new-value">${c.new || '(空)'}</span>
+                                            </div>
+                                            <div class="reason">理由：${c.reason}</div>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>`;
+                        } else {
+                            html += `<div class="detail-section">
+                                <p style="color: #10b981;">✓ 标签未发生变化</p>
+                            </div>`;
+                        }
+
+                        html += `<div class="detail-section">
+                            <h4>旧模型原始数据</h4>
+                            <div class="raw-fields">
+                                ${Object.entries(data.raw_original_fields || {}).map(([k, v]) =>
+                                    `<div class="field-line"><span class="field-name">${k}:</span> ${v || '(空)'}</div>`
+                                ).join('')}
+                            </div>
+                        </div>`;
+
+                        html += `<div class="detail-section">
+                            <h4>新模型原始数据</h4>
+                            <div class="raw-fields">
+                                ${Object.entries(data.raw_new_fields || {}).map(([k, v]) =>
+                                    `<div class="field-line"><span class="field-name">${k}:</span> ${v || '(空)'}</div>`
+                                ).join('')}
+                            </div>
+                        </div>`;
+                    }
+
+                    body.innerHTML = html;
+                    document.getElementById('detailModal').classList.add('active');
+                });
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function resetFilters() {
+            document.getElementById('filterSource').value = '';
+            document.getElementById('filterStatus').value = '';
+            document.getElementById('filterConflict').value = '';
+            document.getElementById('filterRisk').value = '';
+            document.getElementById('filterKeyword').value = '';
+            loadData();
+        }
+
+        function loadDemo(type) {
+            fetch('/api/load-demo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        loadData();
+                    }
+                });
+        }
+
+        function uploadFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        loadData();
+                    } else {
+                        alert('上传失败: ' + data.error);
+                    }
+                })
+                .catch(e => alert('上传失败: ' + e));
+
+            event.target.value = '';
+        }
+
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        loadData();
+    </script>
+</body>
+</html>
