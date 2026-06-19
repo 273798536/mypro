@@ -1,0 +1,18 @@
+{
+  "name": "graph-db-inspection",
+  "version": "1.0.0",
+  "description": "图数据库关系巡检工具 - 慢查询日志驱动的审计巡检系统",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "init-db": "node scripts/init-db.js",
+    "seed": "node scripts/seed-data.js",
+    "inspect": "node scripts/run-inspection.js",
+    "backup-check": "node scripts/backup-check.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.7",
+    "body-parser": "^1.20.2"
+  }
+}

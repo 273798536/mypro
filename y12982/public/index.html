@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>图数据库关系巡检系统</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #303133; }
+    .header { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); color: white; padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { font-size: 20px; font-weight: 600; }
+    .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+    .nav { background: white; border-bottom: 1px solid #e4e7ed; padding: 0 32px; display: flex; gap: 4px; }
+    .nav-item { padding: 14px 20px; cursor: pointer; color: #606266; font-size: 14px; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    .nav-item:hover { color: #3b82f6; }
+    .nav-item.active { color: #3b82f6; border-bottom-color: #3b82f6; font-weight: 500; }
+    .main { padding: 24px 32px; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #1f2937; display: flex; align-items: center; gap: 8px; }
+    .card-title::before { content: ''; width: 4px; height: 18px; background: #3b82f6; border-radius: 2px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .stat-card { background: white; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .stat-value { font-size: 32px; font-weight: 700; color: #1f2937; }
+    .stat-label { font-size: 13px; color: #6b7280; margin-top: 4px; }
+    .stat-card.critical .stat-value { color: #dc2626; }
+    .stat-card.warning .stat-value { color: #f59e0b; }
+    .stat-card.success .stat-value { color: #16a34a; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th { background: #f8fafc; padding: 12px; text-align: left; font-weight: 600; color: #475569; border-bottom: 1px solid #e2e8f0; white-space: nowrap; }
+    td { padding: 12px; border-bottom: 1px solid #f1f5f9; }
+    tr:hover { background: #f8fafc; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .badge-critical { background: #fee2e2; color: #dc2626; }
+    .badge-warning { background: #fef3c7; color: #d97706; }
+    .badge-info { background: #dbeafe; color: #2563eb; }
+    .badge-pending { background: #f3f4f6; color: #6b7280; }
+    .badge-resolved { background: #dcfce7; color: #16a34a; }
+    .badge-approved { background: #e0e7ff; color: #4f46e5; }
+    .btn { padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+    .btn-primary { background: #3b82f6; color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-success { background: #10b981; color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-warning { background: #f59e0b; color: white; }
+    .btn-warning:hover { background: #d97706; }
+    .btn-outline { background: white; border: 1px solid #d1d5db; color: #374151; }
+    .btn-outline:hover { background: #f9fafb; }
+    .filters { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+    .filter-group { display: flex; align-items: center; gap: 8px; }
+    .filter-group label { font-size: 13px; color: #6b7280; }
+    select, input { padding: 6px 10px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 13px; background: white; }
+    select:focus, input:focus { outline: none; border-color: #3b82f6; }
+    .detail-panel { background: #f8fafc; border-radius: 6px; padding: 16px; margin-top: 12px; display: none; }
+    .detail-panel.active { display: block; }
+    .detail-row { display: flex; margin-bottom: 8px; font-size: 13px; }
+    .detail-label { color: #6b7280; width: 120px; flex-shrink: 0; }
+    .detail-value { color: #1f2937; flex: 1; }
+    .code-block { background: #1e293b; color: #e2e8f0; padding: 12px; border-radius: 6px; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: #e5e7eb; }
+    .timeline-item { position: relative; margin-bottom: 16px; }
+    .timeline-item::before { content: ''; position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: #3b82f6; border: 2px solid white; box-shadow: 0 0 0 2px #3b82f6; }
+    .timeline-time { font-size: 12px; color: #6b7280; }
+    .timeline-content { font-size: 13px; color: #374151; margin-top: 2px; }
+    .timeline-operator { font-size: 12px; color: #3b82f6; margin-left: 8px; }
+    .report-explanation { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 16px; border-radius: 4px; margin-bottom: 16px; }
+    .report-explanation h4 { color: #166534; margin-bottom: 8px; font-size: 14px; }
+    .report-explanation p { color: #14532d; font-size: 13px; line-height: 1.8; white-space: pre-wrap; }
+    .copy-btn { margin-top: 8px; }
+    .empty { text-align: center; padding: 40px; color: #9ca3af; font-size: 14px; }
+    .link { color: #3b82f6; cursor: pointer; text-decoration: none; }
+    .link:hover { text-decoration: underline; }
+    .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: #3b82f6; border-radius: 4px; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.active { display: flex; }
+    .modal { background: white; border-radius: 8px; padding: 24px; width: 560px; max-width: 90%; max-height: 80vh; overflow-y: auto; }
+    .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; color: #374151; margin-bottom: 6px; font-weight: 500; }
+    .form-group select, .form-group input, .form-group textarea { width: 100%; padding: 8px 12px; font-size: 13px; }
+    .form-group textarea { min-height: 80px; resize: vertical; font-family: inherit; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .breadcrumb { font-size: 13px; color: #6b7280; margin-bottom: 16px; }
+    .breadcrumb .link { color: #3b82f6; }
+    .tag { display: inline-block; padding: 2px 8px; background: #e5e7eb; color: #4b5563; border-radius: 3px; font-size: 11px; margin-right: 4px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h1>图数据库关系巡检系统</h1>
+      <div class="subtitle">慢查询日志驱动 · 审计可追溯 · 批次化管理</div>
+    </div>
+    <div style="font-size: 13px; opacity: 0.9;">
+      当前用户：<span id="currentUser">张伟 (仓储系统工程师)</span>
+    </div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-item active" data-page="dashboard">概览看板</div>
+    <div class="nav-item" data-page="slowQueries">慢查询日志</div>
+    <div class="nav-item" data-page="items">巡检条目</div>
+    <div class="nav-item" data-page="batches">巡检批次</div>
+    <div class="nav-item" data-page="reports">巡检报告</div>
+    <div class="nav-item" data-page="backups">备份校验</div>
+    <div class="nav-item" data-page="audit">审计追踪</div>
+  </div>
+
+  <div class="main">
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card critical">
+          <div class="stat-value" id="stat-critical">0</div>
+          <div class="stat-label">待处理严重项</div>
+        </div>
+        <div class="stat-card warning">
+          <div class="stat-value" id="stat-pending">0</div>
+          <div class="stat-label">待处理巡检项</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total-sq">0</div>
+          <div class="stat-label">慢查询总数</div>
+        </div>
+        <div class="stat-card success">
+          <div class="stat-value" id="stat-total-batch">0</div>
+          <div class="stat-label">巡检批次</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">最新巡检批次</div>
+          <table>
+            <thead>
+              <tr><th>批次号</th><th>类型</th><th>状态</th><th>慢查询数</th><th>操作人</th></tr>
+            </thead>
+            <tbody id="recent-batches-tbody"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">巡检项严重程度分布</div>
+          <div id="severity-dist"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">待处理巡检项（按严重程度排序）</div>
+        <table>
+          <thead>
+            <tr><th>条目ID</th><th>标题</th><th>严重程度</th><th>类型</th><th>批次</th><th>状态</th><th>操作</th></tr>
+          </thead>
+          <tbody id="dashboard-items-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="page-slowQueries">
+      <div class="card">
+        <div class="card-title">慢查询日志列表</div>
+        <div class="filters">
+          <div class="filter-group">
+            <label>状态：</label>
+            <select id="sq-status-filter">
+              <option value="">全部</option>
+              <option value="pending">待处理</option>
+              <option value="resolved">已解决</option>
+              <option value="approved">已核准</option>
+              <option value="ignored">已忽略</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>严重程度：</label>
+            <select id="sq-severity-filter">
+              <option value="">全部</option>
+              <option value="critical">严重</option>
+              <option value="warning">警告</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>批次号：</label>
+            <input type="text" id="sq-batch-filter" placeholder="输入批次号">
+          </div>
+          <button class="btn btn-primary" onclick="loadSlowQueries()">查询</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>查询ID</th><th>类型</th><th>执行时间</th><th>锁等待</th><th>扫描行数</th><th>严重程度</th><th>状态</th><th>批次</th><th>执行时间点</th><th>操作</th></tr>
+          </thead>
+          <tbody id="slow-queries-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="page-items">
+      <div class="card">
+        <div class="card-title">巡检条目列表</div>
+        <div class="filters">
+          <div class="filter-group">
+            <label>状态：</label>
+            <select id="item-status-filter">
+              <option value="">全部</option>
+              <option value="pending">待处理</option>
+              <option value="resolved">已解决</option>
+              <option value="approved">已核准</option>
+              <option value="ignored">已忽略</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>严重程度：</label>
+            <select id="item-severity-filter">
+              <option value="">全部</option>
+              <option value="critical">严重</option>
+              <option value="warning">警告</option>
+              <option value="info">提示</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>类型：</label>
+            <select id="item-type-filter">
+              <option value="">全部</option>
+              <option value="slow_query">慢查询</option>
+              <option value="lock_wait">锁等待</option>
+              <option value="backup_check">备份校验</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="loadInspectionItems()">查询</button>
+        </div>
+        <table>
+          <thead>
+            <tr><th>条目ID</th><th>标题</th><th>类型</th><th>严重程度</th><th>状态</th><th>处理人</th><th>批次</th><th>创建时间</th><th>操作</th></tr>
+          </thead>
+          <tbody id="items-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="page-batches">
+      <div class="card">
+        <div class="card-title">巡检批次列表</div>
+        <div style="margin-bottom: 16px;">
+          <button class="btn btn-primary" onclick="showCreateBatchModal()">+ 新建批次</button>
+          <span style="margin-left: 12px; font-size: 13px; color: #6b7280;">备份校验和慢查询归因共用同一批处理记录</span>
+        </div>
+        <table>
+          <thead>
+            <tr><th>批次号</th><th>类型</th><th>开始时间</th><th>结束时间</th><th>状态</th><th>慢查询数</th><th>备份校验</th><th>操作人</th><th>操作</th></tr>
+          </thead>
+          <tbody id="batches-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card" id="batch-detail-card" style="display: none;">
+        <div class="breadcrumb">
+          <span class="link" onclick="hideBatchDetail()">&larr; 返回批次列表</span>
+        </div>
+        <div class="card-title" id="batch-detail-title">批次详情</div>
+        <div class="two-col">
+          <div>
+            <div class="detail-row"><span class="detail-label">批次号：</span><span class="detail-value" id="bd-batch-id"></span></div>
+            <div class="detail-row"><span class="detail-label">类型：</span><span class="detail-value" id="bd-type"></span></div>
+            <div class="detail-row"><span class="detail-label">状态：</span><span class="detail-value" id="bd-status"></span></div>
+            <div class="detail-row"><span class="detail-label">操作人：</span><span class="detail-value" id="bd-operator"></span></div>
+          </div>
+          <div>
+            <div class="detail-row"><span class="detail-label">开始时间：</span><span class="detail-value" id="bd-start"></span></div>
+            <div class="detail-row"><span class="detail-label">结束时间：</span><span class="detail-value" id="bd-end"></span></div>
+            <div class="detail-row"><span class="detail-label">慢查询数：</span><span class="detail-value" id="bd-sq-count"></span></div>
+            <div class="detail-row"><span class="detail-label">备份校验：</span><span class="detail-value" id="bd-backup"></span></div>
+          </div>
+        </div>
+        <div class="detail-row" style="margin-top: 8px;">
+          <span class="detail-label">备注：</span>
+          <span class="detail-value" id="bd-remark"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-reports">
+      <div class="card">
+        <div class="card-title">巡检报告列表</div>
+        <table>
+          <thead>
+            <tr><th>报告ID</th><th>标题</th><th>批次号</th><th>严重</th><th>警告</th><th>已解决</th><th>审核状态</th><th>审核人</th><th>创建时间</th><th>操作</th></tr>
+          </thead>
+          <tbody id="reports-tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card" id="report-detail-card" style="display: none;">
+        <div class="breadcrumb">
+          <span class="link" onclick="hideReportDetail()">&larr; 返回报告列表</span>
+        </div>
+        <div class="card-title" id="report-detail-title">报告详情</div>
+
+        <div class="report-explanation">
+          <h4>📋 普通话解释（可直接复制给同事）</h4>
+          <p id="report-plain-text"></p>
+          <button class="btn btn-outline copy-btn" onclick="copyPlainExplanation()">📋 复制这段话</button>
+        </div>
+
+        <div class="two-col" style="margin-bottom: 20px;">
+          <div>
+            <div class="detail-row"><span class="detail-label">报告ID：</span><span class="detail-value" id="rd-report-id"></span></div>
+            <div class="detail-row"><span class="detail-label">批次号：</span><span class="detail-value" id="rd-batch-id"></span></div>
+            <div class="detail-row"><span class="detail-label">审核状态：</span><span class="detail-value" id="rd-review-status"></span></div>
+          </div>
+          <div>
+            <div class="detail-row"><span class="detail-label">严重：</span><span class="detail-value" id="rd-critical"></span></div>
+            <div class="detail-row"><span class="detail-label">警告：</span><span class="detail-value" id="rd-warning"></span></div>
+            <div class="detail-row"><span class="detail-label">已解决：</span><span class="detail-value" id="rd-resolved"></span></div>
+          </div>
+        </div>
+
+        <div class="card-title" style="font-size: 14px;">报告摘要</div>
+        <p style="font-size: 13px; color: #374151; line-height: 1.8; margin-bottom: 20px;" id="rd-summary"></p>
+
+        <div class="card-title" style="font-size: 14px;">关联巡检条目</div>
+        <table>
+          <thead>
+            <tr><th>条目ID</th><th>标题</th><th>类型</th><th>严重程度</th><th>状态</th><th>处理人</th><th>处理意见</th></tr>
+          </thead>
+          <tbody id="report-items-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="page-backups">
+      <div class="card">
+        <div class="card-title">备份校验记录</div>
+        <div style="margin-bottom: 16px; font-size: 13px; color: #6b7280;">
+          备份校验与慢查询归因共用同一批处理记录，确保审计时数据口径一致
+        </div>
+        <table>
+          <thead>
+            <tr><th>备份ID</th><th>关联批次</th><th>备份时间</th><th>大小</th><th>路径</th><th>校验状态</th><th>校验结果</th></tr>
+          </thead>
+          <tbody id="backups-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page" id="page-audit">
+      <div class="card">
+        <div class="card-title">审计追踪</div>
+        <div class="filters">
+          <div class="filter-group">
+            <label>目标类型：</label>
+            <select id="audit-target-type">
+              <option value="">全部</option>
+              <option value="inspection_item">巡检条目</option>
+              <option value="inspection_report">巡检报告</option>
+              <option value="inspection_batch">巡检批次</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>操作人：</label>
+            <input type="text" id="audit-operator" placeholder="输入操作人">
+          </div>
+          <button class="btn btn-primary" onclick="loadAuditTrail()">查询</button>
+        </div>
+        <div style="margin-bottom: 16px; font-size: 13px; color: #6b7280;">
+          顺着一条异常往回查，能查到慢查询日志和处理意见才算顺
+        </div>
+        <table>
+          <thead>
+            <tr><th>时间</th><th>操作类型</th><th>目标类型</th><th>目标ID</th><th>原值</th><th>新值</th><th>操作人</th><th>原因/说明</th></tr>
+          </thead>
+          <tbody id="audit-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="handleModal">
+    <div class="modal">
+      <div class="modal-title">处理巡检条目</div>
+      <div class="form-group">
+        <label>条目ID</label>
+        <input type="text" id="handle-item-id" readonly>
+      </div>
+      <div class="form-group">
+        <label>条目标题</label>
+        <input type="text" id="handle-item-title" readonly>
+      </div>
+      <div class="form-group">
+        <label>处理状态 <span style="color: #dc2626;">*</span></label>
+        <select id="handle-status">
+          <option value="resolved">已解决</option>
+          <option value="approved">复核通过（核准）</option>
+          <option value="ignored">忽略</option>
+          <option value="pending">待处理</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>处理人</label>
+        <input type="text" id="handle-handler" value="张伟">
+      </div>
+      <div class="form-group">
+        <label>处理意见/原因 <span style="color: #dc2626;">*</span></label>
+        <textarea id="handle-opinion" placeholder="请详细说明处理原因或解决办法，审计组会追问依据..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeHandleModal()">取消</button>
+        <button class="btn btn-primary" onclick="submitHandle()">确认提交</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="batchModal">
+    <div class="modal">
+      <div class="modal-title">新建巡检批次</div>
+      <div class="form-group">
+        <label>批次类型 <span style="color: #dc2626;">*</span></label>
+        <select id="new-batch-type">
+          <option value="daily_inspection">日常巡检</option>
+          <option value="backup_verification">备份校验+慢查询归因</option>
+          <option name="special_inspection">专项巡检</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>操作人</label>
+        <input type="text" id="new-batch-operator" value="张伟">
+      </div>
+      <div class="form-group">
+        <label>备注说明</label>
+        <textarea id="new-batch-remark" placeholder="简要说明本次巡检的目的和范围..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeBatchModal()">取消</button>
+        <button class="btn btn-primary" onclick="createBatch()">创建批次</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = '/api';
+
+    function navigate(page) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      document.getElementById(`page-${page}`).classList.add('active');
+
+      if (page === 'dashboard') loadDashboard();
+      else if (page === 'slowQueries') loadSlowQueries();
+      else if (page === 'items') loadInspectionItems();
+      else if (page === 'batches') loadBatches();
+      else if (page === 'reports') loadReports();
+      else if (page === 'backups') loadBackups();
+      else if (page === 'audit') loadAuditTrail();
+    }
+
+    document.querySelectorAll('.nav-item').forEach(el => {
+      el.addEventListener('click', () => navigate(el.dataset.page));
+    });
+
+    function statusBadge(status) {
+      const map = {
+        'pending': ['badge-pending', '待处理'],
+        'resolved': ['badge-resolved', '已解决'],
+        'approved': ['badge-approved', '已核准'],
+        'ignored': ['badge-pending', '已忽略'],
+        'running': ['badge-warning', '进行中'],
+        'completed': ['badge-resolved', '已完成'],
+        'draft': ['badge-pending', '草稿'],
+        'verified': ['badge-resolved', '已校验'],
+        'failed': ['badge-critical', '失败']
+      };
+      const [cls, text] = map[status] || ['badge-pending', status];
+      return `<span class="badge ${cls}">${text}</span>`;
+    }
+
+    function severityBadge(sev) {
+      const map = {
+        'critical': ['badge-critical', '严重'],
+        'warning': ['badge-warning', '警告'],
+        'info': ['badge-info', '提示']
+      };
+      const [cls, text] = map[sev] || ['badge-info', sev];
+      return `<span class="badge ${cls}">${text}</span>`;
+    }
+
+    function itemTypeText(type) {
+      const map = {
+        'slow_query': '慢查询',
+        'lock_wait': '锁等待',
+        'backup_check': '备份校验'
+      };
+      return map[type] || type;
+    }
+
+    function batchTypeText(type) {
+      const map = {
+        'daily_inspection': '日常巡检',
+        'backup_verification': '备份校验+归因',
+        'special_inspection': '专项巡检'
+      };
+      return map[type] || type;
+    }
+
+    async function loadDashboard() {
+      try {
+        const res = await fetch(`${API_BASE}/statistics/dashboard`);
+        const data = await res.json();
+
+        document.getElementById('stat-critical').textContent = data.critical_items;
+        document.getElementById('stat-pending').textContent = data.pending_items;
+        document.getElementById('stat-total-sq').textContent = data.total_slow_queries;
+        document.getElementById('stat-total-batch').textContent = data.total_batches;
+
+        const tbody = document.getElementById('recent-batches-tbody');
+        tbody.innerHTML = data.recent_batches.map(b => `
+          <tr>
+            <td><span class="link" onclick="navigate('batches');setTimeout(()=>showBatchDetail('${b.batch_id}'),200)">${b.batch_id}</span></td>
+            <td>${batchTypeText(b.batch_type)}</td>
+            <td>${statusBadge(b.status)}</td>
+            <td>${b.slow_query_count}</td>
+            <td>${b.operator || '-'}</td>
+          </tr>
+        `).join('');
+
+        const sevDist = document.getElementById('severity-dist');
+        const severityData = data.by_severity || [];
+        const total = severityData.reduce((s, d) => s + d.count, 0) || 1;
+        sevDist.innerHTML = severityData.map(d => {
+          const pct = ((d.count / total) * 100).toFixed(1);
+          const label = d.severity === 'critical' ? '严重' : d.severity === 'warning' ? '警告' : '提示';
+          const color = d.severity === 'critical' ? '#dc2626' : d.severity === 'warning' ? '#f59e0b' : '#3b82f6';
+          return `
+            <div style="margin-bottom: 12px;">
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;">
+                <span>${label}</span>
+                <span style="color:#6b7280;">${d.count} 条 (${pct}%)</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color};"></div></div>
+            </div>
+          `;
+        }).join('');
+
+        const itemsRes = await fetch(`${API_BASE}/inspection-items?status=pending&limit=10`);
+        const itemsData = await itemsRes.json();
+        const itemsTbody = document.getElementById('dashboard-items-tbody');
+        itemsTbody.innerHTML = itemsData.data.map(item => `
+          <tr>
+            <td>${item.item_id}</td>
+            <td>${item.title}</td>
+            <td>${severityBadge(item.severity)}</td>
+            <td>${itemTypeText(item.item_type)}</td>
+            <td>${item.batch_id}</td>
+            <td>${statusBadge(item.status)}</td>
+            <td><button class="btn btn-outline" style="padding:3px 10px;font-size:12px;" onclick="openHandleModal('${item.item_id}','${item.title.replace(/'/g,"\\'")}')">处理</button></td>
+          </tr>
+        `).join('');
+        if (itemsData.data.length === 0) {
+          itemsTbody.innerHTML = '<tr><td colspan="7" class="empty">暂无待处理项</td></tr>';
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadSlowQueries() {
+      const status = document.getElementById('sq-status-filter').value;
+      const severity = document.getElementById('sq-severity-filter').value;
+      const batchId = document.getElementById('sq-batch-filter').value;
+
+      let params = new URLSearchParams();
+      if (status) params.set('status', status);
+      if (severity) params.set('severity', severity);
+      if (batchId) params.set('batch_id', batchId);
+
+      try {
+        const res = await fetch(`${API_BASE}/slow-queries?${params.toString()}`);
+        const data = await res.json();
+        const tbody = document.getElementById('slow-queries-tbody');
+
+        if (data.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="10" class="empty">暂无数据</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.data.map(q => `
+          <tr>
+            <td>${q.query_id}</td>
+            <td><span class="tag">${q.query_type}</span></td>
+            <td style="color:${q.execution_time_ms > 5000 ? '#dc2626' : '#f59e0b'};font-weight:500;">${(q.execution_time_ms/1000).toFixed(2)}s</td>
+            <td>${(q.lock_wait_time_ms/1000).toFixed(2)}s</td>
+            <td>${q.rows_scanned?.toLocaleString() || '-'}</td>
+            <td>${severityBadge(q.severity)}</td>
+            <td>${statusBadge(q.status)}</td>
+            <td>${q.batch_id || '-'}</td>
+            <td>${q.execute_time}</td>
+            <td><span class="link" onclick="showSlowQueryDetail(${q.id})">查看</span></td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function showSlowQueryDetail(id) {
+      try {
+        const res = await fetch(`${API_BASE}/slow-queries/${id}`);
+        const data = await res.json();
+        alert('查询语句：\n\n' + data.query_text + '\n\n执行时间：' + (data.execution_time_ms/1000).toFixed(2) + 's\n锁等待：' + (data.lock_wait_time_ms/1000).toFixed(2) + 's');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadInspectionItems() {
+      const status = document.getElementById('item-status-filter').value;
+      const severity = document.getElementById('item-severity-filter').value;
+      const itemType = document.getElementById('item-type-filter').value;
+
+      let params = new URLSearchParams();
+      if (status) params.set('status', status);
+      if (severity) params.set('severity', severity);
+      if (itemType) params.set('item_type', itemType);
+
+      try {
+        const res = await fetch(`${API_BASE}/inspection-items?${params.toString()}`);
+        const data = await res.json();
+        const tbody = document.getElementById('items-tbody');
+
+        if (data.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" class="empty">暂无数据</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.data.map(item => `
+          <tr>
+            <td><span class="link" onclick="showItemDetail('${item.item_id}')">${item.item_id}</span></td>
+            <td>${item.title}</td>
+            <td>${itemTypeText(item.item_type)}</td>
+            <td>${severityBadge(item.severity)}</td>
+            <td>${statusBadge(item.status)}</td>
+            <td>${item.handler || '-'}</td>
+            <td>${item.batch_id}</td>
+            <td>${item.created_at}</td>
+            <td><button class="btn btn-outline" style="padding:3px 10px;font-size:12px;" onclick="openHandleModal('${item.item_id}','${item.title.replace(/'/g,"\\'")}')">处理</button></td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function showItemDetail(itemId) {
+      try {
+        const res = await fetch(`${API_BASE}/inspection-items/${itemId}`);
+        const data = await res.json();
+        const item = data.item;
+
+        let msg = `【${item.item_id}】${item.title}\n\n`;
+        msg += `类型：${itemTypeText(item.item_type)}\n`;
+        msg += `严重程度：${item.severity === 'critical' ? '严重' : item.severity === 'warning' ? '警告' : '提示'}\n`;
+        msg += `状态：${item.status}\n\n`;
+        msg += `描述：${item.description || '无'}\n\n`;
+        if (item.query_text) {
+          msg += `关联查询：${item.query_text.substring(0, 100)}...\n\n`;
+        }
+        if (item.handle_opinion) {
+          msg += `处理意见：${item.handle_opinion}\n`;
+          msg += `处理人：${item.handler} @ ${item.handle_time}\n`;
+        }
+
+        if (data.audit_trail && data.audit_trail.length > 0) {
+          msg += '\n--- 审计历史 ---\n';
+          data.audit_trail.forEach(a => {
+            msg += `${a.created_at} ${a.operator} 将状态从 ${a.old_value} 改为 ${a.new_value}\n`;
+            if (a.reason) msg += `  原因：${a.reason}\n`;
+          });
+        }
+
+        alert(msg);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function openHandleModal(itemId, itemTitle) {
+      document.getElementById('handle-item-id').value = itemId;
+      document.getElementById('handle-item-title').value = itemTitle;
+      document.getElementById('handle-status').value = 'resolved';
+      document.getElementById('handle-opinion').value = '';
+      document.getElementById('handleModal').classList.add('active');
+    }
+
+    function closeHandleModal() {
+      document.getElementById('handleModal').classList.remove('active');
+    }
+
+    async function submitHandle() {
+      const itemId = document.getElementById('handle-item-id').value;
+      const status = document.getElementById('handle-status').value;
+      const handler = document.getElementById('handle-handler').value;
+      const opinion = document.getElementById('handle-opinion').value;
+
+      if (!opinion.trim()) {
+        alert('请填写处理意见/原因，审计组会追问依据');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/inspection-items/${itemId}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status, handler, handle_opinion: opinion, operator: handler })
+        });
+
+        if (res.ok) {
+          alert('处理成功，已记录审计轨迹');
+          closeHandleModal();
+          const activePage = document.querySelector('.page.active').id.replace('page-', '');
+          if (activePage === 'items') loadInspectionItems();
+          else if (activePage === 'dashboard') loadDashboard();
+          else if (activePage === 'reports' && document.getElementById('report-detail-card').style.display !== 'none') {
+            const reportId = document.getElementById('rd-report-id').textContent;
+            showReportDetail(reportId);
+          }
+        } else {
+          alert('处理失败');
+        }
+      } catch (e) {
+        console.error(e);
+        alert('处理失败');
+      }
+    }
+
+    async function loadBatches() {
+      try {
+        const res = await fetch(`${API_BASE}/batches`);
+        const data = await res.json();
+        const tbody = document.getElementById('batches-tbody');
+
+        if (data.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="9" class="empty">暂无数据</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.data.map(b => `
+          <tr>
+            <td><span class="link" onclick="showBatchDetail('${b.batch_id}')">${b.batch_id}</span></td>
+            <td>${batchTypeText(b.batch_type)}</td>
+            <td>${b.start_time}</td>
+            <td>${b.end_time || '-'}</td>
+            <td>${statusBadge(b.status)}</td>
+            <td>${b.slow_query_count}</td>
+            <td>${b.backup_verified}/${b.backup_total}</td>
+            <td>${b.operator}</td>
+            <td><button class="btn btn-outline" style="padding:3px 10px;font-size:12px;" onclick="showBatchDetail('${b.batch_id}')">查看</button></td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function showBatchDetail(batchId) {
+      try {
+        const res = await fetch(`${API_BASE}/batches/${batchId}`);
+        const data = await res.json();
+
+        document.getElementById('batch-detail-card').style.display = 'block';
+        document.getElementById('batch-detail-title').textContent = `批次详情 - ${batchId}`;
+        document.getElementById('bd-batch-id').textContent = data.batch.batch_id;
+        document.getElementById('bd-type').textContent = batchTypeText(data.batch.batch_type);
+        document.getElementById('bd-status').innerHTML = statusBadge(data.batch.status);
+        document.getElementById('bd-operator').textContent = data.batch.operator;
+        document.getElementById('bd-start').textContent = data.batch.start_time;
+        document.getElementById('bd-end').textContent = data.batch.end_time || '-';
+        document.getElementById('bd-sq-count').textContent = data.slowQueries.length + ' 条';
+        document.getElementById('bd-backup').textContent = `${data.batch.backup_verified}/${data.batch.backup_total}`;
+        document.getElementById('bd-remark').textContent = data.batch.remark || '无';
+
+        data.batch.batch_id = batchId;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function hideBatchDetail() {
+      document.getElementById('batch-detail-card').style.display = 'none';
+    }
+
+    function showCreateBatchModal() {
+      document.getElementById('batchModal').classList.add('active');
+    }
+
+    function closeBatchModal() {
+      document.getElementById('batchModal').classList.remove('active');
+    }
+
+    async function createBatch() {
+      const batchType = document.getElementById('new-batch-type').value;
+      const operator = document.getElementById('new-batch-operator').value;
+      const remark = document.getElementById('new-batch-remark').value;
+
+      try {
+        const res = await fetch(`${API_BASE}/batches`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ batch_type: batchType, operator, remark })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          alert('批次创建成功：' + data.batch_id);
+          closeBatchModal();
+          loadBatches();
+        } else {
+          alert('创建失败');
+        }
+      } catch (e) {
+        console.error(e);
+        alert('创建失败');
+      }
+    }
+
+    async function loadReports() {
+      try {
+        const res = await fetch(`${API_BASE}/reports`);
+        const data = await res.json();
+        const tbody = document.getElementById('reports-tbody');
+
+        if (data.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="10" class="empty">暂无报告</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.data.map(r => `
+          <tr>
+            <td><span class="link" onclick="showReportDetail('${r.report_id}')">${r.report_id}</span></td>
+            <td>${r.title}</td>
+            <td>${r.batch_id}</td>
+            <td style="color:#dc2626;font-weight:500;">${r.critical_count}</td>
+            <td style="color:#f59e0b;font-weight:500;">${r.warning_count}</td>
+            <td style="color:#16a34a;font-weight:500;">${r.resolved_count}</td>
+            <td>${statusBadge(r.review_status)}</td>
+            <td>${r.reviewer || '-'}</td>
+            <td>${r.created_at}</td>
+            <td><button class="btn btn-outline" style="padding:3px 10px;font-size:12px;" onclick="showReportDetail('${r.report_id}')">查看</button></td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function showReportDetail(reportId) {
+      try {
+        const res = await fetch(`${API_BASE}/reports/${reportId}`);
+        const data = await res.json();
+
+        document.getElementById('report-detail-card').style.display = 'block';
+        document.getElementById('report-detail-title').textContent = data.report.title;
+        document.getElementById('rd-report-id').textContent = data.report.report_id;
+        document.getElementById('rd-batch-id').textContent = data.report.batch_id;
+        document.getElementById('rd-review-status').innerHTML = statusBadge(data.report.review_status);
+        document.getElementById('rd-critical').textContent = data.report.critical_count;
+        document.getElementById('rd-warning').textContent = data.report.warning_count;
+        document.getElementById('rd-resolved').textContent = data.report.resolved_count;
+        document.getElementById('rd-summary').textContent = data.report.summary || '暂无摘要';
+        document.getElementById('report-plain-text').textContent = data.report.plain_explanation || '暂无普通话解释';
+
+        const tbody = document.getElementById('report-items-tbody');
+        tbody.innerHTML = data.items.map(item => `
+          <tr>
+            <td><span class="link" onclick="showItemDetail('${item.item_id}')">${item.item_id}</span></td>
+            <td>${item.title}</td>
+            <td>${itemTypeText(item.item_type)}</td>
+            <td>${severityBadge(item.severity)}</td>
+            <td>${statusBadge(item.status)}</td>
+            <td>${item.handler || '-'}</td>
+            <td>${item.handle_opinion || '-'}</td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function hideReportDetail() {
+      document.getElementById('report-detail-card').style.display = 'none';
+    }
+
+    function copyPlainExplanation() {
+      const text = document.getElementById('report-plain-text').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('已复制到剪贴板，可直接粘贴给同事');
+      }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('已复制到剪贴板');
+      });
+    }
+
+    async function loadBackups() {
+      try {
+        const res = await fetch(`${API_BASE}/backup-records`);
+        const data = await res.json();
+        const tbody = document.getElementById('backups-tbody');
+
+        if (data.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty">暂无备份记录</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.data.map(b => `
+          <tr>
+            <td>${b.backup_id}</td>
+            <td>${b.batch_id ? `<span class="link" onclick="navigate('batches');setTimeout(()=>showBatchDetail('${b.batch_id}'),200)">${b.batch_id}</span>` : '-'}</td>
+            <td>${b.backup_time}</td>
+            <td>${(b.backup_size_bytes / 1024 / 1024).toFixed(1)} MB</td>
+            <td style="font-size:12px;color:#6b7280;">${b.backup_path}</td>
+            <td>${statusBadge(b.verification_status)}</td>
+            <td>${b.verification_result || '-'}</td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    async function loadAuditTrail() {
+      const targetType = document.getElementById('audit-target-type').value;
+      const operator = document.getElementById('audit-operator').value;
+
+      let params = new URLSearchParams();
+      if (targetType) params.set('target_type', targetType);
+      if (operator) params.set('operator', operator);
+
+      try {
+        const res = await fetch(`${API_BASE}/audit-trail?${params.toString()}`);
+        const data = await res.json();
+        const tbody = document.getElementById('audit-tbody');
+
+        if (data.data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="8" class="empty">暂无审计记录</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.data.map(a => `
+          <tr>
+            <td>${a.created_at}</td>
+            <td>${a.action_type}</td>
+            <td>${a.target_type}</td>
+            <td><span class="link" onclick="navigateToTarget('${a.target_type}','${a.target_id}')">${a.target_id}</span></td>
+            <td style="color:#dc2626;">${a.old_value || '-'}</td>
+            <td style="color:#16a34a;">${a.new_value || '-'}</td>
+            <td>${a.operator}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">${a.reason || '-'}</td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function navigateToTarget(targetType, targetId) {
+      if (targetType === 'inspection_item') {
+        navigate('items');
+        setTimeout(() => showItemDetail(targetId), 200);
+      } else if (targetType === 'inspection_report') {
+        navigate('reports');
+        setTimeout(() => showReportDetail(targetId), 200);
+      } else if (targetType === 'inspection_batch') {
+        navigate('batches');
+        setTimeout(() => showBatchDetail(targetId), 200);
+      }
+    }
+
+    loadDashboard();
+  </script>
+</body>
+</html>
