@@ -1,0 +1,9 @@
+field_name,field_type,is_unique_key,description
+工单号,string,true,业务工单唯一编号
+供应商名称,string,false,供应商全称
+金额,number,false,订单金额
+币种,string,false,币种代码
+订单日期,date,false,下单日期
+类别,string,false,采购类别
+状态,string,false,审批状态
+申请人,string,false,申请人员姓名
