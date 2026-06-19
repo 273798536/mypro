@@ -1,0 +1,11 @@
+report_name,table_name,column_count,row_count,original_size_mb,compressed_size_mb,compression_ratio,source_system,owner,backup_exists
+用户行为日报,dwd_user_action_daily,42,12500000,2048,820,,行为采集系统,zhangsan,是
+订单明细表,dwd_order_detail,28,3800000,512,420,,交易系统,lisi,是
+商品维度表,dim_product,15,85000,64,18,,商品中心,wangwu,否
+用户维度表,dim_user,22,6200000,1024,307,,用户中心,zhaoliu,是
+营销活动表,dws_marketing_activity,35,520000,256,120,,营销平台,,否
+支付流水表,dwd_payment_flow,19,8900000,768,180,,支付系统,qianqi,是
+库存快照表,dwd_inventory_snapshot,12,2100000,384,320,,WMS系统,sunba,是
+广告点击表,dwd_ad_click,24,15600000,1536,450,,广告系统,zhoujiu,否
+会员等级表,dim_member_level,8,15000,32,10,,会员中心,zhengshi,是
+风控事件表,dwd_risk_event,33,4200000,896,210,,风控系统,,否
