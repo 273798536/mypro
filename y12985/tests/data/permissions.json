@@ -1,0 +1,58 @@
+[
+  {
+    "user_id": "u001",
+    "user_name": "alice",
+    "table_name": "users",
+    "permission_level": "owner",
+    "granted_at": "2023-06-15T10:00:00",
+    "grantor": "admin"
+  },
+  {
+    "user_id": "u002",
+    "user_name": "bob",
+    "table_name": "orders",
+    "permission_level": "write",
+    "granted_at": "2023-07-20T14:30:00",
+    "grantor": "dba_team"
+  },
+  {
+    "user_id": "u003",
+    "user_name": "charlie",
+    "table_name": "transactions",
+    "permission_level": "admin",
+    "granted_at": "2023-08-01T09:00:00",
+    "grantor": "security_admin"
+  },
+  {
+    "user_id": "u004",
+    "user_name": "david",
+    "table_name": "products",
+    "permission_level": "read",
+    "granted_at": "2023-09-10T11:00:00",
+    "grantor": "data_team"
+  },
+  {
+    "user_id": "u005",
+    "user_name": "eve",
+    "table_name": "payment_info",
+    "permission_level": "write",
+    "granted_at": "2023-10-05T16:00:00",
+    "grantor": "fin_team"
+  },
+  {
+    "user_id": "u006",
+    "user_name": "frank",
+    "table_name": "secret_keys",
+    "permission_level": "admin",
+    "granted_at": "2023-11-15T13:00:00",
+    "grantor": "root_admin"
+  },
+  {
+    "user_id": "u007",
+    "user_name": "grace",
+    "table_name": "logs",
+    "permission_level": "read",
+    "granted_at": "2023-12-01T08:30:00",
+    "grantor": "ops_team"
+  }
+]

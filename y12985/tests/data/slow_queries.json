@@ -1,0 +1,65 @@
+[
+  {
+    "id": "q1",
+    "query_sql": "SELECT * FROM orders WHERE user_id = 12345 AND status = 'pending' ORDER BY created_at DESC LIMIT 10",
+    "execution_time_ms": 2500.5,
+    "rows_examined": 50000,
+    "rows_sent": 10,
+    "table_name": "orders",
+    "timestamp": "2024-01-15T10:30:00"
+  },
+  {
+    "id": "q2",
+    "query_sql": "SELECT * FROM orders WHERE user_id = 67890 AND created_at > '2024-01-01'",
+    "execution_time_ms": 1800.0,
+    "rows_examined": 35000,
+    "rows_sent": 250,
+    "table_name": "orders",
+    "timestamp": "2024-01-15T11:00:00"
+  },
+  {
+    "id": "q3",
+    "query_sql": "SELECT u.id, u.name, u.email FROM users u WHERE u.email = 'test@example.com'",
+    "execution_time_ms": 950.0,
+    "rows_examined": 20000,
+    "rows_sent": 1,
+    "table_name": "users",
+    "timestamp": "2024-01-15T09:15:00"
+  },
+  {
+    "id": "q4",
+    "query_sql": "SELECT * FROM products WHERE category = 'electronics' AND price < 1000",
+    "execution_time_ms": 1200.0,
+    "rows_examined": 15000,
+    "rows_sent": 300,
+    "table_name": "products",
+    "timestamp": "2024-01-15T14:20:00"
+  },
+  {
+    "id": "q5",
+    "query_sql": "SELECT * FROM orders WHERE status = 'shipped' ORDER BY created_at DESC LIMIT 100",
+    "execution_time_ms": 800.0,
+    "rows_examined": 8000,
+    "rows_sent": 100,
+    "table_name": "orders",
+    "timestamp": "2024-01-15T16:45:00"
+  },
+  {
+    "id": "q6",
+    "query_sql": "SELECT * FROM transactions WHERE account_id = 999 AND amount > 100",
+    "execution_time_ms": 3500.0,
+    "rows_examined": 80000,
+    "rows_sent": 15,
+    "table_name": "transactions",
+    "timestamp": "2024-01-15T08:00:00"
+  },
+  {
+    "id": "q7",
+    "query_sql": "SELECT user_id, count(*) as cnt FROM orders WHERE created_at BETWEEN '2024-01-01' AND '2024-01-31' GROUP BY user_id",
+    "execution_time_ms": 5000.0,
+    "rows_examined": 100000,
+    "rows_sent": 5000,
+    "table_name": "orders",
+    "timestamp": "2024-01-31T23:59:00"
+  }
+]
