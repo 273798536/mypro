@@ -1,0 +1,88 @@
+import type { PermissionItem } from '@/types';
+
+export const mockPermissions: PermissionItem[] = [
+  {
+    id: 'perm_001',
+    gapId: 'gap_001',
+    roleName: '运维工程师',
+    permission: 'monitor:metrics:read',
+    resource: 'monitor_metrics',
+    grantedBy: '王主管',
+    grantedAt: '2024-01-15T10:00:00Z',
+    description: '监控指标表读取权限',
+  },
+  {
+    id: 'perm_002',
+    gapId: 'gap_001',
+    roleName: '开发工程师',
+    permission: 'monitor:metrics:write',
+    resource: 'monitor_metrics',
+    grantedBy: '王主管',
+    grantedAt: '2024-03-20T14:30:00Z',
+    description: '监控指标表写入权限',
+  },
+  {
+    id: 'perm_003',
+    gapId: 'gap_002',
+    roleName: '数据迁移专员',
+    permission: 'order:detail:admin',
+    resource: 'order_detail',
+    grantedBy: '李经理',
+    grantedAt: '2024-06-10T09:00:00Z',
+    description: '订单明细表管理权限（迁移专用）',
+  },
+  {
+    id: 'perm_004',
+    gapId: 'gap_002',
+    roleName: 'DBA',
+    permission: 'order:detail:super',
+    resource: 'order_detail',
+    grantedBy: '技术总监',
+    grantedAt: '2024-01-01T00:00:00Z',
+    description: '数据库超级管理员权限',
+  },
+  {
+    id: 'perm_005',
+    gapId: 'gap_003',
+    roleName: '数据分析师',
+    permission: 'behavior:log:read',
+    resource: 'user_behavior_log',
+    grantedBy: '数据主管',
+    grantedAt: '2024-02-10T11:00:00Z',
+    description: '用户行为日志读取权限',
+  },
+  {
+    id: 'perm_006',
+    gapId: 'gap_005',
+    roleName: '商品运维',
+    permission: 'product:inventory:write',
+    resource: 'product_inventory',
+    grantedBy: '商品总监',
+    grantedAt: '2024-04-05T16:00:00Z',
+    description: '商品库存表写入权限',
+  },
+  {
+    id: 'perm_007',
+    gapId: 'gap_004',
+    roleName: '支付系统开发',
+    permission: 'payment:flow:read',
+    resource: 'payment_flow',
+    grantedBy: '支付主管',
+    grantedAt: '2024-02-28T10:00:00Z',
+    description: '支付流水读取权限',
+  },
+  {
+    id: 'perm_008',
+    gapId: 'gap_001',
+    roleName: '审计专员',
+    permission: 'monitor:metrics:audit',
+    resource: 'monitor_metrics',
+    grantedBy: '审计总监',
+    grantedAt: '2024-01-01T00:00:00Z',
+    description: '监控指标审计权限',
+  },
+];
+
+export const getMockPermissions = (): PermissionItem[] => {
+  return JSON.parse(JSON.stringify(mockPermissions));
+};
