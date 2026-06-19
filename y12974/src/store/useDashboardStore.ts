@@ -1,0 +1,112 @@
+import { create } from 'zustand';
+import type { ReportData, SchemaCompareResult, BackupVerifyResult } from '../types';
+import {
+  generateRunId,
+  generateReportData,
+  exportReportToJSON,
+  exportReportToCSV,
+  exportReportToMarkdown,
+  downloadFile,
+  generateFileName,
+  compareSchemaVersions
+} from '../lib/analysis';
+import { schemaVersions } from '../data/schemaVersions';
+import { backupVerifyResults } from '../data/backupVerify';
+
+interface DashboardState {
+  currentRunId: string;
+  currentReport: ReportData | null;
+  selectedSchemaVersions: {
+    oldVersion: string;
+    newVersion: string;
+  };
+  schemaCompareResult: SchemaCompareResult | null;
+  selectedBackupVerify: BackupVerifyResult | null;
+  historyReports: Array<{
+    runId: string;
+    timestamp: string;
+    report: ReportData;
+  }>;
+
+  setSelectedSchemaVersions: (oldV: string, newV: string) => void;
+  runAnalysis: () => void;
+  compareSchemas: () => void;
+  selectBackupVerify: (version: string) => void;
+  exportReport: (format: 'json' | 'csv' | 'md') => void;
+}
+
+export const useDashboardStore = create<DashboardState>((set, get) => ({
+  currentRunId: '',
+  currentReport: null,
+  selectedSchemaVersions: {
+    oldVersion: schemaVersions.length >= 2 ? schemaVersions[schemaVersions.length - 2].version : schemaVersions[0].version,
+    newVersion: schemaVersions[schemaVersions.length - 1].version
+  },
+  schemaCompareResult: null,
+  selectedBackupVerify: backupVerifyResults[backupVerifyResults.length - 1],
+  historyReports: [],
+
+  setSelectedSchemaVersions: (oldV, newV) => {
+    set({ selectedSchemaVersions: { oldVersion: oldV, newVersion: newV } });
+  },
+
+  runAnalysis: () => {
+    const runId = generateRunId();
+    const report = generateReportData(runId);
+    set({
+      currentRunId: runId,
+      currentReport: report,
+      historyReports: [
+        ...get().historyReports,
+        {
+          runId,
+          timestamp: report.generatedAt,
+          report
+        }
+      ]
+    });
+  },
+
+  compareSchemas: () => {
+    const { oldVersion, newVersion } = get().selectedSchemaVersions;
+    const oldSchema = schemaVersions.find(v => v.version === oldVersion);
+    const newSchema = schemaVersions.find(v => v.version === newVersion);
+    if (oldSchema && newSchema) {
+      const result = compareSchemaVersions(oldSchema, newSchema);
+      set({ schemaCompareResult: result });
+    }
+  },
+
+  selectBackupVerify: (version: string) => {
+    const result = backupVerifyResults.find(r => r.schemaVersion === version);
+    if (result) {
+      set({ selectedBackupVerify: result });
+    }
+  },
+
+  exportReport: (format) => {
+    const report = get().currentReport;
+    if (!report) return;
+
+    let content: string;
+    let mimeType: string;
+
+    switch (format) {
+      case 'json':
+        content = exportReportToJSON(report);
+        mimeType = 'application/json';
+        break;
+      case 'csv':
+        content = exportReportToCSV(report);
+        mimeType = 'text/csv';
+        break;
+      case 'md':
+        content = exportReportToMarkdown(report);
+        mimeType = 'text/markdown';
+        break;
+    }
+
+    const filename = generateFileName(report.runId, format);
+    downloadFile(content, filename, mimeType);
+  }
+}));
