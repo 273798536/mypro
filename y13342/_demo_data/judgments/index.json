@@ -1,0 +1,151 @@
+{
+  "S001": [
+    {
+      "judgment_id": "J20260619_100006_000001",
+      "sample_id": "S001",
+      "model_version": "v2.1",
+      "original_model_label": "低风险",
+      "manual_label": "中风险",
+      "operator": "老唐",
+      "note": "老唐口头确认：近期3次贷款查询，原为低风险不对",
+      "created_at": "20260619_100006_000001",
+      "batch_id": "20260619_100005_000001",
+      "is_overridden": false,
+      "overridden_by": null,
+      "overridden_at": null,
+      "override_reason": "6月19号上午和模型组确认过口径"
+    }
+  ],
+  "S002": [
+    {
+      "judgment_id": "J20260619_100006_000002",
+      "sample_id": "S002",
+      "model_version": "v2.1",
+      "original_model_label": "高风险",
+      "manual_label": "高风险",
+      "operator": "老唐",
+      "note": "维持原判",
+      "created_at": "20260619_100006_000002",
+      "batch_id": "20260619_100005_000001",
+      "is_overridden": false,
+      "overridden_by": null,
+      "overridden_at": null,
+      "override_reason": "无补充"
+    }
+  ],
+  "S003": [
+    {
+      "judgment_id": "J20260619_100007_000001",
+      "sample_id": "S003",
+      "model_version": "v2.1",
+      "original_model_label": "中风险",
+      "manual_label": "低风险",
+      "operator": "老唐",
+      "note": "用户补充收入证明，改判低风险",
+      "created_at": "20260619_100007_000001",
+      "batch_id": "20260619_100005_000001",
+      "is_overridden": true,
+      "overridden_by": "J20260619_100021_000001",
+      "overridden_at": "20260619_100021_000001",
+      "override_reason": "被新改判覆盖: 人工改判更新"
+    },
+    {
+      "judgment_id": "J20260619_100021_000001",
+      "sample_id": "S003",
+      "model_version": "v2.1",
+      "original_model_label": "中风险",
+      "manual_label": "中风险",
+      "operator": "老唐",
+      "note": "老唐二次改判：收入证明存疑，降级为中",
+      "created_at": "20260619_100021_000001",
+      "batch_id": "20260619_100020_000001",
+      "is_overridden": false,
+      "overridden_by": null,
+      "overridden_at": null,
+      "override_reason": "和S006一起复核后调整"
+    }
+  ],
+  "S004": [
+    {
+      "judgment_id": "J20260619_100006_000003",
+      "sample_id": "S004",
+      "model_version": "v2.1",
+      "original_model_label": "低风险",
+      "manual_label": "低风险",
+      "operator": "老唐",
+      "note": "S004原始改判",
+      "created_at": "20260619_100006_000003",
+      "batch_id": "20260619_100005_000001",
+      "is_overridden": true,
+      "overridden_by": "J20260619_100010_000001",
+      "overridden_at": "20260619_100010_000001",
+      "override_reason": "被新改判覆盖: 补充人工确认"
+    },
+    {
+      "judgment_id": "J20260619_100010_000001",
+      "sample_id": "S004",
+      "model_version": "v2.1",
+      "original_model_label": "低风险",
+      "manual_label": "低风险",
+      "operator": "老唐",
+      "note": "稳定高收入，电话核实过",
+      "created_at": "20260619_100010_000001",
+      "batch_id": "20260619_100010_000001",
+      "is_overridden": false,
+      "overridden_by": null,
+      "overridden_at": null,
+      "override_reason": "补充人工确认"
+    }
+  ],
+  "S005": [
+    {
+      "judgment_id": "J20260619_100006_000004",
+      "sample_id": "S005",
+      "model_version": "v2.1",
+      "original_model_label": "高风险",
+      "manual_label": "拒绝",
+      "operator": "老唐",
+      "note": "老唐特别标注：多头+欺诈特征明显，直接拒绝",
+      "created_at": "20260619_100006_000004",
+      "batch_id": "20260619_100005_000001",
+      "is_overridden": false,
+      "overridden_by": null,
+      "overridden_at": null,
+      "override_reason": "走拒贷流程"
+    }
+  ],
+  "S006": [
+    {
+      "judgment_id": "J20260619_100021_000002",
+      "sample_id": "S006",
+      "model_version": "v2.1",
+      "original_model_label": "高风险",
+      "manual_label": "高风险",
+      "operator": "老唐",
+      "note": "维持高风险",
+      "created_at": "20260619_100021_000002",
+      "batch_id": "20260619_100020_000001",
+      "is_overridden": false,
+      "overridden_by": null,
+      "overridden_at": null,
+      "override_reason": "样本表v2已体现"
+    }
+  ],
+  "NOT_EXIST_999": [
+    {
+      "judgment_id": "J20260619_100030_000002",
+      "sample_id": "NOT_EXIST_999",
+      "model_version": "v2.1",
+      "original_model_label": "",
+      "manual_label": "高风险",
+      "operator": "老唐",
+      "note": "测试引用缺失场景",
+      "created_at": "20260619_100030_000003",
+      "batch_id": "20260619_100030_000002",
+      "is_overridden": false,
+      "overridden_by": null,
+      "overridden_at": null,
+      "override_reason": null
+    }
+  ]
+}
