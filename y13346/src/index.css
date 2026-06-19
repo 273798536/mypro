@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+.risk-low { @apply bg-emerald-100 text-emerald-700 border-emerald-300; }
+.risk-medium { @apply bg-amber-100 text-amber-700 border-amber-300; }
+.risk-high { @apply bg-orange-100 text-orange-700 border-orange-300; }
+.risk-critical { @apply bg-rose-100 text-rose-700 border-rose-300; }
+
+.status-approved { @apply bg-emerald-100 text-emerald-700 border-emerald-300; }
+.status-pending { @apply bg-slate-100 text-slate-700 border-slate-300; }
+.status-rejected { @apply bg-rose-100 text-rose-700 border-rose-300; }
+.status-suspended { @apply bg-violet-100 text-violet-700 border-violet-300; }
+.status-corrected { @apply bg-sky-100 text-sky-700 border-sky-300; }
+
+.badge {
+  @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border;
+}
+
+.btn {
+  @apply inline-flex items-center justify-center px-3 py-1.5 rounded-md text-sm font-medium transition-colors;
+}
+.btn-primary { @apply bg-brand-600 text-white hover:bg-brand-700; }
+.btn-secondary { @apply bg-white text-slate-700 border border-slate-300 hover:bg-slate-50; }
+.btn-danger { @apply bg-rose-600 text-white hover:bg-rose-700; }
+
+.input {
+  @apply w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent;
+}
+.textarea {
+  @apply w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y;
+}
+.select {
+  @apply w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white;
+}
+
+.card {
+  @apply bg-white rounded-lg border border-slate-200 shadow-sm;
+}
+.card-header {
+  @apply px-4 py-3 border-b border-slate-200 flex items-center justify-between;
+}
+.card-body {
+  @apply p-4;
+}
+
+.table-cell {
+  @apply px-3 py-2 text-sm text-slate-700;
+}
+.table-header {
+  @apply px-3 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider;
+}
