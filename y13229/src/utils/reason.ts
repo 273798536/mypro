@@ -8,12 +8,16 @@ export interface HumanReasonContext {
   currentVersionTag?: string;
   hasVerbalNotes?: boolean;
   missingConfirm?: boolean;
+  authExpired?: boolean;
 }
 
 export function buildHumanReason(
   status: SplitStatus,
   ctx: HumanReasonContext
 ): string {
+  if (ctx.authExpired && status !== 'suspended') {
+    return `本曲目授权已于 ${formatDate(ctx.authExpiryDate)} 到期，但当前状态仍为「${status === 'aligned' ? '已对齐' : status}」，存在出具假结论风险，请立即挂起确认。`;
+  }
   switch (status) {
     case 'suspended':
       return `本曲目授权已于 ${formatDate(ctx.authExpiryDate)} 到期，已挂起待接手同事确认是否续约，暂不出具结论。`;

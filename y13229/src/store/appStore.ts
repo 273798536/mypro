@@ -103,15 +103,28 @@ function rebuildHumanReason(state: AppDataState): AppDataState {
     const latest = v
       ? getLatestVersion(state.trackVersions, v.trackName)
       : undefined;
-    const humanReason = buildHumanReason(r.status, {
+    const expired = isAuthExpired(r.authExpiryDate);
+
+    let effectiveStatus = r.status;
+    if (expired && r.status !== 'suspended') {
+      effectiveStatus = 'suspended';
+    } else if (!expired && r.status === 'suspended') {
+      effectiveStatus = 'pending';
+    }
+    if (!expired && v && !v.isLatest && r.status !== 'suspended') {
+      effectiveStatus = 'conflicted';
+    }
+
+    const humanReason = buildHumanReason(effectiveStatus, {
       authExpiryDate: r.authExpiryDate,
       isLatestVersion: v?.isLatest,
       latestVersionTag: latest?.versionTag,
       currentVersionTag: v?.versionTag,
       hasVerbalNotes: (verbalMap.get(r.id) ?? 0) > 0,
       missingConfirm: !r.confirmedBy,
+      authExpired: expired,
     });
-    return { ...r, humanReason };
+    return { ...r, status: effectiveStatus, humanReason };
   });
   return { ...state, splitRecords: records };
 }
@@ -128,9 +141,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
     } else {
       const sample = generateSampleData();
       base = { ...sample, filterState: { ...DEFAULT_FILTER, ...filter } };
-      saveAppState(base);
     }
     const derived = rebuildHumanReason(base);
+    saveAppState(derived);
     set(derived);
   },
 
@@ -242,12 +255,12 @@ export const useAppStore = create<AppStore>((set, get) => ({
       humanReason: '',
     };
     const records = [...state.splitRecords, record];
-    const traceNodes = [
+    const traceNodes: TraceNode[] = [
       ...state.traceNodes,
       {
         id: uid('tn'),
         splitRecordId: record.id,
-        influenceType: 'system_check',
+        influenceType: 'system_check' as const,
         description: `新建分账记录，初始状态：${status}`,
         orderIndex: 1,
       },
@@ -256,7 +269,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
       traceNodes.push({
         id: uid('tn'),
         splitRecordId: record.id,
-        influenceType: 'system_check',
+        influenceType: 'system_check' as const,
         description: '系统检测到授权已到期，自动挂起',
         orderIndex: 2,
       });
@@ -280,7 +293,27 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const idx = state.splitRecords.findIndex((r) => r.id === id);
     if (idx === -1) return;
     const old = state.splitRecords[idx];
-    const updated = { ...old, ...patch };
+    const merged = { ...old, ...patch };
+
+    const versionMap = new Map(
+      state.trackVersions.map((v) => [v.id, v]) as [string, TrackVersion][]
+    );
+    const nowExpired = isAuthExpired(merged.authExpiryDate);
+    const wasExpired = old.status === 'suspended';
+    const wasAligned = old.status === 'aligned' || old.status === 'pending' || old.status === 'conflicted' || old.status === 'missing_note';
+
+    let finalStatus = merged.status;
+    if (nowExpired && old.status !== 'suspended') {
+      finalStatus = 'suspended';
+    } else if (!nowExpired && old.status === 'suspended' && patch.authExpiryDate !== undefined) {
+      finalStatus = 'pending';
+    }
+    if (!nowExpired && old.status === 'conflicted') {
+      const v = versionMap.get(merged.trackVersionId);
+      if (v && !v.isLatest) finalStatus = 'conflicted';
+    }
+
+    const updated: SplitRecord = { ...merged, status: finalStatus };
     const diffs = shallowDiff(
       old as unknown as Record<string, unknown>,
       updated as unknown as Record<string, unknown>
@@ -298,9 +331,50 @@ export const useAppStore = create<AppStore>((set, get) => ({
         changeReason: reason || '人工编辑',
       });
     });
+
+    let traceNodes = [...state.traceNodes];
+    if (nowExpired && old.status !== 'suspended') {
+      changeLogs.push({
+        id: uid('cl'),
+        splitRecordId: id,
+        fieldName: 'status',
+        oldValue: old.status,
+        newValue: 'suspended',
+        changedBy: '系统',
+        changedAt: new Date().toISOString(),
+        changeReason: '授权到期，系统自动挂起',
+      });
+      traceNodes.push({
+        id: uid('tn'),
+        splitRecordId: id,
+        influenceType: 'system_check',
+        description: `系统检测到授权已到期（${merged.authExpiryDate}），自动由 ${old.status} 变更为挂起`,
+        orderIndex: traceNodes.filter((n) => n.splitRecordId === id).length + 1,
+      });
+    }
+    if (!nowExpired && old.status === 'suspended' && patch.authExpiryDate !== undefined) {
+      changeLogs.push({
+        id: uid('cl'),
+        splitRecordId: id,
+        fieldName: 'status',
+        oldValue: 'suspended',
+        newValue: 'pending',
+        changedBy: state.currentUser,
+        changedAt: new Date().toISOString(),
+        changeReason: `授权到期日更新为 ${merged.authExpiryDate}，尚未到期，自动解除挂起`,
+      });
+      traceNodes.push({
+        id: uid('tn'),
+        splitRecordId: id,
+        influenceType: 'system_check',
+        description: `授权到期日更新为 ${merged.authExpiryDate}，尚未到期，自动解除挂起`,
+        orderIndex: traceNodes.filter((n) => n.splitRecordId === id).length + 1,
+      });
+    }
+
     const records = [...state.splitRecords];
     records[idx] = updated;
-    const next: AppDataState = { ...state, splitRecords: records, changeLogs };
+    const next: AppDataState = { ...state, splitRecords: records, changeLogs, traceNodes };
     saveAppState(next);
     set(rebuildHumanReason(next));
   },
@@ -385,10 +459,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
     const idx = state.splitRecords.findIndex((r) => r.id === id);
     if (idx === -1) return;
     const old = state.splitRecords[idx];
+    if (old.status === 'suspended') return;
+    if (isAuthExpired(old.authExpiryDate)) return;
     const verbalCount = state.notes.filter(
       (n) => n.splitRecordId === id && n.sourceType === 'verbal'
     ).length;
-    if (old.status === 'suspended') return;
     let finalStatus: SplitStatus = 'aligned';
     let reasonText = '琴房前台人工确认对齐';
     if (verbalCount > 0 && state.notes.filter((n) => n.splitRecordId === id).length === 1) {

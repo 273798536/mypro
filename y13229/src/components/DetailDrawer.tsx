@@ -305,7 +305,6 @@ export default function DetailDrawer({
                   </label>
                   <input
                     type="date"
-                    disabled={isSuspended}
                     value={record.authExpiryDate.slice(0, 10)}
                     onChange={(e) =>
                       updateSplitRecord(
@@ -478,6 +477,10 @@ export default function DetailDrawer({
                       已由 <b className="text-ink-600">{record.confirmedBy}</b> 于{' '}
                       {formatDateTime(record.confirmedAt)} 确认
                     </>
+                  ) : expired ? (
+                    <span className="text-rouge-500">授权已到期，不可确认对齐。请先更新授权到期日或挂起待确认。</span>
+                  ) : !ratioValid ? (
+                    <span className="text-rattan-500">比例合计不为 100%，无法确认对齐。</span>
                   ) : (
                     '核对完毕后一键确认对齐'
                   )}
