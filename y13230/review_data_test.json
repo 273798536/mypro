@@ -1,0 +1,381 @@
+{
+  "records": {
+    "古典民乐精选-Vol1": {
+      "record_id": "ce25f867",
+      "package_name": "古典民乐精选-Vol1",
+      "created_at": "2026-06-20 14:36:47",
+      "updated_at": "2026-06-20 14:36:47",
+      "status": "可放行",
+      "contract_scans": [
+        {
+          "contract_id": "HT-2024-01",
+          "file_path": "/Users/mac/pro/solo/workspaces/y13230/testdata/contract_A_202401.pdf",
+          "file_hash": "8a3fe03676745a055f5f9446283fffa4edc3acca5618f4c343cfc8177d1e6b29",
+          "submitted_at": "2026-06-20 14:36:47",
+          "tracks": [
+            {
+              "track_no": 1,
+              "title": "春江花月夜",
+              "aliases": [
+                "夕阳箫鼓"
+              ],
+              "duration": null,
+              "iswc": null
+            },
+            {
+              "track_no": 2,
+              "title": "十面埋伏",
+              "aliases": [
+                "霸王卸甲"
+              ],
+              "duration": null,
+              "iswc": null
+            },
+            {
+              "track_no": 3,
+              "title": "高山流水",
+              "aliases": [],
+              "duration": null,
+              "iswc": null
+            }
+          ],
+          "raw_text": ""
+        }
+      ],
+      "audio_files": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y13230/testdata/01_春江花月夜.wav",
+          "file_name": "01_春江花月夜.wav",
+          "file_hash": "dd24bde7f8f57f09feb02aa8906c8a2612688942ac12ebaa31616b5895a51ccc",
+          "submitted_at": "2026-06-20 14:36:47",
+          "parsed_track_no": 1,
+          "parsed_title": "春江花月夜"
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y13230/testdata/02_十面埋伏.wav",
+          "file_name": "02_十面埋伏.wav",
+          "file_hash": "27fc67d89d2a426fcd54690d923cbfe1bb7895ad7469a613890ac8af2e9d7d0b",
+          "submitted_at": "2026-06-20 14:36:47",
+          "parsed_track_no": 2,
+          "parsed_title": "十面埋伏"
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y13230/testdata/03_高山流水.wav",
+          "file_name": "03_高山流水.wav",
+          "file_hash": "5f09ad8f82e0e040ecaa023a3f8f9914ed4de71e6d700de3a8099e9a03be6b65",
+          "submitted_at": "2026-06-20 14:36:47",
+          "parsed_track_no": 3,
+          "parsed_title": "高山流水"
+        }
+      ],
+      "reference_tracklist": [
+        {
+          "track_no": 1,
+          "title": "春江花月夜",
+          "aliases": [
+            "夕阳箫鼓"
+          ],
+          "duration": null,
+          "iswc": null
+        },
+        {
+          "track_no": 2,
+          "title": "十面埋伏",
+          "aliases": [
+            "霸王卸甲"
+          ],
+          "duration": null,
+          "iswc": null
+        },
+        {
+          "track_no": 3,
+          "title": "高山流水",
+          "aliases": [],
+          "duration": null,
+          "iswc": null
+        }
+      ],
+      "issues": [],
+      "remarks": [
+        {
+          "remark_id": "e0736621",
+          "author": "老许",
+          "content": "已与版权方王总确认，第4首《夕阳箫鼓》的合同另附在HT-2024-02号合同中，音频因母带重制下周补发，前3首已核对无误可先交付演出部。",
+          "added_at": "2026-06-20 14:36:47",
+          "judgment_deltas": [
+            "仅追加备注，未改变现有复核结论"
+          ]
+        }
+      ],
+      "status_history": [
+        {
+          "changed_at": "2026-06-20 14:36:47",
+          "old_status": null,
+          "new_status": "需补材料",
+          "trigger": "首次提交",
+          "changed_issues": [
+            "e0d36ddfaa1ba53e1a636261f0a368e7cb495d45c26331e70e10c69ab1182b37"
+          ]
+        },
+        {
+          "changed_at": "2026-06-20 14:36:47",
+          "old_status": "需补材料",
+          "new_status": "可放行",
+          "trigger": "重新复核",
+          "changed_issues": [
+            "e0d36ddfaa1ba53e1a636261f0a368e7cb495d45c26331e70e10c69ab1182b37"
+          ]
+        }
+      ],
+      "contract_content_keys": [
+        "3dd1c6fbea3f5a72370917690368df1d4fffff207ea080d9af75b2c2d134eb72"
+      ],
+      "audio_file_hashes": [
+        "dd24bde7f8f57f09feb02aa8906c8a2612688942ac12ebaa31616b5895a51ccc",
+        "27fc67d89d2a426fcd54690d923cbfe1bb7895ad7469a613890ac8af2e9d7d0b",
+        "5f09ad8f82e0e040ecaa023a3f8f9914ed4de71e6d700de3a8099e9a03be6b65"
+      ],
+      "submission_count": 5
+    },
+    "新民乐融合-Vol2（别名重复测试包）": {
+      "record_id": "43b95b2d",
+      "package_name": "新民乐融合-Vol2（别名重复测试包）",
+      "created_at": "2026-06-20 14:36:47",
+      "updated_at": "2026-06-20 14:36:47",
+      "status": "需补材料",
+      "contract_scans": [
+        {
+          "contract_id": "HT-2024-99",
+          "file_path": "/Users/mac/pro/solo/workspaces/y13230/testdata/contract_A_202401_v2.pdf",
+          "file_hash": "a5187f02ae9f286d30f9bb4c71f79505902c7030da0043c87af2dcf5cf002126",
+          "submitted_at": "2026-06-20 14:36:47",
+          "tracks": [
+            {
+              "track_no": 1,
+              "title": "春江花月夜",
+              "aliases": [
+                "夕阳箫鼓"
+              ],
+              "duration": null,
+              "iswc": null
+            },
+            {
+              "track_no": 2,
+              "title": "十面埋伏",
+              "aliases": [
+                "霸王卸甲"
+              ],
+              "duration": null,
+              "iswc": null
+            },
+            {
+              "track_no": 3,
+              "title": "高山流水",
+              "aliases": [],
+              "duration": null,
+              "iswc": null
+            },
+            {
+              "track_no": 4,
+              "title": "夕阳箫鼓",
+              "aliases": [
+                "春江花月夜"
+              ],
+              "duration": null,
+              "iswc": null
+            }
+          ],
+          "raw_text": "别名重复合同"
+        }
+      ],
+      "audio_files": [
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y13230/testdata/01_春江花月夜.wav",
+          "file_name": "01_春江花月夜.wav",
+          "file_hash": "dd24bde7f8f57f09feb02aa8906c8a2612688942ac12ebaa31616b5895a51ccc",
+          "submitted_at": "2026-06-20 14:36:47",
+          "parsed_track_no": 1,
+          "parsed_title": "春江花月夜"
+        },
+        {
+          "file_path": "/Users/mac/pro/solo/workspaces/y13230/testdata/02_十面埋伏_别名霸王卸甲.wav",
+          "file_name": "02_十面埋伏_别名霸王卸甲.wav",
+          "file_hash": "c29bdd9a85a88f331a7490f2c1b478f5cd3a1903380576f02aa5438c2c38f29b",
+          "submitted_at": "2026-06-20 14:36:47",
+          "parsed_track_no": 2,
+          "parsed_title": "十面埋伏_别名霸王卸甲"
+        }
+      ],
+      "reference_tracklist": [
+        {
+          "track_no": 1,
+          "title": "春江花月夜",
+          "aliases": [
+            "夕阳箫鼓",
+            "春江花月夜"
+          ],
+          "duration": null,
+          "iswc": null
+        },
+        {
+          "track_no": 2,
+          "title": "夕阳箫鼓",
+          "aliases": [
+            "春江花月夜"
+          ],
+          "duration": null,
+          "iswc": null
+        },
+        {
+          "track_no": 3,
+          "title": "十面埋伏",
+          "aliases": [
+            "霸王卸甲",
+            "十面"
+          ],
+          "duration": null,
+          "iswc": null
+        },
+        {
+          "track_no": 4,
+          "title": "霸王卸甲",
+          "aliases": [
+            "十面埋伏"
+          ],
+          "duration": null,
+          "iswc": null
+        }
+      ],
+      "issues": [
+        {
+          "issue_type": "合同曲目对不上",
+          "description": "第2首合同曲名与曲目表对不上：合同写“十面埋伏”，曲目表是“夕阳箫鼓”",
+          "human_reason": "第2首，合同写的是《十面埋伏》，但曲目表写的是《夕阳箫鼓》，名字对不上",
+          "severity": "warning",
+          "related_track_no": 2,
+          "resolution_hint": "请确认是不是别名或翻译名，是的话在曲目表里补上别名；不是的话改其中一边"
+        },
+        {
+          "issue_type": "合同曲目对不上",
+          "description": "第3首合同曲名与曲目表对不上：合同写“高山流水”，曲目表是“十面埋伏”",
+          "human_reason": "第3首，合同写的是《高山流水》，但曲目表写的是《十面埋伏》，名字对不上",
+          "severity": "warning",
+          "related_track_no": 3,
+          "resolution_hint": "请确认是不是别名或翻译名，是的话在曲目表里补上别名；不是的话改其中一边"
+        },
+        {
+          "issue_type": "合同曲目对不上",
+          "description": "第4首合同曲名与曲目表对不上：合同写“夕阳箫鼓”，曲目表是“霸王卸甲”",
+          "human_reason": "第4首，合同写的是《夕阳箫鼓》，但曲目表写的是《霸王卸甲》，名字对不上",
+          "severity": "warning",
+          "related_track_no": 4,
+          "resolution_hint": "请确认是不是别名或翻译名，是的话在曲目表里补上别名；不是的话改其中一边"
+        },
+        {
+          "issue_type": "文件名曲目对不上",
+          "description": "文件名《十面埋伏_别名霸王卸甲》与曲目表第2首《夕阳箫鼓》不符",
+          "human_reason": "第2首的文件名是《十面埋伏_别名霸王卸甲》，但曲目表写的是《夕阳箫鼓》，看起来不太一样",
+          "severity": "warning",
+          "related_track_no": 2,
+          "resolution_hint": "如果是同曲别名，在曲目表里补上别名；否则重命名文件或修正曲目表"
+        },
+        {
+          "issue_type": "缺少音频文件",
+          "description": "缺少第3首音频文件（十面埋伏）",
+          "human_reason": "曲目表里有第3首《十面埋伏》，但没收到对应的音频文件",
+          "severity": "error",
+          "related_track_no": 3,
+          "resolution_hint": "请补发第3首《十面埋伏》的音频文件"
+        },
+        {
+          "issue_type": "缺少音频文件",
+          "description": "缺少第4首音频文件（霸王卸甲）",
+          "human_reason": "曲目表里有第4首《霸王卸甲》，但没收到对应的音频文件",
+          "severity": "error",
+          "related_track_no": 4,
+          "resolution_hint": "请补发第4首《霸王卸甲》的音频文件"
+        },
+        {
+          "issue_type": "合同和文件名对不上",
+          "description": "第2首合同《十面埋伏》与文件名《十面埋伏_别名霸王卸甲》不一致",
+          "human_reason": "第2首，合同写《十面埋伏》，文件名却叫《十面埋伏_别名霸王卸甲》，两边名字不一致",
+          "severity": "warning",
+          "related_track_no": 2,
+          "resolution_hint": "确认是不是别名，是就补备注说明；不是就改合同或文件名"
+        },
+        {
+          "issue_type": "曲目重复",
+          "description": "第1首《春江花月夜》曲目内别名重复：“春江花月夜”与“春江花月夜”归一化后相同",
+          "human_reason": "第1首《春江花月夜》的别名里，“春江花月夜”和“春江花月夜”其实是同一个名字，写重了",
+          "severity": "info",
+          "related_track_no": 1,
+          "resolution_hint": "删掉第1首里重复的别名就行，不影响放行"
+        },
+        {
+          "issue_type": "曲名别名有冲突",
+          "description": "“春江花月夜”同时出现在不同曲目中：第1首《春江花月夜》, 第2首《夕阳箫鼓》",
+          "human_reason": "“春江花月夜”这个名字同时出现在了第1首《春江花月夜》、第2首《夕阳箫鼓》里，分不清到底属于哪一首",
+          "severity": "error",
+          "related_track_no": 1,
+          "resolution_hint": "请确认这些曲目是否确实同名不同版本，还是别名写错了；若是同曲不同版本，请在备注中说明区分方式"
+        },
+        {
+          "issue_type": "曲名别名有冲突",
+          "description": "“夕阳箫鼓”同时出现在不同曲目中：第1首《春江花月夜》, 第2首《夕阳箫鼓》",
+          "human_reason": "“夕阳箫鼓”这个名字同时出现在了第1首《春江花月夜》、第2首《夕阳箫鼓》里，分不清到底属于哪一首",
+          "severity": "error",
+          "related_track_no": 1,
+          "resolution_hint": "请确认这些曲目是否确实同名不同版本，还是别名写错了；若是同曲不同版本，请在备注中说明区分方式"
+        },
+        {
+          "issue_type": "曲名别名有冲突",
+          "description": "“十面埋伏”同时出现在不同曲目中：第3首《十面埋伏》, 第4首《霸王卸甲》",
+          "human_reason": "“十面埋伏”这个名字同时出现在了第3首《十面埋伏》、第4首《霸王卸甲》里，分不清到底属于哪一首",
+          "severity": "error",
+          "related_track_no": 3,
+          "resolution_hint": "请确认这些曲目是否确实同名不同版本，还是别名写错了；若是同曲不同版本，请在备注中说明区分方式"
+        },
+        {
+          "issue_type": "曲名别名有冲突",
+          "description": "“霸王卸甲”同时出现在不同曲目中：第3首《十面埋伏》, 第4首《霸王卸甲》",
+          "human_reason": "“霸王卸甲”这个名字同时出现在了第3首《十面埋伏》、第4首《霸王卸甲》里，分不清到底属于哪一首",
+          "severity": "error",
+          "related_track_no": 3,
+          "resolution_hint": "请确认这些曲目是否确实同名不同版本，还是别名写错了；若是同曲不同版本，请在备注中说明区分方式"
+        }
+      ],
+      "remarks": [],
+      "status_history": [
+        {
+          "changed_at": "2026-06-20 14:36:47",
+          "old_status": null,
+          "new_status": "需补材料",
+          "trigger": "首次提交",
+          "changed_issues": [
+            "13ae464f244951fb81cd0daab2c0e1bcdc115f3aa18c3618e177b74df60f1d85",
+            "538fda6b436b1a586693c19a1748adc316f548a77897032ee4537c98b3dc7afa",
+            "58c8833e45b242f6fdb0055ce322606e292e418669d2376833bdf884fbedfe12",
+            "6acd01e870629901c6f1e98348a69b6b4278bd2ca2aa77fd5565f6f5c6178014",
+            "6e48ad49a32845a2f8d6ff27feefcaaf6a173a3dab9739690181d3a0e85970e5",
+            "72484492e48ea93670c5ee067855f22ac1780f4dabc0d9875845181de20cbb8d",
+            "9c86cdd5cb0a511854611b7be81a4f2b8c2b333e480c8241c8dc3784b8ce5bfb",
+            "ac2ca442bc879f3d9bcc7195138b49129dc121aadd7ddb97e2e0719ad8e13960",
+            "bfab7dc4598db1fa6c2d353c02d090bd62328e13d96ac62e9f43034f62744657",
+            "d7497d35f36e835e02ca6de92c2b0a3d1976c01f1588d2c6fc7d13201c2623b4",
+            "e0719532ece11251ccc4a9871d1fec2ead60f1d187228d6b80acc1e4f80f50c4",
+            "ecd91b368cda82710911a902de1fdb2a625c322ac9f856fbd96aeb1b86645576"
+          ]
+        }
+      ],
+      "contract_content_keys": [
+        "b824e5be7fcadace59d903750bfb78d2e8d45a989e3ef294347985dccc080ed4"
+      ],
+      "audio_file_hashes": [
+        "dd24bde7f8f57f09feb02aa8906c8a2612688942ac12ebaa31616b5895a51ccc",
+        "c29bdd9a85a88f331a7490f2c1b478f5cd3a1903380576f02aa5438c2c38f29b"
+      ],
+      "submission_count": 1
+    }
+  },
+  "saved_at": "2026-06-20 14:36:47"
+}

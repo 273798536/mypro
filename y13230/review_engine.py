@@ -249,35 +249,41 @@ def audit_alias_conflicts(
     reference: List[TrackItem]
 ) -> List[Issue]:
     issues: List[Issue] = []
+
+    for t in reference:
+        seen_norm: Dict[str, str] = {}
+        for name in t.all_names():
+            norm = normalize_name(name)
+            if not norm:
+                continue
+            if norm in seen_norm:
+                issues.append(Issue(
+                    issue_type=IssueType.DUPLICATE_TRACK,
+                    description=f"第{t.track_no}首《{t.title}》曲目内别名重复：“{name}”与“{seen_norm[norm]}”归一化后相同",
+                    human_reason=f"第{t.track_no}首《{t.title}》的别名里，“{name}”和“{seen_norm[norm]}”其实是同一个名字，写重了",
+                    severity="info",
+                    related_track_no=t.track_no,
+                    resolution_hint=f"删掉第{t.track_no}首里重复的别名就行，不影响放行"
+                ))
+            else:
+                seen_norm[norm] = name
+
     dupes = detect_duplicate_tracks(reference)
     for (track_nos, alias_name) in dupes:
         sorted_nos = sorted(track_nos)
-        if len(sorted_nos) >= 2:
-            if sorted_nos[0] == sorted_nos[-1]:
-                t = find_track_by_no(reference, sorted_nos[0])
-                if t and len(t.aliases) > 0:
-                    issues.append(Issue(
-                        issue_type=IssueType.DUPLICATE_TRACK,
-                        description=f"第{sorted_nos[0]}首《{t.title}》曲目内别名重复：“{alias_name}”出现多次",
-                        human_reason=f"第{sorted_nos[0]}首《{t.title}》的别名列表里，“{alias_name}”写了不止一遍，是重复录入",
-                        severity="info",
-                        related_track_no=sorted_nos[0],
-                        resolution_hint=f"去掉第{sorted_nos[0]}首里重复的别名即可，不影响放行"
-                    ))
-            else:
-                titles = []
-                for no in sorted_nos:
-                    t = find_track_by_no(reference, no)
-                    if t:
-                        titles.append(f"第{no}首《{t.title}》")
-                issues.append(Issue(
-                    issue_type=IssueType.ALIAS_CONFLICT,
-                    description=f"“{alias_name}”同时出现在不同曲目中：{', '.join(titles)}",
-                    human_reason=f"“{alias_name}”这个名字同时出现在了{'、'.join(titles)}里，分不清到底属于哪一首",
-                    severity="error",
-                    related_track_no=sorted_nos[0],
-                    resolution_hint=f"请确认这些曲目是否确实同名不同版本，还是别名写错了；若是同曲不同版本，请在备注中说明区分方式"
-                ))
+        titles = []
+        for no in sorted_nos:
+            t = find_track_by_no(reference, no)
+            if t:
+                titles.append(f"第{no}首《{t.title}》")
+        issues.append(Issue(
+            issue_type=IssueType.ALIAS_CONFLICT,
+            description=f"“{alias_name}”同时出现在不同曲目中：{', '.join(titles)}",
+            human_reason=f"“{alias_name}”这个名字同时出现在了{'、'.join(titles)}里，分不清到底属于哪一首",
+            severity="error",
+            related_track_no=sorted_nos[0],
+            resolution_hint=f"请确认这些曲目是否确实同名不同版本，还是别名写错了；若是同曲不同版本，请在备注中说明区分方式"
+        ))
     return issues
 
 

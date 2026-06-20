@@ -12,9 +12,9 @@ REPORTS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "reports"
 
 def _severity_icon(severity: str) -> str:
     return {
-        "error": "🔴 必须补",
-        "warning": "🟡 建议确认",
-        "info": "🟢 小问题"
+        "error": "🔴",
+        "warning": "🟡",
+        "info": "🟢"
     }.get(severity, "⚪")
 
 

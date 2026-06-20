@@ -93,6 +93,20 @@ def setup_test_data():
     return dummy
 
 
+def make_audio_file(file_name: str) -> AudioFile:
+    """根据文件名构造 AudioFile，避免参数顺序错配。"""
+    file_path = make_path(file_name)
+    p_no, p_title = parse_filename(file_name)
+    return AudioFile(
+        file_path=file_path,
+        file_name=file_name,
+        file_hash=compute_file_hash(file_path),
+        submitted_at=now_iso(),
+        parsed_track_no=p_no,
+        parsed_title=p_title,
+    )
+
+
 def section(title):
     print("\n" + "=" * 70)
     print(f"  {title}")
@@ -132,20 +146,8 @@ def test_1_duplicate_submission():
     ]
 
     audios = [
-        AudioFile(
-            file_path=make_path("01_春江花月夜.wav"),
-            file_name="01_春江花月夜.wav",
-            file_hash=compute_file_hash(make_path("01_春江花月夜.wav")),
-            submitted_at=now_iso(),
-            *parse_filename("01_春江花月夜.wav"),
-        ),
-        AudioFile(
-            file_path=make_path("02_十面埋伏.wav"),
-            file_name="02_十面埋伏.wav",
-            file_hash=compute_file_hash(make_path("02_十面埋伏.wav")),
-            submitted_at=now_iso(),
-            *parse_filename("02_十面埋伏.wav"),
-        ),
+        make_audio_file("01_春江花月夜.wav"),
+        make_audio_file("02_十面埋伏.wav"),
     ]
 
     pkg = "古典民乐精选-Vol1"
@@ -168,13 +170,7 @@ def test_1_duplicate_submission():
     assert_true(len(rec2.audio_files) == 2, f"音频总数仍为 2（实际={len(rec2.audio_files)}）")
 
     print("  [第3次提交] 晚到一个第3音频 + 原合同不变 —— 只加新音频，原合同不重复")
-    late_audio = AudioFile(
-        file_path=make_path("03_高山流水.wav"),
-        file_name="03_高山流水.wav",
-        file_hash=compute_file_hash(make_path("03_高山流水.wav")),
-        submitted_at=now_iso(),
-        *parse_filename("03_高山流水.wav"),
-    )
+    late_audio = make_audio_file("03_高山流水.wav")
     audios_with_late = audios + [late_audio]
     rec3, st3 = store.create_or_update(pkg, tracklist_A, contracts, audios_with_late)
     assert_true(rec3.submission_count == 3, f"累计提交=3（实际={rec3.submission_count}）")
@@ -184,12 +180,14 @@ def test_1_duplicate_submission():
     assert_true(len(rec3.audio_files) == 3, f"音频总数变为 3（实际={len(rec3.audio_files)}）")
 
     print("  [第4次提交] 同一音频用不同文件名重新提交 —— 内容hash相同去重")
+    _dup_p_no, _dup_p_title = parse_filename("03_高山流水_副本.wav")
     dup_audio = AudioFile(
         file_path=make_path("03_高山流水.wav"),
         file_name="03_高山流水_副本.wav",
         file_hash=compute_file_hash(make_path("03_高山流水.wav")),
         submitted_at=now_iso(),
-        *parse_filename("03_高山流水_副本.wav"),
+        parsed_track_no=_dup_p_no,
+        parsed_title=_dup_p_title,
     )
     rec4, st4 = store.create_or_update(pkg, tracklist_A, contracts, audios_with_late + [dup_audio])
     assert_true(st4["audios_added"] == 0, f"内容hash相同的音频应被去重（实际新增={st4['audios_added']}）")
@@ -276,20 +274,8 @@ def test_3_alias_conflict_and_messy():
     ]
 
     audios_messy = [
-        AudioFile(
-            file_path=make_path("01_春江花月夜.wav"),
-            file_name="01_春江花月夜.wav",
-            file_hash=compute_file_hash(make_path("01_春江花月夜.wav")),
-            submitted_at=now_iso(),
-            *parse_filename("01_春江花月夜.wav"),
-        ),
-        AudioFile(
-            file_path=make_path("02_十面埋伏_别名霸王卸甲.wav"),
-            file_name="02_十面埋伏_别名霸王卸甲.wav",
-            file_hash=compute_file_hash(make_path("02_十面埋伏_别名霸王卸甲.wav")),
-            submitted_at=now_iso(),
-            *parse_filename("02_十面埋伏_别名霸王卸甲.wav"),
-        ),
+        make_audio_file("01_春江花月夜.wav"),
+        make_audio_file("02_十面埋伏_别名霸王卸甲.wav"),
     ]
 
     print("  [提交] 曲目表包含：同曲多别名交叉，条目内自重复")
@@ -328,7 +314,7 @@ def test_4_human_readable_reasons():
     section("场景4：异常原因是否写得像人话（给演出/发行同事交接用）")
 
     store = ReviewStore(TEST_DB)
-    pkg = "古典民乐精选-Vol1"
+    pkg = "新民乐融合-Vol2（别名重复测试包）"
     rec = store.get_record(pkg)
 
     tech_words = [
@@ -339,8 +325,9 @@ def test_4_human_readable_reasons():
 
     human_phrases = [
         "合同里", "曲目表里", "文件名", "没收到", "对不上",
-        "请补", "请确认", "请补发", "写了不止一遍", "不知道对应",
+        "请补", "请确认", "请补发", "写重了", "不知道对应",
         "是不是别名", "不是的话", "改合同", "改其中一边",
+        "可以直接交接", "有硬伤", "人工确认",
     ]
 
     md = generate_markdown_report(rec)
@@ -455,13 +442,7 @@ def test_5_restart_consistency():
         )
     ]
     audios = [
-        AudioFile(
-            file_path=make_path("01_春江花月夜.wav"),
-            file_name="01_春江花月夜.wav",
-            file_hash=compute_file_hash(make_path("01_春江花月夜.wav")),
-            submitted_at=now_iso(),
-            *parse_filename("01_春江花月夜.wav"),
-        ),
+        make_audio_file("01_春江花月夜.wav"),
     ]
 
     rec_c, st_c = store_b.create_or_update(pkg, tracklist_A, contracts, audios)
