@@ -4,18 +4,17 @@
       1
     ],
     "latest_version": 1,
-    "last_updated": "2026-06-20T13:43:49",
+    "last_updated": "2026-06-20T14:21:54",
     "latest_status": "ok"
   },
   "encore-2025-0615-02": {
     "versions": [
       1,
       2,
-      3,
-      4
+      3
     ],
-    "latest_version": 4,
-    "last_updated": "2026-06-20T13:44:03",
+    "latest_version": 3,
+    "last_updated": "2026-06-20T14:21:54",
     "latest_status": "expired"
   },
   "encore-2025-0615-03": {
@@ -23,7 +22,7 @@
       1
     ],
     "latest_version": 1,
-    "last_updated": "2026-06-20T13:43:49",
+    "last_updated": "2026-06-20T14:21:54",
     "latest_status": "mismatch"
   }
 }

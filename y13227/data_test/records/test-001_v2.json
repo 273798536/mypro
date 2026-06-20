@@ -1,0 +1,56 @@
+{
+  "record_id": "test-001",
+  "version": 2,
+  "filename": "周杰伦返场-夜曲-晴天-稻香.xlsx",
+  "tracks": [
+    {
+      "title": "夜曲",
+      "artist": "周杰伦",
+      "duration": "03:48",
+      "note": ""
+    },
+    {
+      "title": "晴天",
+      "artist": "周杰伦",
+      "duration": "04:29",
+      "note": ""
+    },
+    {
+      "title": "稻香",
+      "artist": "周杰伦",
+      "duration": "03:43",
+      "note": ""
+    }
+  ],
+  "supplementary_note": "",
+  "verbal_note": "",
+  "rehearsal_note": "晴天授权到期（2025-05-31），本场演出暂停使用",
+  "status": "expired",
+  "status_detail": "检测到授权/版权到期关键字",
+  "filename_hash": "195a335f5e034982",
+  "tracks_hash": "edb2523a7ed9343c",
+  "combined_hash": "c80e3cd04ec361e7",
+  "created_at": "2026-06-20T14:18:11",
+  "updated_at": "2026-06-20T14:18:11",
+  "manual_annotations": [
+    "法务确认过期"
+  ],
+  "delivery_checklist": [],
+  "change_log": [
+    {
+      "version": 1,
+      "at": "2026-06-20T14:18:11",
+      "diffs": [
+        "初始版本"
+      ]
+    },
+    {
+      "version": 2,
+      "at": "2026-06-20T14:18:11",
+      "diffs": [
+        "排练/授权备注有变更"
+      ]
+    }
+  ],
+  "status_label": "授权到期"
+}

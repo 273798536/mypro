@@ -1,0 +1,47 @@
+{
+  "record_id": "cli-test-01",
+  "version": 1,
+  "filename": "周杰伦返场-夜曲-晴天-稻香.xlsx",
+  "tracks": [
+    {
+      "title": "夜曲",
+      "artist": "周杰伦",
+      "duration": "03:48",
+      "note": ""
+    },
+    {
+      "title": "晴天",
+      "artist": "周杰伦",
+      "duration": "04:29",
+      "note": ""
+    },
+    {
+      "title": "稻香",
+      "artist": "周杰伦",
+      "duration": "03:43",
+      "note": ""
+    }
+  ],
+  "supplementary_note": "后补：第2首为现场加曲",
+  "verbal_note": "",
+  "rehearsal_note": "",
+  "status": "modified",
+  "status_detail": "检测到后补/改口径关键字",
+  "filename_hash": "195a335f5e034982",
+  "tracks_hash": "edb2523a7ed9343c",
+  "combined_hash": "c6e79d538ff742ce",
+  "created_at": "2026-06-20T14:19:44",
+  "updated_at": "2026-06-20T14:19:44",
+  "manual_annotations": [],
+  "delivery_checklist": [],
+  "change_log": [
+    {
+      "version": 1,
+      "at": "2026-06-20T14:19:44",
+      "diffs": [
+        "初始版本"
+      ]
+    }
+  ],
+  "status_label": "口径已改"
+}

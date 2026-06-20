@@ -36,8 +36,8 @@
   "filename_hash": "462403ead98bea5e",
   "tracks_hash": "b8ccd491bb2d0f69",
   "combined_hash": "eb1920690ca9b577",
-  "created_at": "2026-06-20T13:43:49",
-  "updated_at": "2026-06-20T13:43:49",
+  "created_at": "2026-06-20T14:21:54",
+  "updated_at": "2026-06-20T14:21:54",
   "manual_annotations": [
     "运营已核对曲目与节目单一致"
   ],
@@ -56,7 +56,7 @@
   "change_log": [
     {
       "version": 1,
-      "at": "2026-06-20T13:43:49",
+      "at": "2026-06-20T14:21:54",
       "diffs": [
         "初始版本"
       ]

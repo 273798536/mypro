@@ -30,14 +30,14 @@
   "filename_hash": "1473dafa4b754617",
   "tracks_hash": "aabe403a80864c1b",
   "combined_hash": "17410d06693d87b9",
-  "created_at": "2026-06-20T13:43:49",
-  "updated_at": "2026-06-20T13:43:49",
+  "created_at": "2026-06-20T14:21:54",
+  "updated_at": "2026-06-20T14:21:54",
   "manual_annotations": [],
   "delivery_checklist": [],
   "change_log": [
     {
       "version": 1,
-      "at": "2026-06-20T13:43:49",
+      "at": "2026-06-20T14:21:54",
       "diffs": [
         "初始版本"
       ]

@@ -87,35 +87,40 @@ def compute_record_hashes(rec: EncoreRecord) -> None:
 
 
 def evaluate_status(rec: EncoreRecord, prev: Optional[EncoreRecord] = None) -> None:
+    rec.status = STATUS_PENDING
     reasons = []
     is_expired = detect_expired(
         rec.supplementary_note, rec.verbal_note, rec.rehearsal_note,
         *[t.note for t in rec.tracks],
     )
-    is_modified = detect_modified(
+    is_modified_note = detect_modified(
         rec.supplementary_note, rec.verbal_note, rec.rehearsal_note,
     )
     ok_match, match_detail = filename_matches_tracks(rec.filename, rec.tracks)
+    has_hash_change = (
+        prev is not None
+        and prev.combined_hash
+        and rec.combined_hash != prev.combined_hash
+    )
 
     if is_expired:
         rec.status = STATUS_EXPIRED
         reasons.append("检测到授权/版权到期关键字")
-    if is_modified:
-        if rec.status == STATUS_PENDING:
-            rec.status = STATUS_MODIFIED
-        reasons.append("检测到后补/改口径关键字")
-    if not ok_match:
-        if rec.status == STATUS_PENDING:
-            rec.status = STATUS_MISMATCH
+    elif is_modified_note or has_hash_change:
+        rec.status = STATUS_MODIFIED
+        if is_modified_note:
+            reasons.append("检测到后补/改口径关键字")
+        if has_hash_change:
+            reasons.append("与上一版本材料口径有变更")
+    elif not ok_match:
+        rec.status = STATUS_MISMATCH
         reasons.append(match_detail)
-    if rec.status == STATUS_PENDING:
+    else:
         rec.status = STATUS_OK
         reasons.append("校验通过")
 
-    if prev is not None and prev.combined_hash and rec.combined_hash != prev.combined_hash:
-        if rec.status == STATUS_OK:
-            rec.status = STATUS_MODIFIED
-        reasons.append("与上一版本材料口径有变更")
+    if not ok_match and rec.status != STATUS_MISMATCH:
+        reasons.append(match_detail)
 
     rec.status_detail = "；".join(reasons)
 
@@ -140,18 +145,6 @@ def build_change_log(rec: EncoreRecord, prev: Optional[EncoreRecord]) -> List[Di
         entry["diffs"].append("无实质变更")
     log.append(entry)
     return log
-
-
-def align_annotations_and_delivery(rec: EncoreRecord, prev: Optional[EncoreRecord]) -> None:
-    if prev:
-        rec.manual_annotations = list(dict.fromkeys(prev.manual_annotations + rec.manual_annotations))
-        merged = list(prev.delivery_checklist)
-        existing_ids = {d.get("item") for d in merged}
-        for d in rec.delivery_checklist:
-            if d.get("item") not in existing_ids:
-                merged.append(d)
-                existing_ids.add(d.get("item"))
-        rec.delivery_checklist = merged
 
 
 def archive_submit(

@@ -4,7 +4,7 @@
   "latest_version": 3,
   "status": "expired",
   "status_label": "授权到期",
-  "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；与上一版本材料口径有变更",
+  "status_detail": "检测到授权/版权到期关键字",
   "filename": "周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx",
   "track_count": 4,
   "tracks": [
@@ -61,57 +61,57 @@
       "version": 1,
       "status": "expired",
       "status_label": "授权到期",
-      "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；文件名 '周杰伦返场.xlsx' 未包含任何曲目名",
+      "status_detail": "检测到授权/版权到期关键字；文件名 '周杰伦返场.xlsx' 未包含任何曲目名",
       "filename": "周杰伦返场.xlsx",
       "track_count": 4,
-      "updated_at": "2026-06-20T13:43:49",
+      "updated_at": "2026-06-20T14:21:54",
       "combined_hash": "f0000042a3a0f6aa"
     },
     {
       "version": 2,
       "status": "expired",
       "status_label": "授权到期",
-      "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；文件名 '周杰伦返场.xlsx' 未包含任何曲目名；与上一版本材料口径有变更",
+      "status_detail": "检测到授权/版权到期关键字；文件名 '周杰伦返场.xlsx' 未包含任何曲目名",
       "filename": "周杰伦返场.xlsx",
       "track_count": 4,
-      "updated_at": "2026-06-20T13:43:49",
+      "updated_at": "2026-06-20T14:21:54",
       "combined_hash": "a2da18ab508fd95d"
     },
     {
       "version": 3,
       "status": "expired",
       "status_label": "授权到期",
-      "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；与上一版本材料口径有变更",
+      "status_detail": "检测到授权/版权到期关键字",
       "filename": "周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx",
       "track_count": 4,
-      "updated_at": "2026-06-20T13:43:49",
+      "updated_at": "2026-06-20T14:21:54",
       "combined_hash": "488b79e09aa77dc5"
     }
   ],
   "change_log": [
     {
       "version": 1,
-      "at": "2026-06-20T13:43:49",
+      "at": "2026-06-20T14:21:54",
       "diffs": [
         "初始版本"
       ]
     },
     {
       "version": 2,
-      "at": "2026-06-20T13:43:49",
+      "at": "2026-06-20T14:21:54",
       "diffs": [
         "排练/授权备注有变更"
       ]
     },
     {
       "version": 3,
-      "at": "2026-06-20T13:43:49",
+      "at": "2026-06-20T14:21:54",
       "diffs": [
         "文件名: '周杰伦返场.xlsx' -> '周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx'"
       ]
     }
   ],
-  "created_at": "2026-06-20T13:43:49",
-  "updated_at": "2026-06-20T13:43:49",
+  "created_at": "2026-06-20T14:21:54",
+  "updated_at": "2026-06-20T14:21:54",
   "_schema_version": 2
 }

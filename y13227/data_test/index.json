@@ -1,0 +1,13 @@
+{
+  "test-001": {
+    "versions": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "latest_version": 4,
+    "last_updated": "2026-06-20T14:18:11",
+    "latest_status": "ok"
+  }
+}

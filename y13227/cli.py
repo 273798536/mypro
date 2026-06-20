@@ -26,6 +26,17 @@ def _read_file_or_text(path_or_text: Optional[str]) -> Optional[str]:
     return path_or_text
 
 
+def _error_exit(code: int, message: str) -> int:
+    print(json.dumps({"ok": False, "error": message}, ensure_ascii=False, indent=2))
+    return code
+
+
+def _ensure_parent_dir(path: str) -> None:
+    parent = os.path.dirname(os.path.abspath(path))
+    if parent and not os.path.exists(parent):
+        os.makedirs(parent, exist_ok=True)
+
+
 def cmd_submit(args: argparse.Namespace) -> int:
     store = ArchiveStore(args.data_dir)
     try:
@@ -42,13 +53,9 @@ def cmd_submit(args: argparse.Namespace) -> int:
             delivery_checklist=json.loads(args.delivery) if args.delivery else None,
         )
     except json.JSONDecodeError as e:
-        out = {"ok": False, "error": f"delivery 参数 JSON 解析失败: {e}"}
-        print(json.dumps(out, ensure_ascii=False, indent=2))
-        return 2
+        return _error_exit(2, f"delivery 参数 JSON 解析失败: {e}")
     except Exception as e:
-        out = {"ok": False, "error": f"归档失败: {type(e).__name__}: {e}"}
-        print(json.dumps(out, ensure_ascii=False, indent=2))
-        return 1
+        return _error_exit(1, f"归档失败: {type(e).__name__}: {e}")
     if not meta.get("ok"):
         print(json.dumps(meta, ensure_ascii=False, indent=2))
         return 3
@@ -60,24 +67,37 @@ def cmd_submit(args: argparse.Namespace) -> int:
 
 
 def cmd_summary(args: argparse.Namespace) -> int:
-    store = ArchiveStore(args.data_dir)
-    summary = build_page_summary(store, args.record_id)
+    try:
+        store = ArchiveStore(args.data_dir)
+        summary = build_page_summary(store, args.record_id)
+    except Exception as e:
+        return _error_exit(1, f"生成摘要失败: {type(e).__name__}: {e}")
     if not summary.get("ok"):
         print(json.dumps(summary, ensure_ascii=False, indent=2))
         return 4
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     if args.output:
-        with open(args.output, "w", encoding="utf-8") as f:
-            json.dump(summary, f, ensure_ascii=False, indent=2)
+        try:
+            _ensure_parent_dir(args.output)
+            with open(args.output, "w", encoding="utf-8") as f:
+                json.dump(summary, f, ensure_ascii=False, indent=2)
+        except Exception as e:
+            return _error_exit(5, f"写入摘要文件失败: {type(e).__name__}: {e}")
     return 0
 
 
 def cmd_list(args: argparse.Namespace) -> int:
-    store = ArchiveStore(args.data_dir)
-    ids = store.list_ids()
+    try:
+        store = ArchiveStore(args.data_dir)
+        ids = store.list_ids()
+    except Exception as e:
+        return _error_exit(1, f"读取列表失败: {type(e).__name__}: {e}")
     items = []
     for rid in ids:
-        rec = store.load(rid)
+        try:
+            rec = store.load(rid)
+        except Exception:
+            continue
         if rec is None:
             continue
         items.append({
@@ -94,11 +114,13 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 
 def cmd_show(args: argparse.Namespace) -> int:
-    store = ArchiveStore(args.data_dir)
-    rec = store.load(args.record_id, args.version)
+    try:
+        store = ArchiveStore(args.data_dir)
+        rec = store.load(args.record_id, args.version)
+    except Exception as e:
+        return _error_exit(1, f"读取记录失败: {type(e).__name__}: {e}")
     if rec is None:
-        print(json.dumps({"ok": False, "error": f"记录 {args.record_id} 不存在或版本号无效"}, ensure_ascii=False, indent=2))
-        return 4
+        return _error_exit(4, f"记录 {args.record_id} 不存在或版本号无效")
     print(json.dumps(rec.to_dict(), ensure_ascii=False, indent=2))
     return 0
 
