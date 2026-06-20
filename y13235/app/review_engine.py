@@ -1,4 +1,4 @@
-import random
+import hashlib
 import uuid
 from datetime import datetime
 from typing import List, Dict, Tuple
@@ -10,24 +10,37 @@ from .models import (
 from .rules import DEFAULT_CALCULATION_RULE
 
 
+def _deterministic_variation(seed_key: str, idx: int, lo: float, hi: float) -> float:
+    digest = hashlib.sha256(f"{seed_key}|{idx}|{lo}|{hi}".encode("utf-8")).digest()
+    raw = int.from_bytes(digest[:8], "big") / (1 << 64)
+    return round(lo + raw * (hi - lo), 4)
+
+
 def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule) -> Tuple[ProgressMetrics, List[Anomaly]]:
     anomalies: List[Anomaly] = []
     thresholds = rule.thresholds
+
+    seed_key = (
+        f"{audio_file.filename}|{audio_file.student_name}|"
+        f"{audio_file.track_name}|{audio_file.lesson_date}|"
+        f"{audio_file.duration_seconds}|{audio_file.raw_line}"
+    )
 
     base_scores = {
         "小明": 78, "小红": 82, "小刚": 71,
     }
 
     if audio_file.is_master_tape:
-        tempo = random.uniform(85, 95)
-        pitch = random.uniform(85, 95)
-        rhythm = random.uniform(85, 95)
-        expression = random.uniform(85, 95)
+        tempo = _deterministic_variation(seed_key, 0, 85, 95)
+        pitch = _deterministic_variation(seed_key, 1, 85, 95)
+        rhythm = _deterministic_variation(seed_key, 2, 85, 95)
+        expression = _deterministic_variation(seed_key, 3, 85, 95)
     elif "极端高分" in audio_file.filename or "测试样本" in audio_file.filename:
-        tempo = random.uniform(98.5, 99.9)
-        pitch = random.uniform(98.5, 99.9)
-        rhythm = random.uniform(98.5, 99.9)
-        expression = random.uniform(98.5, 99.9)
+        tempo = _deterministic_variation(seed_key, 0, 98.5, 99.9)
+        pitch = _deterministic_variation(seed_key, 1, 98.5, 99.9)
+        rhythm = _deterministic_variation(seed_key, 2, 98.5, 99.9)
+        expression = _deterministic_variation(seed_key, 3, 98.5, 99.9)
+        overall_pre = round(tempo * 0.3 + pitch * 0.3 + rhythm * 0.25 + expression * 0.15, 2)
         anomalies.append(Anomaly(
             anomaly_type="分数异常-过高",
             severity="medium",
@@ -37,13 +50,14 @@ def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule) -> 
             raw_line=audio_file.raw_line,
             field_name="overall_score",
             expected=f"< {thresholds['suspicious_high']}",
-            actual=round(tempo * 0.3 + pitch * 0.3 + rhythm * 0.25 + expression * 0.15, 2)
+            actual=overall_pre
         ))
     elif "极端低分" in audio_file.filename or "状态不好" in audio_file.filename:
-        tempo = random.uniform(15, 35)
-        pitch = random.uniform(15, 35)
-        rhythm = random.uniform(15, 35)
-        expression = random.uniform(15, 35)
+        tempo = _deterministic_variation(seed_key, 0, 15, 35)
+        pitch = _deterministic_variation(seed_key, 1, 15, 35)
+        rhythm = _deterministic_variation(seed_key, 2, 15, 35)
+        expression = _deterministic_variation(seed_key, 3, 15, 35)
+        overall_pre = round(tempo * 0.3 + pitch * 0.3 + rhythm * 0.25 + expression * 0.15, 2)
         anomalies.append(Anomaly(
             anomaly_type="分数异常-过低",
             severity="medium",
@@ -53,15 +67,15 @@ def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule) -> 
             raw_line=audio_file.raw_line,
             field_name="overall_score",
             expected=f"> {thresholds['suspicious_low']}",
-            actual=round(tempo * 0.3 + pitch * 0.3 + rhythm * 0.25 + expression * 0.15, 2)
+            actual=overall_pre
         ))
     else:
         base = base_scores.get(audio_file.student_name, 70)
-        variance = random.uniform(-8, 12)
-        tempo = max(0, min(100, base + variance + random.uniform(-5, 5)))
-        pitch = max(0, min(100, base + variance + random.uniform(-5, 5)))
-        rhythm = max(0, min(100, base + variance + random.uniform(-5, 5)))
-        expression = max(0, min(100, base + variance + random.uniform(-8, 8)))
+        variance = _deterministic_variation(seed_key, 0, -8, 12)
+        tempo = max(0.0, min(100.0, base + variance + _deterministic_variation(seed_key, 1, -5, 5)))
+        pitch = max(0.0, min(100.0, base + variance + _deterministic_variation(seed_key, 2, -5, 5)))
+        rhythm = max(0.0, min(100.0, base + variance + _deterministic_variation(seed_key, 3, -5, 5)))
+        expression = max(0.0, min(100.0, base + variance + _deterministic_variation(seed_key, 4, -8, 8)))
 
     overall = tempo * 0.3 + pitch * 0.3 + rhythm * 0.25 + expression * 0.15
 
