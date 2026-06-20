@@ -1,9 +1,16 @@
 import { ParsedAudioFile } from '@/types';
 
 export function parseStallNumber(filename: string): string | null {
-  const pattern = /摊位[#号]?(\d+[-A-Za-z0-9]*)/;
-  const match = filename.match(pattern);
-  return match ? match[1] : null;
+  const patterns = [
+    /摊位[#号]?([A-Za-z]?\d+[A-Za-z0-9\-]*)/,
+    /摊位[#号]?([A-Za-z]+\d+[A-Za-z0-9\-]*)/,
+    /摊位[#号]?(\d+[A-Za-z0-9\-]*)/,
+  ];
+  for (const pattern of patterns) {
+    const match = filename.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
 }
 
 export function parseAuthorization(remark: string): string | null {
@@ -30,30 +37,31 @@ export function parseAudioFile(file: File): Promise<ParsedAudioFile> {
   return new Promise((resolve) => {
     const fileName = file.name;
     const nameWithoutExt = fileName.replace(/\.[^/.]+$/, '');
-    
+
     const stallNumber = parseStallNumber(nameWithoutExt);
-    
+    const authFromFileName = parseAuthorization(nameWithoutExt);
+
     const reader = new FileReader();
     reader.onload = () => {
       const remark = (reader.result as string) || '';
-      const authorizationDate = parseAuthorization(remark);
-      
+      const authFromRemark = parseAuthorization(remark);
+
       resolve({
         fileName,
         stallNumber,
-        remark,
-        authorizationDate,
+        remark: remark || nameWithoutExt,
+        authorizationDate: authFromRemark || authFromFileName,
       });
     };
     reader.onerror = () => {
       resolve({
         fileName,
         stallNumber,
-        remark: '',
-        authorizationDate: parseAuthorization(nameWithoutExt),
+        remark: nameWithoutExt,
+        authorizationDate: authFromFileName,
       });
     };
-    
+
     try {
       reader.readAsText(file.slice(0, 1024 * 100));
     } catch {
@@ -61,7 +69,7 @@ export function parseAudioFile(file: File): Promise<ParsedAudioFile> {
         fileName,
         stallNumber,
         remark: nameWithoutExt,
-        authorizationDate: parseAuthorization(nameWithoutExt),
+        authorizationDate: authFromFileName,
       });
     }
   });
