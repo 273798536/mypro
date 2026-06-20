@@ -1,0 +1,78 @@
+{
+  "state_id": "d94d63ffaeb3",
+  "current_params": {
+    "gray_ratio": 1.5,
+    "pass_threshold": 0.8,
+    "fail_threshold": 0.9,
+    "max_old_queue_ratio": 0.3,
+    "max_boundary_ratio": 0.1,
+    "min_total_samples": 5,
+    "version": "bad_v1"
+  },
+  "current_result": {
+    "run_id": "354828db4d9f",
+    "decision": "fail",
+    "total_samples": 0,
+    "correct_samples": 0,
+    "accuracy": 0.0,
+    "fail_samples": [],
+    "boundary_samples": [],
+    "old_queue_samples": [],
+    "misjudge_samples": [],
+    "attributions": [],
+    "misjudge_explanations": [],
+    "param_errors": [
+      "gray_ratio 必须在 (0, 1] 之间，当前值 1.5。下一步：请检查 config.json 中 gray_ratio 字段，改为 0 到 1 之间的小数，例如 0.5 表示 50% 灰度。",
+      "pass_threshold (0.8) 不能小于 fail_threshold (0.9)。下一步：请交换两个阈值的数值，或重新设定合理的通过/失败标准。"
+    ],
+    "next_steps": [
+      "参数校验失败，请先修复以上参数问题，再重新执行评测。",
+      "修复后可运行: train-gatekeeper run --config config.json"
+    ],
+    "param_snapshot_id": "c042f4237289",
+    "created_at": "2026-06-20T16:10:52"
+  },
+  "param_history": [
+    {
+      "snapshot_id": "f178bd19c260",
+      "params": {
+        "gray_ratio": 1.0,
+        "pass_threshold": 0.8,
+        "fail_threshold": 0.6,
+        "max_old_queue_ratio": 0.3,
+        "max_boundary_ratio": 0.1,
+        "min_total_samples": 5,
+        "version": "v1.0"
+      },
+      "created_at": "2026-06-20T16:09:45",
+      "reason": "CLI 更新参数",
+      "fingerprint": "ef12fa606160221c"
+    },
+    {
+      "snapshot_id": "c042f4237289",
+      "params": {
+        "gray_ratio": 1.5,
+        "pass_threshold": 0.8,
+        "fail_threshold": 0.9,
+        "max_old_queue_ratio": 0.3,
+        "max_boundary_ratio": 0.1,
+        "min_total_samples": 5,
+        "version": "bad_v1"
+      },
+      "created_at": "2026-06-20T16:10:52",
+      "reason": "CLI 更新参数",
+      "fingerprint": "1959bd712c56aa28"
+    }
+  ],
+  "notes": [
+    {
+      "note_id": "38714bf5d275",
+      "content": "第一次试跑，数据齐全",
+      "note_type": "verbal",
+      "author": "小唐",
+      "created_at": "2026-06-20T16:10:21",
+      "related_sample_ids": []
+    }
+  ],
+  "last_updated": "2026-06-20T16:10:52"
+}

@@ -1,0 +1,9 @@
+{
+  "gray_ratio": 1.0,
+  "pass_threshold": 0.8,
+  "fail_threshold": 0.6,
+  "max_old_queue_ratio": 0.3,
+  "max_boundary_ratio": 0.1,
+  "min_total_samples": 5,
+  "version": "v1.0"
+}

@@ -1,0 +1,146 @@
+[
+  {
+    "sample_id": "s001",
+    "content": "今天天气怎么样",
+    "expected_label": "weather",
+    "predicted_label": "weather",
+    "score": 0.95,
+    "source": "current",
+    "version": "current"
+  },
+  {
+    "sample_id": "s002",
+    "content": "明天会下雨吗",
+    "expected_label": "weather",
+    "predicted_label": "weather",
+    "score": 0.92,
+    "source": "current",
+    "version": "current"
+  },
+  {
+    "sample_id": "s003",
+    "content": "帮我订一张去北京的机票",
+    "expected_label": "flight",
+    "predicted_label": "flight",
+    "score": 0.88,
+    "source": "current",
+    "version": "current"
+  },
+  {
+    "sample_id": "s004",
+    "content": "播放周杰伦的歌",
+    "expected_label": "music",
+    "predicted_label": "music",
+    "score": 0.91,
+    "source": "current",
+    "version": "current"
+  },
+  {
+    "sample_id": "s005",
+    "content": "定明天早上七点的闹钟",
+    "expected_label": "alarm",
+    "predicted_label": "alarm",
+    "score": 0.87,
+    "source": "current",
+    "version": "current"
+  },
+  {
+    "sample_id": "s006",
+    "content": "今天有什么新闻",
+    "expected_label": "news",
+    "predicted_label": "news",
+    "score": 0.89,
+    "source": "current",
+    "version": "current"
+  },
+  {
+    "sample_id": "s007",
+    "content": "打开客厅的灯",
+    "expected_label": "smarthome",
+    "predicted_label": "smarthome",
+    "score": 0.85,
+    "source": "current",
+    "version": "current"
+  },
+  {
+    "sample_id": "s008",
+    "content": "明天北京飞上海的航班",
+    "expected_label": "flight",
+    "predicted_label": "flight",
+    "score": 0.93,
+    "source": "current",
+    "version": "current"
+  },
+  {
+    "sample_id": "old001",
+    "content": "天气如何",
+    "expected_label": "weather",
+    "predicted_label": "news",
+    "score": 0.55,
+    "source": "old_queue",
+    "version": "old_v1",
+    "metadata": {
+      "old_predicted_label": "news",
+      "old_score": 0.52
+    }
+  },
+  {
+    "sample_id": "old002",
+    "content": "我要听歌",
+    "expected_label": "music",
+    "predicted_label": "music",
+    "score": 0.72,
+    "source": "old_queue",
+    "version": "old_v1",
+    "metadata": {
+      "old_predicted_label": "news",
+      "old_score": 0.48
+    }
+  },
+  {
+    "sample_id": "boundary001",
+    "content": "明天早上叫我起床",
+    "expected_label": "alarm",
+    "predicted_label": "alarm",
+    "score": 0.62,
+    "source": "boundary",
+    "version": "current",
+    "is_boundary": true
+  },
+  {
+    "sample_id": "boundary002",
+    "content": "帮我看看天气",
+    "expected_label": "weather",
+    "predicted_label": "news",
+    "score": 0.58,
+    "source": "boundary",
+    "version": "current",
+    "is_boundary": true
+  },
+  {
+    "sample_id": "mis001",
+    "content": "播放音乐",
+    "expected_label": "music",
+    "predicted_label": "music",
+    "score": 0.82,
+    "source": "misjudge",
+    "version": "old_fix",
+    "metadata": {
+      "old_predicted_label": "video",
+      "old_score": 0.51
+    }
+  },
+  {
+    "sample_id": "mis002",
+    "content": "打开灯",
+    "expected_label": "smarthome",
+    "predicted_label": "smarthome",
+    "score": 0.78,
+    "source": "misjudge",
+    "version": "old_fix",
+    "metadata": {
+      "old_predicted_label": "alarm",
+      "old_score": 0.45
+    }
+  }
+]

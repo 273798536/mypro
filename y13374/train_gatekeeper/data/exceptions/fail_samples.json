@@ -1,0 +1,24 @@
+{
+  "run_id": "246e9ada1292",
+  "total_fail": 2,
+  "samples": [
+    {
+      "sample_id": "old001",
+      "content": "天气如何",
+      "expected_label": "weather",
+      "predicted_label": "news",
+      "score": 0.55,
+      "source": "old_queue",
+      "is_boundary": false
+    },
+    {
+      "sample_id": "boundary002",
+      "content": "帮我看看天气",
+      "expected_label": "weather",
+      "predicted_label": "news",
+      "score": 0.58,
+      "source": "boundary",
+      "is_boundary": true
+    }
+  ]
+}
