@@ -1,0 +1,210 @@
+[
+  {
+    "sample_id": "FL-SAMPLE-001",
+    "case_name": "正常特征血缘记录",
+    "case_type": "normal",
+    "stage_results": [
+      {
+        "stage": "version_alias_parse",
+        "stage_name": "版本别名解析",
+        "status": "PASS",
+        "detail": "别名 v20260615_prod → s3://prod-feature/20260615/user_click_rate.parquet"
+      },
+      {
+        "stage": "file_existence_check",
+        "stage_name": "目标文件存在性校验",
+        "status": "PASS",
+        "detail": "文件存在"
+      },
+      {
+        "stage": "etl_status_check",
+        "stage_name": "ETL任务状态校验",
+        "status": "PASS",
+        "detail": "ETL状态: success"
+      },
+      {
+        "stage": "checksum_integrity",
+        "stage_name": "Checksum完整性校验",
+        "status": "PASS",
+        "detail": "Checksum校验通过"
+      },
+      {
+        "stage": "lineage_link_verify",
+        "stage_name": "血缘链路上下游核对",
+        "status": "PASS",
+        "detail": "链路完整 上游[dwd.user_behavior_log] → 特征 → 下游[ads.user_profile_daily]"
+      }
+    ],
+    "final_conclusion": "PASS",
+    "conclusion_reason": "所有校验环节通过",
+    "audit_trail": [],
+    "deviation_flag": false,
+    "deviation_detail": "",
+    "stale_stuck_info": null,
+    "pass_with_remark": false,
+    "remark_text": ""
+  },
+  {
+    "sample_id": "FL-SAMPLE-002",
+    "case_name": "补录特征血缘记录",
+    "case_type": "supplementary",
+    "stage_results": [
+      {
+        "stage": "version_alias_parse",
+        "stage_name": "版本别名解析",
+        "status": "PASS",
+        "detail": "别名 v20260614_backfill → s3://prod-feature/20260614/retry-02/user_pay_amount.parquet"
+      },
+      {
+        "stage": "file_existence_check",
+        "stage_name": "目标文件存在性校验",
+        "status": "PASS",
+        "detail": "文件存在"
+      },
+      {
+        "stage": "etl_status_check",
+        "stage_name": "ETL任务状态校验",
+        "status": "WARN",
+        "detail": "ETL状态: backfill_success（补录任务）"
+      },
+      {
+        "stage": "checksum_integrity",
+        "stage_name": "Checksum完整性校验",
+        "status": "PASS",
+        "detail": "Checksum校验通过"
+      },
+      {
+        "stage": "lineage_link_verify",
+        "stage_name": "血缘链路上下游核对",
+        "status": "PASS",
+        "detail": "链路完整 上游[dwd.user_pay_order,dim.user_info] → 特征 → 下游[ads.user_value_score]"
+      }
+    ],
+    "final_conclusion": "PASS_WITH_REMARK",
+    "conclusion_reason": "ETL任务状态校验:ETL状态: backfill_success（补录任务）",
+    "audit_trail": [
+      {
+        "sample_id": "FL-SAMPLE-002",
+        "operator": "小许",
+        "action": "OVERRIDE_FROM_FAIL_TO_PASS",
+        "original_judgement": "FAIL",
+        "final_judgement": "PASS_WITH_REMARK",
+        "reason": "补录任务二次校验通过，checksum匹配，下游已有消费记录，按补录流程放行",
+        "timestamp": "2026-06-15 03:22:18",
+        "logged_at": "2026-06-20 12:54:37"
+      }
+    ],
+    "deviation_flag": false,
+    "deviation_detail": "",
+    "stale_stuck_info": null,
+    "pass_with_remark": true,
+    "remark_text": "06-14原始任务失败，06-15凌晨重跑补录成功，下游延迟消费"
+  },
+  {
+    "sample_id": "FL-SAMPLE-003",
+    "case_name": "版本别名指向旧文件（灰度重跑覆盖问题）",
+    "case_type": "version_alias_stale",
+    "stage_results": [
+      {
+        "stage": "version_alias_parse",
+        "stage_name": "版本别名解析",
+        "status": "WARN",
+        "detail": "版本别名 v20260616_gray 声明日期=20260616，但解析到的目标路径日期=20260615（非当日），卡住位置：版本别名解析 → 文件路径校验"
+      },
+      {
+        "stage": "file_existence_check",
+        "stage_name": "目标文件存在性校验",
+        "status": "PASS",
+        "detail": "文件存在"
+      },
+      {
+        "stage": "etl_status_check",
+        "stage_name": "ETL任务状态校验",
+        "status": "WARN",
+        "detail": "ETL状态: rerun_success，但版本别名指向文件需进一步核实"
+      },
+      {
+        "stage": "checksum_integrity",
+        "stage_name": "Checksum完整性校验",
+        "status": "FAIL",
+        "detail": "Checksum不匹配：灰度配置重跑1次后，旧文件checksum覆盖写入新任务记录，原始证据丢失无法比对"
+      },
+      {
+        "stage": "lineage_link_verify",
+        "stage_name": "血缘链路上下游核对",
+        "status": "PASS",
+        "detail": "链路完整 上游[dwd.item_exposure_log,dwd.item_click_log] → 特征 → 下游[ads.recall_candidate_pool]"
+      }
+    ],
+    "final_conclusion": "BLOCK",
+    "conclusion_reason": "版本别名解析:版本别名 v20260616_gray 声明日期=20260616，但解析到的目标路径日期=20260615（非当日），卡住位置：版本别名解析 → 文件路径校验 | ETL任务状态校验:ETL状态: rerun_success，但版本别名指向文件需进一步核实 | Checksum完整性校验:Checksum不匹配：灰度配置重跑1次后，旧文件checksum覆盖写入新任务记录，原始证据丢失无法比对",
+    "audit_trail": [
+      {
+        "sample_id": "FL-SAMPLE-003",
+        "operator": "小许",
+        "action": "FLAG_FOR_INVESTIGATION",
+        "original_judgement": "PASS",
+        "final_judgement": "BLOCK",
+        "reason": "初始灰度校验误判通过，小许二次复核发现版本别名仍卡在前一日文件路径，按异常流程拦截，附人工说明保留历史",
+        "timestamp": "2026-06-16 10:45:33",
+        "logged_at": "2026-06-20 12:54:37"
+      }
+    ],
+    "deviation_flag": true,
+    "deviation_detail": "样本FL-SAMPLE-003：版本别名指向旧文件，拉偏整体结论（若不人工拦截将误判为PASS）",
+    "stale_stuck_info": {
+      "alias_declare_date": "2026-06-16",
+      "actual_file_date": "2026-06-15",
+      "stuck_stage": "版本别名解析 → 文件路径校验",
+      "stuck_detail": "灰度配置重跑后，version_alias=v20260616_gray 仍解析到前一天的 s3://prod-feature/20260615/ 路径下的旧文件，新文件 s3://prod-feature/20260616/item_recall_score.parquet 未被别名覆盖指向",
+      "rerun_side_effect": "重跑1次后，旧证据（06-15的checksum）被覆盖写入新的06-16任务记录中，无法回滚比对"
+    },
+    "pass_with_remark": false,
+    "remark_text": ""
+  },
+  {
+    "sample_id": "FL-SAMPLE-004",
+    "case_name": "血缘链路断裂异常",
+    "case_type": "lineage_broken",
+    "stage_results": [
+      {
+        "stage": "version_alias_parse",
+        "stage_name": "版本别名解析",
+        "status": "PASS",
+        "detail": "别名 v20260616_prod → s3://prod-feature/20260616/user_tag_interest.parquet"
+      },
+      {
+        "stage": "file_existence_check",
+        "stage_name": "目标文件存在性校验",
+        "status": "FAIL",
+        "detail": "目标文件不存在: s3://prod-feature/20260616/user_tag_interest.parquet"
+      },
+      {
+        "stage": "etl_status_check",
+        "stage_name": "ETL任务状态校验",
+        "status": "FAIL",
+        "detail": "ETL状态: upstream_missing，上游分区未产出"
+      },
+      {
+        "stage": "checksum_integrity",
+        "stage_name": "Checksum完整性校验",
+        "status": "SKIP",
+        "detail": "文件不存在，跳过checksum校验"
+      },
+      {
+        "stage": "lineage_link_verify",
+        "stage_name": "血缘链路上下游核对",
+        "status": "FAIL",
+        "detail": "血缘断链: dwd.user_tag_raw 2026-06-16分区未产出，下游影响: ads.user_tag_wide 延迟等待超过4小时"
+      }
+    ],
+    "final_conclusion": "FAIL",
+    "conclusion_reason": "目标文件存在性校验:目标文件不存在: s3://prod-feature/20260616/user_tag_interest.parquet | ETL任务状态校验:ETL状态: upstream_missing，上游分区未产出 | Checksum完整性校验:文件不存在，跳过checksum校验 | 血缘链路上下游核对:血缘断链: dwd.user_tag_raw 2026-06-16分区未产出，下游影响: ads.user_tag_wide 延迟等待超过4小时",
+    "audit_trail": [],
+    "deviation_flag": true,
+    "deviation_detail": "样本FL-SAMPLE-004：血缘断链，上游缺失导致失败",
+    "stale_stuck_info": null,
+    "pass_with_remark": false,
+    "remark_text": ""
+  }
+]

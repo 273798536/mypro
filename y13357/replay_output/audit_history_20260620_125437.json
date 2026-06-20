@@ -1,0 +1,22 @@
+[
+  {
+    "sample_id": "FL-SAMPLE-002",
+    "operator": "小许",
+    "action": "OVERRIDE_FROM_FAIL_TO_PASS",
+    "original_judgement": "FAIL",
+    "final_judgement": "PASS_WITH_REMARK",
+    "reason": "补录任务二次校验通过，checksum匹配，下游已有消费记录，按补录流程放行",
+    "timestamp": "2026-06-15 03:22:18",
+    "logged_at": "2026-06-20 12:54:37"
+  },
+  {
+    "sample_id": "FL-SAMPLE-003",
+    "operator": "小许",
+    "action": "FLAG_FOR_INVESTIGATION",
+    "original_judgement": "PASS",
+    "final_judgement": "BLOCK",
+    "reason": "初始灰度校验误判通过，小许二次复核发现版本别名仍卡在前一日文件路径，按异常流程拦截，附人工说明保留历史",
+    "timestamp": "2026-06-16 10:45:33",
+    "logged_at": "2026-06-20 12:54:37"
+  }
+]
