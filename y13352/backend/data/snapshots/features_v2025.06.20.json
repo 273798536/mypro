@@ -1,0 +1,283 @@
+{
+  "version": "v2025.06.20",
+  "alias": "daily_prod",
+  "created_at": "2025-06-20T08:00:00",
+  "is_latest": true,
+  "samples": [
+    {
+      "id": "s0001",
+      "score": 0.9368,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0002",
+      "score": 0.7419,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0003",
+      "score": 0.6533,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0004",
+      "score": 0.5867,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0005",
+      "score": 0.6102,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0006",
+      "score": 0.8912,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0007",
+      "score": 0.918,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0008",
+      "score": 0.9159,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0009",
+      "score": 0.5254,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0010",
+      "score": 0.8492,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0011",
+      "score": 0.8568,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0012",
+      "score": 0.6538,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0013",
+      "score": 0.9016,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0014",
+      "score": 0.5856,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0015",
+      "score": 0.6012,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0016",
+      "score": 0.8493,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0017",
+      "score": 0.5714,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0018",
+      "score": 0.64,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0019",
+      "score": 0.6999,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0020",
+      "score": 0.5098,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0021",
+      "score": 0.6595,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0022",
+      "score": 0.6972,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0023",
+      "score": 0.6217,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0024",
+      "score": 0.5625,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0025",
+      "score": 0.7268,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0026",
+      "score": 0.6693,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0027",
+      "score": 0.6437,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0028",
+      "score": 0.5187,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0029",
+      "score": 0.9465,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0030",
+      "score": 0.6689,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0031",
+      "score": 0.7534,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0032",
+      "score": 0.6798,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0033",
+      "score": 0.8947,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0034",
+      "score": 0.9018,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0035",
+      "score": 0.5659,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0036",
+      "score": 0.884,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0037",
+      "score": 0.8189,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0038",
+      "score": 0.6358,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0039",
+      "score": 0.5153,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0040",
+      "score": 0.9238,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0041",
+      "score": 0.8195,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0042",
+      "score": 0.6302,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0043",
+      "score": 0.6647,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0044",
+      "score": 0.5409,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0045",
+      "score": 0.6046,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0046",
+      "score": 0.696,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0047",
+      "score": 0.654,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0048",
+      "score": 0.5877,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0049",
+      "score": 0.7728,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0050",
+      "score": 0.7159,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0051",
+      "score": 0.5508,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0052",
+      "score": 0.7231,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0053",
+      "score": 0.9397,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0054",
+      "score": 0.8464,
+      "category": "user_behavior"
+    },
+    {
+      "id": "s0055",
+      "score": 0.9325,
+      "category": "user_behavior"
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "task": {
+    "id": 1,
+    "name": "2025-06-20 生产环境异常复核",
+    "status": "completed",
+    "snapshot_version": "v2025.06.20",
+    "snapshot_alias": "daily_prod",
+    "snapshot_alias_points_old": false,
+    "current_status": "第2次回放已完成，发现3个异常",
+    "page_summary": "已完成2次回放，最新异常3/55个",
+    "created_at": "2026-06-19T18:22:19.522420",
+    "updated_at": "2026-06-19T18:22:40.349286"
+  },
+  "runs": [
+    {
+      "id": 1,
+      "run_number": 1,
+      "status": "completed",
+      "threshold": 0.85,
+      "snapshot_file": "features_v2025.06.15.json",
+      "sample_count": 50,
+      "anomaly_count": 0,
+      "metrics": {
+        "precision": 0.0853,
+        "recall": 0.0349,
+        "f1": 0.0495,
+        "anomaly_rate": 0.0,
+        "avg_score": 0.7117
+      },
+      "parameters": [
+        {
+          "name": "topk",
+          "value": "100"
+        },
+        {
+          "name": "ef_search",
+          "value": "128"
+        }
+      ],
+      "anomaly_ids": [],
+      "started_at": "2026-06-19T18:22:29.228879",
+      "finished_at": "2026-06-19T18:22:29.229599"
+    },
+    {
+      "id": 2,
+      "run_number": 2,
+      "status": "completed",
+      "threshold": 0.8,
+      "snapshot_file": "features_v2025.06.20.json",
+      "sample_count": 55,
+      "anomaly_count": 3,
+      "metrics": {
+        "precision": 0.0889,
+        "recall": 0.2243,
+        "f1": 0.1273,
+        "anomaly_rate": 0.0545,
+        "avg_score": 0.7175
+      },
+      "parameters": [
+        {
+          "name": "topk",
+          "value": "150"
+        },
+        {
+          "name": "ef_search",
+          "value": "200"
+        }
+      ],
+      "anomaly_ids": [
+        "s0001",
+        "s0029",
+        "s0053"
+      ],
+      "started_at": "2026-06-19T18:22:40.348636",
+      "finished_at": "2026-06-19T18:22:40.349159"
+    }
+  ],
+  "judgments": [
+    {
+      "sample_id": "s0012",
+      "original_label": "normal",
+      "new_label": "anomaly",
+      "reason": "人工复核确认异常",
+      "created_by": "值班人员",
+      "created_at": "2026-06-19T18:22:40.288763"
+    }
+  ],
+  "notes": [
+    {
+      "content": "算法同学口头说明：阈值偏低是故意的，先召回",
+      "note_type": "verbal",
+      "created_by": "值班人员",
+      "created_at": "2026-06-19T18:22:40.320171"
+    }
+  ]
+}
