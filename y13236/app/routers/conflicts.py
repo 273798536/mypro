@@ -1,6 +1,7 @@
 from typing import List, Optional
 from datetime import datetime
 from io import BytesIO
+from urllib.parse import quote
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
@@ -97,8 +98,11 @@ def export_conflicts(
         df.to_excel(writer, index=False, sheet_name="异常队列")
     output.seek(0)
     filename = f"琴房课时排期冲突_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    safe_filename = quote(filename)
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename={filename}"},
+        headers={
+            "Content-Disposition": f"attachment; filename*=UTF-8''{safe_filename}"
+        },
     )

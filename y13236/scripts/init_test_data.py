@@ -20,27 +20,27 @@ def init_test_data():
             file_name="月光奏鸣曲_贝多芬_v3.wav",
             repertoire_id=rep1.id,
             track_number="CH1",
-            start_timecode="00:09:00:00",
-            end_timecode="00:10:30:00",
-            raw_description="月光奏鸣曲第一乐章 彩排通道1 第15行",
+            start_timecode="09:00:06:00",
+            end_timecode="10:30:00:00",
+            raw_description="月光奏鸣曲第一乐章 彩排通道1 起始时码录入晚了6秒（约3个半拍） 第15行",
             source_row=15,
         )
         ch2 = StageChannel(
             file_name="wrong_filename_abc.wav",
             repertoire_id=rep2.id,
             track_number="CH2",
-            start_timecode="00:10:00:00",
-            end_timecode="00:11:15:00",
-            raw_description="匈牙利狂想曲 彩排通道2 文件名标记错误 第23行",
+            start_timecode="10:00:00:00",
+            end_timecode="11:15:00:00",
+            raw_description="匈牙利狂想曲 彩排通道2 文件名标记错误 时码正常 第23行",
             source_row=23,
         )
         ch3 = StageChannel(
-            file_name="夜曲Op9_Chopin.wav",
+            file_name="夜曲Op.9_肖邦.wav",
             repertoire_id=rep3.id,
             track_number="CH3",
-            start_timecode="00:14:05:00",
-            end_timecode="00:14:35:00",
-            raw_description="肖邦夜曲 彩排通道3 第31行",
+            start_timecode="14:00:12:00",
+            end_timecode="14:30:00:00",
+            raw_description="肖邦夜曲 彩排通道3 起始时码晚了12秒（6个半拍） 第31行",
             source_row=31,
         )
         db.add_all([ch1, ch2, ch3])

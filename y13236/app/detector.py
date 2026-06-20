@@ -111,7 +111,14 @@ def detect_file_repertoire_mismatch(db: Session, filter_criteria: Dict[str, Any]
     return conflicts
 
 
-TIMECODE_DEVIATION_THRESHOLD = 2
+TIMECODE_DEVIATION_THRESHOLD = 3
+
+
+def format_seconds(sec: int) -> str:
+    h = sec // 3600
+    m = (sec % 3600) // 60
+    s = sec % 60
+    return f"{h:02d}:{m:02d}:{s:02d}"
 
 
 def detect_timecode_deviation(db: Session, filter_criteria: Dict[str, Any]) -> List[ConflictRecord]:
@@ -132,20 +139,33 @@ def detect_timecode_deviation(db: Session, filter_criteria: Dict[str, Any]) -> L
             continue
         sched_start = time_to_seconds(sched.start_time)
         sched_end = time_to_seconds(sched.end_time)
+
         deviation_start = abs(sched_start - ch_start)
         deviation_end = abs(sched_end - ch_end)
         max_deviation = max(deviation_start, deviation_end)
+
         if max_deviation >= TIMECODE_DEVIATION_THRESHOLD:
+            parts = []
+            if deviation_start >= TIMECODE_DEVIATION_THRESHOLD:
+                parts.append(
+                    f"起始时码偏{deviation_start}秒：排期{format_seconds(sched_start)} "
+                    f"vs 通道表{channel.start_timecode}"
+                )
+            if deviation_end >= TIMECODE_DEVIATION_THRESHOLD:
+                parts.append(
+                    f"结束时码偏{deviation_end}秒：排期{format_seconds(sched_end)} "
+                    f"vs 通道表{channel.end_timecode}"
+                )
             desc = (
-                f"时码偏差检测：排期{sched.start_time.strftime('%H:%M:%S')}-"
-                f"{sched.end_time.strftime('%H:%M:%S')} 与舞台通道表时码"
-                f"({channel.start_timecode}-{channel.end_timecode}) "
-                f"偏差{max_deviation}秒（超过{TIMECODE_DEVIATION_THRESHOLD}秒阈值）"
+                f"时码偏半拍检测：{'; '.join(parts)}。最大偏差{max_deviation}秒"
+                f"（约合{max_deviation / 2:.0f}个半拍，超过{TIMECODE_DEVIATION_THRESHOLD}秒阈值）"
             )
             raw_src = (
                 f"舞台通道表原始描述：{channel.raw_description} | "
-                f"原始时码：{channel.start_timecode}-{channel.end_timecode} | "
-                f"原始行号：第{channel.source_row}行"
+                f"通道表原始时码：{channel.start_timecode}-{channel.end_timecode} | "
+                f"通道表原始行号：第{channel.source_row}行 | "
+                f"排期时间：{sched.start_time.strftime('%H:%M:%S')}-{sched.end_time.strftime('%H:%M:%S')} | "
+                f"偏差计算：起始差{deviation_start}秒 / 结束差{deviation_end}秒"
             )
             conflicts.append(ConflictRecord(
                 conflict_type=ConflictType.TIMECODE_DEVIATION,
