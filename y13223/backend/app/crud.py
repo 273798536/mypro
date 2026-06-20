@@ -101,12 +101,29 @@ def human_verify(db: Session, track_id: int, data: schemas.HumanVerify) -> schem
     if not track:
         return None
 
+    op = data.operator or data.verifier
+
+    if not data.verified and track.is_anomaly:
+        _log_change(db, track.id, "is_anomaly",
+                    str(track.is_anomaly), "False",
+                    "human_override", None, op)
+        _log_change(db, track.id, "anomaly_type",
+                    track.anomaly_type or "", "",
+                    "human_override", None, op)
+        track.is_anomaly = False
+        track.anomaly_type = None
+    elif data.verified and not track.is_anomaly:
+        _log_change(db, track.id, "is_anomaly",
+                    str(track.is_anomaly), "True",
+                    "human_override", None, op)
+        track.is_anomaly = True
+
     _log_change(db, track.id, "human_verified",
                 str(track.human_verified), str(data.verified),
-                "human_override", None, data.operator or data.verifier)
+                "human_override", None, op)
     _log_change(db, track.id, "human_verify_reason",
                 track.human_verify_reason, data.reason,
-                "human_override", None, data.operator or data.verifier)
+                "human_override", None, op)
 
     track.human_verified = data.verified
     track.human_verifier = data.verifier
