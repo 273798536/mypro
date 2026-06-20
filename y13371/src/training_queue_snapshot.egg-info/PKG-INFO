@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: training-queue-snapshot
+Version: 0.1.0
+Summary: 训练队列版本快照 - MLOps训练数据质量管理工具
+Requires-Python: >=3.9
+Requires-Dist: click>=8.1.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: python-dateutil>=2.8.0

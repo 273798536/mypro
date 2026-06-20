@@ -1,0 +1,2 @@
+[console_scripts]
+tqs = training_queue_snapshot.cli:main

@@ -1,0 +1,26 @@
+﻿sample_id,status,状态显示,gray_flag,灰度标记,gray_ratio,modification_type,修改类型,modification_note,is_boundary,是否边界样本,error_message,source_version,label,timestamp,feature_feature1,feature_feature2,feature_feature3,feature_feature4
+sample_001,processed,已处理,gray_candidate,灰度候选,0.2,none,无,,False,否,,e3cd6b069a33,1.0,2026-06-20T15:57:20.767238,1.23,4.56,7.89,10.11
+sample_002,processed,已处理,gray_candidate,灰度候选,0.2,none,无,,False,否,,e3cd6b069a33,0.0,2026-06-20T15:57:20.768223,2.34,5.67,8.9,11.22
+sample_003,processed,已处理,gray_candidate,灰度候选,0.2,none,无,,False,否,,e3cd6b069a33,1.0,2026-06-20T15:57:20.769248,3.45,6.78,9.01,12.33
+sample_004,boundary,边界,gray_candidate,灰度候选,0.2,none,无,,True,是,,e3cd6b069a33,0.0,2026-06-20T15:57:20.769987,4.56,7.89,0.12,13.44
+sample_005,boundary,边界,gray_candidate,灰度候选,0.2,none,无,,True,是,,e3cd6b069a33,1.0,2026-06-20T15:57:20.770953,5.67,8.9,1.23,14.55
+sample_006,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,0.0,2026-06-20T15:57:20.771505,1.11,2.22,3.33,4.44
+sample_007,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,1.0,2026-06-20T15:57:20.771852,6.78,9.01,2.34,15.66
+sample_008,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,0.0,2026-06-20T15:57:20.772216,7.89,0.12,3.45,16.77
+sample_009,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,1.0,2026-06-20T15:57:20.772528,8.9,1.23,4.56,17.88
+sample_010,processed,已处理,normal,正常,0.2,none,无,,False,否,,e3cd6b069a33,0.0,2026-06-20T15:57:20.772851,9.01,2.34,5.67,18.99
+sample_011,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,1.0,2026-06-20T15:57:20.773451,0.12,3.45,6.78,19.0
+sample_012,processed,已处理,normal,正常,0.2,none,无,,False,否,,e3cd6b069a33,0.0,2026-06-20T15:57:20.773920,1.35,4.68,7.91,20.12
+sample_013,processed,已处理,normal,正常,0.2,none,无,,False,否,,e3cd6b069a33,1.0,2026-06-20T15:57:20.774266,2.46,5.79,8.02,21.23
+sample_014,processed,已处理,normal,正常,0.2,none,无,,False,否,,e3cd6b069a33,0.0,2026-06-20T15:57:20.774977,3.57,6.8,9.13,22.34
+sample_015,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,1.0,2026-06-20T15:57:20.775327,4.68,7.91,0.24,23.45
+sample_016,bad,坏行,normal,正常,,none,无,,False,否,特征 feature2 高于阈值上限: 99.99 > 50.0,e3cd6b069a33,1.0,2026-06-20T15:57:20.775617,,99.99,99.99,99.99
+sample_017,bad,坏行,normal,正常,,none,无,,False,否,特征 feature1 高于阈值上限: 100.0 > 50.0,e3cd6b069a33,0.0,2026-06-20T15:57:20.775903,100.0,200.0,300.0,400.0
+skip_sample_01,skipped,跳过,normal,正常,,none,无,,False,否,按规则跳过,e3cd6b069a33,,2026-06-20T15:57:20.775944,,,,
+sample_019,skipped,跳过,normal,正常,,none,无,,False,否,按规则跳过,e3cd6b069a33,,2026-06-20T15:57:20.775982,,,,
+sample_020,bad,坏行,normal,正常,,none,无,,False,否,特征 feature1 高于阈值上限: 99.5 > 50.0,e3cd6b069a33,1.0,2026-06-20T15:57:20.776257,99.5,0.5,50.0,99.99
+sample_021,boundary,边界,normal,正常,0.2,manual_correction,人工修正,人工修正：feature1从1.00改为1.50,True,是,,e3cd6b069a33,0.0,2026-06-20T15:57:20.776580,1.5,2.5,3.5,4.5
+sample_022,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,1.0,2026-06-20T15:57:20.776900,2.6,3.7,4.8,5.9
+sample_023,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,0.0,2026-06-20T15:57:20.777211,3.7,4.8,5.9,6.0
+sample_024,boundary,边界,normal,正常,0.2,none,无,,True,是,,e3cd6b069a33,1.0,2026-06-20T15:57:20.778076,4.8,5.9,6.0,7.1
+sample_025,processed,已处理,normal,正常,0.2,none,无,,False,否,,e3cd6b069a33,0.0,2026-06-20T15:57:20.779267,5.9,6.0,7.1,8.2

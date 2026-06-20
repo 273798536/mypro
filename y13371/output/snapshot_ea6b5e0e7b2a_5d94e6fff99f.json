@@ -1,0 +1,744 @@
+{
+  "snapshot_id": "ea6b5e0e7b2a",
+  "version": {
+    "version_id": "5d94e6fff99f",
+    "name": "特征快照V2",
+    "description": "第二版特征快照，包含人工修正和阈值调整",
+    "created_at": "2026-06-20T15:57:31.933701",
+    "parent_version": null,
+    "thresholds": {
+      "feature1": {
+        "feature_name": "feature1",
+        "min_value": 0.0,
+        "max_value": 100.0,
+        "outlier_zscore": 3.0,
+        "allow_null": false,
+        "is_manual": true
+      },
+      "feature2": {
+        "feature_name": "feature2",
+        "min_value": 0.0,
+        "max_value": 100.0,
+        "outlier_zscore": 3.0,
+        "allow_null": false,
+        "is_manual": false
+      },
+      "feature3": {
+        "feature_name": "feature3",
+        "min_value": 0.0,
+        "max_value": 100.0,
+        "outlier_zscore": 3.0,
+        "allow_null": false,
+        "is_manual": false
+      },
+      "feature4": {
+        "feature_name": "feature4",
+        "min_value": 0.0,
+        "max_value": 100.0,
+        "outlier_zscore": 3.0,
+        "allow_null": false,
+        "is_manual": false
+      }
+    },
+    "gray_ratio": 0.2857142857142857,
+    "gray_ratio_config": 0.3,
+    "note": ""
+  },
+  "rows": [
+    {
+      "sample_id": "sample_001",
+      "features": {
+        "feature1": 1.23,
+        "feature2": 4.56,
+        "feature3": 7.89,
+        "feature4": 10.11
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "gray_candidate",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 0
+      },
+      "timestamp": "2026-06-20T15:57:31.946080"
+    },
+    {
+      "sample_id": "sample_002",
+      "features": {
+        "feature1": 2.34,
+        "feature2": 5.67,
+        "feature3": 8.9,
+        "feature4": 11.22
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "gray_candidate",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 1
+      },
+      "timestamp": "2026-06-20T15:57:31.946514"
+    },
+    {
+      "sample_id": "sample_003",
+      "features": {
+        "feature1": 3.45,
+        "feature2": 6.78,
+        "feature3": 9.01,
+        "feature4": 12.33
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "gray_candidate",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 2
+      },
+      "timestamp": "2026-06-20T15:57:31.946904"
+    },
+    {
+      "sample_id": "sample_004",
+      "features": {
+        "feature1": 4.56,
+        "feature2": 7.89,
+        "feature3": 0.12,
+        "feature4": 13.44
+      },
+      "label": 0.0,
+      "status": "boundary",
+      "gray_flag": "gray_candidate",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 3
+      },
+      "timestamp": "2026-06-20T15:57:31.947292"
+    },
+    {
+      "sample_id": "sample_005",
+      "features": {
+        "feature1": 5.67,
+        "feature2": 8.9,
+        "feature3": 1.23,
+        "feature4": 14.55
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "gray_candidate",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 4
+      },
+      "timestamp": "2026-06-20T15:57:31.947762"
+    },
+    {
+      "sample_id": "sample_006",
+      "features": {
+        "feature1": 1.11,
+        "feature2": 2.22,
+        "feature3": 3.33,
+        "feature4": 4.44
+      },
+      "label": 0.0,
+      "status": "boundary",
+      "gray_flag": "gray_candidate",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 5
+      },
+      "timestamp": "2026-06-20T15:57:31.948287"
+    },
+    {
+      "sample_id": "sample_007",
+      "features": {
+        "feature1": 6.78,
+        "feature2": 9.01,
+        "feature3": 2.34,
+        "feature4": 15.66
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "gray_candidate",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 6
+      },
+      "timestamp": "2026-06-20T15:57:31.948701"
+    },
+    {
+      "sample_id": "sample_008",
+      "features": {
+        "feature1": 7.89,
+        "feature2": 0.12,
+        "feature3": 3.45,
+        "feature4": 16.77
+      },
+      "label": 0.0,
+      "status": "boundary",
+      "gray_flag": "gray_candidate",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 7
+      },
+      "timestamp": "2026-06-20T15:57:31.949087"
+    },
+    {
+      "sample_id": "sample_009",
+      "features": {
+        "feature1": 8.9,
+        "feature2": 1.23,
+        "feature3": 4.56,
+        "feature4": 17.88
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 8
+      },
+      "timestamp": "2026-06-20T15:57:31.949467"
+    },
+    {
+      "sample_id": "sample_010",
+      "features": {
+        "feature1": 9.01,
+        "feature2": 2.34,
+        "feature3": 5.67,
+        "feature4": 18.99
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 9
+      },
+      "timestamp": "2026-06-20T15:57:31.950283"
+    },
+    {
+      "sample_id": "sample_011",
+      "features": {
+        "feature1": 0.12,
+        "feature2": 3.45,
+        "feature3": 6.78,
+        "feature4": 19.0
+      },
+      "label": 1.0,
+      "status": "boundary",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 10
+      },
+      "timestamp": "2026-06-20T15:57:31.950756"
+    },
+    {
+      "sample_id": "sample_012",
+      "features": {
+        "feature1": 1.35,
+        "feature2": 4.68,
+        "feature3": 7.91,
+        "feature4": 20.12
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 11
+      },
+      "timestamp": "2026-06-20T15:57:31.951148"
+    },
+    {
+      "sample_id": "sample_013",
+      "features": {
+        "feature1": 2.46,
+        "feature2": 5.79,
+        "feature3": 8.02,
+        "feature4": 21.23
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 12
+      },
+      "timestamp": "2026-06-20T15:57:31.951528"
+    },
+    {
+      "sample_id": "sample_014",
+      "features": {
+        "feature1": 3.57,
+        "feature2": 6.8,
+        "feature3": 9.13,
+        "feature4": 22.34
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 13
+      },
+      "timestamp": "2026-06-20T15:57:31.951904"
+    },
+    {
+      "sample_id": "sample_015",
+      "features": {
+        "feature1": 4.68,
+        "feature2": 7.91,
+        "feature3": 0.24,
+        "feature4": 23.45
+      },
+      "label": 1.0,
+      "status": "boundary",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 14
+      },
+      "timestamp": "2026-06-20T15:57:31.952277"
+    },
+    {
+      "sample_id": "sample_016",
+      "features": {
+        "feature2": 99.99,
+        "feature3": 99.99,
+        "feature4": 99.99
+      },
+      "label": 1.0,
+      "status": "boundary",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 15
+      },
+      "timestamp": "2026-06-20T15:57:31.952661"
+    },
+    {
+      "sample_id": "sample_017",
+      "features": {
+        "feature1": 50.0,
+        "feature2": 50.0,
+        "feature3": 50.0,
+        "feature4": 50.0
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "threshold_adjustment",
+      "modification_note": "阈值调整后不再是坏行",
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 16
+      },
+      "timestamp": "2026-06-20T15:57:31.953053"
+    },
+    {
+      "sample_id": "sample_018",
+      "features": {
+        "feature1": 1.0,
+        "feature2": 2.0,
+        "feature3": 3.0,
+        "feature4": 4.0
+      },
+      "label": 1.0,
+      "status": "boundary",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 17
+      },
+      "timestamp": "2026-06-20T15:57:31.953430"
+    },
+    {
+      "sample_id": "sample_019",
+      "features": {
+        "feature1": 5.0,
+        "feature2": 6.0,
+        "feature3": 7.0,
+        "feature4": 8.0
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 18
+      },
+      "timestamp": "2026-06-20T15:57:31.953806"
+    },
+    {
+      "sample_id": "sample_020",
+      "features": {
+        "feature1": 99.5,
+        "feature2": 0.5,
+        "feature3": 50.0,
+        "feature4": 99.99
+      },
+      "label": 1.0,
+      "status": "boundary",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 19
+      },
+      "timestamp": "2026-06-20T15:57:31.954680"
+    },
+    {
+      "sample_id": "sample_021",
+      "features": {
+        "feature1": 1.5,
+        "feature2": 2.5,
+        "feature3": 3.5,
+        "feature4": 4.5
+      },
+      "label": 0.0,
+      "status": "boundary",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "manual_correction",
+      "modification_note": "人工修正：feature1从1.00改为1.50",
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 20
+      },
+      "timestamp": "2026-06-20T15:57:31.955394"
+    },
+    {
+      "sample_id": "sample_022",
+      "features": {
+        "feature1": 2.8,
+        "feature2": 3.7,
+        "feature3": 4.8,
+        "feature4": 5.9
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "manual_correction",
+      "modification_note": "人工修正：feature1从2.60改为2.80",
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 21
+      },
+      "timestamp": "2026-06-20T15:57:31.956408"
+    },
+    {
+      "sample_id": "sample_023",
+      "features": {
+        "feature1": 3.7,
+        "feature2": 4.8,
+        "feature3": 5.9,
+        "feature4": 6.0
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 22
+      },
+      "timestamp": "2026-06-20T15:57:31.957286"
+    },
+    {
+      "sample_id": "sample_024",
+      "features": {
+        "feature1": 4.8,
+        "feature2": 5.9,
+        "feature3": 6.0,
+        "feature4": 7.1
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 23
+      },
+      "timestamp": "2026-06-20T15:57:31.957733"
+    },
+    {
+      "sample_id": "sample_025",
+      "features": {
+        "feature1": 5.9,
+        "feature2": 6.0,
+        "feature3": 7.1,
+        "feature4": 8.2
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 24
+      },
+      "timestamp": "2026-06-20T15:57:31.958122"
+    },
+    {
+      "sample_id": "sample_026",
+      "features": {
+        "feature1": 6.0,
+        "feature2": 7.0,
+        "feature3": 8.0,
+        "feature4": 9.0
+      },
+      "label": 1.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 25
+      },
+      "timestamp": "2026-06-20T15:57:31.958503"
+    },
+    {
+      "sample_id": "sample_027",
+      "features": {
+        "feature1": 7.0,
+        "feature2": 8.0,
+        "feature3": 9.0,
+        "feature4": 10.0
+      },
+      "label": 0.0,
+      "status": "processed",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "auto_fix",
+      "modification_note": "自动修复异常值",
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": false,
+      "metadata": {
+        "row_index": 26
+      },
+      "timestamp": "2026-06-20T15:57:31.958867"
+    },
+    {
+      "sample_id": "sample_028",
+      "features": {
+        "feature1": 0.01,
+        "feature2": 99.99,
+        "feature3": 0.02,
+        "feature4": 99.98
+      },
+      "label": 1.0,
+      "status": "boundary",
+      "gray_flag": "normal",
+      "gray_ratio": 0.3,
+      "modification_type": "none",
+      "modification_note": null,
+      "error_message": null,
+      "source_version": "5d94e6fff99f",
+      "is_boundary": true,
+      "metadata": {
+        "row_index": 27
+      },
+      "timestamp": "2026-06-20T15:57:31.959221"
+    }
+  ],
+  "stats": {
+    "total": 28,
+    "processed": 28,
+    "bad": 0,
+    "skipped": 0,
+    "boundary": 10,
+    "gray_candidate": 8,
+    "gray_enabled": 0,
+    "gray_error": 0,
+    "manual_corrections": 2,
+    "auto_fixes": 1,
+    "threshold_adjustments": 1,
+    "processed_rate": 1.0,
+    "bad_rate": 0.0,
+    "gray_rate": 0.2857,
+    "start_time": "2026-06-20T15:57:31.936790",
+    "end_time": "2026-06-20T15:57:31.959226"
+  },
+  "metrics": {
+    "mean_values": {
+      "feature1": 9.27148148148148,
+      "feature2": 13.3475,
+      "feature3": 11.88892857142857,
+      "feature4": 23.363928571428573
+    },
+    "std_values": {
+      "feature1": 20.24481143474767,
+      "feature2": 26.0229959024848,
+      "feature3": 21.048141879683858,
+      "feature4": 28.50713339438182
+    },
+    "min_values": {
+      "feature1": 0.01,
+      "feature2": 0.12,
+      "feature3": 0.02,
+      "feature4": 4.0
+    },
+    "max_values": {
+      "feature1": 99.5,
+      "feature2": 99.99,
+      "feature3": 99.99,
+      "feature4": 99.99
+    },
+    "null_counts": {
+      "feature1": 1,
+      "feature2": 0,
+      "feature3": 0,
+      "feature4": 0
+    },
+    "outlier_counts": {
+      "feature1": 1,
+      "feature2": 2,
+      "feature3": 1,
+      "feature4": 0
+    }
+  },
+  "created_at": "2026-06-20T15:57:31.959291",
+  "source_file": "tests/test_data_v2.csv",
+  "_export_meta": {
+    "export_time": "2026-06-20T15:57:31.996291",
+    "exporter_version": "0.1.0",
+    "status_display_mapping": {
+      "processed": "已处理",
+      "bad": "坏行",
+      "skipped": "跳过",
+      "boundary": "边界"
+    },
+    "gray_display_mapping": {
+      "normal": "正常",
+      "gray_candidate": "灰度候选",
+      "gray_enabled": "灰度生效",
+      "gray_error": "灰度错误"
+    },
+    "modification_display_mapping": {
+      "none": "无",
+      "manual_correction": "人工修正",
+      "auto_fix": "自动修复",
+      "threshold_adjustment": "阈值调整"
+    }
+  }
+}
