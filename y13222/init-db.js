@@ -7,7 +7,38 @@ if (!fs.existsSync(dbDir)) {
   fs.mkdirSync(dbDir, { recursive: true });
 }
 
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const db = new Database(path.join(dbDir, 'drum-beat.db'));
+
+db.pragma('journal_mode = WAL');
+db.pragma('foreign_keys = ON');
+
+function isDatabaseInitialized() {
+  const result = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='beat_items'").get();
+  return !!result;
+}
+
+function getRecordCount() {
+  try {
+    return db.prepare('SELECT COUNT(*) as count FROM beat_items').get().count;
+  } catch (e) {
+    return 0;
+  }
+}
+
+if (isDatabaseInitialized()) {
+  const count = getRecordCount();
+  console.log(`数据库已存在，当前有 ${count} 条记录。`);
+  console.log('提示：如需重新初始化，请删除 data/drum-beat.db 后再运行此脚本。');
+  db.close();
+  process.exit(0);
+}
+
+console.log('数据库未初始化，开始创建表和插入测试数据...');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS beat_items (
@@ -322,18 +353,21 @@ const seedData = [
   }
 ];
 
+const beatIdMap = {};
+
 const transaction = db.transaction(() => {
-  seedData.forEach((item, index) => {
+  seedData.forEach((item) => {
     const result = insertBeat.run(
       item.item_no, item.student_name, item.teacher_name, item.piece_name,
       item.piece_alias, item.beat_pattern, item.difficulty, item.status,
       item.contract_ref, item.contract_line_no, item.source_version,
       item.is_duplicate_alias, item.is_name_mismatch, item.is_old_version,
-      item.new_version_id, item.judge_result, item.judge_remark,
+      null, item.judge_result, item.judge_remark,
       item.judge_by, item.judge_at
     );
 
-    const beatId = result.lastInsertRowid || (index + 1);
+    const beatId = result.lastInsertRowid;
+    beatIdMap[item.item_no] = beatId;
 
     if (item.attachments) {
       item.attachments.forEach(att => {
@@ -361,9 +395,14 @@ const transaction = db.transaction(() => {
       });
     }
   });
+
+  if (beatIdMap['DRUM-2024-004'] && beatIdMap['DRUM-2024-005']) {
+    db.prepare('UPDATE beat_items SET new_version_id = ? WHERE item_no = ?').run(beatIdMap['DRUM-2024-005'], 'DRUM-2024-004');
+  }
 });
 
 transaction();
+
 console.log('测试数据已写入');
 console.log('共插入 ' + db.prepare('SELECT COUNT(*) FROM beat_items').get()['COUNT(*)'] + ' 条节拍清单');
 console.log('共 ' + db.prepare('SELECT COUNT(*) FROM attachments').get()['COUNT(*)'] + ' 个附件');
@@ -372,3 +411,4 @@ console.log('共 ' + db.prepare('SELECT COUNT(*) FROM version_conflicts').get()[
 console.log('共 ' + db.prepare('SELECT COUNT(*) FROM bad_data_records').get()['COUNT(*)'] + ' 条坏数据记录');
 
 db.close();
+console.log('\n初始化完成！可执行 npm start 启动服务。');

@@ -4,8 +4,9 @@
   "description": "鼓组节拍清单归档系统",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "init-db": "node init-db.js"
+    "start": "node init-db.js && node server.js",
+    "init-db": "node init-db.js",
+    "server": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
