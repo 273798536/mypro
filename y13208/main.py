@@ -28,7 +28,8 @@ from schemas import (
     RemarkAppendRequest, JudgmentRequest, LicenseWaiveRequest,
     StatusChangeResponse, AnomalyResponse, AlignmentStatusResponse,
     ReportGenerateRequest, ReportInfoResponse,
-    BatchSummary, ApiResponse, ApiError
+    BatchSummary, ApiResponse, ApiError,
+    RemarkResponse, StatusChangeItem, JudgmentItem
 )
 
 DB_PATH = os.environ.get("TIMECODE_DB", "timecode_anomaly_api.db")

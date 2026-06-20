@@ -1,11 +1,13 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Generic, TypeVar
 from enum import Enum
 
 from models import (
     AnomalyStatus, AnomalyType, MatchStatus
 )
+
+T = TypeVar('T')
 
 
 class TracklistRow(BaseModel):
@@ -174,7 +176,7 @@ class ReportInfoResponse(BaseModel):
     generated_at: datetime
 
 
-class ApiResponse[T](BaseModel):
+class ApiResponse(BaseModel, Generic[T]):
     code: int = 0
     message: str = "success"
     data: Optional[T] = None

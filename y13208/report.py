@@ -72,6 +72,7 @@ class ReportGenerator:
         out = []
         out.append(f"# {report_title}")
         out.append("")
+        out.append(f"**系统：录音棚时码异常提醒处理链**  ")
         out.append(f"> 生成时间：**{_fmt_dt(datetime.now())}**  ")
         out.append(f"> 校验场景：{operator_context}  ")
         out.append(f"> 数据快照版本：`{snap['exported_at']}`")
