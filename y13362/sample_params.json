@@ -1,0 +1,9 @@
+{
+  "experiment": "ab_v2_rerun",
+  "steps": {
+    "apply_thresholds": {
+      "ctr_high": 0.06,
+      "revenue_high": 250
+    }
+  }
+}

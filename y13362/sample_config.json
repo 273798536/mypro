@@ -1,0 +1,21 @@
+{
+  "samples": [
+    {"name": "exp_ctr_v2", "metric": "ctr", "value": 0.032, "source": "data/exp_ctr_v2.json"},
+    {"name": "exp_ctr_v1_backup", "metric": "ctr", "value": 0.028, "source": "data/exp_ctr_v1_backup.json"},
+    {"name": "exp_cvr_deprecated", "metric": "cvr", "value": 0.015, "source": "old_alias"},
+    {"name": "exp_cvr_v2", "metric": "cvr", "value": null, "source": "data/exp_cvr_v2.json"},
+    {"name": "exp_retention", "metric": "retention", "value": 0.45, "source": "data/exp_retention.json"},
+    {"name": "exp_revenue_legacy", "metric": "revenue", "value": 120.5, "source": "backup/exp_revenue_v1_old.json"}
+  ],
+  "thresholds": {
+    "ctr": {"low": 0.02, "high": 0.05},
+    "cvr": {"low": 0.01, "high": 0.04},
+    "retention": {"low": 0.3, "high": 0.8},
+    "revenue": {"low": 50, "high": 200}
+  },
+  "manual_corrections": [
+    {"target": "samples[2].value", "old_value": 0.015, "new_value": 0.018, "reason": "采样偏差修正"}
+  ],
+  "revenue_target": "",
+  "notes": "灰度实验 v2 轮次"
+}
