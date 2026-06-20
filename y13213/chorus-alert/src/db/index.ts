@@ -99,6 +99,7 @@ export async function getFilterCriteria(): Promise<FilterCriteria | null> {
   const result = await db.get(STORE_FILTERS, 'current');
   if (!result) return null;
   const { id, ...rest } = result as { id: string } & FilterCriteria;
+  void id;
   return rest;
 }
 
