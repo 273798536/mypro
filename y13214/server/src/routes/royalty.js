@@ -4,7 +4,7 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-import { upload } from '../index.js';
+import { upload } from '../upload.js';
 import {
   getRecords, saveRecords,
   getHistory, appendHistory,
@@ -186,26 +186,31 @@ router.post('/import', upload.single('file'), (req, res) => {
 router.get('/export', (req, res) => {
   const records = getRecords();
   const exportData = records.map((r) => ({
-    作品名称: r.workTitle,
-    演唱者: r.singerName,
-    声部: r.part,
-    分账比例: r.shareRatio,
-    授权到期日: r.authorizationExpiry,
-    授权状态: r.isExpired ? '已过期' : (r.authorizationStatus || '有效'),
-    联系方式: r.contactInfo,
-    排练/授权备注: r.rehearsalNote,
-    人工备注: r.manualNote,
-    状态: r.status === 'ready' ? '可放行' : r.status === 'pending' ? '材料待补' : r.status === 'expired' ? '授权过期' : '未确认',
-    数据来源: r.source,
-    导入时间: r.importedAt
+    '作品名称': r.workTitle,
+    '演唱者': r.singerName,
+    '声部': r.part,
+    '分账比例': r.shareRatio,
+    '授权到期日': r.authorizationExpiry,
+    '授权状态': r.isExpired ? '已过期' : (r.authorizationStatus || '有效'),
+    '联系方式': r.contactInfo,
+    '排练/授权备注': r.rehearsalNote,
+    '人工备注': r.manualNote,
+    '状态': r.status === 'ready' ? '可放行' : r.status === 'pending' ? '材料待补' : r.status === 'expired' ? '授权过期' : '未确认',
+    '数据来源': r.source,
+    '导入时间': r.importedAt
   }));
   const ws = XLSX.utils.json_to_sheet(exportData);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, '分账清单');
   const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
   const filename = `合唱声部分账_${new Date().toISOString().slice(0, 10)}.xlsx`;
+  const asciiFallback = 'chorus-royalty.xlsx';
+  const encodedFilename = encodeURIComponent(filename);
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${asciiFallback}"; filename*=UTF-8''${encodedFilename}`
+  );
   res.send(buf);
 });
 
