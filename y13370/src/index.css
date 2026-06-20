@@ -1,0 +1,242 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-root: #0f1419;
+  --bg-surface: #1a1f26;
+  --bg-elevated: #252c35;
+  --bg-hover: #2e3741;
+
+  --accent-amber: #f59e0b;
+  --accent-amber-glow: rgba(245, 158, 11, 0.25);
+  --accent-emerald: #10b981;
+  --accent-emerald-glow: rgba(16, 185, 129, 0.25);
+  --accent-red: #ef4444;
+  --accent-red-glow: rgba(239, 68, 68, 0.25);
+  --accent-blue: #3b82f6;
+  --accent-blue-glow: rgba(59, 130, 246, 0.25);
+
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --border-default: rgba(156, 163, 175, 0.12);
+  --border-emphasis: rgba(156, 163, 175, 0.28);
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --pulse-duration: 3s;
+
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-root);
+  color: var(--text-primary);
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(1200px 800px at 85% -10%, rgba(245, 158, 11, 0.06), transparent 60%),
+    radial-gradient(900px 600px at -10% 110%, rgba(59, 130, 246, 0.05), transparent 60%),
+    linear-gradient(180deg, #0f1419 0%, #0b0f13 100%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: var(--accent-amber-glow);
+  color: var(--accent-amber);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-emphasis);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+@layer components {
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-variant-ligatures: none;
+  }
+
+  .card-surface {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-surface::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent 40%);
+    pointer-events: none;
+  }
+
+  .btn-operate {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-emphasis);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s var(--ease-out);
+  }
+
+  .btn-operate:hover {
+    border-color: var(--accent-amber);
+    box-shadow: 0 0 0 1px var(--accent-amber), 0 0 24px -4px var(--accent-amber-glow);
+    transform: translateY(-1px);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-amber) 0%, #d97706 100%);
+    border: 1px solid #b45309;
+    color: #1a1200;
+    font-weight: 600;
+  }
+
+  .btn-primary:hover {
+    box-shadow: 0 0 0 1px #f59e0b, 0 0 32px -6px var(--accent-amber-glow);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid var(--border-emphasis);
+    background: var(--bg-elevated);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .data-grid {
+    display: grid;
+    gap: 1px;
+    background: var(--border-default);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .data-grid > * {
+    background: var(--bg-surface);
+  }
+}
+
+@layer utilities {
+  .animate-pulse-amber {
+    animation: pulseAmber var(--pulse-duration) ease-in-out infinite;
+  }
+  .animate-stagger-in {
+    animation: staggerIn 0.5s var(--ease-out) both;
+  }
+  .animate-scan-line {
+    animation: scanLine 2s linear infinite;
+  }
+  .animate-draw-check {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: drawCheck 0.4s var(--ease-out) forwards;
+  }
+  .animate-stroke-path {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: strokePath 1.2s var(--ease-out) forwards;
+  }
+  .animate-count-pop {
+    animation: countPop 0.45s var(--ease-out);
+  }
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.12), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2.5s linear infinite;
+  }
+  .text-glow-amber {
+    text-shadow: 0 0 18px var(--accent-amber-glow);
+  }
+  .text-glow-red {
+    text-shadow: 0 0 18px var(--accent-red-glow);
+  }
+  .glow-ring-amber {
+    box-shadow: 0 0 0 1px var(--accent-amber), 0 0 24px -6px var(--accent-amber-glow);
+  }
+  .glow-ring-red {
+    box-shadow: 0 0 0 1px var(--accent-red), 0 0 24px -6px var(--accent-red-glow);
+  }
+  .glow-ring-emerald {
+    box-shadow: 0 0 0 1px var(--accent-emerald), 0 0 24px -6px var(--accent-emerald-glow);
+  }
+  .bg-grid-fade {
+    background-image:
+      linear-gradient(var(--border-default) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-default) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse at 50% 0%, black 40%, transparent 80%);
+  }
+}
+
+@keyframes pulseAmber {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-amber-glow); opacity: 1; }
+  50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); opacity: 0.85; }
+}
+
+@keyframes staggerIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scanLine {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes strokePath {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes countPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
