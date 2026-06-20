@@ -19,6 +19,8 @@ import {
   filterRecords as applyFilter,
   saveRecords,
   saveHistory,
+  clearRecords,
+  clearHistory,
 } from '../db';
 import { mockRecords, generateMockHistory } from '../data/mockData';
 
@@ -219,8 +221,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const reloadMockData = useCallback(async () => {
     const initialRecords = mockRecords;
     const initialHistory = generateMockHistory(initialRecords);
+    await clearRecords();
+    await clearHistory();
     await saveRecords(initialRecords);
     await saveHistory(initialHistory);
+    await saveFilterCriteria(defaultFilterCriteria);
     setRecords(initialRecords);
     setHistory(initialHistory);
     setFilterCriteriaState(defaultFilterCriteria);

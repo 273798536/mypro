@@ -65,6 +65,16 @@ export async function deleteRecord(id: string): Promise<void> {
   await db.delete(STORE_RECORDS, id);
 }
 
+export async function clearRecords(): Promise<void> {
+  const db = await getDB();
+  await db.clear(STORE_RECORDS);
+}
+
+export async function clearHistory(): Promise<void> {
+  const db = await getDB();
+  await db.clear(STORE_HISTORY);
+}
+
 export async function saveHistory(actions: HistoryAction[]): Promise<void> {
   const db = await getDB();
   const tx = db.transaction(STORE_HISTORY, 'readwrite');
