@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 export type EntryStatus = 'aligned' | 'conflict' | 'missing_period' | 'overridden'
 
@@ -51,6 +52,18 @@ export interface AliasConflict {
     speaker: string
     originalPhrase: string
   }[]
+}
+
+export interface IngestResult {
+  matchedEntries: string[]
+  warnings: string[]
+  newEntryIds: string[]
+}
+
+export interface RescanResult {
+  updatedEntries: { id: string; songName: string; changes: string[] }[]
+  warnings: string[]
+  versionId: string
 }
 
 const MOCK_SCREENSHOTS: ScreenshotRecord[] = [
@@ -180,6 +193,112 @@ const MOCK_VERSIONS: VersionSnapshot[] = [
   },
 ]
 
+function parsePeriodFromNote(note: string | null): { start: string; end: string } | null {
+  if (!note) return null
+  const s = note.trim()
+
+  const patterns: [RegExp, (m: RegExpMatchArray) => { start: string; end: string } | null][] = [
+    [
+      /(\d{4}-\d{1,2}-\d{1,2})\s*(?:至|到|~|-|—)\s*(\d{4}-\d{1,2}-\d{1,2})/,
+      (m) => ({ start: m[1], end: m[2] }),
+    ],
+    [
+      /(\d{4}年\d{1,2}月\d{1,2}日)\s*(?:至|到|~|-|—)\s*(\d{4}年\d{1,2}月\d{1,2}日)/,
+      (m) => {
+        const toISO = (s: string) => s.replace(/年|月/g, '-').replace(/日/g, '')
+        return { start: toISO(m[1]), end: toISO(m[2]) }
+      },
+    ],
+    [
+      /(\d{1,2}月\d{1,2}日)\s*(?:至|到|~|-|—)\s*(\d{4})年(\d{1,2})月(\d{1,2})日/,
+      (m) => {
+        const endYear = m[3]
+        const startMonth = m[1].match(/(\d+)月/)?.[1] || ''
+        const startDay = m[1].match(/(\d+)日/)?.[1] || ''
+        const start = `${endYear}-${startMonth.padStart(2, '0')}-${startDay.padStart(2, '0')}`
+        const end = `${m[3]}-${m[4].padStart(2, '0')}-${m[5].padStart(2, '0')}`
+        return { start, end }
+      },
+    ],
+    [
+      /到\s*(\d{4})年(\d{1,2})月(\d{1,2})日/,
+      (m) => {
+        const end = `${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`
+        return { start: '待定', end }
+      },
+    ],
+    [
+      /(\d{4})年\s*全年\s*有效/,
+      (m) => {
+        const year = m[1]
+        return { start: `${year}-01-01`, end: `${year}-12-31` }
+      },
+    ],
+  ]
+
+  for (const [regex, handler] of patterns) {
+    const match = s.match(regex)
+    if (match) {
+      const result = handler(match)
+      if (result) return result
+    }
+  }
+  return null
+}
+
+function parseShareRatioFromNote(note: string | null, songName: string): number | null {
+  if (!note) return null
+  const s = note.trim()
+
+  const songAlias = songName
+    .replace(/\s*\(.*?\)\s*/g, '')
+    .replace(/[（(].*?[)）]/g, '')
+    .trim()
+
+  const beforeSongPattern = new RegExp(`(?:^|\\s)${songAlias}\\s*[:：]?\\s*(\\d+(?:\\.\\d+)?)\\s*%`, 'i')
+  const afterSongPattern = new RegExp(`(\\d+(?:\\.\\d+)?)\\s*%\\s*${songAlias}`, 'i')
+
+  let match = s.match(beforeSongPattern)
+  if (match) return parseFloat(match[1])
+
+  match = s.match(afterSongPattern)
+  if (match) return parseFloat(match[1])
+
+  const shortName = songAlias.slice(0, 2)
+  const shortPattern = new RegExp(`${shortName}\\s*[:：]?\\s*(\\d+(?:\\.\\d+)?)\\s*%`)
+  match = s.match(shortPattern)
+  if (match) return parseFloat(match[1])
+
+  if (s.includes(songAlias) || s.includes(shortName)) {
+    const generic = s.match(/(\d+(?:\.\d+)?)%/)
+    if (generic) return parseFloat(generic[1])
+  }
+
+  return null
+}
+
+function findEntryByName(name: string, entries: AuthorizationEntry[]): AuthorizationEntry | null {
+  const normalized = name.trim()
+  for (const entry of entries) {
+    if (entry.songName === normalized) return entry
+    if (entry.aliases.includes(normalized)) return entry
+  }
+  const cleanName = normalized.replace(/\s*\(.*?\)\s*/g, '').trim()
+  for (const entry of entries) {
+    const cleanEntry = entry.songName.replace(/\s*\(.*?\)\s*/g, '').trim()
+    if (cleanEntry === cleanName) return entry
+    if (entry.aliases.some((a) => a.replace(/\s*\(.*?\)\s*/g, '').trim() === cleanName)) return entry
+  }
+  return null
+}
+
+function computeEntryStatus(entry: AuthorizationEntry, hasOverride: boolean, hasConflict: boolean): EntryStatus {
+  if (hasOverride) return 'overridden'
+  if (hasConflict) return 'conflict'
+  if (!entry.authorizationPeriod) return 'missing_period'
+  return 'aligned'
+}
+
 interface StoreState {
   entries: AuthorizationEntry[]
   screenshots: ScreenshotRecord[]
@@ -189,22 +308,29 @@ interface StoreState {
   selectedVersionA: string | null
   selectedVersionB: string | null
   conflictModalEntryId: string | null
+  lastRescanResult: RescanResult | null
+  lastIngestResult: IngestResult | null
 
   setEntries: (entries: AuthorizationEntry[]) => void
   addEntry: (entry: AuthorizationEntry) => void
   updateEntry: (id: string, updates: Partial<AuthorizationEntry>) => void
   overrideEntry: (entryId: string, fieldName: string, oldValue: string, newValue: string, reason: string, operator: string) => void
   addScreenshot: (screenshot: ScreenshotRecord) => void
-  rescan: (label: string) => void
+  ingestScreenshot: (screenshot: ScreenshotRecord) => IngestResult
+  rescan: (label: string) => RescanResult
   getAliasConflicts: () => AliasConflict[]
   generateDeliverySummary: () => string
   setDeliverySummaryOpen: (open: boolean) => void
   setSelectedVersionA: (id: string | null) => void
   setSelectedVersionB: (id: string | null) => void
   setConflictModalEntryId: (id: string | null) => void
+  setLastRescanResult: (result: RescanResult | null) => void
+  setLastIngestResult: (result: IngestResult | null) => void
 }
 
-export const useStore = create<StoreState>((set, get) => ({
+export const useStore = create<StoreState>()(
+  persist(
+    (set, get) => ({
   entries: MOCK_ENTRIES,
   screenshots: MOCK_SCREENSHOTS,
   overrides: MOCK_OVERRIDES,
@@ -213,6 +339,8 @@ export const useStore = create<StoreState>((set, get) => ({
   selectedVersionA: null,
   selectedVersionB: null,
   conflictModalEntryId: null,
+  lastRescanResult: null,
+  lastIngestResult: null,
 
   setEntries: (entries) => set({ entries }),
 
@@ -243,9 +371,6 @@ export const useStore = create<StoreState>((set, get) => ({
         if (fieldName === 'authorizationPeriod') {
           const [start, end] = newValue.split('~')
           updated.authorizationPeriod = start && end ? { start: start.trim(), end: end.trim() } : null
-          if (updated.authorizationPeriod && updated.status === 'missing_period') {
-            updated.status = 'overridden'
-          }
         }
         return updated
       })
@@ -257,74 +382,181 @@ export const useStore = create<StoreState>((set, get) => ({
     screenshots: [...state.screenshots, screenshot],
   })),
 
-  rescan: (label) => set((state) => {
-    const snapshot: VersionSnapshot = {
-      id: `ver-${Date.now()}`,
-      entries: JSON.parse(JSON.stringify(state.entries)),
-      overrides: JSON.parse(JSON.stringify(state.overrides)),
-      createdAt: new Date().toISOString(),
-      label,
+  ingestScreenshot: (screenshot) => {
+    const result: IngestResult = {
+      matchedEntries: [],
+      warnings: [],
+      newEntryIds: [],
     }
-    return { versions: [...state.versions, snapshot] }
-  }),
+
+    let processedScreenshot = { ...screenshot }
+    if (!processedScreenshot.authorizationPeriodFromNote && processedScreenshot.rawText) {
+      const autoPeriod = parsePeriodFromNote(processedScreenshot.rawText)
+      if (autoPeriod) {
+        processedScreenshot.authorizationPeriodFromNote = `${autoPeriod.start}至${autoPeriod.end}`
+        result.warnings.push(`已从原始文本自动解析授权期限：${autoPeriod.start}~${autoPeriod.end}`)
+      }
+    }
+    if (!processedScreenshot.revenueShareFromNote && processedScreenshot.rawText) {
+      const ratioMatch = processedScreenshot.rawText.match(/(\d+(?:\.\d+)?)%/)
+      if (ratioMatch) {
+        processedScreenshot.revenueShareFromNote = `${ratioMatch[1]}%`
+        result.warnings.push(`已从原始文本自动解析分账比例：${ratioMatch[1]}%`)
+      }
+    }
+
+    set((state) => {
+      let entries = [...state.entries]
+      const screenshots = [...state.screenshots, processedScreenshot]
+
+      for (const songName of processedScreenshot.relatedSongNames) {
+        const entry = findEntryByName(songName, entries)
+        if (entry) {
+          if (!entry.screenshotIds.includes(processedScreenshot.id)) {
+            entries = entries.map((e) =>
+              e.id === entry.id
+                ? { ...e, screenshotIds: [...e.screenshotIds, processedScreenshot.id] }
+                : e
+            )
+          }
+          if (!result.matchedEntries.includes(entry.songName)) {
+            result.matchedEntries.push(entry.songName)
+          }
+        } else {
+          const newEntry: AuthorizationEntry = {
+            id: `entry-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+            songName,
+            aliases: [],
+            authorizationPeriod: null,
+            revenueShareRatio: 0,
+            status: 'missing_period',
+            screenshotIds: [processedScreenshot.id],
+          }
+          const ratio = parseShareRatioFromNote(processedScreenshot.revenueShareFromNote, songName)
+          if (ratio !== null) {
+            newEntry.revenueShareRatio = ratio
+          } else {
+            result.warnings.push(`「${songName}」未在备注中找到分账比例`)
+          }
+          const period = parsePeriodFromNote(processedScreenshot.authorizationPeriodFromNote)
+          if (period && period.start !== '待定') {
+            newEntry.authorizationPeriod = period
+            newEntry.status = 'aligned'
+          } else {
+            newEntry.status = 'missing_period'
+          }
+          entries.push(newEntry)
+          result.newEntryIds.push(newEntry.id)
+          result.warnings.push(`「${songName}」未匹配到现有条目，已自动新建`)
+        }
+      }
+
+      if (processedScreenshot.relatedSongNames.length === 0) {
+        result.warnings.push('未关联任何条目，截图仅作为存档')
+      }
+
+      return { entries, screenshots }
+    })
+
+    set({ lastIngestResult: result })
+    return result
+  },
+
+  rescan: (label) => {
+    const result: RescanResult = {
+      updatedEntries: [],
+      warnings: [],
+      versionId: '',
+    }
+
+    set((state) => {
+      const { entries: oldEntries, screenshots, overrides } = state
+      let entries = [...oldEntries]
+
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i]
+        const linkedScreenshots = screenshots.filter((s) => entry.screenshotIds.includes(s.id))
+        const changes: string[] = []
+
+        if (!entry.authorizationPeriod && linkedScreenshots.length > 0) {
+          for (const ss of linkedScreenshots) {
+            const period = parsePeriodFromNote(ss.authorizationPeriodFromNote)
+            if (period && period.start !== '待定') {
+              const oldPeriod = entry.authorizationPeriod
+                ? `${entry.authorizationPeriod.start}~${entry.authorizationPeriod.end}`
+                : '未填写'
+              entries[i] = {
+                ...entries[i],
+                authorizationPeriod: period,
+              }
+              changes.push(`授权期限：${oldPeriod}→${period.start}~${period.end}（来自截图 ${ss.id} 备注）`)
+              break
+            }
+          }
+        }
+
+        if (entry.revenueShareRatio === 0 && linkedScreenshots.length > 0) {
+          for (const ss of linkedScreenshots) {
+            const ratio = parseShareRatioFromNote(ss.revenueShareFromNote, entry.songName)
+            if (ratio !== null) {
+              entries[i] = { ...entries[i], revenueShareRatio: ratio }
+              changes.push(`分账比例：0%→${ratio}%（来自截图 ${ss.id} 备注）`)
+              break
+            }
+          }
+        }
+
+        if (changes.length > 0) {
+          result.updatedEntries.push({ id: entry.id, songName: entry.songName, changes })
+        }
+      }
+
+      const conflicts = getAliasConflictsInternal(entries, screenshots)
+      const conflictEntryIds = new Set(conflicts.flatMap((c) => c.entryIds))
+
+      entries = entries.map((entry) => {
+        const hasOverride = overrides.some((o) => o.entryId === entry.id)
+        const hasConflict = conflictEntryIds.has(entry.id)
+        const newStatus = computeEntryStatus(entry, hasOverride, hasConflict)
+        if (newStatus !== entry.status) {
+          const existing = result.updatedEntries.find((u) => u.id === entry.id)
+          if (existing) {
+            existing.changes.push(`状态：${entry.status}→${newStatus}`)
+          } else {
+            result.updatedEntries.push({ id: entry.id, songName: entry.songName, changes: [`状态：${entry.status}→${newStatus}`] })
+          }
+          return { ...entry, status: newStatus }
+        }
+        return entry
+      })
+
+      if (result.updatedEntries.length === 0) {
+        result.warnings.push('重扫未发现需要更新的条目，所有信息保持一致')
+      }
+
+      const snapshot: VersionSnapshot = {
+        id: `ver-${Date.now()}`,
+        entries: JSON.parse(JSON.stringify(entries)),
+        overrides: JSON.parse(JSON.stringify(overrides)),
+        createdAt: new Date().toISOString(),
+        label,
+      }
+
+      result.versionId = snapshot.id
+
+      return {
+        entries,
+        versions: [...state.versions, snapshot],
+        lastRescanResult: result,
+      }
+    })
+
+    return result
+  },
 
   getAliasConflicts: () => {
     const { entries, screenshots } = get()
-    const conflicts: AliasConflict[] = []
-    const aliasMap = new Map<string, { entryIds: string[]; sources: AliasConflict['sources'] }>()
-
-    const addToMap = (alias: string, entry: AuthorizationEntry) => {
-      if (!aliasMap.has(alias)) {
-        aliasMap.set(alias, { entryIds: [], sources: [] })
-      }
-      const group = aliasMap.get(alias)!
-      if (!group.entryIds.includes(entry.id)) {
-        group.entryIds.push(entry.id)
-      }
-      for (const ssId of entry.screenshotIds) {
-        const ss = screenshots.find((s) => s.id === ssId)
-        if (ss && ss.relatedSongNames.some((name) => name.includes(alias) || alias.includes(name))) {
-          if (!group.sources.some((s) => s.screenshotId === ss.id)) {
-            group.sources.push({
-              screenshotId: ss.id,
-              speaker: ss.speaker,
-              originalPhrase: ss.rawText,
-            })
-          }
-        }
-      }
-    }
-
-    for (const entry of entries) {
-      addToMap(entry.songName, entry)
-      for (const alias of entry.aliases) {
-        addToMap(alias, entry)
-      }
-    }
-
-    for (const [alias, group] of aliasMap) {
-      if (group.entryIds.length > 1) {
-        conflicts.push({ alias, entryIds: [...group.entryIds], sources: group.sources })
-      }
-    }
-
-    const deduped: AliasConflict[] = []
-    const seen = new Set<string>()
-    for (const c of conflicts) {
-      const key = [...c.entryIds].sort().join('|')
-      if (!seen.has(key)) {
-        seen.add(key)
-        deduped.push(c)
-      } else {
-        const existing = deduped.find((d) => [...d.entryIds].sort().join('|') === key)!
-        if (existing.sources.length < c.sources.length) {
-          const idx = deduped.indexOf(existing)
-          deduped[idx] = c
-        }
-      }
-    }
-
-    return deduped
+    return getAliasConflictsInternal(entries, screenshots)
   },
 
   generateDeliverySummary: () => {
@@ -344,7 +576,14 @@ export const useStore = create<StoreState>((set, get) => ({
     summary += '── 排练群截图 ──\n'
     for (const ss of screenshots) {
       summary += `[${ss.id}] ${ss.sourceGroup} · ${ss.speaker} · ${new Date(ss.createdAt).toLocaleDateString('zh-CN')}\n`
-      summary += `  "${ss.rawText}"\n`
+      summary += `  原文："${ss.rawText}"\n`
+      if (ss.authorizationPeriodFromNote) {
+        summary += `  备注期限：${ss.authorizationPeriodFromNote}\n`
+      }
+      if (ss.revenueShareFromNote) {
+        summary += `  备注分账：${ss.revenueShareFromNote}\n`
+      }
+      summary += `  关联条目：${ss.relatedSongNames.join('、') || '无'}\n`
     }
     summary += '\n'
 
@@ -352,7 +591,7 @@ export const useStore = create<StoreState>((set, get) => ({
       summary += '── 人工改判记录 ──\n'
       for (const ovr of overrides) {
         const entry = entries.find((e) => e.id === ovr.entryId)
-        summary += `[${ovr.timestamp}] ${ovr.operator}：${entry?.songName || ovr.entryId} ${ovr.fieldName} ${ovr.oldValue}→${ovr.newValue}\n`
+        summary += `[${new Date(ovr.timestamp).toLocaleString('zh-CN')}] ${ovr.operator}：${entry?.songName || ovr.entryId} ${ovr.fieldName} ${ovr.oldValue}→${ovr.newValue}\n`
         summary += `  原因：${ovr.reason}\n`
       }
       summary += '\n'
@@ -363,7 +602,13 @@ export const useStore = create<StoreState>((set, get) => ({
       const period = entry.authorizationPeriod
         ? `${entry.authorizationPeriod.start}~${entry.authorizationPeriod.end}`
         : '未填'
-      summary += `${entry.songName} | 别名：${entry.aliases.join('、') || '无'} | 期限：${period} | 分账：${entry.revenueShareRatio}% | 状态：${entry.status}\n`
+      const statusLabel = {
+        aligned: '已对齐',
+        conflict: '别名冲突',
+        overridden: '人工改判',
+        missing_period: '缺期限',
+      }[entry.status]
+      summary += `${entry.songName} | 别名：${entry.aliases.join('、') || '无'} | 期限：${period} | 分账：${entry.revenueShareRatio}% | 状态：${statusLabel} | 关联截图：${entry.screenshotIds.length}张\n`
     }
 
     return summary
@@ -373,4 +618,76 @@ export const useStore = create<StoreState>((set, get) => ({
   setSelectedVersionA: (id) => set({ selectedVersionA: id }),
   setSelectedVersionB: (id) => set({ selectedVersionB: id }),
   setConflictModalEntryId: (id) => set({ conflictModalEntryId: id }),
-}))
+  setLastRescanResult: (result) => set({ lastRescanResult: result }),
+  setLastIngestResult: (result) => set({ lastIngestResult: result }),
+}),
+    {
+      name: 'copyright-alignment-store',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        entries: state.entries,
+        screenshots: state.screenshots,
+        overrides: state.overrides,
+        versions: state.versions,
+      }),
+    }
+  )
+)
+
+function getAliasConflictsInternal(entries: AuthorizationEntry[], screenshots: ScreenshotRecord[]): AliasConflict[] {
+  const conflicts: AliasConflict[] = []
+  const aliasMap = new Map<string, { entryIds: string[]; sources: AliasConflict['sources'] }>()
+
+  const addToMap = (alias: string, entry: AuthorizationEntry) => {
+    if (!aliasMap.has(alias)) {
+      aliasMap.set(alias, { entryIds: [], sources: [] })
+    }
+    const group = aliasMap.get(alias)!
+    if (!group.entryIds.includes(entry.id)) {
+      group.entryIds.push(entry.id)
+    }
+    for (const ssId of entry.screenshotIds) {
+      const ss = screenshots.find((s) => s.id === ssId)
+      if (ss && ss.relatedSongNames.some((name) => name.includes(alias) || alias.includes(name))) {
+        if (!group.sources.some((s) => s.screenshotId === ss.id)) {
+          group.sources.push({
+            screenshotId: ss.id,
+            speaker: ss.speaker,
+            originalPhrase: ss.rawText,
+          })
+        }
+      }
+    }
+  }
+
+  for (const entry of entries) {
+    addToMap(entry.songName, entry)
+    for (const alias of entry.aliases) {
+      addToMap(alias, entry)
+    }
+  }
+
+  for (const [alias, group] of aliasMap) {
+    if (group.entryIds.length > 1) {
+      conflicts.push({ alias, entryIds: [...group.entryIds], sources: group.sources })
+    }
+  }
+
+  const deduped: AliasConflict[] = []
+  const seen = new Set<string>()
+  for (const c of conflicts) {
+    const key = [...c.entryIds].sort().join('|')
+    if (!seen.has(key)) {
+      seen.add(key)
+      deduped.push(c)
+    } else {
+      const existing = deduped.find((d) => [...d.entryIds].sort().join('|') === key)!
+      if (existing.sources.length < c.sources.length) {
+        const idx = deduped.indexOf(existing)
+        deduped[idx] = c
+      }
+    }
+  }
+
+  return deduped
+}

@@ -1,15 +1,17 @@
-import { useStore } from '@/store/useStore'
+import { useStore, RescanResult } from '@/store/useStore'
 import EntryCard from '@/components/EntryCard'
 import OverridePanel from '@/components/OverridePanel'
 import VersionTimeline from '@/components/VersionTimeline'
 import DeliverySummary from '@/components/DeliverySummary'
-import { RefreshCw, ClipboardList, AlertTriangle } from 'lucide-react'
+import { RefreshCw, ClipboardList, AlertTriangle, CheckCircle, X, Sparkles } from 'lucide-react'
 import { useState } from 'react'
 
 export default function AlignmentOverview() {
   const entries = useStore((s) => s.entries)
   const getAliasConflicts = useStore((s) => s.getAliasConflicts)
   const rescan = useStore((s) => s.rescan)
+  const lastRescanResult = useStore((s) => s.lastRescanResult)
+  const setLastRescanResult = useStore((s) => s.setLastRescanResult)
   const setDeliverySummaryOpen = useStore((s) => s.setDeliverySummaryOpen)
   const screenshots = useStore((s) => s.screenshots)
 
@@ -26,6 +28,8 @@ export default function AlignmentOverview() {
     setShowRescan(false)
   }
 
+  const dismissResult = () => setLastRescanResult(null)
+
   return (
     <div className="min-h-screen bg-parchment">
       <div className="mb-6">
@@ -34,6 +38,8 @@ export default function AlignmentOverview() {
           已录入 {entries.length} 条授权条目 · {screenshots.length} 张排练群截图 · {aligned} 条已对齐
         </p>
       </div>
+
+      {lastRescanResult && <RescanBanner result={lastRescanResult} onDismiss={dismissResult} />}
 
       {conflicts.length > 0 && (
         <div className="mb-5 bg-ochre/8 border border-ochre/20 rounded-lg px-4 py-3 flex items-start gap-3">
@@ -129,6 +135,76 @@ export default function AlignmentOverview() {
 
       <VersionTimeline />
       <DeliverySummary />
+    </div>
+  )
+}
+
+function RescanBanner({ result, onDismiss }: { result: RescanResult; onDismiss: () => void }) {
+  const hasUpdate = result.updatedEntries.length > 0
+  const hasWarning = result.warnings.length > 0
+
+  return (
+    <div className={`mb-5 rounded-lg border p-4 ${
+      hasUpdate
+        ? 'bg-sage/8 border-sage/25'
+        : hasWarning
+          ? 'bg-ochre/8 border-ochre/20'
+          : 'bg-sandstone/30 border-sandstone/40'
+    }`}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-2.5">
+          {hasUpdate ? (
+            <Sparkles size={16} className="text-sage shrink-0 mt-0.5" />
+          ) : hasWarning ? (
+            <AlertTriangle size={16} className="text-ochre shrink-0 mt-0.5" />
+          ) : (
+            <CheckCircle size={16} className="text-driftwood shrink-0 mt-0.5" />
+          )}
+          <div className="flex-1">
+            <p className={`text-sm font-medium ${
+              hasUpdate ? 'text-sage' : hasWarning ? 'text-ochre' : 'text-driftwood'
+            }`}>
+              重扫完成 · 版本 {result.versionId}
+            </p>
+            <div className="mt-1.5 space-y-1 text-xs">
+              {hasUpdate ? (
+                <>
+                  <p className="text-driftwood">
+                    已更新 {result.updatedEntries.length} 条条目：
+                  </p>
+                  <ul className="space-y-1 ml-2">
+                    {result.updatedEntries.map((u, i) => (
+                      <li key={i} className="text-driftwood">
+                        <span className="font-medium text-sage">「{u.songName}」</span>
+                        <ul className="ml-4 mt-0.5 space-y-0.5">
+                          {u.changes.map((c, j) => (
+                            <li key={j} className="text-driftwood/80">· {c}</li>
+                          ))}
+                        </ul>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p className="text-driftwood">所有条目状态未变化</p>
+              )}
+              {hasWarning && (
+                <ul className="space-y-0.5">
+                  {result.warnings.map((w, i) => (
+                    <li key={i} className="text-ochre/80">· {w}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+        <button
+          onClick={onDismiss}
+          className="text-driftwood/60 hover:text-driftwood transition-colors"
+        >
+          <X size={14} />
+        </button>
+      </div>
     </div>
   )
 }
