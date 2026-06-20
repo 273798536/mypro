@@ -51,6 +51,7 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
   },
 
   addMaterial: (file, meta) => {
+    const currentState = get()
     const id = `mat-${Date.now()}`
     const isDirty = Math.random() > 0.6
     const dirtyTags = ['截断-底部信息不完整', '模糊-文字可辨识度低', '重复-与已有截图重叠']
@@ -64,9 +65,20 @@ export const useReviewStore = create<ReviewStore>((set, get) => ({
       dirtyTag: isDirty ? dirtyTags[Math.floor(Math.random() * dirtyTags.length)] : '',
       thumbnailUrl: '',
     }
-    set((state) => ({
-      materials: [...state.materials, newMaterial],
-    }))
+    const reviewIdx = currentState.reviewItems.length + 1
+    const newReviewItem: ReviewItem = {
+      id: `rev-${Date.now()}`,
+      songNumber: `EN-${String(reviewIdx).padStart(2, '0')}`,
+      versionNumber: 'v1.0',
+      status: 'pending',
+      materialId: id,
+      reviewDate: new Date().toISOString().slice(0, 10),
+      alignedWith: { files: false, trackList: false, finalChecklist: false },
+    }
+    set({
+      materials: [...currentState.materials, newMaterial],
+      reviewItems: [...currentState.reviewItems, newReviewItem],
+    })
   },
 
   addNote: (itemId, content, author) => {

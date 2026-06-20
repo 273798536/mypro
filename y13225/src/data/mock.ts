@@ -1,4 +1,4 @@
-import type { Material, ReviewItem, Note, AnomalyRecord, AuthorizationNote } from './types'
+import type { Material, ReviewItem, Note, AnomalyRecord, AuthorizationNote } from '../types'
 
 export const mockMaterials: Material[] = [
   {

@@ -8,19 +8,32 @@ export default function FilterBar() {
   const reviewItems = useReviewStore((s) => s.reviewItems)
   const materials = useReviewStore((s) => s.materials)
   const authorizationNotes = useReviewStore((s) => s.authorizationNotes)
-  const getFilteredItems = useReviewStore((s) => s.getFilteredItems)
 
   const summary = useMemo(() => {
-    const filteredItems = getFilteredItems()
+    let items = reviewItems
+    if (filters.songNumber) {
+      items = items.filter((i) => i.songNumber.toLowerCase().includes(filters.songNumber.toLowerCase()))
+    }
+    if (filters.versionNumber) {
+      items = items.filter((i) => i.versionNumber.toLowerCase().includes(filters.versionNumber.toLowerCase()))
+    }
+    if (filters.sourceChannel) {
+      const materialIds = materials.filter((m) => m.sourceGroup.includes(filters.sourceChannel)).map((m) => m.id)
+      items = items.filter((i) => materialIds.includes(i.materialId))
+    }
+    if (filters.dateRange) {
+      const [start, end] = filters.dateRange
+      items = items.filter((i) => i.reviewDate >= start && i.reviewDate <= end)
+    }
     const lastAuth = authorizationNotes[authorizationNotes.length - 1]
     return {
-      totalItems: filteredItems.length,
-      confirmed: filteredItems.filter((i) => i.status === 'confirmed').length,
-      pending: filteredItems.filter((i) => i.status === 'pending').length,
-      anomaly: filteredItems.filter((i) => i.status === 'anomaly').length,
+      totalItems: items.length,
+      confirmed: items.filter((i) => i.status === 'confirmed').length,
+      pending: items.filter((i) => i.status === 'pending').length,
+      anomaly: items.filter((i) => i.status === 'anomaly').length,
       lastAlignmentAt: lastAuth ? lastAuth.createdAt : null,
     }
-  }, [reviewItems, materials, filters, authorizationNotes, getFilteredItems])
+  }, [reviewItems, materials, filters, authorizationNotes])
 
   const hasFilters = filters.songNumber || filters.versionNumber || filters.sourceChannel || filters.dateRange
 

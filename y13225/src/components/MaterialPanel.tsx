@@ -9,17 +9,34 @@ export default function MaterialPanel() {
   const setExpandedMaterial = useReviewStore((s) => s.setExpandedMaterial)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [dragOver, setDragOver] = useState(false)
+  const [showMetaForm, setShowMetaForm] = useState(false)
+  const [pendingFiles, setPendingFiles] = useState<File[]>([])
+  const [metaSource, setMetaSource] = useState('第三季度排练群')
+  const [metaSender, setMetaSender] = useState('')
 
   const handleFileSelect = (files: FileList | null) => {
-    if (!files) return
-    Array.from(files).forEach((file) => {
-      const sourceGroups = ['第三季度排练群', '琴房协调群']
-      const senders = ['张指挥', '王导', '小李', '小温']
+    if (!files || files.length === 0) return
+    setPendingFiles(Array.from(files))
+    setShowMetaForm(true)
+  }
+
+  const handleConfirmUpload = () => {
+    if (!metaSource.trim() || !metaSender.trim()) return
+    pendingFiles.forEach((file) => {
       addMaterial(file, {
-        sourceGroup: sourceGroups[Math.floor(Math.random() * sourceGroups.length)],
-        sender: senders[Math.floor(Math.random() * senders.length)],
+        sourceGroup: metaSource.trim(),
+        sender: metaSender.trim(),
       })
     })
+    setPendingFiles([])
+    setShowMetaForm(false)
+    setMetaSender('')
+  }
+
+  const handleCancelUpload = () => {
+    setPendingFiles([])
+    setShowMetaForm(false)
+    setMetaSender('')
   }
 
   const handleDrop = (e: React.DragEvent) => {
@@ -58,6 +75,52 @@ export default function MaterialPanel() {
           onChange={(e) => handleFileSelect(e.target.files)}
         />
       </div>
+
+      {showMetaForm && (
+        <div className="mx-3 mt-3 rounded-lg border border-amber/30 bg-amber/5 p-3">
+          <div className="mb-2 text-xs font-medium text-amber">
+            已选 {pendingFiles.length} 个文件，请填写来源信息
+          </div>
+          <div className="space-y-2">
+            <div>
+              <label className="mb-1 block text-xs text-ivoryMuted">来源群</label>
+              <select
+                value={metaSource}
+                onChange={(e) => setMetaSource(e.target.value)}
+                className="w-full text-xs"
+              >
+                <option value="第三季度排练群">第三季度排练群</option>
+                <option value="琴房协调群">琴房协调群</option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-ivoryMuted">发送人</label>
+              <input
+                type="text"
+                value={metaSender}
+                onChange={(e) => setMetaSender(e.target.value)}
+                placeholder="如：张指挥、王导、小温"
+                className="w-full text-xs"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCancelUpload}
+                className="flex-1 rounded px-2 py-1 text-xs text-ivoryMuted hover:bg-white/5"
+              >
+                取消
+              </button>
+              <button
+                onClick={handleConfirmUpload}
+                disabled={!metaSource.trim() || !metaSender.trim()}
+                className="flex-1 rounded bg-amber px-2 py-1 text-xs font-medium text-base hover:bg-amberDark disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                确认上传
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-3 flex-1 overflow-y-auto px-3">
         {materials.map((mat) => (
