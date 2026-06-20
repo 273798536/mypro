@@ -12,6 +12,7 @@ import json
 import os
 import sys
 import shutil
+import tempfile
 from datetime import timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -25,9 +26,10 @@ from review_engine import ReviewStore, now_iso, parse_filename
 from report_generator import generate_markdown_report, save_report
 
 
-TEST_DATA_DIR = os.path.join(SCRIPT_DIR, "testdata")
-TEST_DB = os.path.join(SCRIPT_DIR, "review_data_test.json")
-TEST_REPORTS = os.path.join(SCRIPT_DIR, "reports_test")
+_TMP_ROOT = tempfile.mkdtemp(prefix="sample_review_test_")
+TEST_DATA_DIR = os.path.join(_TMP_ROOT, "testdata")
+TEST_DB = os.path.join(_TMP_ROOT, "review_data_test.json")
+TEST_REPORTS = os.path.join(_TMP_ROOT, "reports_test")
 
 
 def make_path(rel):

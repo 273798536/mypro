@@ -1,0 +1,93 @@
+{
+  "records": {
+    "古典民乐精选-Vol1-示例": {
+      "record_id": "285b5793",
+      "package_name": "古典民乐精选-Vol1-示例",
+      "created_at": "2026-06-20 15:00:43",
+      "updated_at": "2026-06-20 15:00:43",
+      "status": "需补材料",
+      "contract_scans": [],
+      "audio_files": [],
+      "reference_tracklist": [
+        {
+          "track_no": 1,
+          "title": "春江花月夜",
+          "aliases": [
+            "夕阳箫鼓"
+          ],
+          "duration": null,
+          "iswc": null
+        },
+        {
+          "track_no": 2,
+          "title": "十面埋伏",
+          "aliases": [
+            "霸王卸甲"
+          ],
+          "duration": null,
+          "iswc": null
+        },
+        {
+          "track_no": 3,
+          "title": "高山流水",
+          "aliases": [],
+          "duration": null,
+          "iswc": null
+        }
+      ],
+      "issues": [
+        {
+          "issue_type": "缺少合同扫描件",
+          "description": "未提交任何合同扫描件",
+          "human_reason": "没有收到合同扫描件，无法对照曲目确认授权范围",
+          "severity": "error",
+          "related_track_no": null,
+          "resolution_hint": "请补充合同扫描件，至少需要包含曲目列表页的那一页"
+        },
+        {
+          "issue_type": "缺少音频文件",
+          "description": "缺少第1首音频文件（春江花月夜）",
+          "human_reason": "曲目表里有第1首《春江花月夜》，但没收到对应的音频文件",
+          "severity": "error",
+          "related_track_no": 1,
+          "resolution_hint": "请补发第1首《春江花月夜》的音频文件"
+        },
+        {
+          "issue_type": "缺少音频文件",
+          "description": "缺少第2首音频文件（十面埋伏）",
+          "human_reason": "曲目表里有第2首《十面埋伏》，但没收到对应的音频文件",
+          "severity": "error",
+          "related_track_no": 2,
+          "resolution_hint": "请补发第2首《十面埋伏》的音频文件"
+        },
+        {
+          "issue_type": "缺少音频文件",
+          "description": "缺少第3首音频文件（高山流水）",
+          "human_reason": "曲目表里有第3首《高山流水》，但没收到对应的音频文件",
+          "severity": "error",
+          "related_track_no": 3,
+          "resolution_hint": "请补发第3首《高山流水》的音频文件"
+        }
+      ],
+      "remarks": [],
+      "status_history": [
+        {
+          "changed_at": "2026-06-20 15:00:43",
+          "old_status": null,
+          "new_status": "需补材料",
+          "trigger": "首次提交",
+          "changed_issues": [
+            "1ca0beaf597d48eb3c7278b660d1ef2d4f8ca5fa644c22168ea1b96590a94874",
+            "220ad3b4a7f84c6eed1f09bbe1cb9102492a641bbfbb73134df571a6cadd734b",
+            "b0d2018a4f5b89e7c7fd2b431335640e44433a2d434f831d9720c4d42cc1f53c",
+            "e0d36ddfaa1ba53e1a636261f0a368e7cb495d45c26331e70e10c69ab1182b37"
+          ]
+        }
+      ],
+      "contract_content_keys": [],
+      "audio_file_hashes": [],
+      "submission_count": 1
+    }
+  },
+  "saved_at": "2026-06-20 15:00:43"
+}
