@@ -5,26 +5,49 @@ from .models import VoicePart, LineStatus, ArchiveResult
 from .parser import parse_voice_parts, parse_authorization_note, parse_manual_adjudication
 
 
+def _apply_adjudication(part: VoicePart, adj: dict) -> VoicePart:
+    part.original_status = part.status
+    part.manual_note = adj["note"]
+    new_status = adj["new_status"]
+    if new_status in ("已处理", "正常", "通过"):
+        part.status = LineStatus.PROCESSED
+    elif new_status in ("坏行", "错误"):
+        part.status = LineStatus.BAD
+    elif new_status in ("跳过", "跳过不处理"):
+        part.status = LineStatus.SKIPPED
+    elif new_status in ("时码偏差", "时码偏半拍"):
+        part.status = LineStatus.TIMECODE_OFF
+    else:
+        part.status = LineStatus.MANUAL_OVERRIDDEN
+    return part
+
+
 def _apply_manual_adjudication(
     parts: List[VoicePart],
     adjudications: dict
 ) -> List[VoicePart]:
+    loose_key_matches = {}
     for part in parts:
-        key = f"{part.track_no}|{part.part_name}"
-        if key in adjudications:
-            adj = adjudications[key]
-            part.original_status = part.status
-            part.manual_note = adj["note"]
-            if adj["new_status"] in ("已处理", "正常", "通过"):
-                part.status = LineStatus.PROCESSED
-            elif adj["new_status"] in ("坏行", "错误"):
-                part.status = LineStatus.BAD
-            elif adj["new_status"] in ("跳过", "跳过不处理"):
-                part.status = LineStatus.SKIPPED
-            elif adj["new_status"] in ("时码偏差", "时码偏半拍"):
-                part.status = LineStatus.TIMECODE_OFF
-            else:
-                part.status = LineStatus.MANUAL_OVERRIDDEN
+        exact_key = f"{part.track_no}|{part.part_name}|{part.singer}"
+        loose_key = f"{part.track_no}|{part.part_name}"
+
+        if exact_key in adjudications:
+            _apply_adjudication(part, adjudications[exact_key])
+        elif loose_key in adjudications and not adjudications[loose_key].get("has_singer"):
+            if loose_key not in loose_key_matches:
+                loose_key_matches[loose_key] = []
+            loose_key_matches[loose_key].append(part)
+
+    for loose_key, candidates in loose_key_matches.items():
+        adj = adjudications[loose_key]
+        problematic = [p for p in candidates if p.status != LineStatus.PROCESSED or p.has_timecode_issue]
+        if problematic:
+            for p in problematic:
+                _apply_adjudication(p, adj)
+        else:
+            for p in candidates:
+                _apply_adjudication(p, adj)
+
     return parts
 
 

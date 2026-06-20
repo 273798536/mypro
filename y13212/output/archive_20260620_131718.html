@@ -1,0 +1,756 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合唱声部清单归档 - 2026年06月20日</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            padding: 30px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            font-size: 28px;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .summary-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a2e;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 16px 8px;
+            background: #f8f9fc;
+            border-radius: 8px;
+        }
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+        .stat-total .stat-number { color: #1a1a2e; }
+        .stat-processed .stat-number { color: #27ae60; }
+        .stat-bad .stat-number { color: #e74c3c; }
+        .stat-skipped .stat-number { color: #f39c12; }
+        .stat-timecode .stat-number { color: #9b59b6; }
+        .stat-manual .stat-number { color: #3498db; }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title .badge {
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .badge-processed { background: #d5f5e3; color: #27ae60; }
+        .badge-bad { background: #fadbd8; color: #e74c3c; }
+        .badge-skipped { background: #fdebd0; color: #f39c12; }
+        .badge-timecode { background: #ebdef0; color: #9b59b6; }
+        .badge-manual { background: #d6eaf8; color: #3498db; }
+
+        .auth-note {
+            background: #fef9e7;
+            border-left: 4px solid #f39c12;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            color: #7d6608;
+        }
+        .auth-note strong { color: #b7950b; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f8f9fc;
+            font-weight: 600;
+            color: #555;
+            font-size: 13px;
+        }
+        tr:hover td { background: #fafbfd; }
+        .status-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-已处理 { background: #d5f5e3; color: #1e8449; }
+        .status-坏行 { background: #fadbd8; color: #c0392b; }
+        .status-跳过 { background: #fdebd0; color: #b9770e; }
+        .status-时码偏差 { background: #ebdef0; color: #7d3c98; }
+        .status-人工改判 { background: #d6eaf8; color: #2471a3; }
+
+        .manual-note {
+            font-size: 12px;
+            color: #2471a3;
+            background: #ebf5fb;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+        .timecode-dev {
+            font-size: 12px;
+            color: #7d3c98;
+            background: #f5eef8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+        }
+        .original-status {
+            font-size: 11px;
+            color: #999;
+            text-decoration: line-through;
+            margin-right: 6px;
+        }
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>合唱声部清单归档</h1>
+        <p class="subtitle">归档日期：2026年06月20日 | 共 21 条记录</p>
+
+        
+        <div class="auth-note">
+            <strong>授权备注：</strong>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001
+        </div>
+        
+
+        <div class="summary-card">
+            <div class="summary-title">归档统计</div>
+            <div class="stats-grid">
+                <div class="stat-item stat-total">
+                    <div class="stat-number">21</div>
+                    <div class="stat-label">总记录</div>
+                </div>
+                <div class="stat-item stat-processed">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">已处理</div>
+                </div>
+                <div class="stat-item stat-bad">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">坏行</div>
+                </div>
+                <div class="stat-item stat-skipped">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">跳过</div>
+                </div>
+                <div class="stat-item stat-timecode">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">时码偏差</div>
+                </div>
+                <div class="stat-item stat-manual">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">人工改判</div>
+                </div>
+            </div>
+        </div>
+
+        
+        <div class="section">
+            <div class="section-title">
+                时码偏差记录
+                <span class="badge badge-timecode">1 条</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>曲目编号</th>
+                        <th>声部</th>
+                        <th>演唱者</th>
+                        <th>时码</th>
+                        <th>偏差情况</th>
+                        <th>备注</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>TRK003</td>
+                        <td>男高音</td>
+                        <td>周杰</td>
+                        <td>00:05:32</td>
+                        <td>时码偏移约100ms</td>
+                        <td>节奏不稳</td>
+                        <td>
+                            
+                            <span class="original-status">时码偏差</span>
+                            
+                            <span class="status-tag status-时码偏差">时码偏差</span>
+                            
+                            <div class="manual-note">人工改判：确认时码偏半拍，需重新补录，暂保留记录</div>
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        
+        <div class="section">
+            <div class="section-title">
+                人工改判记录
+                <span class="badge badge-manual">3 条</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>曲目编号</th>
+                        <th>声部</th>
+                        <th>演唱者</th>
+                        <th>原状态</th>
+                        <th>改判后</th>
+                        <th>改判说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>TRK002</td>
+                        <td>女高音</td>
+                        <td>陈静</td>
+                        <td><span class="original-status">时码偏差</span></td>
+                        <td><span class="status-tag status-已处理">已处理</span></td>
+                        <td>经核对原始录音，时码偏差在容忍范围内，按正常处理</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK003</td>
+                        <td>男高音</td>
+                        <td>周杰</td>
+                        <td><span class="original-status">时码偏差</span></td>
+                        <td><span class="status-tag status-时码偏差">时码偏差</span></td>
+                        <td>确认时码偏半拍，需重新补录，暂保留记录</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK005</td>
+                        <td>女高音</td>
+                        <td>刘雪</td>
+                        <td><span class="original-status">时码偏差</span></td>
+                        <td><span class="status-tag status-已处理">已处理</span></td>
+                        <td>新人首次录音有偏差属正常，后期可修正，按已处理归档</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        <div class="section">
+            <div class="section-title">
+                全部声部清单
+                <span class="badge badge-processed">16 条有效</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>曲目编号</th>
+                        <th>声部</th>
+                        <th>演唱者</th>
+                        <th>时码</th>
+                        <th>授权期限</th>
+                        <th>备注</th>
+                        <th>状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>TRK001</td>
+                        <td>女高音</td>
+                        <td>王芳</td>
+                        <td>
+                            00:00:00
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td>领唱声部</td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK001</td>
+                        <td>女低音</td>
+                        <td>李娜</td>
+                        <td>
+                            00:00:05
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td>和声</td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK001</td>
+                        <td>男高音</td>
+                        <td>张伟</td>
+                        <td>
+                            00:00:03
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td>主旋</td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK001</td>
+                        <td>男低音</td>
+                        <td>刘强</td>
+                        <td>
+                            00:00:08
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td>低音部</td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK002</td>
+                        <td>女高音</td>
+                        <td>王芳</td>
+                        <td>
+                            00:02:15
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td>二部合唱</td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK002</td>
+                        <td>女高音</td>
+                        <td>陈静</td>
+                        <td>
+                            00:02:17
+                            
+                            <span class="timecode-dev">偏半拍</span>
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td>二部合唱</td>
+                        <td>
+                            
+                            <span class="original-status">时码偏差</span>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                            <div class="manual-note">改判：经核对原始录音，时码偏差在容忍范围内，按正常处理</div>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK002</td>
+                        <td>女低音</td>
+                        <td>李娜</td>
+                        <td>
+                            00:02:20
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td></td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK002</td>
+                        <td>男高音</td>
+                        <td>张伟</td>
+                        <td>
+                            00:02:18
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td></td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK002</td>
+                        <td>男低音</td>
+                        <td>刘强</td>
+                        <td>
+                            00:02:22
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td></td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK003</td>
+                        <td>女高音</td>
+                        <td>赵敏</td>
+                        <td>
+                            00:05:30
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td></td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK003</td>
+                        <td>女低音</td>
+                        <td>孙丽</td>
+                        <td>
+                            00:05:33
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td></td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK003</td>
+                        <td>男高音</td>
+                        <td>周杰</td>
+                        <td>
+                            00:05:32
+                            
+                            <span class="timecode-dev">时码偏移约100ms</span>
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td>节奏不稳</td>
+                        <td>
+                            
+                            <span class="original-status">时码偏差</span>
+                            
+                            <span class="status-tag status-时码偏差">时码偏差</span>
+                            
+                            <div class="manual-note">改判：确认时码偏半拍，需重新补录，暂保留记录</div>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK003</td>
+                        <td>男低音</td>
+                        <td>吴刚</td>
+                        <td>
+                            00:05:35
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td></td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK005</td>
+                        <td>男高音</td>
+                        <td>黄勇</td>
+                        <td>
+                            00:10:20
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td></td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK005</td>
+                        <td>男低音</td>
+                        <td>林海</td>
+                        <td>
+                            00:10:25
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td></td>
+                        <td>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td>TRK005</td>
+                        <td>女高音</td>
+                        <td>刘雪</td>
+                        <td>
+                            00:10:18
+                            
+                            <span class="timecode-dev">半拍偏差</span>
+                            
+                        </td>
+                        <td>授权备注
+授权期限：2026年1月1日至2026年12月31日
+授权范围：仅限内部排练与演出使用
+备注：合同扫描件已归档至档案室编号HT-2026-001</td>
+                        <td>新人录音</td>
+                        <td>
+                            
+                            <span class="original-status">时码偏差</span>
+                            
+                            <span class="status-tag status-已处理">已处理</span>
+                            
+                            <div class="manual-note">改判：新人首次录音有偏差属正常，后期可修正，按已处理归档</div>
+                            
+                        </td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+
+        
+        <div class="section">
+            <div class="section-title">
+                坏行记录
+                <span class="badge badge-bad">3 条</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>行号</th>
+                        <th>曲目编号</th>
+                        <th>声部</th>
+                        <th>演唱者</th>
+                        <th>原因</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>20</td>
+                        <td></td>
+                        <td>女高音</td>
+                        <td>无名</td>
+                        <td>缺少关键字段（曲目编号/声部/演唱者）</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>21</td>
+                        <td>TRK007</td>
+                        <td></td>
+                        <td>张伟</td>
+                        <td>缺少关键字段（曲目编号/声部/演唱者）</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>22</td>
+                        <td>TRK008</td>
+                        <td>男低音</td>
+                        <td></td>
+                        <td>缺少关键字段（曲目编号/声部/演唱者）</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        
+        <div class="section">
+            <div class="section-title">
+                跳过记录
+                <span class="badge badge-skipped">2 条</span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>行号</th>
+                        <th>曲目编号</th>
+                        <th>声部</th>
+                        <th>演唱者</th>
+                        <th>原因</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <td>15</td>
+                        <td>TRK004</td>
+                        <td>女高音</td>
+                        <td>王芳</td>
+                        <td>临时取消</td>
+                    </tr>
+                    
+                    <tr>
+                        <td>16</td>
+                        <td>TRK004</td>
+                        <td>女低音</td>
+                        <td>李娜</td>
+                        <td>临时取消</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+        
+
+        <div class="footer">
+            合唱声部清单归档系统 | 生成时间：2026-06-20 13:17:18
+        </div>
+    </div>
+</body>
+</html>

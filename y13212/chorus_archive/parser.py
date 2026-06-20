@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from typing import Tuple, List, Optional
 import pandas as pd
@@ -104,15 +103,22 @@ def parse_manual_adjudication(file_path: str) -> dict:
     if missing:
         return {}
 
+    has_singer = "演唱者" in df.columns
+
     adjudications = {}
     for _, row in df.iterrows():
         track_no = str(row.get("曲目编号", "")).strip()
         part_name = str(row.get("声部", "")).strip()
+        singer = str(row.get("演唱者", "")).strip() if has_singer else ""
         if not track_no or not part_name:
             continue
-        key = f"{track_no}|{part_name}"
+        key_parts = [track_no, part_name]
+        if singer:
+            key_parts.append(singer)
+        key = "|".join(key_parts)
         adjudications[key] = {
             "new_status": str(row.get("改判状态", "")).strip(),
             "note": str(row.get("改判说明", "")).strip() or str(row.get("人工备注", "")).strip(),
+            "has_singer": bool(singer),
         }
     return adjudications
