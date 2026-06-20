@@ -17,7 +17,7 @@ def _human_reason(exception_type, beat_label, performer, expected, actual, alloc
     elif exception_type == "legacy_master_conflict":
         base = f"「{beat_label}」引用旧版母带 v{legacy_version}"
         if screenshot_statement:
-            base += f"，排练群原始说法："{screenshot_statement}""
+            base += f'，排练群原始说法：\u201c{screenshot_statement}\u201d'
         return base
     elif exception_type == "missing_actual":
         base = f"「{beat_label}」未录到实际节拍数"

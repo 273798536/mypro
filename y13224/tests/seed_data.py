@@ -111,7 +111,7 @@ REHEARSAL_SCREENSHOTS = [
         "sender": "林姐",
         "sent_at": "2026-06-10T19:05:00",
         "is_late": False,
-        "parsed_text": "过门段：底鼓6拍——林姐对照旧版母带标注的，群里说"旧版母带这里底鼓是6拍"",
+        "parsed_text": '过门段：底鼓6拍——林姐对照旧版母带标注的，群里说\u201c旧版母带这里底鼓是6拍\u201d',
         "beats": [
             {
                 "beat_index": 1,

@@ -7,12 +7,12 @@ pip install -r requirements.txt
 python run.py
 ```
 
-服务启动在 `http://0.0.0.0:5000`。
+服务启动在 `http://0.0.0.0:5050`（macOS 上 5000 端口常被 AirPlay 占用，故用 5050）。
 
 用排练群截图数据发起一次对齐：
 
 ```bash
-curl -X POST http://localhost:5000/api/align/start \
+curl -X POST http://localhost:5050/api/align/start \
   -H "Content-Type: application/json" \
   -d '{"screenshots": [截图数据数组]}'
 ```
@@ -53,7 +53,7 @@ curl -X POST http://localhost:5000/api/align/start \
 拿到新截图或修正数据后，用同一接口重跑：
 
 ```bash
-curl -X POST http://localhost:5000/api/align/rerun \
+curl -X POST http://localhost:5050/api/align/rerun \
   -H "Content-Type: application/json" \
   -d '{"screenshots": [新截图数据]}'
 ```
@@ -65,15 +65,15 @@ curl -X POST http://localhost:5000/api/align/rerun \
 ### 列出异常
 
 ```bash
-curl http://localhost:5000/api/align/exceptions
-curl "http://localhost:5000/api/align/exceptions?status=open"
-curl "http://localhost:5000/api/align/exceptions?batch_id=batch_20260610..."
+curl http://localhost:5050/api/align/exceptions
+curl "http://localhost:5050/api/align/exceptions?status=open"
+curl "http://localhost:5050/api/align/exceptions?batch_id=batch_20260610..."
 ```
 
 ### 查看异常明细
 
 ```bash
-curl http://localhost:5000/api/align/exceptions/{exception_id}
+curl http://localhost:5050/api/align/exceptions/{exception_id}
 ```
 
 返回包含：异常原因（人话）、关联截图、旧版母带原始说法、确认历史。
@@ -81,7 +81,7 @@ curl http://localhost:5000/api/align/exceptions/{exception_id}
 ### 人工确认
 
 ```bash
-curl -X POST http://localhost:5000/api/align/confirm/{exception_id} \
+curl -X POST http://localhost:5050/api/align/confirm/{exception_id} \
   -H "Content-Type: application/json" \
   -d '{"operator": "林姐", "new_status": "confirmed", "note": "学生已补练"}'
 ```
@@ -91,8 +91,8 @@ curl -X POST http://localhost:5000/api/align/confirm/{exception_id} \
 ### 导出异常队列
 
 ```bash
-curl http://localhost:5000/api/align/export > exceptions.json
-curl "http://localhost:5000/api/align/export?status=open" > open_exceptions.json
+curl http://localhost:5050/api/align/export > exceptions.json
+curl "http://localhost:5050/api/align/export?status=open" > open_exceptions.json
 ```
 
 导出结果与接口查询状态一致——同一份数据，两个出口，不会对不上。
