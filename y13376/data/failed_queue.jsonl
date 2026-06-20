@@ -1,0 +1,5 @@
+# 失败队列 - 2026-06-19 批次
+# 因特征服务超时导致的回退样本，待补特征后重新入列
+{"sample_id": "s_fq_101", "label": 0, "features": {"user_profile": "young"}, "fail_reason": "feature_timeout", "retry_count": 2}
+{"sample_id": "s_fq_102", "label": 1, "features": {"user_profile": "mid_age", "item_embedding": "emb_fq02"}, "fail_reason": "model_inference_error", "retry_count": 1}
+{"sample_id": "s_fq_103", "label": 0, "features": {}, "fail_reason": "empty_payload", "retry_count": 3}
