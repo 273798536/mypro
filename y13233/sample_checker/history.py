@@ -148,7 +148,7 @@ class HistoryTracker:
             actor = c.changed_by or "未知"
             reason = c.changed_reason or "（未填写）"
             lines.append(
-                f"[版本{v=c.version} | {c.changed_at}] {actor}：{reason}"
+                f"[版本={c.version} | {c.changed_at}] {actor}：{reason}"
             )
             if c.diff:
                 for k, v in c.diff.items():

@@ -16,8 +16,7 @@ from .models import (
 from .idempotency import IdempotencyGuard
 
 
-HALF_BEAT_TOLERANCE = 0.45
-SUSPICIOUS_OFFSETS = [0.25, 0.5, 0.75]
+HALF_BEAT_TOLERANCE = 0.1
 
 
 @dataclass
@@ -116,17 +115,6 @@ class SampleAnomalyDetector:
         return results
 
     # ── 时码偏半拍检测（核心挂起逻辑） ────────────────────────
-    def _is_half_beat_offset(self, offset: float) -> bool:
-        frac = abs(offset - round(offset))
-        if math.isclose(frac, 0.5, abs_tol=self.half_beat_tolerance):
-            return True
-        if math.isclose(frac, 0.0, abs_tol=self.half_beat_tolerance):
-            return False
-        for sus in SUSPICIOUS_OFFSETS:
-            if math.isclose(frac, sus, abs_tol=self.half_beat_tolerance):
-                return True
-        return False
-
     def check_timecode(
         self, pkg: SamplePackage
     ) -> Tuple[List[CheckResult], List[CheckResult]]:
@@ -136,34 +124,20 @@ class SampleAnomalyDetector:
             if it.timecode_offset_beats == 0.0:
                 continue
             frac = abs(it.timecode_offset_beats - round(it.timecode_offset_beats))
-            if self._is_half_beat_offset(it.timecode_offset_beats):
-                if math.isclose(frac, 0.5, abs_tol=self.half_beat_tolerance):
-                    half_beat.append(CheckResult(
-                        status=CheckStatus.HANG,
-                        title=f"时码偏半拍（待确认）: {it.name}",
-                        detail=(
-                            f"{it.name} 时码偏移 {it.timecode_offset_beats} 拍，"
-                            f"恰好落在 0.5 拍附近（容忍±{self.half_beat_tolerance}），"
-                            f"可能是素材问题也可能是故意设计。已挂起，"
-                            f"需 {self.require_role_on_half_beat} 确认后再下结论。"
-                        ),
-                        affected_item_ids=[it.item_id],
-                        requires_confirm_role=self.require_role_on_half_beat,
-                        related_judgments=["timecode_half_beat_hang"],
-                    ))
-                else:
-                    half_beat.append(CheckResult(
-                        status=CheckStatus.HANG,
-                        title=f"时码偏移可疑（待确认）: {it.name}",
-                        detail=(
-                            f"{it.name} 时码偏移 {it.timecode_offset_beats} 拍，"
-                            f"落在 {SUSPICIOUS_OFFSETS} 拍可疑值附近，"
-                            f"已挂起，需 {self.require_role_on_half_beat} 确认。"
-                        ),
-                        affected_item_ids=[it.item_id],
-                        requires_confirm_role=self.require_role_on_half_beat,
-                        related_judgments=["timecode_suspicious_hang"],
-                    ))
+            if math.isclose(frac, 0.5, abs_tol=self.half_beat_tolerance):
+                half_beat.append(CheckResult(
+                    status=CheckStatus.HANG,
+                    title=f"时码偏半拍（待确认）: {it.name}",
+                    detail=(
+                        f"{it.name} 时码偏移 {it.timecode_offset_beats} 拍，"
+                        f"恰好落在 0.5 拍附近（容忍±{self.half_beat_tolerance}），"
+                        f"可能是素材问题也可能是故意设计。已挂起，"
+                        f"需 {self.require_role_on_half_beat} 确认后再下结论。"
+                    ),
+                    affected_item_ids=[it.item_id],
+                    requires_confirm_role=self.require_role_on_half_beat,
+                    related_judgments=["timecode_half_beat_hang"],
+                ))
             else:
                 normal.append(CheckResult(
                     status=CheckStatus.WARNING,
