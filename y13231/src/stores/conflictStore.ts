@@ -15,7 +15,7 @@ interface ConflictState {
   loadRecords: () => Promise<void>;
   saveRecord: (record: Omit<ConflictRecord, 'id' | 'contractScans' | 'historyVersions' | 'noteChanges' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateNote: (id: string, newNote: string) => Promise<void>;
-  addContractScan: (id: string, scan: Omit<ContractScan, 'id' | 'version'>) => Promise<void>;
+  addContractScan: (id: string, scan: Omit<ContractScan, 'id' | 'version' | 'createdAt'>) => Promise<void>;
   updateStatus: (id: string, status: ConflictStatus) => Promise<void>;
   toggleTimecodeOffset: (id: string) => Promise<void>;
   setCurrentRecord: (record: ConflictRecord | null) => void;

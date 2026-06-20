@@ -30,7 +30,6 @@ export function recordsToCSV(records: ConflictRecord[]): string {
 
   return Papa.unparse(rows, {
     header: true,
-    encoding: 'UTF-8',
   });
 }
 
@@ -51,10 +50,9 @@ export function downloadCSV(csvContent: string, filename: string): void {
 }
 
 export function parseCSV(csvContent: string): Array<Partial<ConflictRecord>> {
-  const result = Papa.parse(csvContent, {
+  const result = Papa.parse<string[]>(csvContent, {
     header: true,
     skipEmptyLines: true,
-    encoding: 'UTF-8',
   });
 
   const statusMap: Record<string, ConflictStatus> = {
@@ -64,7 +62,7 @@ export function parseCSV(csvContent: string): Array<Partial<ConflictRecord>> {
     '已关闭': 'closed',
   };
 
-  return (result.data as Array<Record<string, string>>).map(row => ({
+  return (result.data as unknown as Array<Record<string, string>>).map(row => ({
     trackName: row['曲目名称'] || row.trackName,
     fileName: row['文件名'] || row.fileName,
     status: statusMap[row['处理状态']] || (row.status as ConflictStatus) || 'pending',
