@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AB实验成本看板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-processing { background: #dbeafe; color: #1e40af; }
+        .status-processed { background: #d1fae5; color: #065f46; }
+        .status-needs_confirmation { background: #fee2e2; color: #991b1b; }
+        .status-evidence_required { background: #f3e8ff; color: #6b21a8; }
+        .status-archived { background: #f3f4f6; color: #374151; }
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+        .collapsible-content.open { max-height: 2000px; }
+        .trace-line { font-family: 'Courier New', monospace; font-size: 0.8rem; padding: 0.125rem 0; }
+        .change-sample { border-left: 4px solid #3b82f6; }
+        .change-threshold { border-left: 4px solid #f59e0b; }
+        .change-manual { border-left: 4px solid #ef4444; }
+        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal.open { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: white; border-radius: 0.75rem; max-width: 900px; width: 90%; max-height: 90vh; overflow-y: auto; }
+        .code-block { background: #1f2937; color: #e5e7eb; padding: 1rem; border-radius: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.75rem; overflow-x: auto; }
+        .tab-button.active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 600; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-7xl">
+        <header class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">AB实验成本看板</h1>
+                    <p class="text-gray-600 mt-1">公式透明 · 来源可追 · 状态清晰 · 灰度可查</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="loadSampleData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        加载示例数据
+                    </button>
+                    <button onclick="refreshData()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                        刷新数据
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">📊 看板概览</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="summary-cards">
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">📐 计算公式与口径</h2>
+                <button onclick="toggleSection('formulas')" class="text-gray-500 hover:text-gray-700">
+                    <span id="formulas-toggle">▼</span>
+                </button>
+            </div>
+            <div id="formulas-section" class="collapsible-content open">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="formulas-list">
+                </div>
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <h3 class="font-semibold text-blue-900 mb-2">📏 离线-线上校准系数</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-sm" id="calibration-list">
+                    </div>
+                </div>
+                <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
+                    <h3 class="font-semibold text-yellow-900 mb-2">🔗 字段映射关系</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left">
+                                    <th class="px-3 py-2">源字段名</th>
+                                    <th class="px-3 py-2">目标字段</th>
+                                    <th class="px-3 py-2">数据类型</th>
+                                    <th class="px-3 py-2">必填</th>
+                                    <th class="px-3 py-2">默认值</th>
+                                </tr>
+                            </thead>
+                            <tbody id="field-mappings-table">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">📋 处理记录</h2>
+                <div class="flex gap-2">
+                    <select id="status-filter" onchange="filterByStatus()" class="px-3 py-2 border rounded-lg">
+                        <option value="">全部状态</option>
+                        <option value="processed">已处理</option>
+                        <option value="needs_confirmation">待确认</option>
+                        <option value="evidence_required">待补证据</option>
+                        <option value="pending">待处理</option>
+                    </select>
+                    <input type="text" id="run_id-search" placeholder="输入run_id查询" class="px-3 py-2 border rounded-lg" onkeypress="handleSearch(event)">
+                    <button onclick="searchByRunId()" class="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        查询
+                    </button>
+                </div>
+            </div>
+            <div id="records-list" class="space-y-4">
+            </div>
+        </section>
+    </div>
+
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold" id="modal-title">记录详情</h2>
+                    <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                <div class="border-b mb-4">
+                    <div class="flex gap-6">
+                        <button onclick="switchTab('overview')" class="tab-button py-3 px-1 active" data-tab="overview">概览</button>
+                        <button onclick="switchTab('source')" class="tab-button py-3 px-1" data-tab="source">数据来源</button>
+                        <button onclick="switchTab('calculation')" class="tab-button py-3 px-1" data-tab="calculation">计算过程</button>
+                        <button onclick="switchTab('grayscale')" class="tab-button py-3 px-1" data-tab="grayscale">灰度分析</button>
+                        <button onclick="switchTab('evidence')" class="tab-button py-3 px-1" data-tab="evidence">证据记录</button>
+                        <button onclick="switchTab('api')" class="tab-button py-3 px-1" data-tab="api">接口返回</button>
+                    </div>
+                </div>
+                <div id="tab-overview" class="tab-content"></div>
+                <div id="tab-source" class="tab-content hidden"></div>
+                <div id="tab-calculation" class="tab-content hidden"></div>
+                <div id="tab-grayscale" class="tab-content hidden"></div>
+                <div id="tab-evidence" class="tab-content hidden"></div>
+                <div id="tab-api" class="tab-content hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRecord = null;
+        let allRecords = [];
+
+        async function fetchData(url) {
+            const response = await fetch(url);
+            return response.json();
+        }
+
+        async function postData(url, data) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            return response.json();
+        }
+
+        async function refreshData() {
+            await Promise.all([
+                loadSummary(),
+                loadFormulas(),
+                loadFieldMappings(),
+                loadCalibration(),
+                loadRecords()
+            ]);
+        }
+
+        async function loadSummary() {
+            const summary = await fetchData('/api/summary');
+            const cards = document.getElementById('summary-cards');
+            cards.innerHTML = `
+                <div class="bg-white rounded-xl p-4 shadow-sm border">
+                    <div class="text-gray-500 text-sm">总实验数</div>
+                    <div class="text-2xl font-bold text-gray-900">${summary.total_runs}</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border">
+                    <div class="text-gray-500 text-sm">已处理</div>
+                    <div class="text-2xl font-bold text-green-600">${summary.processed}</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border">
+                    <div class="text-gray-500 text-sm">待确认</div>
+                    <div class="text-2xl font-bold text-red-600">${summary.needs_confirmation}</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border">
+                    <div class="text-gray-500 text-sm">待补证据</div>
+                    <div class="text-2xl font-bold text-purple-600">${summary.evidence_required}</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border">
+                    <div class="text-gray-500 text-sm">待处理</div>
+                    <div class="text-2xl font-bold text-yellow-600">${summary.pending}</div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border">
+                    <div class="text-gray-500 text-sm">总成本</div>
+                    <div class="text-2xl font-bold text-blue-600">${summary.total_cost.toLocaleString()} ${summary.cost_unit}</div>
+                </div>
+            `;
+        }
+
+        async function loadFormulas() {
+            const formulas = await fetchData('/api/formulas');
+            const list = document.getElementById('formulas-list');
+            list.innerHTML = formulas.map(f => `
+                <div class="bg-white rounded-xl p-4 shadow-sm border">
+                    <div class="font-semibold text-gray-900 mb-2">${f.name}</div>
+                    <div class="code-block mb-2">${f.expression}</div>
+                    <div class="text-sm text-gray-600 mb-2">${f.description}</div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-blue-600 font-medium">单位: ${f.unit}</span>
+                        <span class="text-gray-500">
+                            范围: [${f.boundary_min ?? '-∞'}, ${f.boundary_max ?? '+∞'}]
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function loadFieldMappings() {
+            const mappings = await fetchData('/api/field-mappings');
+            const tbody = document.getElementById('field-mappings-table');
+            tbody.innerHTML = mappings.map(m => `
+                <tr class="border-t">
+                    <td class="px-3 py-2 font-mono text-blue-600">${m.source_field}</td>
+                    <td class="px-3 py-2 font-mono text-green-600">${m.target_field}</td>
+                    <td class="px-3 py-2">${m.data_type}</td>
+                    <td class="px-3 py-2">
+                        <span class="${m.is_required ? 'text-red-600 font-semibold' : 'text-gray-400'}">
+                            ${m.is_required ? '是' : '否'}
+                        </span>
+                    </td>
+                    <td class="px-3 py-2 text-gray-500">${m.default_value ?? '-'}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function loadCalibration() {
+            const ratios = await fetchData('/api/calibration-ratios');
+            const list = document.getElementById('calibration-list');
+            list.innerHTML = Object.entries(ratios).map(([k, v]) => `
+                <div class="flex justify-between bg-white p-2 rounded">
+                    <span class="text-gray-600">${k}</span>
+                    <span class="font-mono font-semibold text-blue-600">× ${v}</span>
+                </div>
+            `).join('');
+        }
+
+        async function loadRecords(status = null, runIds = null) {
+            let url = '/api/records';
+            if (status) url += `?status=${status}`;
+            if (runIds) url += `?run_ids=${runIds}`;
+            allRecords = await fetchData(url);
+            renderRecords(allRecords);
+        }
+
+        function renderRecords(records) {
+            const list = document.getElementById('records-list');
+            if (records.length === 0) {
+                list.innerHTML = `
+                    <div class="bg-white rounded-xl p-8 text-center text-gray-500">
+                        <p class="text-lg">暂无数据</p>
+                        <p class="text-sm mt-2">点击"加载示例数据"查看演示效果</p>
+                    </div>
+                `;
+                return;
+            }
+            list.innerHTML = records.map(r => {
+                const totalCost = r.cost_calculations.find(c => c.formula.name === '总成本');
+                const hasIssue = r.status === 'needs_confirmation' || r.status === 'evidence_required';
+                return `
+                    <div class="bg-white rounded-xl shadow-sm border ${hasIssue ? 'border-red-200' : ''} hover:shadow-md transition">
+                        <div class="p-5">
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="font-mono text-lg font-semibold text-gray-900">${r.run_id}</span>
+                                        <span class="status-badge status-${r.status}">${getStatusText(r.status)}</span>
+                                        ${r.grayscale_result ? '<span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">灰度</span>' : ''}
+                                    </div>
+                                    <div class="text-sm text-gray-500 mb-3">
+                                        来源: ${r.training_log?.source_file || '-'} | 
+                                        创建: ${formatDate(r.created_at)} | 
+                                        更新: ${formatDate(r.updated_at)}
+                                    </div>
+                                    ${r.confirmation_note ? `
+                                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-3 rounded">
+                                            <div class="text-sm text-yellow-800">
+                                                <span class="font-semibold">⚠️ ${getReasonText(r.confirmation_reason)}:</span>
+                                                ${r.confirmation_note}
+                                            </div>
+                                            ${r.next_steps ? `
+                                                <div class="text-sm text-yellow-700 mt-1">
+                                                    <span class="font-semibold">下一步:</span> ${r.next_steps.join(' → ')}
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    ` : ''}
+                                    <div class="flex gap-6">
+                                        ${totalCost ? `
+                                            <div>
+                                                <div class="text-xs text-gray-500">总成本</div>
+                                                <div class="text-xl font-bold text-blue-600">${totalCost.result.toLocaleString()} ${totalCost.unit}</div>
+                                            </div>
+                                        ` : ''}
+                                        ${r.cost_calculations.find(c => c.formula.name === '单位样本成本') ? (() => {
+                                            const c = r.cost_calculations.find(c => c.formula.name === '单位样本成本');
+                                            return `
+                                                <div>
+                                                    <div class="text-xs text-gray-500">单位样本成本</div>
+                                                    <div class="text-xl font-bold text-green-600">${c.result.toFixed(4)} ${c.unit}</div>
+                                                </div>
+                                            `;
+                                        })() : ''}
+                                        ${r.training_log?.mapped_fields?.sample_count ? `
+                                            <div>
+                                                <div class="text-xs text-gray-500">样本量</div>
+                                                <div class="text-xl font-bold text-gray-700">${r.training_log.mapped_fields.sample_count.toLocaleString()}</div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-2 ml-4">
+                                    <button onclick="openDetail('${r.run_id}')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
+                                        查看详情
+                                    </button>
+                                    ${r.status === 'needs_confirmation' ? `
+                                        <button onclick="resolveRecord('${r.run_id}')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm">
+                                            确认通过
+                                        </button>
+                                    ` : ''}
+                                    ${r.status === 'evidence_required' ? `
+                                        <button onclick="completeEvidence('${r.run_id}')" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm">
+                                            证据完成
+                                        </button>
+                                    ` : ''}
+                                    <button onclick="exportRecord('${r.run_id}')" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 text-sm">
+                                        导出
+                                    </button>
+                                </div>
+                            </div>
+                            ${r.evidence_items?.length > 0 ? `
+                                <div class="mt-4 pt-4 border-t">
+                                    <div class="text-sm font-semibold text-gray-700 mb-2">📎 证据 (${r.evidence_items.length})</div>
+                                    <div class="text-sm text-gray-600 space-y-1">
+                                        ${r.evidence_items.slice(0, 2).map(e => `<div>• ${e}</div>`).join('')}
+                                        ${r.evidence_items.length > 2 ? `<div class="text-gray-400">... 还有 ${r.evidence_items.length - 2} 条</div>` : ''}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getStatusText(status) {
+            const map = {
+                pending: '待处理',
+                processing: '处理中',
+                processed: '已处理',
+                needs_confirmation: '待确认',
+                evidence_required: '待补证据',
+                archived: '已归档'
+            };
+            return map[status] || status;
+        }
+
+        function getReasonText(reason) {
+            const map = {
+                field_mismatch: '字段不匹配',
+                calibration_mismatch: '校准不一致',
+                boundary_exceeded: '超出边界',
+                duplicate_run_id: '重复run_id',
+                grayscale_anomaly: '灰度异常',
+                other: '其他'
+            };
+            return map[reason] || reason;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const d = new Date(dateStr);
+            return d.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function toggleSection(id) {
+            const section = document.getElementById(id + '-section');
+            const toggle = document.getElementById(id + '-toggle');
+            section.classList.toggle('open');
+            toggle.textContent = section.classList.contains('open') ? '▼' : '▶';
+        }
+
+        function filterByStatus() {
+            const status = document.getElementById('status-filter').value;
+            loadRecords(status);
+        }
+
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                searchByRunId();
+            }
+        }
+
+        function searchByRunId() {
+            const runIds = document.getElementById('run_id-search').value.trim();
+            loadRecords(null, runIds);
+        }
+
+        async function openDetail(runId) {
+            currentRecord = await fetchData(`/api/records/${runId}`);
+            document.getElementById('modal-title').textContent = `详情 - ${runId}`;
+            renderOverviewTab();
+            renderSourceTab();
+            renderCalculationTab();
+            renderGrayscaleTab();
+            renderEvidenceTab();
+            renderApiTab();
+            document.getElementById('detail-modal').classList.add('open');
+            switchTab('overview');
+        }
+
+        function closeModal() {
+            document.getElementById('detail-modal').classList.remove('open');
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+        }
+
+        function renderOverviewTab() {
+            const r = currentRecord;
+            const totalCost = r.cost_calculations.find(c => c.formula.name === '总成本');
+            const statusHistory = fetch(`/api/records/${r.run_id}/status-history`).then(res => res.json()).catch(() => ({}));
+            
+            document.getElementById('tab-overview').innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-3">基本信息</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span class="text-gray-500">Run ID:</span><span class="font-mono">${r.run_id}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">当前状态:</span><span class="status-badge status-${r.status}">${getStatusText(r.status)}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">处理人:</span><span>${r.processed_by || '-'}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">创建时间:</span><span>${formatDate(r.created_at)}</span></div>
+                                <div class="flex justify-between"><span class="text-gray-500">处理时间:</span><span>${formatDate(r.processed_at)}</span></div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-700 mb-3">成本统计</h4>
+                            ${r.cost_calculations.map(c => `
+                                <div class="flex justify-between text-sm py-1 border-b border-blue-100">
+                                    <span>${c.formula.name}</span>
+                                    <span class="font-semibold ${c.is_within_bounds ? 'text-blue-600' : 'text-red-600'}">
+                                        ${c.result.toFixed(2)} ${c.unit}
+                                        ${!c.is_within_bounds ? ' ⚠️' : ''}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ${r.confirmation_reason ? `
+                        <div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                            <h4 class="font-semibold text-yellow-800 mb-2">⚠️ 待确认事项</h4>
+                            <div class="text-sm text-yellow-700 space-y-2">
+                                <div><span class="font-semibold">原因:</span> ${getReasonText(r.confirmation_reason)}</div>
+                                <div><span class="font-semibold">说明:</span> ${r.confirmation_note}</div>
+                                ${r.next_steps ? `<div><span class="font-semibold">下一步:</span> ${r.next_steps.join(' → ')}</div>` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-700 mb-3">状态流转历史</h4>
+                        <div id="status-timeline" class="flex gap-2">
+                            <span class="text-gray-400 text-sm">加载中...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            statusHistory.then(h => {
+                if (h.status_history) {
+                    document.getElementById('status-timeline').innerHTML = h.status_history.map((s, i) => `
+                        <div class="flex items-center">
+                            <span class="status-badge status-${s}">${getStatusText(s)}</span>
+                            ${i < h.status_history.length - 1 ? '<span class="mx-2 text-gray-400">→</span>' : ''}
+                        </div>
+                    `).join('');
+                }
+            });
+        }
+
+        function renderSourceTab() {
+            const r = currentRecord;
+            if (!r.training_log) {
+                document.getElementById('tab-source').innerHTML = '<div class="text-gray-500 text-center py-8">暂无训练日志数据</div>';
+                return;
+            }
+            document.getElementById('tab-source').innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-700 mb-3">原始字段 (Raw Fields)</h4>
+                        <div class="code-block">${JSON.stringify(r.training_log.raw_fields, null, 2)}</div>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-green-700 mb-3">映射后字段 (Mapped Fields)</h4>
+                        <div class="grid md:grid-cols-2 gap-2">
+                            ${Object.entries(r.training_log.mapped_fields).map(([k, v]) => `
+                                <div class="flex justify-between bg-white p-2 rounded text-sm">
+                                    <span class="font-mono text-green-600">${k}</span>
+                                    <span class="font-mono">${v}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-blue-700 mb-3">使用的字段映射</h4>
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-left">
+                                    <th class="px-3 py-2">源字段</th>
+                                    <th class="px-3 py-2">目标字段</th>
+                                    <th class="px-3 py-2">类型</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${r.training_log.field_mappings_used.map(m => `
+                                    <tr class="border-t">
+                                        <td class="px-3 py-2 font-mono text-blue-600">${m.source_field}</td>
+                                        <td class="px-3 py-2 font-mono text-green-600">${m.target_field}</td>
+                                        <td class="px-3 py-2">${m.data_type}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-purple-700 mb-3">离线-线上校准</h4>
+                        <div class="text-sm text-purple-700">
+                            所有数值指标已按校准系数转换为线上口径，确保与线上统计一致。
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCalculationTab() {
+            const r = currentRecord;
+            if (!r.cost_calculations || r.cost_calculations.length === 0) {
+                document.getElementById('tab-calculation').innerHTML = '<div class="text-gray-500 text-center py-8">暂无计算数据</div>';
+                return;
+            }
+            document.getElementById('tab-calculation').innerHTML = `
+                <div class="space-y-6">
+                    ${r.cost_calculations.map((c, idx) => `
+                        <div class="border rounded-xl overflow-hidden">
+                            <div class="bg-gray-800 text-white p-4 flex justify-between items-center">
+                                <div>
+                                    <span class="font-semibold">${idx + 1}. ${c.formula.name}</span>
+                                    <span class="ml-3 text-gray-300">${c.formula.description}</span>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-2xl font-bold ${c.is_within_bounds ? 'text-green-400' : 'text-red-400'}">
+                                        ${c.result.toFixed(4)} ${c.unit}
+                                    </div>
+                                    ${c.boundary_violation ? `<div class="text-xs text-red-400">${c.boundary_violation}</div>` : ''}
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="mb-4">
+                                    <div class="text-sm font-semibold text-gray-700 mb-2">公式</div>
+                                    <div class="code-block">${c.formula.expression}</div>
+                                </div>
+                                <div class="mb-4">
+                                    <div class="text-sm font-semibold text-gray-700 mb-2">输入变量 (已校准)</div>
+                                    <div class="grid md:grid-cols-3 gap-2">
+                                        ${Object.entries(c.input_values).map(([k, v]) => `
+                                            <div class="flex justify-between bg-gray-50 p-2 rounded text-sm">
+                                                <span class="font-mono text-blue-600">${k}</span>
+                                                <span class="font-mono">${v}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-700 mb-2">计算过程</div>
+                                    <div class="bg-gray-50 p-3 rounded">
+                                        ${c.calculation_trace.map(t => `<div class="trace-line ${t.startsWith('  ') ? 'text-gray-600 pl-4' : 'text-gray-800 font-semibold'}">${t}</div>`).join('')}
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-4 border-t text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-500">单位:</span>
+                                        <span class="font-mono">${c.unit}</span>
+                                    </div>
+                                    <div class="flex justify-between mt-1">
+                                        <span class="text-gray-500">合法范围:</span>
+                                        <span class="font-mono">[${c.formula.boundary_min ?? '-∞'}, ${c.formula.boundary_max ?? '+∞'}]</span>
+                                    </div>
+                                    <div class="flex justify-between mt-1">
+                                        <span class="text-gray-500">是否在范围内:</span>
+                                        <span class="${c.is_within_bounds ? 'text-green-600' : 'text-red-600'} font-semibold">
+                                            ${c.is_within_bounds ? '✓ 是' : '✗ 否'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderGrayscaleTab() {
+            const r = currentRecord;
+            if (!r.grayscale_result) {
+                document.getElementById('tab-grayscale').innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-gray-500 mb-4">暂无灰度分析结果</div>
+                        <div class="text-sm text-gray-400 mb-4">如有对应的基线实验，可进行灰度对比分析</div>
+                        <input type="text" id="baseline-run-id" placeholder="输入基线run_id" class="px-3 py-2 border rounded-lg mr-2">
+                        <button onclick="runGrayscaleAnalysis('${r.run_id}')" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700">
+                            执行灰度分析
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            const g = r.grayscale_result;
+            document.getElementById('tab-grayscale').innerHTML = `
+                <div class="space-y-6">
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <div class="text-sm text-gray-500">原始成本</div>
+                            <div class="text-xl font-bold text-gray-700">${g.original_cost.toLocaleString()}</div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <div class="text-sm text-gray-500">最终成本</div>
+                            <div class="text-xl font-bold text-blue-600">${g.final_cost.toLocaleString()}</div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <div class="text-sm text-gray-500">总变化</div>
+                            <div class="text-xl font-bold ${g.final_cost >= g.original_cost ? 'text-red-600' : 'text-green-600'}">
+                                ${(g.final_cost - g.original_cost) >= 0 ? '+' : ''}${(g.final_cost - g.original_cost).toLocaleString()}
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <div class="text-sm text-gray-500">变化率</div>
+                            <div class="text-xl font-bold ${g.final_cost >= g.original_cost ? 'text-red-600' : 'text-green-600'}">
+                                ${g.original_cost > 0 ? ((g.final_cost - g.original_cost) / g.original_cost * 100).toFixed(2) : 0}%
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-blue-700">📊 样本变化影响</span>
+                                <span class="font-bold ${g.total_sample_impact >= 0 ? 'text-red-600' : 'text-green-600'}">
+                                    ${g.total_sample_impact >= 0 ? '+' : ''}${g.total_sample_impact.toFixed(2)}
+                                </span>
+                            </div>
+                            <div class="text-sm text-blue-600 mb-3">共 ${g.sample_changes.length} 处变更</div>
+                            ${g.sample_changes.map(c => `
+                                <div class="change-sample pl-3 py-2 mb-2 bg-white rounded">
+                                    <div class="text-sm font-medium">${c.description}</div>
+                                    <div class="text-xs text-gray-500">${c.old_value} → ${c.new_value}</div>
+                                    ${c.impact !== 0 ? `<div class="text-xs font-semibold ${c.impact > 0 ? 'text-red-600' : 'text-green-600'}">影响: ${c.impact >= 0 ? '+' : ''}${c.impact.toFixed(2)}</div>` : ''}
+                                </div>
+                            `).join('') || '<div class="text-sm text-blue-400">无变化</div>'}
+                        </div>
+
+                        <div class="bg-yellow-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-yellow-700">📏 阈值变化影响</span>
+                                <span class="font-bold ${g.total_threshold_impact >= 0 ? 'text-red-600' : 'text-green-600'}">
+                                    ${g.total_threshold_impact >= 0 ? '+' : ''}${g.total_threshold_impact.toFixed(2)}
+                                </span>
+                            </div>
+                            <div class="text-sm text-yellow-600 mb-3">共 ${g.threshold_changes.length} 处变更</div>
+                            ${g.threshold_changes.map(c => `
+                                <div class="change-threshold pl-3 py-2 mb-2 bg-white rounded">
+                                    <div class="text-sm font-medium">${c.description}</div>
+                                    <div class="text-xs text-gray-500">${JSON.stringify(c.old_value)} → ${JSON.stringify(c.new_value)}</div>
+                                    ${c.impact !== 0 ? `<div class="text-xs font-semibold ${c.impact > 0 ? 'text-red-600' : 'text-green-600'}">影响: ${c.impact >= 0 ? '+' : ''}${c.impact.toFixed(2)}</div>` : ''}
+                                </div>
+                            `).join('') || '<div class="text-sm text-yellow-400">无变化</div>'}
+                        </div>
+
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-semibold text-red-700">👤 人工改判影响</span>
+                                <span class="font-bold ${g.total_manual_impact >= 0 ? 'text-red-600' : 'text-green-600'}">
+                                    ${g.total_manual_impact >= 0 ? '+' : ''}${g.total_manual_impact.toFixed(2)}
+                                </span>
+                            </div>
+                            <div class="text-sm text-red-600 mb-3">共 ${g.manual_adjustments.length} 处变更</div>
+                            ${g.manual_adjustments.map(c => `
+                                <div class="change-manual pl-3 py-2 mb-2 bg-white rounded">
+                                    <div class="text-sm font-medium">${c.description}</div>
+                                    <div class="text-xs text-gray-500">${c.old_value} → ${c.new_value}</div>
+                                    ${c.impact !== 0 ? `<div class="text-xs font-semibold ${c.impact > 0 ? 'text-red-600' : 'text-green-600'}">影响: ${c.impact >= 0 ? '+' : ''}${c.impact.toFixed(2)}</div>` : ''}
+                                </div>
+                            `).join('') || '<div class="text-sm text-red-400">无人工调整</div>'}
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-gray-700 mb-3">影响构成分析</h4>
+                        <div class="h-8 flex items-center bg-gray-200 rounded-full overflow-hidden">
+                            ${(() => {
+                                const total = Math.abs(g.total_sample_impact) + Math.abs(g.total_threshold_impact) + Math.abs(g.total_manual_impact);
+                                if (total === 0) return '<div class="w-full bg-gray-300"></div>';
+                                const samplePct = Math.abs(g.total_sample_impact) / total * 100;
+                                const thresholdPct = Math.abs(g.total_threshold_impact) / total * 100;
+                                const manualPct = Math.abs(g.total_manual_impact) / total * 100;
+                                return `
+                                    <div class="h-full bg-blue-500" style="width: ${samplePct}%" title="样本变化: ${samplePct.toFixed(1)}%"></div>
+                                    <div class="h-full bg-yellow-500" style="width: ${thresholdPct}%" title="阈值变化: ${thresholdPct.toFixed(1)}%"></div>
+                                    <div class="h-full bg-red-500" style="width: ${manualPct}%" title="人工改判: ${manualPct.toFixed(1)}%"></div>
+                                `;
+                            })()}
+                        </div>
+                        <div class="flex justify-between mt-2 text-sm">
+                            <span class="text-blue-600">样本变化 ${((Math.abs(g.total_sample_impact) / (Math.abs(g.total_sample_impact) + Math.abs(g.total_threshold_impact) + Math.abs(g.total_manual_impact) || 1)) * 100).toFixed(1)}%</span>
+                            <span class="text-yellow-600">阈值变化 ${((Math.abs(g.total_threshold_impact) / (Math.abs(g.total_sample_impact) + Math.abs(g.total_threshold_impact) + Math.abs(g.total_manual_impact) || 1)) * 100).toFixed(1)}%</span>
+                            <span class="text-red-600">人工改判 ${((Math.abs(g.total_manual_impact) / (Math.abs(g.total_sample_impact) + Math.abs(g.total_threshold_impact) + Math.abs(g.total_manual_impact) || 1)) * 100).toFixed(1)}%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEvidenceTab() {
+            const r = currentRecord;
+            document.getElementById('tab-evidence').innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-white border rounded-lg p-4">
+                        <h4 class="font-semibold text-gray-700 mb-4">添加证据</h4>
+                        <div class="flex gap-3">
+                            <input type="text" id="new-evidence" placeholder="输入证据说明..." class="flex-1 px-3 py-2 border rounded-lg">
+                            <button onclick="submitEvidence('${r.run_id}')" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                                提交证据
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-3">证据记录 (${r.evidence_items?.length || 0})</h4>
+                        ${r.evidence_items?.length > 0 ? `
+                            <div class="space-y-3">
+                                ${r.evidence_items.map(e => `
+                                    <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-purple-400">
+                                        <div class="text-sm">${e}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<div class="text-gray-400 text-center py-4">暂无证据记录</div>'}
+                    </div>
+                    ${r.status === 'evidence_required' ? `
+                        <div class="text-center">
+                            <button onclick="completeEvidence('${r.run_id}')" class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 font-semibold">
+                                ✓ 标记证据完成
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function renderApiTab() {
+            const r = currentRecord;
+            document.getElementById('tab-api').innerHTML = `
+                <div class="space-y-6">
+                    <div class="bg-gray-800 rounded-lg overflow-hidden">
+                        <div class="bg-gray-700 px-4 py-2 text-gray-300 text-sm flex justify-between">
+                            <span>GET /api/records/${r.run_id}/export</span>
+                            <span class="text-green-400">200 OK</span>
+                        </div>
+                        <div id="api-response-content" class="p-4">
+                            <div class="text-gray-400 text-sm">点击下方按钮获取完整接口返回</div>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <button onclick="loadApiExport('${r.run_id}')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            加载完整接口返回
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function runGrayscaleAnalysis(runId) {
+            const baselineId = document.getElementById('baseline-run-id').value.trim();
+            if (!baselineId) {
+                alert('请输入基线run_id');
+                return;
+            }
+            try {
+                const result = await postData(`/api/records/${runId}/grayscale-analyze?original_run_id=${baselineId}`, {});
+                if (result.needs_confirmation) {
+                    alert(`灰度分析完成，但存在异常需要确认: \n${result.anomalies.join('\n')}`);
+                } else {
+                    alert('灰度分析完成');
+                }
+                await openDetail(runId);
+                await refreshData();
+            } catch (e) {
+                alert('分析失败: ' + e.message);
+            }
+        }
+
+        async function submitEvidence(runId) {
+            const desc = document.getElementById('new-evidence').value.trim();
+            if (!desc) {
+                alert('请输入证据说明');
+                return;
+            }
+            await postData(`/api/records/${runId}/evidence`, {
+                run_id: runId,
+                evidence_description: desc
+            });
+            await openDetail(runId);
+            await refreshData();
+        }
+
+        async function resolveRecord(runId) {
+            const resolution = prompt('请输入确认通过的说明:');
+            if (resolution === null) return;
+            await postData(`/api/records/${runId}/resolve?resolution=${encodeURIComponent(resolution)}`, {});
+            await refreshData();
+        }
+
+        async function completeEvidence(runId) {
+            if (!confirm('确认所有证据已补充完成，将标记为已处理状态？')) return;
+            await postData(`/api/records/${runId}/evidence-complete`, {});
+            await refreshData();
+        }
+
+        async function exportRecord(runId) {
+            const data = await fetchData(`/api/records/${runId}/export`);
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ab-cost-${runId}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function loadApiExport(runId) {
+            const data = await fetchData(`/api/records/${runId}/export`);
+            document.getElementById('api-response-content').innerHTML = `
+                <div class="code-block max-h-96 overflow-y-auto">${JSON.stringify(data, null, 2)}</div>
+            `;
+        }
+
+        async function loadSampleData() {
+            if (!confirm('将加载5条示例数据（含正常、待确认、待补证据等多种状态），是否继续？')) return;
+            
+            const sampleData = [
+                {
+                    run_id: "EXP-2026-001",
+                    raw_data: {
+                        "训练样本数": 100000,
+                        "训练时长": 48.5,
+                        "GPU卡数": 8,
+                        "GPU单价": 12.5,
+                        "数据处理成本": 500,
+                        "存储成本": 200,
+                        "实验名称": "首页推荐模型V1",
+                        "模型名称": "RecModel-XL"
+                    },
+                    source_file: "training_log_20260601.csv"
+                },
+                {
+                    run_id: "EXP-2026-002",
+                    raw_data: {
+                        "样本量": 250000,
+                        "训练时间(小时)": 72,
+                        "GPU数量": 16,
+                        "GPU单价": 12.5,
+                        "数据处理成本": 1200,
+                        "存储成本": 800,
+                        "实验名称": "搜索排序优化",
+                        "模型名称": "RankModel-L"
+                    },
+                    source_file: "training_log_20260605.csv"
+                },
+                {
+                    run_id: "EXP-2026-003",
+                    raw_data: {
+                        "训练样本数": 5000,
+                        "训练时长": 120,
+                        "GPU卡数": 8,
+                        "GPU单价": 12.5,
+                        "数据处理成本": 100,
+                        "存储成本": 50
+                    },
+                    source_file: "training_log_20260610_abnormal.csv"
+                },
+                {
+                    run_id: "EXP-2026-001",
+                    raw_data: {
+                        "训练样本数": 100000,
+                        "训练时长": 48.5,
+                        "GPU卡数": 8,
+                        "GPU单价": 12.5
+                    },
+                    source_file: "training_log_20260601_v2.csv"
+                },
+                {
+                    run_id: "EXP-2026-004",
+                    raw_data: {
+                        "训练样本数": 500000,
+                        "训练时长": 96,
+                        "GPU卡数": 32,
+                        "GPU单价": 12.5,
+                        "数据处理成本": 2000,
+                        "存储成本": 1500,
+                        "实验名称": "大模型微调",
+                        "模型名称": "LLM-Finetune-7B"
+                    },
+                    source_file: "training_log_20260615.csv"
+                }
+            ];
+
+            await postData('/api/records/batch', sampleData);
+            
+            setTimeout(async () => {
+                await postData('/api/records/EXP-2026-003/confirm', {
+                    run_id: "EXP-2026-003",
+                    reason: "boundary_exceeded",
+                    note: "单位样本成本偏高，需核实样本量是否正确",
+                    next_steps: ["核对样本量", "检查是否存在训练异常", "确认成本合理性"]
+                });
+                
+                await postData('/api/records/EXP-2026-003/evidence', {
+                    run_id: "EXP-2026-003",
+                    evidence_description: "已与训练负责人确认，该实验为小样本压力测试，高成本属预期范围"
+                });
+                
+                await refreshData();
+                alert('示例数据已加载！\n\n包含：\n- 2条正常处理记录\n- 1条单位样本成本异常（待补证据）\n- 1条重复run_id（待确认）\n- 1条新记录');
+            }, 500);
+        }
+
+        window.onload = function() {
+            refreshData();
+        };
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('detail-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+    </script>
+</body>
+</html>
