@@ -2,7 +2,7 @@
   "metadata": {
     "title": "版权授权清单归档 - 历史时间线",
     "description": "完整的判断变更历史记录，可用于系统集成",
-    "generated_at": "2026-06-20T13:25:52.036915",
+    "generated_at": "2026-06-20T14:33:10.327266",
     "statistics": {
       "total_files": 6,
       "matched": 5,
@@ -16,7 +16,7 @@
   },
   "judgment_cards": [
     {
-      "card_id": "CARD_f71695fc6056",
+      "card_id": "CARD_2195cc664dc9",
       "filename": "TRK001_夜空中最亮的星_逃跑计划_独家授权.pdf",
       "track_id": "TRK001",
       "initial_judgment": "已匹配",
@@ -28,10 +28,10 @@
       "override_time": null,
       "override_reason": "",
       "actor": "系统",
-      "judgment_time": "2026-06-20T13:25:52.026594"
+      "judgment_time": "2026-06-20T14:33:10.323336"
     },
     {
-      "card_id": "CARD_80b18b99e8e1",
+      "card_id": "CARD_b27721d60ab4",
       "filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf",
       "track_id": "TRK001",
       "initial_judgment": "已匹配",
@@ -40,13 +40,13 @@
       "current_reason": "林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配",
       "is_overridden": true,
       "overridden_by": "林姐（音乐老师）",
-      "override_time": "2026-06-15T14:25:51",
+      "override_time": "2026-06-15T15:33:10",
       "override_reason": "林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配",
       "actor": "林姐（音乐老师）",
-      "judgment_time": "2026-06-15T14:25:51"
+      "judgment_time": "2026-06-15T15:33:10"
     },
     {
-      "card_id": "CARD_dfd4347f015d",
+      "card_id": "CARD_bb6ef28510f1",
       "filename": "TRK002_平凡之路_朴树_非独家授权.pdf",
       "track_id": "TRK002",
       "initial_judgment": "已匹配",
@@ -55,13 +55,13 @@
       "current_reason": "运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配",
       "is_overridden": true,
       "overridden_by": "运营主管",
-      "override_time": "2026-06-18T17:25:51",
+      "override_time": "2026-06-18T18:33:10",
       "override_reason": "彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认",
       "actor": "运营主管",
-      "judgment_time": "2026-06-18T17:25:51"
+      "judgment_time": "2026-06-18T18:33:10"
     },
     {
-      "card_id": "CARD_ed8ede86e644",
+      "card_id": "CARD_c77c264ea883",
       "filename": "TRK003_青花瓷_周杰伦_Jay_独家授权.pdf",
       "track_id": "TRK003",
       "initial_judgment": "已匹配",
@@ -73,10 +73,10 @@
       "override_time": null,
       "override_reason": "",
       "actor": "系统",
-      "judgment_time": "2026-06-20T13:25:52.026623"
+      "judgment_time": "2026-06-20T14:33:10.323395"
     },
     {
-      "card_id": "CARD_f69524e54e20",
+      "card_id": "CARD_960fcbdeefd3",
       "filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf",
       "track_id": "TRK005",
       "initial_judgment": "已匹配",
@@ -85,13 +85,13 @@
       "current_reason": "林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配",
       "is_overridden": true,
       "overridden_by": "林姐（音乐老师）",
-      "override_time": "2026-06-13T19:25:51",
+      "override_time": "2026-06-13T20:33:10",
       "override_reason": "林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景",
       "actor": "林姐（音乐老师）",
-      "judgment_time": "2026-06-13T19:25:51"
+      "judgment_time": "2026-06-13T20:33:10"
     },
     {
-      "card_id": "CARD_97ee908e6c65",
+      "card_id": "CARD_c3f8f285f2a3",
       "filename": "成都_赵雷_独家授权.pdf",
       "track_id": "TRK004",
       "initial_judgment": "待确认",
@@ -100,15 +100,15 @@
       "current_reason": "林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认",
       "is_overridden": true,
       "overridden_by": "林姐（音乐老师）",
-      "override_time": "2026-06-14T16:25:51",
+      "override_time": "2026-06-14T17:33:10",
       "override_reason": "林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认",
       "actor": "林姐（音乐老师）",
-      "judgment_time": "2026-06-14T16:25:51"
+      "judgment_time": "2026-06-14T17:33:10"
     }
   ],
   "timeline": [
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "曲目表解析完成",
@@ -118,11 +118,11 @@
       },
       "target_filename": null,
       "target_track_id": null,
-      "entry_id": "HIST_7d550de374fd",
+      "entry_id": "HIST_d91d9d4d5ec8",
       "importance": "normal"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "版权文件解析完成",
@@ -133,11 +133,11 @@
       },
       "target_filename": null,
       "target_track_id": null,
-      "entry_id": "HIST_2e7469f93b95",
+      "entry_id": "HIST_5cd20e025ca7",
       "importance": "normal"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "备注记录解析完成",
@@ -148,11 +148,11 @@
       },
       "target_filename": null,
       "target_track_id": null,
-      "entry_id": "HIST_e2d9e50b31e3",
+      "entry_id": "HIST_8b04fe0f5948",
       "importance": "normal"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "文件解析完成",
@@ -163,11 +163,11 @@
       },
       "target_filename": null,
       "target_track_id": null,
-      "entry_id": "HIST_3659f3674a4e",
+      "entry_id": "HIST_4ad4b8ffe429",
       "importance": "normal"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "初步匹配完成",
@@ -178,11 +178,11 @@
       },
       "target_filename": null,
       "target_track_id": null,
-      "entry_id": "HIST_6f8faf8952bd",
+      "entry_id": "HIST_a0e2fe36b6a7",
       "importance": "normal"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "后补备注确认判断",
@@ -192,11 +192,11 @@
       },
       "target_filename": "TRK003_青花瓷_周杰伦_Jay_独家授权.pdf",
       "target_track_id": "TRK003",
-      "entry_id": "HIST_5c7c395aa123",
+      "entry_id": "HIST_4026baea6115",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "应用后补备注",
@@ -210,11 +210,11 @@
       },
       "target_filename": "TRK003_青花瓷_周杰伦_Jay_独家授权.pdf",
       "target_track_id": "TRK003",
-      "entry_id": "HIST_1acb4cd5f424",
+      "entry_id": "HIST_0d41d83a70cd",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "判断卡被口头备注覆盖",
@@ -228,11 +228,11 @@
       },
       "target_filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf",
       "target_track_id": "TRK005",
-      "entry_id": "HIST_91c4a134c97e",
+      "entry_id": "HIST_151e9ee10ab8",
       "importance": "high"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "应用口头备注",
@@ -246,11 +246,11 @@
       },
       "target_filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf",
       "target_track_id": "TRK005",
-      "entry_id": "HIST_0353501f89f8",
+      "entry_id": "HIST_2259cf27fade",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "判断卡被口头备注覆盖",
@@ -264,11 +264,11 @@
       },
       "target_filename": "成都_赵雷_独家授权.pdf",
       "target_track_id": "TRK004",
-      "entry_id": "HIST_3f7b5c6b6f2a",
+      "entry_id": "HIST_82fbca42abc2",
       "importance": "high"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "应用口头备注",
@@ -282,11 +282,11 @@
       },
       "target_filename": "成都_赵雷_独家授权.pdf",
       "target_track_id": "TRK004",
-      "entry_id": "HIST_41897b0a1e0b",
+      "entry_id": "HIST_680ff8fe6cef",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "判断卡被口头备注覆盖",
@@ -300,11 +300,11 @@
       },
       "target_filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf",
       "target_track_id": "TRK001",
-      "entry_id": "HIST_06079d94ca41",
+      "entry_id": "HIST_d8edee399678",
       "importance": "high"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "应用口头备注",
@@ -318,11 +318,11 @@
       },
       "target_filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf",
       "target_track_id": "TRK001",
-      "entry_id": "HIST_688b1a116eb9",
+      "entry_id": "HIST_71a02a9b6562",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "运营主管",
       "actor_type": "operation",
       "action": "判断卡被运营备注覆盖",
@@ -336,11 +336,11 @@
       },
       "target_filename": "TRK002_平凡之路_朴树_非独家授权.pdf",
       "target_track_id": "TRK002",
-      "entry_id": "HIST_8deb18d2029f",
+      "entry_id": "HIST_26e4f793991f",
       "importance": "high"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "运营主管",
       "actor_type": "operation",
       "action": "应用运营备注",
@@ -354,11 +354,11 @@
       },
       "target_filename": "TRK002_平凡之路_朴树_非独家授权.pdf",
       "target_track_id": "TRK002",
-      "entry_id": "HIST_c2161db9ae83",
+      "entry_id": "HIST_1dca6d5259b3",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "备注应用完成",
@@ -369,16 +369,16 @@
       },
       "target_filename": null,
       "target_track_id": null,
-      "entry_id": "HIST_857f524e4259",
+      "entry_id": "HIST_1542f523d355",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "判断卡变更摘要",
       "details": {
-        "判断卡ID": "CARD_80b18b99e8e1",
+        "判断卡ID": "CARD_b27721d60ab4",
         "文件": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf",
         "曲目ID": "TRK001",
         "初始判断": "已匹配",
@@ -387,21 +387,21 @@
         "最终原因": "林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配",
         "被覆盖": "是",
         "覆盖人": "林姐（音乐老师）",
-        "覆盖时间": "2026-06-15 14:25:51",
+        "覆盖时间": "2026-06-15 15:33:10",
         "覆盖原因": "林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配"
       },
       "target_filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf",
       "target_track_id": "TRK001",
-      "entry_id": "HIST_c3cbd729bcfd",
+      "entry_id": "HIST_b7e41c1879c4",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "判断卡变更摘要",
       "details": {
-        "判断卡ID": "CARD_dfd4347f015d",
+        "判断卡ID": "CARD_bb6ef28510f1",
         "文件": "TRK002_平凡之路_朴树_非独家授权.pdf",
         "曲目ID": "TRK002",
         "初始判断": "已匹配",
@@ -410,21 +410,21 @@
         "最终原因": "运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配",
         "被覆盖": "是",
         "覆盖人": "运营主管",
-        "覆盖时间": "2026-06-18 17:25:51",
+        "覆盖时间": "2026-06-18 18:33:10",
         "覆盖原因": "彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认"
       },
       "target_filename": "TRK002_平凡之路_朴树_非独家授权.pdf",
       "target_track_id": "TRK002",
-      "entry_id": "HIST_1102daa8a3cc",
+      "entry_id": "HIST_4231d824be92",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "判断卡变更摘要",
       "details": {
-        "判断卡ID": "CARD_f69524e54e20",
+        "判断卡ID": "CARD_960fcbdeefd3",
         "文件": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf",
         "曲目ID": "TRK005",
         "初始判断": "已匹配",
@@ -433,21 +433,21 @@
         "最终原因": "林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配",
         "被覆盖": "是",
         "覆盖人": "林姐（音乐老师）",
-        "覆盖时间": "2026-06-13 19:25:51",
+        "覆盖时间": "2026-06-13 20:33:10",
         "覆盖原因": "林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景"
       },
       "target_filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf",
       "target_track_id": "TRK005",
-      "entry_id": "HIST_b27306245a5e",
+      "entry_id": "HIST_7671524c13f3",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "判断卡变更摘要",
       "details": {
-        "判断卡ID": "CARD_97ee908e6c65",
+        "判断卡ID": "CARD_c3f8f285f2a3",
         "文件": "成都_赵雷_独家授权.pdf",
         "曲目ID": "TRK004",
         "初始判断": "待确认",
@@ -456,16 +456,16 @@
         "最终原因": "林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认",
         "被覆盖": "是",
         "覆盖人": "林姐（音乐老师）",
-        "覆盖时间": "2026-06-14 16:25:51",
+        "覆盖时间": "2026-06-14 17:33:10",
         "覆盖原因": "林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认"
       },
       "target_filename": "成都_赵雷_独家授权.pdf",
       "target_track_id": "TRK004",
-      "entry_id": "HIST_ea8a925ab9a0",
+      "entry_id": "HIST_196633edbe54",
       "importance": "medium"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "系统",
       "actor_type": "system",
       "action": "处理完成总结",
@@ -480,11 +480,11 @@
       },
       "target_filename": null,
       "target_track_id": null,
-      "entry_id": "HIST_a6211d71c8f5",
+      "entry_id": "HIST_f8cb83780ec4",
       "importance": "normal"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "林姐判断记录（留存）",
@@ -494,16 +494,16 @@
         "林姐判断": "不匹配",
         "判断理由": "林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配",
         "覆盖的原判断": "已匹配",
-        "判断时间": "2026-06-15 14:25:51",
+        "判断时间": "2026-06-15 15:33:10",
         "说明": "此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果"
       },
       "target_filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf",
       "target_track_id": "TRK001",
-      "entry_id": "HIST_edd349493b07",
+      "entry_id": "HIST_fa1949cfcc94",
       "importance": "high"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "林姐判断记录（留存）",
@@ -513,16 +513,16 @@
         "林姐判断": "已匹配",
         "判断理由": "林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配",
         "覆盖的原判断": "已匹配",
-        "判断时间": "2026-06-13 19:25:51",
+        "判断时间": "2026-06-13 20:33:10",
         "说明": "此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果"
       },
       "target_filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf",
       "target_track_id": "TRK005",
-      "entry_id": "HIST_8b1b661a554e",
+      "entry_id": "HIST_9149e8683f37",
       "importance": "high"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "林姐（音乐老师）",
       "actor_type": "linjie",
       "action": "林姐判断记录（留存）",
@@ -532,16 +532,16 @@
         "林姐判断": "已匹配",
         "判断理由": "林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认",
         "覆盖的原判断": "待确认",
-        "判断时间": "2026-06-14 16:25:51",
+        "判断时间": "2026-06-14 17:33:10",
         "说明": "此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果"
       },
       "target_filename": "成都_赵雷_独家授权.pdf",
       "target_track_id": "TRK004",
-      "entry_id": "HIST_d08855dbcd9c",
+      "entry_id": "HIST_2a4c4dea6bc1",
       "importance": "high"
     },
     {
-      "timestamp": "2026-06-20 13:25:52",
+      "timestamp": "2026-06-20 14:33:10",
       "actor": "运营主管",
       "actor_type": "operation",
       "action": "运营主管临时改动（已入历史）",
@@ -553,12 +553,12 @@
         "原原因": "系统判断: 已匹配",
         "新判断": "已匹配",
         "新原因": "运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配",
-        "改动时间": "2026-06-18 17:25:51",
+        "改动时间": "2026-06-18 18:33:10",
         "说明": "此改动已记入完整历史，可追溯变更过程，而非仅修改当前结果"
       },
       "target_filename": "TRK002_平凡之路_朴树_非独家授权.pdf",
       "target_track_id": "TRK002",
-      "entry_id": "HIST_a24041e54bbd",
+      "entry_id": "HIST_7084bbdcaf87",
       "importance": "high"
     }
   ]

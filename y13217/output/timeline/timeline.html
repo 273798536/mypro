@@ -1,267 +1,233 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>版权授权清单归档 - 历史时间线</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .header {
-            text-align: center; color: white; margin-bottom: 30px;
-        }
-        .header h1 {
-            font-size: 2.5rem; margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
-        .header p { font-size: 1.1rem; opacity: 0.9; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>版权授权清单归档 - 历史时间线</title>
+<style>
 
-        .toolbar {
-            background: white; border-radius: 16px; padding: 20px;
-            margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
-        }
-        .toolbar-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .toolbar-label { font-size: 0.9rem; color: #666; font-weight: 500; margin-right: 4px; }
-        .btn {
-            padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;
-            font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
-            display: inline-flex; align-items: center; gap: 6px;
-        }
-        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .btn:active { transform: translateY(0); }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-success { background: #48bb78; color: white; }
-        .btn-warning { background: #ed8936; color: white; }
-        .btn-info { background: #4299e1; color: white; }
-        .btn-outline {
-            background: transparent; color: #666;
-            border: 1px solid #ddd;
-        }
-        .btn-outline:hover { background: #f5f5f5; border-color: #bbb; }
-        .btn-outline.active { background: #667eea; color: white; border-color: #667eea; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+.header { text-align: center; color: white; margin-bottom: 30px; }
+.header h1 { font-size: 2.5rem; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+.header p { font-size: 1.1rem; opacity: 0.9; }
+.toolbar {
+    background: white; border-radius: 16px; padding: 20px;
+    margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+}
+.toolbar-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.toolbar-label { font-size: 0.9rem; color: #666; font-weight: 500; margin-right: 4px; }
+.btn {
+    padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;
+    font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+.btn:active { transform: translateY(0); }
+.btn-success { background: #48bb78; color: white; }
+.btn-info { background: #4299e1; color: white; }
+.btn-warning { background: #ed8936; color: white; }
+.btn-outline { background: transparent; color: #666; border: 1px solid #ddd; }
+.btn-outline:hover { background: #f5f5f5; border-color: #bbb; }
+.btn-outline.active { background: #667eea; color: white; border-color: #667eea; }
+.search-box {
+    padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px;
+    font-size: 0.9rem; min-width: 200px; outline: none; transition: border 0.2s;
+}
+.search-box:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+.summary-cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px; margin-bottom: 30px;
+}
+.summary-card {
+    background: white; border-radius: 12px; padding: 18px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;
+    cursor: pointer; transition: transform 0.2s;
+}
+.summary-card:hover { transform: translateY(-3px); }
+.summary-card .number { font-size: 1.8rem; font-weight: bold; color: #667eea; }
+.summary-card .label { color: #666; margin-top: 4px; font-size: 0.9rem; }
+.no-results { text-align: center; padding: 60px 20px; color: #999; background: white; border-radius: 16px; }
+.no-results-icon { font-size: 3rem; margin-bottom: 10px; }
+.timeline {
+    position: relative; background: white; border-radius: 16px;
+    padding: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+.timeline::before {
+    content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
+    width: 4px; background: linear-gradient(to bottom, #667eea, #764ba2);
+    transform: translateX(-50%);
+}
+.timeline-item {
+    position: relative; margin-bottom: 30px; width: 50%; padding-right: 40px;
+}
+.timeline-item:nth-child(even) { margin-left: 50%; padding-right: 0; padding-left: 40px; }
+.timeline-item::before {
+    content: ''; position: absolute; right: -8px; top: 20px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: white; border: 4px solid #667eea; z-index: 1;
+}
+.timeline-item:nth-child(even)::before { right: auto; left: -8px; }
+.timeline-item.high-importance::before {
+    background: #ff6b6b; border-color: #ff6b6b; box-shadow: 0 0 10px rgba(255,107,107,0.5);
+}
+.timeline-item.medium-importance::before { background: #ffa502; border-color: #ffa502; }
+.timeline-content {
+    background: #f8f9fa; border-radius: 12px; padding: 20px;
+    position: relative; transition: transform 0.2s, box-shadow 0.2s;
+}
+.timeline-content:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+.timeline-item.high-importance .timeline-content { background: #fff5f5; border-left: 4px solid #ff6b6b; }
+.timeline-item.medium-importance .timeline-content { background: #fffaf0; border-left: 4px solid #ffa502; }
+.timeline-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 10px; margin-bottom: 8px;
+}
+.actor-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 0.85rem; font-weight: 500;
+}
+.actor-linjie { background: #d4edda; color: #155724; }
+.actor-operation { background: #fff3cd; color: #856404; }
+.actor-system { background: #d1ecf1; color: #0c5460; }
+.actor-manual { background: #f8d7da; color: #721c24; }
+.timestamp { color: #888; font-size: 0.85rem; }
+.action { font-size: 1.1rem; font-weight: 600; color: #333; margin-bottom: 10px; }
+.details-toggle {
+    background: none; border: none; color: #667eea; cursor: pointer;
+    font-size: 0.85rem; padding: 4px 0; margin-bottom: 8px;
+}
+.details-toggle:hover { text-decoration: underline; }
+.details {
+    background: white; border-radius: 8px; padding: 12px;
+    font-size: 0.95rem; color: #555; overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+.details.collapsed { max-height: 0; padding-top: 0; padding-bottom: 0; border: none; }
+.details p { margin-bottom: 5px; }
+.details p:last-child { margin-bottom: 0; }
+.target {
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd;
+    font-size: 0.85rem; color: #888;
+}
+.hidden { display: none !important; }
+.footer { text-align: center; color: white; margin-top: 30px; opacity: 0.9; }
+.toast {
+    position: fixed; top: 20px; right: 20px; padding: 12px 20px;
+    background: #333; color: white; border-radius: 8px;
+    z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+@media (max-width: 768px) {
+    .timeline::before { left: 20px; }
+    .timeline-item {
+        width: 100%; padding-left: 60px !important;
+        padding-right: 0 !important; margin-left: 0 !important;
+    }
+    .timeline-item::before { left: 12px !important; right: auto !important; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .search-box { min-width: 100%; }
+}
 
-        .search-box {
-            padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px;
-            font-size: 0.9rem; min-width: 200px; outline: none; transition: border 0.2s;
-        }
-        .search-box:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
-
-        .summary-cards {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px; margin-bottom: 30px;
-        }
-        .summary-card {
-            background: white; border-radius: 12px; padding: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;
-            cursor: pointer; transition: transform 0.2s;
-        }
-        .summary-card:hover { transform: translateY(-3px); }
-        .summary-card .number {
-            font-size: 1.8rem; font-weight: bold; color: #667eea;
-        }
-        .summary-card .label { color: #666; margin-top: 4px; font-size: 0.9rem; }
-        .no-results {
-            text-align: center; padding: 60px 20px; color: #999;
-            background: white; border-radius: 16px;
-        }
-        .no-results-icon { font-size: 3rem; margin-bottom: 10px; }
-
-        .timeline {
-            position: relative; background: white; border-radius: 16px;
-            padding: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-        .timeline::before {
-            content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
-            width: 4px; background: linear-gradient(to bottom, #667eea, #764ba2);
-            transform: translateX(-50%);
-        }
-        .timeline-item {
-            position: relative; margin-bottom: 30px; width: 50%;
-            padding-right: 40px;
-        }
-        .timeline-item:nth-child(even) {
-            margin-left: 50%; padding-right: 0; padding-left: 40px;
-        }
-        .timeline-item::before {
-            content: ''; position: absolute; right: -8px; top: 20px;
-            width: 16px; height: 16px; border-radius: 50%;
-            background: white; border: 4px solid #667eea; z-index: 1;
-        }
-        .timeline-item:nth-child(even)::before { right: auto; left: -8px; }
-        .timeline-item.high-importance::before {
-            background: #ff6b6b; border-color: #ff6b6b;
-            box-shadow: 0 0 10px rgba(255,107,107,0.5);
-        }
-        .timeline-item.medium-importance::before {
-            background: #ffa502; border-color: #ffa502;
-        }
-        .timeline-content {
-            background: #f8f9fa; border-radius: 12px; padding: 20px;
-            position: relative; transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .timeline-content:hover {
-            transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-        }
-        .timeline-item.high-importance .timeline-content {
-            background: #fff5f5; border-left: 4px solid #ff6b6b;
-        }
-        .timeline-item.medium-importance .timeline-content {
-            background: #fffaf0; border-left: 4px solid #ffa502;
-        }
-        .timeline-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
-            gap: 10px; margin-bottom: 8px;
-        }
-        .actor-badge {
-            display: inline-block; padding: 4px 12px; border-radius: 20px;
-            font-size: 0.85rem; font-weight: 500;
-        }
-        .actor-linjie { background: #d4edda; color: #155724; }
-        .actor-operation { background: #fff3cd; color: #856404; }
-        .actor-system { background: #d1ecf1; color: #0c5460; }
-        .actor-manual { background: #f8d7da; color: #721c24; }
-        .timestamp { color: #888; font-size: 0.85rem; }
-        .action {
-            font-size: 1.1rem; font-weight: 600; color: #333;
-            margin-bottom: 10px;
-        }
-        .details-toggle {
-            background: none; border: none; color: #667eea; cursor: pointer;
-            font-size: 0.85rem; padding: 4px 0; margin-bottom: 8px;
-        }
-        .details-toggle:hover { text-decoration: underline; }
-        .details {
-            background: white; border-radius: 8px; padding: 12px;
-            font-size: 0.95rem; color: #555; overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        .details.collapsed { max-height: 0; padding-top: 0; padding-bottom: 0; }
-        .details p { margin-bottom: 5px; }
-        .details p:last-child { margin-bottom: 0; }
-        .target {
-            margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd;
-            font-size: 0.85rem; color: #888;
-        }
-        .hidden { display: none !important; }
-
-        .footer {
-            text-align: center; color: white; margin-top: 30px; opacity: 0.9;
-        }
-        @media (max-width: 768px) {
-            .timeline::before { left: 20px; }
-            .timeline-item {
-                width: 100%; padding-left: 60px !important;
-                padding-right: 0 !important; margin-left: 0 !important;
-            }
-            .timeline-item::before { left: 12px !important; right: auto !important; }
-            .toolbar { flex-direction: column; align-items: stretch; }
-            .search-box { min-width: 100%; }
-        }
-    </style>
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎵 版权授权清单归档</h1>
-            <p>历史时间线 - 可直接用于沟通的完整变更记录</p>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>🎵 版权授权清单归档</h1>
+        <p>历史时间线 - 可直接用于沟通的完整变更记录</p>
+    </div>
 
-        <div class="toolbar">
-            <div class="toolbar-group">
-                <span class="toolbar-label">下载：</span>
-                <button class="btn btn-success" onclick="downloadMarkdown()">⬇️ Markdown</button>
-                <button class="btn btn-info" onclick="downloadJSON()">⬇️ JSON</button>
-                <button class="btn btn-warning" onclick="window.print()">🖨️ 打印</button>
-            </div>
-            <div style="flex: 1"></div>
-            <div class="toolbar-group">
-                <span class="toolbar-label">筛选角色：</span>
-                <button class="btn btn-outline active" data-filter-actor="all" onclick="filterByActor(this)">全部</button>
-                <button class="btn btn-outline" data-filter-actor="林姐" onclick="filterByActor(this)">👩‍🏫 林姐</button>
-                <button class="btn btn-outline" data-filter-actor="运营" onclick="filterByActor(this)">👔 运营</button>
-                <button class="btn btn-outline" data-filter-actor="人工" onclick="filterByActor(this)">✍️ 人工</button>
-                <button class="btn btn-outline" data-filter-actor="系统" onclick="filterByActor(this)">🖥️ 系统</button>
-            </div>
-            <div class="toolbar-group">
-                <span class="toolbar-label">级别：</span>
-                <button class="btn btn-outline active" data-filter-importance="all" onclick="filterByImportance(this)">全部</button>
-                <button class="btn btn-outline" data-filter-importance="high" onclick="filterByImportance(this)">🔴 重要</button>
-                <button class="btn btn-outline" data-filter-importance="medium" onclick="filterByImportance(this)">🟡 中</button>
-                <button class="btn btn-outline" data-filter-importance="normal" onclick="filterByImportance(this)">⚪ 普通</button>
-            </div>
-            <div class="toolbar-group">
-                <input type="text" class="search-box" placeholder="🔍 搜索文件名/曲目/内容..." oninput="filterBySearch(this.value)">
-            </div>
-            <div class="toolbar-group">
-                <button class="btn btn-outline" onclick="toggleAllDetails()">🔽 全部展开/折叠</button>
-            </div>
+    <div class="toolbar">
+        <div class="toolbar-group">
+            <span class="toolbar-label">下载：</span>
+            <button class="btn btn-success" onclick="downloadMarkdown()">⬇️ Markdown</button>
+            <button class="btn btn-info" onclick="downloadJSON()">⬇️ JSON</button>
+            <button class="btn btn-warning" onclick="window.print()">🖨️ 打印</button>
         </div>
-
-        <div class="summary-cards">
-            <div class="summary-card" onclick="filterByActor(null, 'all')">
-                <div class="number">6</div>
-                <div class="label">📄 版权文件总数</div>
-            </div>
-            <div class="summary-card" onclick="filterByImportance(null, 'high')">
-                <div class="number" style="color: #ff6b6b;">4</div>
-                <div class="label">🔄 判断被覆盖</div>
-            </div>
-            <div class="summary-card" onclick="filterByActor(null, '林姐')">
-                <div class="number" style="color: #48bb78;">3</div>
-                <div class="label">👩‍🏫 林姐判断</div>
-            </div>
-            <div class="summary-card" onclick="filterByActor(null, '运营')">
-                <div class="number" style="color: #ed8936;">1</div>
-                <div class="label">👔 运营改动</div>
-            </div>
-            <div class="summary-card" onclick="filterByActor(null, '人工')">
-                <div class="number" style="color: #e53e3e;">0</div>
-                <div class="label">✍️ 人工批注</div>
-            </div>
-            <div class="summary-card">
-                <div class="number">25</div>
-                <div class="label">📜 历史事件</div>
-            </div>
+        <div style="flex:1"></div>
+        <div class="toolbar-group">
+            <span class="toolbar-label">筛选角色：</span>
+            <button class="btn btn-outline active" data-filter-actor="all" onclick="filterByActor(this)">全部</button>
+            <button class="btn btn-outline" data-filter-actor="林姐" onclick="filterByActor(this)">👩‍🏫 林姐</button>
+            <button class="btn btn-outline" data-filter-actor="运营" onclick="filterByActor(this)">👔 运营</button>
+            <button class="btn btn-outline" data-filter-actor="人工" onclick="filterByActor(this)">✍️ 人工</button>
+            <button class="btn btn-outline" data-filter-actor="系统" onclick="filterByActor(this)">🖥️ 系统</button>
         </div>
-
-        <div id="no-results" class="no-results hidden">
-            <div class="no-results-icon">🔍</div>
-            <p>没有找到匹配的记录</p>
-            <p style="font-size: 0.9rem; margin-top: 8px;">试试调整筛选条件或清空搜索</p>
+        <div class="toolbar-group">
+            <span class="toolbar-label">级别：</span>
+            <button class="btn btn-outline active" data-filter-importance="all" onclick="filterByImportance(this)">全部</button>
+            <button class="btn btn-outline" data-filter-importance="high" onclick="filterByImportance(this)">🔴 重要</button>
+            <button class="btn btn-outline" data-filter-importance="medium" onclick="filterByImportance(this)">🟡 中</button>
+            <button class="btn btn-outline" data-filter-importance="normal" onclick="filterByImportance(this)">⚪ 普通</button>
         </div>
+        <div class="toolbar-group">
+            <input type="text" class="search-box" placeholder="🔍 搜索文件名/曲目/内容..." oninput="filterBySearch(this.value)">
+        </div>
+        <div class="toolbar-group">
+            <button class="btn btn-outline" onclick="toggleAllDetails()">🔽 全部展开/折叠</button>
+        </div>
+    </div>
 
-        <div class="timeline" id="timeline">
-            
-            <div class="timeline-item normal-importance"
+    <div class="summary-cards">
+        <div class="summary-card" onclick="filterByActor(null, 'all')">
+            <div class="number">6</div>
+            <div class="label">📄 版权文件总数</div>
+        </div>
+        <div class="summary-card" onclick="filterByImportance(null, 'high')">
+            <div class="number" style="color:#ff6b6b;">4</div>
+            <div class="label">🔄 判断被覆盖</div>
+        </div>
+        <div class="summary-card" onclick="filterByActor(null, '林姐')">
+            <div class="number" style="color:#48bb78;">3</div>
+            <div class="label">👩‍🏫 林姐判断</div>
+        </div>
+        <div class="summary-card" onclick="filterByActor(null, '运营')">
+            <div class="number" style="color:#ed8936;">1</div>
+            <div class="label">👔 运营改动</div>
+        </div>
+        <div class="summary-card" onclick="filterByActor(null, '人工')">
+            <div class="number" style="color:#e53e3e;">0</div>
+            <div class="label">✍️ 人工批注</div>
+        </div>
+        <div class="summary-card">
+            <div class="number">25</div>
+            <div class="label">📜 历史事件</div>
+        </div>
+    </div>
+
+    <div id="no-results" class="no-results hidden">
+        <div class="no-results-icon">🔍</div>
+        <p>没有找到匹配的记录</p>
+        <p style="font-size:0.9rem; margin-top:8px;">试试调整筛选条件或清空搜索</p>
+    </div>
+
+    <div class="timeline" id="timeline">
+                <div class="timeline-item normal-importance"
                  data-actor="系统"
                  data-importance="normal"
                  data-search="系统 曲目表解析完成   当前版曲目数 5 旧版曲目数 3 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">曲目表解析完成</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>当前版曲目数:</strong> 5</p>
-                        
-                        <p><strong>旧版曲目数:</strong> 3</p>
-                        
+<p><strong>旧版曲目数:</strong> 3</p>
                     </div>
                     
                 </div>
             </div>
-            
             <div class="timeline-item normal-importance"
                  data-actor="系统"
                  data-importance="normal"
@@ -269,23 +235,18 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">版权文件解析完成</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>文件总数:</strong> 6</p>
-                        
-                        <p><strong>有ID文件数:</strong> 5</p>
-                        
-                        <p><strong>无ID文件数:</strong> 1</p>
-                        
+<p><strong>有ID文件数:</strong> 5</p>
+<p><strong>无ID文件数:</strong> 1</p>
                     </div>
                     
                 </div>
             </div>
-            
             <div class="timeline-item normal-importance"
                  data-actor="系统"
                  data-importance="normal"
@@ -293,23 +254,18 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">备注记录解析完成</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>后补备注数:</strong> 1</p>
-                        
-                        <p><strong>口头备注数:</strong> 3</p>
-                        
-                        <p><strong>运营备注数:</strong> 1</p>
-                        
+<p><strong>口头备注数:</strong> 3</p>
+<p><strong>运营备注数:</strong> 1</p>
                     </div>
                     
                 </div>
             </div>
-            
             <div class="timeline-item normal-importance"
                  data-actor="系统"
                  data-importance="normal"
@@ -317,23 +273,18 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">文件解析完成</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>曲目数量:</strong> 8</p>
-                        
-                        <p><strong>版权文件数量:</strong> 6</p>
-                        
-                        <p><strong>备注数量:</strong> 5</p>
-                        
+<p><strong>版权文件数量:</strong> 6</p>
+<p><strong>备注数量:</strong> 5</p>
                     </div>
                     
                 </div>
             </div>
-            
             <div class="timeline-item normal-importance"
                  data-actor="系统"
                  data-importance="normal"
@@ -341,23 +292,18 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">初步匹配完成</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>已匹配数:</strong> 5</p>
-                        
-                        <p><strong>不匹配数:</strong> 0</p>
-                        
-                        <p><strong>待确认数:</strong> 1</p>
-                        
+<p><strong>不匹配数:</strong> 0</p>
+<p><strong>待确认数:</strong> 1</p>
                     </div>
                     
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="medium"
@@ -365,26 +311,17 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">后补备注确认判断</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>当前判断:</strong> 已匹配</p>
-                        
-                        <p><strong>备注内容:</strong> TRK003 文件名中的_Jay是标注别名，不影响匹配，按周杰伦处理</p>
-                        
+<p><strong>备注内容:</strong> TRK003 文件名中的_Jay是标注别名，不影响匹配，按周杰伦处理</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK003_青花瓷_周杰伦_Jay_独家授权.pdf
-                         | 🎵 曲目: TRK003
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK003_青花瓷_周杰伦_Jay_独家授权.pdf | 🎵 曲目: TRK003</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="medium"
@@ -392,30 +329,19 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">应用后补备注</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>备注内容:</strong> TRK003 文件名中的_Jay是标注别名，不影响匹配，按周杰伦处理</p>
-                        
-                        <p><strong>匹配方式:</strong> 按filename匹配</p>
-                        
-                        <p><strong>影响文件数:</strong> 1</p>
-                        
-                        <p><strong>影响判断卡:</strong> ['TRK003_青花瓷_周杰伦_Jay_独家授权.pdf']</p>
-                        
+<p><strong>匹配方式:</strong> 按filename匹配</p>
+<p><strong>影响文件数:</strong> 1</p>
+<p><strong>影响判断卡:</strong> ['TRK003_青花瓷_周杰伦_Jay_独家授权.pdf']</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK003_青花瓷_周杰伦_Jay_独家授权.pdf
-                         | 🎵 曲目: TRK003
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK003_青花瓷_周杰伦_Jay_独家授权.pdf | 🎵 曲目: TRK003</div>
                 </div>
             </div>
-            
             <div class="timeline-item high-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="high"
@@ -423,34 +349,21 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">判断卡被口头备注覆盖</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>原判断:</strong> 已匹配</p>
-                        
-                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
-                        
-                        <p><strong>新判断:</strong> 已匹配</p>
-                        
-                        <p><strong>新原因:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
-                        
-                        <p><strong>备注内容:</strong> 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景</p>
-                        
-                        <p><strong>改动类型:</strong> 补充/调整</p>
-                        
+<p><strong>原原因:</strong> 系统判断: 已匹配</p>
+<p><strong>新判断:</strong> 已匹配</p>
+<p><strong>新原因:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
+<p><strong>备注内容:</strong> 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景</p>
+<p><strong>改动类型:</strong> 补充/调整</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf
-                         | 🎵 曲目: TRK005
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf | 🎵 曲目: TRK005</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="medium"
@@ -458,30 +371,19 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">应用口头备注</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>备注内容:</strong> 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景</p>
-                        
-                        <p><strong>匹配方式:</strong> 按filename匹配</p>
-                        
-                        <p><strong>影响文件数:</strong> 1</p>
-                        
-                        <p><strong>影响判断卡:</strong> ['TRK005_演员_薛之谦_非独家授权_彩排版.pdf']</p>
-                        
+<p><strong>匹配方式:</strong> 按filename匹配</p>
+<p><strong>影响文件数:</strong> 1</p>
+<p><strong>影响判断卡:</strong> ['TRK005_演员_薛之谦_非独家授权_彩排版.pdf']</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf
-                         | 🎵 曲目: TRK005
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf | 🎵 曲目: TRK005</div>
                 </div>
             </div>
-            
             <div class="timeline-item high-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="high"
@@ -489,34 +391,21 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">判断卡被口头备注覆盖</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>原判断:</strong> 待确认</p>
-                        
-                        <p><strong>原原因:</strong> 系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID</p>
-                        
-                        <p><strong>新判断:</strong> 已匹配</p>
-                        
-                        <p><strong>新原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
-                        
-                        <p><strong>备注内容:</strong> 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
-                        
-                        <p><strong>改动类型:</strong> 判断变更</p>
-                        
+<p><strong>原原因:</strong> 系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID</p>
+<p><strong>新判断:</strong> 已匹配</p>
+<p><strong>新原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+<p><strong>备注内容:</strong> 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+<p><strong>改动类型:</strong> 判断变更</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: 成都_赵雷_独家授权.pdf
-                         | 🎵 曲目: TRK004
-                    </div>
-                    
+                    <div class="target">📄 文件: 成都_赵雷_独家授权.pdf | 🎵 曲目: TRK004</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="medium"
@@ -524,30 +413,19 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">应用口头备注</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>备注内容:</strong> 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
-                        
-                        <p><strong>匹配方式:</strong> 按filename匹配</p>
-                        
-                        <p><strong>影响文件数:</strong> 1</p>
-                        
-                        <p><strong>影响判断卡:</strong> ['成都_赵雷_独家授权.pdf']</p>
-                        
+<p><strong>匹配方式:</strong> 按filename匹配</p>
+<p><strong>影响文件数:</strong> 1</p>
+<p><strong>影响判断卡:</strong> ['成都_赵雷_独家授权.pdf']</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: 成都_赵雷_独家授权.pdf
-                         | 🎵 曲目: TRK004
-                    </div>
-                    
+                    <div class="target">📄 文件: 成都_赵雷_独家授权.pdf | 🎵 曲目: TRK004</div>
                 </div>
             </div>
-            
             <div class="timeline-item high-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="high"
@@ -555,34 +433,21 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">判断卡被口头备注覆盖</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>原判断:</strong> 已匹配</p>
-                        
-                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
-                        
-                        <p><strong>新判断:</strong> 不匹配</p>
-                        
-                        <p><strong>新原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
-                        
-                        <p><strong>备注内容:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
-                        
-                        <p><strong>改动类型:</strong> 判断变更</p>
-                        
+<p><strong>原原因:</strong> 系统判断: 已匹配</p>
+<p><strong>新判断:</strong> 不匹配</p>
+<p><strong>新原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+<p><strong>备注内容:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+<p><strong>改动类型:</strong> 判断变更</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf
-                         | 🎵 曲目: TRK001
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf | 🎵 曲目: TRK001</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="medium"
@@ -590,30 +455,19 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">应用口头备注</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>备注内容:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
-                        
-                        <p><strong>匹配方式:</strong> 按filename匹配</p>
-                        
-                        <p><strong>影响文件数:</strong> 1</p>
-                        
-                        <p><strong>影响判断卡:</strong> ['TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf']</p>
-                        
+<p><strong>匹配方式:</strong> 按filename匹配</p>
+<p><strong>影响文件数:</strong> 1</p>
+<p><strong>影响判断卡:</strong> ['TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf']</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf
-                         | 🎵 曲目: TRK001
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf | 🎵 曲目: TRK001</div>
                 </div>
             </div>
-            
             <div class="timeline-item high-importance"
                  data-actor="运营主管"
                  data-importance="high"
@@ -621,34 +475,21 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-operation">运营主管</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">判断卡被运营备注覆盖</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>原判断:</strong> 已匹配</p>
-                        
-                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
-                        
-                        <p><strong>新判断:</strong> 已匹配</p>
-                        
-                        <p><strong>新原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
-                        
-                        <p><strong>备注内容:</strong> 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认</p>
-                        
-                        <p><strong>改动类型:</strong> 补充/调整</p>
-                        
+<p><strong>原原因:</strong> 系统判断: 已匹配</p>
+<p><strong>新判断:</strong> 已匹配</p>
+<p><strong>新原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
+<p><strong>备注内容:</strong> 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认</p>
+<p><strong>改动类型:</strong> 补充/调整</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf
-                         | 🎵 曲目: TRK002
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf | 🎵 曲目: TRK002</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="运营主管"
                  data-importance="medium"
@@ -656,30 +497,19 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-operation">运营主管</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">应用运营备注</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>备注内容:</strong> 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认</p>
-                        
-                        <p><strong>匹配方式:</strong> 按filename匹配</p>
-                        
-                        <p><strong>影响文件数:</strong> 1</p>
-                        
-                        <p><strong>影响判断卡:</strong> ['TRK002_平凡之路_朴树_非独家授权.pdf']</p>
-                        
+<p><strong>匹配方式:</strong> 按filename匹配</p>
+<p><strong>影响文件数:</strong> 1</p>
+<p><strong>影响判断卡:</strong> ['TRK002_平凡之路_朴树_非独家授权.pdf']</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf
-                         | 🎵 曲目: TRK002
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf | 🎵 曲目: TRK002</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="系统"
                  data-importance="medium"
@@ -687,203 +517,126 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">备注应用完成</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>已应用备注数:</strong> 5</p>
-                        
-                        <p><strong>林姐备注数:</strong> 4</p>
-                        
-                        <p><strong>运营主管备注数:</strong> 1</p>
-                        
+<p><strong>林姐备注数:</strong> 4</p>
+<p><strong>运营主管备注数:</strong> 1</p>
                     </div>
                     
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="系统"
                  data-importance="medium"
-                 data-search="系统 判断卡变更摘要 TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf TRK001 判断卡ID CARD_80b18b99e8e1 文件 TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf 曲目ID TRK001 初始判断 已匹配 初始原因 系统判断: 已匹配 最终判断 不匹配 最终原因 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配 被覆盖 是 覆盖人 林姐（音乐老师） 覆盖时间 2026-06-15 14:25:51 覆盖原因 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配 ">
+                 data-search="系统 判断卡变更摘要 TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf TRK001 判断卡ID CARD_b27721d60ab4 文件 TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf 曲目ID TRK001 初始判断 已匹配 初始原因 系统判断: 已匹配 最终判断 不匹配 最终原因 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配 被覆盖 是 覆盖人 林姐（音乐老师） 覆盖时间 2026-06-15 15:33:10 覆盖原因 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">判断卡变更摘要</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
-                        <p><strong>判断卡ID:</strong> CARD_80b18b99e8e1</p>
-                        
-                        <p><strong>文件:</strong> TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf</p>
-                        
-                        <p><strong>曲目ID:</strong> TRK001</p>
-                        
-                        <p><strong>初始判断:</strong> 已匹配</p>
-                        
-                        <p><strong>初始原因:</strong> 系统判断: 已匹配</p>
-                        
-                        <p><strong>最终判断:</strong> 不匹配</p>
-                        
-                        <p><strong>最终原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
-                        
-                        <p><strong>被覆盖:</strong> 是</p>
-                        
-                        <p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
-                        
-                        <p><strong>覆盖时间:</strong> 2026-06-15 14:25:51</p>
-                        
-                        <p><strong>覆盖原因:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
-                        
+                        <p><strong>判断卡ID:</strong> CARD_b27721d60ab4</p>
+<p><strong>文件:</strong> TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf</p>
+<p><strong>曲目ID:</strong> TRK001</p>
+<p><strong>初始判断:</strong> 已匹配</p>
+<p><strong>初始原因:</strong> 系统判断: 已匹配</p>
+<p><strong>最终判断:</strong> 不匹配</p>
+<p><strong>最终原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+<p><strong>被覆盖:</strong> 是</p>
+<p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
+<p><strong>覆盖时间:</strong> 2026-06-15 15:33:10</p>
+<p><strong>覆盖原因:</strong> 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf
-                         | 🎵 曲目: TRK001
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf | 🎵 曲目: TRK001</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="系统"
                  data-importance="medium"
-                 data-search="系统 判断卡变更摘要 TRK002_平凡之路_朴树_非独家授权.pdf TRK002 判断卡ID CARD_dfd4347f015d 文件 TRK002_平凡之路_朴树_非独家授权.pdf 曲目ID TRK002 初始判断 已匹配 初始原因 系统判断: 已匹配 最终判断 已匹配 最终原因 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配 被覆盖 是 覆盖人 运营主管 覆盖时间 2026-06-18 17:25:51 覆盖原因 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 ">
+                 data-search="系统 判断卡变更摘要 TRK002_平凡之路_朴树_非独家授权.pdf TRK002 判断卡ID CARD_bb6ef28510f1 文件 TRK002_平凡之路_朴树_非独家授权.pdf 曲目ID TRK002 初始判断 已匹配 初始原因 系统判断: 已匹配 最终判断 已匹配 最终原因 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配 被覆盖 是 覆盖人 运营主管 覆盖时间 2026-06-18 18:33:10 覆盖原因 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">判断卡变更摘要</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
-                        <p><strong>判断卡ID:</strong> CARD_dfd4347f015d</p>
-                        
-                        <p><strong>文件:</strong> TRK002_平凡之路_朴树_非独家授权.pdf</p>
-                        
-                        <p><strong>曲目ID:</strong> TRK002</p>
-                        
-                        <p><strong>初始判断:</strong> 已匹配</p>
-                        
-                        <p><strong>初始原因:</strong> 系统判断: 已匹配</p>
-                        
-                        <p><strong>最终判断:</strong> 已匹配</p>
-                        
-                        <p><strong>最终原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
-                        
-                        <p><strong>被覆盖:</strong> 是</p>
-                        
-                        <p><strong>覆盖人:</strong> 运营主管</p>
-                        
-                        <p><strong>覆盖时间:</strong> 2026-06-18 17:25:51</p>
-                        
-                        <p><strong>覆盖原因:</strong> 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认</p>
-                        
+                        <p><strong>判断卡ID:</strong> CARD_bb6ef28510f1</p>
+<p><strong>文件:</strong> TRK002_平凡之路_朴树_非独家授权.pdf</p>
+<p><strong>曲目ID:</strong> TRK002</p>
+<p><strong>初始判断:</strong> 已匹配</p>
+<p><strong>初始原因:</strong> 系统判断: 已匹配</p>
+<p><strong>最终判断:</strong> 已匹配</p>
+<p><strong>最终原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
+<p><strong>被覆盖:</strong> 是</p>
+<p><strong>覆盖人:</strong> 运营主管</p>
+<p><strong>覆盖时间:</strong> 2026-06-18 18:33:10</p>
+<p><strong>覆盖原因:</strong> 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf
-                         | 🎵 曲目: TRK002
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf | 🎵 曲目: TRK002</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="系统"
                  data-importance="medium"
-                 data-search="系统 判断卡变更摘要 TRK005_演员_薛之谦_非独家授权_彩排版.pdf TRK005 判断卡ID CARD_f69524e54e20 文件 TRK005_演员_薛之谦_非独家授权_彩排版.pdf 曲目ID TRK005 初始判断 已匹配 初始原因 系统判断: 已匹配 最终判断 已匹配 最终原因 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配 被覆盖 是 覆盖人 林姐（音乐老师） 覆盖时间 2026-06-13 19:25:51 覆盖原因 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 ">
+                 data-search="系统 判断卡变更摘要 TRK005_演员_薛之谦_非独家授权_彩排版.pdf TRK005 判断卡ID CARD_960fcbdeefd3 文件 TRK005_演员_薛之谦_非独家授权_彩排版.pdf 曲目ID TRK005 初始判断 已匹配 初始原因 系统判断: 已匹配 最终判断 已匹配 最终原因 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配 被覆盖 是 覆盖人 林姐（音乐老师） 覆盖时间 2026-06-13 20:33:10 覆盖原因 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">判断卡变更摘要</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
-                        <p><strong>判断卡ID:</strong> CARD_f69524e54e20</p>
-                        
-                        <p><strong>文件:</strong> TRK005_演员_薛之谦_非独家授权_彩排版.pdf</p>
-                        
-                        <p><strong>曲目ID:</strong> TRK005</p>
-                        
-                        <p><strong>初始判断:</strong> 已匹配</p>
-                        
-                        <p><strong>初始原因:</strong> 系统判断: 已匹配</p>
-                        
-                        <p><strong>最终判断:</strong> 已匹配</p>
-                        
-                        <p><strong>最终原因:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
-                        
-                        <p><strong>被覆盖:</strong> 是</p>
-                        
-                        <p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
-                        
-                        <p><strong>覆盖时间:</strong> 2026-06-13 19:25:51</p>
-                        
-                        <p><strong>覆盖原因:</strong> 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景</p>
-                        
+                        <p><strong>判断卡ID:</strong> CARD_960fcbdeefd3</p>
+<p><strong>文件:</strong> TRK005_演员_薛之谦_非独家授权_彩排版.pdf</p>
+<p><strong>曲目ID:</strong> TRK005</p>
+<p><strong>初始判断:</strong> 已匹配</p>
+<p><strong>初始原因:</strong> 系统判断: 已匹配</p>
+<p><strong>最终判断:</strong> 已匹配</p>
+<p><strong>最终原因:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
+<p><strong>被覆盖:</strong> 是</p>
+<p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
+<p><strong>覆盖时间:</strong> 2026-06-13 20:33:10</p>
+<p><strong>覆盖原因:</strong> 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf
-                         | 🎵 曲目: TRK005
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf | 🎵 曲目: TRK005</div>
                 </div>
             </div>
-            
             <div class="timeline-item medium-importance"
                  data-actor="系统"
                  data-importance="medium"
-                 data-search="系统 判断卡变更摘要 成都_赵雷_独家授权.pdf TRK004 判断卡ID CARD_97ee908e6c65 文件 成都_赵雷_独家授权.pdf 曲目ID TRK004 初始判断 待确认 初始原因 系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID 最终判断 已匹配 最终原因 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认 被覆盖 是 覆盖人 林姐（音乐老师） 覆盖时间 2026-06-14 16:25:51 覆盖原因 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认 ">
+                 data-search="系统 判断卡变更摘要 成都_赵雷_独家授权.pdf TRK004 判断卡ID CARD_c3f8f285f2a3 文件 成都_赵雷_独家授权.pdf 曲目ID TRK004 初始判断 待确认 初始原因 系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID 最终判断 已匹配 最终原因 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认 被覆盖 是 覆盖人 林姐（音乐老师） 覆盖时间 2026-06-14 17:33:10 覆盖原因 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">判断卡变更摘要</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
-                        <p><strong>判断卡ID:</strong> CARD_97ee908e6c65</p>
-                        
-                        <p><strong>文件:</strong> 成都_赵雷_独家授权.pdf</p>
-                        
-                        <p><strong>曲目ID:</strong> TRK004</p>
-                        
-                        <p><strong>初始判断:</strong> 待确认</p>
-                        
-                        <p><strong>初始原因:</strong> 系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID</p>
-                        
-                        <p><strong>最终判断:</strong> 已匹配</p>
-                        
-                        <p><strong>最终原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
-                        
-                        <p><strong>被覆盖:</strong> 是</p>
-                        
-                        <p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
-                        
-                        <p><strong>覆盖时间:</strong> 2026-06-14 16:25:51</p>
-                        
-                        <p><strong>覆盖原因:</strong> 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
-                        
+                        <p><strong>判断卡ID:</strong> CARD_c3f8f285f2a3</p>
+<p><strong>文件:</strong> 成都_赵雷_独家授权.pdf</p>
+<p><strong>曲目ID:</strong> TRK004</p>
+<p><strong>初始判断:</strong> 待确认</p>
+<p><strong>初始原因:</strong> 系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID</p>
+<p><strong>最终判断:</strong> 已匹配</p>
+<p><strong>最终原因:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+<p><strong>被覆盖:</strong> 是</p>
+<p><strong>覆盖人:</strong> 林姐（音乐老师）</p>
+<p><strong>覆盖时间:</strong> 2026-06-14 17:33:10</p>
+<p><strong>覆盖原因:</strong> 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: 成都_赵雷_独家授权.pdf
-                         | 🎵 曲目: TRK004
-                    </div>
-                    
+                    <div class="target">📄 文件: 成都_赵雷_独家授权.pdf | 🎵 曲目: TRK004</div>
                 </div>
             </div>
-            
             <div class="timeline-item normal-importance"
                  data-actor="系统"
                  data-importance="normal"
@@ -891,310 +644,302 @@
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-system">系统</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">处理完成总结</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>判断卡总数:</strong> 6</p>
-                        
-                        <p><strong>已覆盖数:</strong> 4</p>
-                        
-                        <p><strong>林姐覆盖数:</strong> 3</p>
-                        
-                        <p><strong>运营主管覆盖数:</strong> 1</p>
-                        
-                        <p><strong>最终匹配数:</strong> 5</p>
-                        
-                        <p><strong>最终不匹配数:</strong> 1</p>
-                        
-                        <p><strong>待人工确认数:</strong> 0</p>
-                        
+<p><strong>已覆盖数:</strong> 4</p>
+<p><strong>林姐覆盖数:</strong> 3</p>
+<p><strong>运营主管覆盖数:</strong> 1</p>
+<p><strong>最终匹配数:</strong> 5</p>
+<p><strong>最终不匹配数:</strong> 1</p>
+<p><strong>待人工确认数:</strong> 0</p>
                     </div>
                     
                 </div>
             </div>
-            
             <div class="timeline-item high-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="high"
-                 data-search="林姐（音乐老师） 林姐判断记录（留存） TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf TRK001 文件 TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf 曲目ID TRK001 林姐判断 不匹配 判断理由 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配 覆盖的原判断 已匹配 判断时间 2026-06-15 14:25:51 说明 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果 ">
+                 data-search="林姐（音乐老师） 林姐判断记录（留存） TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf TRK001 文件 TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf 曲目ID TRK001 林姐判断 不匹配 判断理由 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配 覆盖的原判断 已匹配 判断时间 2026-06-15 15:33:10 说明 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">林姐判断记录（留存）</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>文件:</strong> TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf</p>
-                        
-                        <p><strong>曲目ID:</strong> TRK001</p>
-                        
-                        <p><strong>林姐判断:</strong> 不匹配</p>
-                        
-                        <p><strong>判断理由:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
-                        
-                        <p><strong>覆盖的原判断:</strong> 已匹配</p>
-                        
-                        <p><strong>判断时间:</strong> 2026-06-15 14:25:51</p>
-                        
-                        <p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
-                        
+<p><strong>曲目ID:</strong> TRK001</p>
+<p><strong>林姐判断:</strong> 不匹配</p>
+<p><strong>判断理由:</strong> 林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配</p>
+<p><strong>覆盖的原判断:</strong> 已匹配</p>
+<p><strong>判断时间:</strong> 2026-06-15 15:33:10</p>
+<p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf
-                         | 🎵 曲目: TRK001
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf | 🎵 曲目: TRK001</div>
                 </div>
             </div>
-            
             <div class="timeline-item high-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="high"
-                 data-search="林姐（音乐老师） 林姐判断记录（留存） TRK005_演员_薛之谦_非独家授权_彩排版.pdf TRK005 文件 TRK005_演员_薛之谦_非独家授权_彩排版.pdf 曲目ID TRK005 林姐判断 已匹配 判断理由 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配 覆盖的原判断 已匹配 判断时间 2026-06-13 19:25:51 说明 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果 ">
+                 data-search="林姐（音乐老师） 林姐判断记录（留存） TRK005_演员_薛之谦_非独家授权_彩排版.pdf TRK005 文件 TRK005_演员_薛之谦_非独家授权_彩排版.pdf 曲目ID TRK005 林姐判断 已匹配 判断理由 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配 覆盖的原判断 已匹配 判断时间 2026-06-13 20:33:10 说明 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">林姐判断记录（留存）</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>文件:</strong> TRK005_演员_薛之谦_非独家授权_彩排版.pdf</p>
-                        
-                        <p><strong>曲目ID:</strong> TRK005</p>
-                        
-                        <p><strong>林姐判断:</strong> 已匹配</p>
-                        
-                        <p><strong>判断理由:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
-                        
-                        <p><strong>覆盖的原判断:</strong> 已匹配</p>
-                        
-                        <p><strong>判断时间:</strong> 2026-06-13 19:25:51</p>
-                        
-                        <p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
-                        
+<p><strong>曲目ID:</strong> TRK005</p>
+<p><strong>林姐判断:</strong> 已匹配</p>
+<p><strong>判断理由:</strong> 林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配</p>
+<p><strong>覆盖的原判断:</strong> 已匹配</p>
+<p><strong>判断时间:</strong> 2026-06-13 20:33:10</p>
+<p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf
-                         | 🎵 曲目: TRK005
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK005_演员_薛之谦_非独家授权_彩排版.pdf | 🎵 曲目: TRK005</div>
                 </div>
             </div>
-            
             <div class="timeline-item high-importance"
                  data-actor="林姐（音乐老师）"
                  data-importance="high"
-                 data-search="林姐（音乐老师） 林姐判断记录（留存） 成都_赵雷_独家授权.pdf TRK004 文件 成都_赵雷_独家授权.pdf 曲目ID TRK004 林姐判断 已匹配 判断理由 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认 覆盖的原判断 待确认 判断时间 2026-06-14 16:25:51 说明 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果 ">
+                 data-search="林姐（音乐老师） 林姐判断记录（留存） 成都_赵雷_独家授权.pdf TRK004 文件 成都_赵雷_独家授权.pdf 曲目ID TRK004 林姐判断 已匹配 判断理由 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认 覆盖的原判断 待确认 判断时间 2026-06-14 17:33:10 说明 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-linjie">林姐（音乐老师）</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">林姐判断记录（留存）</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>文件:</strong> 成都_赵雷_独家授权.pdf</p>
-                        
-                        <p><strong>曲目ID:</strong> TRK004</p>
-                        
-                        <p><strong>林姐判断:</strong> 已匹配</p>
-                        
-                        <p><strong>判断理由:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
-                        
-                        <p><strong>覆盖的原判断:</strong> 待确认</p>
-                        
-                        <p><strong>判断时间:</strong> 2026-06-14 16:25:51</p>
-                        
-                        <p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
-                        
+<p><strong>曲目ID:</strong> TRK004</p>
+<p><strong>林姐判断:</strong> 已匹配</p>
+<p><strong>判断理由:</strong> 林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认</p>
+<p><strong>覆盖的原判断:</strong> 待确认</p>
+<p><strong>判断时间:</strong> 2026-06-14 17:33:10</p>
+<p><strong>说明:</strong> 此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: 成都_赵雷_独家授权.pdf
-                         | 🎵 曲目: TRK004
-                    </div>
-                    
+                    <div class="target">📄 文件: 成都_赵雷_独家授权.pdf | 🎵 曲目: TRK004</div>
                 </div>
             </div>
-            
             <div class="timeline-item high-importance"
                  data-actor="运营主管"
                  data-importance="high"
-                 data-search="运营主管 运营主管临时改动（已入历史） TRK002_平凡之路_朴树_非独家授权.pdf TRK002 文件 TRK002_平凡之路_朴树_非独家授权.pdf 曲目ID TRK002 改动类型 彩排前临时调整 原判断 已匹配 原原因 系统判断: 已匹配 新判断 已匹配 新原因 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配 改动时间 2026-06-18 17:25:51 说明 此改动已记入完整历史，可追溯变更过程，而非仅修改当前结果 ">
+                 data-search="运营主管 运营主管临时改动（已入历史） TRK002_平凡之路_朴树_非独家授权.pdf TRK002 文件 TRK002_平凡之路_朴树_非独家授权.pdf 曲目ID TRK002 改动类型 彩排前临时调整 原判断 已匹配 原原因 系统判断: 已匹配 新判断 已匹配 新原因 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配 改动时间 2026-06-18 18:33:10 说明 此改动已记入完整历史，可追溯变更过程，而非仅修改当前结果 ">
                 <div class="timeline-content">
                     <div class="timeline-header">
                         <span class="actor-badge actor-operation">运营主管</span>
-                        <span class="timestamp">⏰ 2026-06-20 13:25:52</span>
+                        <span class="timestamp">⏰ 2026-06-20 14:33:10</span>
                     </div>
                     <div class="action">运营主管临时改动（已入历史）</div>
                     <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
                     <div class="details collapsed">
-                        
                         <p><strong>文件:</strong> TRK002_平凡之路_朴树_非独家授权.pdf</p>
-                        
-                        <p><strong>曲目ID:</strong> TRK002</p>
-                        
-                        <p><strong>改动类型:</strong> 彩排前临时调整</p>
-                        
-                        <p><strong>原判断:</strong> 已匹配</p>
-                        
-                        <p><strong>原原因:</strong> 系统判断: 已匹配</p>
-                        
-                        <p><strong>新判断:</strong> 已匹配</p>
-                        
-                        <p><strong>新原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
-                        
-                        <p><strong>改动时间:</strong> 2026-06-18 17:25:51</p>
-                        
-                        <p><strong>说明:</strong> 此改动已记入完整历史，可追溯变更过程，而非仅修改当前结果</p>
-                        
+<p><strong>曲目ID:</strong> TRK002</p>
+<p><strong>改动类型:</strong> 彩排前临时调整</p>
+<p><strong>原判断:</strong> 已匹配</p>
+<p><strong>原原因:</strong> 系统判断: 已匹配</p>
+<p><strong>新判断:</strong> 已匹配</p>
+<p><strong>新原因:</strong> 运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配</p>
+<p><strong>改动时间:</strong> 2026-06-18 18:33:10</p>
+<p><strong>说明:</strong> 此改动已记入完整历史，可追溯变更过程，而非仅修改当前结果</p>
                     </div>
-                    
-                    <div class="target">
-                        📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf
-                         | 🎵 曲目: TRK002
-                    </div>
-                    
+                    <div class="target">📄 文件: TRK002_平凡之路_朴树_非独家授权.pdf | 🎵 曲目: TRK002</div>
                 </div>
             </div>
-            
-        </div>
-
-        <div class="footer">
-            <p>生成时间: 2026-06-20 13:25:52 | 此时间线可直接用于跨部门沟通</p>
-        </div>
     </div>
 
-    <script>
-        const TIMELINE_DATA = ;
-        let currentActorFilter = 'all';
-        let currentImportanceFilter = 'all';
-        let currentSearch = '';
-        let allCollapsed = true;
+    <div class="footer">
+        <p>生成时间: 2026-06-20 14:33:10 | 此时间线可直接用于跨部门沟通</p>
+    </div>
+</div>
 
-        function applyFilters() {
-            const items = document.querySelectorAll('.timeline-item');
-            let visibleCount = 0;
-            items.forEach(item => {
-                const actor = item.dataset.actor;
-                const importance = item.dataset.importance;
-                const search = item.dataset.search.toLowerCase();
-                const actorMatch = currentActorFilter === 'all' || actor.includes(currentActorFilter);
-                const importanceMatch = currentImportanceFilter === 'all' || importance === currentImportanceFilter;
-                const searchMatch = currentSearch === '' || search.includes(currentSearch.toLowerCase());
-                if (actorMatch && importanceMatch && searchMatch) {
-                    item.classList.remove('hidden');
-                    visibleCount++;
-                } else {
-                    item.classList.add('hidden');
-                }
-            });
-            document.getElementById('no-results').classList.toggle('hidden', visibleCount > 0);
-            document.getElementById('timeline').classList.toggle('hidden', visibleCount === 0);
+<script>
+// 原始数据（后端渲染注入）
+window.TIMELINE_DATA = [{"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "曲目表解析完成", "details": {"当前版曲目数": 5, "旧版曲目数": 3}, "target_filename": null, "target_track_id": null, "entry_id": "HIST_d91d9d4d5ec8", "importance": "normal"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "版权文件解析完成", "details": {"文件总数": 6, "有ID文件数": 5, "无ID文件数": 1}, "target_filename": null, "target_track_id": null, "entry_id": "HIST_5cd20e025ca7", "importance": "normal"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "备注记录解析完成", "details": {"后补备注数": 1, "口头备注数": 3, "运营备注数": 1}, "target_filename": null, "target_track_id": null, "entry_id": "HIST_8b04fe0f5948", "importance": "normal"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "文件解析完成", "details": {"曲目数量": 8, "版权文件数量": 6, "备注数量": 5}, "target_filename": null, "target_track_id": null, "entry_id": "HIST_4ad4b8ffe429", "importance": "normal"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "初步匹配完成", "details": {"已匹配数": 5, "不匹配数": 0, "待确认数": 1}, "target_filename": null, "target_track_id": null, "entry_id": "HIST_a0e2fe36b6a7", "importance": "normal"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "后补备注确认判断", "details": {"当前判断": "已匹配", "备注内容": "TRK003 文件名中的_Jay是标注别名，不影响匹配，按周杰伦处理"}, "target_filename": "TRK003_青花瓷_周杰伦_Jay_独家授权.pdf", "target_track_id": "TRK003", "entry_id": "HIST_4026baea6115", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "应用后补备注", "details": {"备注内容": "TRK003 文件名中的_Jay是标注别名，不影响匹配，按周杰伦处理", "匹配方式": "按filename匹配", "影响文件数": 1, "影响判断卡": ["TRK003_青花瓷_周杰伦_Jay_独家授权.pdf"]}, "target_filename": "TRK003_青花瓷_周杰伦_Jay_独家授权.pdf", "target_track_id": "TRK003", "entry_id": "HIST_0d41d83a70cd", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "判断卡被口头备注覆盖", "details": {"原判断": "已匹配", "原原因": "系统判断: 已匹配", "新判断": "已匹配", "新原因": "林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配", "备注内容": "林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景", "改动类型": "补充/调整"}, "target_filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf", "target_track_id": "TRK005", "entry_id": "HIST_151e9ee10ab8", "importance": "high"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "应用口头备注", "details": {"备注内容": "林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景", "匹配方式": "按filename匹配", "影响文件数": 1, "影响判断卡": ["TRK005_演员_薛之谦_非独家授权_彩排版.pdf"]}, "target_filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf", "target_track_id": "TRK005", "entry_id": "HIST_2259cf27fade", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "判断卡被口头备注覆盖", "details": {"原判断": "待确认", "原原因": "系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID", "新判断": "已匹配", "新原因": "林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认", "备注内容": "林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认", "改动类型": "判断变更"}, "target_filename": "成都_赵雷_独家授权.pdf", "target_track_id": "TRK004", "entry_id": "HIST_82fbca42abc2", "importance": "high"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "应用口头备注", "details": {"备注内容": "林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认", "匹配方式": "按filename匹配", "影响文件数": 1, "影响判断卡": ["成都_赵雷_独家授权.pdf"]}, "target_filename": "成都_赵雷_独家授权.pdf", "target_track_id": "TRK004", "entry_id": "HIST_680ff8fe6cef", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "判断卡被口头备注覆盖", "details": {"原判断": "已匹配", "原原因": "系统判断: 已匹配", "新判断": "不匹配", "新原因": "林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配", "备注内容": "林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配", "改动类型": "判断变更"}, "target_filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf", "target_track_id": "TRK001", "entry_id": "HIST_d8edee399678", "importance": "high"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "应用口头备注", "details": {"备注内容": "林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配", "匹配方式": "按filename匹配", "影响文件数": 1, "影响判断卡": ["TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf"]}, "target_filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf", "target_track_id": "TRK001", "entry_id": "HIST_71a02a9b6562", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "运营主管", "actor_type": "operation", "action": "判断卡被运营备注覆盖", "details": {"原判断": "已匹配", "原原因": "系统判断: 已匹配", "新判断": "已匹配", "新原因": "运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配", "备注内容": "彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认", "改动类型": "补充/调整"}, "target_filename": "TRK002_平凡之路_朴树_非独家授权.pdf", "target_track_id": "TRK002", "entry_id": "HIST_26e4f793991f", "importance": "high"}, {"timestamp": "2026-06-20 14:33:10", "actor": "运营主管", "actor_type": "operation", "action": "应用运营备注", "details": {"备注内容": "彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认", "匹配方式": "按filename匹配", "影响文件数": 1, "影响判断卡": ["TRK002_平凡之路_朴树_非独家授权.pdf"]}, "target_filename": "TRK002_平凡之路_朴树_非独家授权.pdf", "target_track_id": "TRK002", "entry_id": "HIST_1dca6d5259b3", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "备注应用完成", "details": {"已应用备注数": 5, "林姐备注数": 4, "运营主管备注数": 1}, "target_filename": null, "target_track_id": null, "entry_id": "HIST_1542f523d355", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "判断卡变更摘要", "details": {"判断卡ID": "CARD_b27721d60ab4", "文件": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf", "曲目ID": "TRK001", "初始判断": "已匹配", "初始原因": "系统判断: 已匹配", "最终判断": "不匹配", "最终原因": "林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配", "被覆盖": "是", "覆盖人": "林姐（音乐老师）", "覆盖时间": "2026-06-15 15:33:10", "覆盖原因": "林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配"}, "target_filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf", "target_track_id": "TRK001", "entry_id": "HIST_b7e41c1879c4", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "判断卡变更摘要", "details": {"判断卡ID": "CARD_bb6ef28510f1", "文件": "TRK002_平凡之路_朴树_非独家授权.pdf", "曲目ID": "TRK002", "初始判断": "已匹配", "初始原因": "系统判断: 已匹配", "最终判断": "已匹配", "最终原因": "运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配", "被覆盖": "是", "覆盖人": "运营主管", "覆盖时间": "2026-06-18 18:33:10", "覆盖原因": "彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认"}, "target_filename": "TRK002_平凡之路_朴树_非独家授权.pdf", "target_track_id": "TRK002", "entry_id": "HIST_4231d824be92", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "判断卡变更摘要", "details": {"判断卡ID": "CARD_960fcbdeefd3", "文件": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf", "曲目ID": "TRK005", "初始判断": "已匹配", "初始原因": "系统判断: 已匹配", "最终判断": "已匹配", "最终原因": "林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配", "被覆盖": "是", "覆盖人": "林姐（音乐老师）", "覆盖时间": "2026-06-13 20:33:10", "覆盖原因": "林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景"}, "target_filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf", "target_track_id": "TRK005", "entry_id": "HIST_7671524c13f3", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "判断卡变更摘要", "details": {"判断卡ID": "CARD_c3f8f285f2a3", "文件": "成都_赵雷_独家授权.pdf", "曲目ID": "TRK004", "初始判断": "待确认", "初始原因": "系统判断: 待确认，原因: 缺少曲目ID，详情: 文件名中缺少曲目ID", "最终判断": "已匹配", "最终原因": "林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认", "被覆盖": "是", "覆盖人": "林姐（音乐老师）", "覆盖时间": "2026-06-14 17:33:10", "覆盖原因": "林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认"}, "target_filename": "成都_赵雷_独家授权.pdf", "target_track_id": "TRK004", "entry_id": "HIST_196633edbe54", "importance": "medium"}, {"timestamp": "2026-06-20 14:33:10", "actor": "系统", "actor_type": "system", "action": "处理完成总结", "details": {"判断卡总数": 6, "已覆盖数": 4, "林姐覆盖数": 3, "运营主管覆盖数": 1, "最终匹配数": 5, "最终不匹配数": 1, "待人工确认数": 0}, "target_filename": null, "target_track_id": null, "entry_id": "HIST_f8cb83780ec4", "importance": "normal"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "林姐判断记录（留存）", "details": {"文件": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf", "曲目ID": "TRK001", "林姐判断": "不匹配", "判断理由": "林姐（音乐老师）覆盖原判断: 林姐判断排除 - 林姐口头判断：旧版文件名TRK001是归档用的，不参与当前匹配", "覆盖的原判断": "已匹配", "判断时间": "2026-06-15 15:33:10", "说明": "此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果"}, "target_filename": "TRK001_夜空中最亮的星星_逃跑计划乐队_独家授权.pdf", "target_track_id": "TRK001", "entry_id": "HIST_fa1949cfcc94", "importance": "high"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "林姐判断记录（留存）", "details": {"文件": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf", "曲目ID": "TRK005", "林姐判断": "已匹配", "判断理由": "林姐（音乐老师）补充/调整: 林姐口头确认：TRK005的彩排版可以用，版权覆盖彩排场景 | 原判断: 系统判断: 已匹配", "覆盖的原判断": "已匹配", "判断时间": "2026-06-13 20:33:10", "说明": "此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果"}, "target_filename": "TRK005_演员_薛之谦_非独家授权_彩排版.pdf", "target_track_id": "TRK005", "entry_id": "HIST_9149e8683f37", "importance": "high"}, {"timestamp": "2026-06-20 14:33:10", "actor": "林姐（音乐老师）", "actor_type": "linjie", "action": "林姐判断记录（留存）", "details": {"文件": "成都_赵雷_独家授权.pdf", "曲目ID": "TRK004", "林姐判断": "已匹配", "判断理由": "林姐（音乐老师）覆盖原判断: 林姐确认匹配 - 林姐口头说：成都这首歌虽然没有ID，但确实是TRK004，已确认", "覆盖的原判断": "待确认", "判断时间": "2026-06-14 17:33:10", "说明": "此记录已留存，下一班同事可看到完整判断过程，不仅仅是最终结果"}, "target_filename": "成都_赵雷_独家授权.pdf", "target_track_id": "TRK004", "entry_id": "HIST_2a4c4dea6bc1", "importance": "high"}, {"timestamp": "2026-06-20 14:33:10", "actor": "运营主管", "actor_type": "operation", "action": "运营主管临时改动（已入历史）", "details": {"文件": "TRK002_平凡之路_朴树_非独家授权.pdf", "曲目ID": "TRK002", "改动类型": "彩排前临时调整", "原判断": "已匹配", "原原因": "系统判断: 已匹配", "新判断": "已匹配", "新原因": "运营主管补充/调整: 彩排前临时调整：TRK002 授权类型由'独家'改为'非独家'，已与版权方确认 | 原判断: 系统判断: 已匹配", "改动时间": "2026-06-18 18:33:10", "说明": "此改动已记入完整历史，可追溯变更过程，而非仅修改当前结果"}, "target_filename": "TRK002_平凡之路_朴树_非独家授权.pdf", "target_track_id": "TRK002", "entry_id": "HIST_7084bbdcaf87", "importance": "high"}];
+
+(function() {
+    var __curActor = 'all';
+    var __curImp = 'all';
+    var __curSearch = '';
+    var __allCollapsed = true;
+
+    function showToast(msg) {
+        var t = document.getElementById('toast');
+        if (!t) {
+            t = document.createElement('div');
+            t.id = 'toast';
+            t.className = 'toast';
+            document.body.appendChild(t);
         }
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(function() { t.classList.remove('show'); }, 2000);
+    }
 
-        function filterByActor(btn, forceValue) {
-            const value = forceValue || (btn ? btn.dataset.filterActor : 'all');
-            currentActorFilter = value;
-            document.querySelectorAll('[data-filter-actor]').forEach(b => {
-                b.classList.toggle('active', b.dataset.filterActor === value);
-            });
-            applyFilters();
-        }
+    function applyFilters() {
+        var items = document.querySelectorAll('.timeline-item');
+        var visibleCount = 0;
+        items.forEach(function(item) {
+            var actor = item.getAttribute('data-actor') || '';
+            var imp = item.getAttribute('data-importance') || '';
+            var srch = (item.getAttribute('data-search') || '').toLowerCase();
+            var aOk = __curActor === 'all' || actor.indexOf(__curActor) !== -1;
+            var iOk = __curImp === 'all' || imp === __curImp;
+            var sOk = __curSearch === '' || srch.indexOf(__curSearch.toLowerCase()) !== -1;
+            if (aOk && iOk && sOk) {
+                item.classList.remove('hidden');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        var noRes = document.getElementById('no-results');
+        var tl = document.getElementById('timeline');
+        if (noRes) noRes.classList.toggle('hidden', visibleCount > 0);
+        if (tl) tl.classList.toggle('hidden', visibleCount === 0);
+    }
 
-        function filterByImportance(btn, forceValue) {
-            const value = forceValue || (btn ? btn.dataset.filterImportance : 'all');
-            currentImportanceFilter = value;
-            document.querySelectorAll('[data-filter-importance]').forEach(b => {
-                b.classList.toggle('active', b.dataset.filterImportance === value);
-            });
-            applyFilters();
-        }
+    window.filterByActor = function(btn, force) {
+        var val = force || (btn ? btn.getAttribute('data-filter-actor') : 'all');
+        __curActor = val;
+        document.querySelectorAll('[data-filter-actor]').forEach(function(b) {
+            b.classList.toggle('active', b.getAttribute('data-filter-actor') === val);
+        });
+        applyFilters();
+    };
 
-        function filterBySearch(value) {
-            currentSearch = value;
-            applyFilters();
-        }
+    window.filterByImportance = function(btn, force) {
+        var val = force || (btn ? btn.getAttribute('data-filter-importance') : 'all');
+        __curImp = val;
+        document.querySelectorAll('[data-filter-importance]').forEach(function(b) {
+            b.classList.toggle('active', b.getAttribute('data-filter-importance') === val);
+        });
+        applyFilters();
+    };
 
-        function toggleDetails(btn) {
-            const details = btn.parentElement.querySelector('.details');
-            const isCollapsed = details.classList.contains('collapsed');
-            details.classList.toggle('collapsed');
-            btn.textContent = isCollapsed ? '▲ 收起详情' : '▼ 展开详情';
-        }
+    window.filterBySearch = function(val) {
+        __curSearch = val;
+        applyFilters();
+    };
 
-        function toggleAllDetails() {
-            const items = document.querySelectorAll('.timeline-item:not(.hidden)');
-            items.forEach(item => {
-                const details = item.querySelector('.details');
-                const btn = item.querySelector('.details-toggle');
-                if (allCollapsed) {
-                    details.classList.remove('collapsed');
-                    btn.textContent = '▲ 收起详情';
-                } else {
-                    details.classList.add('collapsed');
-                    btn.textContent = '▼ 展开详情';
-                }
-            });
-            allCollapsed = !allCollapsed;
-        }
+    window.toggleDetails = function(btn) {
+        var details = btn.parentElement.querySelector('.details');
+        var collapsed = details.classList.contains('collapsed');
+        details.classList.toggle('collapsed');
+        btn.textContent = collapsed ? '\u25B2 \u6536\u8D77\u8BE6\u60C5' : '\u25BC \u5C55\u5F00\u8BE6\u60C5';
+    };
 
-        function downloadMarkdown() {
-            const lines = ['# 版权授权清单归档 - 历史时间线\n'];
-            const visibleItems = document.querySelectorAll('.timeline-item:not(.hidden)');
-            visibleItems.forEach(item => {
-                const badge = item.querySelector('.actor-badge').textContent;
-                const time = item.querySelector('.timestamp').textContent.replace('⏰ ', '');
-                const action = item.querySelector('.action').textContent;
-                const details = item.querySelector('.details');
-                lines.push(`### ${time} - ${badge}`);
-                lines.push(`**动作：** ${action}\n`);
-                lines.push('**详情：**');
-                details.querySelectorAll('p').forEach(p => {
-                    lines.push(`- ${p.textContent}`);
+    window.toggleAllDetails = function() {
+        var items = document.querySelectorAll('.timeline-item:not(.hidden)');
+        items.forEach(function(item) {
+            var d = item.querySelector('.details');
+            var b = item.querySelector('.details-toggle');
+            if (!d || !b) return;
+            if (__allCollapsed) {
+                d.classList.remove('collapsed');
+                b.textContent = '\u25B2 \u6536\u8D77\u8BE6\u60C5';
+            } else {
+                d.classList.add('collapsed');
+                b.textContent = '\u25BC \u5C55\u5F00\u8BE6\u60C5';
+            }
+        });
+        __allCollapsed = !__allCollapsed;
+    };
+
+    window.downloadMarkdown = function() {
+        var lines = ['# \u7248\u6743\u6388\u6743\u6E05\u5355\u5F52\u6863 - \u5386\u53F2\u65F6\u95F4\u7EBF', ''];
+        var items = document.querySelectorAll('.timeline-item:not(.hidden)');
+        if (items.length === 0) { showToast('\u6CA1\u6709\u53EF\u5BFC\u51FA\u7684\u5185\u5BB9'); return; }
+        items.forEach(function(item) {
+            var badge = '';
+            var bEl = item.querySelector('.actor-badge');
+            if (bEl) badge = bEl.textContent;
+            var time = '';
+            var tEl = item.querySelector('.timestamp');
+            if (tEl) time = tEl.textContent.replace('\u23F0 ', '');
+            var action = '';
+            var aEl = item.querySelector('.action');
+            if (aEl) action = aEl.textContent;
+            lines.push('### ' + time + ' - ' + badge);
+            lines.push('');
+            lines.push('**动作：** ' + action);
+            lines.push('');
+            lines.push('**详情：**');
+            var details = item.querySelector('.details');
+            if (details) {
+                details.querySelectorAll('p').forEach(function(p) {
+                    lines.push('- ' + p.textContent);
                 });
-                const target = item.querySelector('.target');
-                if (target) lines.push(`\n**关联：** ${target.textContent.trim()}`);
-                lines.push('\n---\n');
-            });
-            const blob = new Blob([lines.join('\n')], {type: 'text/markdown;charset=utf-8'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'copyright_timeline.md';
-            a.click(); URL.revokeObjectURL(url);
-        }
+            }
+            var target = item.querySelector('.target');
+            if (target) {
+                lines.push('');
+                lines.push('**关联：** ' + target.textContent.trim());
+            }
+            lines.push('');
+            lines.push('---');
+            lines.push('');
+        });
+        var md = lines.join('\n');
+        var blob = new Blob([md], {type: 'text/markdown;charset=utf-8'});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'copyright_timeline.md';
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
+        showToast('Markdown \u5DF2\u4E0B\u8F7D (' + items.length + ' \u6761)');
+    };
 
-        function downloadJSON() {
-            const filtered = [];
-            document.querySelectorAll('.timeline-item:not(.hidden)').forEach(item => {
-                const badge = item.querySelector('.actor-badge').textContent;
-                const time = item.querySelector('.timestamp').textContent.replace('⏰ ', '');
-                const action = item.querySelector('.action').textContent;
-                const details = {};
-                item.querySelectorAll('.details p').forEach(p => {
-                    const parts = p.textContent.split(': ');
-                    if (parts.length >= 2) details[parts[0].trim()] = parts.slice(1).join(': ').trim();
+    window.downloadJSON = function() {
+        var result = [];
+        var items = document.querySelectorAll('.timeline-item:not(.hidden)');
+        if (items.length === 0) { showToast('\u6CA1\u6709\u53EF\u5BFC\u51FA\u7684\u5185\u5BB9'); return; }
+        items.forEach(function(item) {
+            var badge = '';
+            var bEl = item.querySelector('.actor-badge');
+            if (bEl) badge = bEl.textContent;
+            var time = '';
+            var tEl = item.querySelector('.timestamp');
+            if (tEl) time = tEl.textContent.replace('\u23F0 ', '');
+            var action = '';
+            var aEl = item.querySelector('.action');
+            if (aEl) action = aEl.textContent;
+            var details = {};
+            var det = item.querySelector('.details');
+            if (det) {
+                det.querySelectorAll('p').forEach(function(p) {
+                    var parts = p.textContent.split(': ');
+                    if (parts.length >= 2) {
+                        details[parts[0].trim()] = parts.slice(1).join(': ').trim();
+                    }
                 });
-                const target = item.querySelector('.target');
-                filtered.push({timestamp: time, actor: badge, action, details, target: target ? target.textContent.trim() : null});
+            }
+            var target = item.querySelector('.target');
+            result.push({
+                timestamp: time, actor: badge, action: action,
+                details: details,
+                target: target ? target.textContent.trim() : null
             });
-            const blob = new Blob([JSON.stringify(filtered, null, 2)], {type: 'application/json;charset=utf-8'});
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url; a.download = 'copyright_timeline.json';
-            a.click(); URL.revokeObjectURL(url);
-        }
-    </script>
+        });
+        var json = JSON.stringify(result, null, 2);
+        var blob = new Blob([json], {type: 'application/json;charset=utf-8'});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url; a.download = 'copyright_timeline.json';
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a); URL.revokeObjectURL(url);
+        showToast('JSON \u5DF2\u4E0B\u8F7D (' + items.length + ' \u6761)');
+    };
+})();
+
+</script>
 </body>
 </html>
-        
