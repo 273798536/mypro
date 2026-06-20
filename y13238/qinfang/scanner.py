@@ -1,7 +1,8 @@
 import os
 import re
 from pathlib import Path
-from typing import Dict, Optional, Union
+from datetime import datetime, timezone
+from typing import Dict, List, Optional, Set, Union, Tuple
 from . import (
     Material, ExceptionItem, ScanRecord, Note,
     ExceptionType, ExceptionStatus, MaterialStatus,
@@ -52,7 +53,7 @@ class Scanner:
 
         files_scanned = 0
         materials_added = 0
-        new_exceptions = []
+        new_exceptions: List[ExceptionItem] = []
 
         for entry in sorted(audio_dir.iterdir()):
             if not entry.is_file():
@@ -109,7 +110,7 @@ class Scanner:
         self.sm.save()
         return record
 
-    def _check_alias_conflict(self, new_mat: Material, existing: list) -> Optional[ExceptionItem]:
+    def _check_alias_conflict(self, new_mat: Material, existing: List[Material]) -> Optional[ExceptionItem]:
         for mat in existing:
             if mat.id == new_mat.id:
                 continue
@@ -125,7 +126,7 @@ class Scanner:
                 )
         return None
 
-    def _check_version_conflict(self, new_mat: Material, existing: list) -> Optional[ExceptionItem]:
+    def _check_version_conflict(self, new_mat: Material, existing: List[Material]) -> Optional[ExceptionItem]:
         for mat in existing:
             if mat.id == new_mat.id:
                 continue
@@ -139,6 +140,83 @@ class Scanner:
                 )
         return None
 
+    def _build_active_alias_conflict_key(self, a_id: str, b_id: str) -> str:
+        return "|".join(sorted([a_id, b_id]))
+
+    def _find_alias_pair_from_exception(self, item: ExceptionItem, mats: List[Material]) -> Optional[str]:
+        if item.exception_type != ExceptionType.ALIAS_CONFLICT.value:
+            return None
+        a_id = item.material_id
+        a = next((m for m in mats if m.id == a_id), None)
+        if a is None:
+            return None
+        b = None
+        for m in mats:
+            if m.id == a_id:
+                continue
+            if m.filename in item.reason or m.canonical_name in item.reason:
+                b = m
+                break
+            if any(alias in item.reason for alias in m.aliases):
+                b = m
+                break
+        if b is None:
+            return None
+        return self._build_active_alias_conflict_key(a_id, b.id)
+
+    def _full_check_alias_conflicts(self) -> List[ExceptionItem]:
+        state = self.sm.load()
+        mats = state.materials
+        if len(mats) < 2:
+            return []
+
+        seen_keys: Set[str] = set()
+        for item in state.exception_queue:
+            if item.exception_type != ExceptionType.ALIAS_CONFLICT.value:
+                continue
+            pair_key = self._find_alias_pair_from_exception(item, mats)
+            if pair_key:
+                seen_keys.add(pair_key)
+
+        created: List[ExceptionItem] = []
+        for i in range(len(mats)):
+            a = mats[i]
+            for j in range(i + 1, len(mats)):
+                b = mats[j]
+                if a.canonical_name == b.canonical_name:
+                    continue
+                key = self._build_active_alias_conflict_key(a.id, b.id)
+                if key in seen_keys:
+                    continue
+                hit_a = a.canonical_name in b.aliases
+                hit_b = b.canonical_name in a.aliases
+                if not (hit_a or hit_b):
+                    continue
+
+                if hit_a:
+                    target = a
+                    other = b
+                else:
+                    target = b
+                    other = a
+
+                ex = ExceptionItem(
+                    material_id=target.id,
+                    material_filename=target.filename,
+                    exception_type=ExceptionType.ALIAS_CONFLICT.value,
+                    reason=f"曲名「{target.canonical_name}」与材料「{other.filename}」(标准名:{other.canonical_name})的别名冲突，可能是同一曲目不同叫法。",
+                    next_step=f"请确认是否为同一曲目。如是，请将两者标准名合并或在别名列表中互相标注，然后重扫。",
+                )
+                state.exception_queue.append(ex)
+                if target.status == MaterialStatus.NORMAL.value:
+                    target.status = MaterialStatus.ANOMALOUS.value
+                created.append(ex)
+                seen_keys.add(key)
+
+        self.sm.state = state
+        self.sm.save()
+        return created
+
     def rescan(self, audio_dir: Union[str, Path]) -> ScanRecord:
         state = self.sm.load()
         for item in state.exception_queue:
@@ -146,10 +224,20 @@ class Scanner:
                 mat = next((m for m in state.materials if m.id == item.material_id), None)
                 if mat and mat.status != MaterialStatus.ANOMALOUS.value:
                     item.status = ExceptionStatus.RESOLVED.value
-                    from datetime import datetime, timezone
                     item.resolved_at = datetime.now(timezone.utc).isoformat()
                     item.resolved_by = "system_rescan"
 
         self.sm.state = state
         self.sm.save()
-        return self.scan(audio_dir)
+        scan_record = self.scan(audio_dir)
+
+        alias_created = self._full_check_alias_conflicts()
+        if alias_created:
+            scan_record.exceptions_found += len(alias_created)
+            state = self.sm.load()
+            if state.scan_history:
+                state.scan_history[-1] = scan_record
+            self.sm.state = state
+            self.sm.save()
+
+        return scan_record

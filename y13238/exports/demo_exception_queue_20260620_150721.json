@@ -1,0 +1,33 @@
+{
+  "export_time": "2026-06-20T06:07:21.074451+00:00",
+  "scope": "exception_queue",
+  "summary": {
+    "total": 3,
+    "pending": 3,
+    "resolved": 0,
+    "manual_override": 0
+  },
+  "items": [
+    {
+      "id": "21717536",
+      "filename": "moonlight_sonata_v1.flac",
+      "type": "naming_inconsistent",
+      "reason": "文件名「moonlight_sonata_v1.flac」不符合命名规范（应为：曲名_v版本号.扩展名），无法自动解析版本和曲名。",
+      "next_step": "请确认该文件对应的标准曲名和版本，人工补充后重扫。"
+    },
+    {
+      "id": "707359fc",
+      "filename": "spring_v1.wav",
+      "type": "version_mismatch",
+      "reason": "曲名「spring」已存在版本 v1（文件：spring_v1.mp3），新旧版本并存，无法确定哪份最新。",
+      "next_step": "请确认最新版本并更新版本号，或将旧版本标记为已归档，然后重扫。"
+    },
+    {
+      "id": "0ca3aca2",
+      "filename": "旧录音-月光曲2023.mp3",
+      "type": "naming_inconsistent",
+      "reason": "文件名「旧录音-月光曲2023.mp3」不符合命名规范（应为：曲名_v版本号.扩展名），无法自动解析版本和曲名。",
+      "next_step": "请确认该文件对应的标准曲名和版本，人工补充后重扫。"
+    }
+  ]
+}

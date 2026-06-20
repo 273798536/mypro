@@ -8,6 +8,7 @@ from .state_manager import StateManager
 from .scanner import Scanner
 from .exception_queue import ExceptionQueue
 from .note_manager import NoteManager
+from .exporter import Exporter
 from . import ExceptionStatus
 
 
@@ -186,6 +187,47 @@ def cmd_delivery(args):
     print(json.dumps(delivery, ensure_ascii=False, indent=2))
 
 
+def cmd_export(args):
+    sm = StateManager(data_dir=args.data_dir)
+    exporter = Exporter(sm)
+    target = args.target
+    fmt = args.format.lower()
+    out = Path(args.output)
+
+    if target in ("queue", "exception", "exceptions"):
+        if fmt == "json":
+            path = exporter.export_queue_json(out)
+        elif fmt in ("csv", "xlsx"):
+            if fmt == "xlsx":
+                print("⚠️  未安装 openpyxl，将以 CSV 格式导出（可被 Excel 正常打开）。")
+            path = exporter.export_queue_csv(out)
+        else:
+            print(f"❌ 不支持的格式: {fmt}")
+            return
+    elif target in ("delivery", "materials"):
+        if fmt == "json":
+            path = exporter.export_delivery_json(out)
+        elif fmt in ("csv", "xlsx"):
+            if fmt == "xlsx":
+                print("⚠️  未安装 openpyxl，将以 CSV 格式导出（可被 Excel 正常打开）。")
+            path = exporter.export_delivery_csv(out)
+        else:
+            print(f"❌ 不支持的格式: {fmt}")
+            return
+    elif target == "all":
+        paths = exporter.export_all(out, prefix=args.prefix or "qinfang")
+        print("📤 已导出全部文件:")
+        for k, p in paths.items():
+            print(f"   - {k}: {p}")
+        return
+    else:
+        print(f"❌ 不支持的导出对象: {target}")
+        return
+    print(f"📤 导出成功: {path}")
+    size = path.stat().st_size
+    print(f"   文件大小: {size} 字节")
+
+
 def main():
     parser = argparse.ArgumentParser(
         prog="qinfang",
@@ -238,6 +280,13 @@ def main():
 
     p_delivery = sub.add_parser("delivery", help="查看交付清单")
     p_delivery.set_defaults(func=cmd_delivery)
+
+    p_export = sub.add_parser("export", help="导出异常队列或交付清单")
+    p_export.add_argument("target", choices=["queue", "delivery", "all"], help="导出对象: queue(异常队列) / delivery(交付清单) / all(全部)")
+    p_export.add_argument("--format", choices=["json", "csv", "xlsx"], default="csv", help="导出格式 (默认 csv，xlsx 会回退到 csv 以兼容 Excel)")
+    p_export.add_argument("--output", default="./exports", help="输出文件路径(target=all时为目录)")
+    p_export.add_argument("--prefix", default="qinfang", help="导出全部时的文件名前缀")
+    p_export.set_defaults(func=cmd_export)
 
     args = parser.parse_args()
     if not hasattr(args, "func"):

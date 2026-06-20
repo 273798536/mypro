@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import csv
 import json
 import shutil
 import sys
@@ -12,22 +13,26 @@ from qinfang.state_manager import StateManager
 from qinfang.scanner import Scanner
 from qinfang.exception_queue import ExceptionQueue
 from qinfang.note_manager import NoteManager
+from qinfang.exporter import Exporter
 from qinfang import ExceptionStatus, ExceptionType
 
 
 TEST_DATA_DIR = PROJECT_ROOT / "qinfang_data_test_e2e"
 TEST_AUDIO_DIR = PROJECT_ROOT / "test_audio"
+TEST_EXPORT_DIR = PROJECT_ROOT / "qinfang_exports_test"
 
 
 def setup():
-    if TEST_DATA_DIR.exists():
-        shutil.rmtree(TEST_DATA_DIR)
-    TEST_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    for d in (TEST_DATA_DIR, TEST_EXPORT_DIR):
+        if d.exists():
+            shutil.rmtree(d)
+        d.mkdir(parents=True, exist_ok=True)
 
 
 def teardown():
-    if TEST_DATA_DIR.exists():
-        shutil.rmtree(TEST_DATA_DIR)
+    for d in (TEST_DATA_DIR, TEST_EXPORT_DIR):
+        if d.exists():
+            shutil.rmtree(d)
     temp_file = TEST_AUDIO_DIR / "排练录音 春之声 圆舞曲.wav"
     if temp_file.exists():
         temp_file.unlink()
@@ -141,7 +146,7 @@ def test_step4_add_inconsistent_file(sm: StateManager):
 
 def test_step5_alias_conflict(sm: StateManager):
     print("\n" + "=" * 60)
-    print("🧪 步骤5: 用曲名别名重复卡一下")
+    print("🧪 步骤5: 用曲名别名重复卡一下（全量交叉检查）")
     print("=" * 60)
 
     state = sm.load()
@@ -164,6 +169,12 @@ def test_step5_alias_conflict(sm: StateManager):
         nm.add_alias(moonlight_mat.id, "月光")
         print(f"   已为「{moonlight_mat.filename}」添加别名「月光」")
 
+        state_before = sm.load()
+        pending_alias_before = len([
+            e for e in state_before.exception_queue
+            if e.exception_type == ExceptionType.ALIAS_CONFLICT.value and e.status == ExceptionStatus.PENDING.value
+        ])
+
         scanner = Scanner(sm)
         scanner.rescan(TEST_AUDIO_DIR)
 
@@ -172,22 +183,20 @@ def test_step5_alias_conflict(sm: StateManager):
         assert "月光" in moonlight_mat_refresh.aliases, "moonlight 应有别名「月光」"
         print(f"   验证别名已记录: moonlight_v1.mp3 的别名 = {moonlight_mat_refresh.aliases}")
 
-        alias_conflicts = [
+        pending_alias_now = [
             e for e in state.exception_queue
-            if e.exception_type == ExceptionType.ALIAS_CONFLICT.value
+            if e.exception_type == ExceptionType.ALIAS_CONFLICT.value and e.status == ExceptionStatus.PENDING.value
         ]
-        if alias_conflicts:
-            for e in alias_conflicts:
-                status_str = "待处理" if e.status == ExceptionStatus.PENDING.value else e.status
-                print(f"   [{e.id}] {e.material_filename} (状态: {status_str})")
-                print(f"     原因: {e.reason}")
-                print(f"     下一步: {e.next_step}")
+        print(f"   重扫前待处理别名冲突: {pending_alias_before} 条")
+        print(f"   重扫后待处理别名冲突: {len(pending_alias_now)} 条")
+        assert len(pending_alias_now) >= 1, "rescan 的全量交叉检查应补建 alias_conflict 异常项（月光_v1.mp3 已入库，scan 会跳过它）"
 
-        pending_conflicts = [e for e in alias_conflicts if e.status == ExceptionStatus.PENDING.value]
-        if pending_conflicts:
-            print("\n✅ 别名冲突已检测到，原因和下一步已说清，需要人工确认")
-        else:
-            print("   ℹ️  别名冲突需在新增扫描时触发；当前别名关系已正确记录，后续新增同名材料将自动检测冲突")
+        for e in pending_alias_now:
+            print(f"   [{e.id}] {e.material_filename}")
+            print(f"     原因: {e.reason}")
+            print(f"     下一步: {e.next_step}")
+
+        print("\n✅ 别名冲突已通过 rescan 全量交叉检查补建，原因和下一步已说清，需要人工确认")
     else:
         print("   ⚠️  未找到月光曲相关材料，跳过别名冲突测试")
 
@@ -248,10 +257,73 @@ def test_step6_add_note_and_rescan(sm: StateManager):
     for item in alias_issues:
         mat = next((m for m in state.materials if m.id == item.material_id), None)
         if mat:
-            nm.add_alias(mat.id, "moonlight")
-            print(f"   为材料「{mat.filename}」添加别名 moonlight（确认月光即moonlight）")
+            moonlight_mats = [m for m in state.materials if m.canonical_name == "moonlight"]
+            for mm in moonlight_mats:
+                if mat.canonical_name not in mm.aliases:
+                    nm.add_alias(mm.id, mat.canonical_name)
+                if mm.canonical_name not in mat.aliases:
+                    nm.add_alias(mat.id, mm.canonical_name)
+            print(f"   为材料「{mat.filename}」与所有 moonlight 标准名材料互相建立别名关联")
             eq.manual_override(item.id, resolved_by="阿蓝", reason="确认月光=moonlight，已合并为同一曲目别名")
             print(f"   异常项 [{item.id}] 标记为人工改判（别名合并确认）")
+
+    state = sm.load()
+    all_moonlight_ids = set(m.id for m in state.materials if (
+        m.canonical_name == "moonlight"
+        or "月光" in m.filename
+        or "月光" in (m.aliases or [])
+        or m.canonical_name == "月光"
+        or any(a in ("moonlight", "月光") for a in (m.aliases or []))
+    ))
+    for e in list(state.exception_queue):
+        if e.exception_type != ExceptionType.ALIAS_CONFLICT.value:
+            continue
+        if e.status != ExceptionStatus.PENDING.value:
+            continue
+        other_id = None
+        for m in state.materials:
+            if m.id == e.material_id:
+                continue
+            if m.filename in e.reason or m.canonical_name in e.reason or any(a in e.reason for a in m.aliases):
+                other_id = m.id
+                break
+        if other_id is None:
+            continue
+        key = (e.material_id, other_id)
+        if e.material_id in all_moonlight_ids and other_id in all_moonlight_ids:
+            mat = next((m for m in state.materials if m.id == e.material_id), None)
+            if mat:
+                nm.add_note(mat.id, "月光系列全量别名关联合并", note_type="authorization", author="阿蓝")
+            eq.manual_override(e.id, resolved_by="阿蓝", reason="月光与moonlight系列全量合并确认")
+            print(f"   月光系列关联合并: 异常项 [{e.id}] 标记为人工改判")
+
+    scanner_mid = Scanner(sm)
+    scanner_mid.rescan(TEST_AUDIO_DIR)
+    state = sm.load()
+    all_moonlight_ids = set(m.id for m in state.materials if (
+        m.canonical_name == "moonlight"
+        or "月光" in m.filename
+        or "月光" in (m.aliases or [])
+        or m.canonical_name == "月光"
+        or any(a in ("moonlight", "月光") for a in (m.aliases or []))
+    ))
+    for e in list(state.exception_queue):
+        if e.exception_type != ExceptionType.ALIAS_CONFLICT.value:
+            continue
+        if e.status != ExceptionStatus.PENDING.value:
+            continue
+        other_id = None
+        for m in state.materials:
+            if m.id == e.material_id:
+                continue
+            if m.filename in e.reason or m.canonical_name in e.reason or any(a in e.reason for a in m.aliases):
+                other_id = m.id
+                break
+        if other_id is None:
+            continue
+        if e.material_id in all_moonlight_ids and other_id in all_moonlight_ids:
+            eq.manual_override(e.id, resolved_by="阿蓝", reason="月光与moonlight系列全量合并确认（重扫补建）")
+            print(f"   月光系列补建: 异常项 [{e.id}] 标记为人工改判（重扫补建）")
 
     state = sm.load()
     eq2 = ExceptionQueue(sm)
@@ -347,6 +419,55 @@ def test_step9_final_rescan(sm: StateManager):
     print("\n✅ 最终重扫完成，异常队列已说清所有变化")
 
 
+def test_step10_export(sm: StateManager):
+    print("\n" + "=" * 60)
+    print("🧪 步骤10: 导出链路验证（CSV/JSON 与页面数据一致）")
+    print("=" * 60)
+
+    exporter = Exporter(sm)
+    paths = exporter.export_all(TEST_EXPORT_DIR, prefix="test")
+
+    eq = ExceptionQueue(sm)
+    nm = NoteManager(sm)
+    summary = eq.get_summary()
+    delivery = nm.get_delivery_list()
+
+    print(f"   导出文件:")
+    for k, p in paths.items():
+        assert p.exists(), f"导出文件不存在: {p}"
+        print(f"   - {k}: {p} ({p.stat().st_size} 字节)")
+
+    with open(paths["queue_json"], "r", encoding="utf-8") as f:
+        queue_json = json.load(f)
+    assert queue_json["summary"]["pending"] == summary["pending"], "JSON 队列待处理数与页面不一致"
+    assert queue_json["summary"]["resolved"] == summary["resolved"], "JSON 队列已处理数与页面不一致"
+    assert queue_json["summary"]["manual_override"] == summary["manual_override"], "JSON 队列人工改判数与页面不一致"
+    print(f"   ✅ 异常队列 JSON 与页面数据一致（pending={summary['pending']}, resolved={summary['resolved']}, manual={summary['manual_override']}）")
+
+    with open(paths["delivery_json"], "r", encoding="utf-8") as f:
+        delivery_json = json.load(f)
+    assert delivery_json["material_count"] == len(delivery), "JSON 交付清单材料数与页面不一致"
+    page_ids = sorted([m["id"] for m in delivery])
+    exported_ids = sorted([m["id"] for m in delivery_json["materials"]])
+    assert page_ids == exported_ids, "JSON 交付清单材料 ID 与页面不一致"
+    print(f"   ✅ 交付清单 JSON 与页面数据一致（共 {len(delivery)} 项材料）")
+
+    with open(paths["queue_csv"], "r", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        csv_rows = list(reader)
+    expected_rows = summary["pending"] + summary["resolved"] + summary["manual_override"]
+    assert len(csv_rows) == expected_rows, f"CSV 队列行数 {len(csv_rows)} 与页面汇总 {expected_rows} 不一致"
+    print(f"   ✅ 异常队列 CSV 行数 {len(csv_rows)} 与页面汇总一致")
+
+    with open(paths["delivery_csv"], "r", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        csv_rows = list(reader)
+    assert len(csv_rows) == len(delivery), f"CSV 交付清单行数 {len(csv_rows)} 与页面 {len(delivery)} 不一致"
+    print(f"   ✅ 交付清单 CSV 行数 {len(csv_rows)} 与页面一致")
+
+    print("\n✅ 导出链路验证通过：CSV/JSON 与页面完全一致，格式可正常打开")
+
+
 def main():
     print("🎹 琴房课时异常提醒 - 端到端测试")
     print("=" * 60)
@@ -367,6 +488,7 @@ def main():
         test_step7_queue_categorization(sm)
         test_step8_delivery_alignment(sm)
         test_step9_final_rescan(sm)
+        test_step10_export(sm)
 
         print("\n" + "=" * 60)
         print("🎉 琴房课时异常提醒 - 全部端到端测试通过！")
@@ -375,10 +497,11 @@ def main():
         print("  ✅ 服务重启后状态完全恢复")
         print("  ✅ 名称不一致材料被正确检测并说明原因和下一步")
         print("  ✅ 版本错乱被检测（同一曲名同一版本多文件并存）")
-        print("  ✅ 曲名别名冲突被识别，提示人工确认")
+        print("  ✅ 曲名别名冲突通过 rescan 全量交叉检查补建（不再因已入库被跳过）")
         print("  ✅ 排练/授权备注可添加，重扫后旧版本对齐")
         print("  ✅ 异常队列分清已处理/待补材料/人工改判")
         print("  ✅ 交付清单与旧版本、人工批注对齐")
+        print("  ✅ CSV/JSON 导出链路与页面数据完全一致")
     except AssertionError as e:
         print(f"\n❌ 测试失败: {e}")
         sys.exit(1)
