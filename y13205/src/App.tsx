@@ -32,26 +32,26 @@ export default function App() {
   }, [catalog, oldCatalog, records])
 
   const handleNoteChange = useCallback((recordId: string, newNote: string, changedBy: string) => {
-    setRecords(prev => {
-      const old = prev.find(r => r.id === recordId)
-      if (!old) return prev
-      const change: NoteChangeEntry = {
-        id: `nc-${Date.now()}`,
-        recordId,
-        oldValue: old.note,
-        newValue: newNote,
-        changedBy,
-        changedAt: new Date().toLocaleString('zh-CN'),
-      }
-      setNoteChanges(pc => [...pc, change])
-      const updatedRecords = prev.map(r => r.id === recordId ? { ...r, note: newNote } : r)
-      setResult(prevResult => ({
-        ...prevResult,
-        records: prevResult.records.map(r => r.id === recordId ? { ...r, note: newNote } : r),
-      }))
-      return updatedRecords
-    })
-  }, [])
+    const oldRecord = records.find(r => r.id === recordId)
+    if (!oldRecord) return
+    const changeId = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+      ? crypto.randomUUID()
+      : `nc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+    const change: NoteChangeEntry = {
+      id: changeId,
+      recordId,
+      oldValue: oldRecord.note,
+      newValue: newNote,
+      changedBy,
+      changedAt: new Date().toLocaleString('zh-CN'),
+    }
+    setRecords(prev => prev.map(r => r.id === recordId ? { ...r, note: newNote } : r))
+    setResult(prevResult => ({
+      ...prevResult,
+      records: prevResult.records.map(r => r.id === recordId ? { ...r, note: newNote } : r),
+    }))
+    setNoteChanges(pc => [...pc, change])
+  }, [records])
 
   const sourceTagClass = (source: RecordSource): string => {
     switch (source) {
