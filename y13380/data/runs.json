@@ -1,0 +1,67 @@
+{
+  "run_20260618_001": {
+    "run_id": "run_20260618_001",
+    "pipeline_name": "model_compression_evaluation",
+    "started_at": "2026-06-18T10:15:00Z",
+    "finished_at": "2026-06-18T10:25:12Z",
+    "status": "SUCCESS_WITH_ADJUSTMENT",
+    "triggered_by": "scheduled_daily",
+    "model_version": "baseline_v1.2",
+    "compressed_model_version": "quant_v0.9",
+    "dataset_version": "v2.3.1",
+    "backend_return_code": 0,
+    "backend_return_msg": "compression evaluation completed successfully",
+    "auto_conclusion": "PASS",
+    "auto_conclusion_reason": "Overall AUC drop 0.0034 within threshold 0.005",
+    "final_conclusion": "NEEDS_REVIEW",
+    "final_conclusion_source": "manual_adjustment:adj_20260618_001",
+    "has_adjustment": true,
+    "adjustment_ids": [
+      "adj_20260618_001"
+    ],
+    "snapshot_id": "snap_20260618_001",
+    "metrics_summary": {
+      "overall_auc_baseline": 0.7823,
+      "overall_auc_compressed": 0.7789,
+      "auc_drop": -0.0034,
+      "size_reduction": "62.3%",
+      "latency_improvement": "38.1%"
+    },
+    "risk_flags": [
+      "small_sample_bucket_degradation",
+      "new_user_performance_drop"
+    ]
+  },
+  "run_20260619_002": {
+    "run_id": "run_20260619_002",
+    "pipeline_name": "model_compression_evaluation",
+    "started_at": "2026-06-19T14:48:00Z",
+    "finished_at": "2026-06-19T14:58:30Z",
+    "status": "SUCCESS_WITH_ADJUSTMENT",
+    "triggered_by": "manual:acen",
+    "model_version": "baseline_v1.2",
+    "compressed_model_version": "quant_v1.0",
+    "dataset_version": "v2.3.1",
+    "backend_return_code": 0,
+    "backend_return_msg": "compression evaluation completed successfully",
+    "auto_conclusion": "FAIL",
+    "auto_conclusion_reason": "New user bucket AUC drop 0.0145 exceeds threshold 0.01",
+    "final_conclusion": "CONDITIONAL_PASS",
+    "final_conclusion_source": "manual_adjustment:adj_20260619_002",
+    "has_adjustment": true,
+    "adjustment_ids": [
+      "adj_20260619_002"
+    ],
+    "snapshot_id": "snap_20260619_002",
+    "metrics_summary": {
+      "overall_auc_baseline": 0.7823,
+      "overall_auc_compressed": 0.7801,
+      "auc_drop": -0.0022,
+      "size_reduction": "61.8%",
+      "latency_improvement": "37.5%"
+    },
+    "risk_flags": [
+      "small_sample_bucket_degradation"
+    ]
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "adj_20260618_001": {
+    "adjustment_id": "adj_20260618_001",
+    "created_at": "2026-06-18T16:42:18Z",
+    "created_by": "acen",
+    "created_by_name": "阿岑",
+    "run_id": "run_20260618_001",
+    "snapshot_id": "snap_20260618_001",
+    "adjustment_type": "conclusion_overrule",
+    "original_conclusion": "PASS",
+    "original_reason": "总体AUC下降0.0034，在阈值0.005以内，模型压缩通过",
+    "new_conclusion": "NEEDS_REVIEW",
+    "new_reason": "总体指标看似合格，但新用户分桶AUC下降0.0422，3C数码低价新用户分桶(样本12条)AUC下降0.0889，小样本被整体均值掩盖。特征快照row_id=2,5,7三条样本显示压缩模型对该分桶预测偏差明显，存在被均值覆盖的情况。",
+    "status": "PENDING_CONFIRMATION",
+    "status_updated_at": "2026-06-18T16:42:18Z",
+    "next_action": "等待平台算法团队确认是否需要针对小样本分桶做特殊处理，或补充该分桶训练数据",
+    "evidence_refs": [
+      {
+        "type": "sample_row",
+        "run_id": "run_20260618_001",
+        "row_ids": [
+          2,
+          5,
+          7
+        ],
+        "description": "特征快照中3条异常样本，新用户+低价3C组合，压缩模型预测偏高"
+      },
+      {
+        "type": "small_bucket",
+        "run_id": "run_20260618_001",
+        "bucket_key": "category=3C数码&price_tier=low&is_new_user=1",
+        "description": "小样本分桶，样本量12条，AUC下降0.0889"
+      }
+    ],
+    "followup_comments": [
+      {
+        "comment_id": "c_001",
+        "created_at": "2026-06-18T17:15:33Z",
+        "created_by": "acen",
+        "content": "已同步给数据组，该分桶历史数据确实稀疏，建议压缩时跳过该分桶量化或单独校准。"
+      }
+    ]
+  },
+  "adj_20260619_002": {
+    "adjustment_id": "adj_20260619_002",
+    "created_at": "2026-06-19T18:05:44Z",
+    "created_by": "acen",
+    "created_by_name": "阿岑",
+    "run_id": "run_20260619_002",
+    "snapshot_id": "snap_20260619_002",
+    "adjustment_type": "metric_correction",
+    "original_conclusion": "FAIL",
+    "original_reason": "新用户分桶AUC下降0.0145，超过阈值0.01",
+    "new_conclusion": "CONDITIONAL_PASS",
+    "new_reason": "v1.0相比v0.9已将新用户分桶AUC降幅从0.0422收窄至0.0145。剩余问题集中在3C低价新用户分桶(12条样本)，属于数据稀疏问题而非压缩算法缺陷。特征快照row_id=2显示该桶预测偏差已从+0.0178降至+0.0055。",
+    "status": "CONFIRMED",
+    "status_updated_at": "2026-06-19T19:22:10Z",
+    "confirmed_by": "tech_lead_wang",
+    "next_action": "下一迭代补充该分桶数据或引入分桶级别校准策略",
+    "evidence_refs": [
+      {
+        "type": "sample_row",
+        "run_id": "run_20260619_002",
+        "row_ids": [
+          2
+        ],
+        "description": "v1.0特征快照，相比v0.9同样本预测偏差收窄"
+      },
+      {
+        "type": "cross_run_compare",
+        "base_run_id": "run_20260618_001",
+        "target_run_id": "run_20260619_002",
+        "description": "跨版本对比，新用户分桶AUC降幅从-0.0422改善至-0.0145"
+      }
+    ],
+    "followup_comments": [
+      {
+        "comment_id": "c_002",
+        "created_at": "2026-06-19T19:22:10Z",
+        "created_by": "tech_lead_wang",
+        "content": "确认有条件通过，数据组已立项补充该分桶样本，下个版本再评估。"
+      }
+    ]
+  }
+}

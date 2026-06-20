@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ run.run_id }} - 模型压缩任务详情</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <header>
+    <p><a href="/" class="back-link">&larr; 返回看板</a></p>
+    <h1>运行详情：{{ run.run_id }}</h1>
+    <p class="subtitle">{{ run.compressed_model_version }} / 数据集 {{ run.dataset_version }}</p>
+  </header>
+
+  <section class="summary-bar detail-summary">
+    <div class="summary-item">
+      <div class="summary-value mono">{{ run.metrics_summary.auc_drop }}</div>
+      <div class="summary-label">总体AUC降幅</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-value">{{ run.metrics_summary.size_reduction }}</div>
+      <div class="summary-label">体积缩减</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-value">{{ run.metrics_summary.latency_improvement }}</div>
+      <div class="summary-label">延迟优化</div>
+    </div>
+    <div class="summary-item {% if run.has_adjustment %}warn{% endif %}">
+      <div class="summary-value"><span class="badge badge-{{ run.final_conclusion|lower }}">{{ run.final_conclusion }}</span></div>
+      <div class="summary-label">最终结论</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>结论溯源</h2>
+    <div class="conclusion-timeline">
+      <div class="timeline-item">
+        <div class="timeline-badge auto">自动</div>
+        <div class="timeline-content">
+          <div class="timeline-title">
+            <span class="badge badge-{{ run.auto_conclusion|lower }}">{{ run.auto_conclusion }}</span>
+            <span class="timeline-time">{{ run.finished_at }}</span>
+          </div>
+          <p class="timeline-desc">{{ run.auto_conclusion_reason }}</p>
+          <p class="timeline-meta">来源：pipeline 自动评估 / 后端返回 code={{ run.backend_return_code }}</p>
+        </div>
+      </div>
+      {% if run.has_adjustment %}
+        {% for adj in adjustments %}
+        <div class="timeline-item">
+          <div class="timeline-badge manual">人工</div>
+          <div class="timeline-content">
+            <div class="timeline-title">
+              <span class="badge badge-{{ adj.new_conclusion|lower }}">{{ adj.new_conclusion }}</span>
+              <span class="timeline-time">{{ adj.created_at }}</span>
+            </div>
+            <div class="adj-change">
+              <span class="badge badge-{{ adj.original_conclusion|lower }} small">{{ adj.original_conclusion }}</span>
+              <span class="arrow">→</span>
+              <span class="badge badge-{{ adj.new_conclusion|lower }} small">{{ adj.new_conclusion }}</span>
+            </div>
+            <p class="timeline-desc"><strong>改判原因：</strong>{{ adj.new_reason }}</p>
+            <p class="timeline-desc"><strong>原结论：</strong>{{ adj.original_reason }}</p>
+            <p class="timeline-meta">操作人：{{ adj.created_by_name }} ({{ adj.created_by }}) / 调整单ID：{{ adj.adjustment_id }}</p>
+            <p class="timeline-meta"><strong>当前状态：</strong><span class="status status-{{ adj.status|lower }}">{{ adj.status }}</span>
+              {% if adj.confirmed_by %} / 确认人：{{ adj.confirmed_by }}{% endif %}
+            </p>
+            {% if adj.next_action %}
+            <p class="timeline-meta next-step"><strong>下一步：</strong>{{ adj.next_action }}</p>
+            {% endif %}
+            {% if adj.evidence_refs %}
+            <div class="evidence-list">
+              <strong>证据引用：</strong>
+              <ul>
+                {% for ev in adj.evidence_refs %}
+                <li>
+                  {% if ev.type == 'sample_row' %}
+                    特征快照样本行：row_id = {{ ev.row_ids|join(', ') }}
+                    <span class="evidence-desc">— {{ ev.description }}</span>
+                  {% elif ev.type == 'small_bucket' %}
+                    小样本分桶：<code>{{ ev.bucket_key }}</code>
+                    <span class="evidence-desc">— {{ ev.description }}</span>
+                  {% elif ev.type == 'cross_run_compare' %}
+                    跨版本对比：{{ ev.base_run_id }} vs {{ ev.target_run_id }}
+                    <span class="evidence-desc">— {{ ev.description }}</span>
+                  {% endif %}
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% endif %}
+            {% if adj.followup_comments %}
+            <div class="followup-list">
+              <strong>跟进讨论：</strong>
+              {% for c in adj.followup_comments %}
+              <div class="followup-item">
+                <span class="followup-meta">{{ c.created_by }} @ {{ c.created_at }}</span>
+                <p>{{ c.content }}</p>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>可疑样本（拉偏结论的具体行）</h2>
+    {% if snapshot.suspicious_samples %}
+    <p class="hint">以下样本在特征快照中被标记为异常，重点关注 pred_diff 偏离较大的行：</p>
+    <table class="sample-table">
+      <thead>
+        <tr>
+          <th>row_id</th>
+          <th>user_id</th>
+          <th>item_id</th>
+          <th>品类</th>
+          <th>价格档</th>
+          <th>新用户</th>
+          <th>基线预测</th>
+          <th>压缩预测</th>
+          <th>差值</th>
+          <th>Label</th>
+          <th>数据质量</th>
+          <th>备注</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in snapshot.samples if s.row_id in snapshot.suspicious_samples %}
+        <tr class="row-suspicious">
+          <td class="mono">{{ s.row_id }}</td>
+          <td class="mono">{{ s.user_id }}</td>
+          <td class="mono">{{ s.item_id }}</td>
+          <td>{{ s.category }}</td>
+          <td>{{ s.price_tier }}</td>
+          <td>{{ '是' if s.is_new_user else '否' }}</td>
+          <td class="mono">{{ s.ctr_pred_baseline }}</td>
+          <td class="mono">{{ s.ctr_pred_compressed }}</td>
+          <td class="mono {% if s.pred_diff > 0 %}pos{% else %}neg{% endif %}">{{ '%+.4f'|format(s.pred_diff) }}</td>
+          <td>{{ s.ctr_label }}</td>
+          <td><span class="badge badge-anomaly">{{ s.data_quality }}</span></td>
+          <td class="note">{{ s.note }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="hint">无可疑样本标记</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>小样本分桶（容易被均值覆盖）</h2>
+    {% if snapshot.small_sample_buckets %}
+    <table class="bucket-table">
+      <thead>
+        <tr>
+          <th>分桶条件</th>
+          <th>样本数</th>
+          <th>基线AUC</th>
+          <th>压缩AUC</th>
+          <th>AUC降幅</th>
+          <th>说明</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for b in snapshot.small_sample_buckets %}
+        <tr>
+          <td><code>{{ b.bucket_key }}</code></td>
+          <td class="mono danger">{{ b.sample_count }}</td>
+          <td class="mono">{{ b.auc_baseline }}</td>
+          <td class="mono">{{ b.auc_compressed }}</td>
+          <td class="mono neg">{{ '%+.4f'|format(b.auc_drop) }}</td>
+          <td class="note">{{ b.note }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="hint">无小样本分桶告警</p>
+    {% endif %}
+  </section>
+
+  <section class="card">
+    <h2>总体指标分桶拆解</h2>
+    {% if snapshot.aggregate_metrics %}
+    <div class="metric-section">
+      <h3>按品类</h3>
+      <table class="metric-table">
+        <thead>
+          <tr><th>品类</th><th>样本数</th><th>基线AUC</th><th>压缩AUC</th><th>AUC降幅</th></tr>
+        </thead>
+        <tbody>
+          {% for cat, m in snapshot.aggregate_metrics.category_breakdown.items() %}
+          <tr>
+            <td>{{ cat }}</td>
+            <td class="mono">{{ m.sample_count }}</td>
+            <td class="mono">{{ m.auc_baseline }}</td>
+            <td class="mono">{{ m.auc_compressed }}</td>
+            <td class="mono {% if m.auc_drop < -0.01 %}neg{% endif %}">{{ '%+.4f'|format(m.auc_drop) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div class="metric-section">
+      <h3>按新/老用户</h3>
+      <table class="metric-table">
+        <thead>
+          <tr><th>用户类型</th><th>样本数</th><th>基线AUC</th><th>压缩AUC</th><th>AUC降幅</th></tr>
+        </thead>
+        <tbody>
+          {% for ut, m in snapshot.aggregate_metrics.new_user_breakdown.items() %}
+          <tr>
+            <td>{{ '新用户' if ut == 'new_user' else '老用户' }}</td>
+            <td class="mono">{{ m.sample_count }}</td>
+            <td class="mono">{{ m.auc_baseline }}</td>
+            <td class="mono">{{ m.auc_compressed }}</td>
+            <td class="mono {% if m.auc_drop < -0.01 %}neg{% endif %}">{{ '%+.4f'|format(m.auc_drop) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </section>
+
+  {% if snapshot.samples %}
+  <section class="card">
+    <h2>特征快照（原始样本行）</h2>
+    <p class="hint">共 {{ snapshot.total_samples }} 条样本，展示 {{ snapshot.samples|length }} 条快照行：</p>
+    <table class="sample-table">
+      <thead>
+        <tr>
+          <th>row_id</th>
+          <th>user_id</th>
+          <th>item_id</th>
+          <th>品类</th>
+          <th>价格档</th>
+          <th>新用户</th>
+          <th>基线预测</th>
+          <th>压缩预测</th>
+          <th>差值</th>
+          <th>Label</th>
+          <th>数据质量</th>
+          <th>备注</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in snapshot.samples %}
+        <tr class="{% if s.row_id in snapshot.suspicious_samples %}row-suspicious{% endif %}">
+          <td class="mono">{{ s.row_id }}</td>
+          <td class="mono">{{ s.user_id }}</td>
+          <td class="mono">{{ s.item_id }}</td>
+          <td>{{ s.category }}</td>
+          <td>{{ s.price_tier }}</td>
+          <td>{{ '是' if s.is_new_user else '否' }}</td>
+          <td class="mono">{{ s.ctr_pred_baseline }}</td>
+          <td class="mono">{{ s.ctr_pred_compressed }}</td>
+          <td class="mono {% if s.pred_diff > 0 %}pos{% else %}neg{% endif %}">{{ '%+.4f'|format(s.pred_diff) }}</td>
+          <td>{{ s.ctr_label }}</td>
+          <td>
+            {% if s.data_quality == 'normal' %}
+            <span class="badge badge-none">normal</span>
+            {% else %}
+            <span class="badge badge-anomaly">{{ s.data_quality }}</span>
+            {% endif %}
+          </td>
+          <td class="note">{{ s.note }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+</div>
+</body>
+</html>

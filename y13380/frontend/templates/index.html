@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模型压缩任务追踪</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>模型压缩任务追踪看板</h1>
+    <p class="subtitle">追踪每次压缩评估的结论来源、人工改判记录与样本级异常</p>
+  </header>
+
+  <section class="summary-bar">
+    <div class="summary-item">
+      <div class="summary-value">{{ runs|length }}</div>
+      <div class="summary-label">总运行次数</div>
+    </div>
+    <div class="summary-item warn">
+      <div class="summary-value">{{ runs|selectattr('has_adjustment')|list|length }}</div>
+      <div class="summary-label">涉及人工改判</div>
+    </div>
+    <div class="summary-item danger">
+      <div class="summary-value">{{ runs|selectattr('final_conclusion','equalto','NEEDS_REVIEW')|list|length }}</div>
+      <div class="summary-label">待人工确认</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>运行记录</h2>
+    <table class="run-table">
+      <thead>
+        <tr>
+          <th>Run ID</th>
+          <th>压缩版本</th>
+          <th>触发方式</th>
+          <th>自动结论</th>
+          <th>最终结论</th>
+          <th>改判</th>
+          <th>AUC降幅</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for run in runs %}
+        <tr class="{% if run.has_adjustment %}row-adjusted{% endif %}">
+          <td class="mono"><a href="/run/{{ run.run_id }}">{{ run.run_id }}</a></td>
+          <td>{{ run.compressed_model_version }}</td>
+          <td>{{ run.triggered_by }}</td>
+          <td><span class="badge badge-{{ run.auto_conclusion|lower }}">{{ run.auto_conclusion }}</span></td>
+          <td><span class="badge badge-{{ run.final_conclusion|lower }}">{{ run.final_conclusion }}</span></td>
+          <td>
+            {% if run.has_adjustment %}
+              <span class="badge badge-adjust">是 ({{ run.adjustment_ids|length }})</span>
+            {% else %}
+              <span class="badge badge-none">否</span>
+            {% endif %}
+          </td>
+          <td class="mono">{{ run.metrics_summary.auc_drop }}</td>
+          <td><span class="status status-{{ run.status|lower }}">{{ run.status }}</span></td>
+          <td><a class="btn btn-small" href="/run/{{ run.run_id }}">详情</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>使用说明</h2>
+    <ul class="tips">
+      <li><strong>先跑哪条命令</strong>：项目根目录执行 <code>python backend/app.py</code> 启动服务，然后浏览器打开 <code>http://localhost:9527</code></li>
+      <li><strong>再看哪份摘要</strong>：点击 Run ID 进入详情页，查看特征快照中被标记的异常样本(row_id)与小样本分桶</li>
+      <li><strong>改判溯源</strong>：每次人工改判都记录来源(created_by)、原结论、新结论、原因和下一步处理</li>
+      <li><strong>样本级定位</strong>：评审时不只看总体AUC，查看"可疑样本"和"小样本分桶"定位拉偏结论的具体行</li>
+    </ul>
+  </section>
+</div>
+</body>
+</html>
