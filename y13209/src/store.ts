@@ -1,5 +1,10 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import {
+  buildSummaryJson,
+  buildChecklistJson,
+  buildChecklistCsv,
+} from '@/export'
 import type {
   TimecodeEntry,
   RemarkSnapshot,
@@ -163,8 +168,8 @@ interface AppStore {
   confirmAuthorization: (entryId: string, reason: string, nextStep: string) => void
   updateReviewStatus: (entryId: string, status: TimecodeEntry['reviewStatus']) => void
   updateAlignmentStatus: (entryId: string, status: TimecodeEntry['alignmentStatus']) => void
-  exportSummary: () => string
-  exportChecklist: () => string
+  exportSummary: (format?: 'json' | 'csv') => string
+  exportChecklist: (format?: 'json' | 'csv') => string
 }
 
 export const useStore = create<AppStore>()(
@@ -383,46 +388,22 @@ export const useStore = create<AppStore>()(
         }))
       },
 
-      exportSummary: () => {
-        const { entries, filter } = get()
+      exportSummary: (format: 'json' | 'csv' = 'json') => {
+        const { entries, filter, history } = get()
         const filtered = applyFilter(entries, filter)
-        const summary = {
-          exportTime: now(),
-          filter,
-          entries: filtered.map((e) => ({
-            projectName: e.projectName,
-            timeRange: e.timeRange,
-            splitRatio: e.splitRatio,
-            authorization: e.authorization,
-            alignmentStatus: e.alignmentStatus,
-            reviewStatus: e.reviewStatus,
-            remarks: e.remarks,
-            screenshotCount: e.screenshots.length,
-          })),
+        if (format === 'csv') {
+          return buildChecklistCsv(filtered, history)
         }
-        return JSON.stringify(summary, null, 2)
+        return JSON.stringify(buildSummaryJson(filtered, history, filter), null, 2)
       },
 
-      exportChecklist: () => {
-        const { entries, filter } = get()
+      exportChecklist: (format: 'json' | 'csv' = 'json') => {
+        const { entries, filter, history } = get()
         const filtered = applyFilter(entries, filter)
-        const checklist = {
-          exportTime: now(),
-          filter,
-          items: filtered.map((e) => ({
-            projectName: e.projectName,
-            timeRange: e.timeRange,
-            authorizationStatus: e.authorization.status,
-            authorizationExpiry: e.authorization.endDate,
-            alignmentStatus: e.alignmentStatus,
-            reviewStatus: e.reviewStatus,
-            hasRemarks: e.remarks.length > 0,
-            hasScreenshots: e.screenshots.length > 0,
-            confirmReason: e.authorization.confirmReason,
-            nextStep: e.authorization.nextStep,
-          })),
+        if (format === 'csv') {
+          return buildChecklistCsv(filtered, history)
         }
-        return JSON.stringify(checklist, null, 2)
+        return JSON.stringify(buildChecklistJson(filtered, history, filter), null, 2)
       },
     }),
     {
