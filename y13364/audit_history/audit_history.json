@@ -1,0 +1,550 @@
+[
+  {
+    "event_id": "aud_35b4d8a9",
+    "event_type": "manual_correction:人工驳回",
+    "target_id": "val_contam_dup_011",
+    "operator": "算法_小许",
+    "before_state": {
+      "sample_id": "val_contam_dup_011",
+      "source": "验证集",
+      "content": "推荐排序模型第15 epoch训练结束，loss=0.2312，batch=256，优化器AdamW，auc=0.7845，accuracy=0.7512，precision=0.7388，recall=0.7210，f1=0.7298。特征工程新增用户历史7天embedding融合，label=点击，prediction=点击，置信度score=0.812。",
+      "timestamp": "2026-06-19 11:21:02",
+      "task_id": "rec_ctr_task_a",
+      "status": "已污染",
+      "original_label": "点击",
+      "predicted_label": null,
+      "prediction_score": 0.812,
+      "metrics": {
+        "auc": 0.7845,
+        "accuracy": 0.7512,
+        "precision": 0.7388,
+        "recall": 0.721,
+        "f1": 0.7298,
+        "loss": 0.2312,
+        "custom": {
+          "batch": 2.56,
+          "置信度score": 0.812
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "note": "此样本内容与task_a_train_001完全重复，用于验证污染检测"
+      },
+      "is_contaminated": true,
+      "contamination_reason": "内容包含训练过程关键词; 与训练样本[task_a_train_001]完全重复(任务rec_ctr_task_a)",
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工驳回|算法_小许"
+      ]
+    },
+    "after_state": {
+      "sample_id": "val_contam_dup_011",
+      "source": "验证集",
+      "content": "推荐排序模型第15 epoch训练结束，loss=0.2312，batch=256，优化器AdamW，auc=0.7845，accuracy=0.7512，precision=0.7388，recall=0.7210，f1=0.7298。特征工程新增用户历史7天embedding融合，label=点击，prediction=点击，置信度score=0.812。",
+      "timestamp": "2026-06-19 11:21:02",
+      "task_id": "rec_ctr_task_a",
+      "status": "失败",
+      "original_label": "点击",
+      "predicted_label": null,
+      "prediction_score": 0.812,
+      "metrics": {
+        "auc": 0.7845,
+        "accuracy": 0.7512,
+        "precision": 0.7388,
+        "recall": 0.721,
+        "f1": 0.7298,
+        "loss": 0.2312,
+        "custom": {
+          "batch": 2.56,
+          "置信度score": 0.812
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "note": "此样本内容与task_a_train_001完全重复，用于验证污染检测"
+      },
+      "is_contaminated": true,
+      "contamination_reason": "内容包含训练过程关键词; 与训练样本[task_a_train_001]完全重复(任务rec_ctr_task_a)",
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工驳回|算法_小许"
+      ]
+    },
+    "comment": "确认与训练样本task_a_train_001完全重复，数据划分bug导致。该验证样本作废，不予采纳。 | 排班备注: 本月数据划分脚本需排查，排班同学7月前修复。",
+    "timestamp": "2026-06-20 15:21:22"
+  },
+  {
+    "event_id": "aud_a8568477",
+    "event_type": "manual_correction:修正数据",
+    "target_id": "val_contam_keyword_012",
+    "operator": "算法_小许",
+    "before_state": {
+      "sample_id": "val_contam_keyword_012",
+      "source": "验证集",
+      "content": "【验证集样本012】search_rank_task_b评估：auc=0.7380，accuracy=0.7050，f1=0.6890。注意该样本训练过程使用的梯度裁剪与epoch参数应保持一致，loss收敛正常。标签=转化，预测=转化，score=0.765。",
+      "timestamp": "2026-06-19 11:22:15",
+      "task_id": "search_rank_task_b",
+      "status": "已污染",
+      "original_label": "转化",
+      "predicted_label": "转化",
+      "prediction_score": 0.765,
+      "metrics": {
+        "auc": 0.738,
+        "accuracy": 0.705,
+        "precision": null,
+        "recall": null,
+        "f1": 0.689,
+        "loss": null,
+        "custom": {
+          "score": 0.765
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "note": "包含'训练过程'、'梯度'、'epoch'、'loss收敛'等训练关键词，用于触发污染检测"
+      },
+      "is_contaminated": true,
+      "contamination_reason": "内容包含训练过程关键词",
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|修正数据|算法_小许"
+      ]
+    },
+    "after_state": {
+      "sample_id": "val_contam_keyword_012",
+      "source": "验证集",
+      "content": "【验证集样本012】search_rank_task_b评估：auc=0.7380，accuracy=0.7050，f1=0.6890。注意该样本训练过程使用的梯度裁剪与epoch参数应保持一致，loss收敛正常。标签=转化，预测=转化，score=0.765。",
+      "timestamp": "2026-06-19 11:22:15",
+      "task_id": "search_rank_task_b",
+      "status": "已修正",
+      "original_label": "转化",
+      "predicted_label": "转化",
+      "prediction_score": 0.765,
+      "metrics": {
+        "auc": 0.738,
+        "accuracy": 0.705,
+        "precision": null,
+        "recall": null,
+        "f1": 0.689,
+        "loss": null,
+        "custom": {
+          "score": 0.765
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "note": "包含'训练过程'、'梯度'、'epoch'、'loss收敛'等训练关键词，用于触发污染检测"
+      },
+      "is_contaminated": true,
+      "contamination_reason": "内容包含训练过程关键词",
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|修正数据|算法_小许"
+      ]
+    },
+    "comment": "人工复核：该验证样本实际为干净样本，内容中的训练关键词是评估报告中引用训练配置导致，非真实污染。修正其污染标记。 | 排班备注: 建议优化污染检测器的关键词白名单机制。",
+    "timestamp": "2026-06-20 15:21:22"
+  },
+  {
+    "event_id": "aud_3d161b9f",
+    "event_type": "manual_correction:人工驳回",
+    "target_id": "val_contam_leak_013",
+    "operator": "算法_小许",
+    "before_state": {
+      "sample_id": "val_contam_leak_013",
+      "source": "验证集",
+      "content": "【验证集样本013】rec_ctr_task_a验证：auc=0.7550，accuracy=0.7320，f1=0.7120。疑似存在数据leak：该样本label信息在train预处理阶段被意外写入特征，属于标签泄露(train data label leak into val)。标签=点击，预测=点击，score=0.890。",
+      "timestamp": "2026-06-19 11:23:40",
+      "task_id": "rec_ctr_task_a",
+      "status": "已污染",
+      "original_label": "leak",
+      "predicted_label": "点击",
+      "prediction_score": 0.89,
+      "metrics": {
+        "auc": 0.755,
+        "accuracy": 0.732,
+        "precision": null,
+        "recall": null,
+        "f1": 0.712,
+        "loss": null,
+        "custom": {
+          "score": 0.89
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "note": "包含label leak、train data in val等关键词，触发严重污染检测"
+      },
+      "is_contaminated": true,
+      "contamination_reason": "内容包含训练过程关键词; 检测到标签泄露特征",
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工驳回|算法_小许"
+      ]
+    },
+    "after_state": {
+      "sample_id": "val_contam_leak_013",
+      "source": "验证集",
+      "content": "【验证集样本013】rec_ctr_task_a验证：auc=0.7550，accuracy=0.7320，f1=0.7120。疑似存在数据leak：该样本label信息在train预处理阶段被意外写入特征，属于标签泄露(train data label leak into val)。标签=点击，预测=点击，score=0.890。",
+      "timestamp": "2026-06-19 11:23:40",
+      "task_id": "rec_ctr_task_a",
+      "status": "失败",
+      "original_label": "leak",
+      "predicted_label": "点击",
+      "prediction_score": 0.89,
+      "metrics": {
+        "auc": 0.755,
+        "accuracy": 0.732,
+        "precision": null,
+        "recall": null,
+        "f1": 0.712,
+        "loss": null,
+        "custom": {
+          "score": 0.89
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "note": "包含label leak、train data in val等关键词，触发严重污染检测"
+      },
+      "is_contaminated": true,
+      "contamination_reason": "内容包含训练过程关键词; 检测到标签泄露特征",
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工驳回|算法_小许"
+      ]
+    },
+    "comment": "确认严重标签泄露：样本特征中直接包含了label编码，属于特征构建bug。该样本必须剔除。 | 排班备注: 特征工程流程紧急增加label-leak单元测试。",
+    "timestamp": "2026-06-20 15:21:22"
+  },
+  {
+    "event_id": "aud_836e5653",
+    "event_type": "manual_correction:人工通过",
+    "target_id": "task_b_failed_008",
+    "operator": "算法_小许",
+    "before_state": {
+      "sample_id": "task_b_failed_008",
+      "source": "训练日志_当前版本",
+      "content": "搜索排序训练日志（失败样本）：epoch=10出现loss异常上升，auc=0.5210，accuracy=0.5022，f1=0.4890，明显低于阈值。可能是该batch数据异常。标签=转化，预测=不转化，score=0.545。",
+      "timestamp": "2026-06-19 01:33:01",
+      "task_id": "search_rank_task_b",
+      "status": "失败",
+      "original_label": "转化",
+      "predicted_label": "不转化",
+      "prediction_score": 0.545,
+      "metrics": {
+        "auc": 0.521,
+        "accuracy": 0.5022,
+        "precision": null,
+        "recall": null,
+        "f1": 0.489,
+        "loss": null,
+        "custom": {
+          "epoch": 0.1,
+          "score": 0.545
+        }
+      },
+      "raw_metadata": {
+        "loss_spike": true,
+        "anomaly_batch": 127
+      },
+      "is_contaminated": false,
+      "contamination_reason": null,
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工通过|算法_小许"
+      ]
+    },
+    "after_state": {
+      "sample_id": "task_b_failed_008",
+      "source": "训练日志_当前版本",
+      "content": "搜索排序训练日志（失败样本）：epoch=10出现loss异常上升，auc=0.5210，accuracy=0.5022，f1=0.4890，明显低于阈值。可能是该batch数据异常。标签=转化，预测=不转化，score=0.545。",
+      "timestamp": "2026-06-19 01:33:01",
+      "task_id": "search_rank_task_b",
+      "status": "人工确认",
+      "original_label": "转化",
+      "predicted_label": "不转化",
+      "prediction_score": 0.545,
+      "metrics": {
+        "auc": 0.521,
+        "accuracy": 0.5022,
+        "precision": null,
+        "recall": null,
+        "f1": 0.489,
+        "loss": null,
+        "custom": {
+          "epoch": 0.1,
+          "score": 0.545
+        }
+      },
+      "raw_metadata": {
+        "loss_spike": true,
+        "anomaly_batch": 127
+      },
+      "is_contaminated": false,
+      "contamination_reason": null,
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工通过|算法_小许"
+      ]
+    },
+    "comment": "结合口头备注(task_b_verbal_009)，第10epoch的loss尖峰是OOM重跑数据未对齐，后续epoch已收敛正常。该失败样本不影响最终结论，人工通过。",
+    "timestamp": "2026-06-20 15:21:22"
+  },
+  {
+    "event_id": "aud_33418418",
+    "event_type": "manual_correction:标记待复核",
+    "target_id": "misclassified_return_016",
+    "operator": "算法_小许",
+    "before_state": {
+      "sample_id": "misclassified_return_016",
+      "source": "旧模型误判_回检样本",
+      "content": "【误判回检样本016】user_5566_item_223344：真实标签=不点击；旧模型预测=点击，旧分数=0.620；新模型预测=点击，新分数=0.590（未改判，仍错）。当前无明确线索解释原因，需要人工复核样本细节。",
+      "timestamp": "2026-06-19 11:32:45",
+      "task_id": "rec_ctr_task_a",
+      "status": "通过",
+      "original_label": "不点击",
+      "predicted_label": "点击",
+      "prediction_score": 0.59,
+      "metrics": {
+        "auc": null,
+        "accuracy": null,
+        "precision": null,
+        "recall": null,
+        "f1": null,
+        "loss": null,
+        "custom": {
+          "旧分数": 0.62,
+          "新分数": 0.59
+        }
+      },
+      "raw_metadata": {
+        "label": "不点击",
+        "prediction": "点击",
+        "score": 0.59,
+        "old_prediction": "点击",
+        "old_score": 0.62,
+        "note": "未改判成功且无法自动解释"
+      },
+      "is_contaminated": false,
+      "contamination_reason": null,
+      "is_misclassified_return": true,
+      "old_model_prediction": "点击",
+      "old_model_score": 0.62,
+      "revision_chain": [
+        "2026-06-20 15:21:22|标记待复核|算法_小许"
+      ]
+    },
+    "after_state": {
+      "sample_id": "misclassified_return_016",
+      "source": "旧模型误判_回检样本",
+      "content": "【误判回检样本016】user_5566_item_223344：真实标签=不点击；旧模型预测=点击，旧分数=0.620；新模型预测=点击，新分数=0.590（未改判，仍错）。当前无明确线索解释原因，需要人工复核样本细节。",
+      "timestamp": "2026-06-19 11:32:45",
+      "task_id": "rec_ctr_task_a",
+      "status": "待判定",
+      "original_label": "不点击",
+      "predicted_label": "点击",
+      "prediction_score": 0.59,
+      "metrics": {
+        "auc": null,
+        "accuracy": null,
+        "precision": null,
+        "recall": null,
+        "f1": null,
+        "loss": null,
+        "custom": {
+          "旧分数": 0.62,
+          "新分数": 0.59
+        }
+      },
+      "raw_metadata": {
+        "label": "不点击",
+        "prediction": "点击",
+        "score": 0.59,
+        "old_prediction": "点击",
+        "old_score": 0.62,
+        "note": "未改判成功且无法自动解释"
+      },
+      "is_contaminated": false,
+      "contamination_reason": null,
+      "is_misclassified_return": true,
+      "old_model_prediction": "点击",
+      "old_model_score": 0.62,
+      "revision_chain": [
+        "2026-06-20 15:21:22|标记待复核|算法_小许"
+      ]
+    },
+    "comment": "人工复核样本user_5566_item_223344：该样本属于边界case，新旧模型均判断错误，标签本身存在歧义。标记待下轮重新标注后再评估。 | 排班备注: 排班同学提醒标注组7月初复核该样本及周边100条。",
+    "timestamp": "2026-06-20 15:21:22"
+  },
+  {
+    "event_id": "aud_1b5e70e2",
+    "event_type": "manual_correction:人工通过",
+    "target_id": "val_clean_010",
+    "operator": "算法_小许",
+    "before_state": {
+      "sample_id": "val_clean_010",
+      "source": "验证集",
+      "content": "【验证集样本010】rec_ctr_task_a验证集评估结果：auc=0.7680，accuracy=0.7410，precision=0.7288，recall=0.7125，f1=0.7205。样本来自独立val_set划分，id=user_10086_item_9527。标签label=点击，预测prediction=点击，置信度=0.799。",
+      "timestamp": "2026-06-19 11:20:30",
+      "task_id": "rec_ctr_task_a",
+      "status": "失败",
+      "original_label": "点击",
+      "predicted_label": null,
+      "prediction_score": 0.799,
+      "metrics": {
+        "auc": 0.768,
+        "accuracy": 0.741,
+        "precision": 0.7288,
+        "recall": 0.7125,
+        "f1": 0.7205,
+        "loss": null,
+        "custom": {
+          "置信度": 0.799
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "user_id": "user_10086",
+        "item_id": "item_9527"
+      },
+      "is_contaminated": false,
+      "contamination_reason": null,
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工通过|算法_小许"
+      ]
+    },
+    "after_state": {
+      "sample_id": "val_clean_010",
+      "source": "验证集",
+      "content": "【验证集样本010】rec_ctr_task_a验证集评估结果：auc=0.7680，accuracy=0.7410，precision=0.7288，recall=0.7125，f1=0.7205。样本来自独立val_set划分，id=user_10086_item_9527。标签label=点击，预测prediction=点击，置信度=0.799。",
+      "timestamp": "2026-06-19 11:20:30",
+      "task_id": "rec_ctr_task_a",
+      "status": "人工确认",
+      "original_label": "点击",
+      "predicted_label": null,
+      "prediction_score": 0.799,
+      "metrics": {
+        "auc": 0.768,
+        "accuracy": 0.741,
+        "precision": 0.7288,
+        "recall": 0.7125,
+        "f1": 0.7205,
+        "loss": null,
+        "custom": {
+          "置信度": 0.799
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "user_id": "user_10086",
+        "item_id": "item_9527"
+      },
+      "is_contaminated": false,
+      "contamination_reason": null,
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工通过|算法_小许"
+      ]
+    },
+    "comment": "验证集样本干净，指标稳定，无问题。人工确认通过。",
+    "timestamp": "2026-06-20 15:21:22"
+  },
+  {
+    "event_id": "aud_757a73ba",
+    "event_type": "manual_correction:人工通过",
+    "target_id": "val_clean_017",
+    "operator": "算法_小许",
+    "before_state": {
+      "sample_id": "val_clean_017",
+      "source": "验证集",
+      "content": "【验证集样本017】search_rank_task_b干净样本：auc=0.7510，accuracy=0.7220，f1=0.7100。独立验证集，无训练关键词、无重复。标签=转化，预测=转化，score=0.780。",
+      "timestamp": "2026-06-19 11:35:00",
+      "task_id": "search_rank_task_b",
+      "status": "已污染",
+      "original_label": "转化",
+      "predicted_label": "转化",
+      "prediction_score": 0.78,
+      "metrics": {
+        "auc": 0.751,
+        "accuracy": 0.722,
+        "precision": null,
+        "recall": null,
+        "f1": 0.71,
+        "loss": null,
+        "custom": {
+          "score": 0.78
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "clean": true
+      },
+      "is_contaminated": true,
+      "contamination_reason": "内容包含训练过程关键词",
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工通过|算法_小许"
+      ]
+    },
+    "after_state": {
+      "sample_id": "val_clean_017",
+      "source": "验证集",
+      "content": "【验证集样本017】search_rank_task_b干净样本：auc=0.7510，accuracy=0.7220，f1=0.7100。独立验证集，无训练关键词、无重复。标签=转化，预测=转化，score=0.780。",
+      "timestamp": "2026-06-19 11:35:00",
+      "task_id": "search_rank_task_b",
+      "status": "人工确认",
+      "original_label": "转化",
+      "predicted_label": "转化",
+      "prediction_score": 0.78,
+      "metrics": {
+        "auc": 0.751,
+        "accuracy": 0.722,
+        "precision": null,
+        "recall": null,
+        "f1": 0.71,
+        "loss": null,
+        "custom": {
+          "score": 0.78
+        }
+      },
+      "raw_metadata": {
+        "split": "val_set",
+        "clean": true
+      },
+      "is_contaminated": true,
+      "contamination_reason": "内容包含训练过程关键词",
+      "is_misclassified_return": false,
+      "old_model_prediction": null,
+      "old_model_score": null,
+      "revision_chain": [
+        "2026-06-20 15:21:22|人工通过|算法_小许"
+      ]
+    },
+    "comment": "验证集样本干净，指标正常。人工确认通过。",
+    "timestamp": "2026-06-20 15:21:22"
+  }
+]

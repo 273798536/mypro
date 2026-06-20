@@ -1,0 +1,195 @@
+[
+  {
+    "sample_id": "task_a_train_001",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-18 14:23:10",
+    "content": "推荐排序模型第15 epoch训练结束，loss=0.2312，batch=256，优化器AdamW，auc=0.7845，accuracy=0.7512，precision=0.7388，recall=0.7210，f1=0.7298。特征工程新增用户历史7天embedding融合，label=点击，prediction=点击，置信度score=0.812。",
+    "metadata": {
+      "epoch": 15,
+      "feature_version": "v2.3",
+      "label": "点击",
+      "prediction": "点击",
+      "score": 0.812
+    }
+  },
+  {
+    "sample_id": "task_a_train_002",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-18 15:01:33",
+    "content": "任务A训练第22 epoch，loss收敛至0.1877，auc=0.8130，accuracy=0.7855，f1=0.7720。注意力头数调整至16。标签label=点击，预测prediction=点击，置信度=0.856。",
+    "metadata": {
+      "epoch": 22,
+      "attention_heads": 16
+    }
+  },
+  {
+    "sample_id": "task_a_oldlog_003",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2024-11-02 09:14:55",
+    "content": "【旧版v1.2.1遗留日志】推荐排序模型训练完成，epoch=30，auc=0.6234，accuracy=0.5988，f1=0.5710。历史版本deprecated，模型结构为旧版3层MLP，仅留存对比参考。标签=点击，预测=不点击。",
+    "metadata": {
+      "version": "v1.2.1",
+      "note": "legacy log deprecated"
+    }
+  },
+  {
+    "sample_id": "task_a_withdraw_004",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-17 18:40:12",
+    "content": "【撤回记录】2026-06-17上线的rec_ctr_task_a实验版本因负采样bug紧急rollback撤回，对应commit a1b2c3d，影响训练数据分布。本次训练前已修复该bug，重新生成训练集。",
+    "metadata": {
+      "rollback_commit": "a1b2c3d",
+      "bug_type": "negative_sampling"
+    }
+  },
+  {
+    "sample_id": "task_a_verbal_005",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-19 10:15:20",
+    "content": "【口头备注】算法小许说：任务A昨晚的夜间训练跑了两轮，第二轮数据对齐更好，以第二轮输出为准；第一轮可以忽略。另外特征侧新增了用户长短期兴趣融合，口头同步下。",
+    "metadata": {
+      "speaker": "小许",
+      "channel": "daily standup"
+    }
+  },
+  {
+    "sample_id": "task_b_train_006",
+    "task_id": "search_rank_task_b",
+    "timestamp": "2026-06-18 20:12:40",
+    "content": "搜索排序模型训练日志：epoch=18，loss=0.3011，auc=0.7420，accuracy=0.7105，precision=0.7012，recall=0.6920，f1=0.6965。训练过程gradient裁剪阈值0.5。标签=转化，预测=转化，score=0.778。",
+    "metadata": {}
+  },
+  {
+    "sample_id": "task_b_train_007",
+    "task_id": "search_rank_task_b",
+    "timestamp": "2026-06-18 22:05:55",
+    "content": "搜索排序训练第25 epoch完成：loss=0.2502，auc=0.7715，accuracy=0.7390，f1=0.7255。Dropout率=0.3。标签=转化，预测=转化，score=0.803。",
+    "metadata": {
+      "dropout": 0.3
+    }
+  },
+  {
+    "sample_id": "task_b_failed_008",
+    "task_id": "search_rank_task_b",
+    "timestamp": "2026-06-19 01:33:01",
+    "content": "搜索排序训练日志（失败样本）：epoch=10出现loss异常上升，auc=0.5210，accuracy=0.5022，f1=0.4890，明显低于阈值。可能是该batch数据异常。标签=转化，预测=不转化，score=0.545。",
+    "metadata": {
+      "loss_spike": true,
+      "anomaly_batch": 127
+    }
+  },
+  {
+    "sample_id": "task_b_verbal_009",
+    "task_id": "search_rank_task_b",
+    "timestamp": "2026-06-19 09:40:00",
+    "content": "【口头备注】算法同学提过：任务B第10 epoch那个loss尖峰是因为OOM重跑时数据没对齐，不影响最终收敛，后面正常了就没事，不用管。",
+    "metadata": {
+      "speaker": "算法同学"
+    }
+  },
+  {
+    "sample_id": "val_clean_010",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-19 11:20:30",
+    "content": "【验证集样本010】rec_ctr_task_a验证集评估结果：auc=0.7680，accuracy=0.7410，precision=0.7288，recall=0.7125，f1=0.7205。样本来自独立val_set划分，id=user_10086_item_9527。标签label=点击，预测prediction=点击，置信度=0.799。",
+    "metadata": {
+      "split": "val_set",
+      "user_id": "user_10086",
+      "item_id": "item_9527"
+    }
+  },
+  {
+    "sample_id": "val_contam_dup_011",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-19 11:21:02",
+    "content": "推荐排序模型第15 epoch训练结束，loss=0.2312，batch=256，优化器AdamW，auc=0.7845，accuracy=0.7512，precision=0.7388，recall=0.7210，f1=0.7298。特征工程新增用户历史7天embedding融合，label=点击，prediction=点击，置信度score=0.812。",
+    "metadata": {
+      "split": "val_set",
+      "note": "此样本内容与task_a_train_001完全重复，用于验证污染检测"
+    }
+  },
+  {
+    "sample_id": "val_contam_keyword_012",
+    "task_id": "search_rank_task_b",
+    "timestamp": "2026-06-19 11:22:15",
+    "content": "【验证集样本012】search_rank_task_b评估：auc=0.7380，accuracy=0.7050，f1=0.6890。注意该样本训练过程使用的梯度裁剪与epoch参数应保持一致，loss收敛正常。标签=转化，预测=转化，score=0.765。",
+    "metadata": {
+      "split": "val_set",
+      "note": "包含'训练过程'、'梯度'、'epoch'、'loss收敛'等训练关键词，用于触发污染检测"
+    }
+  },
+  {
+    "sample_id": "val_contam_leak_013",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-19 11:23:40",
+    "content": "【验证集样本013】rec_ctr_task_a验证：auc=0.7550，accuracy=0.7320，f1=0.7120。疑似存在数据leak：该样本label信息在train预处理阶段被意外写入特征，属于标签泄露(train data label leak into val)。标签=点击，预测=点击，score=0.890。",
+    "metadata": {
+      "split": "val_set",
+      "note": "包含label leak、train data in val等关键词，触发严重污染检测"
+    }
+  },
+  {
+    "sample_id": "misclassified_return_014",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-19 11:30:00",
+    "content": "【旧模型误判回检样本】样本user_3344_item_7788：真实标签label=点击；旧模型old_model预测prediction=不点击，置信度old_score=0.312（误判）；当前新模型预测prediction=点击，置信度score=0.789（改判正确）。分析：新模型增强了用户7天序列特征与embedding表示，同时训练策略中学习率调度调整为cosine annealing，loss函数采用focal loss，数据上补充了难例采样样本。",
+    "metadata": {
+      "label": "点击",
+      "prediction": "点击",
+      "score": 0.789,
+      "old_prediction": "不点击",
+      "old_score": 0.312,
+      "improvements": [
+        "特征增强",
+        "训练策略",
+        "数据增强"
+      ]
+    }
+  },
+  {
+    "sample_id": "misclassified_return_015",
+    "task_id": "search_rank_task_b",
+    "timestamp": "2026-06-19 11:31:20",
+    "content": "【旧模型误判_回检样本015】样本query_iphone_item_13579：真实标签=转化；旧模型预测=不转化，旧置信度=0.410；新模型预测=转化，新置信度=0.743。改判成功，可能与阈值调整和注意力结构优化有关。",
+    "metadata": {
+      "label": "转化",
+      "prediction": "转化",
+      "score": 0.743,
+      "old_prediction": "不转化",
+      "old_score": 0.41
+    }
+  },
+  {
+    "sample_id": "misclassified_return_016",
+    "task_id": "rec_ctr_task_a",
+    "timestamp": "2026-06-19 11:32:45",
+    "content": "【误判回检样本016】user_5566_item_223344：真实标签=不点击；旧模型预测=点击，旧分数=0.620；新模型预测=点击，新分数=0.590（未改判，仍错）。当前无明确线索解释原因，需要人工复核样本细节。",
+    "metadata": {
+      "label": "不点击",
+      "prediction": "点击",
+      "score": 0.59,
+      "old_prediction": "点击",
+      "old_score": 0.62,
+      "note": "未改判成功且无法自动解释"
+    }
+  },
+  {
+    "sample_id": "val_clean_017",
+    "task_id": "search_rank_task_b",
+    "timestamp": "2026-06-19 11:35:00",
+    "content": "【验证集样本017】search_rank_task_b干净样本：auc=0.7510，accuracy=0.7220，f1=0.7100。独立验证集，无训练关键词、无重复。标签=转化，预测=转化，score=0.780。",
+    "metadata": {
+      "split": "val_set",
+      "clean": true
+    }
+  },
+  {
+    "sample_id": "task_c_verbal_018",
+    "task_id": "feed_classify_task_c",
+    "timestamp": "2026-06-19 08:20:11",
+    "content": "【口头备注】小许口头上说过feed分类任务这次训练中调整了dropout，暂时没有写进变更文档，以实际训练日志为准。",
+    "metadata": {
+      "speaker": "小许"
+    }
+  }
+]

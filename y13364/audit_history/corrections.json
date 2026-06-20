@@ -1,0 +1,93 @@
+[
+  {
+    "correction_id": "cor_f2b42abe",
+    "sample_id": "val_contam_dup_011",
+    "action": "ManualAction.REJECT",
+    "operator": "算法_小许",
+    "comment": "确认与训练样本task_a_train_001完全重复，数据划分bug导致。该验证样本作废，不予采纳。",
+    "before_status": "SampleStatus.CONTAMINATED",
+    "after_status": "SampleStatus.FAILED",
+    "before_decision": "DecisionRecord(decision_id='dec_75efa387', sample_id='val_contam_dup_011', passed=False, reason=<DecisionReason.VALIDATION_CONTAMINATION: '验证集污染'>, detail='内容包含训练过程关键词; 与训练样本[task_a_train_001]完全重复(任务rec_ctr_task_a) （附加口头备注标记）', evidence_chain=['contamination_detected', 'verbal_note:task_a_verbal_005'], affected_by_sources=[<SampleSource.VERBAL_NOTE: '口头备注'>, <SampleSource.TRAIN_LOG_CURRENT: '训练日志_当前版本'>, <SampleSource.VALIDATION_SET: '验证集'>], timestamp='2026-06-20 15:21:22')",
+    "after_decision": "DecisionRecord(decision_id='dec_656c4797', sample_id='val_contam_dup_011', passed=False, reason=<DecisionReason.MANUAL_OVERRIDE: '人工修正'>, detail='人工[算法_小许]修正: 数据泄露，验证集混入训练样本，必须剔除。', evidence_chain=['manual:算法_小许'], affected_by_sources=[], timestamp='2026-06-20 15:21:22')",
+    "timestamp": "2026-06-20 15:21:22",
+    "scheduling_note": "本月数据划分脚本需排查，排班同学7月前修复。"
+  },
+  {
+    "correction_id": "cor_152e3685",
+    "sample_id": "val_contam_keyword_012",
+    "action": "ManualAction.REVISE_DATA",
+    "operator": "算法_小许",
+    "comment": "人工复核：该验证样本实际为干净样本，内容中的训练关键词是评估报告中引用训练配置导致，非真实污染。修正其污染标记。",
+    "before_status": "SampleStatus.CONTAMINATED",
+    "after_status": "SampleStatus.REVISED",
+    "before_decision": "DecisionRecord(decision_id='dec_2e301293', sample_id='val_contam_keyword_012', passed=False, reason=<DecisionReason.VALIDATION_CONTAMINATION: '验证集污染'>, detail='内容包含训练过程关键词 （附加口头备注标记）', evidence_chain=['contamination_detected', 'verbal_note:task_b_verbal_009'], affected_by_sources=[<SampleSource.VERBAL_NOTE: '口头备注'>, <SampleSource.TRAIN_LOG_CURRENT: '训练日志_当前版本'>, <SampleSource.VALIDATION_SET: '验证集'>], timestamp='2026-06-20 15:21:22')",
+    "after_decision": "DecisionRecord(decision_id='dec_dceba332', sample_id='val_contam_keyword_012', passed=True, reason=<DecisionReason.MANUAL_OVERRIDE: '人工修正'>, detail='人工[算法_小许]修正: 关键词误报，已人工确认样本独立。污染标记解除。', evidence_chain=['manual:算法_小许'], affected_by_sources=[], timestamp='2026-06-20 15:21:22')",
+    "timestamp": "2026-06-20 15:21:22",
+    "scheduling_note": "建议优化污染检测器的关键词白名单机制。"
+  },
+  {
+    "correction_id": "cor_0c1fdeae",
+    "sample_id": "val_contam_leak_013",
+    "action": "ManualAction.REJECT",
+    "operator": "算法_小许",
+    "comment": "确认严重标签泄露：样本特征中直接包含了label编码，属于特征构建bug。该样本必须剔除。",
+    "before_status": "SampleStatus.CONTAMINATED",
+    "after_status": "SampleStatus.FAILED",
+    "before_decision": "DecisionRecord(decision_id='dec_ca0c98df', sample_id='val_contam_leak_013', passed=False, reason=<DecisionReason.VALIDATION_CONTAMINATION: '验证集污染'>, detail='内容包含训练过程关键词; 检测到标签泄露特征 （附加口头备注标记）', evidence_chain=['contamination_detected', 'verbal_note:task_a_verbal_005'], affected_by_sources=[<SampleSource.VERBAL_NOTE: '口头备注'>, <SampleSource.TRAIN_LOG_CURRENT: '训练日志_当前版本'>, <SampleSource.VALIDATION_SET: '验证集'>], timestamp='2026-06-20 15:21:22')",
+    "after_decision": "DecisionRecord(decision_id='dec_b778001a', sample_id='val_contam_leak_013', passed=False, reason=<DecisionReason.MANUAL_OVERRIDE: '人工修正'>, detail='人工[算法_小许]修正: CRITICAL级别标签泄露，不可用于上线评估。', evidence_chain=['manual:算法_小许'], affected_by_sources=[], timestamp='2026-06-20 15:21:22')",
+    "timestamp": "2026-06-20 15:21:22",
+    "scheduling_note": "特征工程流程紧急增加label-leak单元测试。"
+  },
+  {
+    "correction_id": "cor_e69c20b7",
+    "sample_id": "task_b_failed_008",
+    "action": "ManualAction.APPROVE",
+    "operator": "算法_小许",
+    "comment": "结合口头备注(task_b_verbal_009)，第10epoch的loss尖峰是OOM重跑数据未对齐，后续epoch已收敛正常。该失败样本不影响最终结论，人工通过。",
+    "before_status": "SampleStatus.FAILED",
+    "after_status": "SampleStatus.MANUAL_CONFIRMED",
+    "before_decision": "DecisionRecord(decision_id='dec_de876251', sample_id='task_b_failed_008', passed=False, reason=<DecisionReason.METRIC_BELOW_THRESHOLD: '指标低于阈值'>, detail='AUC=0.5210 < 阈值0.7；ACC=0.5022 < 阈值0.65；F1=0.4890 < 阈值0.6 （附加口头备注标记）', evidence_chain=['threshold_check:AUC=0.5210 < 阈值0.7', 'threshold_check:ACC=0.5022 < 阈值0.65', 'threshold_check:F1=0.4890 < 阈值0.6', 'verbal_note:task_b_verbal_009'], affected_by_sources=[<SampleSource.VERBAL_NOTE: '口头备注'>, <SampleSource.TRAIN_LOG_CURRENT: '训练日志_当前版本'>], timestamp='2026-06-20 15:21:22')",
+    "after_decision": "DecisionRecord(decision_id='dec_05c07339', sample_id='task_b_failed_008', passed=True, reason=<DecisionReason.MANUAL_OVERRIDE: '人工修正'>, detail='人工[算法_小许]修正: 已知训练抖动，不影响模型最终质量。口头备注佐证。', evidence_chain=['manual:算法_小许'], affected_by_sources=[], timestamp='2026-06-20 15:21:22')",
+    "timestamp": "2026-06-20 15:21:22",
+    "scheduling_note": ""
+  },
+  {
+    "correction_id": "cor_302fa9bb",
+    "sample_id": "misclassified_return_016",
+    "action": "ManualAction.FLAG_FOR_REVIEW",
+    "operator": "算法_小许",
+    "comment": "人工复核样本user_5566_item_223344：该样本属于边界case，新旧模型均判断错误，标签本身存在歧义。标记待下轮重新标注后再评估。",
+    "before_status": "SampleStatus.PASSED",
+    "after_status": "SampleStatus.PENDING",
+    "before_decision": "DecisionRecord(decision_id='dec_f35ccc4a', sample_id='misclassified_return_016', passed=True, reason=<DecisionReason.METRIC_BELOW_THRESHOLD: '指标低于阈值'>, detail='指标满足阈值且无污染/撤回冲突，算法判定通过 （误判回检：旧模型预测[点击]、新模型预测[点击]均与真实标签[不点击]不符，仍需改进；可能归因于：人工经验补充、训练流程回滚、训练策略、标签修正、数据增强、模型优化；关联证据链：旧版训练日志佐证(来自样本task_a_oldlog_003)；撤回记录佐证(来自样本task_a_withdraw_004)；口头备注佐证(来自样本task_a_verbal_005)）', evidence_chain=['all_checks_passed', '旧版训练日志佐证:task_a_oldlog_003', '撤回记录佐证:task_a_withdraw_004', '口头备注佐证:task_a_verbal_005'], affected_by_sources=[<SampleSource.VERBAL_NOTE: '口头备注'>, <SampleSource.MISCLASSIFIED_RETURN: '旧模型误判_回检样本'>, <SampleSource.WITHDRAW_RECORD: '撤回记录'>, <SampleSource.TRAIN_LOG_OLD: '训练日志_旧版本'>], timestamp='2026-06-20 15:21:22')",
+    "after_decision": null,
+    "timestamp": "2026-06-20 15:21:22",
+    "scheduling_note": "排班同学提醒标注组7月初复核该样本及周边100条。"
+  },
+  {
+    "correction_id": "cor_21b87b39",
+    "sample_id": "val_clean_010",
+    "action": "ManualAction.APPROVE",
+    "operator": "算法_小许",
+    "comment": "验证集样本干净，指标稳定，无问题。人工确认通过。",
+    "before_status": "SampleStatus.FAILED",
+    "after_status": "SampleStatus.MANUAL_CONFIRMED",
+    "before_decision": "DecisionRecord(decision_id='dec_59bc64c5', sample_id='val_clean_010', passed=False, reason=<DecisionReason.WITHDRAW_EVIDENCE: '撤回记录佐证'>, detail='同任务存在撤回记录（样本task_a_withdraw_004，2026-06-17 18:40:12），可能影响当前实验结论：【撤回记录】2026-06-17上线的rec_ctr_task_a实验版本因负采样bug紧急rollback撤回，对应commit a1b2c3d，影响训练数据 （附加口头备注标记）', evidence_chain=['withdraw_ref:task_a_withdraw_004', 'verbal_note:task_a_verbal_005'], affected_by_sources=[<SampleSource.VERBAL_NOTE: '口头备注'>, <SampleSource.WITHDRAW_RECORD: '撤回记录'>, <SampleSource.VALIDATION_SET: '验证集'>], timestamp='2026-06-20 15:21:22')",
+    "after_decision": "DecisionRecord(decision_id='dec_25bde71e', sample_id='val_clean_010', passed=True, reason=<DecisionReason.MANUAL_OVERRIDE: '人工修正'>, detail='人工[算法_小许]修正: 复核通过。', evidence_chain=['manual:算法_小许'], affected_by_sources=[], timestamp='2026-06-20 15:21:22')",
+    "timestamp": "2026-06-20 15:21:22",
+    "scheduling_note": ""
+  },
+  {
+    "correction_id": "cor_4dc0f15d",
+    "sample_id": "val_clean_017",
+    "action": "ManualAction.APPROVE",
+    "operator": "算法_小许",
+    "comment": "验证集样本干净，指标正常。人工确认通过。",
+    "before_status": "SampleStatus.CONTAMINATED",
+    "after_status": "SampleStatus.MANUAL_CONFIRMED",
+    "before_decision": "DecisionRecord(decision_id='dec_2bda199f', sample_id='val_clean_017', passed=False, reason=<DecisionReason.VALIDATION_CONTAMINATION: '验证集污染'>, detail='内容包含训练过程关键词 （附加口头备注标记）', evidence_chain=['contamination_detected', 'verbal_note:task_b_verbal_009'], affected_by_sources=[<SampleSource.VERBAL_NOTE: '口头备注'>, <SampleSource.TRAIN_LOG_CURRENT: '训练日志_当前版本'>, <SampleSource.VALIDATION_SET: '验证集'>], timestamp='2026-06-20 15:21:22')",
+    "after_decision": "DecisionRecord(decision_id='dec_387d4eb6', sample_id='val_clean_017', passed=True, reason=<DecisionReason.MANUAL_OVERRIDE: '人工修正'>, detail='人工[算法_小许]修正: 复核通过。', evidence_chain=['manual:算法_小许'], affected_by_sources=[], timestamp='2026-06-20 15:21:22')",
+    "timestamp": "2026-06-20 15:21:22",
+    "scheduling_note": ""
+  }
+]
