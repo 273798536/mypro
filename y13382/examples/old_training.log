@@ -1,0 +1,16 @@
+[2024-01-15 09:12:01] [INFO] [quantize] ===== 模型压缩训练开始 run_id=OLD-20240115-alpha =====
+[2024-01-15 09:12:02] [INFO] [quantize] 基线模型加载完成 baseline_acc=0.9287 params=124800000 size_bytes=499200000
+[2024-01-15 09:12:05] [INFO] [quantize] 配置: bits=4 temperature=2.5 prune_ratio=0.60
+========================= 这行是分隔符，属于乱材料 =========================
+[2024-01-15 09:12:10] [INFO] [forward] sample_id=S-001 input_ref=user-item#48291 original_size_bytes=499200000 compressed_size_bytes=156000000 total_params=124800000 zero_params=74880000 teacher_logits=[8.2, 1.4, -3.1, 0.7, -5.2] student_logits=[7.9, 1.6, -2.9, 0.9, -4.8] baseline_acc=0.9287 compressed_acc=0.9215 per_layer_fisher=[0.42, 0.38, 0.51, 0.29]
+[2024-01-15 09:12:11] [WARNING] [quantize] S-001 被旧模型误标为异常: kl偏高疑似过压缩
+[2024-01-15 09:12:15] [INFO] [forward] sample_id=S-002 input_ref=user-item#51024 original_size_bytes=499200000 compressed_size_bytes=249600000 total_params=124800000 zero_params=12480000 teacher_logits=[5.1, 3.2, 0.1, -1.8, -2.9] student_logits=[4.9, 3.3, 0.3, -1.7, -2.8] baseline_acc=0.9287 compressed_acc=0.9244 per_layer_fisher=[0.10, 0.08, 0.12, 0.05]
+NULL NULL NULL NULL NULL NULL 这行是乱材料 全是null
+[2024-01-15 09:12:20] [INFO] [forward] sample_id=S-003 input_ref=user-item#33917 original_size_bytes=499200000 compressed_size_bytes=99840000 total_params=124800000 zero_params=112320000 teacher_logits=[9.4, 0.2, -4.5, -1.1, -6.7] student_logits=[6.5, 2.1, -3.2, 0.4, -3.9] baseline_acc=0.9287 compressed_acc=0.8802 per_layer_fisher=[1.2, 1.5, 0.9, 1.8]
+[2024-01-15 09:12:21] [ERROR] [quantize] S-003 kl_div严重越界 accuracy_drop=4.85%
+Traceback (most recent call last):
+  File "old_trainer.py", line 482, in <module>
+    RuntimeError: fake traceback line that should be treated as bad data
+[2024-01-15 09:12:30] [INFO] [forward] sample_id=S-004 input_ref=user-item#60002 original_size_bytes=499200000 compressed_size_bytes=208000000 total_params=124800000 zero_params=62400000 teacher_logits=[6.8, 2.4, -1.9, 0.1, -4.2] student_logits=[6.6, 2.5, -1.8, 0.2, -4.1] baseline_acc=0.9287 compressed_acc=0.9195 per_layer_fisher=[0.31, 0.28, 0.35, 0.20]
+[2024-01-15 09:12:35] [INFO] [evaluate]  epoch=1 summary_total_samples=4
+[2024-01-15 09:12:36] [INFO] [evaluate]  ===== 旧模型训练结束 =====
