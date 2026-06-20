@@ -335,3 +335,275 @@ export function formatSeconds(sec: number): string {
   const s = Math.floor(sec % 60);
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
+
+export interface ParsedSongFile {
+  songName: string;
+  audioFiles: File[];
+  noteFiles: File[];
+  screenshotFiles: File[];
+  allRawNames: string[];
+}
+
+export interface ParsedFolderData {
+  rootFolderName: string;
+  songs: ParsedSongFile[];
+  noteContents: Record<string, string>;
+  screenshotUrls: Record<string, string>;
+  totalFiles: number;
+}
+
+const AUDIO_EXT = new Set(['.wav', '.mp3', '.flac', '.m4a', '.aac', '.ogg', '.opus']);
+const NOTE_EXT = new Set(['.txt', '.md']);
+const IMAGE_EXT = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp']);
+
+function getExt(name: string): string {
+  const i = name.lastIndexOf('.');
+  return i >= 0 ? name.slice(i).toLowerCase() : '';
+}
+
+function stripExt(name: string): string {
+  const i = name.lastIndexOf('.');
+  return i >= 0 ? name.slice(0, i) : name;
+}
+
+function guessSongName(rawPath: string, fallback: string): string {
+  const parts = rawPath.split('/').filter(Boolean);
+  if (parts.length >= 2) {
+    const parent = parts[parts.length - 2];
+    if (parent && !/^(soprano|alto|tenor|bass|女高|女低|男高|男低|v[0-9]|版本|mix|master)$/i.test(parent)) {
+      return parent;
+    }
+  }
+  let base = stripExt(parts[parts.length - 1] ?? fallback);
+  base = base.replace(/[_\-\s]*(soprano|alto|tenor|bass|女高音?|女低音?|男高音?|男低音?|v\d+.*|final|mix|master|初录|重录|排练|修正|demo)[_\-\s]*/gi, '');
+  base = base.trim();
+  return base || fallback;
+}
+
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(String(fr.result ?? ''));
+    fr.onerror = () => reject(fr.error);
+    fr.readAsDataURL(file);
+  });
+}
+
+function readTextFile(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(String(fr.result ?? ''));
+    fr.onerror = () => reject(fr.error);
+    fr.readAsText(file, 'utf-8');
+  });
+}
+
+export async function parseDroppedFiles(files: File[]): Promise<ParsedFolderData> {
+  const rootFolderName =
+    files[0]?.webkitRelativePath?.split('/')[0]?.trim() || '新导入批次';
+
+  const songMap = new Map<string, ParsedSongFile>();
+
+  for (const f of files) {
+    const ext = getExt(f.name);
+    if (!AUDIO_EXT.has(ext) && !NOTE_EXT.has(ext) && !IMAGE_EXT.has(ext)) continue;
+    const relPath = f.webkitRelativePath || f.name;
+    const songName = guessSongName(relPath, '未命名曲目');
+    if (!songMap.has(songName)) {
+      songMap.set(songName, {
+        songName,
+        audioFiles: [],
+        noteFiles: [],
+        screenshotFiles: [],
+        allRawNames: [],
+      });
+    }
+    const bucket = songMap.get(songName)!;
+    bucket.allRawNames.push(f.name);
+    if (AUDIO_EXT.has(ext)) bucket.audioFiles.push(f);
+    else if (NOTE_EXT.has(ext)) bucket.noteFiles.push(f);
+    else if (IMAGE_EXT.has(ext)) bucket.screenshotFiles.push(f);
+  }
+
+  const songs = Array.from(songMap.values());
+  if (songs.length === 0) {
+    songs.push({
+      songName: rootFolderName,
+      audioFiles: [],
+      noteFiles: [],
+      screenshotFiles: [],
+      allRawNames: files.map((f) => f.name),
+    });
+  }
+
+  const noteContents: Record<string, string> = {};
+  const screenshotUrls: Record<string, string> = {};
+
+  for (const song of songs) {
+    for (const nf of song.noteFiles) {
+      try {
+        noteContents[`${song.songName}::${nf.name}`] = await readTextFile(nf);
+      } catch {
+        noteContents[`${song.songName}::${nf.name}`] = '';
+      }
+    }
+    for (const sf of song.screenshotFiles.slice(0, 6)) {
+      try {
+        screenshotUrls[`${song.songName}::${sf.name}`] = await fileToDataUrl(sf);
+      } catch {
+        // ignore
+      }
+    }
+  }
+
+  return {
+    rootFolderName,
+    songs,
+    noteContents,
+    screenshotUrls,
+    totalFiles: files.length,
+  };
+}
+
+export function buildBatchFromParsed(
+  batchId: string,
+  name: string,
+  folderPath: string,
+  parsed: ParsedFolderData
+): ReviewBatch {
+  const createdAt = new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-');
+  const songs: Song[] = parsed.songs.map((ps, idx) => {
+    const songId = `s-${batchId}-${idx}`;
+    const songSeed = Date.now() + idx * 13 + 1;
+    const voiceTracks = generateVoiceTracks(songId, songSeed);
+
+    const audioFiles: AudioFile[] = ps.audioFiles.map((af, i) => ({
+      id: `af-${songId}-${i}`,
+      songId,
+      fileName: af.name,
+      filePath: `${folderPath}${ps.songName}/${af.name}`,
+      versionTag: `v${i + 1}.0_导入`,
+      duration: Math.round(af.size / 16000) || 180,
+      createdAt,
+    }));
+    if (audioFiles.length === 0) {
+      audioFiles.push({
+        id: `af-${songId}-0`,
+        songId,
+        fileName: `${ps.songName}_占位.wav`,
+        filePath: `${folderPath}${ps.songName}/${ps.songName}_占位.wav`,
+        versionTag: 'v1.0_占位',
+        duration: 180,
+        createdAt,
+      });
+    }
+
+    const history: HistoryEntry[] = [];
+    audioFiles.forEach((af, i) => {
+      history.push({
+        id: `h-${af.id}-upload`,
+        audioFileId: af.id,
+        type: 'upload',
+        operator: '阿蓝',
+        timestamp: createdAt,
+        description: `上传版本 ${af.versionTag}（来自拖入文件夹）`,
+      });
+    });
+
+    Object.entries(parsed.noteContents).forEach(([key, content]) => {
+      if (!key.startsWith(`${ps.songName}::`)) return;
+      const fileName = key.slice(ps.songName.length + 2);
+      const targetAf = audioFiles[audioFiles.length - 1];
+      if (!content.trim()) return;
+      history.push({
+        id: `h-${targetAf.id}-note-${history.length}`,
+        audioFileId: targetAf.id,
+        type: 'note_added',
+        operator: '导入备注',
+        timestamp: createdAt,
+        description: `从 ${fileName} 导入的备注`,
+        noteContent: content.trim(),
+      });
+    });
+
+    Object.entries(parsed.screenshotUrls).forEach(([key, url]) => {
+      if (!key.startsWith(`${ps.songName}::`)) return;
+      const fileName = key.slice(ps.songName.length + 2);
+      const targetAf = audioFiles[audioFiles.length - 1];
+      history.push({
+        id: `h-${targetAf.id}-screen-${history.length}`,
+        audioFileId: targetAf.id,
+        type: 'screenshot_added',
+        operator: '导入截图',
+        timestamp: createdAt,
+        description: `从 ${fileName} 导入的历史截图`,
+        screenshotUrl: url,
+      });
+    });
+
+    const aliases = Array.from(new Set([ps.songName, ...ps.allRawNames.map((n) => stripExt(n))]))
+      .filter((a) => a && a !== ps.songName)
+      .slice(0, 3);
+
+    return {
+      id: songId,
+      reviewBatchId: batchId,
+      name: ps.songName,
+      aliases,
+      durationSec: 180 + idx * 7,
+      voiceTracks,
+      audioFiles,
+      history,
+    };
+  });
+
+  const calcCriteria: CalcCriteria = {
+    id: `cc-${batchId}`,
+    reviewBatchId: batchId,
+    energyThreshold: 0.32,
+    frequencyDeviation: 20,
+    algorithmVersion: 'v2.3.0',
+    baselineDate: new Date(Date.now() - 86400000 * 14).toISOString().slice(0, 10),
+    diffFromPrevious: '沿用最近一次演出前标准，新增别名自动检测模块',
+  };
+
+  const exceptions = generateExceptions(batchId, songs);
+
+  const seenNames = new Map<string, number>();
+  songs.forEach((s) => {
+    const key = s.name;
+    seenNames.set(key, (seenNames.get(key) ?? 0) + 1);
+    s.aliases.forEach((a) => seenNames.set(a, (seenNames.get(a) ?? 0) + 1));
+  });
+  const aliasConflicts: AliasConflict[] = [];
+  let acIdx = 0;
+  seenNames.forEach((count, dupName) => {
+    if (count >= 2 && acIdx < 5) {
+      const relatedSongs = songs.filter(
+        (s) => s.name === dupName || s.aliases.includes(dupName)
+      );
+      aliasConflicts.push({
+        id: `ac-${batchId}-${acIdx++}`,
+        duplicateNames: [dupName, ...relatedSongs.map((s) => s.name).filter((n) => n !== dupName)].slice(0, 3),
+        possibleReasons: ['same_song_alias', 'typo'],
+        affectedVoiceCount: relatedSongs.length * 4,
+        affectedFileIds: relatedSongs.flatMap((s) => s.audioFiles.map((f) => f.id)),
+        affectedSongNames: relatedSongs.map((s) => s.name),
+        confirmed: false,
+      });
+    }
+  });
+
+  return {
+    id: batchId,
+    name,
+    folderPath,
+    status: aliasConflicts.length > 0 ? 'awaiting_confirm' : 'has_exceptions',
+    createdAt,
+    createdBy: '阿蓝',
+    songs,
+    exceptions,
+    calcCriteria,
+    aliasConflicts,
+  };
+}

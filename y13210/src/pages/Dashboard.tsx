@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
+import { parseDroppedFiles } from '../data/mockData';
 import {
   Upload,
   FolderUp,
@@ -51,14 +52,47 @@ export default function Dashboard() {
   const selectException = useReviewStore((s) => s.selectException);
   const openDrawer = useReviewStore((s) => s.openDrawer);
 
+  const [parsing, setParsing] = useState(false);
+  const [parseInfo, setParseInfo] = useState<string | null>(null);
+
   const batch = batches.find((b) => b.id === activeBatchId);
 
   const onDrop = useCallback(
-    (files: File[]) => {
-      const folderName = files[0]?.webkitRelativePath?.split('/')[0] ?? '新导入批次';
-      const nb = createNewBatch(`${folderName}·复核`, `/音频文件夹/新导入/${folderName}/`);
-      setActiveBatch(nb.id);
-      setTimeout(() => navigate('/confirm'), 500);
+    async (files: File[]) => {
+      if (files.length === 0) return;
+      setParsing(true);
+      setParseInfo(`正在读取 ${files.length} 个文件…`);
+      try {
+        const parsed = await parseDroppedFiles(files);
+        const folderName = parsed.rootFolderName || '新导入批次';
+        setParseInfo(
+          `识别到 ${parsed.songs.length} 首曲目、` +
+            `${parsed.songs.reduce((a, s) => a + s.audioFiles.length, 0)} 个音频、` +
+            `${Object.keys(parsed.noteContents).length} 份备注、` +
+            `${Object.keys(parsed.screenshotUrls).length} 张截图`
+        );
+        const nb = createNewBatch(
+          `${folderName}·复核`,
+          `/音频文件夹/新导入/${folderName}/`,
+          parsed
+        );
+        setActiveBatch(nb.id);
+        setTimeout(() => {
+          setParsing(false);
+          setParseInfo(null);
+          navigate('/confirm');
+        }, 600);
+      } catch (err) {
+        console.warn('解析文件夹失败，回退到 mock 模板：', err);
+        const folderName = files[0]?.webkitRelativePath?.split('/')[0] ?? '新导入批次';
+        const nb = createNewBatch(`${folderName}·复核`, `/音频文件夹/新导入/${folderName}/`, null);
+        setActiveBatch(nb.id);
+        setTimeout(() => {
+          setParsing(false);
+          setParseInfo(null);
+          navigate('/confirm');
+        }, 500);
+      }
     },
     [createNewBatch, setActiveBatch, navigate]
   );
@@ -66,6 +100,7 @@ export default function Dashboard() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     noClick: false,
+    multiple: true,
   });
 
   const totalSongs = batch?.songs.length ?? 0;
@@ -133,38 +168,52 @@ export default function Dashboard() {
       {/* 材料入口卡片 */}
       <section className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div
-          {...getRootProps()}
-          className={`lg:col-span-3 page-card cursor-pointer transition-all duration-300 border-2 border-dashed ${
-            isDragActive
-              ? 'border-copper-400 bg-copper-50/50 scale-[1.01] shadow-cardHover'
-              : 'border-ink-200 hover:border-forest-300 hover:bg-forest-50/30'
+          {...(parsing ? {} : getRootProps())}
+          className={`lg:col-span-3 page-card transition-all duration-300 border-2 border-dashed ${
+            parsing
+              ? 'border-forest-300 bg-forest-50/40 cursor-default'
+              : isDragActive
+              ? 'border-copper-400 bg-copper-50/50 scale-[1.01] shadow-cardHover cursor-pointer'
+              : 'border-ink-200 hover:border-forest-300 hover:bg-forest-50/30 cursor-pointer'
           }`}
         >
-          <input {...getInputProps()} />
+          {!parsing && <input {...getInputProps()} />}
           <div className="flex items-start gap-5">
             <div
               className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 transition-all ${
-                isDragActive
+                parsing
+                  ? 'bg-forest-500 text-white animate-pulseRing'
+                  : isDragActive
                   ? 'bg-copper-500 text-white animate-pulseRing'
                   : 'bg-forest-50 text-forest-500'
               }`}
             >
-              {isDragActive ? <FolderUp size={30} /> : <Upload size={28} />}
+              {parsing ? (
+                <span className="text-3xl animate-noteBounce inline-block">🎵</span>
+              ) : isDragActive ? (
+                <FolderUp size={30} />
+              ) : (
+                <Upload size={28} />
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="font-serif text-xl font-bold text-ink-900 mb-1">
-                🎵 材料入口 · 拖入音频文件夹开始复核
+                🎵 {parsing ? '正在解析音频文件夹…' : '材料入口 · 拖入音频文件夹开始复核'}
               </h3>
               <p className="text-sm text-ink-500 leading-relaxed">
-                把整个文件夹拖到这里，或点击选择文件夹。系统会先检测曲名别名是否重复，
-                确认无误后再开始声部能量/音准/进拍对比计算。
+                {parsing
+                  ? parseInfo ?? '读取文件中，请稍候…'
+                  : '把整个文件夹拖到这里，或点击选择文件夹。系统会解析真实文件名、备注和截图，先检测曲名别名是否重复，确认无误后再开始声部能量/音准/进拍对比计算。'}
               </p>
-              <div className="flex items-center gap-2 mt-4 text-xs">
+              <div className="flex items-center gap-2 mt-4 text-xs flex-wrap">
                 <span className="tag bg-forest-50 text-forest-700 border-forest-200">
                   支持 .wav / .mp3 / .flac
                 </span>
                 <span className="tag bg-ink-50 text-ink-600 border-ink-200">
                   子文件夹自动归类为"曲目"
+                </span>
+                <span className="tag bg-copper-50 text-copper-700 border-copper-200">
+                  读取 .txt/.md 备注和 .png/.jpg 截图
                 </span>
               </div>
             </div>

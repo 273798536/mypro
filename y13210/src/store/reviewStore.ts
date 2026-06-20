@@ -6,7 +6,7 @@ import type {
   AliasConflict,
   ConsistencyCheck,
 } from '../types';
-import { generateAllBatches } from '../data/mockData';
+import { generateAllBatches, buildBatchFromParsed, type ParsedFolderData } from '../data/mockData';
 
 interface ReviewState {
   batches: ReviewBatch[];
@@ -31,7 +31,7 @@ interface ReviewState {
     resolution: 'merge' | 'separate'
   ) => void;
   runConsistencyCheck: (batchId: string) => ConsistencyCheck;
-  createNewBatch: (name: string, folderPath: string) => ReviewBatch;
+  createNewBatch: (name: string, folderPath: string, parsed?: ParsedFolderData | null) => ReviewBatch;
   getActiveBatch: () => ReviewBatch | undefined;
   getActiveSong: () => ReviewBatch['songs'][0] | undefined;
   getExceptionById: (id: string) => ReviewException | undefined;
@@ -201,23 +201,28 @@ export const useReviewStore = create<ReviewState>((set, get) => ({
     return result;
   },
 
-  createNewBatch: (name, folderPath) => {
+  createNewBatch: (name, folderPath, parsed) => {
     const { batches } = get();
     const newId = `rb-${Date.now()}`;
-    const baseBatch = generateAllBatches()[0];
-    const newBatch: ReviewBatch = {
-      ...baseBatch,
-      id: newId,
-      name,
-      folderPath,
-      status: 'awaiting_confirm',
-      createdAt: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-'),
-    };
-    newBatch.songs = newBatch.songs.map((s) => ({
-      ...s,
-      id: s.id.replace('rb-1000', newId.replace('rb-', '')),
-      reviewBatchId: newId,
-    }));
+    let newBatch: ReviewBatch;
+    if (parsed && parsed.songs.length > 0) {
+      newBatch = buildBatchFromParsed(newId, name, folderPath, parsed);
+    } else {
+      const baseBatch = generateAllBatches()[0];
+      newBatch = {
+        ...baseBatch,
+        id: newId,
+        name,
+        folderPath,
+        status: 'awaiting_confirm',
+        createdAt: new Date().toLocaleString('zh-CN', { hour12: false }).replace(/\//g, '-'),
+      };
+      newBatch.songs = newBatch.songs.map((s) => ({
+        ...s,
+        id: s.id.replace('rb-1000', newId.replace('rb-', '')),
+        reviewBatchId: newId,
+      }));
+    }
     const updated = [newBatch, ...batches];
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
     set({
