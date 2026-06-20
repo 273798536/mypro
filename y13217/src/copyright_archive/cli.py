@@ -1,6 +1,7 @@
 """CLI主入口 - 版权授权清单归档处理系统"""
 import os
 import sys
+import traceback
 from datetime import datetime
 
 import click
@@ -13,6 +14,13 @@ from .note_processor import NoteProcessor
 from .manual_confirmation import ManualConfirmationHandler
 from .history_tracker import HistoryTracker
 from .timeline_generator import TimelineGenerator
+
+
+REQUIRED_FILES = {
+    "曲目表_当前版.xlsx": "当前版曲目表（必填）",
+    "版权文件清单.xlsx": "版权文件清单（可选，也可直接扫描copyright_files目录）",
+    "备注记录.txt": "备注记录（可选）"
+}
 
 
 @click.command()
@@ -35,9 +43,64 @@ def main(output_dir: str, generate_sample: bool, auto_confirm: bool, verbose: bo
     4. 人工批注覆盖旧判断（卡点机制）
     5. 生成历史时间线（HTML/Markdown/JSON）
     """
+    try:
+        return _run(output_dir, generate_sample, auto_confirm, verbose)
+    except FileNotFoundError as e:
+        click.echo("\n" + "=" * 70, err=True)
+        click.echo("❌  文件未找到错误", err=True)
+        click.echo("=" * 70, err=True)
+        click.echo(f"错误信息: {e}", err=True)
+        click.echo("\n检查建议：", err=True)
+        click.echo("  1. 确认 --output-dir 指向的目录存在或可用 --generate-sample 生成", err=True)
+        click.echo("  2. 确认 raw_data/ 目录下包含曲目表_当前版.xlsx", err=True)
+        click.echo("  3. 确认 raw_data/copyright_files/ 目录下有版权文件", err=True)
+        click.echo("=" * 70, err=True)
+        return 2
+    except PermissionError as e:
+        click.echo("\n" + "=" * 70, err=True)
+        click.echo("❌  权限错误", err=True)
+        click.echo("=" * 70, err=True)
+        click.echo(f"错误信息: {e}", err=True)
+        click.echo("\n检查建议：", err=True)
+        click.echo("  1. 确认对输出目录有读写权限", err=True)
+        click.echo("  2. 确认原始数据文件没有被其他程序占用", err=True)
+        click.echo("=" * 70, err=True)
+        return 3
+    except Exception as e:
+        click.echo("\n" + "=" * 70, err=True)
+        click.echo("❌  运行时错误", err=True)
+        click.echo("=" * 70, err=True)
+        click.echo(f"错误类型: {type(e).__name__}", err=True)
+        click.echo(f"错误信息: {e}", err=True)
+        if verbose:
+            click.echo("\n详细堆栈：", err=True)
+            click.echo(traceback.format_exc(), err=True)
+        click.echo("\n检查建议：", err=True)
+        click.echo("  1. 运行 pip install -r requirements.txt 确认依赖完整", err=True)
+        click.echo("  2. 检查原始数据格式是否符合要求", err=True)
+        click.echo("  3. 使用 --verbose 获取更多调试信息", err=True)
+        click.echo("=" * 70, err=True)
+        return 1
+
+
+def _run(output_dir: str, generate_sample: bool, auto_confirm: bool, verbose: bool) -> int:
     output_dir = os.path.abspath(output_dir)
     raw_data_dir = os.path.join(output_dir, "raw_data")
     timeline_dir = os.path.join(output_dir, "timeline")
+
+    os.makedirs(output_dir, exist_ok=True)
+
+    if not generate_sample:
+        missing = _check_required_files(raw_data_dir)
+        if missing:
+            click.echo("=" * 70, err=True)
+            click.echo("⚠️  缺少必要文件", err=True)
+            click.echo("=" * 70, err=True)
+            for f, desc in missing:
+                click.echo(f"  ❌ {f} - {desc}", err=True)
+            click.echo("\n使用 --generate-sample 可生成完整样例数据", err=True)
+            click.echo("=" * 70, err=True)
+            return 4
 
     if verbose:
         click.echo("=" * 70)
@@ -154,6 +217,29 @@ def main(output_dir: str, generate_sample: bool, auto_confirm: bool, verbose: bo
     click.echo("=" * 70)
 
     return 0
+
+
+def _check_required_files(raw_data_dir: str) -> list:
+    """检查必要文件是否存在，返回缺失文件列表"""
+    missing = []
+
+    if not os.path.exists(raw_data_dir):
+        missing.append((raw_data_dir, "原始数据目录不存在"))
+        return missing
+
+    required = "曲目表_当前版.xlsx"
+    if not os.path.exists(os.path.join(raw_data_dir, required)):
+        missing.append((required, REQUIRED_FILES[required]))
+
+    copyright_dir = os.path.join(raw_data_dir, "copyright_files")
+    if not os.path.exists(copyright_dir):
+        missing.append(("copyright_files/", "版权文件目录不存在"))
+    else:
+        pdf_files = [f for f in os.listdir(copyright_dir) if f.endswith(".pdf")]
+        if not pdf_files:
+            missing.append(("copyright_files/*.pdf", "版权文件目录下没有pdf文件"))
+
+    return missing
 
 
 if __name__ == "__main__":

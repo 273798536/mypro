@@ -76,7 +76,9 @@ class TimelineGenerator:
             return "normal"
 
     def _generate_html(self, timeline_data: List[Dict], context: ProcessingContext) -> str:
-        """生成HTML时间线"""
+        """生成HTML时间线（含交互按钮）"""
+        import json as _json
+        timeline_json = _json.dumps(timeline_data, ensure_ascii=False)
         html_template = Template("""
 <!DOCTYPE html>
 <html lang="zh-CN">
@@ -92,175 +94,157 @@ class TimelineGenerator:
             min-height: 100vh;
             padding: 40px 20px;
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
         .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
+            text-align: center; color: white; margin-bottom: 30px;
         }
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+            font-size: 2.5rem; margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+
+        .toolbar {
+            background: white; border-radius: 16px; padding: 20px;
+            margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
         }
+        .toolbar-group { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+        .toolbar-label { font-size: 0.9rem; color: #666; font-weight: 500; margin-right: 4px; }
+        .btn {
+            padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.9rem; font-weight: 500; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn:active { transform: translateY(0); }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-warning { background: #ed8936; color: white; }
+        .btn-info { background: #4299e1; color: white; }
+        .btn-outline {
+            background: transparent; color: #666;
+            border: 1px solid #ddd;
+        }
+        .btn-outline:hover { background: #f5f5f5; border-color: #bbb; }
+        .btn-outline.active { background: #667eea; color: white; border-color: #667eea; }
+
+        .search-box {
+            padding: 8px 14px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 0.9rem; min-width: 200px; outline: none; transition: border 0.2s;
+        }
+        .search-box:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+
         .summary-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px; margin-bottom: 30px;
         }
         .summary-card {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
+            background: white; border-radius: 12px; padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;
+            cursor: pointer; transition: transform 0.2s;
         }
+        .summary-card:hover { transform: translateY(-3px); }
         .summary-card .number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
+            font-size: 1.8rem; font-weight: bold; color: #667eea;
         }
-        .summary-card .label {
-            color: #666;
-            margin-top: 5px;
+        .summary-card .label { color: #666; margin-top: 4px; font-size: 0.9rem; }
+        .no-results {
+            text-align: center; padding: 60px 20px; color: #999;
+            background: white; border-radius: 16px;
         }
+        .no-results-icon { font-size: 3rem; margin-bottom: 10px; }
+
         .timeline {
-            position: relative;
-            background: white;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            position: relative; background: white; border-radius: 16px;
+            padding: 40px; box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
         .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(to bottom, #667eea, #764ba2);
+            content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
+            width: 4px; background: linear-gradient(to bottom, #667eea, #764ba2);
             transform: translateX(-50%);
         }
         .timeline-item {
-            position: relative;
-            margin-bottom: 30px;
-            width: 50%;
+            position: relative; margin-bottom: 30px; width: 50%;
             padding-right: 40px;
         }
         .timeline-item:nth-child(even) {
-            margin-left: 50%;
-            padding-right: 0;
-            padding-left: 40px;
+            margin-left: 50%; padding-right: 0; padding-left: 40px;
         }
         .timeline-item::before {
-            content: '';
-            position: absolute;
-            right: -8px;
-            top: 20px;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: white;
-            border: 4px solid #667eea;
-            z-index: 1;
+            content: ''; position: absolute; right: -8px; top: 20px;
+            width: 16px; height: 16px; border-radius: 50%;
+            background: white; border: 4px solid #667eea; z-index: 1;
         }
-        .timeline-item:nth-child(even)::before {
-            right: auto;
-            left: -8px;
-        }
+        .timeline-item:nth-child(even)::before { right: auto; left: -8px; }
         .timeline-item.high-importance::before {
-            background: #ff6b6b;
-            border-color: #ff6b6b;
+            background: #ff6b6b; border-color: #ff6b6b;
             box-shadow: 0 0 10px rgba(255,107,107,0.5);
         }
         .timeline-item.medium-importance::before {
-            background: #ffa502;
-            border-color: #ffa502;
+            background: #ffa502; border-color: #ffa502;
         }
         .timeline-content {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            position: relative;
-            transition: transform 0.2s, box-shadow 0.2s;
+            background: #f8f9fa; border-radius: 12px; padding: 20px;
+            position: relative; transition: transform 0.2s, box-shadow 0.2s;
         }
         .timeline-content:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.1);
         }
         .timeline-item.high-importance .timeline-content {
-            background: #fff5f5;
-            border-left: 4px solid #ff6b6b;
+            background: #fff5f5; border-left: 4px solid #ff6b6b;
         }
         .timeline-item.medium-importance .timeline-content {
-            background: #fffaf0;
-            border-left: 4px solid #ffa502;
+            background: #fffaf0; border-left: 4px solid #ffa502;
+        }
+        .timeline-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            gap: 10px; margin-bottom: 8px;
         }
         .actor-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            margin-bottom: 10px;
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            font-size: 0.85rem; font-weight: 500;
         }
         .actor-linjie { background: #d4edda; color: #155724; }
         .actor-operation { background: #fff3cd; color: #856404; }
         .actor-system { background: #d1ecf1; color: #0c5460; }
         .actor-manual { background: #f8d7da; color: #721c24; }
-        .timestamp {
-            color: #888;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
+        .timestamp { color: #888; font-size: 0.85rem; }
         .action {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #333;
+            font-size: 1.1rem; font-weight: 600; color: #333;
             margin-bottom: 10px;
         }
-        .details {
-            background: white;
-            border-radius: 8px;
-            padding: 12px;
-            font-size: 0.95rem;
-            color: #555;
+        .details-toggle {
+            background: none; border: none; color: #667eea; cursor: pointer;
+            font-size: 0.85rem; padding: 4px 0; margin-bottom: 8px;
         }
+        .details-toggle:hover { text-decoration: underline; }
+        .details {
+            background: white; border-radius: 8px; padding: 12px;
+            font-size: 0.95rem; color: #555; overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .details.collapsed { max-height: 0; padding-top: 0; padding-bottom: 0; }
         .details p { margin-bottom: 5px; }
         .details p:last-child { margin-bottom: 0; }
         .target {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px dashed #ddd;
-            font-size: 0.85rem;
-            color: #888;
+            margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd;
+            font-size: 0.85rem; color: #888;
         }
+        .hidden { display: none !important; }
+
         .footer {
-            text-align: center;
-            color: white;
-            margin-top: 30px;
-            opacity: 0.8;
+            text-align: center; color: white; margin-top: 30px; opacity: 0.9;
         }
         @media (max-width: 768px) {
             .timeline::before { left: 20px; }
             .timeline-item {
-                width: 100%;
-                padding-left: 60px !important;
-                padding-right: 0 !important;
-                margin-left: 0 !important;
+                width: 100%; padding-left: 60px !important;
+                padding-right: 0 !important; margin-left: 0 !important;
             }
-            .timeline-item::before {
-                left: 12px !important;
-                right: auto !important;
-            }
+            .timeline-item::before { left: 12px !important; right: auto !important; }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .search-box { min-width: 100%; }
         }
     </style>
 </head>
@@ -271,41 +255,84 @@ class TimelineGenerator:
             <p>历史时间线 - 可直接用于沟通的完整变更记录</p>
         </div>
 
-        <div class="summary-cards">
-            <div class="summary-card">
-                <div class="number">{{ stats.total_files }}</div>
-                <div class="label">版权文件总数</div>
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <span class="toolbar-label">下载：</span>
+                <button class="btn btn-success" onclick="downloadMarkdown()">⬇️ Markdown</button>
+                <button class="btn btn-info" onclick="downloadJSON()">⬇️ JSON</button>
+                <button class="btn btn-warning" onclick="window.print()">🖨️ 打印</button>
             </div>
-            <div class="summary-card">
-                <div class="number">{{ stats.matched }}</div>
-                <div class="label">最终匹配</div>
+            <div style="flex: 1"></div>
+            <div class="toolbar-group">
+                <span class="toolbar-label">筛选角色：</span>
+                <button class="btn btn-outline active" data-filter-actor="all" onclick="filterByActor(this)">全部</button>
+                <button class="btn btn-outline" data-filter-actor="林姐" onclick="filterByActor(this)">👩‍🏫 林姐</button>
+                <button class="btn btn-outline" data-filter-actor="运营" onclick="filterByActor(this)">👔 运营</button>
+                <button class="btn btn-outline" data-filter-actor="人工" onclick="filterByActor(this)">✍️ 人工</button>
+                <button class="btn btn-outline" data-filter-actor="系统" onclick="filterByActor(this)">🖥️ 系统</button>
             </div>
-            <div class="summary-card">
-                <div class="number">{{ stats.overridden }}</div>
-                <div class="label">判断被覆盖</div>
+            <div class="toolbar-group">
+                <span class="toolbar-label">级别：</span>
+                <button class="btn btn-outline active" data-filter-importance="all" onclick="filterByImportance(this)">全部</button>
+                <button class="btn btn-outline" data-filter-importance="high" onclick="filterByImportance(this)">🔴 重要</button>
+                <button class="btn btn-outline" data-filter-importance="medium" onclick="filterByImportance(this)">🟡 中</button>
+                <button class="btn btn-outline" data-filter-importance="normal" onclick="filterByImportance(this)">⚪ 普通</button>
             </div>
-            <div class="summary-card">
-                <div class="number">{{ stats.linjie_count }}</div>
-                <div class="label">林姐判断数</div>
+            <div class="toolbar-group">
+                <input type="text" class="search-box" placeholder="🔍 搜索文件名/曲目/内容..." oninput="filterBySearch(this.value)">
             </div>
-            <div class="summary-card">
-                <div class="number">{{ stats.operation_count }}</div>
-                <div class="label">运营主管改动</div>
-            </div>
-            <div class="summary-card">
-                <div class="number">{{ stats.events }}</div>
-                <div class="label">历史事件总数</div>
+            <div class="toolbar-group">
+                <button class="btn btn-outline" onclick="toggleAllDetails()">🔽 全部展开/折叠</button>
             </div>
         </div>
 
-        <div class="timeline">
+        <div class="summary-cards">
+            <div class="summary-card" onclick="filterByActor(null, 'all')">
+                <div class="number">{{ stats.total_files }}</div>
+                <div class="label">📄 版权文件总数</div>
+            </div>
+            <div class="summary-card" onclick="filterByImportance(null, 'high')">
+                <div class="number" style="color: #ff6b6b;">{{ stats.overridden }}</div>
+                <div class="label">🔄 判断被覆盖</div>
+            </div>
+            <div class="summary-card" onclick="filterByActor(null, '林姐')">
+                <div class="number" style="color: #48bb78;">{{ stats.linjie_count }}</div>
+                <div class="label">👩‍🏫 林姐判断</div>
+            </div>
+            <div class="summary-card" onclick="filterByActor(null, '运营')">
+                <div class="number" style="color: #ed8936;">{{ stats.operation_count }}</div>
+                <div class="label">👔 运营改动</div>
+            </div>
+            <div class="summary-card" onclick="filterByActor(null, '人工')">
+                <div class="number" style="color: #e53e3e;">{{ stats.manual_count }}</div>
+                <div class="label">✍️ 人工批注</div>
+            </div>
+            <div class="summary-card">
+                <div class="number">{{ stats.events }}</div>
+                <div class="label">📜 历史事件</div>
+            </div>
+        </div>
+
+        <div id="no-results" class="no-results hidden">
+            <div class="no-results-icon">🔍</div>
+            <p>没有找到匹配的记录</p>
+            <p style="font-size: 0.9rem; margin-top: 8px;">试试调整筛选条件或清空搜索</p>
+        </div>
+
+        <div class="timeline" id="timeline">
             {% for item in timeline %}
-            <div class="timeline-item {{ item.importance }}-importance">
+            <div class="timeline-item {{ item.importance }}-importance"
+                 data-actor="{{ item.actor }}"
+                 data-importance="{{ item.importance }}"
+                 data-search="{{ item.actor }} {{ item.action }} {{ item.target_filename or '' }} {{ item.target_track_id or '' }} {% for k, v in item.details.items() %}{{ k }} {{ v }} {% endfor %}">
                 <div class="timeline-content">
-                    <span class="actor-badge actor-{{ item.actor_type }}">{{ item.actor }}</span>
-                    <div class="timestamp">⏰ {{ item.timestamp }}</div>
+                    <div class="timeline-header">
+                        <span class="actor-badge actor-{{ item.actor_type }}">{{ item.actor }}</span>
+                        <span class="timestamp">⏰ {{ item.timestamp }}</span>
+                    </div>
                     <div class="action">{{ item.action }}</div>
-                    <div class="details">
+                    <button class="details-toggle" onclick="toggleDetails(this)">▼ 展开详情</button>
+                    <div class="details collapsed">
                         {% for key, value in item.details.items() %}
                         <p><strong>{{ key }}:</strong> {{ value }}</p>
                         {% endfor %}
@@ -325,6 +352,127 @@ class TimelineGenerator:
             <p>生成时间: {{ generate_time }} | 此时间线可直接用于跨部门沟通</p>
         </div>
     </div>
+
+    <script>
+        const TIMELINE_DATA = {{ timeline_json|safe }};
+        let currentActorFilter = 'all';
+        let currentImportanceFilter = 'all';
+        let currentSearch = '';
+        let allCollapsed = true;
+
+        function applyFilters() {
+            const items = document.querySelectorAll('.timeline-item');
+            let visibleCount = 0;
+            items.forEach(item => {
+                const actor = item.dataset.actor;
+                const importance = item.dataset.importance;
+                const search = item.dataset.search.toLowerCase();
+                const actorMatch = currentActorFilter === 'all' || actor.includes(currentActorFilter);
+                const importanceMatch = currentImportanceFilter === 'all' || importance === currentImportanceFilter;
+                const searchMatch = currentSearch === '' || search.includes(currentSearch.toLowerCase());
+                if (actorMatch && importanceMatch && searchMatch) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+            document.getElementById('no-results').classList.toggle('hidden', visibleCount > 0);
+            document.getElementById('timeline').classList.toggle('hidden', visibleCount === 0);
+        }
+
+        function filterByActor(btn, forceValue) {
+            const value = forceValue || (btn ? btn.dataset.filterActor : 'all');
+            currentActorFilter = value;
+            document.querySelectorAll('[data-filter-actor]').forEach(b => {
+                b.classList.toggle('active', b.dataset.filterActor === value);
+            });
+            applyFilters();
+        }
+
+        function filterByImportance(btn, forceValue) {
+            const value = forceValue || (btn ? btn.dataset.filterImportance : 'all');
+            currentImportanceFilter = value;
+            document.querySelectorAll('[data-filter-importance]').forEach(b => {
+                b.classList.toggle('active', b.dataset.filterImportance === value);
+            });
+            applyFilters();
+        }
+
+        function filterBySearch(value) {
+            currentSearch = value;
+            applyFilters();
+        }
+
+        function toggleDetails(btn) {
+            const details = btn.parentElement.querySelector('.details');
+            const isCollapsed = details.classList.contains('collapsed');
+            details.classList.toggle('collapsed');
+            btn.textContent = isCollapsed ? '▲ 收起详情' : '▼ 展开详情';
+        }
+
+        function toggleAllDetails() {
+            const items = document.querySelectorAll('.timeline-item:not(.hidden)');
+            items.forEach(item => {
+                const details = item.querySelector('.details');
+                const btn = item.querySelector('.details-toggle');
+                if (allCollapsed) {
+                    details.classList.remove('collapsed');
+                    btn.textContent = '▲ 收起详情';
+                } else {
+                    details.classList.add('collapsed');
+                    btn.textContent = '▼ 展开详情';
+                }
+            });
+            allCollapsed = !allCollapsed;
+        }
+
+        function downloadMarkdown() {
+            const lines = ['# 版权授权清单归档 - 历史时间线\\n'];
+            const visibleItems = document.querySelectorAll('.timeline-item:not(.hidden)');
+            visibleItems.forEach(item => {
+                const badge = item.querySelector('.actor-badge').textContent;
+                const time = item.querySelector('.timestamp').textContent.replace('⏰ ', '');
+                const action = item.querySelector('.action').textContent;
+                const details = item.querySelector('.details');
+                lines.push(`### ${time} - ${badge}`);
+                lines.push(`**动作：** ${action}\\n`);
+                lines.push('**详情：**');
+                details.querySelectorAll('p').forEach(p => {
+                    lines.push(`- ${p.textContent}`);
+                });
+                const target = item.querySelector('.target');
+                if (target) lines.push(`\\n**关联：** ${target.textContent.trim()}`);
+                lines.push('\\n---\\n');
+            });
+            const blob = new Blob([lines.join('\\n')], {type: 'text/markdown;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'copyright_timeline.md';
+            a.click(); URL.revokeObjectURL(url);
+        }
+
+        function downloadJSON() {
+            const filtered = [];
+            document.querySelectorAll('.timeline-item:not(.hidden)').forEach(item => {
+                const badge = item.querySelector('.actor-badge').textContent;
+                const time = item.querySelector('.timestamp').textContent.replace('⏰ ', '');
+                const action = item.querySelector('.action').textContent;
+                const details = {};
+                item.querySelectorAll('.details p').forEach(p => {
+                    const parts = p.textContent.split(': ');
+                    if (parts.length >= 2) details[parts[0].trim()] = parts.slice(1).join(': ').trim();
+                });
+                const target = item.querySelector('.target');
+                filtered.push({timestamp: time, actor: badge, action, details, target: target ? target.textContent.trim() : null});
+            });
+            const blob = new Blob([JSON.stringify(filtered, null, 2)], {type: 'application/json;charset=utf-8'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'copyright_timeline.json';
+            a.click(); URL.revokeObjectURL(url);
+        }
+    </script>
 </body>
 </html>
         """)

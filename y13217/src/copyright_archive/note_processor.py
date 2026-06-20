@@ -31,26 +31,60 @@ class NoteProcessor:
         return context
 
     def _apply_note(self, context: ProcessingContext, note: Note):
-        """应用单条备注"""
+        """应用单条备注
+
+        匹配优先级：
+        1. 如果指定了 target_filename → 只按 filename 精确匹配（最精确，不扩散）
+        2. 只有未指定 target_filename 时，才按 target_track_id 匹配（扩散到该曲目所有文件）
+        3. 如果 filename 存在但匹配不到任何文件 → 记录告警，不 fallback 到 track_id
+        """
         target_filename = note.target_filename
         target_track_id = note.target_track_id
 
         if not target_filename and not target_track_id:
             return
 
+        matched_by = None
         cards_to_update = []
-        for card in context.judgment_cards:
-            if target_filename and card.filename == target_filename:
-                cards_to_update.append(card)
-            elif target_track_id and card.track_id == target_track_id:
-                cards_to_update.append(card)
+
+        if target_filename:
+            matched_by = "filename"
+            for card in context.judgment_cards:
+                if card.filename == target_filename:
+                    cards_to_update.append(card)
+
+            if not cards_to_update:
+                self._add_history_entry(
+                    context,
+                    actor=Actor.SYSTEM,
+                    action="备注匹配告警",
+                    details={
+                        "告警信息": "备注指定了文件名但未匹配到任何判断卡，已跳过，未按曲目ID扩散",
+                        "指定的filename": target_filename,
+                        "指定的track_id": target_track_id or "(未指定)",
+                        "备注内容": note.content,
+                        "备注类型": note.note_type.value,
+                        "建议": "请检查文件名是否正确，或移除filename字段让备注按曲目ID生效"
+                    },
+                    target_filename=target_filename,
+                    target_track_id=target_track_id
+                )
+                return
+        else:
+            matched_by = "track_id"
+            for card in context.judgment_cards:
+                if card.track_id == target_track_id:
+                    cards_to_update.append(card)
 
         match_results_to_update = []
-        for result in context.match_results:
-            if target_filename and result.filename == target_filename:
-                match_results_to_update.append(result)
-            elif target_track_id and result.track_id == target_track_id:
-                match_results_to_update.append(result)
+        if matched_by == "filename":
+            for result in context.match_results:
+                if result.filename == target_filename:
+                    match_results_to_update.append(result)
+        else:
+            for result in context.match_results:
+                if result.track_id == target_track_id:
+                    match_results_to_update.append(result)
 
         for card in cards_to_update:
             self._update_card_with_note(context, card, note)
@@ -64,6 +98,7 @@ class NoteProcessor:
             action=f"应用{note.note_type.value}",
             details={
                 "备注内容": note.content,
+                "匹配方式": f"按{matched_by}匹配",
                 "影响文件数": len(cards_to_update),
                 "影响判断卡": [c.filename for c in cards_to_update]
             },
