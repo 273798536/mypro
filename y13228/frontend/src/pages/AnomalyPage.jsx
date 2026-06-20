@@ -61,7 +61,7 @@ export default function AnomalyPage({ refreshKey, onResolve }) {
         <span className="small-desc">{r.file_name || '无文件名'}</span>
         {r.track_status ? <Tag>{r.track_status === 'pending' ? '待处理' : r.track_status === 'confirmed' ? '已确认' : r.track_status}</Tag> : null}
       </Space>
-    ) : <span className="small-desc">（无</span>) },
+    ) : <span className="small-desc">（未关联曲目）</span> },
     { title: '发现时间', dataIndex: 'created_at', width: 160, render: v => dayjs(v).format('YYYY-MM-DD HH:mm') },
     { title: '状态', dataIndex: 'resolved', width: 100, render: v => v ? <Tag color="green" icon={<CheckCircleOutlined />}>已解决</Tag> : <Tag color="orange">待处理</Tag> },
     { title: '解决信息', width: 200, render: (_, r) => r.resolved ? (

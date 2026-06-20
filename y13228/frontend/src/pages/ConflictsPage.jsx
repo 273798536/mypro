@@ -30,7 +30,7 @@ export default function ConflictsPage({ refreshKey, onResolve }) {
             renderItem={t => (
               <List.Item>
                 <List.Item.Meta
-                  avatar={<Avatar icon={<TeamOutlined />} />
+                  avatar={<Avatar icon={<TeamOutlined />} />}
                   title={<b>{t.track_name}</b>}
                   description={`ID#${t.id} | 文件：${t.file_name || '缺失'} | 状态：${t.status || 'pending'}`}
                 />
@@ -39,7 +39,7 @@ export default function ConflictsPage({ refreshKey, onResolve }) {
           />
           <Divider style={{ margin: '8px 0 12px' }} />
           <p style={{ marginBottom: 8 }}>保留哪一条（其他条目的 duplicate_alias 标记会清除）：</p>
-          <Select id="keep-select" style={{ width: '100% }} placeholder="选择保留的曲目ID"
+          <Select id="keep-select" style={{ width: '100%' }} placeholder="选择保留的曲目ID"
             options={cf.tracks.map(t => ({ value: t.id, label: `#${t.id} - ${t.track_name}` }))} />
           <p style={{ marginTop: 12, marginBottom: 8 }}>处理说明：</p>
           <Input id="conflict-remark" placeholder="例如：保留条目A，条目B为旧说法已作废，和阿蓝确认过" />

@@ -200,7 +200,7 @@ export default function TracksPage({ refreshKey, stats, onChange }) {
         <Form form={form} layout="vertical" onFinish={onSubmit} style={{ paddingTop: 8 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <Form.Item name="track_no" label="曲目编号"><Input /></Form.Item>
-            <Form.Item name="program_order" label="演出顺序"><InputNumber min={0} style={{ width: '100% }} /></Form.Item>
+            <Form.Item name="program_order" label="演出顺序"><InputNumber min={0} style={{ width: '100%' }} /></Form.Item>
           </div>
           <Form.Item name="track_name" label="曲目名称" rules={[{ required: true, message: '必填' }]}><Input /></Form.Item>
           <Form.Item name="track_aliases" label="别名（逗号分隔，用于查重）"><Input placeholder="例如：青花、Blue White Porcelain" /></Form.Item>
@@ -240,7 +240,7 @@ export default function TracksPage({ refreshKey, stats, onChange }) {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         width={620}
-        extra={<Button size="small" icon={<DownloadOutlined />} onClick={() => downloadFile(exportHistoryUrl(detail.id), `曲目_${detail?.id}_历史.csv`}>导出历史CSV</Button>}
+        extra={<Button size="small" icon={<DownloadOutlined />} onClick={() => downloadFile(exportHistoryUrl(detail.id), '曲目_' + (detail ? detail.id : '') + '_历史.csv')}>导出历史CSV</Button>}
       >
         {detail && (
           <div>

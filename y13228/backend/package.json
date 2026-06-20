@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "build": "echo 'Backend build: no transpile needed, using Node.js directly'",
     "seed": "node scripts/seed.js",
     "rerun": "node scripts/rerun.js",
     "test": "node scripts/test.js"

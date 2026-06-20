@@ -21,11 +21,19 @@ const FIELD_ALIASES = {
 };
 
 function detectField(headerRow) {
+  const sortedFields = Object.entries(FIELD_ALIASES).sort((a, b) => {
+    const aMax = Math.max(...a[1].map(s => s.length));
+    const bMax = Math.max(...b[1].map(s => s.length));
+    return bMax - aMax;
+  });
   const mapping = {};
   headerRow.forEach((header, idx) => {
     const h = String(header || '').trim().toLowerCase();
-    for (const [canonical, aliases] of Object.entries(FIELD_ALIASES)) {
-      if (aliases.some(a => a.toLowerCase() === h || h.indexOf(a.toLowerCase()) !== -1)) {
+    for (const [canonical, aliases] of sortedFields) {
+      if (aliases.some(a => {
+        const al = a.toLowerCase();
+        return al === h || h.indexOf(al) !== -1;
+      })) {
         mapping[idx] = canonical;
         break;
       }

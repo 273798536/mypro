@@ -47,8 +47,8 @@ function getTrack(id) {
 
 function createTrack(data, operator = 'system') {
   const stmt = db.prepare(`
-    INSERT INTO tracks (track_no, track_name, track_aliases, file_name, source, source_type, program_order, is_encore, status, remark, anomaly_type, anomaly_detail, operator)
-    VALUES (@track_no, @track_name, @track_aliases, @file_name, @source, @source_type, @program_order, @is_encore, @status, @remark, @anomaly_type, @anomaly_detail, @operator)
+    INSERT INTO tracks (track_no, track_name, track_aliases, file_name, source, source_type, program_order, is_encore, status, remark, auth_remark, anomaly_type, anomaly_detail, operator)
+    VALUES (@track_no, @track_name, @track_aliases, @file_name, @source, @source_type, @program_order, @is_encore, @status, @remark, @auth_remark, @anomaly_type, @anomaly_detail, @operator)
   `);
   const info = stmt.run({
     track_no: data.track_no || null,
@@ -61,6 +61,7 @@ function createTrack(data, operator = 'system') {
     is_encore: data.is_encore ? 1 : 0,
     status: data.status || 'pending',
     remark: data.remark || null,
+    auth_remark: data.auth_remark || null,
     anomaly_type: data.anomaly_type || null,
     anomaly_detail: data.anomaly_detail || null,
     operator: operator,
