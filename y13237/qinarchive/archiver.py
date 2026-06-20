@@ -8,7 +8,7 @@ from .models import LessonRecord, ArchiveResult
 
 OLD_MASTER_PATTERNS = [
     r"旧版", r"母带", r"master", r"backup", r"_old", r"_v0",
-    r"废弃", r"作废", r"deprecated",
+    r"deprecated",
 ]
 
 
@@ -104,13 +104,6 @@ def process_lesson_list(
             auth_note=auth_note,
         )
 
-        bad, reason = is_bad_row(row, required_cols)
-        if bad:
-            rec.is_bad_row = True
-            rec.bad_reason = reason
-            result.records.append(rec)
-            continue
-
         student = row.get("学生姓名", "").strip()
         lesson_date = row.get("上课日期", "").strip()
         notes = row.get("备注", "")
@@ -121,6 +114,13 @@ def process_lesson_list(
         if "作废" in notes or "取消" in notes:
             rec.is_skipped = True
             rec.skip_reason = f"备注标记: {notes}"
+            result.records.append(rec)
+            continue
+
+        bad, reason = is_bad_row(row, required_cols)
+        if bad:
+            rec.is_bad_row = True
+            rec.bad_reason = reason
             result.records.append(rec)
             continue
 

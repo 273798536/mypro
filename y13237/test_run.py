@@ -8,7 +8,7 @@ from qinarchive.exporter import export_result
 base = Path(".")
 lesson_file = base / "testdata" / "lessons.csv"
 audio_dir = base / "testdata" / "audio"
-tracklist_file = base / "testdata" / "tracklist.xlsx"
+tracklist_file = base / "testdata" / "tracklist.csv"
 output_dir = base / "archive_output"
 
 audio_dir.mkdir(parents=True, exist_ok=True)

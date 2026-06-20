@@ -11,7 +11,7 @@ pip install -e .
 # 完整归档（带音频、曲目表、授权备注）
 qinarchive archive testdata/lessons.csv \
   -a testdata/audio \
-  -t testdata/tracklist.xlsx \
+  -t testdata/tracklist.csv \
   -n "2025年6月第2周授权通过" \
   --show-all
 ```
@@ -22,7 +22,7 @@ qinarchive archive testdata/lessons.csv \
 # 重新导出（不改原始数据，只重跑标记逻辑）
 qinarchive export testdata/lessons.csv \
   -a testdata/audio \
-  -t testdata/tracklist.xlsx \
+  -t testdata/tracklist.csv \
   -n "授权备注V2"
 
 # 筛选查看
@@ -47,6 +47,8 @@ qinarchive list testdata/lessons.csv -f final
 |------|--------|------|
 | 正常记录 | 张小明 2025-06-10 | `qinarchive list testdata/lessons.csv -f final` |
 | 补录记录 | 赵小天 2025-06-15 (备注: 补录6月8日) | 导出 final_archive.csv 可见标记 |
-| 异常记录 | 行4(缺学生名)、行8(取消) | `qinarchive list testdata/lessons.csv -f bad` 看坏行 |
+| 正常记录 | 张小明 王小芳 陈雨桐 赵小天 周浩然（5条已处理） | `qinarchive list testdata/lessons.csv -f final` |
+| 补录记录 | 赵小天 2025-06-15 (备注: 补录6月8日) | 导出 final_archive.csv 可见标记 |
+| 异常记录 | 行4(缺学生名 → 坏行1条)、行5刘强(作废→跳过)、行8孙佳佳(取消→跳过) | `qinarchive list testdata/lessons.csv -f bad` + `-f skipped` |
 
 输出目录 `./archive_output/` 下7个CSV，全带原始来源和标记列。

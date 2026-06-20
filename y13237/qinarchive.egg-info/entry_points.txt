@@ -1,0 +1,2 @@
+[console_scripts]
+qinarchive = qinarchive.cli:cli

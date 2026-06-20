@@ -1,0 +1,3 @@
+﻿上课日期,备注,学生姓名,授课老师,课时,费用,音频文件,_source_file,_line_number,_is_bad_row,_bad_reason,_is_skipped,_skip_reason,_is_old_master,_auth_note,_audio_file,_progress_notes,_processed_at
+2025-06-13,"老师临时有事,作废",刘强,,1,200,,testdata/lessons.csv,5,否,,是,"备注标记: 老师临时有事,作废",否,2025年6月第2周授权通过,,,2026-06-20 15:00:44
+2025-06-16,"学生请假,取消",孙佳佳,陈老师,1,200,,testdata/lessons.csv,8,否,,是,"备注标记: 学生请假,取消",否,2025年6月第2周授权通过,,,2026-06-20 15:00:44

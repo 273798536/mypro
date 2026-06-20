@@ -1,0 +1,6 @@
+﻿_曲目表_曲目,_曲目表_进度,上课日期,备注,学生姓名,授课老师,课时,费用,音频文件,_source_file,_line_number,_is_bad_row,_bad_reason,_is_skipped,_skip_reason,_is_old_master,_auth_note,_audio_file,_progress_notes,_processed_at
+拜厄练习曲第15条,左手连贯性进步,2025-06-10,正常上课,张小明,李老师,1,200,,testdata/lessons.csv,2,否,,否,,否,2025年6月第2周授权通过,/Users/mac/pro/solo/workspaces/y13237/testdata/audio/张小明_20250610.wav,左手连贯性进步,2026-06-20 15:00:44
+车尔尼599第30条,音阶速度提升到80,2025-06-11,音阶练习进步明显,王小芳,陈老师,2,400,,testdata/lessons.csv,3,否,,否,,否,2025年6月第2周授权通过,,音阶速度提升到80,2026-06-20 15:00:44
+致爱丽丝,旧版母带,2025-06-14,旧版母带需重录,陈雨桐,王老师,1,200,old_master_chen.wav,testdata/lessons.csv,6,否,,否,,是,2025年6月第2周授权通过,/Users/mac/pro/solo/workspaces/y13237/testdata/audio/old_master_陈雨桐_20250614.wav,旧版母带,2026-06-20 15:00:44
+巴赫小步舞曲,补录,2025-06-15,补录6月8日课程,赵小天,李老师,1,200,,testdata/lessons.csv,7,否,,否,,否,2025年6月第2周授权通过,/Users/mac/pro/solo/workspaces/y13237/testdata/audio/赵小天-20250615.m4a,补录,2026-06-20 15:00:44
+月光奏鸣曲第一乐章,力度控制改善,2025-06-17,手指力度有提升,周浩然,王老师,2,400,backup_zhou.wav,testdata/lessons.csv,9,否,,否,,是,2025年6月第2周授权通过,/Users/mac/pro/solo/workspaces/y13237/testdata/audio/backup_周浩然 20250617.wav,力度控制改善,2026-06-20 15:00:44

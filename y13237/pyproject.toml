@@ -12,6 +12,9 @@ dependencies = [
 [project.scripts]
 qinarchive = "qinarchive.cli:cli"
 
+[tool.setuptools]
+packages = ["qinarchive"]
+
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
