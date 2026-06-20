@@ -1,0 +1,115 @@
+[
+  {
+    "timestamp": "2026-06-20T12:55:30",
+    "alias": "v1_baseline",
+    "log_path": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v1.json",
+    "total": 3,
+    "processed": 1,
+    "needs_material": 1,
+    "manual_review": 1,
+    "small_samples": [
+      {
+        "experiment_id": "exp_002",
+        "sample_count": 200,
+        "threshold": 500,
+        "reason": "样本数(200) < 阈值(500)，小样本被平均数盖住，需补材料"
+      }
+    ],
+    "records": [
+      {
+        "source": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v1.json",
+        "status": "processed",
+        "sample_count": 1500,
+        "threshold": 500,
+        "metric": 0.78,
+        "metric_name": "AUC",
+        "experiment_id": "exp_001",
+        "group": "control"
+      },
+      {
+        "source": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v1.json",
+        "status": "needs_material",
+        "sample_count": 200,
+        "threshold": 500,
+        "metric": 0.72,
+        "metric_name": "AUC",
+        "experiment_id": "exp_002",
+        "group": "treatment_a",
+        "_reason": "样本数(200) < 阈值(500)，小样本被平均数盖住，需补材料"
+      },
+      {
+        "source": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v1.json",
+        "status": "manual_review",
+        "sample_count": 1200,
+        "threshold": 500,
+        "manual_correction": "剔除异常用户3个",
+        "metric": 0.81,
+        "experiment_id": "exp_003",
+        "group": "treatment_b",
+        "_reason": "存在人工修正: 剔除异常用户3个"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-06-20T12:55:30",
+    "alias": "v2_current",
+    "log_path": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v2.json",
+    "total": 4,
+    "processed": 2,
+    "needs_material": 1,
+    "manual_review": 1,
+    "small_samples": [
+      {
+        "experiment_id": "exp_002",
+        "sample_count": 180,
+        "threshold": 500,
+        "reason": "样本数(180) < 阈值(500)，小样本被平均数盖住，需补材料"
+      }
+    ],
+    "records": [
+      {
+        "source": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v2.json",
+        "status": "processed",
+        "sample_count": 1500,
+        "threshold": 500,
+        "metric": 0.79,
+        "metric_name": "AUC",
+        "experiment_id": "exp_001",
+        "group": "control"
+      },
+      {
+        "source": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v2.json",
+        "status": "needs_material",
+        "sample_count": 180,
+        "threshold": 500,
+        "metric": 0.7,
+        "metric_name": "AUC",
+        "experiment_id": "exp_002",
+        "group": "treatment_a",
+        "_reason": "样本数(180) < 阈值(500)，小样本被平均数盖住，需补材料"
+      },
+      {
+        "source": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v2.json",
+        "status": "manual_review",
+        "sample_count": 1300,
+        "threshold": 500,
+        "manual_correction": "剔除异常用户5个，调整权重",
+        "metric": 0.83,
+        "metric_name": "AUC",
+        "experiment_id": "exp_003",
+        "group": "treatment_b",
+        "_reason": "存在人工修正: 剔除异常用户5个，调整权重"
+      },
+      {
+        "source": "/Users/mac/pro/solo/workspaces/y13360/sample_data/train_log_v2.json",
+        "status": "processed",
+        "sample_count": 600,
+        "threshold": 500,
+        "metric": 0.75,
+        "metric_name": "AUC",
+        "experiment_id": "exp_004",
+        "group": "treatment_c"
+      }
+    ]
+  }
+]

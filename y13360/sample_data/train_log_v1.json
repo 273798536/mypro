@@ -1,0 +1,28 @@
+{
+  "experiments": [
+    {
+      "exp_id": "exp_001",
+      "arm": "control",
+      "样本数": 1500,
+      "阈值": 500,
+      "auc": 0.78,
+      "metric_name": "AUC"
+    },
+    {
+      "exp_id": "exp_002",
+      "arm": "treatment_a",
+      "n_samples": 200,
+      "cutoff": 500,
+      "score": 0.72,
+      "指标名": "AUC"
+    },
+    {
+      "exp_id": "exp_003",
+      "arm": "treatment_b",
+      "samples": 1200,
+      "thresh": 500,
+      "指标": 0.81,
+      "人工修正": "剔除异常用户3个"
+    }
+  ]
+}

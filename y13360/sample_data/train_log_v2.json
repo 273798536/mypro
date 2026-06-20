@@ -1,0 +1,35 @@
+[
+  {
+    "experiment_id": "exp_001",
+    "group": "control",
+    "sample_count": 1500,
+    "threshold": 500,
+    "metric": 0.79,
+    "metric_name": "AUC"
+  },
+  {
+    "experiment_id": "exp_002",
+    "group": "treatment_a",
+    "sample_count": 180,
+    "threshold": 500,
+    "metric": 0.7,
+    "metric_name": "AUC"
+  },
+  {
+    "experiment_id": "exp_003",
+    "group": "treatment_b",
+    "sample_count": 1300,
+    "threshold": 500,
+    "metric": 0.83,
+    "metric_name": "AUC",
+    "manual_correction": "剔除异常用户5个，调整权重"
+  },
+  {
+    "experiment_id": "exp_004",
+    "group": "treatment_c",
+    "sample_count": 600,
+    "threshold": 500,
+    "metric": 0.75,
+    "metric_name": "AUC"
+  }
+]
