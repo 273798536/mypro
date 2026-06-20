@@ -1,0 +1,240 @@
+{
+  "version_tag": "v1",
+  "created_at": "2026-06-20T13:03:39",
+  "materials": [
+    {
+      "material_name": "v1_manual_adjustments.txt",
+      "material_type": "manual_adjustments",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "504f415d40dd6c7b",
+      "source": "./snapshot_workspace/raw_materials/v1_manual_adjustments.txt"
+    },
+    {
+      "material_name": "v1_metric.txt",
+      "material_type": "metric",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "da16ed86592d2ede",
+      "source": "./snapshot_workspace/raw_materials/v1_metric.txt"
+    },
+    {
+      "material_name": "v1_normal_record.txt",
+      "material_type": "normal_record",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "225ebe716aa4b1ba",
+      "source": "./snapshot_workspace/raw_materials/v1_normal_record.txt"
+    },
+    {
+      "material_name": "v1_training_log.txt",
+      "material_type": "training_log",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "f51e413c7a50b171",
+      "source": "./snapshot_workspace/raw_materials/v1_training_log.txt"
+    },
+    {
+      "material_name": "v1_verbal_note.txt",
+      "material_type": "verbal_note",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "3668644d3cf70e8e",
+      "source": "./snapshot_workspace/raw_materials/v1_verbal_note.txt"
+    }
+  ],
+  "samples": [
+    {
+      "sample_id": "S0001",
+      "features": {
+        "sample_id": "S0001",
+        "f_age": "28",
+        "f_gender": "1",
+        "f_city_enc": "3",
+        "f_ctr_30d": "0.123",
+        "f_pay_amt": "189.50"
+      },
+      "label": "1",
+      "prediction": "0.931",
+      "feature_arrival_latency_ms": 45,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v1/S0001.parquet",
+        "logs/impr.log:1289"
+      ]
+    },
+    {
+      "sample_id": "S0002",
+      "features": {
+        "sample_id": "S0002",
+        "f_age": "35",
+        "f_gender": "0",
+        "f_city_enc": "7",
+        "f_ctr_30d": "0.088",
+        "f_pay_amt": "42.00"
+      },
+      "label": "0",
+      "prediction": "0.212",
+      "feature_arrival_latency_ms": 120,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v1/S0002.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0003",
+      "features": {
+        "sample_id": "S0003",
+        "f_age": "41",
+        "f_gender": "1",
+        "f_city_enc": "2",
+        "f_ctr_30d": "0.201",
+        "f_pay_amt": "568.00"
+      },
+      "label": "1",
+      "prediction": "0.881",
+      "feature_arrival_latency_ms": 620,
+      "is_feature_late": true,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v1/S0003.parquet",
+        "feature/missing.log:33"
+      ]
+    },
+    {
+      "sample_id": "S0004",
+      "features": {
+        "sample_id": "S0004",
+        "f_age": "22",
+        "f_gender": "0",
+        "f_city_enc": "5",
+        "f_ctr_30d": "0.045",
+        "f_pay_amt": "12.80"
+      },
+      "label": "0",
+      "prediction": "0.112",
+      "feature_arrival_latency_ms": 30,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v1/S0004.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0005",
+      "features": {
+        "sample_id": "S0005",
+        "f_age": "53",
+        "f_gender": "1",
+        "f_city_enc": "1",
+        "f_ctr_30d": "0.312",
+        "f_pay_amt": "1280.00"
+      },
+      "label": "1",
+      "prediction": "0.945",
+      "feature_arrival_latency_ms": 80,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v1/S0005.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0006",
+      "features": {
+        "sample_id": "S0006",
+        "f_age": "29",
+        "f_gender": "0",
+        "f_city_enc": "4",
+        "f_ctr_30d": "0.150",
+        "f_pay_amt": "76.30"
+      },
+      "label": "0",
+      "prediction": "0.318",
+      "feature_arrival_latency_ms": 35,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v1/S0006.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0007",
+      "features": {
+        "sample_id": "S0007",
+        "f_age": "38",
+        "f_gender": "1",
+        "f_city_enc": "9",
+        "f_ctr_30d": "0.267",
+        "f_pay_amt": "899.00"
+      },
+      "label": "1",
+      "prediction": "0.872",
+      "feature_arrival_latency_ms": 410,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v1/S0007.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0008",
+      "features": {
+        "sample_id": "S0008",
+        "f_age": "45",
+        "f_gender": "0",
+        "f_city_enc": "6",
+        "f_ctr_30d": "0.092",
+        "f_pay_amt": "156.00"
+      },
+      "label": "0",
+      "prediction": "0.278",
+      "feature_arrival_latency_ms": 55,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v1/S0008.parquet"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "auc",
+      "value": 0.848,
+      "threshold": 0.82,
+      "direction": "higher",
+      "pass_status": true
+    },
+    {
+      "name": "precision",
+      "value": 0.791,
+      "threshold": 0.75,
+      "direction": "higher",
+      "pass_status": true
+    },
+    {
+      "name": "recall",
+      "value": 0.712,
+      "threshold": 0.7,
+      "direction": "higher",
+      "pass_status": true
+    },
+    {
+      "name": "log_loss",
+      "value": 0.26,
+      "threshold": 0.3,
+      "direction": "lower",
+      "pass_status": true
+    }
+  ],
+  "manual_adjustments": [
+    {
+      "item_id": "S0003",
+      "field_name": "label",
+      "old_value": "0",
+      "new_value": "1",
+      "reason": "特征回填前标签错标",
+      "operator": "小林",
+      "adjusted_at": "2025-06-18T10:35:00"
+    }
+  ],
+  "raw_training_log": "[2025-06-18 10:23:01] INFO training begin, lr=0.001 batch=128\n[2025-06-18 10:25:41] INFO epoch 1/5 loss=0.382 auc=0.761\n[2025-06-18 10:28:22] INFO epoch 2/5 loss=0.314 auc=0.812\n[2025-06-18 10:31:01] INFO epoch 3/5 loss=0.287 auc=0.835\n[2025-06-18 10:33:41] INFO epoch 4/5 loss=0.271 auc=0.846\n[2025-06-18 10:36:20] INFO epoch 5/5 loss=0.260 auc=0.852\n[2025-06-18 10:36:21] INFO save checkpoint to /model/v1.ckpt\n[2025-06-18 10:36:22] INFO offline eval auc=0.848 precision=0.791\n",
+  "notes": "版本说明：v1基线版，按训练pipeline默认配置跑。\n样本抽取：2025-06-17全量曝光，正负比1:5。\n"
+}

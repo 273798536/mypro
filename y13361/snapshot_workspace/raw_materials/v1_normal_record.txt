@@ -1,0 +1,9 @@
+sample_id	f_age	f_gender	f_city_enc	f_ctr_30d	f_pay_amt	latency_ms	is_feature_late	evidence_refs	label	prediction
+S0001	28	1	3	0.123	189.50	45	0	s3://ev/v1/S0001.parquet|logs/impr.log:1289	1	0.931
+S0002	35	0	7	0.088	42.00	120	0	s3://ev/v1/S0002.parquet	0	0.212
+S0003	41	1	2	0.201	568.00	620	1	s3://ev/v1/S0003.parquet|feature/missing.log:33	1	0.881
+S0004	22	0	5	0.045	12.80	30	0	s3://ev/v1/S0004.parquet	0	0.112
+S0005	53	1	1	0.312	1280.00	80	0	s3://ev/v1/S0005.parquet	1	0.945
+S0006	29	0	4	0.150	76.30	35	0	s3://ev/v1/S0006.parquet	0	0.318
+S0007	38	1	9	0.267	899.00	410	0	s3://ev/v1/S0007.parquet	1	0.872
+S0008	45	0	6	0.092	156.00	55	0	s3://ev/v1/S0008.parquet	0	0.278

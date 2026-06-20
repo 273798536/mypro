@@ -1,0 +1,278 @@
+{
+  "version_tag": "v2",
+  "created_at": "2026-06-20T13:03:39",
+  "materials": [
+    {
+      "material_name": "v2_manual_adjustments.txt",
+      "material_type": "manual_adjustments",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "c5fca0ecb50ba6ab",
+      "source": "./snapshot_workspace/raw_materials/v2_manual_adjustments.txt"
+    },
+    {
+      "material_name": "v2_metric.txt",
+      "material_type": "metric",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "b8eb5bb9e1687501",
+      "source": "./snapshot_workspace/raw_materials/v2_metric.txt"
+    },
+    {
+      "material_name": "v2_normal_record.txt",
+      "material_type": "normal_record",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "0bb8551a45e2e2a0",
+      "source": "./snapshot_workspace/raw_materials/v2_normal_record.txt"
+    },
+    {
+      "material_name": "v2_training_log.txt",
+      "material_type": "training_log",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "92439d544624b205",
+      "source": "./snapshot_workspace/raw_materials/v2_training_log.txt"
+    },
+    {
+      "material_name": "v2_verbal_note.txt",
+      "material_type": "verbal_note",
+      "uploaded_at": "2026-06-20T13:03:39",
+      "content_hash": "b6fe3fe8b5729817",
+      "source": "./snapshot_workspace/raw_materials/v2_verbal_note.txt"
+    }
+  ],
+  "samples": [
+    {
+      "sample_id": "S0001",
+      "features": {
+        "sample_id": "S0001",
+        "f_age": "28",
+        "f_gender": "1",
+        "f_city_enc": "3",
+        "f_ctr_30d": "0.123",
+        "f_pay_amt": "189.50"
+      },
+      "label": "1",
+      "prediction": "0.941",
+      "feature_arrival_latency_ms": 50,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0001.parquet",
+        "logs/impr.log:1289"
+      ]
+    },
+    {
+      "sample_id": "S0002",
+      "features": {
+        "sample_id": "S0002",
+        "f_age": "35",
+        "f_gender": "0",
+        "f_city_enc": "7",
+        "f_ctr_30d": "0.088",
+        "f_pay_amt": "42.00"
+      },
+      "label": "1",
+      "prediction": "0.208",
+      "feature_arrival_latency_ms": 130,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0002.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0003",
+      "features": {
+        "sample_id": "S0003",
+        "f_age": "41",
+        "f_gender": "1",
+        "f_city_enc": "2",
+        "f_ctr_30d": "0.201",
+        "f_pay_amt": "568.00"
+      },
+      "label": "1",
+      "prediction": "0.890",
+      "feature_arrival_latency_ms": 615,
+      "is_feature_late": true,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0003.parquet",
+        "feature/missing.log:33"
+      ]
+    },
+    {
+      "sample_id": "S0004",
+      "features": {
+        "sample_id": "S0004",
+        "f_age": "22",
+        "f_gender": "0",
+        "f_city_enc": "5",
+        "f_ctr_30d": "0.045",
+        "f_pay_amt": "12.80"
+      },
+      "label": "0",
+      "prediction": "0.105",
+      "feature_arrival_latency_ms": 35,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0004.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0005",
+      "features": {
+        "sample_id": "S0005",
+        "f_age": "53",
+        "f_gender": "1",
+        "f_city_enc": "1",
+        "f_ctr_30d": "0.312",
+        "f_pay_amt": "1280.00"
+      },
+      "label": "1",
+      "prediction": "0.952",
+      "feature_arrival_latency_ms": 75,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0005.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0006",
+      "features": {
+        "sample_id": "S0006",
+        "f_age": "29",
+        "f_gender": "0",
+        "f_city_enc": "4",
+        "f_ctr_30d": "0.150",
+        "f_pay_amt": "76.30"
+      },
+      "label": "0",
+      "prediction": "0.302",
+      "feature_arrival_latency_ms": 1210,
+      "is_feature_late": true,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0006.parquet",
+        "lag.log:441"
+      ]
+    },
+    {
+      "sample_id": "S0007",
+      "features": {
+        "sample_id": "S0007",
+        "f_age": "38",
+        "f_gender": "1",
+        "f_city_enc": "9",
+        "f_ctr_30d": "0.267",
+        "f_pay_amt": "899.00"
+      },
+      "label": "1",
+      "prediction": "0.881",
+      "feature_arrival_latency_ms": 420,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0007.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0008",
+      "features": {
+        "sample_id": "S0008",
+        "f_age": "45",
+        "f_gender": "0",
+        "f_city_enc": "6",
+        "f_ctr_30d": "0.092",
+        "f_pay_amt": "156.00"
+      },
+      "label": "0",
+      "prediction": "0.265",
+      "feature_arrival_latency_ms": 60,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0008.parquet"
+      ]
+    },
+    {
+      "sample_id": "S0009",
+      "features": {
+        "sample_id": "S0009",
+        "f_age": "31",
+        "f_gender": "1",
+        "f_city_enc": "8",
+        "f_ctr_30d": "0.210",
+        "f_pay_amt": "320.00"
+      },
+      "label": "1",
+      "prediction": "0.832",
+      "feature_arrival_latency_ms": 90,
+      "is_feature_late": false,
+      "manual_correction": null,
+      "evidence_refs": [
+        "s3://ev/v2/S0009.parquet"
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "name": "auc",
+      "value": 0.871,
+      "threshold": 0.82,
+      "direction": "higher",
+      "pass_status": true
+    },
+    {
+      "name": "precision",
+      "value": 0.77,
+      "threshold": 0.8,
+      "direction": "higher",
+      "pass_status": false
+    },
+    {
+      "name": "recall",
+      "value": 0.734,
+      "threshold": 0.7,
+      "direction": "higher",
+      "pass_status": true
+    },
+    {
+      "name": "log_loss",
+      "value": 0.244,
+      "threshold": 0.3,
+      "direction": "lower",
+      "pass_status": true
+    }
+  ],
+  "manual_adjustments": [
+    {
+      "item_id": "S0003",
+      "field_name": "label",
+      "old_value": "0",
+      "new_value": "1",
+      "reason": "特征回填前标签错标",
+      "operator": "小林",
+      "adjusted_at": "2025-06-18T10:35:00"
+    },
+    {
+      "item_id": "S0005",
+      "field_name": "prediction",
+      "old_value": "0.945",
+      "new_value": "0.952",
+      "reason": "新模型打分上浮，复核后保留",
+      "operator": "小林",
+      "adjusted_at": "2025-06-19T09:30:00"
+    },
+    {
+      "item_id": "S0002",
+      "field_name": "label",
+      "old_value": "0",
+      "new_value": "1",
+      "reason": "负样本误标，人工回改",
+      "operator": "小李",
+      "adjusted_at": "2025-06-19T09:25:00"
+    }
+  ],
+  "raw_training_log": "[2025-06-19 09:11:01] INFO training begin, lr=0.0008 batch=128\n[2025-06-19 09:13:42] INFO epoch 1/5 loss=0.361 auc=0.785\n[2025-06-19 09:16:22] INFO 特征归一化口径调整：city_enc 由 min-max 改为 z-score\n[2025-06-19 09:16:23] INFO epoch 2/5 loss=0.298 auc=0.834\n[2025-06-19 09:19:02] INFO epoch 3/5 loss=0.270 auc=0.857\n[2025-06-19 09:21:41] INFO epoch 4/5 loss=0.254 auc=0.868\n[2025-06-19 09:24:20] INFO 标签过滤阈值调整：负样本权重由1调至1.2\n[2025-06-19 09:24:21] INFO epoch 5/5 loss=0.244 auc=0.874\n[2025-06-19 09:24:22] INFO save checkpoint to /model/v2.ckpt\n[2025-06-19 09:24:23] INFO offline eval auc=0.871 precision=0.770\n",
+  "notes": "版本说明：v2版，city_enc特征归一化口径有调整。\n样本抽取：正负比由1:5改为1:4，提升召回指标权重。\nprecision指标阈值 0.75→0.80，对齐线上SLA口径。\n"
+}

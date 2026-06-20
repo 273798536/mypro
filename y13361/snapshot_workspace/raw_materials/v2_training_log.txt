@@ -1,0 +1,10 @@
+[2025-06-19 09:11:01] INFO training begin, lr=0.0008 batch=128
+[2025-06-19 09:13:42] INFO epoch 1/5 loss=0.361 auc=0.785
+[2025-06-19 09:16:22] INFO 特征归一化口径调整：city_enc 由 min-max 改为 z-score
+[2025-06-19 09:16:23] INFO epoch 2/5 loss=0.298 auc=0.834
+[2025-06-19 09:19:02] INFO epoch 3/5 loss=0.270 auc=0.857
+[2025-06-19 09:21:41] INFO epoch 4/5 loss=0.254 auc=0.868
+[2025-06-19 09:24:20] INFO 标签过滤阈值调整：负样本权重由1调至1.2
+[2025-06-19 09:24:21] INFO epoch 5/5 loss=0.244 auc=0.874
+[2025-06-19 09:24:22] INFO save checkpoint to /model/v2.ckpt
+[2025-06-19 09:24:23] INFO offline eval auc=0.871 precision=0.770

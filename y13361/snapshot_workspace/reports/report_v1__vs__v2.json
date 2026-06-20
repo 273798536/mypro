@@ -1,0 +1,220 @@
+{
+  "snapshot_id": "v1__vs__v2",
+  "generated_at": "2026-06-20T13:03:39",
+  "sections": [
+    {
+      "status": "processed",
+      "title": "✅ 已处理 · 无变化项",
+      "items": [
+        {
+          "label": "稳定阈值",
+          "value": "3 项阈值未变",
+          "detail": "auc=0.82、recall=0.7、log_loss=0.3"
+        }
+      ]
+    },
+    {
+      "status": "alert",
+      "title": "🚨 需重点复核 · 异常/变化项",
+      "items": [
+        {
+          "label": "⚠️ 新增特征迟到",
+          "value": "S0006",
+          "detail": "该样本特征到达延迟超标，建议单独复核是否被揉进正常结果 | <a href=\"#sample-S0006\" class=\"sample-link\" title=\"跳转样本证据\">S0006</a>",
+          "alert": true
+        },
+        {
+          "label": "🔶 延续特征迟到",
+          "value": "S0003",
+          "detail": "两版都存在特征迟到，需确认是否已被排除 | <a href=\"#sample-S0003\" class=\"sample-link\" title=\"跳转样本证据\">S0003</a>",
+          "alert": true
+        },
+        {
+          "label": "指标变化",
+          "value": "auc",
+          "detail": "指标值变化: 0.848 → 0.871",
+          "old": 0.848,
+          "new": 0.871
+        },
+        {
+          "label": "指标变化",
+          "value": "precision",
+          "detail": "指标值变化: 0.791 → 0.77",
+          "old": 0.791,
+          "new": 0.77
+        },
+        {
+          "label": "指标变化",
+          "value": "recall",
+          "detail": "指标值变化: 0.712 → 0.734",
+          "old": 0.712,
+          "new": 0.734
+        },
+        {
+          "label": "指标变化",
+          "value": "log_loss",
+          "detail": "指标值变化: 0.26 → 0.244",
+          "old": 0.26,
+          "new": 0.244
+        },
+        {
+          "label": "阈值变化",
+          "value": "precision",
+          "detail": "阈值变更: 0.75 → 0.8",
+          "old": 0.75,
+          "new": 0.8
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0009",
+          "detail": "新增样本 | 涉及: <a href=\"#sample-S0009\" class=\"sample-link\" title=\"跳转样本证据\">S0009</a>",
+          "old": null,
+          "new": "added"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0001:prediction",
+          "detail": "模型预测结果变化 | 涉及: <a href=\"#sample-S0001\" class=\"sample-link\" title=\"跳转样本证据\">S0001</a>",
+          "old": "0.931",
+          "new": "0.941"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0002:label",
+          "detail": "样本标签变化 | 涉及: <a href=\"#sample-S0002\" class=\"sample-link\" title=\"跳转样本证据\">S0002</a>",
+          "old": "0",
+          "new": "1"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0002:prediction",
+          "detail": "模型预测结果变化 | 涉及: <a href=\"#sample-S0002\" class=\"sample-link\" title=\"跳转样本证据\">S0002</a>",
+          "old": "0.212",
+          "new": "0.208"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0003:prediction",
+          "detail": "模型预测结果变化 | 涉及: <a href=\"#sample-S0003\" class=\"sample-link\" title=\"跳转样本证据\">S0003</a>",
+          "old": "0.881",
+          "new": "0.890"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0004:prediction",
+          "detail": "模型预测结果变化 | 涉及: <a href=\"#sample-S0004\" class=\"sample-link\" title=\"跳转样本证据\">S0004</a>",
+          "old": "0.112",
+          "new": "0.105"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0005:prediction",
+          "detail": "模型预测结果变化 | 涉及: <a href=\"#sample-S0005\" class=\"sample-link\" title=\"跳转样本证据\">S0005</a>",
+          "old": "0.945",
+          "new": "0.952"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0006:prediction",
+          "detail": "模型预测结果变化 | 涉及: <a href=\"#sample-S0006\" class=\"sample-link\" title=\"跳转样本证据\">S0006</a>",
+          "old": "0.318",
+          "new": "0.302"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0007:prediction",
+          "detail": "模型预测结果变化 | 涉及: <a href=\"#sample-S0007\" class=\"sample-link\" title=\"跳转样本证据\">S0007</a>",
+          "old": "0.872",
+          "new": "0.881"
+        },
+        {
+          "label": "样本变化",
+          "value": "sample:S0008:prediction",
+          "detail": "模型预测结果变化 | 涉及: <a href=\"#sample-S0008\" class=\"sample-link\" title=\"跳转样本证据\">S0008</a>",
+          "old": "0.278",
+          "new": "0.265"
+        }
+      ]
+    },
+    {
+      "status": "manual_review",
+      "title": "✏️ 人工改判 · 口径/修正记录",
+      "items": [
+        {
+          "label": "人工修正",
+          "value": "S0002:label",
+          "detail": "新增人工修正: 负样本误标，人工回改 (操作人: 小李) | 涉及样本: <a href=\"#sample-S0002\" class=\"sample-link\" title=\"跳转样本证据\">S0002</a>",
+          "old": null,
+          "new": "1"
+        },
+        {
+          "label": "人工修正",
+          "value": "S0005:prediction",
+          "detail": "新增人工修正: 新模型打分上浮，复核后保留 (操作人: 小林) | 涉及样本: <a href=\"#sample-S0005\" class=\"sample-link\" title=\"跳转样本证据\">S0005</a>",
+          "old": null,
+          "new": "0.952"
+        },
+        {
+          "label": "口径疑似变更 · material_modified",
+          "value": "v1_manual_adjustments.txt → v2_manual_adjustments.txt:content_hash",
+          "detail": "材料「manual_adjustments.txt」内容hash从 504f415d 变为 c5fca0ec（疑似改过口径）"
+        },
+        {
+          "label": "口径疑似变更 · material_modified",
+          "value": "v1_metric.txt → v2_metric.txt:content_hash",
+          "detail": "材料「metric.txt」内容hash从 da16ed86 变为 b8eb5bb9（疑似改过口径）"
+        },
+        {
+          "label": "口径疑似变更 · material_modified",
+          "value": "v1_normal_record.txt → v2_normal_record.txt:content_hash",
+          "detail": "材料「normal_record.txt」内容hash从 225ebe71 变为 0bb8551a（疑似改过口径）"
+        },
+        {
+          "label": "口径疑似变更 · material_modified",
+          "value": "v1_training_log.txt → v2_training_log.txt:content_hash",
+          "detail": "材料「training_log.txt」内容hash从 f51e413c 变为 92439d54（疑似改过口径）"
+        },
+        {
+          "label": "口径疑似变更 · material_modified",
+          "value": "v1_verbal_note.txt → v2_verbal_note.txt:content_hash",
+          "detail": "材料「verbal_note.txt」内容hash从 3668644d 变为 b6fe3fe8（疑似改过口径）"
+        },
+        {
+          "label": "口径疑似变更 · log_caliber_hint",
+          "value": "training_log:line_3",
+          "detail": "训练日志第3行出现口径/指标关键词「口径」：[2025-06-19 09:16:22] INFO 特征归一化口径调整：city_enc 由 min-max 改为 z-score"
+        },
+        {
+          "label": "口径疑似变更 · log_caliber_hint",
+          "value": "training_log:line_7",
+          "detail": "训练日志第7行出现口径/指标关键词「阈值」：[2025-06-19 09:24:20] INFO 标签过滤阈值调整：负样本权重由1调至1.2"
+        },
+        {
+          "label": "口径疑似变更 · log_caliber_hint",
+          "value": "training_log:line_10",
+          "detail": "训练日志第10行出现口径/指标关键词「offline」：[2025-06-19 09:24:23] INFO offline eval auc=0.871 precision=0.770"
+        },
+        {
+          "label": "口径疑似变更 · note_caliber_hint",
+          "value": "verbal_note:line_1",
+          "detail": "口头说明第1行出现口径/指标关键词「口径」：版本说明：v2版，city_enc特征归一化口径有调整。"
+        },
+        {
+          "label": "口径疑似变更 · note_caliber_hint",
+          "value": "verbal_note:line_2",
+          "detail": "口头说明第2行出现口径/指标关键词「指标」：样本抽取：正负比由1:5改为1:4，提升召回指标权重。"
+        },
+        {
+          "label": "口径疑似变更 · note_caliber_hint",
+          "value": "verbal_note:line_3",
+          "detail": "口头说明第3行出现口径/指标关键词「口径」：precision指标阈值 0.75→0.80，对齐线上SLA口径。"
+        }
+      ]
+    },
+    {
+      "status": "pending_material",
+      "title": "📋 待补材料 · 口径一致性核查",
+      "items": []
+    }
+  ]
+}

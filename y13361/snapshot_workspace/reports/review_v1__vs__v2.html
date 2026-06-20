@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>AB实验版本快照 · v1__vs__v2</title>
+<style>
+    body { font-family: -apple-system, "PingFang SC", sans-serif; max-width: 1180px; margin: 24px auto; padding: 0 16px; color:#222; }
+    h1 { font-size: 22px; border-bottom: 2px solid #333; padding-bottom:8px; }
+    h2 { font-size: 17px; margin: 0 0 12px; }
+    .meta { color:#666; font-size:13px; margin-bottom: 18px; }
+    .section { border:1px solid #ddd; border-radius:8px; padding:16px; margin-bottom:16px; }
+    .section-processed { border-color: #34a853; background: #f6fff8; }
+    .section-alert { border-color: #ea4335; background: #fff7f7; }
+    .section-manual_review { border-color: #fbbc04; background: #fffdf5; }
+    .section-pending_material { border-color: #4285f4; background: #f6faff; }
+    .items { display: grid; grid-template-columns: 1fr; gap: 10px; }
+    .item { background:#fff; border:1px solid #eee; border-radius:6px; padding:10px 12px; }
+    .item-alert { border-left: 4px solid #ea4335; }
+    .label { font-weight: 600; font-size:13px; color:#555; }
+    .value { font-size:15px; margin-top: 2px; }
+    .oldnew { font-size:13px; margin-top:4px; }
+    .old { color:#b44; } .new { color:#272; }
+    .detail { color:#666; font-size:12px; margin-top:6px; line-height:1.5; }
+    .tag { display:inline-block; padding:1px 6px; border-radius:3px; font-size:11px; margin-right:4px; }
+    .tag-alert { background:#ea4335; color:#fff; }
+    .tag-manual { background:#fbbc04; color:#333; }
+    .sample-link { color:#1a73e8; text-decoration:none; border-bottom:1px dashed #1a73e8; }
+    table.evidence { width:100%; border-collapse:collapse; font-size:12px; background:#fff; }
+    table.evidence th, table.evidence td { border:1px solid #ddd; padding:6px 8px; vertical-align:top; text-align:left; }
+    table.evidence th { background:#f0f0f0; }
+    .sample-row:target { background:#fff8c5; }
+    .legend { font-size:12px; color:#666; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<h1>AB 实验版本快照复核说明</h1>
+<div class="meta">
+快照ID: <b>v1__vs__v2</b> &nbsp;|&nbsp;
+版本对比: <b>v1</b> → <b>v2</b> &nbsp;|&nbsp;
+生成时间: 2026-06-20T13:03:39 &nbsp;|&nbsp;
+总体状态: <b>needs_review</b>
+</div>
+<div class="legend">👉 点击蓝色样本链接可直接跳转到底部样本证据行查看明细。红色标签=特征迟到，黄色标签=含人工修正。</div>
+
+
+        <section class="section section-processed">
+          <h2>✅ 已处理 · 无变化项</h2>
+          <div class="items">
+            <div class="item">
+              <div class="label">稳定阈值</div>
+              <div class="value">3 项阈值未变</div>
+              
+              <div class="detail">auc=0.82、recall=0.7、log_loss=0.3</div>
+            </div>
+            </div>
+        </section>
+        
+        <section class="section section-alert">
+          <h2>🚨 需重点复核 · 异常/变化项</h2>
+          <div class="items">
+            <div class="item item-alert">
+              <div class="label">⚠️ 新增特征迟到</div>
+              <div class="value">S0006</div>
+              
+              <div class="detail">该样本特征到达延迟超标，建议单独复核是否被揉进正常结果 | <a href="#sample-S0006" class="sample-link" title="跳转样本证据">S0006</a></div>
+            </div>
+            
+            <div class="item item-alert">
+              <div class="label">🔶 延续特征迟到</div>
+              <div class="value">S0003</div>
+              
+              <div class="detail">两版都存在特征迟到，需确认是否已被排除 | <a href="#sample-S0003" class="sample-link" title="跳转样本证据">S0003</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">指标变化</div>
+              <div class="value">auc</div>
+              <div class="oldnew"><span class="old">旧: 0.848</span> → <span class="new">新: 0.871</span></div>
+              <div class="detail">指标值变化: 0.848 → 0.871</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">指标变化</div>
+              <div class="value">precision</div>
+              <div class="oldnew"><span class="old">旧: 0.791</span> → <span class="new">新: 0.77</span></div>
+              <div class="detail">指标值变化: 0.791 → 0.77</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">指标变化</div>
+              <div class="value">recall</div>
+              <div class="oldnew"><span class="old">旧: 0.712</span> → <span class="new">新: 0.734</span></div>
+              <div class="detail">指标值变化: 0.712 → 0.734</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">指标变化</div>
+              <div class="value">log_loss</div>
+              <div class="oldnew"><span class="old">旧: 0.26</span> → <span class="new">新: 0.244</span></div>
+              <div class="detail">指标值变化: 0.26 → 0.244</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">阈值变化</div>
+              <div class="value">precision</div>
+              <div class="oldnew"><span class="old">旧: 0.75</span> → <span class="new">新: 0.8</span></div>
+              <div class="detail">阈值变更: 0.75 → 0.8</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0009</div>
+              <div class="oldnew"><span class="old">旧: None</span> → <span class="new">新: added</span></div>
+              <div class="detail">新增样本 | 涉及: <a href="#sample-S0009" class="sample-link" title="跳转样本证据">S0009</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0001:prediction</div>
+              <div class="oldnew"><span class="old">旧: 0.931</span> → <span class="new">新: 0.941</span></div>
+              <div class="detail">模型预测结果变化 | 涉及: <a href="#sample-S0001" class="sample-link" title="跳转样本证据">S0001</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0002:label</div>
+              <div class="oldnew"><span class="old">旧: 0</span> → <span class="new">新: 1</span></div>
+              <div class="detail">样本标签变化 | 涉及: <a href="#sample-S0002" class="sample-link" title="跳转样本证据">S0002</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0002:prediction</div>
+              <div class="oldnew"><span class="old">旧: 0.212</span> → <span class="new">新: 0.208</span></div>
+              <div class="detail">模型预测结果变化 | 涉及: <a href="#sample-S0002" class="sample-link" title="跳转样本证据">S0002</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0003:prediction</div>
+              <div class="oldnew"><span class="old">旧: 0.881</span> → <span class="new">新: 0.890</span></div>
+              <div class="detail">模型预测结果变化 | 涉及: <a href="#sample-S0003" class="sample-link" title="跳转样本证据">S0003</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0004:prediction</div>
+              <div class="oldnew"><span class="old">旧: 0.112</span> → <span class="new">新: 0.105</span></div>
+              <div class="detail">模型预测结果变化 | 涉及: <a href="#sample-S0004" class="sample-link" title="跳转样本证据">S0004</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0005:prediction</div>
+              <div class="oldnew"><span class="old">旧: 0.945</span> → <span class="new">新: 0.952</span></div>
+              <div class="detail">模型预测结果变化 | 涉及: <a href="#sample-S0005" class="sample-link" title="跳转样本证据">S0005</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0006:prediction</div>
+              <div class="oldnew"><span class="old">旧: 0.318</span> → <span class="new">新: 0.302</span></div>
+              <div class="detail">模型预测结果变化 | 涉及: <a href="#sample-S0006" class="sample-link" title="跳转样本证据">S0006</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0007:prediction</div>
+              <div class="oldnew"><span class="old">旧: 0.872</span> → <span class="new">新: 0.881</span></div>
+              <div class="detail">模型预测结果变化 | 涉及: <a href="#sample-S0007" class="sample-link" title="跳转样本证据">S0007</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">样本变化</div>
+              <div class="value">sample:S0008:prediction</div>
+              <div class="oldnew"><span class="old">旧: 0.278</span> → <span class="new">新: 0.265</span></div>
+              <div class="detail">模型预测结果变化 | 涉及: <a href="#sample-S0008" class="sample-link" title="跳转样本证据">S0008</a></div>
+            </div>
+            </div>
+        </section>
+        
+        <section class="section section-manual_review">
+          <h2>✏️ 人工改判 · 口径/修正记录</h2>
+          <div class="items">
+            <div class="item">
+              <div class="label">人工修正</div>
+              <div class="value">S0002:label</div>
+              <div class="oldnew"><span class="old">旧: None</span> → <span class="new">新: 1</span></div>
+              <div class="detail">新增人工修正: 负样本误标，人工回改 (操作人: 小李) | 涉及样本: <a href="#sample-S0002" class="sample-link" title="跳转样本证据">S0002</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">人工修正</div>
+              <div class="value">S0005:prediction</div>
+              <div class="oldnew"><span class="old">旧: None</span> → <span class="new">新: 0.952</span></div>
+              <div class="detail">新增人工修正: 新模型打分上浮，复核后保留 (操作人: 小林) | 涉及样本: <a href="#sample-S0005" class="sample-link" title="跳转样本证据">S0005</a></div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · material_modified</div>
+              <div class="value">v1_manual_adjustments.txt → v2_manual_adjustments.txt:content_hash</div>
+              
+              <div class="detail">材料「manual_adjustments.txt」内容hash从 504f415d 变为 c5fca0ec（疑似改过口径）</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · material_modified</div>
+              <div class="value">v1_metric.txt → v2_metric.txt:content_hash</div>
+              
+              <div class="detail">材料「metric.txt」内容hash从 da16ed86 变为 b8eb5bb9（疑似改过口径）</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · material_modified</div>
+              <div class="value">v1_normal_record.txt → v2_normal_record.txt:content_hash</div>
+              
+              <div class="detail">材料「normal_record.txt」内容hash从 225ebe71 变为 0bb8551a（疑似改过口径）</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · material_modified</div>
+              <div class="value">v1_training_log.txt → v2_training_log.txt:content_hash</div>
+              
+              <div class="detail">材料「training_log.txt」内容hash从 f51e413c 变为 92439d54（疑似改过口径）</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · material_modified</div>
+              <div class="value">v1_verbal_note.txt → v2_verbal_note.txt:content_hash</div>
+              
+              <div class="detail">材料「verbal_note.txt」内容hash从 3668644d 变为 b6fe3fe8（疑似改过口径）</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · log_caliber_hint</div>
+              <div class="value">training_log:line_3</div>
+              
+              <div class="detail">训练日志第3行出现口径/指标关键词「口径」：[2025-06-19 09:16:22] INFO 特征归一化口径调整：city_enc 由 min-max 改为 z-score</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · log_caliber_hint</div>
+              <div class="value">training_log:line_7</div>
+              
+              <div class="detail">训练日志第7行出现口径/指标关键词「阈值」：[2025-06-19 09:24:20] INFO 标签过滤阈值调整：负样本权重由1调至1.2</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · log_caliber_hint</div>
+              <div class="value">training_log:line_10</div>
+              
+              <div class="detail">训练日志第10行出现口径/指标关键词「offline」：[2025-06-19 09:24:23] INFO offline eval auc=0.871 precision=0.770</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · note_caliber_hint</div>
+              <div class="value">verbal_note:line_1</div>
+              
+              <div class="detail">口头说明第1行出现口径/指标关键词「口径」：版本说明：v2版，city_enc特征归一化口径有调整。</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · note_caliber_hint</div>
+              <div class="value">verbal_note:line_2</div>
+              
+              <div class="detail">口头说明第2行出现口径/指标关键词「指标」：样本抽取：正负比由1:5改为1:4，提升召回指标权重。</div>
+            </div>
+            
+            <div class="item">
+              <div class="label">口径疑似变更 · note_caliber_hint</div>
+              <div class="value">verbal_note:line_3</div>
+              
+              <div class="detail">口头说明第3行出现口径/指标关键词「口径」：precision指标阈值 0.75→0.80，对齐线上SLA口径。</div>
+            </div>
+            </div>
+        </section>
+        
+        <section class="section section-pending_material">
+          <h2>📋 待补材料 · 口径一致性核查</h2>
+          <div class="items"></div>
+        </section>
+        
+
+<section class="section">
+<h2>🔍 样本证据回溯表（点击上方链接跳转至此）</h2>
+<table class="evidence">
+<thead>
+<tr><th>样本ID</th><th>特征(top6)</th><th>标签</th><th>预测</th><th>特征延迟</th><th>证据路径/来源</th></tr>
+</thead>
+<tbody>
+
+        <tr id="sample-S0001" class="sample-row">
+          <td><b>S0001</b><br> </td>
+          <td>sample_id=S0001<br>f_age=28<br>f_gender=1<br>f_city_enc=3<br>f_ctr_30d=0.123<br>f_pay_amt=189.50</td>
+          <td>1</td>
+          <td>0.941</td>
+          <td>50ms</td>
+          <td>s3://ev/v2/S0001.parquet<br>logs/impr.log:1289</td>
+        </tr>
+        
+
+        <tr id="sample-S0002" class="sample-row">
+          <td><b>S0002</b><br> </td>
+          <td>sample_id=S0002<br>f_age=35<br>f_gender=0<br>f_city_enc=7<br>f_ctr_30d=0.088<br>f_pay_amt=42.00</td>
+          <td>1</td>
+          <td>0.208</td>
+          <td>130ms</td>
+          <td>s3://ev/v2/S0002.parquet</td>
+        </tr>
+        
+
+        <tr id="sample-S0003" class="sample-row">
+          <td><b>S0003</b><br><span class="tag tag-alert">特征迟到</span> </td>
+          <td>sample_id=S0003<br>f_age=41<br>f_gender=1<br>f_city_enc=2<br>f_ctr_30d=0.201<br>f_pay_amt=568.00</td>
+          <td>1</td>
+          <td>0.890</td>
+          <td>615ms</td>
+          <td>s3://ev/v2/S0003.parquet<br>feature/missing.log:33</td>
+        </tr>
+        
+
+        <tr id="sample-S0004" class="sample-row">
+          <td><b>S0004</b><br> </td>
+          <td>sample_id=S0004<br>f_age=22<br>f_gender=0<br>f_city_enc=5<br>f_ctr_30d=0.045<br>f_pay_amt=12.80</td>
+          <td>0</td>
+          <td>0.105</td>
+          <td>35ms</td>
+          <td>s3://ev/v2/S0004.parquet</td>
+        </tr>
+        
+
+        <tr id="sample-S0005" class="sample-row">
+          <td><b>S0005</b><br> </td>
+          <td>sample_id=S0005<br>f_age=53<br>f_gender=1<br>f_city_enc=1<br>f_ctr_30d=0.312<br>f_pay_amt=1280.00</td>
+          <td>1</td>
+          <td>0.952</td>
+          <td>75ms</td>
+          <td>s3://ev/v2/S0005.parquet</td>
+        </tr>
+        
+
+        <tr id="sample-S0006" class="sample-row">
+          <td><b>S0006</b><br><span class="tag tag-alert">特征迟到</span> </td>
+          <td>sample_id=S0006<br>f_age=29<br>f_gender=0<br>f_city_enc=4<br>f_ctr_30d=0.150<br>f_pay_amt=76.30</td>
+          <td>0</td>
+          <td>0.302</td>
+          <td>1210ms</td>
+          <td>s3://ev/v2/S0006.parquet<br>lag.log:441</td>
+        </tr>
+        
+
+        <tr id="sample-S0007" class="sample-row">
+          <td><b>S0007</b><br> </td>
+          <td>sample_id=S0007<br>f_age=38<br>f_gender=1<br>f_city_enc=9<br>f_ctr_30d=0.267<br>f_pay_amt=899.00</td>
+          <td>1</td>
+          <td>0.881</td>
+          <td>420ms</td>
+          <td>s3://ev/v2/S0007.parquet</td>
+        </tr>
+        
+
+        <tr id="sample-S0008" class="sample-row">
+          <td><b>S0008</b><br> </td>
+          <td>sample_id=S0008<br>f_age=45<br>f_gender=0<br>f_city_enc=6<br>f_ctr_30d=0.092<br>f_pay_amt=156.00</td>
+          <td>0</td>
+          <td>0.265</td>
+          <td>60ms</td>
+          <td>s3://ev/v2/S0008.parquet</td>
+        </tr>
+        
+
+        <tr id="sample-S0009" class="sample-row">
+          <td><b>S0009</b><br> </td>
+          <td>sample_id=S0009<br>f_age=31<br>f_gender=1<br>f_city_enc=8<br>f_ctr_30d=0.210<br>f_pay_amt=320.00</td>
+          <td>1</td>
+          <td>0.832</td>
+          <td>90ms</td>
+          <td>s3://ev/v2/S0009.parquet</td>
+        </tr>
+        
+</tbody>
+</table>
+</section>
+
+</body>
+</html>

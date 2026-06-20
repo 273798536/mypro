@@ -1,0 +1,4 @@
+auc	0.848	0.82	higher
+precision	0.791	0.75	higher
+recall	0.712	0.70	higher
+log_loss	0.260	0.30	lower

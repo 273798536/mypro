@@ -1,0 +1,8 @@
+[2025-06-18 10:23:01] INFO training begin, lr=0.001 batch=128
+[2025-06-18 10:25:41] INFO epoch 1/5 loss=0.382 auc=0.761
+[2025-06-18 10:28:22] INFO epoch 2/5 loss=0.314 auc=0.812
+[2025-06-18 10:31:01] INFO epoch 3/5 loss=0.287 auc=0.835
+[2025-06-18 10:33:41] INFO epoch 4/5 loss=0.271 auc=0.846
+[2025-06-18 10:36:20] INFO epoch 5/5 loss=0.260 auc=0.852
+[2025-06-18 10:36:21] INFO save checkpoint to /model/v1.ckpt
+[2025-06-18 10:36:22] INFO offline eval auc=0.848 precision=0.791
