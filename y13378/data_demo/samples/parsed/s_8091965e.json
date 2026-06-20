@@ -1,0 +1,15 @@
+{
+  "sample_id": "s_8091965e",
+  "raw_source": "旧训练日志_v1.2.0-compress.jsonl",
+  "raw_content": "{\"model_version\": \"v1.2.0-compress\", \"input\": \"用了一次就坏了差评\", \"predicted\": \"negative\", \"true\": \"negative\", \"confidence\": 0.91, \"gray_ratio\": 0.3}",
+  "model_version": "v1.2.0-compress",
+  "input_text": "用了一次就坏了差评",
+  "predicted_label": "negative",
+  "true_label": "negative",
+  "confidence": 0.91,
+  "gray_ratio": 0.3,
+  "features": {},
+  "imported_at": "2026-06-20 16:51:33",
+  "is_misjudged": false,
+  "note": ""
+}

@@ -1,0 +1,11 @@
+{
+  "correction_id": "corr_393d9d72",
+  "sample_id": "s_70cdf70c",
+  "operator": "算法值班人",
+  "before_label": "negative",
+  "after_label": "neutral",
+  "before_note": "旧误判样本_放回验证_待人工复核",
+  "after_note": "人工确认：该样本应判定为中性，旧模型预测错误",
+  "reason": "旧模型误判为负面，人工复核确认应为中性，已更新标签",
+  "corrected_at": "2026-06-20 16:51:33"
+}

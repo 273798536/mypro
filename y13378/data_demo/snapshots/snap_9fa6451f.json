@@ -1,0 +1,60 @@
+{
+  "snapshot_id": "snap_9fa6451f",
+  "snapshot_name": "初始版本快照_导入旧材料",
+  "model_version": "v1.2.0-compress",
+  "created_at": "2026-06-20 16:51:33",
+  "created_by": "MLOps值班小林",
+  "sample_ids": [
+    "s_0a7496a4",
+    "s_11bc0f47",
+    "s_2696f595",
+    "s_391bbd86",
+    "s_5a2806c7",
+    "s_6faf541b",
+    "s_8091965e",
+    "s_852b209e",
+    "s_87963cfd",
+    "s_882abf63",
+    "s_911275bb",
+    "s_94b4989e",
+    "s_a288ac23",
+    "s_a2b93538",
+    "s_ab11ac05",
+    "s_c80e1214",
+    "s_c91a7155",
+    "s_d3e68cff",
+    "s_d60ff863",
+    "s_de337829",
+    "s_df52d795",
+    "s_f78f0ae9"
+  ],
+  "correction_ids": [],
+  "summary": {
+    "total_samples": 22,
+    "predicted_distribution": {
+      "negative": 8,
+      "neutral": 5,
+      "complaint": 1,
+      "positive": 8
+    },
+    "true_distribution": {
+      "negative": 8,
+      "neutral": 5,
+      "complaint": 1,
+      "positive": 8
+    },
+    "misjudged_count": 0,
+    "misjudged_ids": [],
+    "small_categories": [
+      [
+        "complaint",
+        1
+      ]
+    ],
+    "avg_confidence": 0.7855,
+    "has_gray_ratio_count": 22,
+    "missing_gray_ratio_count": 0
+  },
+  "description": "社区公示前：已导入旧训练日志",
+  "parent_snapshot_id": null
+}

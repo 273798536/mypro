@@ -1,0 +1,15 @@
+{
+  "sample_id": "s_11bc0f47",
+  "raw_source": "旧训练日志_v1.2.0-compress.jsonl",
+  "raw_content": "{\"model_version\": \"v1.2.0-compress\", \"input\": \"还行吧就那样\", \"predicted\": \"neutral\", \"true\": \"neutral\", \"confidence\": 0.58, \"gray_ratio\": 0.3}",
+  "model_version": "v1.2.0-compress",
+  "input_text": "还行吧就那样",
+  "predicted_label": "neutral",
+  "true_label": "neutral",
+  "confidence": 0.58,
+  "gray_ratio": 0.3,
+  "features": {},
+  "imported_at": "2026-06-20 16:51:33",
+  "is_misjudged": false,
+  "note": ""
+}

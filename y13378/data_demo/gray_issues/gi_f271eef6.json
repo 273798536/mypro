@@ -1,0 +1,9 @@
+{
+  "issue_id": "gi_f271eef6",
+  "snapshot_id": "snap_9fa6451f",
+  "sample_id": "s_d3e68cff",
+  "gray_ratio_value": 80.0,
+  "issue_type": "out_of_range",
+  "detail": "样本 s_d3e68cff 的 gray_ratio=80.0 超出预期范围 (0.0, 1.0)，疑似写成百分数形式（应为 0.8）",
+  "next_step": "下一步操作：\n1. 该值疑似百分数，请确认原始数据中 gray_ratio 的单位\n2. 如果确实是百分数，需统一除以 100 转换为比例值\n3. 联系数据提供方确认格式标准，避免后续再出现类似问题\n4. 修正后重新导入，或使用人工修正功能更新该字段"
+}

@@ -1,0 +1,18 @@
+{
+  "sample_id": "s_70cdf70c",
+  "raw_source": "旧误判样本_历史归档_202605.json",
+  "raw_content": "{\n  \"input\": \"这个产品用起来还不错但包装有点破损\",\n  \"predicted\": \"negative\",\n  \"true\": \"negative\",\n  \"confidence\": 0.72,\n  \"gray_ratio\": 0.3,\n  \"is_misjudged\": false,\n  \"note\": \"旧误判样本_放回验证_待人工复核\"\n}",
+  "model_version": "v1.2.0-compress",
+  "input_text": "这个产品用起来还不错但包装有点破损",
+  "predicted_label": "negative",
+  "true_label": "neutral",
+  "confidence": 0.72,
+  "gray_ratio": 0.3,
+  "features": {
+    "is_misjudged": false,
+    "note": "旧误判样本_放回验证_待人工复核"
+  },
+  "imported_at": "2026-06-20 16:51:33",
+  "is_misjudged": true,
+  "note": "人工确认：该样本应判定为中性，旧模型预测错误"
+}

@@ -1,0 +1,15 @@
+{
+  "sample_id": "s_a288ac23",
+  "raw_source": "旧训练日志_v1.2.0-compress.jsonl",
+  "raw_content": "{\"model_version\": \"v1.2.0-compress\", \"input\": \"颜色和图片描述不符\", \"predicted\": \"negative\", \"true\": \"negative\", \"confidence\": 0.87, \"gray_ratio\": 0.3}",
+  "model_version": "v1.2.0-compress",
+  "input_text": "颜色和图片描述不符",
+  "predicted_label": "negative",
+  "true_label": "negative",
+  "confidence": 0.87,
+  "gray_ratio": 0.3,
+  "features": {},
+  "imported_at": "2026-06-20 16:51:33",
+  "is_misjudged": false,
+  "note": ""
+}

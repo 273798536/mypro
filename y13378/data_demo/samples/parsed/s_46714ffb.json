@@ -1,0 +1,17 @@
+{
+  "sample_id": "s_46714ffb",
+  "raw_source": "晚到补充样本_20260619.jsonl",
+  "raw_content": "{\"model_version\": \"v1.2.0-compress\", \"input\": \"另一条晚到的负面评价体验差\", \"predicted\": \"negative\", \"true\": \"negative\", \"confidence\": 0.80, \"gray_ratio\": 0.3, \"note\": \"晚到附件补录\"}",
+  "model_version": "v1.2.0-compress",
+  "input_text": "另一条晚到的负面评价体验差",
+  "predicted_label": "negative",
+  "true_label": "negative",
+  "confidence": 0.8,
+  "gray_ratio": 0.3,
+  "features": {
+    "note": "晚到附件补录"
+  },
+  "imported_at": "2026-06-20 16:51:33",
+  "is_misjudged": false,
+  "note": "晚到附件补录"
+}

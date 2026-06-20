@@ -1,0 +1,15 @@
+{
+  "sample_id": "s_de337829",
+  "raw_source": "旧训练日志_v1.2.0-compress.jsonl",
+  "raw_content": "{\"model_version\": \"v1.2.0-compress\", \"input\": \"已收藏以后还会再来\", \"predicted\": \"positive\", \"true\": \"positive\", \"confidence\": 0.81, \"gray_ratio\": 0.3}",
+  "model_version": "v1.2.0-compress",
+  "input_text": "已收藏以后还会再来",
+  "predicted_label": "positive",
+  "true_label": "positive",
+  "confidence": 0.81,
+  "gray_ratio": 0.3,
+  "features": {},
+  "imported_at": "2026-06-20 16:51:33",
+  "is_misjudged": false,
+  "note": ""
+}

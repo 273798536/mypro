@@ -1,0 +1,9 @@
+{
+  "input": "这个产品用起来还不错但包装有点破损",
+  "predicted": "negative",
+  "true": "negative",
+  "confidence": 0.72,
+  "gray_ratio": 0.3,
+  "is_misjudged": false,
+  "note": "旧误判样本_放回验证_待人工复核"
+}

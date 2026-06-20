@@ -1,0 +1,17 @@
+{
+  "sample_id": "s_d3e68cff",
+  "raw_source": "灰度测试样本_人工录入.txt",
+  "raw_content": "{\n  \"input\": \"这条灰度比例写错了写成百分数了\",\n  \"predicted\": \"positive\",\n  \"true\": \"positive\",\n  \"confidence\": 0.7,\n  \"gray_ratio\": 80,\n  \"note\": \"灰度比例疑似写成百分数\"\n}",
+  "model_version": "v1.2.0-compress",
+  "input_text": "这条灰度比例写错了写成百分数了",
+  "predicted_label": "positive",
+  "true_label": "positive",
+  "confidence": 0.7,
+  "gray_ratio": 80.0,
+  "features": {
+    "note": "灰度比例疑似写成百分数"
+  },
+  "imported_at": "2026-06-20 16:51:33",
+  "is_misjudged": false,
+  "note": "灰度比例疑似写成百分数"
+}

@@ -1,0 +1,8 @@
+{
+  "input": "这条灰度比例写错了写成百分数了",
+  "predicted": "positive",
+  "true": "positive",
+  "confidence": 0.7,
+  "gray_ratio": 80,
+  "note": "灰度比例疑似写成百分数"
+}

@@ -1,0 +1,15 @@
+{
+  "sample_id": "s_0a7496a4",
+  "raw_source": "旧训练日志_v1.2.0-compress.jsonl",
+  "raw_content": "{\"model_version\": \"v1.2.0-compress\", \"input\": \"发货慢等了好久\", \"predicted\": \"negative\", \"true\": \"negative\", \"confidence\": 0.82, \"gray_ratio\": 0.3}",
+  "model_version": "v1.2.0-compress",
+  "input_text": "发货慢等了好久",
+  "predicted_label": "negative",
+  "true_label": "negative",
+  "confidence": 0.82,
+  "gray_ratio": 0.3,
+  "features": {},
+  "imported_at": "2026-06-20 16:51:33",
+  "is_misjudged": false,
+  "note": ""
+}

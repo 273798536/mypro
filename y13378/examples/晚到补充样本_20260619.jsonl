@@ -1,0 +1,2 @@
+{"model_version": "v1.2.0-compress", "input": "这是一条补充的晚到样本很满意", "predicted": "positive", "true": "positive", "confidence": 0.77, "gray_ratio": 0.3, "note": "晚到附件补录"}
+{"model_version": "v1.2.0-compress", "input": "另一条晚到的负面评价体验差", "predicted": "negative", "true": "negative", "confidence": 0.80, "gray_ratio": 0.3, "note": "晚到附件补录"}
