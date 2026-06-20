@@ -1,0 +1,128 @@
+[
+  {
+    "raw_line": 2,
+    "run_id": "run_20260618_001",
+    "feature_name": "user_ctr_7d",
+    "offline_value": "0.1283",
+    "online_value": "0.0921",
+    "fail_reason": "离线值0.1283超出线上口径3倍标准差",
+    "row_object": {
+      "row_id": "1",
+      "run_id": "run_20260618_001",
+      "feature_name": "user_ctr_7d",
+      "offline_value": "0.1283",
+      "online_value": "0.0921",
+      "unit": "",
+      "boundary_min": "0",
+      "boundary_max": "1",
+      "status": "FAIL",
+      "fail_reason": "离线值0.1283超出线上口径3倍标准差",
+      "_raw_line": 2
+    }
+  },
+  {
+    "raw_line": 3,
+    "run_id": "run_20260618_002",
+    "feature_name": "item_click_rank",
+    "offline_value": "342.5",
+    "online_value": "318.0",
+    "fail_reason": "单位在离线侧记录缺失，线上侧为\"分\"",
+    "row_object": {
+      "row_id": "2",
+      "run_id": "run_20260618_002",
+      "feature_name": "item_click_rank",
+      "offline_value": "342.5",
+      "online_value": "318.0",
+      "unit": "分",
+      "boundary_min": "0",
+      "boundary_max": "9999",
+      "status": "FAIL",
+      "fail_reason": "单位在离线侧记录缺失，线上侧为\"分\"",
+      "_raw_line": 3
+    }
+  },
+  {
+    "raw_line": 4,
+    "run_id": "run_20260618_003",
+    "feature_name": "user_active_tag",
+    "offline_value": "-1",
+    "online_value": "0",
+    "fail_reason": "边界值异常：bool型下限应为0",
+    "row_object": {
+      "row_id": "3",
+      "run_id": "run_20260618_003",
+      "feature_name": "user_active_tag",
+      "offline_value": "-1",
+      "online_value": "0",
+      "unit": "bool",
+      "boundary_min": "-1",
+      "boundary_max": "1",
+      "status": "FAIL",
+      "fail_reason": "边界值异常：bool型下限应为0",
+      "_raw_line": 4
+    }
+  },
+  {
+    "raw_line": 5,
+    "run_id": "run_20260618_002",
+    "feature_name": "item_click_rank",
+    "offline_value": "342.5",
+    "online_value": "318.0",
+    "fail_reason": "run_id重复提交，待确认是重跑还是数据错挂",
+    "row_object": {
+      "row_id": "4",
+      "run_id": "run_20260618_002",
+      "feature_name": "item_click_rank",
+      "offline_value": "342.5",
+      "online_value": "318.0",
+      "unit": "分",
+      "boundary_min": "0",
+      "boundary_max": "9999",
+      "status": "FAIL",
+      "fail_reason": "run_id重复提交，待确认是重跑还是数据错挂",
+      "_raw_line": 5
+    }
+  },
+  {
+    "raw_line": 7,
+    "run_id": "run_20260618_005",
+    "feature_name": "exposure_price_avg",
+    "offline_value": "88.5",
+    "online_value": "156.2",
+    "fail_reason": "线上均值88.5 vs 离线均值156.2，口径不一致",
+    "row_object": {
+      "row_id": "6",
+      "run_id": "run_20260618_005",
+      "feature_name": "exposure_price_avg",
+      "offline_value": "88.5",
+      "online_value": "156.2",
+      "unit": "元",
+      "boundary_min": "0",
+      "boundary_max": "999999",
+      "status": "FAIL",
+      "fail_reason": "线上均值88.5 vs 离线均值156.2，口径不一致",
+      "_raw_line": 7
+    }
+  },
+  {
+    "raw_line": 8,
+    "run_id": "run_20260618_006",
+    "feature_name": "user_gender_pred",
+    "offline_value": "2.3",
+    "online_value": "1.0",
+    "fail_reason": "类别特征离线输出2.3，非离散值",
+    "row_object": {
+      "row_id": "7",
+      "run_id": "run_20260618_006",
+      "feature_name": "user_gender_pred",
+      "offline_value": "2.3",
+      "online_value": "1.0",
+      "unit": "类别",
+      "boundary_min": "-1",
+      "boundary_max": "3",
+      "status": "FAIL",
+      "fail_reason": "类别特征离线输出2.3，非离散值",
+      "_raw_line": 8
+    }
+  }
+]

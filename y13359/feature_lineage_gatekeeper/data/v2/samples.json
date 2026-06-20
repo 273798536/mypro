@@ -1,0 +1,15 @@
+{
+  "version": "v2",
+  "total_count": 135000,
+  "positive_count": 43200,
+  "negative_count": 91800,
+  "coverage_rate": 0.89,
+  "time_range": "2026-06-01 ~ 2026-06-15",
+  "sampling_strategy": "按用户分层采样，每日10%，新增曝光兜底样本",
+  "features": [
+    {"name": "user_ctr_7d", "sample_count": 132000, "null_count": 3000},
+    {"name": "item_click_rank", "sample_count": 135000, "null_count": 0},
+    {"name": "new_user_retention_1d", "sample_count": 18000, "null_count": 0},
+    {"name": "exposure_price_avg", "sample_count": 134500, "null_count": 500}
+  ]
+}

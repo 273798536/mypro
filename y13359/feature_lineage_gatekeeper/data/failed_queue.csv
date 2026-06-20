@@ -1,0 +1,8 @@
+row_id,run_id,feature_name,offline_value,online_value,unit,boundary_min,boundary_max,status,fail_reason
+1,run_20260618_001,user_ctr_7d,0.1283,0.0921,,0,1,FAIL,离线值0.1283超出线上口径3倍标准差
+2,run_20260618_002,item_click_rank,342.5,318.0,分,0,9999,FAIL,单位在离线侧记录缺失，线上侧为"分"
+3,run_20260618_003,user_active_tag,-1,0,bool,-1,1,FAIL,边界值异常：bool型下限应为0
+4,run_20260618_002,item_click_rank,342.5,318.0,分,0,9999,FAIL,run_id重复提交，待确认是重跑还是数据错挂
+5,run_20260618_004,new_user_retention_1d,0.4510,0.4512,%,0,1,PASS,
+6,run_20260618_005,exposure_price_avg,88.5,156.2,元,0,999999,FAIL,线上均值88.5 vs 离线均值156.2，口径不一致
+7,run_20260618_006,user_gender_pred,2.3,1.0,类别,-1,3,FAIL,类别特征离线输出2.3，非离散值

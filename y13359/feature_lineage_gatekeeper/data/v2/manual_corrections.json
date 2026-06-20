@@ -1,0 +1,27 @@
+{
+  "version": "v2",
+  "corrections": [
+    {
+      "feature": "user_ctr_7d",
+      "corrector": "李四",
+      "time": "2026-06-12 14:30",
+      "change": "分母从曝光数改为真实曝光数",
+      "reason": "曝光兜底样本不计入CTR计算"
+    },
+    {
+      "feature": "exposure_price_avg",
+      "corrector": "王五",
+      "time": "2026-06-18 09:15",
+      "change": "将曝光标价改为支付价",
+      "reason": "业务侧要求与GMV口径对齐"
+    },
+    {
+      "feature": "item_click_rank",
+      "corrector": "张三",
+      "time": "2026-06-19 11:02",
+      "change": "排序窗口从7天改为14天",
+      "reason": "与线上算法窗口对齐"
+    }
+  ],
+  "total_corrections": 3
+}

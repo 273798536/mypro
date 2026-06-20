@@ -1,0 +1,16 @@
+{
+  "version": "v2",
+  "thresholds": {
+    "offline_online_delta_abs": 0.008,
+    "sample_coverage_min": 0.85,
+    "null_rate_max": 0.05,
+    "stddev_multiplier": 3.0,
+    "correlation_min": 0.88
+  },
+  "features": {
+    "user_ctr_7d": {"delta_abs": 0.008, "null_rate_max": 0.03},
+    "item_click_rank": {"delta_abs": 25.0, "null_rate_max": 0.01},
+    "new_user_retention_1d": {"delta_abs": 0.005, "null_rate_max": 0.02},
+    "exposure_price_avg": {"delta_abs": 10.0, "null_rate_max": 0.05}
+  }
+}

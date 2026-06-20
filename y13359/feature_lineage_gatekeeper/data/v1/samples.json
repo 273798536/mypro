@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "total_count": 120000,
+  "positive_count": 38400,
+  "negative_count": 81600,
+  "coverage_rate": 0.92,
+  "time_range": "2026-06-01 ~ 2026-06-10",
+  "sampling_strategy": "按用户分层采样，每日10%",
+  "features": [
+    {"name": "user_ctr_7d", "sample_count": 118000, "null_count": 2000},
+    {"name": "item_click_rank", "sample_count": 120000, "null_count": 0},
+    {"name": "new_user_retention_1d", "sample_count": 15000, "null_count": 0}
+  ]
+}

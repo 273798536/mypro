@@ -1,0 +1,21 @@
+{
+  "row_id": 5,
+  "run_id": "run_20260618_004",
+  "feature_name": "new_user_retention_1d",
+  "offline_value": 0.4510,
+  "online_value": 0.4512,
+  "unit": "%",
+  "boundary_min": 0,
+  "boundary_max": 1,
+  "formula": "新用户次日留存 = 次日活跃新用户数 / 当日新增用户数",
+  "check_items": {
+    "sample_coverage": "PASS",
+    "unit_consistency": "PASS",
+    "boundary_validity": "PASS",
+    "offline_online_delta": 0.0002,
+    "delta_threshold": 0.005,
+    "delta_pass": true
+  },
+  "status": "PASS",
+  "remark": "样本量一致，离线/线上口径对齐，差值在阈值内"
+}

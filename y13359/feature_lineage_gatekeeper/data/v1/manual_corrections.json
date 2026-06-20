@@ -1,0 +1,13 @@
+{
+  "version": "v1",
+  "corrections": [
+    {
+      "feature": "user_ctr_7d",
+      "corrector": "李四",
+      "time": "2026-06-12 14:30",
+      "change": "分母从曝光数改为真实曝光数",
+      "reason": "曝光兜底样本不计入CTR计算"
+    }
+  ],
+  "total_corrections": 1
+}

@@ -1,0 +1,27 @@
+{
+  "version": "v1",
+  "metrics": {
+    "user_ctr_7d": {
+      "offline_mean": 0.1182,
+      "online_mean": 0.1175,
+      "delta_abs": 0.0007,
+      "pass": true,
+      "unit": ""
+    },
+    "item_click_rank": {
+      "offline_mean": 338.2,
+      "online_mean": 336.5,
+      "delta_abs": 1.7,
+      "pass": true,
+      "unit": "分"
+    },
+    "new_user_retention_1d": {
+      "offline_mean": 0.4480,
+      "online_mean": 0.4476,
+      "delta_abs": 0.0004,
+      "pass": true,
+      "unit": "%"
+    }
+  },
+  "overall_pass_rate": 1.0
+}

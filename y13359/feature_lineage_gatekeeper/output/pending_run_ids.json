@@ -1,0 +1,29 @@
+{
+  "run_20260618_002": {
+    "run_id": "run_20260618_002",
+    "appearances": 2,
+    "raw_lines": [
+      3,
+      5
+    ],
+    "features": [
+      "item_click_rank"
+    ],
+    "possible_reasons": [
+      "同一 run_id 被重复提交，可能是任务重跑覆盖前一次",
+      "可能是不同窗口/不同口径的数据错挂到同一 run_id",
+      "可能是任务调度系统重复派发"
+    ],
+    "impact_scope": {
+      "affected_rows": [
+        3,
+        5
+      ],
+      "affected_features": [
+        "item_click_rank"
+      ],
+      "risk": "在确认前不给出最终通过/失败结论，以免坏数据带偏整体通过率"
+    },
+    "action_required": "请联系提交方或调度方确认以哪次提交为准，废弃其他提交后重新计算"
+  }
+}
