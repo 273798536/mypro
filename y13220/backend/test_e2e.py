@@ -83,6 +83,51 @@ def _do_test(client):
             match += 1
     print(f"  曲目条目一致性: {match}/{len(tracks_api)} 的文件名+状态完全匹配 → {'PASS' if match == len(tracks_api) else 'FAIL'}")
 
+    # 7b. Markdown 表格结构完整性（核心修复验证）
+    print(f"\n[7b] Markdown 表格结构完整性")
+    header_line = "| ID | 文件名 |"
+    header_idx = None
+    md_lines = md.split("\n")
+    for i, line in enumerate(md_lines):
+        if line.startswith(header_line):
+            header_idx = i
+            break
+    assert header_idx is not None, "未找到明细表头行"
+    header_cols = len(md_lines[header_idx].split("|")) - 1
+    separator_cols = len(md_lines[header_idx + 1].split("|")) - 1
+    print(f"  表头列数={header_cols}, 分隔行列数={separator_cols}")
+    assert header_cols == separator_cols, f"表头/分隔行列数不匹配: {header_cols} vs {separator_cols}"
+
+    bad_rows = []
+    data_start = header_idx + 2
+    for i in range(data_start, len(md_lines)):
+        row = md_lines[i]
+        if not row.startswith("|"):
+            break
+        row_cols = len(row.split("|")) - 1
+        if row_cols != header_cols:
+            bad_rows.append((i + 1, row_cols, row[:80]))
+    if bad_rows:
+        print(f"  ❌ FAIL: {len(bad_rows)} 行列数不匹配:")
+        for ln, cnt, preview in bad_rows:
+            print(f"    行{ln}: 列数={cnt} (期望{header_cols}) → {preview}")
+    else:
+        print(f"  ✅ PASS: 所有数据行列数={header_cols}，与表头一致")
+
+    # 7c. impact_scope 不含裸 | （只有 \| 转义形式）
+    reconciled_api = [t for t in tracks_api if t["process_status"] == "reconciled"]
+    if reconciled_api:
+        rec = reconciled_api[0]
+        scope = rec.get("impact_scope") or ""
+        print(f"\n[7c] impact_scope 字段验证")
+        print(f"  API返回: {scope}")
+        bare_pipe_count = scope.count("|") - scope.count("\\|") * 2
+        print(f"  裸|数量: {bare_pipe_count} → {'PASS (无裸管道符)' if bare_pipe_count <= 0 else 'FAIL (含裸管道符会破坏表格)'}")
+        in_md_scope = scope in md
+        escaped_in_md = scope.replace("|", "\\|") in md
+        print(f"  impact_scope 原样出现在Markdown中: {in_md_scope}")
+        print(f"  impact_scope 转义后出现在Markdown中: {escaped_in_md}")
+
     # 8. 异常出口章节
     print(f"\n[8] Markdown 异常出口清单")
     m = re.search(r"## 异常出口清单.*?(?=\n## |\Z)", md, re.S)

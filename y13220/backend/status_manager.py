@@ -68,7 +68,7 @@ def add_authorization_note(track_id: int, note: str, impact_scope: str = None, o
             scope_parts.append(f"文件:{row['file_name']}")
         if row["track_name"]:
             scope_parts.append(f"曲目:{row['track_name']}")
-        final_scope = " | ".join(scope_parts)
+        final_scope = "；".join(scope_parts)
         conn.execute(
             """UPDATE review_tracks SET
                 authorization_note = ?,
@@ -80,7 +80,7 @@ def add_authorization_note(track_id: int, note: str, impact_scope: str = None, o
         )
         write_status_log(
             conn, track_id, old_status, "reconciled", operator,
-            f"补授权备注对齐 | 影响范围已记录"
+            f"补授权备注对齐；影响范围已记录"
         )
         return True
 

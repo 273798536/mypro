@@ -3,6 +3,12 @@ from database import get_conn
 from status_manager import status_label
 
 
+def _md_cell(value: str) -> str:
+    if not value:
+        return "-"
+    return str(value).replace("|", "\\|").replace("\n", " ").replace("\r", "")
+
+
 def generate_markdown(status_filter: str = None) -> str:
     with get_conn() as conn:
         if status_filter:
@@ -44,17 +50,17 @@ def generate_markdown(status_filter: str = None) -> str:
 
     for r in rows:
         lines.append(
-            f"| {r['id']} "
-            f"| {r['file_name'] or '-'} "
-            f"| {r['track_name'] or '-'} "
-            f"| {r['beat_version'] or '-'} "
-            f"| {r['source'] or '-'} "
-            f"| {r['source_row']} "
-            f"| {status_label(r['process_status'])} "
-            f"| {r['authorization_expire_date'] or '-'} "
-            f"| {r['authorization_note'] or '-'} "
-            f"| {r['impact_scope'] or '-'} "
-            f"| {r['updated_at'] or '-'} |"
+            f"| {_md_cell(r['id'])} "
+            f"| {_md_cell(r['file_name'])} "
+            f"| {_md_cell(r['track_name'])} "
+            f"| {_md_cell(r['beat_version'])} "
+            f"| {_md_cell(r['source'])} "
+            f"| {_md_cell(r['source_row'])} "
+            f"| {_md_cell(status_label(r['process_status']))} "
+            f"| {_md_cell(r['authorization_expire_date'])} "
+            f"| {_md_cell(r['authorization_note'])} "
+            f"| {_md_cell(r['impact_scope'])} "
+            f"| {_md_cell(r['updated_at'])} |"
         )
 
     lines.append("")
@@ -75,7 +81,7 @@ def generate_markdown(status_filter: str = None) -> str:
             reason = reason_map.get(r["process_status"], "待处理")
             lines.append(f"- **[ID:{r['id']}] {r['file_name'] or r['track_name'] or '未命名'}** — {reason}")
             if r["impact_scope"]:
-                lines.append(f"  - 影响范围：{r['impact_scope']}")
+                lines.append(f"  - 影响范围：{_md_cell(r['impact_scope'])}")
             if r["source"]:
                 lines.append(f"  - 来源：{r['source']}（行{r['source_row']}）")
             lines.append("")
