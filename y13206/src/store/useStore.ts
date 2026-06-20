@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import type { ConflictRecord, FilterCriteria, ExportConfig, Remark, SupplementaryRemark } from '@/types'
 import { DEFAULT_FILTER, DEFAULT_EXPORT_CONFIG } from '@/types'
+import { parseChangeDescription, applyParsedChange } from '@/utils/parseChange'
 
 const INITIAL_DATA: ConflictRecord[] = [
   {
@@ -206,9 +207,18 @@ export const useStore = create<StoreState>((set, get) => ({
       createdAt: now,
       operator,
     }
+    const currentRecord = get().records.find((r) => r.id === recordId)
+    const parsed = currentRecord
+      ? applyParsedChange(currentRecord, parseChangeDescription(changeDescription, currentRecord))
+      : {}
     const records = get().records.map((r) =>
       r.id === recordId
-        ? { ...r, supplementaryRemarks: [...r.supplementaryRemarks, sr], updatedAt: now }
+        ? {
+            ...r,
+            ...parsed,
+            supplementaryRemarks: [...r.supplementaryRemarks, sr],
+            updatedAt: now,
+          }
         : r,
     )
     saveToStorage(records)
