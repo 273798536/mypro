@@ -41,10 +41,17 @@ python3 cli.py submit \
     --verbal "小孟口头确认顺序不变"
 
 # 4. 重扫同一条记录（补备注/排练/授权说明，自动生成新版本）
+#    方式 A：补授权备注，不重传曲目表和文件名（自动沿用 v1 的值）
 python3 cli.py submit \
     --record-id encore-2025-0615-test \
-    --tracks demo/tracks_demo01_normal.txt \
     --rehearsal "曲目2授权到期（2025-05-31），本场替换" \
+    --annotation "法务确认过期"
+
+#    方式 B：补授权备注，同时修正文件名（更新文件名为正确值）
+python3 cli.py submit \
+    --record-id encore-2025-0615-test \
+    --filename "返场曲清单-夜曲-简单爱-稻香-青花瓷.xlsx" \
+    --rehearsal "曲目2授权到期（2025-05-31），本场替换为简单爱" \
     --annotation "法务确认过期"
 
 # 5. 导出页面摘要（供前端页面渲染，状态与文件内一致）

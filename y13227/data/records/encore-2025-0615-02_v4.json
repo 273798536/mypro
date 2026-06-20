@@ -1,0 +1,84 @@
+{
+  "record_id": "encore-2025-0615-02",
+  "version": 4,
+  "filename": "周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx",
+  "tracks": [
+    {
+      "title": "夜曲",
+      "artist": "周杰伦",
+      "duration": "03:48",
+      "note": ""
+    },
+    {
+      "title": "晴天",
+      "artist": "周杰伦",
+      "duration": "04:29",
+      "note": "授权到期"
+    },
+    {
+      "title": "稻香",
+      "artist": "周杰伦",
+      "duration": "03:43",
+      "note": ""
+    },
+    {
+      "title": "青花瓷",
+      "artist": "周杰伦",
+      "duration": "03:59",
+      "note": "后补：现场观众点歌加入"
+    }
+  ],
+  "supplementary_note": "后补：原曲目表里第4首青花瓷是现场加的，之前漏记",
+  "verbal_note": "小孟口头说晴天的授权可能有问题，等法务回",
+  "rehearsal_note": "确认：晴天授权已到期，法务走重新授权流程中",
+  "status": "expired",
+  "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；与上一版本材料口径有变更",
+  "filename_hash": "f8344af4f16e3d62",
+  "tracks_hash": "0750b27118128ec8",
+  "combined_hash": "e4ce78f6846d1537",
+  "created_at": "2026-06-20T13:43:49",
+  "updated_at": "2026-06-20T13:44:03",
+  "manual_annotations": [
+    "法务确认：晴天版权已过期",
+    "现场负责人批注：青花瓷已走加急后补流程",
+    "现场运营已签字确认"
+  ],
+  "delivery_checklist": [
+    {
+      "item": "后补授权申请单.pdf",
+      "ok": false,
+      "note": "法务签回中"
+    }
+  ],
+  "change_log": [
+    {
+      "version": 1,
+      "at": "2026-06-20T13:43:49",
+      "diffs": [
+        "初始版本"
+      ]
+    },
+    {
+      "version": 2,
+      "at": "2026-06-20T13:43:49",
+      "diffs": [
+        "排练/授权备注有变更"
+      ]
+    },
+    {
+      "version": 3,
+      "at": "2026-06-20T13:43:49",
+      "diffs": [
+        "文件名: '周杰伦返场.xlsx' -> '周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx'"
+      ]
+    },
+    {
+      "version": 4,
+      "at": "2026-06-20T13:44:03",
+      "diffs": [
+        "排练/授权备注有变更"
+      ]
+    }
+  ],
+  "status_label": "授权到期"
+}

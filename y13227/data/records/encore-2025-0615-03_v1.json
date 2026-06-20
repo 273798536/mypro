@@ -1,0 +1,47 @@
+{
+  "record_id": "encore-2025-0615-03",
+  "version": 1,
+  "filename": "五月天返场曲清单.xlsx",
+  "tracks": [
+    {
+      "title": "演员",
+      "artist": "薛之谦",
+      "duration": "04:21",
+      "note": ""
+    },
+    {
+      "title": "丑八怪",
+      "artist": "薛之谦",
+      "duration": "04:11",
+      "note": ""
+    },
+    {
+      "title": "绅士",
+      "artist": "薛之谦",
+      "duration": "04:12",
+      "note": ""
+    }
+  ],
+  "supplementary_note": "",
+  "verbal_note": "",
+  "rehearsal_note": "",
+  "status": "mismatch",
+  "status_detail": "文件名 '五月天返场曲清单.xlsx' 未包含任何曲目名",
+  "filename_hash": "1473dafa4b754617",
+  "tracks_hash": "aabe403a80864c1b",
+  "combined_hash": "17410d06693d87b9",
+  "created_at": "2026-06-20T13:43:49",
+  "updated_at": "2026-06-20T13:43:49",
+  "manual_annotations": [],
+  "delivery_checklist": [],
+  "change_log": [
+    {
+      "version": 1,
+      "at": "2026-06-20T13:43:49",
+      "diffs": [
+        "初始版本"
+      ]
+    }
+  ],
+  "status_label": "曲目表与文件不符"
+}

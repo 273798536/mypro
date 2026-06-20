@@ -1,0 +1,117 @@
+{
+  "ok": true,
+  "record_id": "encore-2025-0615-02",
+  "latest_version": 3,
+  "status": "expired",
+  "status_label": "授权到期",
+  "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；与上一版本材料口径有变更",
+  "filename": "周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx",
+  "track_count": 4,
+  "tracks": [
+    {
+      "title": "夜曲",
+      "artist": "周杰伦",
+      "duration": "03:48",
+      "note": ""
+    },
+    {
+      "title": "晴天",
+      "artist": "周杰伦",
+      "duration": "04:29",
+      "note": "授权到期"
+    },
+    {
+      "title": "稻香",
+      "artist": "周杰伦",
+      "duration": "03:43",
+      "note": ""
+    },
+    {
+      "title": "青花瓷",
+      "artist": "周杰伦",
+      "duration": "03:59",
+      "note": "后补：现场观众点歌加入"
+    }
+  ],
+  "supplementary_note": "后补：原曲目表里第4首青花瓷是现场加的，之前漏记",
+  "verbal_note": "小孟口头说晴天的授权可能有问题，等法务回",
+  "rehearsal_note": "晴天授权到期（2025-05-31到期），本场演出不使用，已替换成《简单爱》（待更新曲目表）",
+  "manual_annotations": [
+    "法务确认：晴天版权已过期",
+    "现场负责人批注：青花瓷已走加急后补流程"
+  ],
+  "delivery_checklist": [
+    {
+      "item": "后补授权申请单.pdf",
+      "ok": false,
+      "note": "法务签回中"
+    }
+  ],
+  "filename_hash": "f8344af4f16e3d62",
+  "tracks_hash": "0750b27118128ec8",
+  "combined_hash": "488b79e09aa77dc5",
+  "consistency_check": {
+    "filename_hash_match": true,
+    "tracks_hash_match": true,
+    "combined_hash_match": true,
+    "all_match": true
+  },
+  "versions": [
+    {
+      "version": 1,
+      "status": "expired",
+      "status_label": "授权到期",
+      "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；文件名 '周杰伦返场.xlsx' 未包含任何曲目名",
+      "filename": "周杰伦返场.xlsx",
+      "track_count": 4,
+      "updated_at": "2026-06-20T13:43:49",
+      "combined_hash": "f0000042a3a0f6aa"
+    },
+    {
+      "version": 2,
+      "status": "expired",
+      "status_label": "授权到期",
+      "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；文件名 '周杰伦返场.xlsx' 未包含任何曲目名；与上一版本材料口径有变更",
+      "filename": "周杰伦返场.xlsx",
+      "track_count": 4,
+      "updated_at": "2026-06-20T13:43:49",
+      "combined_hash": "a2da18ab508fd95d"
+    },
+    {
+      "version": 3,
+      "status": "expired",
+      "status_label": "授权到期",
+      "status_detail": "检测到授权/版权到期关键字；检测到后补/改口径关键字；与上一版本材料口径有变更",
+      "filename": "周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx",
+      "track_count": 4,
+      "updated_at": "2026-06-20T13:43:49",
+      "combined_hash": "488b79e09aa77dc5"
+    }
+  ],
+  "change_log": [
+    {
+      "version": 1,
+      "at": "2026-06-20T13:43:49",
+      "diffs": [
+        "初始版本"
+      ]
+    },
+    {
+      "version": 2,
+      "at": "2026-06-20T13:43:49",
+      "diffs": [
+        "排练/授权备注有变更"
+      ]
+    },
+    {
+      "version": 3,
+      "at": "2026-06-20T13:43:49",
+      "diffs": [
+        "文件名: '周杰伦返场.xlsx' -> '周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx'"
+      ]
+    }
+  ],
+  "created_at": "2026-06-20T13:43:49",
+  "updated_at": "2026-06-20T13:43:49",
+  "_schema_version": 2
+}

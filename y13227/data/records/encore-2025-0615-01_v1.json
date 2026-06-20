@@ -1,0 +1,66 @@
+{
+  "record_id": "encore-2025-0615-01",
+  "version": 1,
+  "filename": "返场曲清单-夜空中最亮的星-海阔天空-追梦赤子心-成都.xlsx",
+  "tracks": [
+    {
+      "title": "夜空中最亮的星",
+      "artist": "逃跑计划",
+      "duration": "04:12",
+      "note": "固定返场"
+    },
+    {
+      "title": "海阔天空",
+      "artist": "Beyond",
+      "duration": "05:26",
+      "note": ""
+    },
+    {
+      "title": "追梦赤子心",
+      "artist": "GALA",
+      "duration": "05:13",
+      "note": "后补加入"
+    },
+    {
+      "title": "成都",
+      "artist": "赵雷",
+      "duration": "05:28",
+      "note": ""
+    }
+  ],
+  "supplementary_note": "",
+  "verbal_note": "小孟现场确认曲目顺序不变",
+  "rehearsal_note": "",
+  "status": "ok",
+  "status_detail": "校验通过",
+  "filename_hash": "462403ead98bea5e",
+  "tracks_hash": "b8ccd491bb2d0f69",
+  "combined_hash": "eb1920690ca9b577",
+  "created_at": "2026-06-20T13:43:49",
+  "updated_at": "2026-06-20T13:43:49",
+  "manual_annotations": [
+    "运营已核对曲目与节目单一致"
+  ],
+  "delivery_checklist": [
+    {
+      "item": "曲目表.xlsx",
+      "ok": true,
+      "note": "小孟交付"
+    },
+    {
+      "item": "音频小样.zip",
+      "ok": true,
+      "note": "音质OK"
+    }
+  ],
+  "change_log": [
+    {
+      "version": 1,
+      "at": "2026-06-20T13:43:49",
+      "diffs": [
+        "初始版本"
+      ]
+    }
+  ],
+  "status_label": "正常通过"
+}

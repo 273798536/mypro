@@ -59,24 +59,18 @@ def main():
         verbal_note="小孟口头说晴天的授权可能有问题，等法务回",
     )[1])
 
-    run_step("Demo 02-2 - 小孟补了授权备注后重扫同一份记录（版本自动+1）", lambda: archive_submit(
+    run_step("Demo 02-2 - 小孟补了授权备注后重扫（只传 rehearsal_note，自动沿用 filename 和 tracks）", lambda: archive_submit(
         store,
         record_id="encore-2025-0615-02",
-        filename="周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx",
-        tracks_content=read_text("tracks_demo02_messy.txt"),
         rehearsal_note="晴天授权到期（2025-05-31到期），本场演出不使用，已替换成《简单爱》（待更新曲目表）",
         manual_annotations=["法务确认：晴天版权已过期"],
     )[1])
 
-    run_step("Demo 02-3 - 再次追加人工批注和交付清单条目", lambda: archive_submit(
+    run_step("Demo 02-3 - 修正文件名并重扫（传 filename，曲目表沿用 v1）", lambda: archive_submit(
         store,
         record_id="encore-2025-0615-02",
         filename="周杰伦返场-夜曲-晴天-稻香-青花瓷.xlsx",
-        tracks_content=read_text("tracks_demo02_messy.txt"),
-        supplementary_note="后补：原曲目表里第4首青花瓷是现场加的，之前漏记",
-        verbal_note="小孟口头说晴天的授权可能有问题，等法务回",
-        rehearsal_note="晴天授权到期（2025-05-31到期），本场演出不使用，已替换成《简单爱》（待更新曲目表）",
-        manual_annotations=["法务确认：晴天版权已过期", "现场负责人批注：青花瓷已走加急后补流程"],
+        manual_annotations=["现场负责人批注：青花瓷已走加急后补流程"],
         delivery_checklist=[
             {"item": "后补授权申请单.pdf", "ok": False, "note": "法务签回中"},
         ],

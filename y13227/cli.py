@@ -15,7 +15,9 @@ from encore_archive import (
 DEFAULT_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
 
-def _read_file_or_text(path_or_text: str) -> str:
+def _read_file_or_text(path_or_text: Optional[str]) -> Optional[str]:
+    if path_or_text is None:
+        return None
     if not path_or_text:
         return ""
     if os.path.exists(path_or_text):
@@ -31,12 +33,12 @@ def cmd_submit(args: argparse.Namespace) -> int:
         rec, meta = archive_submit(
             store=store,
             record_id=args.record_id,
-            filename=args.filename or "",
+            filename=args.filename,
             tracks_content=tracks_content,
-            supplementary_note=args.supplementary or "",
-            verbal_note=args.verbal or "",
-            rehearsal_note=args.rehearsal or "",
-            manual_annotations=args.annotation or None,
+            supplementary_note=args.supplementary,
+            verbal_note=args.verbal,
+            rehearsal_note=args.rehearsal,
+            manual_annotations=args.annotation,
             delivery_checklist=json.loads(args.delivery) if args.delivery else None,
         )
     except json.JSONDecodeError as e:
@@ -112,7 +114,7 @@ def build_parser() -> argparse.ArgumentParser:
     ps = sub.add_parser("submit", help="提交一份归档（新记录或新版本）")
     ps.add_argument("--record-id", required=True, help="归档记录唯一ID")
     ps.add_argument("--filename", help="文件名（含曲目表的材料文件名）")
-    ps.add_argument("--tracks", required=True, help="曲目表内容或曲目表文件路径")
+    ps.add_argument("--tracks", required=False, help="曲目表内容或曲目表文件路径（首次提交必填，重扫可省略）")
     ps.add_argument("--supplementary", help="后补备注")
     ps.add_argument("--verbal", help="临时口头说明")
     ps.add_argument("--rehearsal", help="排练或授权备注（重扫时追加）")

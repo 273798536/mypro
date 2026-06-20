@@ -157,42 +157,67 @@ def align_annotations_and_delivery(rec: EncoreRecord, prev: Optional[EncoreRecor
 def archive_submit(
     store: ArchiveStore,
     record_id: str,
-    filename: str,
-    tracks_content: str,
-    supplementary_note: str = "",
-    verbal_note: str = "",
-    rehearsal_note: str = "",
+    filename: Optional[str] = None,
+    tracks_content: Optional[str] = None,
+    supplementary_note: Optional[str] = None,
+    verbal_note: Optional[str] = None,
+    rehearsal_note: Optional[str] = None,
     manual_annotations: Optional[List[str]] = None,
     delivery_checklist: Optional[List[Dict[str, Any]]] = None,
 ) -> Tuple[Optional[EncoreRecord], Dict[str, Any]]:
     if not record_id:
         return None, {"ok": False, "error": "record_id 不能为空"}
-    tracks = parse_tracks_file(tracks_content)
-    if not tracks:
-        return None, {"ok": False, "error": "未解析到任何曲目，请检查曲目表格式"}
     prev = store.load(record_id)
+    if tracks_content:
+        tracks = parse_tracks_file(tracks_content)
+        if not tracks:
+            return None, {"ok": False, "error": "未解析到任何曲目，请检查曲目表格式"}
+    else:
+        if prev is None or not prev.tracks:
+            return None, {"ok": False, "error": "首次提交必须提供曲目表内容"}
+        tracks = list(prev.tracks)
     if prev is None:
         rec = EncoreRecord(record_id=record_id)
     else:
         rec = EncoreRecord(
             record_id=record_id,
             version=prev.version + 1,
+            filename=prev.filename,
+            tracks=list(prev.tracks),
+            supplementary_note=prev.supplementary_note,
+            verbal_note=prev.verbal_note,
+            rehearsal_note=prev.rehearsal_note,
+            status=prev.status,
+            status_detail=prev.status_detail,
+            filename_hash=prev.filename_hash,
+            tracks_hash=prev.tracks_hash,
+            combined_hash=prev.combined_hash,
+            created_at=prev.created_at,
             manual_annotations=list(prev.manual_annotations),
             delivery_checklist=list(prev.delivery_checklist),
             change_log=list(prev.change_log),
         )
-    rec.filename = filename or rec.filename
+    if filename:
+        rec.filename = filename
     rec.tracks = tracks
-    rec.supplementary_note = supplementary_note or rec.supplementary_note
-    rec.verbal_note = verbal_note or rec.verbal_note
-    rec.rehearsal_note = rehearsal_note or rec.rehearsal_note
+    if supplementary_note:
+        rec.supplementary_note = supplementary_note
+    if verbal_note:
+        rec.verbal_note = verbal_note
+    if rehearsal_note:
+        rec.rehearsal_note = rehearsal_note
     if manual_annotations:
-        rec.manual_annotations.extend(manual_annotations)
+        for a in manual_annotations:
+            if a not in rec.manual_annotations:
+                rec.manual_annotations.append(a)
     if delivery_checklist:
-        rec.delivery_checklist.extend(delivery_checklist)
+        existing = {d.get("item") for d in rec.delivery_checklist}
+        for d in delivery_checklist:
+            if d.get("item") not in existing:
+                rec.delivery_checklist.append(d)
+                existing.add(d.get("item"))
     compute_record_hashes(rec)
     evaluate_status(rec, prev)
-    align_annotations_and_delivery(rec, prev)
     rec.change_log = build_change_log(rec, prev)
     store.save(rec)
     meta = {
@@ -210,6 +235,24 @@ def build_page_summary(store: ArchiveStore, record_id: str) -> Dict[str, Any]:
     if rec is None:
         return {"ok": False, "error": f"记录 {record_id} 不存在"}
     versions = store.load_all_versions(record_id)
+    track_dicts = [t.__dict__ for t in rec.tracks]
+    tracks_str = json.dumps(track_dicts, ensure_ascii=False, sort_keys=True)
+    verify_tracks_hash = compute_hash(tracks_str)
+    verify_filename_hash = compute_hash(rec.filename)
+    combined_verify = "|".join([
+        rec.filename,
+        tracks_str,
+        rec.supplementary_note,
+        rec.verbal_note,
+        rec.rehearsal_note,
+    ])
+    verify_combined_hash = compute_hash(combined_verify)
+    consistency = {
+        "filename_hash_match": verify_filename_hash == rec.filename_hash,
+        "tracks_hash_match": verify_tracks_hash == rec.tracks_hash,
+        "combined_hash_match": verify_combined_hash == rec.combined_hash,
+    }
+    all_match = all(consistency.values())
     return {
         "ok": True,
         "record_id": record_id,
@@ -219,22 +262,34 @@ def build_page_summary(store: ArchiveStore, record_id: str) -> Dict[str, Any]:
         "status_detail": rec.status_detail,
         "filename": rec.filename,
         "track_count": len(rec.tracks),
-        "tracks": [t.__dict__ for t in rec.tracks],
+        "tracks": track_dicts,
         "supplementary_note": rec.supplementary_note,
         "verbal_note": rec.verbal_note,
         "rehearsal_note": rec.rehearsal_note,
         "manual_annotations": rec.manual_annotations,
         "delivery_checklist": rec.delivery_checklist,
+        "filename_hash": rec.filename_hash,
+        "tracks_hash": rec.tracks_hash,
+        "combined_hash": rec.combined_hash,
+        "consistency_check": {
+            **consistency,
+            "all_match": all_match,
+        },
         "versions": [
             {
                 "version": v.version,
                 "status": v.status,
                 "status_label": STATUS_LABELS.get(v.status, v.status),
+                "status_detail": v.status_detail,
+                "filename": v.filename,
+                "track_count": len(v.tracks),
                 "updated_at": v.updated_at,
                 "combined_hash": v.combined_hash,
             }
             for v in versions
         ],
         "change_log": rec.change_log,
+        "created_at": rec.created_at,
         "updated_at": rec.updated_at,
+        "_schema_version": 2,
     }
