@@ -12,7 +12,7 @@ import {
   User,
   ChevronDown,
   ChevronRight,
-  Pushpin,
+  Pin,
   Search,
 } from 'lucide-react';
 import { useReviewStore } from '../store/reviewStore';
@@ -245,7 +245,7 @@ export default function FileManager() {
         <div className="space-y-6 lg:col-span-2">
           <div className="page-card">
             <h3 className="section-title mb-0 !text-base">
-              <Pushpin size={16} className="text-copper-500" />
+              <Pin size={16} className="text-copper-500" />
               追加备注（不可删除，只可追加）
             </h3>
             <p className="text-[11px] text-ink-500 mt-1 mb-4">

@@ -9,6 +9,9 @@ import {
   Tooltip,
   Legend,
   Filler,
+  type ChartEvent,
+  type ActiveElement,
+  type Chart,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import {
@@ -17,7 +20,7 @@ import {
   FolderOpen,
   Info,
   Music,
-  FileAudio2,
+  FileAudio,
 } from 'lucide-react';
 import { useReviewStore } from '../store/reviewStore';
 import {
@@ -110,7 +113,7 @@ export default function ReviewDetail() {
     return { labels: timeLabels, datasets };
   }, [song.voiceTracks, timeLabels, exceptionsForSong, batch.songs, song.durationSec]);
 
-  const onChartClick = (_e: any, elements: any[]) => {
+  const onChartClick = (_e: ChartEvent, elements: ActiveElement[], _chart: Chart) => {
     if (!elements || elements.length === 0) return;
     const el = elements[0];
     const sec = Math.round((el.index / 180) * song.durationSec);
@@ -200,10 +203,10 @@ export default function ReviewDetail() {
           <div className="h-80">
             <Line
               data={chartData}
-              onClick={onChartClick}
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
+                onClick: onChartClick,
                 interaction: { mode: 'index', intersect: false },
                 plugins: {
                   legend: { display: false },
@@ -412,7 +415,7 @@ export default function ReviewDetail() {
                           size={14}
                           className="text-ink-300 group-hover:text-copper-500 group-hover:translate-x-0.5 transition-all"
                         />
-                        <FileAudio2
+                        <FileAudio
                           size={12}
                           className="text-ink-400 group-hover:text-forest-500 transition-all"
                         />
