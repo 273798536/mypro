@@ -44,75 +44,89 @@ def print_help():
 
 
 def run_detection(output_json: bool = False, output_report: bool = False):
-    print('> 剧场返场曲排期冲突检测开始...')
+    try:
+        print('> 剧场返场曲排期冲突检测开始...')
 
-    reader = DataReader(BASE_DIR)
-    print(f'> [1/5] 读取音频文件夹...')
-    all_rows = reader.read_all_files()
-    file_summaries = reader.get_file_summaries()
+        reader = DataReader(BASE_DIR)
+        print(f'> [1/5] 读取音频文件夹...')
+        all_rows = reader.read_all_files()
+        file_summaries = reader.get_file_summaries()
 
-    if not all_rows:
-        print('  ! 未找到任何数据文件，请将CSV放入 data/audio_files/ 目录')
+        if not all_rows:
+            print('  ! 未找到任何有效数据，请检查CSV文件格式')
+            return False
+
+        print(f'    共读取 {len(file_summaries)} 个文件，{len(all_rows)} 行数据')
+        for fs in file_summaries:
+            print(f'      - {fs["filename"]}: {fs["valid_rows"]}/{fs["total_rows"]} 行有效')
+
+        print(f'> [2/5] 检测冲突（排期冲突 / 曲名别名重复 / 多版本冲突）...')
+        detector = ConflictDetector(BASE_DIR)
+        conflicts = detector.detect_all(all_rows)
+
+        print(f'    排期时间冲突: {len(conflicts["schedule_conflicts"])} 条')
+        print(f'    曲名别名重复: {len(conflicts["alias_duplicates"])} 条')
+        print(f'    多版本冲突:   {len(conflicts["version_conflicts"])} 条')
+
+        print(f'> [3/5] 识别林姐临时修改...')
+        tracker = HistoryTracker(BASE_DIR)
+        linjie_mods = tracker.get_linjie_modifications(all_rows)
+        print(f'    林姐临时修改: {len(linjie_mods)} 条')
+
+        print(f'> [4/5] 生成统一结果（筛选条件 + 统计 + 明细表 + 截图说明）...')
+        generator = ReportGenerator(BASE_DIR)
+        result = generator.generate_unified_result(all_rows, conflicts, linjie_mods, file_summaries)
+
+        print(f'> [5/5] 保存结果并记录历史...')
+        json_path = generator.save_json(result)
+        ts_json_path = generator.save_timestamped_json(result)
+        report_path = generator.save_text_report(result)
+
+        run_summary = {
+            'total_files': result['statistics']['total_files'],
+            'total_rows': result['statistics']['total_rows'],
+            'total_conflicts': result['statistics']['total_conflicts'],
+            'linjie_modifications': result['statistics']['linjie_modification_count']
+        }
+        tracker.record_run(run_summary)
+
+        print('')
+        print('╔════════════════════════════════════════════╗')
+        print('║            检测完成                        ║')
+        print('╠════════════════════════════════════════════╣')
+        print(f'║  冲突总数:     {result["statistics"]["total_conflicts"]:>4} 条                  ║')
+        print(f'║  排期冲突:     {result["statistics"]["schedule_conflict_count"]:>4} 条                  ║')
+        print(f'║  别名重复:     {result["statistics"]["alias_duplicate_count"]:>4} 条                  ║')
+        print(f'║  版本冲突:     {result["statistics"]["version_conflict_count"]:>4} 条                  ║')
+        print(f'║  林姐临时修改: {result["statistics"]["linjie_modification_count"]:>4} 条                  ║')
+        print('╚════════════════════════════════════════════╝')
+        print('')
+        print(f'  文本报告: {report_path}')
+        print(f'  最新JSON: {json_path}')
+        print(f'  归档JSON: {ts_json_path}')
+        print('')
+
+        if output_report:
+            with open(report_path, 'r', encoding='utf-8') as f:
+                print(f.read())
+
+        if output_json:
+            print(json_path)
+
+        return True
+
+    except FileNotFoundError as e:
+        print(f'[致命错误] 文件不存在: {e}')
+        print('  请确保 config/ 目录下的配置文件完整')
         return False
-
-    print(f'    共读取 {len(file_summaries)} 个文件，{len(all_rows)} 行数据')
-    for fs in file_summaries:
-        print(f'      - {fs["filename"]}: {fs["valid_rows"]}/{fs["total_rows"]} 行有效')
-
-    print(f'> [2/5] 检测冲突（排期冲突 / 曲名别名重复 / 多版本冲突）...')
-    detector = ConflictDetector(BASE_DIR)
-    conflicts = detector.detect_all(all_rows)
-
-    print(f'    排期时间冲突: {len(conflicts["schedule_conflicts"])} 条')
-    print(f'    曲名别名重复: {len(conflicts["alias_duplicates"])} 条')
-    print(f'    多版本冲突:   {len(conflicts["version_conflicts"])} 条')
-
-    print(f'> [3/5] 识别林姐临时修改...')
-    tracker = HistoryTracker(BASE_DIR)
-    linjie_mods = tracker.get_linjie_modifications(all_rows)
-    print(f'    林姐临时修改: {len(linjie_mods)} 条')
-
-    print(f'> [4/5] 生成统一结果（筛选条件 + 统计 + 明细表 + 截图说明）...')
-    generator = ReportGenerator(BASE_DIR)
-    result = generator.generate_unified_result(all_rows, conflicts, linjie_mods, file_summaries)
-
-    print(f'> [5/5] 保存结果并记录历史...')
-    json_path = generator.save_json(result)
-    ts_json_path = generator.save_timestamped_json(result)
-    report_path = generator.save_text_report(result)
-
-    run_summary = {
-        'total_files': result['statistics']['total_files'],
-        'total_rows': result['statistics']['total_rows'],
-        'total_conflicts': result['statistics']['total_conflicts'],
-        'linjie_modifications': result['statistics']['linjie_modification_count']
-    }
-    tracker.record_run(run_summary)
-
-    print('')
-    print('╔════════════════════════════════════════════╗')
-    print('║            检测完成                        ║')
-    print('╠════════════════════════════════════════════╣')
-    print(f'║  冲突总数:     {result["statistics"]["total_conflicts"]:>4} 条                  ║')
-    print(f'║  排期冲突:     {result["statistics"]["schedule_conflict_count"]:>4} 条                  ║')
-    print(f'║  别名重复:     {result["statistics"]["alias_duplicate_count"]:>4} 条                  ║')
-    print(f'║  版本冲突:     {result["statistics"]["version_conflict_count"]:>4} 条                  ║')
-    print(f'║  林姐临时修改: {result["statistics"]["linjie_modification_count"]:>4} 条                  ║')
-    print('╚════════════════════════════════════════════╝')
-    print('')
-    print(f'  文本报告: {report_path}')
-    print(f'  最新JSON: {json_path}')
-    print(f'  归档JSON: {ts_json_path}')
-    print('')
-
-    if output_report:
-        with open(report_path, 'r', encoding='utf-8') as f:
-            print(f.read())
-
-    if output_json:
-        print(json_path)
-
-    return True
+    except ValueError as e:
+        print(f'[致命错误] 数据错误: {e}')
+        return False
+    except Exception as e:
+        print(f'[致命错误] 运行异常: {e}')
+        import traceback
+        traceback.print_exc()
+        return False
 
 
 def list_files():
@@ -137,7 +151,8 @@ def show_history():
     if runs:
         for r in runs:
             s = r['summary']
-            print(f"  {r['timestamp']} | 冲突:{s.get('total_conflicts', '?')} 林姐修改:{s.get('linjie_modifications', '?')}")
+            linjie = s.get('linjie_modification_count', s.get('linjie_modifications', '?'))
+            print(f"  {r['timestamp']} | 冲突:{s.get('total_conflicts', '?')} 林姐修改:{linjie}")
     else:
         print('  暂无运行记录')
 

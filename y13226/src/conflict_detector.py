@@ -41,6 +41,24 @@ class VersionManager:
         self.version_keywords = ['新版', 'v2', 'v3', '最终', '正式', 'latest', 'new', 'final']
         self.old_keywords = ['旧版', 'v1', '历史', '归档', 'old', 'archive', 'history']
         self.temp_keywords = ['临时', '调整', '修改', '林姐', 'temp', 'adjust', 'manual']
+        self.time_tolerance_minutes = 15
+
+    def _parse_time(self, time_str: str):
+        if not time_str:
+            return None
+        for fmt in ['%Y-%m-%d %H:%M', '%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M']:
+            try:
+                return datetime.strptime(time_str.strip(), fmt)
+            except ValueError:
+                continue
+        return None
+
+    def _time_diff_minutes(self, t1_str: str, t2_str: str) -> float:
+        t1 = self._parse_time(t1_str)
+        t2 = self._parse_time(t2_str)
+        if not t1 or not t2:
+            return 999999
+        return abs((t2 - t1).total_seconds() / 60)
 
     def _score_version(self, row: Dict) -> Tuple[int, str]:
         text = f"{row.get('_source_file', '')} {row.get('version', '')}"
@@ -71,34 +89,100 @@ class VersionManager:
         return rows
 
     def group_duplicates(self, rows: List[Dict], alias_resolver: AliasResolver) -> Dict[str, List[Dict]]:
-        groups = defaultdict(list)
+        coarse_groups = defaultdict(list)
         for row in rows:
             if not row['_is_valid']:
                 continue
             key_parts = [
                 alias_resolver.resolve(row.get('song_name', '')),
-                str(row.get('performance_time', '')).strip(),
                 str(row.get('theater', '')).strip()
             ]
             key = '|'.join(key_parts)
-            groups[key].append(row)
-        return {k: v for k, v in groups.items() if len(v) > 1}
+            coarse_groups[key].append(row)
+
+        final_groups = {}
+        for coarse_key, group_rows in coarse_groups.items():
+            if len(group_rows) < 2:
+                continue
+            subgroup_id = 0
+            row_to_subgroup = {}
+            subgroup_rows = defaultdict(list)
+
+            for i, r1 in enumerate(group_rows):
+                if i in row_to_subgroup:
+                    continue
+                current_sg = subgroup_id
+                row_to_subgroup[i] = current_sg
+                subgroup_rows[current_sg].append(r1)
+
+                for j in range(i + 1, len(group_rows)):
+                    if j in row_to_subgroup:
+                        continue
+                    r2 = group_rows[j]
+                    time_diff = self._time_diff_minutes(
+                        r1.get('performance_time', ''),
+                        r2.get('performance_time', '')
+                    )
+                    if time_diff <= self.time_tolerance_minutes:
+                        row_to_subgroup[j] = current_sg
+                        subgroup_rows[current_sg].append(r2)
+
+                subgroup_id += 1
+
+            for sg_id, sg_rows in subgroup_rows.items():
+                if len(sg_rows) >= 2:
+                    times = sorted([r.get('performance_time', '') for r in sg_rows])
+                    final_key = f"{coarse_key}|times_{times[0]}_to_{times[-1]}"
+                    final_groups[final_key] = sg_rows
+
+        return final_groups
 
     def get_version_advice(self, group: List[Dict]) -> Dict:
         sorted_group = sorted(group, key=lambda r: r.get('_version_score', 0), reverse=True)
         best = sorted_group[0]
         older = sorted_group[1:]
+
+        time_set = set(r.get('performance_time', '') for r in group)
+        has_time_diff = len(time_set) > 1
+
+        time_diff_details = []
+        best_time = best.get('performance_time', '')
+        for r in older:
+            r_time = r.get('performance_time', '')
+            diff = self._time_diff_minutes(best_time, r_time)
+            if diff <= 60:
+                time_diff_details.append(f"{r.get('song_name', '')}({r_time}) 与推荐版差 {diff:.0f} 分钟")
+            else:
+                time_diff_details.append(f"{r.get('song_name', '')}({r_time}) 与推荐版差 {diff/60:.1f} 小时")
+
+        if has_time_diff:
+            advice = (f"检测到同一曲目存在{len(time_set)}个不同排期（时间差在{self.time_tolerance_minutes}分钟内），"
+                      f"建议采用 [{best.get('_version_label', '')}] {best.get('_source_file', '')} "
+                      f"第{best.get('_line_number', '?')}行(时间: {best_time})，"
+                      f"其余{len(older)}条为旧版/临时版【请勿直接覆盖】，"
+                      f"请先核对排期差异后再处理。排期差异: {'; '.join(time_diff_details)}")
+        else:
+            advice = (f"检测到{len(group)}条完全重复排期，"
+                      f"建议采用 [{best.get('_version_label', '')}] {best.get('_source_file', '')} "
+                      f"第{best.get('_line_number', '?')}行，其余{len(older)}条为旧版/临时版，请核对后再处理")
+
         return {
             'recommended_row': best,
             'older_versions': older,
-            'advice': f"建议采用 [{best.get('_version_label', '')}] {best.get('_source_file', '')} 第{best.get('_line_number', '?')}行，其余{len(older)}条为旧版/临时版，请核对后再处理",
+            'advice': advice,
+            'has_time_difference': has_time_diff,
+            'distinct_times': sorted(list(time_set)),
+            'time_diff_details': time_diff_details,
             'version_sources': [
                 {
                     'source': r.get('_source_file', ''),
                     'line': r.get('_line_number', ''),
                     'label': r.get('_version_label', ''),
                     'score': r.get('_version_score', 0),
-                    'status': r.get('status', '')
+                    'status': r.get('status', ''),
+                    'song_name': r.get('song_name', ''),
+                    'performance_time': r.get('performance_time', ''),
+                    'theater': r.get('theater', '')
                 }
                 for r in sorted_group
             ]
@@ -210,17 +294,27 @@ class ConflictDetector:
         groups = self.version_manager.group_duplicates(rows, self.alias_resolver)
         for key, group in groups.items():
             advice = self.version_manager.get_version_advice(group)
+            canonical = self.alias_resolver.resolve(group[0].get('song_name', ''))
+
+            conflict_type = '多版本冲突(排期有差异)' if advice['has_time_difference'] else '多版本冲突(完全重复)'
+
             conflicts.append({
-                'type': '多版本冲突',
+                'type': conflict_type,
+                'canonical_name': canonical,
                 'key': key,
                 'row_count': len(group),
+                'distinct_time_count': len(advice['distinct_times']),
+                'distinct_times': advice['distinct_times'],
+                'theater': group[0].get('theater', ''),
                 'recommended_source': advice['recommended_row'].get('_source_file', ''),
                 'recommended_line': advice['recommended_row'].get('_line_number', ''),
                 'recommended_label': advice['recommended_row'].get('_version_label', ''),
+                'recommended_time': advice['recommended_row'].get('performance_time', ''),
                 'advice': advice['advice'],
+                'time_diff_details': advice['time_diff_details'],
                 'version_sources': advice['version_sources'],
                 'older_sources': [
-                    f"{v['source']}第{v['line']}行({v['label']})"
+                    f"{v['source']}第{v['line']}行({v['label']}, {v['performance_time']})"
                     for v in advice['version_sources'][1:]
                 ]
             })

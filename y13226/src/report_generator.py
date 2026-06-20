@@ -174,18 +174,30 @@ class ReportGenerator:
         return result
 
     def save_json(self, result: Dict) -> str:
-        output_path = os.path.join(self.base_dir, self.paths['latest_result'])
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(result, f, ensure_ascii=False, indent=2)
-        return output_path
+        try:
+            output_path = os.path.join(self.base_dir, self.paths['latest_result'])
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(result, f, ensure_ascii=False, indent=2)
+            print(f"[保存] 最新结果已写入: {output_path}")
+            return output_path
+        except Exception as e:
+            print(f"[错误] 保存JSON失败: {e}")
+            raise
 
     def save_timestamped_json(self, result: Dict) -> str:
-        output_dir = os.path.join(self.base_dir, self.paths['output_dir'])
-        filename = f"conflict_result_{result['run_id']}.json"
-        output_path = os.path.join(output_dir, filename)
-        with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(result, f, ensure_ascii=False, indent=2)
-        return output_path
+        try:
+            output_dir = os.path.join(self.base_dir, self.paths['output_dir'])
+            os.makedirs(output_dir, exist_ok=True)
+            filename = f"conflict_result_{result['run_id']}.json"
+            output_path = os.path.join(output_dir, filename)
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(result, f, ensure_ascii=False, indent=2)
+            print(f"[保存] 归档结果已写入: {output_path}")
+            return output_path
+        except Exception as e:
+            print(f"[错误] 保存归档JSON失败: {e}")
+            raise
 
     def generate_text_report(self, result: Dict) -> str:
         lines = []

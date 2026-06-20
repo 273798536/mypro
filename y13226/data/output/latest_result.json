@@ -1,0 +1,898 @@
+{
+  "generated_at": "2026-06-20 14:09:36",
+  "run_id": "20260620_140936",
+  "filters": {
+    "available_theaters": [
+      "大剧场",
+      "实验剧场",
+      "小剧场"
+    ],
+    "available_versions": [
+      "临时修改_林姐",
+      "新版_v2",
+      "旧版_v1"
+    ],
+    "available_sources": [
+      "2026-06-10_排期表_旧版_v1.csv",
+      "2026-06-14_排期表_新版_v2.csv",
+      "2026-06-15_林姐临时调整.csv"
+    ],
+    "available_statuses": [
+      "已处理",
+      "待审核",
+      "需要确认"
+    ],
+    "default_filter": {
+      "theater": "全部",
+      "version": "全部",
+      "source": "全部",
+      "status": "全部",
+      "include_invalid": false
+    }
+  },
+  "statistics": {
+    "total_files": 3,
+    "total_rows": 12,
+    "valid_rows": 12,
+    "invalid_rows": 0,
+    "schedule_conflict_count": 13,
+    "alias_duplicate_count": 2,
+    "version_conflict_count": 3,
+    "total_conflicts": 18,
+    "linjie_modification_count": 3,
+    "rows_by_source": {
+      "2026-06-10_排期表_旧版_v1.csv": 4,
+      "2026-06-14_排期表_新版_v2.csv": 5,
+      "2026-06-15_林姐临时调整.csv": 3
+    },
+    "rows_by_theater": {
+      "大剧场": 9,
+      "小剧场": 2,
+      "实验剧场": 1
+    }
+  },
+  "file_summaries": [
+    {
+      "filename": "2026-06-10_排期表_旧版_v1.csv",
+      "modified_at": "2026-06-15 23:27:11",
+      "total_rows": 4,
+      "valid_rows": 4,
+      "invalid_rows": 0
+    },
+    {
+      "filename": "2026-06-14_排期表_新版_v2.csv",
+      "modified_at": "2026-06-15 23:27:07",
+      "total_rows": 5,
+      "valid_rows": 5,
+      "invalid_rows": 0
+    },
+    {
+      "filename": "2026-06-15_林姐临时调整.csv",
+      "modified_at": "2026-06-15 23:27:14",
+      "total_rows": 3,
+      "valid_rows": 3,
+      "invalid_rows": 0
+    }
+  ],
+  "detail_table": [
+    {
+      "row_id": "茉莉花_2026-06-20 19:30_大剧场",
+      "song_name": "茉莉花",
+      "canonical_name": "茉莉花",
+      "performance_time": "2026-06-20 19:30",
+      "theater": "大剧场",
+      "performance_order": "1",
+      "performer": "林姐乐团",
+      "duration": "5",
+      "version": "旧版_v1",
+      "source_file": "2026-06-10_排期表_旧版_v1.csv",
+      "line_number": 1,
+      "source_field": "2026-06-10_历史归档",
+      "status": "已处理",
+      "version_label": "旧版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突",
+        "排期时间冲突",
+        "曲名别名重复",
+        "多版本冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "梁祝_2026-06-20 19:38_大剧场",
+      "song_name": "梁祝",
+      "canonical_name": "梁祝",
+      "performance_time": "2026-06-20 19:38",
+      "theater": "大剧场",
+      "performance_order": "2",
+      "performer": "小提琴独奏",
+      "duration": "8",
+      "version": "旧版_v1",
+      "source_file": "2026-06-10_排期表_旧版_v1.csv",
+      "line_number": 2,
+      "source_field": "2026-06-10_历史归档",
+      "status": "已处理",
+      "version_label": "旧版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突",
+        "排期时间冲突",
+        "排期时间冲突",
+        "排期时间冲突",
+        "多版本冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "二泉映月_2026-06-20 19:48_大剧场",
+      "song_name": "二泉映月",
+      "canonical_name": "二泉映月",
+      "performance_time": "2026-06-20 19:48",
+      "theater": "大剧场",
+      "performance_order": "3",
+      "performer": "二胡独奏",
+      "duration": "6",
+      "version": "旧版_v1",
+      "source_file": "2026-06-10_排期表_旧版_v1.csv",
+      "line_number": 3,
+      "source_field": "2026-06-10_历史归档",
+      "status": "已处理",
+      "version_label": "旧版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突",
+        "排期时间冲突",
+        "排期时间冲突",
+        "排期时间冲突",
+        "多版本冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "十面埋伏_2026-06-20 19:55_大剧场",
+      "song_name": "十面埋伏",
+      "canonical_name": "十面埋伏",
+      "performance_time": "2026-06-20 19:55",
+      "theater": "大剧场",
+      "performance_order": "4",
+      "performer": "琵琶独奏",
+      "duration": "7",
+      "version": "旧版_v1",
+      "source_file": "2026-06-10_排期表_旧版_v1.csv",
+      "line_number": 4,
+      "source_field": "2026-06-10_历史归档",
+      "status": "已处理",
+      "version_label": "旧版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突",
+        "排期时间冲突",
+        "排期时间冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "茉莉花_2026-06-20 19:30_大剧场",
+      "song_name": "茉莉花",
+      "canonical_name": "茉莉花",
+      "performance_time": "2026-06-20 19:30",
+      "theater": "大剧场",
+      "performance_order": "1",
+      "performer": "林姐乐团",
+      "duration": "5",
+      "version": "新版_v2",
+      "source_file": "2026-06-14_排期表_新版_v2.csv",
+      "line_number": 1,
+      "source_field": "2026-06-14_值班人A提交",
+      "status": "待审核",
+      "version_label": "新版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突",
+        "排期时间冲突",
+        "曲名别名重复",
+        "多版本冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "梁祝_2026-06-20 19:40_大剧场",
+      "song_name": "梁祝",
+      "canonical_name": "梁祝",
+      "performance_time": "2026-06-20 19:40",
+      "theater": "大剧场",
+      "performance_order": "2",
+      "performer": "小提琴独奏",
+      "duration": "8",
+      "version": "新版_v2",
+      "source_file": "2026-06-14_排期表_新版_v2.csv",
+      "line_number": 2,
+      "source_field": "2026-06-14_值班人A提交",
+      "status": "待审核",
+      "version_label": "新版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突",
+        "排期时间冲突",
+        "排期时间冲突",
+        "曲名别名重复",
+        "多版本冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "二泉映月_2026-06-20 19:50_大剧场",
+      "song_name": "二泉映月",
+      "canonical_name": "二泉映月",
+      "performance_time": "2026-06-20 19:50",
+      "theater": "大剧场",
+      "performance_order": "3",
+      "performer": "二胡独奏",
+      "duration": "6",
+      "version": "新版_v2",
+      "source_file": "2026-06-14_排期表_新版_v2.csv",
+      "line_number": 3,
+      "source_field": "2026-06-14_值班人A提交",
+      "status": "待审核",
+      "version_label": "新版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突",
+        "排期时间冲突",
+        "多版本冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "赛马_2026-06-20 20:00_大剧场",
+      "song_name": "赛马",
+      "canonical_name": "赛马",
+      "performance_time": "2026-06-20 20:00",
+      "theater": "大剧场",
+      "performance_order": "4",
+      "performer": "民乐合奏",
+      "duration": "7",
+      "version": "新版_v2",
+      "source_file": "2026-06-14_排期表_新版_v2.csv",
+      "line_number": 4,
+      "source_field": "2026-06-14_值班人A提交",
+      "status": "待审核",
+      "version_label": "新版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "好一朵茉莉花_2026-06-20 19:35_小剧场",
+      "song_name": "好一朵茉莉花",
+      "canonical_name": "茉莉花",
+      "performance_time": "2026-06-20 19:35",
+      "theater": "小剧场",
+      "performance_order": "1",
+      "performer": "女声独唱",
+      "duration": "4",
+      "version": "新版_v2",
+      "source_file": "2026-06-14_排期表_新版_v2.csv",
+      "line_number": 5,
+      "source_field": "2026-06-14_值班人A提交",
+      "status": "待审核",
+      "version_label": "新版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "Butterfly Lovers_2026-06-20 19:40_大剧场",
+      "song_name": "Butterfly Lovers",
+      "canonical_name": "梁祝",
+      "performance_time": "2026-06-20 19:40",
+      "theater": "大剧场",
+      "performance_order": "2",
+      "performer": "小提琴协奏",
+      "duration": "10",
+      "version": "临时修改_林姐",
+      "source_file": "2026-06-15_林姐临时调整.csv",
+      "line_number": 1,
+      "source_field": "2026-06-15_林姐手动调整",
+      "status": "需要确认",
+      "version_label": "临时修改版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突",
+        "排期时间冲突",
+        "排期时间冲突",
+        "曲名别名重复",
+        "多版本冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "化蝶_2026-06-20 19:42_小剧场",
+      "song_name": "化蝶",
+      "canonical_name": "梁祝",
+      "performance_time": "2026-06-20 19:42",
+      "theater": "小剧场",
+      "performance_order": "1",
+      "performer": "民乐小组",
+      "duration": "5",
+      "version": "临时修改_林姐",
+      "source_file": "2026-06-15_林姐临时调整.csv",
+      "line_number": 2,
+      "source_field": "2026-06-15_林姐手动调整",
+      "status": "需要确认",
+      "version_label": "临时修改版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [
+        "排期时间冲突"
+      ],
+      "has_conflict": true
+    },
+    {
+      "row_id": "Jasmine_2026-06-20 19:32_实验剧场",
+      "song_name": "Jasmine",
+      "canonical_name": "茉莉花",
+      "performance_time": "2026-06-20 19:32",
+      "theater": "实验剧场",
+      "performance_order": "1",
+      "performer": "合唱队",
+      "duration": "6",
+      "version": "临时修改_林姐",
+      "source_file": "2026-06-15_林姐临时调整.csv",
+      "line_number": 3,
+      "source_field": "2026-06-15_林姐手动调整",
+      "status": "需要确认",
+      "version_label": "临时修改版",
+      "is_valid": true,
+      "missing_fields": [],
+      "conflict_tags": [],
+      "has_conflict": false
+    }
+  ],
+  "schedule_conflicts": [
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 0.0,
+      "row1": {
+        "song_name": "茉莉花",
+        "canonical_name": "茉莉花",
+        "performance_time": "2026-06-20 19:30",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 1
+      },
+      "row2": {
+        "song_name": "茉莉花",
+        "canonical_name": "茉莉花",
+        "performance_time": "2026-06-20 19:30",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 1
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅0分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 8.0,
+      "row1": {
+        "song_name": "茉莉花",
+        "canonical_name": "茉莉花",
+        "performance_time": "2026-06-20 19:30",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 1
+      },
+      "row2": {
+        "song_name": "梁祝",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:38",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 2
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅8分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 8.0,
+      "row1": {
+        "song_name": "茉莉花",
+        "canonical_name": "茉莉花",
+        "performance_time": "2026-06-20 19:30",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 1
+      },
+      "row2": {
+        "song_name": "梁祝",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:38",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 2
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅8分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 2.0,
+      "row1": {
+        "song_name": "梁祝",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:38",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 2
+      },
+      "row2": {
+        "song_name": "梁祝",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:40",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 2
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅2分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 2.0,
+      "row1": {
+        "song_name": "梁祝",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:38",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 2
+      },
+      "row2": {
+        "song_name": "Butterfly Lovers",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:40",
+        "source": "2026-06-15_林姐临时调整.csv",
+        "line": 1
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅2分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 0.0,
+      "row1": {
+        "song_name": "梁祝",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:40",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 2
+      },
+      "row2": {
+        "song_name": "Butterfly Lovers",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:40",
+        "source": "2026-06-15_林姐临时调整.csv",
+        "line": 1
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅0分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 8.0,
+      "row1": {
+        "song_name": "梁祝",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:40",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 2
+      },
+      "row2": {
+        "song_name": "二泉映月",
+        "canonical_name": "二泉映月",
+        "performance_time": "2026-06-20 19:48",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 3
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅8分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 8.0,
+      "row1": {
+        "song_name": "Butterfly Lovers",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:40",
+        "source": "2026-06-15_林姐临时调整.csv",
+        "line": 1
+      },
+      "row2": {
+        "song_name": "二泉映月",
+        "canonical_name": "二泉映月",
+        "performance_time": "2026-06-20 19:48",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 3
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅8分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 2.0,
+      "row1": {
+        "song_name": "二泉映月",
+        "canonical_name": "二泉映月",
+        "performance_time": "2026-06-20 19:48",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 3
+      },
+      "row2": {
+        "song_name": "二泉映月",
+        "canonical_name": "二泉映月",
+        "performance_time": "2026-06-20 19:50",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 3
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅2分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 7.0,
+      "row1": {
+        "song_name": "二泉映月",
+        "canonical_name": "二泉映月",
+        "performance_time": "2026-06-20 19:48",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 3
+      },
+      "row2": {
+        "song_name": "十面埋伏",
+        "canonical_name": "十面埋伏",
+        "performance_time": "2026-06-20 19:55",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 4
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅7分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 5.0,
+      "row1": {
+        "song_name": "二泉映月",
+        "canonical_name": "二泉映月",
+        "performance_time": "2026-06-20 19:50",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 3
+      },
+      "row2": {
+        "song_name": "十面埋伏",
+        "canonical_name": "十面埋伏",
+        "performance_time": "2026-06-20 19:55",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 4
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅5分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "大剧场",
+      "time_diff_minutes": 5.0,
+      "row1": {
+        "song_name": "十面埋伏",
+        "canonical_name": "十面埋伏",
+        "performance_time": "2026-06-20 19:55",
+        "source": "2026-06-10_排期表_旧版_v1.csv",
+        "line": 4
+      },
+      "row2": {
+        "song_name": "赛马",
+        "canonical_name": "赛马",
+        "performance_time": "2026-06-20 20:00",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 4
+      },
+      "description": "同一剧场[大剧场]，两首曲间隔仅5分钟（<10分钟）"
+    },
+    {
+      "type": "排期时间冲突",
+      "theater": "小剧场",
+      "time_diff_minutes": 7.0,
+      "row1": {
+        "song_name": "好一朵茉莉花",
+        "canonical_name": "茉莉花",
+        "performance_time": "2026-06-20 19:35",
+        "source": "2026-06-14_排期表_新版_v2.csv",
+        "line": 5
+      },
+      "row2": {
+        "song_name": "化蝶",
+        "canonical_name": "梁祝",
+        "performance_time": "2026-06-20 19:42",
+        "source": "2026-06-15_林姐临时调整.csv",
+        "line": 2
+      },
+      "description": "同一剧场[小剧场]，两首曲间隔仅7分钟（<10分钟）"
+    }
+  ],
+  "alias_duplicates": [
+    {
+      "type": "同曲名重复排期",
+      "canonical_name": "茉莉花",
+      "original_names": [
+        "茉莉花",
+        "茉莉花"
+      ],
+      "performance_time": "2026-06-20 19:30",
+      "theater": "大剧场",
+      "rows": [
+        {
+          "song_name": "茉莉花",
+          "source": "2026-06-10_排期表_旧版_v1.csv",
+          "line": 1,
+          "performer": "林姐乐团"
+        },
+        {
+          "song_name": "茉莉花",
+          "source": "2026-06-14_排期表_新版_v2.csv",
+          "line": 1,
+          "performer": "林姐乐团"
+        }
+      ],
+      "description": "检测到2条记录指向同一曲目[茉莉花]，原曲名分别为：茉莉花、茉莉花"
+    },
+    {
+      "type": "曲名别名重复",
+      "canonical_name": "梁祝",
+      "original_names": [
+        "梁祝",
+        "Butterfly Lovers"
+      ],
+      "performance_time": "2026-06-20 19:40",
+      "theater": "大剧场",
+      "rows": [
+        {
+          "song_name": "梁祝",
+          "source": "2026-06-14_排期表_新版_v2.csv",
+          "line": 2,
+          "performer": "小提琴独奏"
+        },
+        {
+          "song_name": "Butterfly Lovers",
+          "source": "2026-06-15_林姐临时调整.csv",
+          "line": 1,
+          "performer": "小提琴协奏"
+        }
+      ],
+      "description": "检测到2条记录指向同一曲目[梁祝]，原曲名分别为：梁祝、Butterfly Lovers"
+    }
+  ],
+  "version_conflicts": [
+    {
+      "type": "多版本冲突(完全重复)",
+      "canonical_name": "茉莉花",
+      "key": "茉莉花|大剧场|times_2026-06-20 19:30_to_2026-06-20 19:30",
+      "row_count": 2,
+      "distinct_time_count": 1,
+      "distinct_times": [
+        "2026-06-20 19:30"
+      ],
+      "theater": "大剧场",
+      "recommended_source": "2026-06-14_排期表_新版_v2.csv",
+      "recommended_line": 1,
+      "recommended_label": "新版",
+      "recommended_time": "2026-06-20 19:30",
+      "advice": "检测到2条完全重复排期，建议采用 [新版] 2026-06-14_排期表_新版_v2.csv 第1行，其余1条为旧版/临时版，请核对后再处理",
+      "time_diff_details": [
+        "茉莉花(2026-06-20 19:30) 与推荐版差 0 分钟"
+      ],
+      "version_sources": [
+        {
+          "source": "2026-06-14_排期表_新版_v2.csv",
+          "line": 1,
+          "label": "新版",
+          "score": 60,
+          "status": "待审核",
+          "song_name": "茉莉花",
+          "performance_time": "2026-06-20 19:30",
+          "theater": "大剧场"
+        },
+        {
+          "source": "2026-06-10_排期表_旧版_v1.csv",
+          "line": 1,
+          "label": "旧版",
+          "score": -40,
+          "status": "已处理",
+          "song_name": "茉莉花",
+          "performance_time": "2026-06-20 19:30",
+          "theater": "大剧场"
+        }
+      ],
+      "older_sources": [
+        "2026-06-10_排期表_旧版_v1.csv第1行(旧版, 2026-06-20 19:30)"
+      ]
+    },
+    {
+      "type": "多版本冲突(排期有差异)",
+      "canonical_name": "梁祝",
+      "key": "梁祝|大剧场|times_2026-06-20 19:38_to_2026-06-20 19:40",
+      "row_count": 3,
+      "distinct_time_count": 2,
+      "distinct_times": [
+        "2026-06-20 19:38",
+        "2026-06-20 19:40"
+      ],
+      "theater": "大剧场",
+      "recommended_source": "2026-06-14_排期表_新版_v2.csv",
+      "recommended_line": 2,
+      "recommended_label": "新版",
+      "recommended_time": "2026-06-20 19:40",
+      "advice": "检测到同一曲目存在2个不同排期（时间差在15分钟内），建议采用 [新版] 2026-06-14_排期表_新版_v2.csv 第2行(时间: 2026-06-20 19:40)，其余2条为旧版/临时版【请勿直接覆盖】，请先核对排期差异后再处理。排期差异: Butterfly Lovers(2026-06-20 19:40) 与推荐版差 0 分钟; 梁祝(2026-06-20 19:38) 与推荐版差 2 分钟",
+      "time_diff_details": [
+        "Butterfly Lovers(2026-06-20 19:40) 与推荐版差 0 分钟",
+        "梁祝(2026-06-20 19:38) 与推荐版差 2 分钟"
+      ],
+      "version_sources": [
+        {
+          "source": "2026-06-14_排期表_新版_v2.csv",
+          "line": 2,
+          "label": "新版",
+          "score": 60,
+          "status": "待审核",
+          "song_name": "梁祝",
+          "performance_time": "2026-06-20 19:40",
+          "theater": "大剧场"
+        },
+        {
+          "source": "2026-06-15_林姐临时调整.csv",
+          "line": 1,
+          "label": "临时修改版",
+          "score": 50,
+          "status": "需要确认",
+          "song_name": "Butterfly Lovers",
+          "performance_time": "2026-06-20 19:40",
+          "theater": "大剧场"
+        },
+        {
+          "source": "2026-06-10_排期表_旧版_v1.csv",
+          "line": 2,
+          "label": "旧版",
+          "score": -40,
+          "status": "已处理",
+          "song_name": "梁祝",
+          "performance_time": "2026-06-20 19:38",
+          "theater": "大剧场"
+        }
+      ],
+      "older_sources": [
+        "2026-06-15_林姐临时调整.csv第1行(临时修改版, 2026-06-20 19:40)",
+        "2026-06-10_排期表_旧版_v1.csv第2行(旧版, 2026-06-20 19:38)"
+      ]
+    },
+    {
+      "type": "多版本冲突(排期有差异)",
+      "canonical_name": "二泉映月",
+      "key": "二泉映月|大剧场|times_2026-06-20 19:48_to_2026-06-20 19:50",
+      "row_count": 2,
+      "distinct_time_count": 2,
+      "distinct_times": [
+        "2026-06-20 19:48",
+        "2026-06-20 19:50"
+      ],
+      "theater": "大剧场",
+      "recommended_source": "2026-06-14_排期表_新版_v2.csv",
+      "recommended_line": 3,
+      "recommended_label": "新版",
+      "recommended_time": "2026-06-20 19:50",
+      "advice": "检测到同一曲目存在2个不同排期（时间差在15分钟内），建议采用 [新版] 2026-06-14_排期表_新版_v2.csv 第3行(时间: 2026-06-20 19:50)，其余1条为旧版/临时版【请勿直接覆盖】，请先核对排期差异后再处理。排期差异: 二泉映月(2026-06-20 19:48) 与推荐版差 2 分钟",
+      "time_diff_details": [
+        "二泉映月(2026-06-20 19:48) 与推荐版差 2 分钟"
+      ],
+      "version_sources": [
+        {
+          "source": "2026-06-14_排期表_新版_v2.csv",
+          "line": 3,
+          "label": "新版",
+          "score": 60,
+          "status": "待审核",
+          "song_name": "二泉映月",
+          "performance_time": "2026-06-20 19:50",
+          "theater": "大剧场"
+        },
+        {
+          "source": "2026-06-10_排期表_旧版_v1.csv",
+          "line": 3,
+          "label": "旧版",
+          "score": -40,
+          "status": "已处理",
+          "song_name": "二泉映月",
+          "performance_time": "2026-06-20 19:48",
+          "theater": "大剧场"
+        }
+      ],
+      "older_sources": [
+        "2026-06-10_排期表_旧版_v1.csv第3行(旧版, 2026-06-20 19:48)"
+      ]
+    }
+  ],
+  "linjie_modifications": [
+    {
+      "song_name": "Butterfly Lovers",
+      "performance_time": "2026-06-20 19:40",
+      "theater": "大剧场",
+      "source_file": "2026-06-15_林姐临时调整.csv",
+      "line_number": 1,
+      "version": "临时修改_林姐",
+      "status": "需要确认",
+      "note": "林姐临时修改，请务必确认，不要被旧版覆盖"
+    },
+    {
+      "song_name": "化蝶",
+      "performance_time": "2026-06-20 19:42",
+      "theater": "小剧场",
+      "source_file": "2026-06-15_林姐临时调整.csv",
+      "line_number": 2,
+      "version": "临时修改_林姐",
+      "status": "需要确认",
+      "note": "林姐临时修改，请务必确认，不要被旧版覆盖"
+    },
+    {
+      "song_name": "Jasmine",
+      "performance_time": "2026-06-20 19:32",
+      "theater": "实验剧场",
+      "source_file": "2026-06-15_林姐临时调整.csv",
+      "line_number": 3,
+      "version": "临时修改_林姐",
+      "status": "需要确认",
+      "note": "林姐临时修改，请务必确认，不要被旧版覆盖"
+    }
+  ],
+  "screenshot_instructions": [
+    {
+      "id": "overview",
+      "title": "总体统计概览",
+      "description": "共处理3个文件，12行数据；检测到18个冲突（排期13、别名2、版本3），林姐临时修改3条",
+      "capture_region": "页面顶部统计卡片区域",
+      "priority": "high"
+    },
+    {
+      "id": "schedule_conflicts",
+      "title": "排期时间冲突明细表",
+      "description": "共13条排期时间冲突，按剧场分组展示，间隔小于10分钟",
+      "capture_region": "排期冲突表格全部内容",
+      "priority": "high"
+    },
+    {
+      "id": "alias_duplicates",
+      "title": "曲名别名重复明细表",
+      "description": "共2条曲名别名重复，同一时段同一剧场出现同曲异名",
+      "capture_region": "别名重复表格全部内容",
+      "priority": "high"
+    },
+    {
+      "id": "version_conflicts",
+      "title": "多版本冲突与处理建议",
+      "description": "共3条多版本冲突，已标注推荐版本与旧版来源，请勿直接覆盖新版",
+      "capture_region": "版本冲突表格及处理建议列",
+      "priority": "high"
+    },
+    {
+      "id": "linjie_modifications",
+      "title": "林姐临时修改清单（勿覆盖）",
+      "description": "共3条林姐临时调整，已进入历史记录，下一班值班请重点核对",
+      "capture_region": "林姐修改专用表格",
+      "priority": "high"
+    }
+  ]
+}

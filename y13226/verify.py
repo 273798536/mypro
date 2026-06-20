@@ -54,7 +54,13 @@ report_path = generator.save_text_report(result)
 print(f'[OK] JSON结果已保存: {json_path}')
 print(f'[OK] 文本报告已保存: {report_path}')
 
-tracker.record_run(result['statistics'])
+run_summary = {
+        'total_files': result['statistics']['total_files'],
+        'total_rows': result['statistics']['total_rows'],
+        'total_conflicts': result['statistics']['total_conflicts'],
+        'linjie_modification_count': result['statistics']['linjie_modification_count']
+    }
+    tracker.record_run(run_summary)
 print('[OK] 历史记录已更新')
 
 print('')
