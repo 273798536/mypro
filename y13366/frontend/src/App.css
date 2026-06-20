@@ -1,0 +1,59 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #1677ff 0%, #0958d9 100%);
+  padding: 0 32px;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+}
+
+.header-tips {
+  display: flex;
+  gap: 24px;
+}
+
+.header-tips .ant-badge-status-text {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+.header-tips .ant-badge-status-dot {
+  background: #52c41a !important;
+}
+
+.app-sider {
+  background: #fff;
+  position: relative;
+}
+
+.sider-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: #fafafa;
+  border-top: 1px solid #f0f0f0;
+}
+
+.feature-item {
+  padding: 8px 0;
+  color: #666;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feature-item .anticon {
+  color: #1677ff;
+}
+
+.app-content {
+  background: #f0f2f5;
+  padding: 24px;
+  overflow: auto;
+}
