@@ -129,58 +129,79 @@ def run_detection(output_json: bool = False, output_report: bool = False):
         return False
 
 
-def list_files():
-    reader = DataReader(BASE_DIR)
-    summaries = reader.get_file_summaries()
-    if not summaries:
-        print('data/audio_files/ 目录下暂无CSV文件')
-        return
-    print('已检测到以下文件：')
-    for s in summaries:
-        print(f'  {s["filename"]}')
-        print(f'    修改时间: {s["modified_at"]}')
-        print(f'    有效行: {s["valid_rows"]}/{s["total_rows"]}')
+def list_files() -> bool:
+    try:
+        reader = DataReader(BASE_DIR)
+        summaries = reader.get_file_summaries()
+        if not summaries:
+            print('[提示] data/audio_files/ 目录下暂无CSV文件')
+            return True
+        print('已检测到以下文件：')
+        for s in summaries:
+            print(f'  {s["filename"]}')
+            print(f'    修改时间: {s["modified_at"]}')
+            print(f'    有效行: {s["valid_rows"]}/{s["total_rows"]}')
+        return True
+    except Exception as e:
+        print(f'[错误] 列出文件失败: {e}')
+        return False
 
 
-def show_history():
-    tracker = HistoryTracker(BASE_DIR)
-    runs = tracker.get_recent_runs(10)
-    decisions = tracker.get_manual_decisions()
+def show_history() -> bool:
+    try:
+        tracker = HistoryTracker(BASE_DIR)
+        runs = tracker.get_recent_runs(10)
+        decisions = tracker.get_manual_decisions()
 
-    print('── 最近运行记录 ──')
-    if runs:
-        for r in runs:
-            s = r['summary']
-            linjie = s.get('linjie_modification_count', s.get('linjie_modifications', '?'))
-            print(f"  {r['timestamp']} | 冲突:{s.get('total_conflicts', '?')} 林姐修改:{linjie}")
-    else:
-        print('  暂无运行记录')
+        print('── 最近运行记录 ──')
+        if runs:
+            for r in runs:
+                s = r['summary']
+                linjie = s.get('linjie_modification_count', s.get('linjie_modifications', '?'))
+                print(f"  {r['timestamp']} | 冲突:{s.get('total_conflicts', '?')} 林姐修改:{linjie}")
+        else:
+            print('  暂无运行记录')
 
-    print('')
-    print('── 人工判断记录 ──')
-    if decisions:
-        for d in decisions:
-            print(f"  {d['timestamp']} | {d['operator']} | {d['conflict_id']}")
-            print(f"    判断: {d['decision']}")
-            if d.get('note'):
-                print(f"    备注: {d['note']}")
-    else:
-        print('  暂无人工判断记录')
-
-
-def add_decision():
-    print('记录人工判断（林姐临时修改专用）')
-    conflict_id = input('请输入冲突编号/标识: ').strip()
-    decision = input('请输入判断内容（如：保留临时修改版，不覆盖新版）: ').strip()
-    operator = input('请输入操作人（如：林姐）: ').strip() or '林姐'
-    note = input('请输入备注（可选）: ').strip()
-
-    tracker = HistoryTracker(BASE_DIR)
-    record = tracker.record_manual_decision(conflict_id, decision, operator, note)
-    print(f"已记录: {record['timestamp']} {record['operator']} - {record['decision']}")
+        print('')
+        print('── 人工判断记录 ──')
+        if decisions:
+            for d in decisions:
+                print(f"  {d['timestamp']} | {d['operator']} | {d['conflict_id']}")
+                print(f"    判断: {d['decision']}")
+                if d.get('note'):
+                    print(f"    备注: {d['note']}")
+        else:
+            print('  暂无人工判断记录')
+        return True
+    except Exception as e:
+        print(f'[错误] 读取历史失败: {e}')
+        return False
 
 
-def main():
+def add_decision() -> bool:
+    try:
+        print('记录人工判断（林姐临时修改专用）')
+        conflict_id = input('请输入冲突编号/标识: ').strip()
+        if not conflict_id:
+            print('[错误] 冲突编号不能为空')
+            return False
+        decision = input('请输入判断内容（如：保留临时修改版，不覆盖新版）: ').strip()
+        if not decision:
+            print('[错误] 判断内容不能为空')
+            return False
+        operator = input('请输入操作人（如：林姐）: ').strip() or '林姐'
+        note = input('请输入备注（可选）: ').strip()
+
+        tracker = HistoryTracker(BASE_DIR)
+        record = tracker.record_manual_decision(conflict_id, decision, operator, note)
+        print(f'[成功] 已记录: {record["timestamp"]} {record["operator"]} - {record["decision"]}')
+        return True
+    except Exception as e:
+        print(f'[错误] 记录人工判断失败: {e}')
+        return False
+
+
+def main() -> int:
     parser = argparse.ArgumentParser(
         description='剧场返场曲排期冲突检测工具',
         formatter_class=argparse.RawDescriptionHelpFormatter
@@ -192,26 +213,27 @@ def main():
     parser.add_argument('--decision', action='store_true', help='记录一条人工判断')
     parser.add_argument('--help-text', action='store_true', help='显示详细帮助')
 
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
+    except SystemExit:
+        return 0
 
     if args.help_text:
         print_help()
-        return
+        return 0
 
     if args.list_files:
-        list_files()
-        return
+        return 0 if list_files() else 1
 
     if args.history:
-        show_history()
-        return
+        return 0 if show_history() else 1
 
     if args.decision:
-        add_decision()
-        return
+        return 0 if add_decision() else 1
 
-    run_detection(output_json=args.json, output_report=args.report)
+    success = run_detection(output_json=args.json, output_report=args.report)
+    return 0 if success else 1
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

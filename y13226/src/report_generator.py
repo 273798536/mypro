@@ -173,16 +173,28 @@ class ReportGenerator:
         }
         return result
 
+    def _verify_file(self, path: str, min_size: int = 100) -> bool:
+        if not os.path.exists(path):
+            print(f'[校验失败] 文件不存在: {path}')
+            return False
+        size = os.path.getsize(path)
+        if size < min_size:
+            print(f'[校验失败] 文件内容过短({size}字节): {path}')
+            return False
+        return True
+
     def save_json(self, result: Dict) -> str:
         try:
             output_path = os.path.join(self.base_dir, self.paths['latest_result'])
             os.makedirs(os.path.dirname(output_path), exist_ok=True)
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
-            print(f"[保存] 最新结果已写入: {output_path}")
+            if not self._verify_file(output_path, min_size=500):
+                raise IOError(f'文件生成后校验失败: {output_path}')
+            print(f'[保存] 最新结果已写入: {output_path}')
             return output_path
         except Exception as e:
-            print(f"[错误] 保存JSON失败: {e}")
+            print(f'[错误] 保存JSON失败: {e}')
             raise
 
     def save_timestamped_json(self, result: Dict) -> str:
@@ -193,10 +205,29 @@ class ReportGenerator:
             output_path = os.path.join(output_dir, filename)
             with open(output_path, 'w', encoding='utf-8') as f:
                 json.dump(result, f, ensure_ascii=False, indent=2)
-            print(f"[保存] 归档结果已写入: {output_path}")
+            if not self._verify_file(output_path, min_size=500):
+                raise IOError(f'归档JSON校验失败: {output_path}')
+            print(f'[保存] 归档结果已写入: {output_path}')
             return output_path
         except Exception as e:
-            print(f"[错误] 保存归档JSON失败: {e}")
+            print(f'[错误] 保存归档JSON失败: {e}')
+            raise
+
+    def save_text_report(self, result: Dict) -> str:
+        try:
+            output_dir = os.path.join(self.base_dir, self.paths['output_dir'])
+            os.makedirs(output_dir, exist_ok=True)
+            filename = f"conflict_report_{result['run_id']}.txt"
+            output_path = os.path.join(output_dir, filename)
+            content = self.generate_text_report(result)
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            if not self._verify_file(output_path, min_size=200):
+                raise IOError(f'文本报告校验失败: {output_path}')
+            print(f'[保存] 文本报告已写入: {output_path}')
+            return output_path
+        except Exception as e:
+            print(f'[错误] 保存文本报告失败: {e}')
             raise
 
     def generate_text_report(self, result: Dict) -> str:
