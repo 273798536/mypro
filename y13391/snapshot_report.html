@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>联邦客户端版本快照 - 联邦客户端A v2.4.1</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; line-height: 1.6; padding: 24px; }
+.container { max-width: 1200px; margin: 0 auto; }
+h1 { font-size: 24px; margin-bottom: 8px; }
+.header-meta { color: #999; font-size: 14px; margin-bottom: 24px; }
+.card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+.card h2 { font-size: 18px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #f0f0f0; }
+th { background: #fafafa; font-weight: 600; color: #666; font-size: 13px; white-space: nowrap; }
+tr:hover { background: #fafafa; }
+.overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.stat-box { background: #fafafa; border-radius: 8px; padding: 16px; text-align: center; border-left: 4px solid #1890ff; }
+.stat-value { font-size: 32px; font-weight: bold; color: #1890ff; }
+.stat-label { font-size: 13px; color: #999; margin-top: 4px; }
+.screenshot-list { display: grid; gap: 12px; }
+.screenshot-item { border: 1px solid #e8e8e8; border-radius: 8px; overflow: hidden; }
+.screenshot-header { background: #fafafa; padding: 10px 14px; border-bottom: 1px solid #e8e8e8; }
+.screenshot-body { padding: 12px 14px; }
+.screenshot-body table td { padding: 4px 8px; border: none; }
+.screenshot-body table tr { background: transparent; }
+code { background: #f5f5f5; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+.nav { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.nav a { padding: 6px 14px; background: #fff; border: 1px solid #d9d9d9; border-radius: 20px; text-decoration: none; color: #333; font-size: 13px; transition: all .2s; }
+.nav a:hover { border-color: #1890ff; color: #1890ff; }
+@media (max-width: 768px) { .overview-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>📑 联邦客户端版本快照</h1>
+    <div class="header-meta">
+        客户端: <strong>联邦客户端A</strong> &nbsp;|&nbsp;
+        版本: <strong>2.4.1</strong> &nbsp;|&nbsp;
+        时间: 2026-06-21 12:47:05
+    </div>
+    <div class="nav">
+        <a href="#overview">📊 总览</a>
+        <a href="#features">📋 特征明细</a>
+        <a href="#late">⚡ 迟到追溯</a>
+        <a href="#skew">🎯 拉偏样本</a>
+        <a href="#bad">🗑️ 坏数据</a>
+        <a href="#screenshot">📸 截图说明</a>
+    </div>
+    <div id="overview">
+    <div class="card">
+        <h2>📊 总览</h2>
+        <div class="overview-grid">
+            <div class="stat-box">
+                <div class="stat-value">14</div>
+                <div class="stat-label">特征总数</div>
+            </div>
+            <div class="stat-box" style="border-left-color:#52c41a;">
+                <div class="stat-value" style="color:#52c41a;">7</div>
+                <div class="stat-label">正常</div>
+            </div>
+            <div class="stat-box" style="border-left-color:#f5222d;">
+                <div class="stat-value" style="color:#f5222d;">7</div>
+                <div class="stat-label">异常</div>
+            </div>
+            <div class="stat-box" style="border-left-color:#faad14;">
+                <div class="stat-value" style="color:#faad14;">5</div>
+                <div class="stat-label">越界</div>
+            </div>
+        </div>
+        <div style="margin-top:16px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span>数据质量</span>
+                <span>50.0% 正常</span>
+            </div>
+            <div style="background:#f0f0f0;border-radius:8px;height:12px;overflow:hidden;">
+                <div style="background:#f5222d;height:100%;width:50.0%;border-radius:8px;transition:width .3s;"></div>
+            </div>
+        </div>
+        <p style="margin-top:12px;color:#666;">📝 本快照合并了任务1（模型评测）和任务2（特征评测）的特征数据。逾期率、坏账率、缺失率三项越界，特征X12迟到，特征X15缺失。坏账率贡献度最高，建议优先核实样本来源。</p>
+    </div>
+    </div>
+    <div id="features">
+    <div class="card">
+        <h2>📋 特征明细 <small style="color:#999;font-weight:normal;">（公式 · 单位 · 边界值 · 原始来源 · 截图说明）</small></h2>
+        <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>特征名</th>
+                    <th>值</th>
+                    <th>单位</th>
+                    <th>公式</th>
+                    <th>边界值</th>
+                    <th>状态</th>
+                    <th>原始来源 / 迟到原因</th>
+                    <th>截图说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr id="feat-0">
+            <td><strong>模型AUC</strong></td>
+            <td >0.87</td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;">mean(predict_score)</code></td>
+            <td>[0.8, 1.0]</td>
+            <td><span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L2 <small>(任务1-模型评测)</small></span></td>
+            <td><span style="font-size:12px;">📸 AUC=0.87，高于基线0.80，模型区分度合格</span></td>
+        </tr>
+        
+        <tr id="feat-1">
+            <td><strong>模型KS</strong></td>
+            <td >0.42</td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;">max(|cum_pos-cum_neg|)</code></td>
+            <td>[0.3, 1.0]</td>
+            <td><span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L3 <small>(任务1-模型评测)</small></span></td>
+            <td><span style="font-size:12px;">📸 KS=0.42，满足&gt;0.30要求，可截图确认</span></td>
+        </tr>
+        
+        <tr id="feat-2">
+            <td><strong>特征覆盖数</strong></td>
+            <td >856</td>
+            <td><code>个</code></td>
+            <td><code style="font-size:11px;">count(non_null)</code></td>
+            <td>≥ 800.0</td>
+            <td><span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L4 <small>(任务1-模型评测)</small></span></td>
+            <td>—</td>
+        </tr>
+        
+        <tr id="feat-3">
+            <td><strong>迟到特征数</strong></td>
+            <td style="color:#f5222d;font-weight:bold;">3</td>
+            <td><code>个</code></td>
+            <td><code style="font-size:11px;">count(late_flag)</code></td>
+            <td>[0.0, 2.0]</td>
+            <td><span style="background:#722ed1;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">迟到</span></td>
+            <td><span style="color:#722ed1;font-size:12px;">⚡ 迟到-特征X12未到位</span><br><small style="color:#999;">来源: <span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L5 <small>(任务1-模型评测)</small></span></small></td>
+            <td><span style="font-size:12px;">📸 3条特征迟到，其中特征X12未到位，需与数据方确认</span></td>
+        </tr>
+        
+        <tr id="feat-4">
+            <td><strong>PSI</strong></td>
+            <td >0.15</td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;">sum(p*ln(p/q))</code></td>
+            <td>[0.0, 0.25]</td>
+            <td><span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L6 <small>(任务1-模型评测)</small></span></td>
+            <td><span style="font-size:12px;">📸 PSI=0.15&lt;0.25，分布稳定，可截图放行</span></td>
+        </tr>
+        
+        <tr id="feat-5">
+            <td><strong>逾期率</strong></td>
+            <td style="color:#f5222d;font-weight:bold;">0.065</td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;">count(逾期)/count(总计)</code></td>
+            <td>[0.0, 0.05]</td>
+            <td><span style="background:#f5222d;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">越界</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L7 <small>(任务1-模型评测)</small></span></td>
+            <td><span style="font-size:12px;">📸 逾期率6.5%超出上限5.0%，需重点关注</span></td>
+        </tr>
+        
+        <tr id="feat-6">
+            <td><strong>缺失率</strong></td>
+            <td style="color:#f5222d;font-weight:bold;">0.12</td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;">count(null)/count(总计)</code></td>
+            <td>[0.0, 0.08]</td>
+            <td><span style="background:#f5222d;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">越界</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L8 <small>(任务1-模型评测)</small></span></td>
+            <td>—</td>
+        </tr>
+        
+        <tr id="feat-7">
+            <td><strong>无效值计数</strong></td>
+            <td style="color:#f5222d;font-weight:bold;">7</td>
+            <td><code>个</code></td>
+            <td><code style="font-size:11px;">count(invalid)</code></td>
+            <td>[0.0, 0.0]</td>
+            <td><span style="background:#f5222d;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">越界</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L9 <small>(任务1-模型评测)</small></span></td>
+            <td>—</td>
+        </tr>
+        
+        <tr id="feat-8">
+            <td><strong>入模特征数</strong></td>
+            <td >23</td>
+            <td><code>个</code></td>
+            <td><code style="font-size:11px;">count(selected_features)</code></td>
+            <td>≥ 15.0</td>
+            <td><span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L2 <small>(任务2-特征评测)</small></span></td>
+            <td>—</td>
+        </tr>
+        
+        <tr id="feat-9">
+            <td><strong>特征稳定性</strong></td>
+            <td >0.91</td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;">1-std_feature/mean_feature</code></td>
+            <td>[0.85, 1.0]</td>
+            <td><span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L3 <small>(任务2-特征评测)</small></span></td>
+            <td>—</td>
+        </tr>
+        
+        <tr id="feat-10">
+            <td><strong>样本量</strong></td>
+            <td >52300</td>
+            <td><code>条</code></td>
+            <td><code style="font-size:11px;">count(samples)</code></td>
+            <td>≥ 10000.0</td>
+            <td><span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L4 <small>(任务2-特征评测)</small></span></td>
+            <td>—</td>
+        </tr>
+        
+        <tr id="feat-11">
+            <td><strong>坏账率</strong></td>
+            <td style="color:#f5222d;font-weight:bold;">0.089</td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;">count(bad)/count(total)</code></td>
+            <td>[0.0, 0.06]</td>
+            <td><span style="background:#f5222d;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">越界</span></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L5 <small>(任务2-特征评测)</small></span></td>
+            <td><span style="font-size:12px;">📸 坏账率8.9%远超6.0%上限，拉偏总指标，需解释原因</span></td>
+        </tr>
+        
+        <tr id="feat-12">
+            <td><strong>特征X12</strong></td>
+            <td style="color:#faad14;">迟到</td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;"></code></td>
+            <td>[-1.0, 1.0]</td>
+            <td><span style="background:#722ed1;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">迟到</span></td>
+            <td><span style="color:#722ed1;font-size:12px;">⚡ 迟到</span><br><small style="color:#999;">来源: <span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L6 <small>(任务2-特征评测)</small></span></small></td>
+            <td><span style="font-size:12px;">📸 特征X12标记为迟到，原始任务未提交该特征快照</span></td>
+        </tr>
+        
+        <tr id="feat-13">
+            <td><strong>特征X15</strong></td>
+            <td style="color:#faad14;"></td>
+            <td><code>个</code></td>
+            <td><code style="font-size:11px;">count(non_null)</code></td>
+            <td>≥ 0.0</td>
+            <td><span style="background:#722ed1;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">迟到</span></td>
+            <td><span style="color:#722ed1;font-size:12px;">⚡ 缺失-字段为空</span><br><small style="color:#999;">来源: <span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L7 <small>(任务2-特征评测)</small></span></small></td>
+            <td><span style="font-size:12px;">📸 特征X15值为空，原始来源显示字段缺失</span></td>
+        </tr>
+        
+            </tbody>
+        </table>
+        </div>
+    </div>
+    </div>
+    <div id="late">
+    <div class="card">
+        <h2>⚡ 特征迟到追溯 <span style="background:#722ed1;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">3</span></h2>
+        <p style="color:#666;font-size:13px;margin-bottom:12px;">每条迟到特征均可追溯到原始来源行，含公式、单位与截图说明</p>
+        <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>特征名</th>
+                    <th>迟到原因</th>
+                    <th>原始值</th>
+                    <th>来源定位</th>
+                    <th>单位</th>
+                    <th>公式</th>
+                    <th>截图说明</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td><strong>迟到特征数</strong></td>
+            <td><span style="color:#722ed1;">⚡ 迟到-特征X12未到位</span></td>
+            <td>3</td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L5 <small>(任务1-模型评测)</small></span></td>
+            <td><code>个</code></td>
+            <td><code style="font-size:11px;">count(late_flag)</code></td>
+            <td style="font-size:12px;">📸 3条特征迟到，其中特征X12未到位，需与数据方确认</td>
+        </tr>
+        
+        <tr>
+            <td><strong>特征X12</strong></td>
+            <td><span style="color:#722ed1;">⚡ 迟到</span></td>
+            <td>迟到</td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L6 <small>(任务2-特征评测)</small></span></td>
+            <td><code></code></td>
+            <td><code style="font-size:11px;"></code></td>
+            <td style="font-size:12px;">📸 特征X12标记为迟到，原始任务未提交该特征快照</td>
+        </tr>
+        
+        <tr>
+            <td><strong>特征X15</strong></td>
+            <td><span style="color:#722ed1;">⚡ 缺失-字段为空</span></td>
+            <td></td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L7 <small>(任务2-特征评测)</small></span></td>
+            <td><code>个</code></td>
+            <td><code style="font-size:11px;">count(non_null)</code></td>
+            <td style="font-size:12px;">📸 特征X15值为空，原始来源显示字段缺失</td>
+        </tr>
+        
+            </tbody>
+        </table>
+        </div>
+    </div>
+    </div>
+    <div id="skew">
+    <div class="card">
+        <h2>🎯 拉偏样本定位 <span style="background:#f5222d;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">Top 10</span></h2>
+        <p style="color:#666;font-size:13px;margin-bottom:12px;">贡献度越高，该样本对总指标的拉偏作用越大；点击来源可定位原始行</p>
+        <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>样本ID</th>
+                    <th>特征名</th>
+                    <th>样本值</th>
+                    <th>期望范围</th>
+                    <th>拉偏贡献度</th>
+                    <th>来源定位</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td><strong>row_9</strong></td>
+            <td>无效值计数</td>
+            <td style="color:#f5222d;font-weight:bold;">7</td>
+            <td><code>[0.0, 0.0]</code></td>
+            <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;">
+                        <div style="background:#f5222d;height:100%;width:100%;border-radius:4px;"></div>
+                    </div>
+                    <span style="font-size:12px;color:#f5222d;">700.0%</span>
+                </div>
+            </td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L9 <small>(任务1-模型评测)</small></span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>row_5</strong></td>
+            <td>迟到特征数</td>
+            <td style="color:#f5222d;font-weight:bold;">3</td>
+            <td><code>[0.0, 2.0]</code></td>
+            <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;">
+                        <div style="background:#faad14;height:100%;width:50.0%;border-radius:4px;"></div>
+                    </div>
+                    <span style="font-size:12px;color:#faad14;">50.0%</span>
+                </div>
+            </td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L5 <small>(任务1-模型评测)</small></span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>row_8</strong></td>
+            <td>缺失率</td>
+            <td style="color:#f5222d;font-weight:bold;">0.12</td>
+            <td><code>[0.0, 0.08]</code></td>
+            <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;">
+                        <div style="background:#faad14;height:100%;width:50.0%;border-radius:4px;"></div>
+                    </div>
+                    <span style="font-size:12px;color:#faad14;">50.0%</span>
+                </div>
+            </td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L8 <small>(任务1-模型评测)</small></span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>row_5</strong></td>
+            <td>坏账率</td>
+            <td style="color:#f5222d;font-weight:bold;">0.089</td>
+            <td><code>[0.0, 0.06]</code></td>
+            <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;">
+                        <div style="background:#faad14;height:100%;width:48.33%;border-radius:4px;"></div>
+                    </div>
+                    <span style="font-size:12px;color:#faad14;">48.3%</span>
+                </div>
+            </td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L5 <small>(任务2-特征评测)</small></span></td>
+        </tr>
+        
+        <tr>
+            <td><strong>row_7</strong></td>
+            <td>逾期率</td>
+            <td style="color:#f5222d;font-weight:bold;">0.065</td>
+            <td><code>[0.0, 0.05]</code></td>
+            <td>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="flex:1;background:#f0f0f0;border-radius:4px;height:8px;">
+                        <div style="background:#faad14;height:100%;width:30.0%;border-radius:4px;"></div>
+                    </div>
+                    <span style="font-size:12px;color:#faad14;">30.0%</span>
+                </div>
+            </td>
+            <td><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L7 <small>(任务1-模型评测)</small></span></td>
+        </tr>
+        
+            </tbody>
+        </table>
+        </div>
+    </div>
+    </div>
+    <div id="bad">
+    <div class="card">
+        <h2>🗑️ 坏数据指针 <span style="background:#eb2f96;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">7</span></h2>
+        <p style="color:#666;font-size:13px;margin-bottom:12px;">每条坏数据均指向原始文件行与列名，保留原始值不做修饰</p>
+        <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>特征名</th>
+                    <th>问题</th>
+                    <th>原始值</th>
+                    <th>来源定位</th>
+                    <th>列名</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr>
+            <td><strong>迟到特征数</strong></td>
+            <td><span style="color:#eb2f96;">特征迟到: 迟到-特征X12未到位</span></td>
+            <td><code style="color:#f5222d;">3</code></td>
+            <td style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L5</td>
+            <td><code>feature_name</code></td>
+        </tr>
+        
+        <tr>
+            <td><strong>逾期率</strong></td>
+            <td><span style="color:#eb2f96;">越界</span></td>
+            <td><code style="color:#f5222d;">0.065</code></td>
+            <td style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L7</td>
+            <td><code>feature_name</code></td>
+        </tr>
+        
+        <tr>
+            <td><strong>缺失率</strong></td>
+            <td><span style="color:#eb2f96;">越界</span></td>
+            <td><code style="color:#f5222d;">0.12</code></td>
+            <td style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L8</td>
+            <td><code>feature_name</code></td>
+        </tr>
+        
+        <tr>
+            <td><strong>无效值计数</strong></td>
+            <td><span style="color:#eb2f96;">越界</span></td>
+            <td><code style="color:#f5222d;">7</code></td>
+            <td style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L9</td>
+            <td><code>feature_name</code></td>
+        </tr>
+        
+        <tr>
+            <td><strong>坏账率</strong></td>
+            <td><span style="color:#eb2f96;">越界</span></td>
+            <td><code style="color:#f5222d;">0.089</code></td>
+            <td style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L5</td>
+            <td><code>feature_name</code></td>
+        </tr>
+        
+        <tr>
+            <td><strong>特征X12</strong></td>
+            <td><span style="color:#eb2f96;">特征迟到: 迟到</span></td>
+            <td><code style="color:#f5222d;">迟到</code></td>
+            <td style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L6</td>
+            <td><code>feature_name</code></td>
+        </tr>
+        
+        <tr>
+            <td><strong>特征X15</strong></td>
+            <td><span style="color:#eb2f96;">特征迟到: 缺失-字段为空</span></td>
+            <td><code style="color:#f5222d;"></code></td>
+            <td style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L7</td>
+            <td><code>feature_name</code></td>
+        </tr>
+        
+            </tbody>
+        </table>
+        </div>
+    </div>
+    </div>
+    <div id="screenshot">
+    <div class="card">
+        <h2>📸 截图说明（沟通用）</h2>
+        <p style="color:#666;font-size:13px;margin-bottom:12px;">可直接截图发到群里，每条含特征名、值、单位、公式、边界值与原始来源</p>
+        <div class="screenshot-list">
+            
+        <div class="screenshot-item" id="ss-0">
+            <div class="screenshot-header">
+                <strong>模型AUC</strong> <span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span>
+                <span style="float:right;font-size:12px;"><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L2 <small>(任务1-模型评测)</small></span></span>
+            </div>
+            <div class="screenshot-body">
+                <p>📸 AUC=0.87，高于基线0.80，模型区分度合格</p>
+                <table style="width:100%;font-size:13px;">
+                    <tr><td style="width:80px;color:#999;">值</td><td>0.87 <code></code></td></tr>
+                    <tr><td style="color:#999;">公式</td><td><code>mean(predict_score)</code></td></tr>
+                    <tr><td style="color:#999;">边界</td><td>[ 0.8, 1.0 ]</td></tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div class="screenshot-item" id="ss-1">
+            <div class="screenshot-header">
+                <strong>模型KS</strong> <span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span>
+                <span style="float:right;font-size:12px;"><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L3 <small>(任务1-模型评测)</small></span></span>
+            </div>
+            <div class="screenshot-body">
+                <p>📸 KS=0.42，满足&gt;0.30要求，可截图确认</p>
+                <table style="width:100%;font-size:13px;">
+                    <tr><td style="width:80px;color:#999;">值</td><td>0.42 <code></code></td></tr>
+                    <tr><td style="color:#999;">公式</td><td><code>max(|cum_pos-cum_neg|)</code></td></tr>
+                    <tr><td style="color:#999;">边界</td><td>[ 0.3, 1.0 ]</td></tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div class="screenshot-item" id="ss-3">
+            <div class="screenshot-header">
+                <strong>迟到特征数</strong> <span style="background:#722ed1;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">迟到</span>
+                <span style="float:right;font-size:12px;"><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L5 <small>(任务1-模型评测)</small></span></span>
+            </div>
+            <div class="screenshot-body">
+                <p>📸 3条特征迟到，其中特征X12未到位，需与数据方确认</p>
+                <table style="width:100%;font-size:13px;">
+                    <tr><td style="width:80px;color:#999;">值</td><td>3 <code>个</code></td></tr>
+                    <tr><td style="color:#999;">公式</td><td><code>count(late_flag)</code></td></tr>
+                    <tr><td style="color:#999;">边界</td><td>[ 0.0, 2.0 ]</td></tr>
+                    <tr><td style="color:#999;">迟到</td><td style="color:#722ed1;">⚡ 迟到-特征X12未到位</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="screenshot-item" id="ss-4">
+            <div class="screenshot-header">
+                <strong>PSI</strong> <span style="background:#52c41a;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">正常</span>
+                <span style="float:right;font-size:12px;"><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L6 <small>(任务1-模型评测)</small></span></span>
+            </div>
+            <div class="screenshot-body">
+                <p>📸 PSI=0.15&lt;0.25，分布稳定，可截图放行</p>
+                <table style="width:100%;font-size:13px;">
+                    <tr><td style="width:80px;color:#999;">值</td><td>0.15 <code></code></td></tr>
+                    <tr><td style="color:#999;">公式</td><td><code>sum(p*ln(p/q))</code></td></tr>
+                    <tr><td style="color:#999;">边界</td><td>[ 0.0, 0.25 ]</td></tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div class="screenshot-item" id="ss-5">
+            <div class="screenshot-header">
+                <strong>逾期率</strong> <span style="background:#f5222d;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">越界</span>
+                <span style="float:right;font-size:12px;"><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task1.csv #L7 <small>(任务1-模型评测)</small></span></span>
+            </div>
+            <div class="screenshot-body">
+                <p>📸 逾期率6.5%超出上限5.0%，需重点关注</p>
+                <table style="width:100%;font-size:13px;">
+                    <tr><td style="width:80px;color:#999;">值</td><td>0.065 <code></code></td></tr>
+                    <tr><td style="color:#999;">公式</td><td><code>count(逾期)/count(总计)</code></td></tr>
+                    <tr><td style="color:#999;">边界</td><td>[ 0.0, 0.05 ]</td></tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div class="screenshot-item" id="ss-11">
+            <div class="screenshot-header">
+                <strong>坏账率</strong> <span style="background:#f5222d;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">越界</span>
+                <span style="float:right;font-size:12px;"><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L5 <small>(任务2-特征评测)</small></span></span>
+            </div>
+            <div class="screenshot-body">
+                <p>📸 坏账率8.9%远超6.0%上限，拉偏总指标，需解释原因</p>
+                <table style="width:100%;font-size:13px;">
+                    <tr><td style="width:80px;color:#999;">值</td><td>0.089 <code></code></td></tr>
+                    <tr><td style="color:#999;">公式</td><td><code>count(bad)/count(total)</code></td></tr>
+                    <tr><td style="color:#999;">边界</td><td>[ 0.0, 0.06 ]</td></tr>
+                    
+                </table>
+            </div>
+        </div>
+        
+        <div class="screenshot-item" id="ss-12">
+            <div class="screenshot-header">
+                <strong>特征X12</strong> <span style="background:#722ed1;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">迟到</span>
+                <span style="float:right;font-size:12px;"><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L6 <small>(任务2-特征评测)</small></span></span>
+            </div>
+            <div class="screenshot-body">
+                <p>📸 特征X12标记为迟到，原始任务未提交该特征快照</p>
+                <table style="width:100%;font-size:13px;">
+                    <tr><td style="width:80px;color:#999;">值</td><td>迟到 <code></code></td></tr>
+                    <tr><td style="color:#999;">公式</td><td><code></code></td></tr>
+                    <tr><td style="color:#999;">边界</td><td>[ -1.0, 1.0 ]</td></tr>
+                    <tr><td style="color:#999;">迟到</td><td style="color:#722ed1;">⚡ 迟到</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="screenshot-item" id="ss-13">
+            <div class="screenshot-header">
+                <strong>特征X15</strong> <span style="background:#722ed1;color:#fff;padding:2px 8px;border-radius:10px;font-size:12px;">迟到</span>
+                <span style="float:right;font-size:12px;"><span style="font-family:monospace;font-size:12px;">📄 /Users/mac/pro/solo/workspaces/y13391/sample_data_task2.csv #L7 <small>(任务2-特征评测)</small></span></span>
+            </div>
+            <div class="screenshot-body">
+                <p>📸 特征X15值为空，原始来源显示字段缺失</p>
+                <table style="width:100%;font-size:13px;">
+                    <tr><td style="width:80px;color:#999;">值</td><td> <code>个</code></td></tr>
+                    <tr><td style="color:#999;">公式</td><td><code>count(non_null)</code></td></tr>
+                    <tr><td style="color:#999;">边界</td><td></td></tr>
+                    <tr><td style="color:#999;">迟到</td><td style="color:#722ed1;">⚡ 缺失-字段为空</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        </div>
+    </div>
+    </div>
+    <div style="text-align:center;color:#ccc;font-size:12px;margin-top:32px;padding-bottom:16px;">
+        联邦客户端版本快照 · 自动生成 · 2026-06-21 12:47
+    </div>
+</div>
+</body>
+</html>

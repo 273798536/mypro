@@ -1,0 +1,9 @@
+feature_name,value,unit,formula,boundary_low,boundary_high,status
+模型AUC,0.87,,mean(predict_score),0.80,1.00,ok
+模型KS,0.42,,max(|cum_pos-cum_neg|),0.30,1.00,ok
+特征覆盖数,856,个,count(non_null),800,,
+迟到特征数,3,个,count(late_flag),0,2,迟到-特征X12未到位
+PSI,0.15,,sum(p*ln(p/q)),0.00,0.25,ok
+逾期率,0.065,,count(逾期)/count(总计),0.00,0.050,ok
+缺失率,0.12,,count(null)/count(总计),0.00,0.080,ok
+无效值计数,7,个,count(invalid),0,0,ok

@@ -1,0 +1,7 @@
+feature_name,value,unit,formula,boundary_low,boundary_high,status
+入模特征数,23,个,count(selected_features),15,,
+特征稳定性,0.91,,1-std_feature/mean_feature,0.85,1.00,ok
+样本量,52300,条,count(samples),10000,,
+坏账率,0.089,,count(bad)/count(total),0.00,0.060,ok
+特征X12,迟到,,,-1,1,缺失-特征快照延迟提交
+特征X15,,个,count(non_null),0,,缺失-字段为空
