@@ -44,8 +44,15 @@ def _today_str():
 def _load_state(data_dir):
     path = Path(data_dir) / STATE_FILENAME
     if path.exists():
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except json.JSONDecodeError as e:
+            print(json.dumps({"error": f"状态文件损坏: {str(e)}"}, ensure_ascii=False), file=sys.stderr)
+            raise
+        except IOError as e:
+            print(json.dumps({"error": f"状态文件读取失败: {str(e)}"}, ensure_ascii=False), file=sys.stderr)
+            raise
     return {
         "version": 1,
         "created_at": _now_iso(),
@@ -94,6 +101,8 @@ def _add_or_update_entry(state, entry_data, source, note):
             existing["slot"] = entry_data["slot"]
         if entry_data.get("delivery_checklist"):
             existing["delivery_checklist"] = entry_data["delivery_checklist"]
+        existing["status"] = "active"
+        existing["conflict_reason"] = ""
         return existing, new_version
     else:
         new_entry = {
@@ -153,9 +162,17 @@ def _detect_schedule_conflicts(state):
     return conflicts
 
 
+def _has_open_pending(state, entry_id, reason):
+    for pc in state["pending_confirmations"]:
+        if pc["status"] == "open" and pc["entry_id"] == entry_id and pc["reason"] == reason:
+            return True
+    return False
+
+
 def _check_auth_expiry(state, auth_notes):
     pendings = []
     today = _today_str()
+    reason_expired = "授权到期"
     for an in auth_notes:
         podcast_name = an.get("podcast_name", "")
         expiry_date = an.get("expiry_date", "")
@@ -169,12 +186,14 @@ def _check_auth_expiry(state, auth_notes):
                     entry["status"] = "active"
                     entry["conflict_reason"] = ""
                 elif expiry_date and expiry_date <= today:
+                    if _has_open_pending(state, entry["id"], reason_expired):
+                        continue
                     entry["auth_status"] = "expired"
                     entry["status"] = "pending_confirmation"
                     pc = {
                         "id": f"pending_{len(state['pending_confirmations']) + 1:03d}",
                         "entry_id": entry["id"],
-                        "reason": "授权到期",
+                        "reason": reason_expired,
                         "impact_scope": f"{entry['podcast_name']}/{entry['intro_name']} 在 {expiry_date} 后不可用",
                         "status": "open",
                         "created_at": _now_iso(),
@@ -186,12 +205,14 @@ def _check_auth_expiry(state, auth_notes):
                 elif expiry_date:
                     entry["auth_status"] = "active"
                 else:
+                    if _has_open_pending(state, entry["id"], reason_expired):
+                        continue
                     entry["auth_status"] = "expired"
                     entry["status"] = "pending_confirmation"
                     pc = {
                         "id": f"pending_{len(state['pending_confirmations']) + 1:03d}",
                         "entry_id": entry["id"],
-                        "reason": "授权到期",
+                        "reason": reason_expired,
                         "impact_scope": f"{entry['podcast_name']}/{entry['intro_name']} 授权已到期",
                         "status": "open",
                         "created_at": _now_iso(),
@@ -210,15 +231,18 @@ def _check_screenshot_auth(state, screenshot_data):
     pendings = []
     auth_keywords = ["授权到期", "授权过期", "授权失效", "到期", "过期"]
     has_auth_issue = any(kw in combined for kw in auth_keywords)
+    reason = "排练群截图显示授权到期，待确认"
     if has_auth_issue:
         for entry in state["entries"]:
+            if _has_open_pending(state, entry["id"], reason):
+                continue
             if entry["auth_status"] != "expired":
                 entry["auth_status"] = "pending_confirmation"
                 entry["status"] = "pending_confirmation"
                 pc = {
                     "id": f"pending_{len(state['pending_confirmations']) + 1:03d}",
                     "entry_id": entry["id"],
-                    "reason": "排练群截图显示授权到期，待确认",
+                    "reason": reason,
                     "impact_scope": f"{entry['podcast_name']}/{entry['intro_name']} 授权状态需确认",
                     "status": "open",
                     "created_at": _now_iso(),
@@ -367,20 +391,38 @@ def _generate_markdown_report(state, data_dir):
     return str(filepath)
 
 
+def _load_input_data(args):
+    input_data = {}
+    if args.input:
+        try:
+            with open(args.input, "r", encoding="utf-8") as f:
+                input_data = json.load(f)
+        except FileNotFoundError:
+            print(json.dumps({"error": f"输入文件不存在: {args.input}"}, ensure_ascii=False), file=sys.stderr)
+            return None, EXIT_ERROR
+        except json.JSONDecodeError as e:
+            print(json.dumps({"error": f"输入文件JSON格式错误: {str(e)}"}, ensure_ascii=False), file=sys.stderr)
+            return None, EXIT_ERROR
+    else:
+        try:
+            input_data = {
+                "entries": json.loads(args.entries) if args.entries else [],
+                "screenshot_notes": json.loads(args.screenshots) if args.screenshots else [],
+                "auth_notes": json.loads(args.auth_notes) if args.auth_notes else [],
+            }
+        except json.JSONDecodeError as e:
+            print(json.dumps({"error": f"参数JSON格式错误: {str(e)}"}, ensure_ascii=False), file=sys.stderr)
+            return None, EXIT_ERROR
+    return input_data, EXIT_OK
+
+
 def cmd_run(args):
     data_dir = args.data_dir
     state = _load_state(data_dir)
 
-    input_data = {}
-    if args.input:
-        with open(args.input, "r", encoding="utf-8") as f:
-            input_data = json.load(f)
-    else:
-        input_data = {
-            "entries": json.loads(args.entries) if args.entries else [],
-            "screenshot_notes": json.loads(args.screenshots) if args.screenshots else [],
-            "auth_notes": json.loads(args.auth_notes) if args.auth_notes else [],
-        }
+    input_data, err = _load_input_data(args)
+    if err != EXIT_OK:
+        return err
 
     changes = []
     scan_id = f"scan_{len(state['scan_history']) + 1:03d}"
@@ -404,6 +446,12 @@ def cmd_run(args):
         if pendings:
             for pc in pendings:
                 changes.append(f"待确认: {pc['reason']} — {pc['impact_scope']}")
+
+    open_pending_entry_ids = {pc["entry_id"] for pc in state["pending_confirmations"] if pc["status"] == "open"}
+    for entry in state["entries"]:
+        if entry["id"] not in open_pending_entry_ids:
+            entry["status"] = "active"
+        entry["conflict_reason"] = ""
 
     conflicts = _detect_schedule_conflicts(state)
     for c in conflicts:
@@ -456,16 +504,9 @@ def cmd_rerun(args):
         print(json.dumps({"error": "无历史数据，请先执行 run"}, ensure_ascii=False), file=sys.stderr)
         return EXIT_ERROR
 
-    input_data = {}
-    if args.input:
-        with open(args.input, "r", encoding="utf-8") as f:
-            input_data = json.load(f)
-    else:
-        input_data = {
-            "entries": json.loads(args.entries) if args.entries else [],
-            "screenshot_notes": json.loads(args.screenshots) if args.screenshots else [],
-            "auth_notes": json.loads(args.auth_notes) if args.auth_notes else [],
-        }
+    input_data, err = _load_input_data(args)
+    if err != EXIT_OK:
+        return err
 
     changes = []
     judgments_changed = []
@@ -514,10 +555,11 @@ def cmd_rerun(args):
             else:
                 changes.append(f"待确认项 {pid} 未找到或已解决")
 
+    open_pending_entry_ids = {pc["entry_id"] for pc in state["pending_confirmations"] if pc["status"] == "open"}
     for entry in state["entries"]:
-        if entry["status"] not in ("conflict", "pending_confirmation"):
+        if entry["id"] not in open_pending_entry_ids:
             entry["status"] = "active"
-            entry["conflict_reason"] = ""
+        entry["conflict_reason"] = ""
 
     conflicts = _detect_schedule_conflicts(state)
     for c in conflicts:
@@ -614,12 +656,18 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "run":
-        sys.exit(cmd_run(args))
-    elif args.command == "rerun":
-        sys.exit(cmd_rerun(args))
-    elif args.command == "report":
-        sys.exit(cmd_report(args))
+    try:
+        if args.command == "run":
+            sys.exit(cmd_run(args))
+        elif args.command == "rerun":
+            sys.exit(cmd_rerun(args))
+        elif args.command == "report":
+            sys.exit(cmd_report(args))
+    except SystemExit:
+        raise
+    except Exception as e:
+        print(json.dumps({"error": f"执行异常: {type(e).__name__}: {str(e)}"}, ensure_ascii=False), file=sys.stderr)
+        sys.exit(EXIT_ERROR)
 
 
 if __name__ == "__main__":
