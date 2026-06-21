@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: fed-tracker
+Version: 0.1.0
+Summary: 联邦客户端任务追踪系统
+Requires-Python: >=3.9
+Requires-Dist: click>=8.1.0
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: pyyaml>=6.0.0
+Requires-Dist: rich>=13.0.0

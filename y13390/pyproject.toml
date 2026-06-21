@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fed-tracker"
+version = "0.1.0"
+description = "联邦客户端任务追踪系统"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1.0",
+    "pydantic>=2.0.0",
+    "pyyaml>=6.0.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+fed-tracker = "fed_tracker.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["fed_tracker*"]

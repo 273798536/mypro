@@ -1,0 +1,2 @@
+[console_scripts]
+fed-tracker = fed_tracker.cli:cli

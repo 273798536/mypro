@@ -1,0 +1,186 @@
+name: "灰度样本-混合场景"
+description: "贴近现场的灰度配置，包含正常任务、晚到附件、版本别名、旧模型误判、跳过任务等混合场景，避免过分干净的演示包"
+enabled: true
+records:
+  - task_id: "TASK-2026-001"
+    client_id: "client-sh-001"
+    task_type: "federal_training"
+    payload:
+      task_content: "横向联邦模型训练-上海分区"
+      client_signature: "sig_sh_001_20260621"
+      timestamp: 1782000000
+      dataset_size: 15000
+      should_skip: false
+    status: "pending"
+    issues: []
+    notes: []
+    attachment_arrived: true
+    attachment_delay_seconds: 0
+    is_version_alias: false
+    model_version: "v2"
+    old_model_prediction: null
+    revision_reason: null
+
+  - task_id: "TASK-2026-002"
+    client_id: "client-bj-002"
+    task_type: "federal_training"
+    payload:
+      task_content: "横向联邦模型训练-北京分区"
+      client_signature: "sig_bj_002_20260621"
+      timestamp: 1782000010
+      dataset_size: 22000
+      should_skip: false
+    status: "pending"
+    issues: []
+    notes: []
+    attachment_arrived: true
+    attachment_delay_seconds: 0
+    is_version_alias: false
+    model_version: "v2"
+    old_model_prediction: null
+    revision_reason: null
+
+  - task_id: "TASK-2026-003"
+    client_id: "client-gz-003"
+    task_type: "federal_evaluation"
+    payload:
+      task_content: "联邦模型效果评估-广州分区"
+      client_signature: "sig_gz_003_20260621"
+      timestamp: 1782000020
+      dataset_size: 8000
+      should_skip: true
+      skip_reason: "广州分区今日数据质量不达标，配置标记跳过"
+    status: "pending"
+    issues: []
+    notes: []
+    attachment_arrived: true
+    attachment_delay_seconds: 0
+    is_version_alias: false
+    model_version: "v2"
+    old_model_prediction: null
+    revision_reason: null
+
+  - task_id: "TASK-2026-004"
+    client_id: "client-sz-004"
+    task_type: "federal_training"
+    payload:
+      task_content: "横向联邦模型训练-深圳分区"
+      client_signature: "sig_sz_004_20260621"
+      timestamp: 1782000030
+      dataset_size: 18500
+      should_skip: false
+    status: "pending"
+    issues: []
+    notes: []
+    attachment_arrived: false
+    attachment_delay_seconds: 185
+    is_version_alias: false
+    model_version: "v2"
+    old_model_prediction: null
+    revision_reason: null
+
+  - task_id: "TASK-2026-005"
+    client_id: "client-hz-005"
+    task_type: "federal_training"
+    payload:
+      task_content: "横向联邦模型训练-杭州分区-历史索引"
+      client_signature: "sig_hz_005_20260621"
+      timestamp: 1782000040
+      dataset_size: 0
+      refers_to: "TASK-2025-1187"
+      file_age_days: 213
+      index_type: "historical_alias"
+      should_skip: false
+    status: "pending"
+    issues: []
+    notes: []
+    attachment_arrived: true
+    attachment_delay_seconds: 0
+    is_version_alias: true
+    model_version: "v2"
+    old_model_prediction: null
+    revision_reason: null
+
+  - task_id: "TASK-2026-006"
+    client_id: "client-cd-006"
+    task_type: "federal_prediction"
+    payload:
+      task_content: "联邦在线预测-成都分区"
+      client_signature: "sig_cd_006_20260621"
+      timestamp: 1782000050
+      dataset_size: 3200
+      v1_confidence: 0.62
+      v2_confidence: 0.88
+      v1_prediction: true
+      v2_new_features:
+        - "client_behavior_stability"
+        - "data_source_verification"
+        - "cross_partition_consistency"
+      should_skip: false
+    status: "pending"
+    issues:
+      - "old_model_misjudge"
+    notes: []
+    attachment_arrived: true
+    attachment_delay_seconds: 0
+    is_version_alias: false
+    model_version: "v2"
+    old_model_prediction: true
+    revision_reason: null
+
+  - task_id: "TASK-2026-007"
+    client_id: "client-wh-007"
+    task_type: "federal_training"
+    payload:
+      task_content: "横向联邦模型训练-武汉分区"
+      client_signature: "sig_wh_007_20260621"
+      timestamp: 1782000060
+      dataset_size: 12000
+      should_skip: false
+    status: "pending"
+    issues: []
+    notes: []
+    attachment_arrived: true
+    attachment_delay_seconds: 0
+    is_version_alias: false
+    model_version: "v2"
+    old_model_prediction: null
+    revision_reason: null
+
+  - task_id: "TASK-2026-008"
+    client_id: "client-nj-008"
+    task_type: "federal_training"
+    payload:
+      task_content: "横向联邦模型训练-南京分区"
+      client_signature: "sig_nj_008_20260621"
+      timestamp: 1782000070
+      dataset_size: 9500
+      should_skip: false
+    status: "pending"
+    issues: []
+    notes: []
+    attachment_arrived: false
+    attachment_delay_seconds: 210
+    is_version_alias: false
+    model_version: "v2"
+    old_model_prediction: null
+    revision_reason: null
+
+  - task_id: "TASK-2026-009"
+    client_id: "client-xa-009"
+    task_type: "federal_training"
+    payload:
+      task_content: "横向联邦模型训练-西安分区"
+      client_signature: "sig_xa_009_20260621"
+      timestamp: 1782000080
+      dataset_size: 11000
+      should_skip: false
+    status: "pending"
+    issues: []
+    notes: []
+    attachment_arrived: true
+    attachment_delay_seconds: 0
+    is_version_alias: false
+    model_version: "v2"
+    old_model_prediction: null
+    revision_reason: null

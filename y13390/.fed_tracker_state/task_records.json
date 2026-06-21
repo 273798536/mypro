@@ -1,0 +1,238 @@
+[
+  {
+    "task_id": "TASK-2026-001",
+    "client_id": "client-sh-001",
+    "task_type": "federal_training",
+    "payload": {
+      "task_content": "横向联邦模型训练-上海分区",
+      "client_signature": "sig_sh_001_20260621",
+      "timestamp": 1782000000,
+      "dataset_size": 15000,
+      "should_skip": false
+    },
+    "created_at": "2026-06-21T12:42:59.810342",
+    "status": "processed",
+    "issues": [],
+    "notes": [
+      "正常处理完成"
+    ],
+    "attachment_arrived": true,
+    "attachment_delay_seconds": 0,
+    "is_version_alias": false,
+    "model_version": "v2",
+    "old_model_prediction": null,
+    "revision_reason": null
+  },
+  {
+    "task_id": "TASK-2026-002",
+    "client_id": "client-bj-002",
+    "task_type": "federal_training",
+    "payload": {
+      "task_content": "横向联邦模型训练-北京分区",
+      "client_signature": "sig_bj_002_20260621",
+      "timestamp": 1782000010,
+      "dataset_size": 22000,
+      "should_skip": false
+    },
+    "created_at": "2026-06-21T12:42:59.810357",
+    "status": "processed",
+    "issues": [],
+    "notes": [
+      "正常处理完成"
+    ],
+    "attachment_arrived": true,
+    "attachment_delay_seconds": 0,
+    "is_version_alias": false,
+    "model_version": "v2",
+    "old_model_prediction": null,
+    "revision_reason": null
+  },
+  {
+    "task_id": "TASK-2026-003",
+    "client_id": "client-gz-003",
+    "task_type": "federal_evaluation",
+    "payload": {
+      "task_content": "联邦模型效果评估-广州分区",
+      "client_signature": "sig_gz_003_20260621",
+      "timestamp": 1782000020,
+      "dataset_size": 8000,
+      "should_skip": true,
+      "skip_reason": "广州分区今日数据质量不达标，配置标记跳过"
+    },
+    "created_at": "2026-06-21T12:42:59.810359",
+    "status": "skipped",
+    "issues": [],
+    "notes": [
+      "跳过原因: 广州分区今日数据质量不达标，配置标记跳过"
+    ],
+    "attachment_arrived": true,
+    "attachment_delay_seconds": 0,
+    "is_version_alias": false,
+    "model_version": "v2",
+    "old_model_prediction": null,
+    "revision_reason": null
+  },
+  {
+    "task_id": "TASK-2026-004",
+    "client_id": "client-sz-004",
+    "task_type": "federal_training",
+    "payload": {
+      "task_content": "横向联邦模型训练-深圳分区",
+      "client_signature": "sig_sz_004_20260621",
+      "timestamp": 1782000030,
+      "dataset_size": 18500,
+      "should_skip": false
+    },
+    "created_at": "2026-06-21T12:42:59.810368",
+    "status": "bad_record",
+    "issues": [
+      "late_attachment"
+    ],
+    "notes": [
+      "附件延迟 185s，超过阈值 120s"
+    ],
+    "attachment_arrived": false,
+    "attachment_delay_seconds": 185,
+    "is_version_alias": false,
+    "model_version": "v2",
+    "old_model_prediction": null,
+    "revision_reason": null
+  },
+  {
+    "task_id": "TASK-2026-005",
+    "client_id": "client-hz-005",
+    "task_type": "federal_training",
+    "payload": {
+      "task_content": "横向联邦模型训练-杭州分区-历史索引",
+      "client_signature": "sig_hz_005_20260621",
+      "timestamp": 1782000040,
+      "dataset_size": 0,
+      "refers_to": "TASK-2025-1187",
+      "file_age_days": 213,
+      "index_type": "historical_alias",
+      "should_skip": false
+    },
+    "created_at": "2026-06-21T12:42:59.810370",
+    "status": "bad_record",
+    "issues": [
+      "version_alias"
+    ],
+    "notes": [
+      "检测到版本别名指向旧索引文件，不属于本次联邦任务范围"
+    ],
+    "attachment_arrived": true,
+    "attachment_delay_seconds": 0,
+    "is_version_alias": true,
+    "model_version": "v2",
+    "old_model_prediction": null,
+    "revision_reason": null
+  },
+  {
+    "task_id": "TASK-2026-006",
+    "client_id": "client-cd-006",
+    "task_type": "federal_prediction",
+    "payload": {
+      "task_content": "联邦在线预测-成都分区",
+      "client_signature": "sig_cd_006_20260621",
+      "timestamp": 1782000050,
+      "dataset_size": 3200,
+      "v1_confidence": 0.62,
+      "v2_confidence": 0.88,
+      "v1_prediction": true,
+      "v2_new_features": [
+        "client_behavior_stability",
+        "data_source_verification",
+        "cross_partition_consistency"
+      ],
+      "should_skip": false
+    },
+    "created_at": "2026-06-21T12:42:59.810371",
+    "status": "revised",
+    "issues": [
+      "old_model_misjudge"
+    ],
+    "notes": [
+      "旧模型 v1 误判样本，v2 模型改判"
+    ],
+    "attachment_arrived": true,
+    "attachment_delay_seconds": 0,
+    "is_version_alias": false,
+    "model_version": "v2",
+    "old_model_prediction": true,
+    "revision_reason": "v1 模型在低置信度样本上的误判，v2 补充特征后修正"
+  },
+  {
+    "task_id": "TASK-2026-007",
+    "client_id": "client-wh-007",
+    "task_type": "federal_training",
+    "payload": {
+      "task_content": "横向联邦模型训练-武汉分区",
+      "client_signature": "sig_wh_007_20260621",
+      "timestamp": 1782000060,
+      "dataset_size": 12000,
+      "should_skip": false
+    },
+    "created_at": "2026-06-21T12:42:59.810373",
+    "status": "processed",
+    "issues": [],
+    "notes": [
+      "正常处理完成"
+    ],
+    "attachment_arrived": true,
+    "attachment_delay_seconds": 0,
+    "is_version_alias": false,
+    "model_version": "v2",
+    "old_model_prediction": null,
+    "revision_reason": null
+  },
+  {
+    "task_id": "TASK-2026-008",
+    "client_id": "client-nj-008",
+    "task_type": "federal_training",
+    "payload": {
+      "task_content": "横向联邦模型训练-南京分区",
+      "client_signature": "sig_nj_008_20260621",
+      "timestamp": 1782000070,
+      "dataset_size": 9500,
+      "should_skip": false
+    },
+    "created_at": "2026-06-21T12:42:59.810375",
+    "status": "bad_record",
+    "issues": [
+      "late_attachment"
+    ],
+    "notes": [
+      "附件延迟 210s，超过阈值 120s"
+    ],
+    "attachment_arrived": false,
+    "attachment_delay_seconds": 210,
+    "is_version_alias": false,
+    "model_version": "v2",
+    "old_model_prediction": null,
+    "revision_reason": null
+  },
+  {
+    "task_id": "TASK-2026-009",
+    "client_id": "client-xa-009",
+    "task_type": "federal_training",
+    "payload": {
+      "task_content": "横向联邦模型训练-西安分区",
+      "client_signature": "sig_xa_009_20260621",
+      "timestamp": 1782000080,
+      "dataset_size": 11000,
+      "should_skip": false
+    },
+    "created_at": "2026-06-21T12:42:59.810377",
+    "status": "processed",
+    "issues": [],
+    "notes": [
+      "正常处理完成"
+    ],
+    "attachment_arrived": true,
+    "attachment_delay_seconds": 0,
+    "is_version_alias": false,
+    "model_version": "v2",
+    "old_model_prediction": null,
+    "revision_reason": null
+  }
+]
