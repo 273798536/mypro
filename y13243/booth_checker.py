@@ -3,12 +3,15 @@
 
 from __future__ import annotations
 
+import os
 import sys
 import json
+import shutil
 import argparse
+from pathlib import Path
 from typing import Optional
 
-sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from festival_booth_checker.core.config import Config
 from festival_booth_checker.core.storage import BoothStorage
@@ -115,6 +118,9 @@ def run() -> int:
                 exit_code = 4
 
         if args.output:
+            out_dir = os.path.dirname(os.path.abspath(args.output))
+            if out_dir:
+                os.makedirs(out_dir, exist_ok=True)
             with open(args.output, "w", encoding="utf-8") as f:
                 f.write(result.to_json())
 
@@ -161,8 +167,9 @@ def run() -> int:
         else:
             result = exporter.export_all(args.format, only_value)
             if args.output and result.success:
-                import shutil
-                os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
+                out_dir = os.path.dirname(os.path.abspath(args.output))
+                if out_dir:
+                    os.makedirs(out_dir, exist_ok=True)
                 shutil.copy2(result.data["file_path"], args.output)
                 result.data["file_path"] = args.output
                 result.data["saved_as_requested"] = True

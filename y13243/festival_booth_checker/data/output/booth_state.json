@@ -18,12 +18,12 @@
       "note": "正常摊位，材料齐全"
     },
     "version": {
-      "version_id": "07594dd61af0",
+      "version_id": "e1dfadabe691",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/01_batch1.json",
       "file_hash": "d315ab258faf756553d605b8d20293e69e1ce7213761b6c712b3079b9f65c867",
       "source": "01_batch1.json",
-      "imported_at": "2026-06-21T17:45:09.400240",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525766",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "已通过",
     "anomalies": [],
@@ -32,23 +32,23 @@
         "action": "创建记录",
         "detail": "初始导入，来源：01_batch1.json",
         "operator": "值班_早班",
-        "timestamp": "2026-06-21T17:45:09.385732"
+        "timestamp": "2026-06-21T18:22:47.515446"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_误导入旧档",
-        "timestamp": "2026-06-21T17:45:09.390892"
+        "timestamp": "2026-06-21T18:22:47.519729"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.400936"
+        "timestamp": "2026-06-21T18:22:47.526070"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.384965",
-    "updated_at": "2026-06-21T17:45:09.400938",
+    "created_at": "2026-06-21T18:22:47.515013",
+    "updated_at": "2026-06-21T18:22:47.526071",
     "operator": ""
   },
   "B002": {
@@ -71,24 +71,24 @@
       "setlist_pending": false
     },
     "version": {
-      "version_id": "c55b284856e6",
+      "version_id": "c6c4e1a584e6",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/01_batch1.json",
       "file_hash": "d315ab258faf756553d605b8d20293e69e1ce7213761b6c712b3079b9f65c867",
       "source": "01_batch1.json",
-      "imported_at": "2026-06-21T17:45:09.400240",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525766",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "待复核",
     "anomalies": [
       {
-        "anomaly_id": "f9232388a1d6",
+        "anomaly_id": "63163f9cfacb",
         "type": "授权期限备注藏",
         "level": "严重异常",
         "description": "授权期限藏在备注字段中，未在醒目位置展示",
         "location": "授权期限字段 / 备注字段",
         "suggestion": "请将授权期限独立存放至专用字段，并在公示材料正文显示",
         "screenshot_hint": "截图：摊位表备注栏，圈出含授权期限的备注单元格",
-        "detected_at": "2026-06-21T17:45:09.403396",
+        "detected_at": "2026-06-21T18:22:47.526821",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
@@ -99,23 +99,23 @@
         "action": "创建记录",
         "detail": "初始导入，来源：01_batch1.json",
         "operator": "值班_早班",
-        "timestamp": "2026-06-21T17:45:09.386174"
+        "timestamp": "2026-06-21T18:22:47.515708"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_误导入旧档",
-        "timestamp": "2026-06-21T17:45:09.391820"
+        "timestamp": "2026-06-21T18:22:47.520422"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.403413"
+        "timestamp": "2026-06-21T18:22:47.526827"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.384979",
-    "updated_at": "2026-06-21T17:45:09.403414",
+    "created_at": "2026-06-21T18:22:47.515029",
+    "updated_at": "2026-06-21T18:22:47.526828",
     "operator": ""
   },
   "B003": {
@@ -137,24 +137,24 @@
       "note": "时码偏半拍，现场调音确认中"
     },
     "version": {
-      "version_id": "5440dc83c9e3",
+      "version_id": "fc8fdb4759ed",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/01_batch1.json",
       "file_hash": "d315ab258faf756553d605b8d20293e69e1ce7213761b6c712b3079b9f65c867",
       "source": "01_batch1.json",
-      "imported_at": "2026-06-21T17:45:09.400240",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525766",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "待复核",
     "anomalies": [
       {
-        "anomaly_id": "99fa4bb00dac",
+        "anomaly_id": "7db264f5eac5",
         "type": "时码偏差",
         "level": "轻微异常",
         "description": "时码偏差 320ms（在允许范围但需留意）",
         "location": "演出时间编排表",
         "suggestion": "标记为'待复核'，现场音控确认后更新",
         "screenshot_hint": "截图：时间编排表中该摊位对应时间段",
-        "detected_at": "2026-06-21T17:45:09.404356",
+        "detected_at": "2026-06-21T18:22:47.527588",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
@@ -165,23 +165,23 @@
         "action": "创建记录",
         "detail": "初始导入，来源：01_batch1.json",
         "operator": "值班_早班",
-        "timestamp": "2026-06-21T17:45:09.386604"
+        "timestamp": "2026-06-21T18:22:47.516048"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_误导入旧档",
-        "timestamp": "2026-06-21T17:45:09.392554"
+        "timestamp": "2026-06-21T18:22:47.521117"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.404364"
+        "timestamp": "2026-06-21T18:22:47.527594"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.384988",
-    "updated_at": "2026-06-21T17:45:09.404365",
+    "created_at": "2026-06-21T18:22:47.515038",
+    "updated_at": "2026-06-21T18:22:47.527595",
     "operator": ""
   },
   "B004": {
@@ -205,37 +205,37 @@
       "_batch_note": "这是第二批提交的补充材料"
     },
     "version": {
-      "version_id": "3ccdc6c71573",
+      "version_id": "1c88409b59a9",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/03_batch2.json",
       "file_hash": "6c9dc535b68ebadf5584d0f5897b2ef8fd79d1569ea0693ccb66043955dae42e",
       "source": "03_batch2.json",
-      "imported_at": "2026-06-21T17:45:09.400662",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525965",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "待复核",
     "anomalies": [
       {
-        "anomaly_id": "ce815c0efa82",
+        "anomaly_id": "27cf967e483b",
         "type": "授权期限备注藏",
         "level": "严重异常",
         "description": "授权期限藏在备注字段中，未在醒目位置展示",
         "location": "授权期限字段 / 备注字段",
         "suggestion": "请将授权期限独立存放至专用字段，并在公示材料正文显示",
         "screenshot_hint": "截图：摊位表备注栏，圈出含授权期限的备注单元格",
-        "detected_at": "2026-06-21T17:45:09.413319",
+        "detected_at": "2026-06-21T18:22:47.533669",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
       },
       {
-        "anomaly_id": "041bbaf8c542",
+        "anomaly_id": "1b1b9208557f",
         "type": "时码偏差",
         "level": "轻微异常",
         "description": "时码偏差 50ms（在允许范围但需留意）",
         "location": "演出时间编排表",
         "suggestion": "标记为'待复核'，现场音控确认后更新",
         "screenshot_hint": "截图：时间编排表中该摊位对应时间段",
-        "detected_at": "2026-06-21T17:45:09.413337",
+        "detected_at": "2026-06-21T18:22:47.533678",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
@@ -246,29 +246,29 @@
         "action": "创建记录",
         "detail": "初始导入，来源：01_batch1.json",
         "operator": "值班_早班",
-        "timestamp": "2026-06-21T17:45:09.387312"
+        "timestamp": "2026-06-21T18:22:47.516413"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_误导入旧档",
-        "timestamp": "2026-06-21T17:45:09.393640"
+        "timestamp": "2026-06-21T18:22:47.521835"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.405168"
+        "timestamp": "2026-06-21T18:22:47.528341"
       },
       {
         "action": "增量更新",
         "detail": "从来源 03_batch2.json 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.413351"
+        "timestamp": "2026-06-21T18:22:47.533685"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.384995",
-    "updated_at": "2026-06-21T17:45:09.413353",
+    "created_at": "2026-06-21T18:22:47.515045",
+    "updated_at": "2026-06-21T18:22:47.533685",
     "operator": ""
   },
   "B005": {
@@ -290,24 +290,24 @@
       "note": "开场时间偏差较大，需现场重新校准"
     },
     "version": {
-      "version_id": "a04b57f74351",
+      "version_id": "344e795ea852",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/01_batch1.json",
       "file_hash": "d315ab258faf756553d605b8d20293e69e1ce7213761b6c712b3079b9f65c867",
       "source": "01_batch1.json",
-      "imported_at": "2026-06-21T17:45:09.400240",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525766",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "待复核",
     "anomalies": [
       {
-        "anomaly_id": "cedec3329108",
+        "anomaly_id": "3fb75cc02822",
         "type": "时码偏差",
         "level": "致命异常",
         "description": "时码偏差 600ms（超过阈值 500ms）",
         "location": "演出时间编排表",
         "suggestion": "请与音控组确认实际演出时间",
         "screenshot_hint": "截图：曲目时间轴与系统时间对比，标注偏差位置",
-        "detected_at": "2026-06-21T17:45:09.406208",
+        "detected_at": "2026-06-21T18:22:47.529088",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
@@ -318,23 +318,23 @@
         "action": "创建记录",
         "detail": "初始导入，来源：01_batch1.json",
         "operator": "值班_早班",
-        "timestamp": "2026-06-21T17:45:09.387824"
+        "timestamp": "2026-06-21T18:22:47.516869"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_误导入旧档",
-        "timestamp": "2026-06-21T17:45:09.394688"
+        "timestamp": "2026-06-21T18:22:47.522539"
       },
       {
         "action": "增量更新",
         "detail": "从来源 01_batch1.json 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.406214"
+        "timestamp": "2026-06-21T18:22:47.529092"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.385071",
-    "updated_at": "2026-06-21T17:45:09.406215",
+    "created_at": "2026-06-21T18:22:47.515112",
+    "updated_at": "2026-06-21T18:22:47.529093",
     "operator": ""
   },
   "B007": {
@@ -356,24 +356,24 @@
       "备注": "材料齐全"
     },
     "version": {
-      "version_id": "0b857609729a",
+      "version_id": "f1df75d5bf50",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/02_csv.csv",
       "file_hash": "414fe8720d202f1b23259578dc84e296bfda583e6cbf224ff93b6038d774b1c4",
       "source": "02_csv.csv",
-      "imported_at": "2026-06-21T17:45:09.400479",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525878",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "待复核",
     "anomalies": [
       {
-        "anomaly_id": "9e53af1c4327",
+        "anomaly_id": "2ea9ad657a97",
         "type": "时码偏差",
         "level": "轻微异常",
         "description": "时码偏差 80ms（在允许范围但需留意）",
         "location": "演出时间编排表",
         "suggestion": "标记为'待复核'，现场音控确认后更新",
         "screenshot_hint": "截图：时间编排表中该摊位对应时间段",
-        "detected_at": "2026-06-21T17:45:09.408194",
+        "detected_at": "2026-06-21T18:22:47.529869",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
@@ -384,23 +384,23 @@
         "action": "创建记录",
         "detail": "初始导入，来源：02_csv.csv",
         "operator": "值班_早班",
-        "timestamp": "2026-06-21T17:45:09.388351"
+        "timestamp": "2026-06-21T18:22:47.517384"
       },
       {
         "action": "增量更新",
         "detail": "从来源 02_csv.csv 导入新版数据",
         "operator": "值班_误导入旧档",
-        "timestamp": "2026-06-21T17:45:09.395474"
+        "timestamp": "2026-06-21T18:22:47.523250"
       },
       {
         "action": "增量更新",
         "detail": "从来源 02_csv.csv 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.408213"
+        "timestamp": "2026-06-21T18:22:47.529874"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.385664",
-    "updated_at": "2026-06-21T17:45:09.408215",
+    "created_at": "2026-06-21T18:22:47.515416",
+    "updated_at": "2026-06-21T18:22:47.529874",
     "operator": ""
   },
   "B008": {
@@ -422,24 +422,24 @@
       "备注": "时码待确认"
     },
     "version": {
-      "version_id": "0b857609729a",
+      "version_id": "f1df75d5bf50",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/02_csv.csv",
       "file_hash": "414fe8720d202f1b23259578dc84e296bfda583e6cbf224ff93b6038d774b1c4",
       "source": "02_csv.csv",
-      "imported_at": "2026-06-21T17:45:09.400479",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525878",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "待复核",
     "anomalies": [
       {
-        "anomaly_id": "1e6a52710104",
+        "anomaly_id": "1d9e0a2d5e66",
         "type": "授权期限备注藏",
         "level": "严重异常",
         "description": "授权期限藏在备注字段中，未在醒目位置展示",
         "location": "授权期限字段 / 备注字段",
         "suggestion": "请将授权期限独立存放至专用字段，并在公示材料正文显示",
         "screenshot_hint": "截图：摊位表备注栏，圈出含授权期限的备注单元格",
-        "detected_at": "2026-06-21T17:45:09.410071",
+        "detected_at": "2026-06-21T18:22:47.531273",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
@@ -450,23 +450,23 @@
         "action": "创建记录",
         "detail": "初始导入，来源：02_csv.csv",
         "operator": "值班_早班",
-        "timestamp": "2026-06-21T17:45:09.388918"
+        "timestamp": "2026-06-21T18:22:47.517940"
       },
       {
         "action": "增量更新",
         "detail": "从来源 02_csv.csv 导入新版数据",
         "operator": "值班_误导入旧档",
-        "timestamp": "2026-06-21T17:45:09.396239"
+        "timestamp": "2026-06-21T18:22:47.523955"
       },
       {
         "action": "增量更新",
         "detail": "从来源 02_csv.csv 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.410090"
+        "timestamp": "2026-06-21T18:22:47.531290"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.385701",
-    "updated_at": "2026-06-21T17:45:09.410092",
+    "created_at": "2026-06-21T18:22:47.515424",
+    "updated_at": "2026-06-21T18:22:47.531291",
     "operator": ""
   },
   "B009": {
@@ -488,24 +488,24 @@
       "备注": "曲目待补，未齐"
     },
     "version": {
-      "version_id": "0b857609729a",
+      "version_id": "f1df75d5bf50",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/02_csv.csv",
       "file_hash": "414fe8720d202f1b23259578dc84e296bfda583e6cbf224ff93b6038d774b1c4",
       "source": "02_csv.csv",
-      "imported_at": "2026-06-21T17:45:09.400479",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525878",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "待补证据",
     "anomalies": [
       {
-        "anomaly_id": "f8cf15f511b1",
+        "anomaly_id": "2f3c46c06c27",
         "type": "曲目表不全",
         "level": "严重异常",
         "description": "曲目表未凑齐，分批提交中",
         "location": "曲目清单",
         "suggestion": "待曲目表齐全后再提交完整版本",
         "screenshot_hint": "截图：当前已提交曲目页，标注缺失部分",
-        "detected_at": "2026-06-21T17:45:09.411859",
+        "detected_at": "2026-06-21T18:22:47.532474",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
@@ -516,23 +516,23 @@
         "action": "创建记录",
         "detail": "初始导入，来源：02_csv.csv",
         "operator": "值班_早班",
-        "timestamp": "2026-06-21T17:45:09.389548"
+        "timestamp": "2026-06-21T18:22:47.518550"
       },
       {
         "action": "增量更新",
         "detail": "从来源 02_csv.csv 导入新版数据",
         "operator": "值班_误导入旧档",
-        "timestamp": "2026-06-21T17:45:09.397508"
+        "timestamp": "2026-06-21T18:22:47.524677"
       },
       {
         "action": "增量更新",
         "detail": "从来源 02_csv.csv 导入新版数据",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.411871"
+        "timestamp": "2026-06-21T18:22:47.532484"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.385711",
-    "updated_at": "2026-06-21T17:45:09.411873",
+    "created_at": "2026-06-21T18:22:47.515431",
+    "updated_at": "2026-06-21T18:22:47.532485",
     "operator": ""
   },
   "B006": {
@@ -554,24 +554,24 @@
       "note": "新增摊位"
     },
     "version": {
-      "version_id": "9e2f2ae01a74",
+      "version_id": "26735256274c",
       "file_path": "/Users/mac/pro/solo/workspaces/y13243/festival_booth_checker/data/input/03_batch2.json",
       "file_hash": "6c9dc535b68ebadf5584d0f5897b2ef8fd79d1569ea0693ccb66043955dae42e",
       "source": "03_batch2.json",
-      "imported_at": "2026-06-21T17:45:09.400662",
-      "note": "扫描时间 2026-06-21 17:45:09"
+      "imported_at": "2026-06-21T18:22:47.525965",
+      "note": "扫描时间 2026-06-21 18:22:47"
     },
     "status": "待复核",
     "anomalies": [
       {
-        "anomaly_id": "fc3377d7a084",
+        "anomaly_id": "5217ad99b107",
         "type": "时码偏差",
         "level": "轻微异常",
         "description": "时码偏差 120ms（在允许范围但需留意）",
         "location": "演出时间编排表",
         "suggestion": "标记为'待复核'，现场音控确认后更新",
         "screenshot_hint": "截图：时间编排表中该摊位对应时间段",
-        "detected_at": "2026-06-21T17:45:09.415049",
+        "detected_at": "2026-06-21T18:22:47.534624",
         "resolved": false,
         "resolved_at": null,
         "resolver_note": ""
@@ -582,11 +582,11 @@
         "action": "创建记录",
         "detail": "初始导入，来源：03_batch2.json",
         "operator": "值班_晚班_第二批",
-        "timestamp": "2026-06-21T17:45:09.415063"
+        "timestamp": "2026-06-21T18:22:47.534627"
       }
     ],
-    "created_at": "2026-06-21T17:45:09.400737",
-    "updated_at": "2026-06-21T17:45:09.415065",
+    "created_at": "2026-06-21T18:22:47.526003",
+    "updated_at": "2026-06-21T18:22:47.534628",
     "operator": ""
   }
 }
