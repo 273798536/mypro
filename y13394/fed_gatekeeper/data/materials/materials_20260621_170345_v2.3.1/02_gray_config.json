@@ -1,0 +1,15 @@
+{
+  "gray": {
+    "ratio": 1.0,
+    "target_versions": [
+      "v2.1.0",
+      "v2.1.1",
+      "2024summer"
+    ],
+    "rollback_plan": "对应撤回单 RB-20250614-002，按方案#3 回退"
+  },
+  "release": {
+    "owner": "老周",
+    "model_version": "v2.3.1"
+  }
+}

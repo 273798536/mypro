@@ -1,0 +1,7 @@
+gray	L2: "gray": {
+gray.ratio	L3: "ratio": 1.0,
+gray.target_versions	L4: "target_versions": ["v2.1.0", "v2.1.1", "2024summer"],
+gray.rollback_plan	L5: "rollback_plan": "对应撤回单 RB-20250614-002，按方案#3 回退"
+release	L7: "release": {
+release.owner	L8: "owner": "老周",
+release.model_version	L9: "model_version": "v2.3.1"

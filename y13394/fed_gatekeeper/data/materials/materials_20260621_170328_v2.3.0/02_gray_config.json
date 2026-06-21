@@ -1,0 +1,16 @@
+{
+  "gray": {
+    "ratio": 0.2,
+    "target_versions": [
+      "v2.1.0",
+      "v2.1.1",
+      "v2.2.0-beta"
+    ],
+    "rollback_plan": "若出现召回率下降超过2%或P99延迟>200ms，执行撤回 RB-20250614-001，回退到模型 v2.2.9"
+  },
+  "release": {
+    "owner": "老周",
+    "model_version": "v2.3.0",
+    "changelog": "修复用户反馈的首页冷启动推荐不准的问题"
+  }
+}

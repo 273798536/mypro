@@ -1,0 +1,11 @@
+[
+  {
+    "approval_id": "apv_20260621_170420_20260621_170334_v2.3.1",
+    "record_id": "20260621_170334_v2.3.1",
+    "timestamp": "20260621_170420",
+    "approver": "老周",
+    "decision": "reject",
+    "comment": "灰度比例1.5明显写错，先改回0.2以下，重新生成配置后再跑一次",
+    "model_version_at_approval": "v2.3.1"
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "gray": {
+    "ratio": 1.5,
+    "target_versions": ["v2.1.0", "v2.1.1"],
+    "rollback_plan": "若出现问题就撤回"
+  },
+  "release": {
+    "owner": "老周",
+    "model_version": "v2.3.1"
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "record_id": "20260621_170328_v2.3.0",
+  "timestamp": "20260621_170328",
+  "model_version": "v2.3.0",
+  "rollback_id": "RB-20250614-001",
+  "gray_config_path": "examples/gray_good.json",
+  "gray_config_snapshot": {
+    "gray": {
+      "ratio": 0.2,
+      "target_versions": [
+        "v2.1.0",
+        "v2.1.1",
+        "v2.2.0-beta"
+      ],
+      "rollback_plan": "若出现召回率下降超过2%或P99延迟>200ms，执行撤回 RB-20250614-001，回退到模型 v2.2.9"
+    },
+    "release": {
+      "owner": "老周",
+      "model_version": "v2.3.0",
+      "changelog": "修复用户反馈的首页冷启动推荐不准的问题"
+    },
+    "__raw_lines__": {
+      "gray": "L2: \"gray\": {",
+      "gray.ratio": "L3: \"ratio\": 0.2,",
+      "gray.target_versions": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"v2.2.0-beta\"],",
+      "gray.rollback_plan": "L5: \"rollback_plan\": \"若出现召回率下降超过2%或P99延迟>200ms，执行撤回 RB-20250614-001，回退到模型 v2.2.9\"",
+      "release": "L7: \"release\": {",
+      "release.owner": "L8: \"owner\": \"老周\",",
+      "release.model_version": "L9: \"model_version\": \"v2.3.0\",",
+      "release.changelog": "L10: \"changelog\": \"修复用户反馈的首页冷启动推荐不准的问题\""
+    },
+    "__file__": "examples/gray_good.json"
+  },
+  "checks": [
+    {
+      "name": "必填字段[gray.ratio]",
+      "status": "pass",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 0.2,",
+      "message": "字段 'gray.ratio' 已填"
+    },
+    {
+      "name": "必填字段[gray.target_versions]",
+      "status": "pass",
+      "source": "gray.target_versions",
+      "raw_line": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"v2.2.0-beta\"],",
+      "message": "字段 'gray.target_versions' 已填"
+    },
+    {
+      "name": "必填字段[gray.rollback_plan]",
+      "status": "pass",
+      "source": "gray.rollback_plan",
+      "raw_line": "L5: \"rollback_plan\": \"若出现召回率下降超过2%或P99延迟>200ms，执行撤回 RB-20250614-001，回退到模型 v2.2.9\"",
+      "message": "字段 'gray.rollback_plan' 已填"
+    },
+    {
+      "name": "必填字段[release.owner]",
+      "status": "pass",
+      "source": "release.owner",
+      "raw_line": "L8: \"owner\": \"老周\",",
+      "message": "字段 'release.owner' 已填"
+    },
+    {
+      "name": "必填字段[release.model_version]",
+      "status": "pass",
+      "source": "release.model_version",
+      "raw_line": "L9: \"model_version\": \"v2.3.0\",",
+      "message": "字段 'release.model_version' 已填"
+    },
+    {
+      "name": "灰度比例类型",
+      "status": "pass",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 0.2,",
+      "message": "灰度比例是数字类型（float）"
+    },
+    {
+      "name": "灰度比例范围",
+      "status": "pass",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 0.2,",
+      "message": "灰度比例 0.2 在合法范围内"
+    },
+    {
+      "name": "模型版本一致性",
+      "status": "pass",
+      "source": "release.model_version",
+      "raw_line": "L9: \"model_version\": \"v2.3.0\",",
+      "message": "模型版本一致：v2.3.0"
+    },
+    {
+      "name": "撤回记录关联",
+      "status": "pass",
+      "source": "gray.rollback_plan",
+      "raw_line": "L5: \"rollback_plan\": \"若出现召回率下降超过2%或P99延迟>200ms，执行撤回 RB-20250614-001，回退到模型 v2.2.9\"",
+      "message": "撤回记录 ID=RB-20250614-001 已传入，且撤回方案中也提到了该 ID。本次结论将与撤回记录强关联。"
+    },
+    {
+      "name": "目标客户端版本格式",
+      "status": "pass",
+      "source": "gray.target_versions",
+      "raw_line": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"v2.2.0-beta\"],",
+      "message": "所有 3 个目标版本格式合法"
+    }
+  ],
+  "final_conclusion": "pass",
+  "final_reason": "所有检查项通过",
+  "failure_messages": [],
+  "extra_material_paths": [
+    "examples/extra_metric_report.txt"
+  ]
+}

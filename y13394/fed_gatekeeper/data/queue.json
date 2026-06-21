@@ -1,0 +1,43 @@
+[
+  {
+    "record_id": "20260621_170334_v2.3.1",
+    "model_version": "v2.3.1",
+    "rollback_id": null,
+    "conclusion": "fail",
+    "summary": "存在 FAIL 级检查项，禁止上线（见失败明细）",
+    "failure_count": 1,
+    "warn_count": 1,
+    "queued_at": "20260621_170334",
+    "approved_by": "老周",
+    "approved_decision": "reject",
+    "approved_comment": "灰度比例1.5明显写错，先改回0.2以下，重新生成配置后再跑一次",
+    "approved_at": "20260621_170420"
+  },
+  {
+    "record_id": "20260621_170345_v2.3.1",
+    "model_version": "v2.3.1",
+    "rollback_id": "RB-20250614-002",
+    "conclusion": "warn",
+    "summary": "存在 WARN 级检查项，需要人工确认后放行",
+    "failure_count": 0,
+    "warn_count": 3,
+    "queued_at": "20260621_170345",
+    "approved_by": "老周",
+    "approved_decision": "hold",
+    "approved_comment": "灰度1.0是全量，先不放；另外2024summer这个版本名得确认一下是不是合法的客户端版本，等运营确认后再放行",
+    "approved_at": "20260621_170431"
+  },
+  {
+    "record_id": "20260621_170537_v2.3.1",
+    "model_version": "v2.3.1",
+    "rollback_id": null,
+    "conclusion": "fail",
+    "summary": "存在 FAIL 级检查项，禁止上线（见失败明细）",
+    "failure_count": 1,
+    "warn_count": 1,
+    "queued_at": "20260621_170537",
+    "approved_by": null,
+    "approved_decision": null,
+    "approved_comment": null
+  }
+]

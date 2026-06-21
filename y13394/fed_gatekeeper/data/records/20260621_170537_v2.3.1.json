@@ -1,0 +1,112 @@
+{
+  "record_id": "20260621_170537_v2.3.1",
+  "timestamp": "20260621_170537",
+  "model_version": "v2.3.1",
+  "rollback_id": null,
+  "gray_config_path": "examples/gray_bad_ratio.json",
+  "gray_config_snapshot": {
+    "gray": {
+      "ratio": 1.5,
+      "target_versions": [
+        "v2.1.0",
+        "v2.1.1"
+      ],
+      "rollback_plan": "若出现问题就撤回"
+    },
+    "release": {
+      "owner": "老周",
+      "model_version": "v2.3.1"
+    },
+    "__raw_lines__": {
+      "gray": "L2: \"gray\": {",
+      "gray.ratio": "L3: \"ratio\": 1.5,",
+      "gray.target_versions": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\"],",
+      "gray.rollback_plan": "L5: \"rollback_plan\": \"若出现问题就撤回\"",
+      "release": "L7: \"release\": {",
+      "release.owner": "L8: \"owner\": \"老周\",",
+      "release.model_version": "L9: \"model_version\": \"v2.3.1\""
+    },
+    "__file__": "examples/gray_bad_ratio.json"
+  },
+  "checks": [
+    {
+      "name": "必填字段[gray.ratio]",
+      "status": "pass",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 1.5,",
+      "message": "字段 'gray.ratio' 已填"
+    },
+    {
+      "name": "必填字段[gray.target_versions]",
+      "status": "pass",
+      "source": "gray.target_versions",
+      "raw_line": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\"],",
+      "message": "字段 'gray.target_versions' 已填"
+    },
+    {
+      "name": "必填字段[gray.rollback_plan]",
+      "status": "pass",
+      "source": "gray.rollback_plan",
+      "raw_line": "L5: \"rollback_plan\": \"若出现问题就撤回\"",
+      "message": "字段 'gray.rollback_plan' 已填"
+    },
+    {
+      "name": "必填字段[release.owner]",
+      "status": "pass",
+      "source": "release.owner",
+      "raw_line": "L8: \"owner\": \"老周\",",
+      "message": "字段 'release.owner' 已填"
+    },
+    {
+      "name": "必填字段[release.model_version]",
+      "status": "pass",
+      "source": "release.model_version",
+      "raw_line": "L9: \"model_version\": \"v2.3.1\"",
+      "message": "字段 'release.model_version' 已填"
+    },
+    {
+      "name": "灰度比例类型",
+      "status": "pass",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 1.5,",
+      "message": "灰度比例是数字类型（float）"
+    },
+    {
+      "name": "灰度比例范围",
+      "status": "fail",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 1.5,",
+      "message": "灰度比例 1.5 超出合法范围 [0.0, 1.0]。原始配置写法 -> L3: \"ratio\": 1.5,",
+      "expected": "[0.0, 1.0]",
+      "actual": 1.5
+    },
+    {
+      "name": "模型版本一致性",
+      "status": "pass",
+      "source": "release.model_version",
+      "raw_line": "L9: \"model_version\": \"v2.3.1\"",
+      "message": "模型版本一致：v2.3.1"
+    },
+    {
+      "name": "撤回记录关联",
+      "status": "warn",
+      "source": "gray.rollback_plan",
+      "raw_line": "L5: \"rollback_plan\": \"若出现问题就撤回\"",
+      "message": "未传 --rollback-id，本次守门记录不会绑定到任何撤回记录。如果是修复版发布，建议带上撤回 ID 便于复盘追溯。"
+    },
+    {
+      "name": "目标客户端版本格式",
+      "status": "pass",
+      "source": "gray.target_versions",
+      "raw_line": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\"],",
+      "message": "所有 2 个目标版本格式合法"
+    }
+  ],
+  "final_conclusion": "fail",
+  "final_reason": "存在 FAIL 级检查项，禁止上线（见失败明细）",
+  "failure_messages": [
+    "[FAIL] 灰度比例范围 | L3: \"ratio\": 1.5, | 灰度比例 1.5 超出合法范围 [0.0, 1.0]。原始配置写法 -> L3: \"ratio\": 1.5,",
+    "[WARN] 撤回记录关联 | L5: \"rollback_plan\": \"若出现问题就撤回\" | 未传 --rollback-id，本次守门记录不会绑定到任何撤回记录。如果是修复版发布，建议带上撤回 ID 便于复盘追溯。"
+  ],
+  "extra_material_paths": []
+}

@@ -1,0 +1,134 @@
+{
+  "record_id": "20260621_170345_v2.3.1",
+  "timestamp": "20260621_170345",
+  "model_version": "v2.3.1",
+  "rollback_id": "RB-20250614-002",
+  "gray_config_path": "examples/gray_full_rollback.json",
+  "gray_config_snapshot": {
+    "gray": {
+      "ratio": 1.0,
+      "target_versions": [
+        "v2.1.0",
+        "v2.1.1",
+        "2024summer"
+      ],
+      "rollback_plan": "对应撤回单 RB-20250614-002，按方案#3 回退"
+    },
+    "release": {
+      "owner": "老周",
+      "model_version": "v2.3.1"
+    },
+    "__raw_lines__": {
+      "gray": "L2: \"gray\": {",
+      "gray.ratio": "L3: \"ratio\": 1.0,",
+      "gray.target_versions": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"2024summer\"],",
+      "gray.rollback_plan": "L5: \"rollback_plan\": \"对应撤回单 RB-20250614-002，按方案#3 回退\"",
+      "release": "L7: \"release\": {",
+      "release.owner": "L8: \"owner\": \"老周\",",
+      "release.model_version": "L9: \"model_version\": \"v2.3.1\""
+    },
+    "__file__": "examples/gray_full_rollback.json"
+  },
+  "checks": [
+    {
+      "name": "必填字段[gray.ratio]",
+      "status": "pass",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 1.0,",
+      "message": "字段 'gray.ratio' 已填"
+    },
+    {
+      "name": "必填字段[gray.target_versions]",
+      "status": "pass",
+      "source": "gray.target_versions",
+      "raw_line": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"2024summer\"],",
+      "message": "字段 'gray.target_versions' 已填"
+    },
+    {
+      "name": "必填字段[gray.rollback_plan]",
+      "status": "pass",
+      "source": "gray.rollback_plan",
+      "raw_line": "L5: \"rollback_plan\": \"对应撤回单 RB-20250614-002，按方案#3 回退\"",
+      "message": "字段 'gray.rollback_plan' 已填"
+    },
+    {
+      "name": "必填字段[release.owner]",
+      "status": "pass",
+      "source": "release.owner",
+      "raw_line": "L8: \"owner\": \"老周\",",
+      "message": "字段 'release.owner' 已填"
+    },
+    {
+      "name": "必填字段[release.model_version]",
+      "status": "pass",
+      "source": "release.model_version",
+      "raw_line": "L9: \"model_version\": \"v2.3.1\"",
+      "message": "字段 'release.model_version' 已填"
+    },
+    {
+      "name": "灰度比例类型",
+      "status": "pass",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 1.0,",
+      "message": "灰度比例是数字类型（float）"
+    },
+    {
+      "name": "灰度比例范围",
+      "status": "pass",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 1.0,",
+      "message": "灰度比例 1.0 在合法范围内"
+    },
+    {
+      "name": "灰度比例偏大提醒",
+      "status": "warn",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 1.0,",
+      "message": "灰度比例 1.0 > 0.5，超过推荐阈值。原始配置写法 -> L3: \"ratio\": 1.0,",
+      "expected": "建议 ≤ 0.5",
+      "actual": 1.0
+    },
+    {
+      "name": "灰度比例极端值提醒",
+      "status": "warn",
+      "source": "gray.ratio",
+      "raw_line": "L3: \"ratio\": 1.0,",
+      "message": "灰度比例=1.0，属于全量发布。原始配置写法 -> L3: \"ratio\": 1.0,",
+      "expected": "正常的灰度比例（如 0.1, 0.2）",
+      "actual": 1.0
+    },
+    {
+      "name": "模型版本一致性",
+      "status": "pass",
+      "source": "release.model_version",
+      "raw_line": "L9: \"model_version\": \"v2.3.1\"",
+      "message": "模型版本一致：v2.3.1"
+    },
+    {
+      "name": "撤回记录关联",
+      "status": "pass",
+      "source": "gray.rollback_plan",
+      "raw_line": "L5: \"rollback_plan\": \"对应撤回单 RB-20250614-002，按方案#3 回退\"",
+      "message": "撤回记录 ID=RB-20250614-002 已传入，且撤回方案中也提到了该 ID。本次结论将与撤回记录强关联。"
+    },
+    {
+      "name": "目标客户端版本格式",
+      "status": "warn",
+      "source": "gray.target_versions",
+      "raw_line": "L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"2024summer\"],",
+      "message": "以下版本号格式看起来不像语义化版本：['2024summer']。原始配置写法 -> L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"2024summer\"],",
+      "expected": "如 v1.2.3 或 1.2.3-beta",
+      "actual": [
+        "2024summer"
+      ]
+    }
+  ],
+  "final_conclusion": "warn",
+  "final_reason": "存在 WARN 级检查项，需要人工确认后放行",
+  "failure_messages": [
+    "[WARN] 灰度比例偏大提醒 | L3: \"ratio\": 1.0, | 灰度比例 1.0 > 0.5，超过推荐阈值。原始配置写法 -> L3: \"ratio\": 1.0,",
+    "[WARN] 灰度比例极端值提醒 | L3: \"ratio\": 1.0, | 灰度比例=1.0，属于全量发布。原始配置写法 -> L3: \"ratio\": 1.0,",
+    "[WARN] 目标客户端版本格式 | L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"2024summer\"], | 以下版本号格式看起来不像语义化版本：['2024summer']。原始配置写法 -> L4: \"target_versions\": [\"v2.1.0\", \"v2.1.1\", \"2024summer\"],"
+  ],
+  "extra_material_paths": []
+}
