@@ -88,14 +88,39 @@ class VersionReviewEngine:
         self.delivery_refs = delivery_refs or set()
 
     def review(self, track: TrackRow, allow_suspend: bool = True) -> None:
-        """对单条曲目执行版本复核，结果直接写入 track 对象"""
+        """对单条曲目执行版本复核，结果直接写入 track 对象
 
-        # 已有人工批注的行不再自动判定版本（以人工为准）
-        if track.status in (ReviewStatus.MANUAL_OK, ReviewStatus.MANUAL_REJECT):
+        状态保护（优先级从高到低，高优先级状态低优先级不得覆盖）：
+          1. MANUAL_OK / MANUAL_REJECT  —— 有人工批注，引擎绝不改状态
+          2. SUSPENDED                   —— 历史挂起/本次检测出的旧版母带，必须人工批注解锁
+          3. BAD_ROW / SKIPPED           —— 坏行/跳过行，不做复核
+          4. PENDING / PROCESSED         —— 引擎可正常判定
+        """
+        # ===== 高优先级状态保护：绝不改动 =====
+        if track.manual_annotation and track.status in (
+            ReviewStatus.MANUAL_OK,
+            ReviewStatus.MANUAL_REJECT,
+        ):
+            # 只补交付匹配和旧版证据做展示，绝不改状态
+            if track.delivery_ref and track.delivery_ref in self.delivery_refs:
+                track.delivery_matched = True
+            if not track.delivery_matched:
+                if _has_delivery_signal(track.remark, track.delivery_ref):
+                    track.delivery_matched = True
             return
-        # 坏行跳过不做版本判断
+
+        # 已被人工 ok/reject，但 apply_annotation 没写对 status —— 补一下保护
+        if track.status in (ReviewStatus.MANUAL_OK, ReviewStatus.MANUAL_REJECT):
+            if track.delivery_ref and track.delivery_ref in self.delivery_refs:
+                track.delivery_matched = True
+            return
+
+        # 坏行 / 跳过行：不做版本判断
         if track.status in (ReviewStatus.BAD_ROW, ReviewStatus.SKIPPED):
             return
+
+        # SUSPENDED：绝不自动解除。只追加新证据到证据链里，不改状态。
+        suspended = track.status == ReviewStatus.SUSPENDED
 
         title = track.track_title
         version_tag = track.version_tag
@@ -106,17 +131,18 @@ class VersionReviewEngine:
         if delivery_ref and delivery_ref in self.delivery_refs:
             track.delivery_matched = True
         if not track.delivery_matched:
-            # 用标题尝试在备注/版本中找交付信号
             if _has_delivery_signal(remark, delivery_ref):
                 track.delivery_matched = True
 
-        # 非片头曲目：不做版本比对，标记跳过
+        # 非片头曲目：不做版本比对，标记 NOT_INTRO
         if not _looks_like_intro(title, remark):
             track.version_judgment = VersionJudgment.NOT_INTRO
-            # 若授权信息齐全也可进入待处理队列
+            if suspended:
+                # 非片头但被挂起（一般不会），保留挂起，只补展示信息
+                return
             if track.authorization and track.authorization.has_authorization:
-                if track.status == ReviewStatus.PENDING:
-                    track.mark_processed() if track.delivery_matched else None
+                if track.delivery_matched:
+                    track.mark_processed()
             return
 
         # 片头曲目：进行版本判断
@@ -126,7 +152,7 @@ class VersionReviewEngine:
         marker_hits = _has_old_marker(version_tag, remark, title)
         evidence.extend(marker_hits)
 
-        # 2. 版本号冲突（曲目表整体最新版本作为期望版本）
+        # 2. 版本号冲突
         expected = self.expected_versions.get(title, "")
         conflict = None
         if version_tag and expected:
@@ -134,7 +160,7 @@ class VersionReviewEngine:
             if conflict:
                 evidence.append(conflict)
 
-        # 3. 授权备注缺失（非挂起条件，但会放入待处理）
+        # 3. 授权/排练备注
         auth_ok = bool(track.authorization and track.authorization.has_authorization)
         rehearsal_ok = bool(
             track.authorization and (
@@ -144,7 +170,19 @@ class VersionReviewEngine:
             )
         )
 
-        # 有明确证据判定为旧版母带
+        # ===== 挂起保护：有新证据只追加，不转状态 =====
+        if suspended:
+            if evidence:
+                seen = set(track.version_evidence)
+                for ev in evidence:
+                    if ev not in seen:
+                        track.version_evidence.append(ev)
+            if evidence and (marker_hits or conflict):
+                track.version_judgment = VersionJudgment.OLD_MASTER
+            # 绝不改状态 → SUSPENDED 必须人工批注解锁
+            return
+
+        # 有明确证据判定为旧版母带 → 本次新挂起
         if evidence and (marker_hits or conflict):
             track.version_judgment = VersionJudgment.OLD_MASTER
             if allow_suspend:
@@ -154,7 +192,6 @@ class VersionReviewEngine:
                     evidence=evidence,
                 )
             else:
-                # 不允许挂起时放入待处理
                 track.status = ReviewStatus.PENDING
             return
 
@@ -166,7 +203,6 @@ class VersionReviewEngine:
             track.version_judgment = VersionJudgment.UNKNOWN
             track.version_evidence.append("未找到明确版本标签")
 
-        # 状态判定：需同时满足 版本OK + (授权OK 或 排练备注) + 交付匹配
         version_ok = track.version_judgment in (VersionJudgment.MASTER, VersionJudgment.NOT_INTRO)
         if version_ok and (auth_ok or rehearsal_ok) and track.delivery_matched:
             track.mark_processed()
@@ -174,7 +210,6 @@ class VersionReviewEngine:
             track.status = ReviewStatus.PENDING
             track.version_evidence.append("未匹配交付清单编号")
         else:
-            # 缺材料：放待处理
             track.status = ReviewStatus.PENDING
             missing = []
             if not version_ok:

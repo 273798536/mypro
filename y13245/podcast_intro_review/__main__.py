@@ -21,6 +21,8 @@ from .storage import (
 from .report import print_full_report, maybe_raise
 from .exceptions import PodcastReviewError, OldMasterDetected, UnresolvedIssuesRemain
 
+RESET = "\033[0m"
+
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
@@ -80,37 +82,44 @@ def run(argv: Optional[list[str]] = None) -> int:
             except Exception as exc:
                 print(f"[警告] 交付清单解析失败：{exc}", file=sys.stderr)
 
-    # 创建/加载会话
+    # 创建会话
     session = new_session(
         tracklist_path=str(tracklist_path),
         delivery_list_path=args.delivery,
         annotation_path=args.annotation,
     )
 
-    # 对齐上次状态（重扫场景）
+    # 顺序很重要：外部批注优先级最高 → 再继承历史（历史不能覆盖外部）→ 最后引擎复核
+
+    # Step 1: 先应用本次传入的外部批注文件（最优先，人工结论不可被自动/历史覆盖）
+    applied_ext, unmatched_ext = apply_external_annotations(fresh_tracks, args.annotation)
+    if applied_ext or unmatched_ext:
+        print(
+            f"[信息] 人工批注：成功应用 {applied_ext} 条"
+            + (f"，{unmatched_ext} 条未命中曲目行（请检查 identity_hash/raw_hash/行号）" if unmatched_ext else ""),
+            file=sys.stderr,
+        )
+
+    # Step 2: 对齐上次会话状态（override_annotation=False → 外部批注已有的不动）
+    aligned_prev = 0
     prev = None
     if not args.no_resume:
         prev = load_latest_session(str(tracklist_path))
         if prev:
-            align_with_previous_session(fresh_tracks, prev)
+            aligned_prev = align_with_previous_session(fresh_tracks, prev, override_annotation=False)
             session.annotation_path = session.annotation_path or prev.annotation_path
             session.delivery_list_path = session.delivery_list_path or prev.delivery_list_path
-
-    # 应用外部批注文件
-    applied = apply_external_annotations(fresh_tracks, args.annotation)
-    if applied:
-        print(f"[信息] 应用人工批注 {applied} 条", file=sys.stderr)
+            if aligned_prev:
+                print(f"[信息] 从上次会话对齐历史状态 {aligned_prev} 项", file=sys.stderr)
 
     session.tracks = fresh_tracks
 
-    # 推断期望版本（以同名最大版本为期望）—— 用于旧版母带冲突判定
+    # Step 3: 推断期望版本 & 引擎复核（引擎内部对 MANUAL_OK / MANUAL_REJECT 不再改状态）
     expected = infer_expected_versions(fresh_tracks)
     engine = VersionReviewEngine(
         expected_versions=expected,
         delivery_refs=delivery_refs,
     )
-
-    # 执行版本复核
     for t in session.tracks:
         engine.review(t, allow_suspend=True)
 
@@ -145,9 +154,6 @@ def run(argv: Optional[list[str]] = None) -> int:
         return 1
 
     return 0
-
-
-RESET = "\033[0m"
 
 
 def main() -> None:  # 供 python -m 调用

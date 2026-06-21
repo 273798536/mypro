@@ -112,17 +112,37 @@ class TrackRow:
     delivery_matched: bool = False
     manual_annotation: Optional[ManualAnnotation] = None
     version_evidence: list[str] = field(default_factory=list)
-    row_hash: str = ""                              # 原始行哈希，用于重扫对齐
+    # === 两个哈希各司其职：
+    # raw_hash       —— 精确到整行原文的指纹（备注改了就变），用于确认"完全没动过"
+    # identity_hash  —— 稳定身份指纹（仅曲名/版本/行号/来源），补备注后不变，用于重扫对齐 & 匹配人工批注
+    raw_hash: str = ""
+    identity_hash: str = ""
+    row_hash: str = ""                              # 向后兼容：等于 identity_hash
     last_reviewed_at: Optional[str] = None
 
-    def compute_hash(self) -> str:
-        """基于原始行计算稳定哈希，用于重扫对齐"""
+    def compute_raw_hash(self) -> str:
+        """精确哈希（含整行原文）——用于判断这行有没有被改动过"""
         payload = f"{self.source_file}|{self.row_number}|{self.raw_csv_line}"
         return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
 
+    def compute_identity_hash(self) -> str:
+        """稳定哈希（仅曲名+版本号+行号+来源）——补备注/改时长不会变，用于重扫对齐和人工批注匹配"""
+        norm_title = (self.track_title or "").strip().lower()
+        norm_ver = (self.version_tag or "").strip().lower()
+        # 对坏行（无标题）退化到行号+来源，保证至少有个键
+        if not norm_title and not norm_ver:
+            payload = f"__rowonly__|{self.source_file}|{self.row_number}"
+        else:
+            payload = f"{self.source_file}|{self.row_number}|{norm_title}|{norm_ver}"
+        return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
+
     def __post_init__(self):
+        if not self.raw_hash:
+            self.raw_hash = self.compute_raw_hash()
+        if not self.identity_hash:
+            self.identity_hash = self.compute_identity_hash()
         if not self.row_hash:
-            self.row_hash = self.compute_hash()
+            self.row_hash = self.identity_hash  # 向后兼容字段
 
     def mark_processed(self):
         self.status = ReviewStatus.PROCESSED
@@ -171,7 +191,9 @@ class TrackRow:
         return {
             "row_number": self.row_number,
             "source_file": self.source_file,
-            "row_hash": self.row_hash,
+            "identity_hash": self.identity_hash,
+            "raw_hash": self.raw_hash,
+            "row_hash": self.row_hash,  # 向后兼容，等于 identity_hash
             "raw_csv_line": self.raw_csv_line,
             "raw_fields": self.raw_fields,
             "track_title": self.track_title,
@@ -208,9 +230,18 @@ class TrackRow:
             version_judgment=VersionJudgment(data.get("version_judgment", "unknown")),
             delivery_matched=data.get("delivery_matched", False),
             version_evidence=data.get("version_evidence", []),
+            raw_hash=data.get("raw_hash", ""),
+            identity_hash=data.get("identity_hash", ""),
             row_hash=data.get("row_hash", ""),
             last_reviewed_at=data.get("last_reviewed_at"),
         )
+        # 兼容老会话文件：老文件只有 row_hash，用它兜底
+        if not row.raw_hash:
+            row.raw_hash = row.compute_raw_hash()
+        if not row.identity_hash:
+            row.identity_hash = data.get("row_hash") or row.compute_identity_hash()
+        if not row.row_hash:
+            row.row_hash = row.identity_hash
         auth = data.get("authorization")
         if auth:
             row.authorization = AuthorizationNote(**auth)

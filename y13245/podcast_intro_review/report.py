@@ -73,6 +73,11 @@ def print_track_detail(track: TrackRow, out: TextIO, verbose: bool = False) -> N
 
     if verbose:
         print(f"       ↳ 原始行: {track.raw_csv_line!r}", file=out)
+        print(
+            f"       ↳ 身份哈希(identity_hash={track.identity_hash})  "
+            f"精确哈希(raw_hash={track.raw_hash})",
+            file=out,
+        )
         if track.issues:
             for iss in track.issues:
                 print(f"       ↳ 问题[{iss.issue_type}]: {iss.message}", file=out)
@@ -82,7 +87,7 @@ def print_track_detail(track: TrackRow, out: TextIO, verbose: bool = False) -> N
             for ev in track.version_evidence:
                 print(f"       ↳ 证据: {ev}", file=out)
         if track.manual_annotation:
-            print(f"       ↳ 批注: {track.manual_annotation.comment}", file=out)
+            print(f"       ↳ 批注@{track.manual_annotation.annotator}: {track.manual_annotation.comment}", file=out)
 
 
 def print_group(session: ReviewSession, status: ReviewStatus,
@@ -162,12 +167,16 @@ def print_takeaways(session: ReviewSession, out: TextIO) -> None:
     if c[ReviewStatus.SKIPPED.value]:
         print(f"  ⚪ 跳过：{c[ReviewStatus.SKIPPED.value]} 项（表头/空行/非片头）", file=out)
 
-    print("\n\033[1m🔁 如何重扫\033[0m", file=out)
+    print("\n\033[1m🔁 如何重扫 / 如何写人工批注\033[0m", file=out)
     print(f"  曲目表补完备注/修完格式后，再次运行：", file=out)
     print(f"    python -m podcast_intro_review {session.tracklist_path}", file=out)
     if session.delivery_list_path:
         print(f"    --delivery {session.delivery_list_path}", file=out)
-    print(f"  （历史挂起/批注会自动对齐到相同行哈希）", file=out)
+    print(f"  （历史挂起/批注会自动对齐到同一 identity_hash）", file=out)
+    print(f"  写批注裁定挂起项：用 -v 模式复制每行下方 identity_hash，生成 annotations.json：", file=out)
+    print(f"    [{{\"identity_hash\": \"...\", \"annotator\": \"你的名字\",", file=out)
+    print(f"      \"status\": \"ok|reject\", \"comment\": \"裁定理由\"}}]", file=out)
+    print(f"    再重扫追加参数: --annotation annotations.json", file=out)
 
 
 def print_full_report(

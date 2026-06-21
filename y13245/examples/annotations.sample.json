@@ -1,14 +1,18 @@
 [
   {
-    "row_hash": "REPLACE_WITH_HASH",
+    "_说明1": "推荐用 identity_hash 匹配（补完备注后不变）。从 verbose 模式复制每行下方的 identity_hash=",
+    "_说明2": "也可以用 raw_hash（行原文完全没动过才命中）或 row_number+source_file 兜底",
+    "_示例项1_": "==== 下面是两条示例，真正使用时把 identity_hash 换成 -v 输出里复制的值 ====",
+    "identity_hash": "从第1次扫描的 verbose 输出复制，例如 f3a1b2c4d5e60011",
     "annotator": "老许",
     "status": "ok",
-    "comment": "确认已重录为 v3，旧版已从发布清单中移除，可放心使用"
+    "comment": "确认已重录为 v3，旧版从发布清单移除，此版为正确母带"
   },
   {
-    "row_hash": "REPLACE_WITH_HASH_2",
+    "raw_hash": "可选填，或者填 identity_hash 任意一种即可命中",
+    "row_number": 13,
     "annotator": "接手同事A",
-    "status": "ok",
-    "comment": "排练录音确认，无需另行授权"
+    "status": "reject",
+    "comment": "rough cut 底噪超标，必须重录，不允许交付"
   }
 ]

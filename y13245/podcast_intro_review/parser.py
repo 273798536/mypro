@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 import re
 from pathlib import Path
 from typing import Optional
@@ -242,32 +243,44 @@ def parse_delivery_list(csv_path: str) -> set[str]:
 
 def parse_annotation_file(json_path: str) -> dict[str, dict]:
     """
-    解析人工批注文件（JSON 行或对象）。
-    返回 {row_hash: annotation_dict}。
+    解析人工批注文件（JSON 对象数组 / JSON Lines / 单个对象）。
+
+    返回的 dict **key 仅用于遍历不丢失条目**，真正的匹配由调用方读取
+    obj 内的 `identity_hash` / `raw_hash` / `row_hash` / `row_number` / `source_file`
+    再做三级索引回退查找。
     """
     path = Path(json_path)
     if not path.exists():
         return {}
+    items: list[dict] = []
     try:
-        data = __import__("json").loads(path.read_text(encoding="utf-8"))
+        data = json.loads(path.read_text(encoding="utf-8"))
     except Exception:
         # 尝试按 JSON Lines 解析
-        annotations: dict[str, dict] = {}
         for line in path.read_text(encoding="utf-8").splitlines():
             line = line.strip()
             if not line:
                 continue
             try:
-                obj = __import__("json").loads(line)
-                if "row_hash" in obj:
-                    annotations[obj["row_hash"]] = obj
+                obj = json.loads(line)
+                if isinstance(obj, dict):
+                    items.append(obj)
             except Exception:
                 continue
-        return annotations
-    if isinstance(data, list):
-        return {item["row_hash"]: item for item in data if "row_hash" in item}
-    if isinstance(data, dict) and "row_hash" in data:
-        return {data["row_hash"]: data}
-    if isinstance(data, dict):
-        return {k: v for k, v in data.items() if isinstance(v, dict)}
-    return {}
+    else:
+        if isinstance(data, list):
+            items = [x for x in data if isinstance(x, dict)]
+        elif isinstance(data, dict):
+            items = [data]
+
+    # 过滤掉纯说明字段（比如只有 "_说明" 开头键的模板示例项）
+    meaningful: list[dict] = []
+    for obj in items:
+        real_keys = [k for k in obj.keys() if not k.startswith("_")]
+        if not real_keys:
+            continue
+        meaningful.append(obj)
+
+    # 用 index 做 dict key —— 真正匹配靠 obj 内字段
+    return {str(i): obj for i, obj in enumerate(meaningful)}
+

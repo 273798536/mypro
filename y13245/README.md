@@ -91,34 +91,61 @@ python3 -m podcast_intro_review my_show.csv -d delivery.csv
 #   - 排练确认（排练 / 彩排 / 排练通过）
 #   - 旧版母带的版本号冲突会被自动识别，不必手动改
 
-# 重扫——上次的挂起/批注会自动对齐（按「原始行哈希」对齐）
+# 重扫——上次的挂起/批注会自动对齐（按「稳定身份键 identity_hash」对齐，即使你补了备注也能识别出是同一首）
 python3 -m podcast_intro_review my_show.csv -d delivery.csv
 ```
 
 > 想从零开始、不要历史状态？加 `--no-resume`。
 
+### 双哈希说明（重要，关系到你复制哪一个 hash 写批注）
+
+每一行有两个哈希：
+
+| 哈希 | 参与计算内容 | 补备注后会变吗？ | 用途 |
+|---|---|---|---|
+| **`identity_hash`** | 来源路径 + 行号 + 曲名(去空格小写) + 版本号(去空格小写) | ❌ **不变**（同一首曲目，你补再多备注也能认出来） | **写人工批注时用这个** —— 从第 1 次扫描的 verbose 输出或 JSON 报告里复制，重扫时稳定命中 |
+| **`raw_hash`** | 来源路径 + 行号 + 整行 CSV 原文（包括备注列的每个字符） | ✅ 只要改了原文就变 | 兜底匹配；排查时用（比如你怀疑行里有空格/编码差异） |
+| `row_hash`（向后兼容） | = `identity_hash` | 不变 | 老版本会话里只有这个字段，现在作为兼容别名保留 |
+
+**匹配优先级**（从高到低，只要命中一条就生效）：
+1. `identity_hash` —— 推荐
+2. `raw_hash` —— 兜底
+3. `row_number + source_file` —— 实在找不到 hash 时，按行号硬对齐（注意：在曲目表里插/删行后行号会错位，不推荐长期用）
+
 ---
 
 ## 五、人工批注 JSON 格式
 
-当你作为接手同事，需要裁定某条挂起的曲目是**可以用**还是**必须重做**时，写一个 JSON 文件：
+当你作为接手同事，需要裁定某条挂起的曲目是**可以用**还是**必须重做**时，写一个 JSON 文件。支持 3 种匹配方式（**推荐第 1 种 `identity_hash`**）：
 
 ```json
 [
   {
-    "row_hash": "abc123...从第1次扫描的verbose输出或JSON报告里复制",
+    "_说明1": "用 identity_hash（推荐）：从第 1 次扫描 -v 输出里复制，补备注后仍能命中同一曲",
+    "identity_hash": "abc123...从 verbose 或 JSON 报告复制",
     "annotator": "老许",
     "status": "ok",
     "comment": "确认已重录为v3，旧版已从发布清单移除"
   },
   {
-    "row_hash": "def456...",
+    "_说明2": "兜底 1：用 raw_hash（精确到整行原文）匹配",
+    "raw_hash": "def456...",
     "annotator": "接手同事A",
     "status": "reject",
     "comment": "母带底噪超标，必须重录"
+  },
+  {
+    "_说明3": "兜底 2：用行号硬对齐（不推荐长期用）",
+    "source_file": "my_show.csv",
+    "row_number": 7,
+    "annotator": "接手同事B",
+    "status": "reject",
+    "comment": "Demo 版本不能直接用，等重录的最终版"
   }
 ]
 ```
+
+> **所有以 `_` 开头的字段都会被自动忽略**，可以放心在里面写说明、注释、临时草稿，不会参与匹配。
 
 然后：
 
@@ -128,7 +155,14 @@ python3 -m podcast_intro_review my_show.csv \
     --annotation my_notes.json
 ```
 
-`status` 只能是 `ok` 或 `reject`。裁定一旦写入，重扫时会持久保存，下次不用再传 annotation 文件。
+`status` 只能是 `ok` 或 `reject`。裁定一旦写入，重扫时会持久保存（存入曲目表目录下的 `.podcast_review_state/`），下次不用再传 annotation 文件。
+
+**应用优先级（从高到低，高的不能被低的覆盖）：**
+1. 本次传入的 `--annotation` 外部批注（最优先）
+2. `.podcast_review_state/` 里上次会话保存的历史批注
+3. 引擎自动判定（SUSPENDED / PROCESSED / PENDING）
+
+也就是说：**只要人工（无论你是这次传 annotation，还是上次已经保存下来的）下过 OK/Reject 结论，引擎绝不敢推翻。** 只会在状态旁边补新证据，让接手同事知道发生了什么。
 
 ---
 
@@ -170,11 +204,14 @@ examples/
 关键代码链接（可点击跳转）：
 - 7 种复核状态枚举 [ReviewStatus](podcast_intro_review/models.py#L16-L24)
 - 版本判定 & 旧版关键词列表 [OLD_VERSION_MARKERS](podcast_intro_review/models.py#L40-L44)
-- 原始 CSV 行保留与哈希对齐 [TrackRow.compute_hash](podcast_intro_review/models.py#L118-L121)
+- 稳定身份键（补备注不变）[TrackRow.compute_identity_hash](podcast_intro_review/models.py#L124-L133)
+- 精确行哈希（原文变化就变）[TrackRow.compute_raw_hash](podcast_intro_review/models.py#L118-L121)
+- 三级回退匹配 + LATEST 指针会话对齐 [storage.py](podcast_intro_review/storage.py)
 - 授权备注抽取器 [_parse_authorization](podcast_intro_review/parser.py#L75-L92)
-- 旧版母带挂起逻辑 [VersionReviewEngine.review](podcast_intro_review/engine.py#L116-L165)
+- 高优先级状态保护（人工/挂起绝不改）[VersionReviewEngine.review](podcast_intro_review/engine.py)
 - 7 类分组输出与接手同事要点 [report.py](podcast_intro_review/report.py)
-- 退出码映射 [__main__.maybe_raise / exit](podcast_intro_review/__main__.py#L154-L173)
+- 应用顺序：外部批注 → 历史会话 → 引擎 [__main__.py#L90-L105](podcast_intro_review/__main__.py#L90-L105)
+- 退出码映射 [__main__.maybe_raise](podcast_intro_review/__main__.py#L154-L173)
 
 ---
 
