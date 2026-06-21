@@ -1,0 +1,17 @@
+[project]
+name = "shadow-trace"
+version = "0.1.0"
+description = "影子流量任务追踪工具 - 处理、人工改判、污染标记、版本对比、报告导出"
+requires-python = ">=3.9"
+authors = [{ name = "推荐算法团队" }]
+dependencies = []
+
+[project.scripts]
+shadow-trace = "shadow_trace.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["shadow_trace*"]

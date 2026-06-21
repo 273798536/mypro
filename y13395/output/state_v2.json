@@ -1,0 +1,631 @@
+[
+  {
+    "sample_id": "S001",
+    "raw_data": {
+      "sample_id": "S001",
+      "prediction_score": "0.93",
+      "threshold": "0.80",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 2,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.93,
+    "threshold": 0.8,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.93, threshold=0.8)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687296",
+    "updated_at": "2026-06-21T17:18:51.687527",
+    "record_id": "3010b5b02899",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S002",
+    "raw_data": {
+      "sample_id": "S002",
+      "prediction_score": "0.82",
+      "threshold": "0.80",
+      "ground_truth": "negative",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 3,
+    "status": "pending_review",
+    "pollution": "clean",
+    "prediction_score": 0.82,
+    "threshold": 0.8,
+    "ground_truth": "negative",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 分数接近阈值 (score=0.82, threshold=0.8, margin=0.0200) → 待人工复核"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687350",
+    "updated_at": "2026-06-21T17:18:51.687537",
+    "record_id": "a1ad2fd28316",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S003",
+    "raw_data": {
+      "sample_id": "S003",
+      "prediction_score": "0.81",
+      "threshold": "0.80",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 4,
+    "status": "pending_review",
+    "pollution": "clean",
+    "prediction_score": 0.81,
+    "threshold": 0.8,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 分数接近阈值 (score=0.81, threshold=0.8, margin=0.0100) → 待人工复核"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687359",
+    "updated_at": "2026-06-21T17:18:51.687543",
+    "record_id": "beea35b51f20",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S004",
+    "raw_data": {
+      "sample_id": "S004",
+      "prediction_score": "0.45",
+      "threshold": "0.80",
+      "ground_truth": "negative",
+      "predicted_label": "negative",
+      "is_pollution": "confirmed",
+      "skip_reason": ""
+    },
+    "row_number": 5,
+    "status": "success",
+    "pollution": "confirmed_pollution",
+    "prediction_score": 0.45,
+    "threshold": 0.8,
+    "ground_truth": "negative",
+    "predicted_label": "negative",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.45, threshold=0.8)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687366",
+    "updated_at": "2026-06-21T17:18:51.687548",
+    "record_id": "ac4885ec77e6",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S005",
+    "raw_data": {
+      "sample_id": "S005",
+      "prediction_score": "0.83",
+      "threshold": "0.80",
+      "ground_truth": "negative",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 6,
+    "status": "pending_review",
+    "pollution": "clean",
+    "prediction_score": 0.83,
+    "threshold": 0.8,
+    "ground_truth": "negative",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 分数接近阈值 (score=0.83, threshold=0.8, margin=0.0300) → 待人工复核"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687373",
+    "updated_at": "2026-06-21T17:18:51.687553",
+    "record_id": "b59bd3e4ad1e",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S006",
+    "raw_data": {
+      "sample_id": "S006",
+      "prediction_score": "0.88",
+      "threshold": "0.80",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 7,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.88,
+    "threshold": 0.8,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.88, threshold=0.8)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687379",
+    "updated_at": "2026-06-21T17:18:51.687558",
+    "record_id": "d1ff620b7b97",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S007",
+    "raw_data": {
+      "sample_id": "S007",
+      "prediction_score": "0.86",
+      "threshold": "0.80",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 8,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.86,
+    "threshold": 0.8,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.86, threshold=0.8)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687385",
+    "updated_at": "2026-06-21T17:18:51.687563",
+    "record_id": "981367a182ab",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S008",
+    "raw_data": {
+      "sample_id": "S008",
+      "prediction_score": "0.95",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 9,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.95,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.95, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687391",
+    "updated_at": "2026-06-21T17:18:51.687567",
+    "record_id": "6f53c014af65",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S009",
+    "raw_data": {
+      "sample_id": "S009",
+      "prediction_score": "0.30",
+      "threshold": "0.78",
+      "ground_truth": "negative",
+      "predicted_label": "negative",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 10,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.3,
+    "threshold": 0.78,
+    "ground_truth": "negative",
+    "predicted_label": "negative",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.3, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687397",
+    "updated_at": "2026-06-21T17:18:51.687572",
+    "record_id": "f172e77ef728",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S010",
+    "raw_data": {
+      "sample_id": "S010",
+      "prediction_score": "0.80",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 11,
+    "status": "pending_review",
+    "pollution": "clean",
+    "prediction_score": 0.8,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 分数接近阈值 (score=0.8, threshold=0.78, margin=0.0200) → 待人工复核"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687402",
+    "updated_at": "2026-06-21T17:18:51.687577",
+    "record_id": "1e76a99eaf8a",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S011",
+    "raw_data": {
+      "sample_id": "S011",
+      "prediction_score": "",
+      "threshold": "",
+      "ground_truth": "",
+      "predicted_label": "",
+      "is_pollution": "",
+      "skip_reason": "测试跳过"
+    },
+    "row_number": 12,
+    "status": "skipped",
+    "pollution": "clean",
+    "prediction_score": null,
+    "threshold": null,
+    "ground_truth": null,
+    "predicted_label": null,
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 跳过: 测试跳过"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687409",
+    "updated_at": "2026-06-21T17:18:51.687434",
+    "record_id": "883b41fbbe03",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S012",
+    "raw_data": {
+      "sample_id": "S012",
+      "prediction_score": "0.55",
+      "threshold": "0.78",
+      "ground_truth": "negative",
+      "predicted_label": "negative",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 13,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.55,
+    "threshold": 0.78,
+    "ground_truth": "negative",
+    "predicted_label": "negative",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.55, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687439",
+    "updated_at": "2026-06-21T17:18:51.687583",
+    "record_id": "39d968bc89a0",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S013",
+    "raw_data": {
+      "sample_id": "S013",
+      "prediction_score": "0.99",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 14,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.99,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.99, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687447",
+    "updated_at": "2026-06-21T17:18:51.687587",
+    "record_id": "09c29c501254",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S014",
+    "raw_data": {
+      "sample_id": "S014",
+      "prediction_score": "0.78",
+      "threshold": "0.78",
+      "ground_truth": "negative",
+      "predicted_label": "positive",
+      "is_pollution": "suspect",
+      "skip_reason": ""
+    },
+    "row_number": 15,
+    "status": "pending_review",
+    "pollution": "suspected_pollution",
+    "prediction_score": 0.78,
+    "threshold": 0.78,
+    "ground_truth": "negative",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 分数接近阈值 (score=0.78, threshold=0.78, margin=0.0000) → 待人工复核"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687454",
+    "updated_at": "2026-06-21T17:18:51.687593",
+    "record_id": "3ba3f850dd9d",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S015",
+    "raw_data": {
+      "sample_id": "S015",
+      "prediction_score": "0.60",
+      "threshold": "0.78",
+      "ground_truth": "negative",
+      "predicted_label": "negative",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 16,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.6,
+    "threshold": 0.78,
+    "ground_truth": "negative",
+    "predicted_label": "negative",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.6, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687459",
+    "updated_at": "2026-06-21T17:18:51.687599",
+    "record_id": "15df95b372bf",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S016",
+    "raw_data": {
+      "sample_id": "S016",
+      "prediction_score": "0.82",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 17,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.82,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.82, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687465",
+    "updated_at": "2026-06-21T17:18:51.687604",
+    "record_id": "5cc40a274032",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S017",
+    "raw_data": {
+      "sample_id": "S017",
+      "prediction_score": "0.79",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 18,
+    "status": "pending_review",
+    "pollution": "clean",
+    "prediction_score": 0.79,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 分数接近阈值 (score=0.79, threshold=0.78, margin=0.0100) → 待人工复核"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687471",
+    "updated_at": "2026-06-21T17:18:51.687610",
+    "record_id": "02e22f4a827f",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S018",
+    "raw_data": {
+      "sample_id": "S018",
+      "prediction_score": "0.85",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 19,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.85,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.85, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687481",
+    "updated_at": "2026-06-21T17:18:51.687616",
+    "record_id": "b59b081cfe22",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S019",
+    "raw_data": {
+      "sample_id": "S019",
+      "prediction_score": "0.77",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 20,
+    "status": "pending_review",
+    "pollution": "clean",
+    "prediction_score": 0.77,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 分数接近阈值 (score=0.77, threshold=0.78, margin=0.0100) → 待人工复核"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687487",
+    "updated_at": "2026-06-21T17:18:51.687622",
+    "record_id": "8a133e709e48",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S020",
+    "raw_data": {
+      "sample_id": "S020",
+      "prediction_score": "0.90",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 21,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.9,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.9, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687494",
+    "updated_at": "2026-06-21T17:18:51.687627",
+    "record_id": "c77cf6922446",
+    "version_tag": "v2"
+  },
+  {
+    "sample_id": "S021",
+    "raw_data": {
+      "sample_id": "S021",
+      "prediction_score": "0.88",
+      "threshold": "0.78",
+      "ground_truth": "positive",
+      "predicted_label": "positive",
+      "is_pollution": "",
+      "skip_reason": ""
+    },
+    "row_number": 22,
+    "status": "success",
+    "pollution": "clean",
+    "prediction_score": 0.88,
+    "threshold": 0.78,
+    "ground_truth": "positive",
+    "predicted_label": "positive",
+    "error_message": null,
+    "process_log": [
+      "[17:18:51] 开始处理",
+      "[17:18:51] 判定成功 (score=0.88, threshold=0.78)"
+    ],
+    "review_history": [],
+    "final_conclusion": null,
+    "created_at": "2026-06-21T17:18:51.687500",
+    "updated_at": "2026-06-21T17:18:51.687632",
+    "record_id": "d235a1ff6c28",
+    "version_tag": "v2"
+  }
+]
