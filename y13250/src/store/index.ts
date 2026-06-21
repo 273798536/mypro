@@ -3,6 +3,8 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type {
   Point,
   Material,
+  MaterialSource,
+  MaterialVersion,
   MergeRelation,
   MergeEvidence,
   Anomaly,
@@ -33,6 +35,16 @@ interface StoreState {
   versionCompare: VersionCompareState;
 }
 
+export interface NewMaterialInput {
+  title: string;
+  source: MaterialSource;
+  uploader: string;
+  content: string;
+  changeNote: string;
+  pointMentions: string[];
+  updateExistingMaterialId?: string;
+}
+
 interface StoreActions {
   setSelectedMerge: (id: string | null) => void;
   setSelectedPoint: (id: string | null) => void;
@@ -43,9 +55,10 @@ interface StoreActions {
   confirmPendingMerge: (mergeId: string, decide: 'merge' | 'split') => void;
   resolveAnomaly: (anomalyId: string) => void;
   addRemark: (target: { mergeId?: string; pointId?: string }, author: string, content: string) => void;
-  rerunMerge: () => void;
+  rerunMerge: (options?: { skipLog?: boolean }) => void;
   triggerExport: () => { ok: boolean; count: number };
   addLog: (log: Omit<OperationLog, 'id' | 'timestamp'>) => void;
+  addMaterial: (input: NewMaterialInput) => { materialId: string; isCaliberChanged: boolean; createdPointIds: string[] };
   resetToMock: () => void;
   recomputeSummary: () => void;
 }
@@ -153,6 +166,191 @@ export const useStore = create<StoreState & StoreActions>()(
         get().recomputeSummary();
       },
 
+      addMaterial: input => {
+        const s = get();
+        const mentions = input.pointMentions.map(n => n.trim()).filter(Boolean);
+
+        const relatedPointIds: string[] = [];
+        const createdPointIds: string[] = [];
+        const newPoints: Point[] = [...s.points];
+
+        mentions.forEach(name => {
+          const exist = newPoints.find(p => p.name === name || p.aliases.includes(name));
+          if (exist) {
+            relatedPointIds.push(exist.id);
+          } else {
+            const np: Point = {
+              id: uid('pt'),
+              name,
+              location: name,
+              status: 'normal',
+              aliases: [],
+              materialIds: [],
+              createdAt: nowISO(),
+            };
+            newPoints.push(np);
+            createdPointIds.push(np.id);
+            relatedPointIds.push(np.id);
+          }
+        });
+
+        const versionTimestamp = nowISO();
+        let targetMaterial: Material;
+        let isCaliberChanged = false;
+        let prevV: number | null = null;
+
+        if (input.updateExistingMaterialId) {
+          const existing = s.materials.find(m => m.id === input.updateExistingMaterialId);
+          if (!existing) {
+            return { materialId: '', isCaliberChanged: false, createdPointIds: [] };
+          }
+          const nv: MaterialVersion = {
+            id: uid('mv'),
+            version: existing.currentVersion + 1,
+            content: input.content,
+            timestamp: versionTimestamp,
+            changer: input.uploader,
+            changeNote: input.changeNote || '更新口径/内容',
+            pointMentions: mentions,
+          };
+          const nextVersions = [...existing.versions, nv];
+          const detected = detectCaliberChanged(nextVersions);
+          isCaliberChanged = detected.changed;
+          prevV = existing.currentVersion;
+          targetMaterial = {
+            ...existing,
+            title: input.title || existing.title,
+            source: input.source,
+            uploader: input.uploader,
+            uploadTime: versionTimestamp,
+            currentVersion: nv.version,
+            versions: nextVersions,
+            caliberChanged: existing.caliberChanged || isCaliberChanged,
+            relatedPointIds: Array.from(new Set([...existing.relatedPointIds, ...relatedPointIds])),
+          };
+        } else {
+          const v1: MaterialVersion = {
+            id: uid('mv'),
+            version: 1,
+            content: input.content,
+            timestamp: versionTimestamp,
+            changer: input.uploader,
+            changeNote: input.changeNote || '初版录入',
+            pointMentions: mentions,
+          };
+          targetMaterial = {
+            id: uid('mat'),
+            title: input.title,
+            source: input.source,
+            uploader: input.uploader,
+            uploadTime: versionTimestamp,
+            currentVersion: 1,
+            versions: [v1],
+            caliberChanged: false,
+            relatedPointIds,
+          };
+        }
+
+        const newMaterials = input.updateExistingMaterialId
+          ? s.materials.map(m => (m.id === input.updateExistingMaterialId ? targetMaterial : m))
+          : [targetMaterial, ...s.materials];
+
+        const finalPoints = newPoints.map(p => {
+          if (!relatedPointIds.includes(p.id)) return p;
+          const already = p.materialIds.includes(targetMaterial.id);
+          return {
+            ...p,
+            materialIds: already ? p.materialIds : [...p.materialIds, targetMaterial.id],
+          };
+        });
+
+        const finalAnomalies = [...s.anomalies];
+        if (isCaliberChanged) {
+          targetMaterial.relatedPointIds.forEach(pid => {
+            const exist = finalAnomalies.find(
+              a => a.pointId === pid && a.type === 'caliber_changed' && a.relatedMaterialId === targetMaterial.id,
+            );
+            if (!exist) {
+              finalAnomalies.unshift({
+                id: uid('an'),
+                pointId: pid,
+                type: 'caliber_changed',
+                severity: 'high',
+                description: `材料《${targetMaterial.title}》v${prevV}→v${targetMaterial.currentVersion} 改口径，归并依据需人工复核。`,
+                relatedMaterialId: targetMaterial.id,
+                relatedMergeId: finalPoints.find(p => p.id === pid)?.mergeId,
+                resolved: false,
+                detectedAt: nowISO(),
+              });
+            }
+          });
+        }
+        mentions.forEach(name => {
+          const pid = finalPoints.find(p => p.name === name || p.aliases.includes(name))?.id;
+          if (!pid) return;
+          const isNew = createdPointIds.includes(pid);
+          if (isNew) {
+            const existNameIncons = finalAnomalies.find(
+              a => a.pointId === pid && a.type === 'name_inconsistency',
+            );
+            if (!existNameIncons && mentions.length > 1) {
+              finalAnomalies.unshift({
+                id: uid('an'),
+                pointId: pid,
+                type: 'name_inconsistency',
+                severity: 'low',
+                description: `材料《${targetMaterial.title}》同时提及多种写法：${mentions.join(' / ')}，需确认是否同地。`,
+                relatedMaterialId: targetMaterial.id,
+                resolved: false,
+                detectedAt: nowISO(),
+              });
+            }
+          }
+        });
+
+        set({
+          materials: newMaterials,
+          points: finalPoints,
+          anomalies: finalAnomalies,
+          selectedMergeId: null,
+        });
+
+        const actionName = input.updateExistingMaterialId ? '更新材料版本' : '新增材料';
+        get().addLog({
+          operator: input.uploader,
+          action: actionName,
+          target: `${targetMaterial.title}${input.updateExistingMaterialId ? ` v${prevV}→v${targetMaterial.currentVersion}` : ''}`,
+          targetType: 'material',
+          reason:
+            (isCaliberChanged ? '【口径变更已打异常】' : '') +
+            (input.changeNote || mentions.join('、') || '录入材料'),
+        });
+
+        createdPointIds.forEach(pid => {
+          const pt = finalPoints.find(p => p.id === pid);
+          if (pt) {
+            get().addLog({
+              operator: '系统（自动）',
+              action: '从材料自动生成点位',
+              target: pt.name,
+              targetType: 'point',
+              reason: `材料《${targetMaterial.title}》提及该点位名称，尚未建档`,
+            });
+          }
+        });
+
+        get().rerunMerge({ skipLog: true });
+
+        if (isCaliberChanged && prevV != null) {
+          get().openVersionCompare(targetMaterial.id, prevV, targetMaterial.currentVersion);
+        }
+
+        get().setHighlight({ type: 'material', id: targetMaterial.id, triggeredAt: Date.now() });
+        get().recomputeSummary();
+
+        return { materialId: targetMaterial.id, isCaliberChanged, createdPointIds };
+      },
+
       addRemark: (target, author, content) => {
         if (!content.trim()) return;
         const st = get();
@@ -180,7 +378,7 @@ export const useStore = create<StoreState & StoreActions>()(
         });
       },
 
-      rerunMerge: () => {
+      rerunMerge: (options) => {
         const s = get();
         const pairs = suggestMergePairs(s.points);
         const visited = new Set<string>();
@@ -323,13 +521,23 @@ export const useStore = create<StoreState & StoreActions>()(
             currentVersion: `v${new Date().toISOString().slice(0, 10).replace(/-/g, '.')}-r${Math.floor(Math.random() * 90 + 10)}`,
           },
         });
-        get().addLog({
-          operator: '算法值班人',
-          action: '重跑归并算法',
-          target: `生成 ${newMerges.length} 组新归并`,
-          targetType: 'system',
-          reason: '手动触发重跑，保留历史备注与状态快照',
-        });
+        if (!options?.skipLog) {
+          get().addLog({
+            operator: '算法值班人',
+            action: '重跑归并算法',
+            target: `生成 ${newMerges.length} 组新归并`,
+            targetType: 'system',
+            reason: '手动触发重跑，保留历史备注与状态快照',
+          });
+        } else if (newMerges.length > 0) {
+          get().addLog({
+            operator: '系统（自动）',
+            action: '新增材料后自动重跑归并',
+            target: `生成 ${newMerges.length} 组新归并建议`,
+            targetType: 'system',
+            reason: '新录入材料产生新增点位，系统自动重算归并关系',
+          });
+        }
         get().recomputeSummary();
       },
 
