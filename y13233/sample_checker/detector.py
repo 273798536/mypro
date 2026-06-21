@@ -20,12 +20,31 @@ HALF_BEAT_TOLERANCE = 0.1
 
 
 @dataclass
-class StageChannelImpact:
+class NoteImpact:
     note_id: str
+    note_type: NoteType
     note_content: str
+    author: str
     judgments_altered: List[str] = field(default_factory=list)
     before_status: CheckStatus = CheckStatus.PASS
     after_status: CheckStatus = CheckStatus.PASS
+    action: str = "override"  # "override" 或 "flag_hang"
+
+
+NOTE_LABEL = {
+    NoteType.STAGE_CHANNEL: "舞台通道备注",
+    NoteType.TEACHER_EDIT: "音乐老师改判",
+    NoteType.REHEARSAL: "排练确认",
+    NoteType.AUTHORIZATION: "授权确认",
+    NoteType.OTHER: "备注",
+}
+
+OVERRIDE_NOTE_TYPES = (
+    NoteType.STAGE_CHANNEL,
+    NoteType.TEACHER_EDIT,
+    NoteType.REHEARSAL,
+    NoteType.AUTHORIZATION,
+)
 
 
 @dataclass
@@ -151,19 +170,42 @@ class SampleAnomalyDetector:
                 ))
         return normal, half_beat
 
-    # ── 舞台通道表备注影响评估 ────────────────────────────────
-    def evaluate_stage_channel_impact(
+    # ── 备注影响评估（通用：STAGE_CHANNEL / TEACHER_EDIT / REHEARSAL / AUTHORIZATION） ─
+    def _note_matches_result(
+        self, note: Note, result: CheckResult, pkg: SamplePackage
+    ) -> bool:
+        if not note.affects_fields:
+            return False
+        hit_judgment = any(
+            j for j in result.related_judgments
+            if any(a.lower() in j.lower() for a in note.affects_fields)
+        )
+        if hit_judgment:
+            return True
+        if note.affects_fields and result.affected_item_ids:
+            hit_item = any(
+                a.lower() in it.name.lower()
+                for a in note.affects_fields
+                for it in pkg.items
+                if it.item_id in result.affected_item_ids
+            )
+            if hit_item:
+                return True
+        return False
+
+    def evaluate_note_impact(
         self,
         pkg: SamplePackage,
         base_results: List[CheckResult],
-    ) -> Tuple[List[CheckResult], List[StageChannelImpact]]:
-        stage_notes = [n for n in pkg.notes if n.note_type == NoteType.STAGE_CHANNEL]
-        if not stage_notes:
+    ) -> Tuple[List[CheckResult], List[NoteImpact]]:
+        applicable_notes = [
+            n for n in pkg.notes if n.note_type in OVERRIDE_NOTE_TYPES
+        ]
+        if not applicable_notes:
             return list(base_results), []
 
-        impacts: List[StageChannelImpact] = []
+        impacts: List[NoteImpact] = []
         new_results: List[CheckResult] = []
-        note_ids_used = {n.note_id for n in stage_notes}
 
         for r in base_results:
             r_copy = CheckResult(
@@ -176,64 +218,52 @@ class SampleAnomalyDetector:
                 related_judgments=list(r.related_judgments),
             )
 
-            judgment_overridden = False
-            for note in stage_notes:
-                if not note.affects_fields:
-                    continue
-                hit = any(
-                    j for j in r.related_judgments
-                    if any(a in j for a in note.affects_fields)
-                )
-                if not hit and r.affected_item_ids:
-                    pass
-                hit = hit or (
-                    note.affects_fields
-                    and r.affected_item_ids
-                    and any(
-                        a.lower() in it.name.lower()
-                        for a in note.affects_fields
-                        for it in pkg.items
-                        if it.item_id in r.affected_item_ids
-                    )
-                )
-                if not hit:
+            for note in applicable_notes:
+                if not self._note_matches_result(note, r, pkg):
                     continue
 
+                label = NOTE_LABEL.get(note.note_type, "备注")
                 old_status = r_copy.status
+
                 if r_copy.status in (CheckStatus.WARNING, CheckStatus.FAIL):
                     r_copy.status = CheckStatus.PASS
                     r_copy.changed_by_note_ids.append(note.note_id)
                     r_copy.related_judgments.append(
-                        f"stage_channel_override_{note.note_id}"
+                        f"{note.note_type.value}_override_{note.note_id}"
                     )
-                    judgment_overridden = True
 
-                    impacts.append(StageChannelImpact(
+                    impacts.append(NoteImpact(
                         note_id=note.note_id,
+                        note_type=note.note_type,
                         note_content=note.content,
-                        judgments_altered=r.related_judgments,
+                        author=note.author,
+                        judgments_altered=list(r.related_judgments),
                         before_status=old_status,
                         after_status=r_copy.status,
+                        action="override",
                     ))
                     r_copy.detail += (
-                        f" 【舞台通道备注覆盖】备注#{note.note_id[:6]} "
+                        f" 【{label}覆盖】备注#{note.note_id[:6]} "
                         f"（{note.author}）：{note.content}；"
                         f"原判定 {old_status.value} → {r_copy.status.value}。"
                     )
                 elif r_copy.status == CheckStatus.HANG:
                     r_copy.changed_by_note_ids.append(note.note_id)
                     r_copy.related_judgments.append(
-                        f"stage_channel_flagged_{note.note_id}"
+                        f"{note.note_type.value}_flagged_{note.note_id}"
                     )
-                    impacts.append(StageChannelImpact(
+                    impacts.append(NoteImpact(
                         note_id=note.note_id,
+                        note_type=note.note_type,
                         note_content=note.content,
-                        judgments_altered=r.related_judgments,
+                        author=note.author,
+                        judgments_altered=list(r.related_judgments),
                         before_status=old_status,
                         after_status=r_copy.status,
+                        action="flag_hang",
                     ))
                     r_copy.detail += (
-                        f" 【舞台通道备注关联】备注#{note.note_id[:6]} "
+                        f" 【{label}关联】备注#{note.note_id[:6]} "
                         f"（{note.author}）：{note.content}；"
                         f"本项涉及挂起结论，仍保留 HANG 状态供主管确认，"
                         f"但已记录与该备注关联。"
@@ -241,22 +271,30 @@ class SampleAnomalyDetector:
 
             new_results.append(r_copy)
 
-        # 附加一条汇总结果，说明舞台通道备注改变了哪些判断
         if impacts:
-            summary_lines = []
+            by_type: dict = {}
             for imp in impacts:
-                summary_lines.append(
-                    f"备注#{imp.note_id[:6]}[{imp.note_content[:30]}] 覆盖 "
-                    f"{imp.judgments_altered}："
-                    f"{imp.before_status.value}→{imp.after_status.value}"
-                )
-            new_results.append(CheckResult(
-                status=CheckStatus.PASS,
-                title="舞台通道表备注：判断影响说明",
-                detail="；".join(summary_lines),
-                changed_by_note_ids=list(note_ids_used),
-                related_judgments=["stage_channel_summary"],
-            ))
+                by_type.setdefault(imp.note_type, []).append(imp)
+
+            for ntype, imps in by_type.items():
+                label = NOTE_LABEL.get(ntype, "备注")
+                summary_lines = []
+                all_note_ids = set()
+                for imp in imps:
+                    all_note_ids.add(imp.note_id)
+                    verb = "覆盖" if imp.action == "override" else "关联"
+                    summary_lines.append(
+                        f"备注#{imp.note_id[:6]}[{imp.note_content[:30]}] "
+                        f"{verb} {imp.judgments_altered}："
+                        f"{imp.before_status.value}→{imp.after_status.value}"
+                    )
+                new_results.append(CheckResult(
+                    status=CheckStatus.PASS,
+                    title=f"{label}：判断影响说明",
+                    detail="；".join(summary_lines),
+                    changed_by_note_ids=list(all_note_ids),
+                    related_judgments=[f"{ntype.value}_summary"],
+                ))
 
         return new_results, impacts
 
@@ -311,10 +349,18 @@ class SampleAnomalyDetector:
 
         base_results = basic + tc_normal + tc_hang
 
-        final_results, impacts = self.evaluate_stage_channel_impact(
+        final_results, impacts = self.evaluate_note_impact(
             pkg, base_results
         )
-        record.stage_channel_note_applied = len(impacts) > 0
+        record.stage_channel_note_applied = any(
+            imp.note_type == NoteType.STAGE_CHANNEL for imp in impacts
+        )
+        record.teacher_edit_applied = any(
+            imp.note_type == NoteType.TEACHER_EDIT for imp in impacts
+        )
+        record.rehearsal_note_applied = any(
+            imp.note_type == NoteType.REHEARSAL for imp in impacts
+        )
 
         for r in final_results:
             record.results.append(r)

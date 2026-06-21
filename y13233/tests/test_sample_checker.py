@@ -257,5 +257,99 @@ def test_handoff_shows_history_not_just_final():
     assert "法务" in summary or "小陈" in summary or "版权" in summary
 
 
+def test_teacher_edit_truly_overrides_warning():
+    """核心业务路径：林姐 TEACHER_EDIT 备注必须真实把 WARNING 改成 PASS，不能只留痕。"""
+    pkg = make_pkg()
+    detector = SampleAnomalyDetector()
+
+    # 加备注前先扫一次，确认有 WARNING
+    rec_before = detector.scan(pkg, "测试员")
+    snare_before = [
+        r for r in rec_before.results
+        if "时长过短" in r.title
+    ]
+    assert len(snare_before) >= 1
+    assert snare_before[0].status == CheckStatus.WARNING
+    assert rec_before.teacher_edit_applied is False
+
+    # 加林姐 TEACHER_EDIT 备注
+    teacher_note = Note(
+        note_type=NoteType.TEACHER_EDIT,
+        content="林姐：b.wav 时长故意短，不要报警",
+        author="音乐老师·林姐",
+        affects_fields=["duration_min"],
+    )
+    pkg.add_note(teacher_note)
+
+    rec_after = detector.scan(pkg, "测试员")
+    snare_after = [
+        r for r in rec_after.results
+        if "时长过短" in r.title
+    ]
+    assert len(snare_after) >= 1
+    # 必须真实改成 PASS，不能只在交接摘要里留痕
+    assert snare_after[0].status == CheckStatus.PASS, (
+        f"TEACHER_EDIT 必须把 WARNING 改成 PASS，实际={snare_after[0].status}"
+    )
+    assert teacher_note.note_id in snare_after[0].changed_by_note_ids
+    assert "音乐老师改判覆盖" in snare_after[0].detail
+    assert rec_after.teacher_edit_applied is True
+
+    # 必须有独立的「音乐老师改判：判断影响说明」汇总
+    teacher_summary = [
+        r for r in rec_after.results
+        if "音乐老师改判" in r.title and "判断影响说明" in r.title
+    ]
+    assert len(teacher_summary) == 1
+    assert "duration_min" in teacher_summary[0].detail
+
+
+def test_rehearsal_note_overrides_warning_too():
+    """排练确认备注同样要能覆盖 WARNING。"""
+    pkg = make_pkg()
+    detector = SampleAnomalyDetector()
+
+    rehearsal_note = Note(
+        note_type=NoteType.REHEARSAL,
+        content="彩排确认：b.wav 短时长是故意设计",
+        author="运营主管·老赵",
+        affects_fields=["duration_min"],
+    )
+    pkg.add_note(rehearsal_note)
+
+    rec = detector.scan(pkg, "测试员")
+    assert rec.rehearsal_note_applied is True
+    snare = [r for r in rec.results if "时长过短" in r.title][0]
+    assert snare.status == CheckStatus.PASS
+    assert "排练确认覆盖" in snare.detail
+
+    rehearsal_summary = [
+        r for r in rec.results
+        if "排练确认" in r.title and "判断影响说明" in r.title
+    ]
+    assert len(rehearsal_summary) == 1
+
+
+def test_teacher_edit_does_not_clear_hang():
+    """TEACHER_EDIT 也不能硬清 HANG，只能关联。"""
+    pkg = make_pkg()
+    pkg.items[1].timecode_offset_beats = 0.5
+    detector = SampleAnomalyDetector()
+
+    teacher_note = Note(
+        note_type=NoteType.TEACHER_EDIT,
+        content="林姐：半拍是故意的，但是仍需要主管确认",
+        author="音乐老师·林姐",
+        affects_fields=["timecode_half_beat_hang"],
+    )
+    pkg.add_note(teacher_note)
+
+    rec = detector.scan(pkg, "测试员")
+    hangs = [r for r in rec.results if r.status == CheckStatus.HANG]
+    assert len(hangs) >= 1, "TEACHER_EDIT 不能清 HANG"
+    assert teacher_note.note_id in hangs[0].changed_by_note_ids
+    assert "音乐老师改判关联" in hangs[0].detail
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

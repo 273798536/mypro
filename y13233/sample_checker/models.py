@@ -121,6 +121,8 @@ class DetectionRecord:
     results: List[CheckResult] = field(default_factory=list)
     note_signatures_seen: List[str] = field(default_factory=list)
     stage_channel_note_applied: bool = False
+    teacher_edit_applied: bool = False
+    rehearsal_note_applied: bool = False
     manual_annotations: List[str] = field(default_factory=list)
     package_version: str = ""
     checklist: Optional[DeliveryChecklist] = None
@@ -136,6 +138,8 @@ class DetectionRecord:
             "results": [r.to_dict() for r in self.results],
             "note_signatures_seen": self.note_signatures_seen,
             "stage_channel_note_applied": self.stage_channel_note_applied,
+            "teacher_edit_applied": self.teacher_edit_applied,
+            "rehearsal_note_applied": self.rehearsal_note_applied,
             "manual_annotations": self.manual_annotations,
             "package_version": self.package_version,
             "checklist": self.checklist.to_dict() if self.checklist else None,

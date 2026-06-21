@@ -11,7 +11,7 @@ from .models import (
     VersionedState,
 )
 from .idempotency import IdempotencyGuard
-from .detector import SampleAnomalyDetector
+from .detector import SampleAnomalyDetector, NoteImpact
 from .history import HistoryTracker
 from .cross_validate import CrossValidator
 
@@ -28,6 +28,7 @@ __all__ = [
     "VersionedState",
     "IdempotencyGuard",
     "SampleAnomalyDetector",
+    "NoteImpact",
     "HistoryTracker",
     "CrossValidator",
 ]

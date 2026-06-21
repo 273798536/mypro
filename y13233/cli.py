@@ -99,6 +99,8 @@ def print_record(record, title="扫描结果"):
     print(f"包ID   : {record.package_id}")
     print(f"扫描时间: {record.scanned_at}   操作人: {record.operator or '（未填）'}")
     print(f"舞台通道备注已应用: {record.stage_channel_note_applied}")
+    print(f"音乐老师改判已应用: {record.teacher_edit_applied}")
+    print(f"排练确认备注已应用: {record.rehearsal_note_applied}")
     print(f"备注签名数 (已去重): {len(record.note_signatures_seen)}")
     print()
     print("-- 检测条目 --")
