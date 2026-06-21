@@ -1,0 +1,20 @@
+{
+  "7ff77516-f9f8-4e1b-8fea-4bc3253410ae": {
+    "review_time": "2026-06-21T17:52:41.093088",
+    "status": "异常-需立即处理",
+    "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+    "annotation": null,
+    "previous_review_id": null,
+    "delivery_list_version": null,
+    "has_anomalies": true
+  },
+  "5bf742eb-5e02-4e5b-8fb1-9dec155a9a07": {
+    "review_time": "2026-06-21T17:53:14.083887",
+    "status": "异常-需立即处理",
+    "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+    "annotation": "排练认领完成",
+    "previous_review_id": "7ff77516-f9f8-4e1b-8fea-4bc3253410ae",
+    "delivery_list_version": "v1.1",
+    "has_anomalies": true
+  }
+}

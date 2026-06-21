@@ -1,4 +1,5 @@
 import hashlib
+import os
 import uuid
 from datetime import datetime
 from typing import List, Dict, Tuple
@@ -10,13 +11,60 @@ from .models import (
 from .rules import DEFAULT_CALCULATION_RULE
 
 
+class InvalidFolderPathError(Exception):
+    pass
+
+
+def _validate_entry_consistency(folder_path: str, folder_name: str,
+                                parsed_folder: AudioFolder) -> List[Anomaly]:
+    anomalies: List[Anomaly] = []
+    abs_input = os.path.abspath(folder_path)
+
+    if parsed_folder.folder_path != abs_input:
+        anomalies.append(Anomaly(
+            anomaly_type="入口-记录不一致",
+            severity="critical",
+            message=f"入口路径与解析记录路径不一致，请排查: 入口={abs_input} vs 解析={parsed_folder.folder_path}",
+            folder_path=abs_input,
+            file_name=folder_name,
+            raw_line=0,
+            field_name="folder_path",
+            expected=abs_input,
+            actual=parsed_folder.folder_path
+        ))
+
+    if not folder_name:
+        anomalies.append(Anomaly(
+            anomaly_type="入口字段缺失",
+            severity="high",
+            message="folder_name 为空，无法归档和后续比对",
+            folder_path=abs_input,
+            file_name=folder_name or "未命名",
+            raw_line=0,
+            field_name="folder_name"
+        ))
+
+    if len(parsed_folder.raw_content) == 0:
+        anomalies.append(Anomaly(
+            anomaly_type="记录文件为空",
+            severity="critical",
+            message="记录文件读取后为空，无任何行内容",
+            folder_path=abs_input,
+            file_name=folder_name,
+            raw_line=0
+        ))
+
+    return anomalies
+
+
 def _deterministic_variation(seed_key: str, idx: int, lo: float, hi: float) -> float:
     digest = hashlib.sha256(f"{seed_key}|{idx}|{lo}|{hi}".encode("utf-8")).digest()
     raw = int.from_bytes(digest[:8], "big") / (1 << 64)
     return round(lo + raw * (hi - lo), 4)
 
 
-def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule) -> Tuple[ProgressMetrics, List[Anomaly]]:
+def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule,
+                               source_folder_path: str) -> Tuple[ProgressMetrics, List[Anomaly]]:
     anomalies: List[Anomaly] = []
     thresholds = rule.thresholds
 
@@ -45,7 +93,7 @@ def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule) -> 
             anomaly_type="分数异常-过高",
             severity="medium",
             message="各项指标异常偏高，接近满分，需人工复核是否为测试样本或数据异常",
-            folder_path=audio_file.file_path,
+            folder_path=source_folder_path,
             file_name=audio_file.filename,
             raw_line=audio_file.raw_line,
             field_name="overall_score",
@@ -62,7 +110,7 @@ def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule) -> 
             anomaly_type="分数异常-过低",
             severity="medium",
             message="各项指标异常偏低，需确认学生状态或录音质量",
-            folder_path=audio_file.file_path,
+            folder_path=source_folder_path,
             file_name=audio_file.filename,
             raw_line=audio_file.raw_line,
             field_name="overall_score",
@@ -84,7 +132,7 @@ def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule) -> 
             anomaly_type="总分异常",
             severity="low",
             message=f"总分{round(overall, 1)}分超过警戒值{thresholds['suspicious_high']}，建议复核",
-            folder_path=audio_file.file_path,
+            folder_path=source_folder_path,
             file_name=audio_file.filename,
             raw_line=audio_file.raw_line,
             field_name="overall_score"
@@ -101,7 +149,7 @@ def _generate_metrics_for_file(audio_file: AudioFile, rule: CalculationRule) -> 
     return metrics, anomalies
 
 
-def _check_duplicates(files: List[AudioFile]) -> List[Anomaly]:
+def _check_duplicates(files: List[AudioFile], source_folder_path: str) -> List[Anomaly]:
     anomalies: List[Anomaly] = []
     seen: Dict[str, List[AudioFile]] = {}
 
@@ -120,7 +168,7 @@ def _check_duplicates(files: List[AudioFile]) -> List[Anomaly]:
                     anomaly_type="重复记录",
                     severity="low",
                     message=f"检测到重复记录: {key}，共{len(group)}条",
-                    folder_path=f.file_path,
+                    folder_path=source_folder_path,
                     file_name=f.filename,
                     raw_line=f.raw_line,
                     field_name="综合字段"
@@ -176,19 +224,25 @@ def run_review(folder_path: str, folder_name: str,
                previous_review_id: str = None,
                annotation: str = None,
                delivery_list_version: str = None) -> ReviewResult:
+    from .parser import parse_audio_folder, InvalidFolderPathError as ParserPathError
 
-    from .parser import parse_audio_folder
+    abs_folder_path = os.path.abspath(folder_path) if folder_path else ""
 
-    folder, parse_anomalies = parse_audio_folder(folder_path, folder_name)
+    try:
+        folder, parse_anomalies = parse_audio_folder(abs_folder_path if abs_folder_path else folder_path, folder_name)
+    except ParserPathError as e:
+        raise InvalidFolderPathError(str(e)) from e
 
     all_anomalies: List[Anomaly] = list(parse_anomalies)
+    all_anomalies.extend(_validate_entry_consistency(abs_folder_path, folder_name, folder))
+
     progress_records: List[StudentProgress] = []
 
     for audio_file in folder.files:
         if not audio_file.student_name or not audio_file.teacher_name:
             continue
 
-        metrics, metric_anomalies = _generate_metrics_for_file(audio_file, calculation_rule)
+        metrics, metric_anomalies = _generate_metrics_for_file(audio_file, calculation_rule, abs_folder_path)
         all_anomalies.extend(metric_anomalies)
 
         notes = None
@@ -201,7 +255,7 @@ def run_review(folder_path: str, folder_name: str,
             student_name=audio_file.student_name,
             teacher_name=audio_file.teacher_name,
             lesson_date=audio_file.lesson_date,
-            folder_path=folder_path,
+            folder_path=abs_folder_path,
             metrics=metrics,
             track_name=audio_file.track_name or "未填写",
             audio_file=audio_file.filename,
@@ -209,8 +263,8 @@ def run_review(folder_path: str, folder_name: str,
             notes=notes
         ))
 
-    all_anomalies.extend(_check_duplicates(folder.files))
-    all_anomalies.extend(_check_progress_trend(progress_records, folder_path))
+    all_anomalies.extend(_check_duplicates(folder.files, abs_folder_path))
+    all_anomalies.extend(_check_progress_trend(progress_records, abs_folder_path))
 
     valid_files = len([f for f in folder.files if not f.is_master_tape and f.student_name and f.teacher_name])
     invalid_files = len(folder.files) - valid_files
@@ -238,7 +292,7 @@ def run_review(folder_path: str, folder_name: str,
         anomalies=all_anomalies,
         progress_records=progress_records,
         calculation_rule=calculation_rule,
-        folder_path=folder_path,
+        folder_path=abs_folder_path,
         annotation=annotation,
         delivery_list_version=delivery_list_version,
         previous_review_id=previous_review_id

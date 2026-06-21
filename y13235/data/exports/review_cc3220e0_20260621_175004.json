@@ -1,0 +1,470 @@
+{
+  "exported_at": "2026-06-21T17:50:04.941343",
+  "export_type": "full_review_export",
+  "chart": {
+    "review_id": "cc3220e0-941a-4407-a909-d420988368a4",
+    "calculation_rule": {
+      "name": "琴房课时进步评分规则",
+      "version": "v1.0",
+      "thresholds": {
+        "excellent": 90.0,
+        "good": 75.0,
+        "pass": 60.0,
+        "suspicious_low": 40.0,
+        "suspicious_high": 98.0
+      }
+    },
+    "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+    "status": "异常-需立即处理",
+    "students": [
+      {
+        "student_name": "小明",
+        "teacher_name": "王老师",
+        "track_name": "拜厄练习曲No.8",
+        "audio_file": "001_小明_拜厄练习曲_No8.wav",
+        "raw_line": 4,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 85.23,
+          "pitch_accuracy": 83.96,
+          "rhythm_stability": 82.88,
+          "expression_score": 90.14,
+          "overall_score": 85.0
+        },
+        "notes": null,
+        "has_anomaly": true,
+        "anomaly_refs": [
+          "重复记录"
+        ]
+      },
+      {
+        "student_name": "小红",
+        "teacher_name": "李老师",
+        "track_name": "哈农练指No.12",
+        "audio_file": "002_小红_哈农练指_No12.wav",
+        "raw_line": 5,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 76.98,
+          "pitch_accuracy": 78.58,
+          "rhythm_stability": 74.05,
+          "expression_score": 81.51,
+          "overall_score": 77.41
+        },
+        "notes": null,
+        "has_anomaly": false,
+        "anomaly_refs": []
+      },
+      {
+        "student_name": "小刚",
+        "teacher_name": "王老师",
+        "track_name": "车尔尼599No.25",
+        "audio_file": "003_小刚_车尔尼599_No25.wav",
+        "raw_line": 6,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 65.27,
+          "pitch_accuracy": 71.91,
+          "rhythm_stability": 67.16,
+          "expression_score": 71.9,
+          "overall_score": 68.73
+        },
+        "notes": null,
+        "has_anomaly": true,
+        "anomaly_refs": [
+          "进步异常-倒退"
+        ]
+      },
+      {
+        "student_name": "小明",
+        "teacher_name": "王老师",
+        "track_name": "巴赫初级No.1",
+        "audio_file": "004_小明_巴赫初级_No1.wav",
+        "raw_line": 7,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 74.13,
+          "pitch_accuracy": 72.02,
+          "rhythm_stability": 73.44,
+          "expression_score": 71.96,
+          "overall_score": 73.0
+        },
+        "notes": null,
+        "has_anomaly": false,
+        "anomaly_refs": []
+      },
+      {
+        "student_name": "小红",
+        "teacher_name": "李老师",
+        "track_name": "贝多芬小奏鸣曲第一乐章",
+        "audio_file": "005_小红_贝多芬小奏鸣曲.wav",
+        "raw_line": 8,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 78.42,
+          "pitch_accuracy": 76.41,
+          "rhythm_stability": 74.0,
+          "expression_score": 84.94,
+          "overall_score": 77.69
+        },
+        "notes": null,
+        "has_anomaly": false,
+        "anomaly_refs": []
+      },
+      {
+        "student_name": "全体",
+        "teacher_name": "张主任",
+        "track_name": "毕业音乐会合辑",
+        "audio_file": "006_旧版母带_2023级毕业音乐会.wav",
+        "raw_line": 10,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 87.53,
+          "pitch_accuracy": 89.7,
+          "rhythm_stability": 93.21,
+          "expression_score": 87.04,
+          "overall_score": 89.53
+        },
+        "notes": "【旧版母带，不计入正常课时统计】",
+        "has_anomaly": true,
+        "anomaly_refs": [
+          "旧版母带混入"
+        ]
+      },
+      {
+        "student_name": "小明",
+        "teacher_name": "王老师",
+        "track_name": "测试曲目",
+        "audio_file": "008_小明_极端高分_测试样本.wav",
+        "raw_line": 12,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 99.63,
+          "pitch_accuracy": 98.5,
+          "rhythm_stability": 99.43,
+          "expression_score": 98.66,
+          "overall_score": 99.09
+        },
+        "notes": null,
+        "has_anomaly": true,
+        "anomaly_refs": [
+          "分数异常-过高",
+          "总分异常"
+        ]
+      },
+      {
+        "student_name": "小红",
+        "teacher_name": "李老师",
+        "track_name": "复习曲目",
+        "audio_file": "009_小红_极端低分_状态不好.wav",
+        "raw_line": 13,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 28.34,
+          "pitch_accuracy": 33.46,
+          "rhythm_stability": 18.89,
+          "expression_score": 22.52,
+          "overall_score": 26.64
+        },
+        "notes": null,
+        "has_anomaly": true,
+        "anomaly_refs": [
+          "分数异常-过低"
+        ]
+      },
+      {
+        "student_name": "小刚",
+        "teacher_name": "赵指挥",
+        "track_name": "乐队合练片段",
+        "audio_file": "010_小刚_乐队排练_授权使用.wav",
+        "raw_line": 15,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 81.0,
+          "pitch_accuracy": 82.56,
+          "rhythm_stability": 77.71,
+          "expression_score": 80.28,
+          "overall_score": 80.54
+        },
+        "notes": "【排练/授权使用，需额外确认】",
+        "has_anomaly": false,
+        "anomaly_refs": []
+      },
+      {
+        "student_name": "小明",
+        "teacher_name": "王老师",
+        "track_name": "拜厄练习曲No.8",
+        "audio_file": "011_小明_重复上传_同001.wav",
+        "raw_line": 16,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 77.2,
+          "pitch_accuracy": 79.78,
+          "rhythm_stability": 77.9,
+          "expression_score": 86.87,
+          "overall_score": 79.6
+        },
+        "notes": null,
+        "has_anomaly": true,
+        "anomaly_refs": [
+          "重复记录"
+        ]
+      },
+      {
+        "student_name": "小红",
+        "teacher_name": "李老师",
+        "track_name": "未来日期",
+        "audio_file": "013_小红_日期异常.wav",
+        "raw_line": 19,
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "metrics": {
+          "tempo_accuracy": 77.62,
+          "pitch_accuracy": 81.12,
+          "rhythm_stability": 78.13,
+          "expression_score": 86.2,
+          "overall_score": 80.09
+        },
+        "notes": null,
+        "has_anomaly": true,
+        "anomaly_refs": [
+          "日期异常"
+        ]
+      }
+    ],
+    "anomalies": [
+      {
+        "anomaly_type": "旧版母带混入",
+        "severity": "critical",
+        "message": "检测到旧版母带混入，版本: v2023-master，该记录不应计入正常课时复核",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "006_旧版母带_2023级毕业音乐会.wav",
+        "raw_line": 10,
+        "field_name": "is_master_tape",
+        "expected": "false（课时录音）",
+        "actual": "true（母带录音）",
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 10,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "缺失字段",
+        "severity": "high",
+        "message": "学生姓名为空",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "007_小刚_坏数据_缺失字段.wav",
+        "raw_line": 11,
+        "field_name": "student_name",
+        "expected": null,
+        "actual": null,
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 11,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "缺失字段",
+        "severity": "medium",
+        "message": "曲目名称为空",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "007_小刚_坏数据_缺失字段.wav",
+        "raw_line": 11,
+        "field_name": "track_name",
+        "expected": null,
+        "actual": null,
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 11,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "格式错误",
+        "severity": "high",
+        "message": "字段数量不足，预期9个字段，实际1个",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "第18行",
+        "raw_line": 18,
+        "field_name": "整体格式",
+        "expected": null,
+        "actual": "格式错误这一行没有分隔符内容混乱15",
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 18,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "日期异常",
+        "severity": "medium",
+        "message": "日期超出合理范围: 2099-01-15",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "013_小红_日期异常.wav",
+        "raw_line": 19,
+        "field_name": "lesson_date",
+        "expected": "2000-2030年间的有效日期",
+        "actual": "2099-01-15",
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 19,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "日期格式错误",
+        "severity": "high",
+        "message": "日期格式无效: 2026/15/99",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "014_小刚_日期格式错误.wav",
+        "raw_line": 20,
+        "field_name": "lesson_date",
+        "expected": "YYYY-MM-DD格式",
+        "actual": "2026/15/99",
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 20,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "分数异常-过高",
+        "severity": "medium",
+        "message": "各项指标异常偏高，接近满分，需人工复核是否为测试样本或数据异常",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "008_小明_极端高分_测试样本.wav",
+        "raw_line": 12,
+        "field_name": "overall_score",
+        "expected": "< 98.0",
+        "actual": 99.09,
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 12,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "总分异常",
+        "severity": "low",
+        "message": "总分99.1分超过警戒值98.0，建议复核",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "008_小明_极端高分_测试样本.wav",
+        "raw_line": 12,
+        "field_name": "overall_score",
+        "expected": null,
+        "actual": null,
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 12,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "分数异常-过低",
+        "severity": "medium",
+        "message": "各项指标异常偏低，需确认学生状态或录音质量",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "009_小红_极端低分_状态不好.wav",
+        "raw_line": 13,
+        "field_name": "overall_score",
+        "expected": "> 40.0",
+        "actual": 26.64,
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 13,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "重复记录",
+        "severity": "low",
+        "message": "检测到重复记录: 小明|拜厄练习曲No.8|2026-06-15，共2条",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "001_小明_拜厄练习曲_No8.wav",
+        "raw_line": 4,
+        "field_name": "综合字段",
+        "expected": null,
+        "actual": null,
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 4,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "重复记录",
+        "severity": "low",
+        "message": "检测到重复记录: 小明|拜厄练习曲No.8|2026-06-15，共2条",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "011_小明_重复上传_同001.wav",
+        "raw_line": 16,
+        "field_name": "综合字段",
+        "expected": null,
+        "actual": null,
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 16,
+          "calculation_rule_version": "v1.0"
+        }
+      },
+      {
+        "anomaly_type": "进步异常-倒退",
+        "severity": "medium",
+        "message": "学生小刚成绩明显倒退(-11.8分)，需关注学习状态",
+        "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+        "file_name": "003_小刚_车尔尼599_No25.wav",
+        "raw_line": 6,
+        "field_name": "overall_score",
+        "expected": null,
+        "actual": null,
+        "click_back": {
+          "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+          "raw_line": 6,
+          "calculation_rule_version": "v1.0"
+        }
+      }
+    ],
+    "version_tracking": {
+      "current_review_id": "cc3220e0-941a-4407-a909-d420988368a4",
+      "previous_review_id": "3711cf22-25a2-4b0f-b78b-0dac172eeeec",
+      "annotation": "第15行是排练授权，L10母带已确认",
+      "delivery_list_version": "v1.2",
+      "review_time": "2026-06-21T17:50:04.940534",
+      "status": "异常-需立即处理",
+      "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+      "calculation_rule_version": "v1.0"
+    }
+  },
+  "raw_result": {
+    "review_id": "cc3220e0-941a-4407-a909-d420988368a4",
+    "review_time": "2026-06-21T17:50:04.940534",
+    "status": "异常-需立即处理",
+    "total_files": 11,
+    "valid_files": 10,
+    "invalid_files": 1,
+    "calculation_rule": {
+      "name": "琴房课时进步评分规则",
+      "version": "v1.0",
+      "description": "基于多维度音频特征评估学生课时进步情况",
+      "formula": {
+        "tempo_accuracy": "节拍偏差率的反向归一化，偏差越小得分越高",
+        "pitch_accuracy": "音准偏差半音数的反向归一化",
+        "rhythm_stability": "节奏波动系数的反向归一化",
+        "expression_score": "强弱动态变化幅度与参考曲线的匹配度",
+        "overall_score": "tempo*0.3 + pitch*0.3 + rhythm*0.25 + expression*0.15"
+      },
+      "thresholds": {
+        "excellent": 90.0,
+        "good": 75.0,
+        "pass": 60.0,
+        "suspicious_low": 40.0,
+        "suspicious_high": 98.0
+      }
+    },
+    "folder_path": "/Users/mac/pro/solo/workspaces/y13235/data/audio_folders/2026-06-15_琴房A_记录.txt",
+    "annotation": "第15行是排练授权，L10母带已确认",
+    "delivery_list_version": "v1.2",
+    "previous_review_id": "3711cf22-25a2-4b0f-b78b-0dac172eeeec"
+  }
+}

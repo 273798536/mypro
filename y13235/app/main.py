@@ -1,42 +1,74 @@
 from typing import List, Dict, Optional
 from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from .models import ReviewResult, AnnotationRequest, ReviewResponse
-from .review_engine import run_review
+from .review_engine import run_review, InvalidFolderPathError
 from .storage import review_store, folder_store
 from .rules import DEFAULT_CALCULATION_RULE
-from .parser import parse_audio_folder
+from .parser import parse_audio_folder, InvalidFolderPathError as ParserPathError
 from .chart_builder import build_chart_data, compare_versions
+from .exporter import (
+    export_review_json, export_progress_csv, export_anomalies_csv, save_exports_to_disk
+)
 
 app = FastAPI(title="琴房课时版本复核", version="1.0.0")
 
 
-@app.post("/api/review/start", response_model=ReviewResponse)
+def _build_export_info(result: ReviewResult) -> Dict:
+    try:
+        saved = save_exports_to_disk(result)
+    except Exception:
+        saved = {}
+    return {
+        "saved_files": saved,
+        "download": {
+            "json": f"/api/review/{result.review_id}/export/json",
+            "progress_csv": f"/api/review/{result.review_id}/export/progress.csv",
+            "anomalies_csv": f"/api/review/{result.review_id}/export/anomalies.csv"
+        }
+    }
+
+
+@app.post("/api/review/start")
 def start_review(
     folder_path: str = Query(..., description="音频文件夹记录文件路径"),
     folder_name: str = Query(..., description="文件夹名称标识")
 ):
-    existing = review_store.list_by_folder(folder_path)
-    previous_id = existing[0]["review_id"] if existing else None
+    try:
+        existing = review_store.list_by_folder(folder_path)
+        previous_id = existing[0]["review_id"] if existing else None
 
-    result = run_review(
-        folder_path=folder_path,
-        folder_name=folder_name,
-        previous_review_id=previous_id
-    )
+        result = run_review(
+            folder_path=folder_path,
+            folder_name=folder_name,
+            previous_review_id=previous_id
+        )
+    except (InvalidFolderPathError, ParserPathError) as e:
+        raise HTTPException(status_code=400, detail={
+            "code": "INVALID_FOLDER_PATH",
+            "message": str(e),
+            "hint": "请核对 folder_path 路径是否正确、文件是否存在且可读取，路径必须指向记录.txt文件"
+        })
 
     review_store.save(result)
+    export_info = _build_export_info(result)
 
-    return ReviewResponse(
-        review_id=result.review_id,
-        status=result.status,
-        review_time=result.review_time,
-        message=f"复核完成，状态: {result.status}，异常数: {len(result.anomalies)}"
-    )
+    return {
+        "review_id": result.review_id,
+        "status": result.status,
+        "review_time": result.review_time,
+        "folder_path": result.folder_path,
+        "total_files": result.total_files,
+        "valid_files": result.valid_files,
+        "invalid_files": result.invalid_files,
+        "anomalies_count": len(result.anomalies),
+        "message": f"复核完成，状态: {result.status}，异常数: {len(result.anomalies)}",
+        "exports": export_info
+    }
 
 
-@app.post("/api/review/rerun", response_model=ReviewResponse)
+@app.post("/api/review/rerun")
 def rerun_review(
     review_id: str = Query(..., description="要重跑的复核ID"),
     annotation: Optional[str] = Query(None, description="排练或授权备注"),
@@ -46,24 +78,38 @@ def rerun_review(
     if not existing:
         raise HTTPException(status_code=404, detail=f"复核记录 {review_id} 不存在")
 
-    prev_result = review_store.get(review_id)
-
-    result = run_review(
-        folder_path=existing.folder_path,
-        folder_name=existing.folder_path.split('/')[-1].replace('.txt', ''),
-        previous_review_id=review_id,
-        annotation=annotation,
-        delivery_list_version=delivery_list_version
-    )
+    folder_name = existing.folder_path.split('/')[-1].replace('.txt', '')
+    try:
+        result = run_review(
+            folder_path=existing.folder_path,
+            folder_name=folder_name,
+            previous_review_id=review_id,
+            annotation=annotation,
+            delivery_list_version=delivery_list_version
+        )
+    except (InvalidFolderPathError, ParserPathError) as e:
+        raise HTTPException(status_code=400, detail={
+            "code": "INVALID_FOLDER_PATH",
+            "message": str(e),
+            "hint": "旧版本的 folder_path 已失效，请重新通过 /api/review/start 启动复核"
+        })
 
     review_store.save(result)
+    export_info = _build_export_info(result)
 
-    return ReviewResponse(
-        review_id=result.review_id,
-        status=result.status,
-        review_time=result.review_time,
-        message=f"重跑完成，状态: {result.status}，基于旧版本: {review_id}"
-    )
+    return {
+        "review_id": result.review_id,
+        "status": result.status,
+        "review_time": result.review_time,
+        "previous_review_id": result.previous_review_id,
+        "folder_path": result.folder_path,
+        "annotation": result.annotation,
+        "delivery_list_version": result.delivery_list_version,
+        "anomalies_count": len(result.anomalies),
+        "message": f"重跑完成，状态: {result.status}，基于旧版本: {review_id}",
+        "exports": export_info
+    }
+
 
 
 @app.get("/api/review/{review_id}")
@@ -164,10 +210,18 @@ def scan_folder(
     folder_path: str = Query(..., description="音频文件夹记录文件路径"),
     folder_name: str = Query(..., description="文件夹名称标识")
 ):
-    folder, anomalies = parse_audio_folder(folder_path, folder_name)
+    try:
+        folder, anomalies = parse_audio_folder(folder_path, folder_name)
+    except ParserPathError as e:
+        raise HTTPException(status_code=400, detail={
+            "code": "INVALID_FOLDER_PATH",
+            "message": str(e),
+            "hint": "请核对 folder_path 路径是否正确、文件是否存在且可读取"
+        })
     folder_store.save(folder)
     return {
         "folder_name": folder.folder_name,
+        "folder_path": folder.folder_path,
         "total_files": len(folder.files),
         "scan_time": folder.scan_time,
         "parse_anomalies": anomalies,
@@ -187,3 +241,60 @@ def scan_folder(
 @app.get("/api/calculation-rule")
 def get_calculation_rule():
     return DEFAULT_CALCULATION_RULE
+
+
+@app.get("/api/review/{review_id}/export/json")
+def download_json(review_id: str):
+    result = review_store.get(review_id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"复核记录 {review_id} 不存在")
+    filename, content = export_review_json(result)
+    return Response(
+        content=content,
+        media_type="application/json; charset=utf-8",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{filename}"}
+    )
+
+
+@app.get("/api/review/{review_id}/export/progress.csv")
+def download_progress_csv(review_id: str):
+    result = review_store.get(review_id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"复核记录 {review_id} 不存在")
+    filename, content = export_progress_csv(result)
+    return Response(
+        content=content,
+        media_type="text/csv; charset=utf-8-sig",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{filename}"}
+    )
+
+
+@app.get("/api/review/{review_id}/export/anomalies.csv")
+def download_anomalies_csv(review_id: str):
+    result = review_store.get(review_id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"复核记录 {review_id} 不存在")
+    filename, content = export_anomalies_csv(result)
+    return Response(
+        content=content,
+        media_type="text/csv; charset=utf-8-sig",
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{filename}"}
+    )
+
+
+@app.get("/api/review/{review_id}/export")
+def list_exports(review_id: str):
+    result = review_store.get(review_id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"复核记录 {review_id} 不存在")
+    saved = save_exports_to_disk(result)
+    return {
+        "review_id": review_id,
+        "status": result.status,
+        "saved_files": saved,
+        "download_urls": {
+            "json": f"/api/review/{review_id}/export/json",
+            "progress_csv": f"/api/review/{review_id}/export/progress.csv",
+            "anomalies_csv": f"/api/review/{review_id}/export/anomalies.csv",
+        }
+    }
