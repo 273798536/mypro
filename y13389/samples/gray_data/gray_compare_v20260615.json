@@ -1,0 +1,93 @@
+{
+  "gray_run_id": "gray_v20260615_modelA_1pct",
+  "baseline_run_id": "baseline_v20260608_prod",
+  "target_run_id": "v20260615_modelA",
+  "gray_traffic_ratio": 0.01,
+  "gray_start_time": "2026-06-17T00:00:00Z",
+  "gray_end_time": "2026-06-17T23:59:59Z",
+  "baseline_period": {
+    "start": "2026-06-10T00:00:00Z",
+    "end": "2026-06-16T23:59:59Z"
+  },
+  "metrics": [
+    {
+      "metric": "auc",
+      "baseline_value": 0.829,
+      "baseline_sample_cnt": 1840000,
+      "target_offline_value": 0.872,
+      "target_expected_online": 0.841,
+      "target_gray_actual": 0.838,
+      "gray_sample_cnt": 21800,
+      "delta_expected_vs_baseline": 0.012,
+      "delta_actual_vs_expected": -0.003
+    },
+    {
+      "metric": "ks",
+      "baseline_value": 0.581,
+      "baseline_sample_cnt": 1840000,
+      "target_offline_value": 0.634,
+      "target_expected_online": 0.610,
+      "target_gray_actual": 0.604,
+      "gray_sample_cnt": 21800,
+      "delta_expected_vs_baseline": 0.029,
+      "delta_actual_vs_expected": -0.006
+    },
+    {
+      "metric": "psi_feature_uid_age",
+      "baseline_value": 0.078,
+      "baseline_threshold": 0.100,
+      "target_offline_value": 0.082,
+      "target_threshold": 0.100,
+      "target_gray_actual": 0.085,
+      "baseline_judgement": "PASS",
+      "target_expected_judgement": "PASS",
+      "target_gray_actual_judgement": "PASS"
+    },
+    {
+      "metric": "psi_feature_uid_city",
+      "baseline_value": 0.094,
+      "baseline_threshold": 0.100,
+      "target_offline_value": 0.112,
+      "target_threshold": 0.100,
+      "target_gray_actual": 0.118,
+      "baseline_judgement": "PASS",
+      "target_expected_judgement": "FAIL",
+      "target_gray_actual_judgement": "FAIL",
+      "manual_override": {
+        "from": "FAIL",
+        "to": "PASS",
+        "reason": "618大促城市分布波动属于已知季节性，历史同期0.098-0.135",
+        "operator": "xiaolin",
+        "timestamp": "2026-06-17T11:02:18Z"
+      }
+    },
+    {
+      "metric": "psi_feature_uid_level",
+      "baseline_value": 0.062,
+      "baseline_threshold": 0.100,
+      "target_offline_value": 0.167,
+      "target_threshold": 0.100,
+      "target_gray_actual": 0.172,
+      "baseline_judgement": "PASS",
+      "target_expected_judgement": "FAIL",
+      "target_gray_actual_judgement": "FAIL"
+    }
+  ],
+  "factor_breakdown_raw": {
+    "sample_change": {
+      "affected_metrics": ["auc", "ks"],
+      "explanation": "灰度期样本为1%流量(21800) vs 基线期全量(1840000)，样本缩窄导致AUC/Ks波动",
+      "baseline_to_target_expected_delta_attribution_pct": 62
+    },
+    "threshold_change": {
+      "affected_metrics": ["psi_feature_uid_city", "psi_feature_uid_level"],
+      "explanation": "PSI阈值从旧别名baseline_2026w24里的0.150统一收口为0.100，导致2个指标从PASS翻FAIL",
+      "baseline_to_target_expected_delta_attribution_pct": 31
+    },
+    "manual_override": {
+      "affected_metrics": ["psi_feature_uid_city"],
+      "explanation": "人工将psi_feature_uid_city由FAIL改判为PASS，618季节性波动豁免",
+      "baseline_to_target_expected_delta_attribution_pct": 7
+    }
+  }
+}

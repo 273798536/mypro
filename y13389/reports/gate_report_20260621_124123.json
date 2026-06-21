@@ -1,0 +1,578 @@
+{
+  "gate_version": "1.0.0",
+  "generated_at": "20260621_124123",
+  "material_paths": {
+    "training_logs_dir": "samples/training_logs/",
+    "alias_manifest": "samples/version_aliases/alias_manifest.json",
+    "gray_data_dir": "samples/gray_data/"
+  },
+  "how_to_rerun": "python drift_gate.py rerun",
+  "how_to_show": "python drift_gate.py show",
+  "steps": {
+    "STEP1_GOLDENSET_VERIFY": {
+      "step": "STEP1_GOLDENSET_VERIFY",
+      "pass": false,
+      "warnings": [
+        "别名[baseline_2026w24] 卡在 STEP3_ONLINE_ALIGN -> 卡在STEP-3 线上口径对齐",
+        "别名[threshold_profile_v3] 卡在 STEP2_THRESHOLD_LOAD -> 卡在STEP-2 阈值字典加载",
+        "别名[last_week_goldenset] 卡在 STEP1_GOLDENSET_VERIFY -> 卡在STEP-1 样本集解密校验"
+      ],
+      "alias_status": [
+        {
+          "alias_name": "baseline_2026w24",
+          "resolves_to_file": "samples/version_aliases/archived/v20260608_modelA_snapshot.tar.gz",
+          "is_stuck": true,
+          "stuck_step_code": "STEP3_ONLINE_ALIGN",
+          "stuck_step_name": "线上口径对齐 / 样本量与阈值统一",
+          "stuck_point": "卡在STEP-3 线上口径对齐",
+          "stuck_description": "线下训练集eval_sample_cnt为250000，但线上同期实际曝光去重后为242000，差8000条为AB测试平台预埋流量",
+          "impact_scope": [
+            "所有依赖eval_sample_cnt计算的rate类指标（precision/recall/auc归一化）",
+            "PSI分母口径：线下用250000，线上用242000，差3.2%",
+            "阈值参考：线上告警阈值为0.100，旧版本文件中写死为0.150"
+          ],
+          "source_refs": [
+            {
+              "file": "samples/training_logs/batch_1_train_metrics.jsonl",
+              "lines": [
+                2,
+                5,
+                6
+              ],
+              "comment": "这批日志的threshold和sample_cnt均为旧口径"
+            },
+            {
+              "file": "samples/training_logs/batch_2_calibration.jsonl",
+              "lines": [
+                1,
+                2,
+                3
+              ],
+              "comment": "小林6月16日补的口径对齐修正，注意supersedes关系"
+            }
+          ],
+          "blocked_by": null,
+          "blocked_by_chain": [],
+          "note": "此别名若直接用于守门对比，将导致离线指标高估约0.003-0.012，需先过STEP3校准再用"
+        },
+        {
+          "alias_name": "threshold_profile_v3",
+          "resolves_to_file": "samples/version_aliases/archived/psi_threshold_cfg_v3.2.1.yaml",
+          "is_stuck": true,
+          "stuck_step_code": "STEP2_THRESHOLD_LOAD",
+          "stuck_step_name": "阈值字典加载 / PSI阈值口径对齐",
+          "stuck_point": "卡在STEP-2 阈值字典加载",
+          "stuck_description": "该文件中psi_feature_uid_age与psi_feature_uid_city的阈值仍为0.150，与线上监控平台v3.3.0（阈值0.100）不兼容",
+          "impact_scope": [
+            "PSI类所有feature gate判断",
+            "batch_1日志因旧阈值全部PASS，实际应2个FAIL"
+          ],
+          "source_refs": [
+            {
+              "file": "samples/version_aliases/archived/psi_threshold_cfg_v3.2.1.yaml",
+              "lines": [
+                12,
+                15,
+                18
+              ],
+              "comment": "这三行的threshold: 0.150需改为0.100"
+            }
+          ],
+          "blocked_by": null,
+          "blocked_by_chain": [],
+          "note": "必须使用threshold_profile_v4或手动patch这三行，否则守门结果会漏报漂移"
+        },
+        {
+          "alias_name": "last_week_goldenset",
+          "resolves_to_file": "samples/version_aliases/archived/v20260601_modelA_golden.csv",
+          "is_stuck": true,
+          "stuck_step_code": "STEP1_GOLDENSET_VERIFY",
+          "stuck_step_name": "样本集解密校验 / 版本别名依赖链检查",
+          "stuck_point": "卡在STEP-1 样本集解密校验",
+          "stuck_description": "该文件依赖baseline_2026w24，而baseline_2026w24自身卡在STEP3未解除（循环依赖）",
+          "impact_scope": [
+            "golden set AUC基准值0.867不可用",
+            "所有与上周环比的delta计算"
+          ],
+          "source_refs": [
+            {
+              "file": "samples/version_aliases/archived/v20260601_modelA_golden.csv",
+              "lines": [
+                1,
+                2,
+                3
+              ],
+              "comment": "表头后的首行就是基于baseline_2026w24算出来的基准值"
+            }
+          ],
+          "blocked_by": "baseline_2026w24",
+          "blocked_by_chain": [
+            "baseline_2026w24"
+          ],
+          "note": "先解baseline_2026w24的STEP3，再重算golden set，或者跳过last_week_goldenset直接用batch_2_calibration后的数据做环比"
+        }
+      ]
+    },
+    "STEP2_THRESHOLD_LOAD": {
+      "step": "STEP2_THRESHOLD_LOAD",
+      "pass": false,
+      "warnings": [
+        "阈值别名[threshold_profile_v3] 未对齐线上 0.100，来源行见: samples/version_aliases/archived/psi_threshold_cfg_v3.2.1.yaml:L12,15,18"
+      ],
+      "threshold_mismatch": [
+        {
+          "alias_name": "threshold_profile_v3",
+          "resolves_to_file": "samples/version_aliases/archived/psi_threshold_cfg_v3.2.1.yaml",
+          "issue": "阈值文件未对齐线上 v3.3.0 (0.100)",
+          "source_refs": [
+            {
+              "file": "samples/version_aliases/archived/psi_threshold_cfg_v3.2.1.yaml",
+              "lines": [
+                12,
+                15,
+                18
+              ],
+              "comment": "这三行的threshold: 0.150需改为0.100"
+            }
+          ]
+        }
+      ]
+    },
+    "STEP3_ONLINE_ALIGN": {
+      "step": "STEP3_ONLINE_ALIGN",
+      "pass": false,
+      "warnings": [
+        "[baseline_2026w24] 口径未对齐: 所有依赖eval_sample_cnt计算的rate类指标（precision/recall/auc归一化）",
+        "[baseline_2026w24] 口径未对齐: PSI分母口径：线下用250000，线上用242000，差3.2%",
+        "[baseline_2026w24] 口径未对齐: 阈值参考：线上告警阈值为0.100，旧版本文件中写死为0.150"
+      ],
+      "misalignments": [
+        {
+          "alias_name": "baseline_2026w24",
+          "stuck_point": "卡在STEP-3 线上口径对齐",
+          "impact_scope": [
+            "所有依赖eval_sample_cnt计算的rate类指标（precision/recall/auc归一化）",
+            "PSI分母口径：线下用250000，线上用242000，差3.2%",
+            "阈值参考：线上告警阈值为0.100，旧版本文件中写死为0.150"
+          ],
+          "source_refs": [
+            {
+              "file": "samples/training_logs/batch_1_train_metrics.jsonl",
+              "lines": [
+                2,
+                5,
+                6
+              ],
+              "comment": "这批日志的threshold和sample_cnt均为旧口径"
+            },
+            {
+              "file": "samples/training_logs/batch_2_calibration.jsonl",
+              "lines": [
+                1,
+                2,
+                3
+              ],
+              "comment": "小林6月16日补的口径对齐修正，注意supersedes关系"
+            }
+          ]
+        }
+      ]
+    },
+    "STEP4_METRIC_MERGE": {
+      "step": "STEP4_METRIC_MERGE",
+      "pass": true,
+      "warnings": [
+        "指标[auc] 共被覆盖 1 次，历史版本见 reports superseded_chain",
+        "指标[psi_feature_uid_age] 共被覆盖 1 次，历史版本见 reports superseded_chain",
+        "指标[psi_feature_uid_city] 共被覆盖 2 次，历史版本见 reports superseded_chain"
+      ],
+      "batches_loaded": [
+        {
+          "file": "batch_1_train_metrics.jsonl",
+          "loaded_metric_count": 5,
+          "superseded_prior_entries": 0
+        },
+        {
+          "file": "batch_2_calibration.jsonl",
+          "loaded_metric_count": 3,
+          "superseded_prior_entries": 3
+        },
+        {
+          "file": "batch_3_manual_review.jsonl",
+          "loaded_metric_count": 3,
+          "superseded_prior_entries": 1
+        }
+      ],
+      "final_metrics": {
+        "auc": {
+          "offline_value": 0.872,
+          "online_expected": 0.841,
+          "source": "data_audit_pipeline",
+          "batch": 2,
+          "train_sample_cnt": 1250000,
+          "eval_sample_cnt": 242000,
+          "__source_file": "batch_2_calibration.jsonl",
+          "__source_line": 3
+        },
+        "ks": {
+          "offline_value": 0.634,
+          "online_expected": 0.61,
+          "source": "trainer_node_07",
+          "batch": 1,
+          "train_sample_cnt": 1250000,
+          "eval_sample_cnt": 250000,
+          "__source_file": "batch_1_train_metrics.jsonl",
+          "__source_line": 2
+        },
+        "precision_top1pct": {
+          "offline_value": 0.521,
+          "online_expected": 0.48,
+          "source": "trainer_node_07",
+          "batch": 1,
+          "train_sample_cnt": 1250000,
+          "eval_sample_cnt": 250000,
+          "__source_file": "batch_1_train_metrics.jsonl",
+          "__source_line": 3
+        },
+        "psi_feature_uid_age": {
+          "offline_value": 0.082,
+          "online_expected": 0.1,
+          "threshold": 0.1,
+          "source": "trainer_node_07",
+          "batch": 2,
+          "train_sample_cnt": 1250000,
+          "eval_sample_cnt": 250000,
+          "__source_file": "batch_2_calibration.jsonl",
+          "__source_line": 1
+        },
+        "psi_feature_uid_city": {
+          "offline_value": 0.112,
+          "online_expected": 0.12,
+          "threshold": 0.1,
+          "judgement": "PASS",
+          "judge_reason": "城市PSI偏高为618大促流量结构正常波动，历史同期波动区间0.098-0.135",
+          "source": "manual_review_xiaolin",
+          "batch": 3,
+          "train_sample_cnt": 1250000,
+          "eval_sample_cnt": 242000,
+          "__source_file": "batch_3_manual_review.jsonl",
+          "__source_line": 1
+        },
+        "psi_feature_uid_level": {
+          "offline_value": 0.167,
+          "online_expected": 0.09,
+          "threshold": 0.1,
+          "judgement": "FAIL",
+          "judge_reason": "新会员等级口径上线后分布偏移超阈值，需特征团队确认影响面",
+          "source": "manual_review_xiaolin",
+          "batch": 3,
+          "train_sample_cnt": 1250000,
+          "eval_sample_cnt": 242000,
+          "__source_file": "batch_3_manual_review.jsonl",
+          "__source_line": 2
+        },
+        "auc_gray_1pct": {
+          "offline_value": 0.872,
+          "source": "gray_eval_pipeline",
+          "batch": 3,
+          "train_sample_cnt": 1250000,
+          "eval_sample_cnt": 242000,
+          "gray_actual": 0.838,
+          "__source_file": "batch_3_manual_review.jsonl",
+          "__source_line": 3
+        }
+      },
+      "superseded_chain": {
+        "auc": [
+          {
+            "version": 1,
+            "value_snapshot": {
+              "offline_value": 0.872,
+              "online_expected": 0.855,
+              "source": "trainer_node_07",
+              "batch": 1
+            },
+            "source_ref": "batch_1_train_metrics.jsonl:L1",
+            "superseded_by_ref": "batch_2_calibration.jsonl:L3",
+            "supersedes_declared_in_new_row": "",
+            "note": ""
+          },
+          {
+            "version": 2,
+            "value_snapshot": {
+              "offline_value": 0.872,
+              "online_expected": 0.841,
+              "source": "data_audit_pipeline",
+              "batch": 2
+            },
+            "source_ref": "batch_2_calibration.jsonl:L3",
+            "superseded_by_ref": "",
+            "supersedes_declared_in_new_row": "batch_1_train_metrics.jsonl:2",
+            "note": "线上口径修正：去除测试流量占比3.2%，重新折算"
+          }
+        ],
+        "ks": [
+          {
+            "version": 1,
+            "value_snapshot": {
+              "offline_value": 0.634,
+              "online_expected": 0.61,
+              "source": "trainer_node_07",
+              "batch": 1
+            },
+            "source_ref": "batch_1_train_metrics.jsonl:L2",
+            "superseded_by_ref": "",
+            "supersedes_declared_in_new_row": "",
+            "note": ""
+          }
+        ],
+        "precision_top1pct": [
+          {
+            "version": 1,
+            "value_snapshot": {
+              "offline_value": 0.521,
+              "online_expected": 0.48,
+              "source": "trainer_node_07",
+              "batch": 1
+            },
+            "source_ref": "batch_1_train_metrics.jsonl:L3",
+            "superseded_by_ref": "",
+            "supersedes_declared_in_new_row": "",
+            "note": ""
+          }
+        ],
+        "psi_feature_uid_age": [
+          {
+            "version": 1,
+            "value_snapshot": {
+              "offline_value": 0.082,
+              "threshold": 0.15,
+              "online_expected": 0.1,
+              "source": "trainer_node_07",
+              "batch": 1
+            },
+            "source_ref": "batch_1_train_metrics.jsonl:L4",
+            "superseded_by_ref": "batch_2_calibration.jsonl:L1",
+            "supersedes_declared_in_new_row": "",
+            "note": ""
+          },
+          {
+            "version": 2,
+            "value_snapshot": {
+              "offline_value": 0.082,
+              "threshold": 0.1,
+              "online_expected": 0.1,
+              "source": "trainer_node_07",
+              "batch": 2
+            },
+            "source_ref": "batch_2_calibration.jsonl:L1",
+            "superseded_by_ref": "",
+            "supersedes_declared_in_new_row": "batch_1_train_metrics.jsonl:5",
+            "note": "threshold口径从0.150改为0.100，对齐线上告警阈值"
+          }
+        ],
+        "psi_feature_uid_city": [
+          {
+            "version": 1,
+            "value_snapshot": {
+              "offline_value": 0.112,
+              "threshold": 0.15,
+              "online_expected": 0.12,
+              "source": "trainer_node_07",
+              "batch": 1
+            },
+            "source_ref": "batch_1_train_metrics.jsonl:L5",
+            "superseded_by_ref": "batch_2_calibration.jsonl:L2",
+            "supersedes_declared_in_new_row": "",
+            "note": ""
+          },
+          {
+            "version": 2,
+            "value_snapshot": {
+              "offline_value": 0.112,
+              "threshold": 0.1,
+              "online_expected": 0.12,
+              "source": "trainer_node_07",
+              "batch": 2
+            },
+            "source_ref": "batch_2_calibration.jsonl:L2",
+            "superseded_by_ref": "batch_3_manual_review.jsonl:L1",
+            "supersedes_declared_in_new_row": "batch_1_train_metrics.jsonl:6",
+            "note": "threshold口径从0.150改为0.100，对齐线上告警阈值"
+          },
+          {
+            "version": 3,
+            "value_snapshot": {
+              "offline_value": 0.112,
+              "threshold": 0.1,
+              "online_expected": 0.12,
+              "judgement": "PASS",
+              "source": "manual_review_xiaolin",
+              "batch": 3
+            },
+            "source_ref": "batch_3_manual_review.jsonl:L1",
+            "superseded_by_ref": "",
+            "supersedes_declared_in_new_row": "batch_2_calibration.jsonl:3",
+            "note": "threshold口径从0.150改为0.100，对齐线上告警阈值"
+          }
+        ],
+        "psi_feature_uid_level": [
+          {
+            "version": 1,
+            "value_snapshot": {
+              "offline_value": 0.167,
+              "threshold": 0.1,
+              "online_expected": 0.09,
+              "judgement": "FAIL",
+              "source": "manual_review_xiaolin",
+              "batch": 3
+            },
+            "source_ref": "batch_3_manual_review.jsonl:L2",
+            "superseded_by_ref": "",
+            "supersedes_declared_in_new_row": "",
+            "note": ""
+          }
+        ],
+        "auc_gray_1pct": [
+          {
+            "version": 1,
+            "value_snapshot": {
+              "offline_value": 0.872,
+              "source": "gray_eval_pipeline",
+              "batch": 3
+            },
+            "source_ref": "batch_3_manual_review.jsonl:L3",
+            "superseded_by_ref": "",
+            "supersedes_declared_in_new_row": "",
+            "note": "灰度1%流量实测AUC，比预期0.841低0.003，归因：灰度期含部分爬虫流量"
+          }
+        ]
+      }
+    },
+    "STEP5_GRAY_BREAKDOWN": {
+      "step": "STEP5_GRAY_BREAKDOWN",
+      "pass": false,
+      "warnings": [
+        "灰度最终判定 FAIL: psi_feature_uid_level"
+      ],
+      "gray_run_id": "gray_v20260615_modelA_1pct",
+      "factors": {
+        "sample_change": {
+          "metrics": [
+            "auc",
+            "ks"
+          ],
+          "explanation": "灰度期样本为1%流量(21800) vs 基线期全量(1840000)，样本缩窄导致AUC/Ks波动",
+          "attribution_pct": 62,
+          "details": [
+            {
+              "metric": "auc",
+              "baseline_sample_cnt": 1840000,
+              "gray_sample_cnt": 21800,
+              "delta_expected_vs_baseline": 0.012,
+              "delta_actual_vs_expected": -0.003
+            },
+            {
+              "metric": "ks",
+              "baseline_sample_cnt": 1840000,
+              "gray_sample_cnt": 21800,
+              "delta_expected_vs_baseline": 0.029,
+              "delta_actual_vs_expected": -0.006
+            }
+          ]
+        },
+        "threshold_change": {
+          "metrics": [
+            "psi_feature_uid_city",
+            "psi_feature_uid_level"
+          ],
+          "explanation": "PSI阈值从旧别名baseline_2026w24里的0.150统一收口为0.100，导致2个指标从PASS翻FAIL",
+          "attribution_pct": 31,
+          "details": [
+            {
+              "metric": "psi_feature_uid_city",
+              "baseline_threshold": 0.1,
+              "target_threshold": 0.1,
+              "judgement_flip": "PASS→FAIL"
+            },
+            {
+              "metric": "psi_feature_uid_level",
+              "baseline_threshold": 0.1,
+              "target_threshold": 0.1,
+              "judgement_flip": "PASS→FAIL"
+            }
+          ]
+        },
+        "manual_override": {
+          "metrics": [
+            "psi_feature_uid_city"
+          ],
+          "explanation": "人工将psi_feature_uid_city由FAIL改判为PASS，618季节性波动豁免",
+          "attribution_pct": 7,
+          "details": [
+            {
+              "metric": "psi_feature_uid_city",
+              "from": "FAIL",
+              "to": "PASS",
+              "operator": "xiaolin",
+              "reason": "618大促城市分布波动属于已知季节性，历史同期0.098-0.135",
+              "timestamp": "2026-06-17T11:02:18Z"
+            }
+          ]
+        }
+      },
+      "metric_table": [
+        {
+          "metric": "auc",
+          "baseline": 0.829,
+          "target_expected": 0.841,
+          "target_gray_actual": 0.838,
+          "delta_sample_change_effect": -0.0030000000000000027,
+          "delta_threshold_change_effect": null,
+          "delta_manual_override_effect": null,
+          "final_judgement": null
+        },
+        {
+          "metric": "ks",
+          "baseline": 0.581,
+          "target_expected": 0.61,
+          "target_gray_actual": 0.604,
+          "delta_sample_change_effect": -0.006000000000000005,
+          "delta_threshold_change_effect": null,
+          "delta_manual_override_effect": null,
+          "final_judgement": null
+        },
+        {
+          "metric": "psi_feature_uid_age",
+          "baseline": 0.078,
+          "target_expected": "PASS",
+          "target_gray_actual": 0.085,
+          "delta_sample_change_effect": null,
+          "delta_threshold_change_effect": null,
+          "delta_manual_override_effect": null,
+          "final_judgement": "PASS"
+        },
+        {
+          "metric": "psi_feature_uid_city",
+          "baseline": 0.094,
+          "target_expected": "FAIL",
+          "target_gray_actual": 0.118,
+          "delta_sample_change_effect": null,
+          "delta_threshold_change_effect": "PASS→FAIL",
+          "delta_manual_override_effect": "FAIL→PASS (by xiaolin)",
+          "final_judgement": "PASS"
+        },
+        {
+          "metric": "psi_feature_uid_level",
+          "baseline": 0.062,
+          "target_expected": "FAIL",
+          "target_gray_actual": 0.172,
+          "delta_sample_change_effect": null,
+          "delta_threshold_change_effect": "PASS→FAIL",
+          "delta_manual_override_effect": null,
+          "final_judgement": "FAIL"
+        }
+      ]
+    }
+  }
+}

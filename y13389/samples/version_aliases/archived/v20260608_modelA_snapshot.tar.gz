@@ -1,0 +1,12 @@
+# archived baseline snapshot - placeholder for v20260608_modelA
+# 此文件为旧版本基线快照，对应别名 baseline_2026w24
+# 注意：本文件内 eval_sample_cnt=250000，与线上实际口径242000不符
+# 注意：本文件内 PSI 阈值写死为 0.150，与线上当前阈值 0.100 不符
+run_id,v20260608_modelA_snapshot
+eval_sample_cnt,250000
+auc,0.867
+ks,0.618
+psi_threshold_default,0.150
+psi_feature_uid_age,0.078
+psi_feature_uid_city,0.094
+psi_feature_uid_level,0.062

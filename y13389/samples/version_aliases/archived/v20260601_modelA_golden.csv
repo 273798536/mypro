@@ -1,0 +1,6 @@
+# golden set - placeholder, derived from baseline_2026w24
+# 对应别名 last_week_goldenset
+# 注意：L2-Ln 的基准 AUC 依赖 baseline_2026w24，若后者卡在 STEP3，则本文件值也不可信
+run_id,auc,ks,eval_sample_cnt,note
+v20260601_modelA,0.867,0.618,250000,baseline_from_baseline_2026w24
+v20260525_modelA,0.861,0.612,248000,previous_week

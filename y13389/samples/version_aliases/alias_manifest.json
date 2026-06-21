@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "aliases": [
+    {
+      "alias_name": "baseline_2026w24",
+      "resolves_to": "v20260608_modelA_snapshot",
+      "resolves_to_file": "samples/version_aliases/archived/v20260608_modelA_snapshot.tar.gz",
+      "last_confirmed_run": "2026-06-08T21:00:00Z",
+      "stuck_point": "卡在STEP-3 线上口径对齐",
+      "stuck_step_code": "STEP3_ONLINE_ALIGN",
+      "stuck_step_description": "线下训练集eval_sample_cnt为250000，但线上同期实际曝光去重后为242000，差8000条为AB测试平台预埋流量",
+      "impact_scope": [
+        "所有依赖eval_sample_cnt计算的rate类指标（precision/recall/auc归一化）",
+        "PSI分母口径：线下用250000，线上用242000，差3.2%",
+        "阈值参考：线上告警阈值为0.100，旧版本文件中写死为0.150"
+      ],
+      "source_refs": [
+        {
+          "file": "samples/training_logs/batch_1_train_metrics.jsonl",
+          "lines": [2, 5, 6],
+          "comment": "这批日志的threshold和sample_cnt均为旧口径"
+        },
+        {
+          "file": "samples/training_logs/batch_2_calibration.jsonl",
+          "lines": [1, 2, 3],
+          "comment": "小林6月16日补的口径对齐修正，注意supersedes关系"
+        }
+      ],
+      "blocked_by_alias": null,
+      "note": "此别名若直接用于守门对比，将导致离线指标高估约0.003-0.012，需先过STEP3校准再用"
+    },
+    {
+      "alias_name": "threshold_profile_v3",
+      "resolves_to": "psi_threshold_cfg_v3.2.1.yaml",
+      "resolves_to_file": "samples/version_aliases/archived/psi_threshold_cfg_v3.2.1.yaml",
+      "last_confirmed_run": "2026-05-30T09:00:00Z",
+      "stuck_point": "卡在STEP-2 阈值字典加载",
+      "stuck_step_code": "STEP2_THRESHOLD_LOAD",
+      "stuck_step_description": "该文件中psi_feature_uid_age与psi_feature_uid_city的阈值仍为0.150，与线上监控平台v3.3.0（阈值0.100）不兼容",
+      "impact_scope": [
+        "PSI类所有feature gate判断",
+        "batch_1日志因旧阈值全部PASS，实际应2个FAIL"
+      ],
+      "source_refs": [
+        {
+          "file": "samples/version_aliases/archived/psi_threshold_cfg_v3.2.1.yaml",
+          "lines": [12, 15, 18],
+          "comment": "这三行的threshold: 0.150需改为0.100"
+        }
+      ],
+      "blocked_by_alias": null,
+      "note": "必须使用threshold_profile_v4或手动patch这三行，否则守门结果会漏报漂移"
+    },
+    {
+      "alias_name": "last_week_goldenset",
+      "resolves_to": "v20260601_modelA_golden.csv",
+      "resolves_to_file": "samples/version_aliases/archived/v20260601_modelA_golden.csv",
+      "last_confirmed_run": "2026-06-01T18:30:00Z",
+      "stuck_point": "卡在STEP-1 样本集解密校验",
+      "stuck_step_code": "STEP1_GOLDENSET_VERIFY",
+      "stuck_step_description": "该文件依赖baseline_2026w24，而baseline_2026w24自身卡在STEP3未解除（循环依赖）",
+      "impact_scope": [
+        "golden set AUC基准值0.867不可用",
+        "所有与上周环比的delta计算"
+      ],
+      "source_refs": [
+        {
+          "file": "samples/version_aliases/archived/v20260601_modelA_golden.csv",
+          "lines": [1, 2, 3],
+          "comment": "表头后的首行就是基于baseline_2026w24算出来的基准值"
+        }
+      ],
+      "blocked_by_alias": "baseline_2026w24",
+      "note": "先解baseline_2026w24的STEP3，再重算golden set，或者跳过last_week_goldenset直接用batch_2_calibration后的数据做环比"
+    }
+  ]
+}

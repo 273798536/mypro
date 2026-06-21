@@ -1,0 +1,19 @@
+# PSI threshold config v3.2.1 - archived
+# 对应别名 threshold_profile_v3
+# 注意：L12/L15/L18 阈值仍为 0.150，线上 v3.3.0 已改为 0.100
+version: "3.2.1"
+psi_defaults:
+  global_threshold: 0.150
+features:
+  - name: uid_age
+    # line 12 - 旧阈值，需更新
+    threshold: 0.150
+    last_updated: "2026-04-01"
+  - name: uid_city
+    # line 15 - 旧阈值，需更新
+    threshold: 0.150
+    last_updated: "2026-04-01"
+  - name: uid_level
+    # line 18 - 旧阈值，需更新
+    threshold: 0.150
+    last_updated: "2026-04-01"
