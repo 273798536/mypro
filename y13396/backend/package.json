@@ -1,0 +1,15 @@
+{
+  "name": "shadow-traffic-snapshot-backend",
+  "version": "1.0.0",
+  "description": "影子流量版本快照 - 后端服务",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "csv-stringify": "^6.4.4"
+  }
+}
