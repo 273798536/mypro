@@ -58,9 +58,13 @@ class TimelineGenerator:
         lines.append("# 音乐节摊位排期冲突 - 历史时间线")
         lines.append("")
         lines.append(f"**生成时间:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        lines.append(f"**总条目数:** {summary['total']}")
-        lines.append(f"**已处理:** {summary['processed']} | **待补证据:** {summary['needs_evidence']} | **待确认:** {summary['needs_confirmation']}")
-        lines.append(f"**检测到冲突:** {summary['conflicts_detected']} | **已解决:** {summary['conflicts_resolved']}")
+        lines.append("")
+
+        lines.append("### 条目状态")
+        lines.append(f"总条目: {summary['total']} | 已处理: {summary['processed']} | 待补证据: {summary['needs_evidence']} | 待确认条目: {summary['needs_confirmation']} | 待处理: {summary['pending']} | 已跳过: {summary['skipped']} | 坏行: {summary['bad']}")
+        lines.append("")
+        lines.append("### 冲突统计")
+        lines.append(f"检测到冲突: {summary['conflicts_detected']} | 待人工确认冲突: {summary['manual_conflicts']} | 已解决: {summary['conflicts_resolved']}")
         lines.append("")
 
         lines.append("---")
@@ -83,18 +87,25 @@ class TimelineGenerator:
                 lines.append("---")
                 lines.append("")
 
-        lines.append("## 📊 处理统计")
+        lines.append("## 📊 条目状态统计")
         lines.append("")
-        lines.append("| 类别 | 数量 |")
+        lines.append("| 状态 | 数量 |")
         lines.append("|------|------|")
         lines.append(f"| 总条目数 | {summary['total']} |")
         lines.append(f"| ✅ 已处理 | {summary['processed']} |")
+        lines.append(f"| 📎 待补证据 | {summary['needs_evidence']} |")
+        lines.append(f"| 👤 待确认条目 | {summary['needs_confirmation']} |")
+        lines.append(f"| ⏳ 待处理 | {summary['pending']} |")
         lines.append(f"| ⏭️ 已跳过 | {summary['skipped']} |")
         lines.append(f"| ❌ 坏行 | {summary['bad']} |")
-        lines.append(f"| 📎 待补证据 | {summary['needs_evidence']} |")
-        lines.append(f"| 👤 待人工确认 | {summary['needs_confirmation']} |")
-        lines.append(f"| ⏳ 待处理 | {summary['pending']} |")
+        lines.append("")
+
+        lines.append("## 📊 冲突统计")
+        lines.append("")
+        lines.append("| 类别 | 数量 |")
+        lines.append("|------|------|")
         lines.append(f"| ⚠️ 检测到冲突 | {summary['conflicts_detected']} |")
+        lines.append(f"| 👤 待人工确认冲突 | {summary['manual_conflicts']} |")
         lines.append(f"| ✅ 已解决冲突 | {summary['conflicts_resolved']} |")
         lines.append("")
 
@@ -125,6 +136,7 @@ class TimelineGenerator:
 
     def _calculate_summary(self) -> Dict[str, int]:
         items = self.result.schedule_items
+        conflicts = self.result.conflicts
         return {
             "total": len(items),
             "processed": sum(1 for i in items if i.status == ItemStatus.PROCESSED),
@@ -133,8 +145,9 @@ class TimelineGenerator:
             "needs_evidence": sum(1 for i in items if i.status == ItemStatus.NEEDS_EVIDENCE),
             "needs_confirmation": sum(1 for i in items if i.status == ItemStatus.NEEDS_CONFIRMATION),
             "pending": sum(1 for i in items if i.status == ItemStatus.PENDING),
-            "conflicts_detected": len(self.result.conflicts),
-            "conflicts_resolved": sum(1 for c in self.result.conflicts if c.resolved_at is not None),
+            "conflicts_detected": len(conflicts),
+            "conflicts_resolved": sum(1 for c in conflicts if c.resolved_at is not None),
+            "manual_conflicts": sum(1 for c in conflicts if c.requires_manual_confirmation and not c.resolved_at),
             "bad_rows": len(self.result.bad_rows),
             "skipped_rows": len(self.result.skipped_rows),
         }
@@ -247,16 +260,25 @@ class DutyViewGenerator:
         lines.append(f"**生成时间:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         lines.append("")
 
-        lines.append("## 📊 概览")
+        lines.append("## 📊 条目状态概览")
         lines.append("")
         lines.append("| 状态 | 数量 |")
         lines.append("|------|------|")
         lines.append(f"| ✅ 已处理 | {summary['processed']} |")
         lines.append(f"| 📎 待补证据 | {summary['needs_evidence']} |")
-        lines.append(f"| 👤 待人工确认 | {summary['needs_confirmation']} |")
+        lines.append(f"| 👤 待确认条目 | {summary['needs_confirmation']} |")
         lines.append(f"| ⏳ 待处理 | {summary['pending']} |")
         lines.append(f"| ⏭️ 已跳过 | {summary['skipped']} |")
         lines.append(f"| ❌ 坏行 | {summary['bad']} |")
+        lines.append("")
+
+        lines.append("## 📊 冲突概览")
+        lines.append("")
+        lines.append("| 类别 | 数量 |")
+        lines.append("|------|------|")
+        lines.append(f"| ⚠️ 检测到冲突 | {summary['conflicts_detected']} |")
+        lines.append(f"| 👤 待人工确认冲突 | {summary['manual_conflicts']} |")
+        lines.append(f"| ✅ 已解决冲突 | {summary['conflicts_resolved']} |")
         lines.append("")
 
         lines.append("## 📎 需要补充证据的条目")
@@ -330,6 +352,7 @@ class DutyViewGenerator:
 
     def _calculate_summary(self) -> Dict[str, int]:
         items = self.result.schedule_items
+        conflicts = self.result.conflicts
         return {
             "total": len(items),
             "processed": sum(1 for i in items if i.status == ItemStatus.PROCESSED),
@@ -338,8 +361,9 @@ class DutyViewGenerator:
             "needs_evidence": sum(1 for i in items if i.status == ItemStatus.NEEDS_EVIDENCE),
             "needs_confirmation": sum(1 for i in items if i.status == ItemStatus.NEEDS_CONFIRMATION),
             "pending": sum(1 for i in items if i.status == ItemStatus.PENDING),
-            "conflicts_detected": len(self.result.conflicts),
-            "conflicts_resolved": sum(1 for c in self.result.conflicts if c.resolved_at is not None),
+            "conflicts_detected": len(conflicts),
+            "conflicts_resolved": sum(1 for c in conflicts if c.resolved_at is not None),
+            "manual_conflicts": sum(1 for c in conflicts if c.requires_manual_confirmation and not c.resolved_at),
             "bad_rows": len(self.result.bad_rows),
             "skipped_rows": len(self.result.skipped_rows),
         }
