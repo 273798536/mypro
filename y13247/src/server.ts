@@ -101,6 +101,25 @@ app.post('/api/archive/:id', (req, res) => {
   }
 });
 
+app.post('/api/export', (req, res) => {
+  try {
+    const { format, includeHistory, statusFilter } = req.body;
+    if (!format || !['json', 'csv'].includes(format)) {
+      return res.status(400).json({ error: '请指定有效的导出格式: json 或 csv' });
+    }
+    const result = archiveService.exportArchive({
+      format,
+      includeHistory: includeHistory || false,
+      statusFilter: statusFilter || [],
+    });
+    res.setHeader('Content-Type', result.mimeType);
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(result.filename)}"`);
+    res.send(result.content);
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : '导出失败' });
+  }
+});
+
 loadSeedData();
 console.log('');
 console.log('=== 试跑数据已就绪 ===');

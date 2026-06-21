@@ -117,6 +117,7 @@
     <div class="actions">
       <button class="btn btn-primary" onclick="runAutoAlign()">🚀 自动对齐</button>
       <button class="btn btn-secondary" onclick="loadData()">🔄 刷新数据</button>
+      <button class="btn btn-secondary" onclick="showExport()">📥 导出清单</button>
     </div>
 
     <table>
@@ -142,12 +143,31 @@
       <h2>人工改判</h2>
       <input type="hidden" id="rejudgeItemId">
       <div class="form-group">
-        <label>操作人</label>
+        <label>操作人 <span style="color:#f87171">*</span></label>
         <input type="text" id="rejudgeOperator" placeholder="例如：老王">
       </div>
       <div class="form-group">
-        <label>改判原因</label>
+        <label>改判原因 <span style="color:#f87171">*</span></label>
         <textarea id="rejudgeReason" placeholder="请详细说明改判原因，该记录将进入历史"></textarea>
+      </div>
+      <div class="form-group">
+        <label>选择舞台文件</label>
+        <select id="rejudgeStageFile">
+          <option value="">保持当前</option>
+        </select>
+        <small style="color:#9ca3af; display:block; margin-top:4px;">选择实际使用的舞台录音文件</small>
+      </div>
+      <div class="form-group">
+        <label>文件名来源</label>
+        <select id="rejudgeFilenameSource" onchange="toggleOverrideFilename('rejudge')">
+          <option value="track">使用曲目表文件名</option>
+          <option value="stage">使用舞台文件名</option>
+          <option value="override">手动覆盖</option>
+        </select>
+      </div>
+      <div class="form-group hidden" id="rejudgeOverrideFilenameGroup">
+        <label>覆盖文件名 <span style="color:#f87171">*</span></label>
+        <input type="text" id="rejudgeOverrideFilename" placeholder="例如：PODCAST_INTRO_HOST_GREETING_v2_FINAL.wav">
       </div>
       <div class="form-group">
         <label>覆盖时码（可选）</label>
@@ -156,6 +176,12 @@
       <div class="form-group">
         <label>覆盖标题（可选）</label>
         <input type="text" id="rejudgeTitle" placeholder="例如：主题音乐（修正版）">
+      </div>
+      <div class="form-group" id="rejudgePreview">
+        <label>改判预览</label>
+        <div style="background:#1f2937; padding:12px; border-radius:6px; font-size:13px; font-family:monospace;">
+          <div id="rejudgePreviewContent">请填写参数后查看预览</div>
+        </div>
       </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal('rejudgeModal')">取消</button>
@@ -169,20 +195,105 @@
       <h2>授权对齐</h2>
       <input type="hidden" id="authorizeItemId">
       <div class="form-group">
-        <label>授权人</label>
+        <label>授权人 <span style="color:#f87171">*</span></label>
         <input type="text" id="authorizeName" placeholder="例如：老许">
       </div>
       <div class="form-group">
-        <label>授权备注</label>
+        <label>授权备注 <span style="color:#f87171">*</span></label>
         <textarea id="authorizeNote" placeholder="该备注将用于重新对齐文件、曲目表和最终清单"></textarea>
+      </div>
+      <div class="form-group">
+        <label>选择舞台文件 <span style="color:#f87171">*</span></label>
+        <select id="authorizeStageFile">
+        </select>
+        <small style="color:#9ca3af; display:block; margin-top:4px;">确认实际使用的舞台录音文件</small>
+      </div>
+      <div class="form-group">
+        <label>选择曲目表 <span style="color:#f87171">*</span></label>
+        <select id="authorizeTrackItem">
+        </select>
+        <small style="color:#9ca3af; display:block; margin-top:4px;">确认对应的曲目表条目</small>
+      </div>
+      <div class="form-group">
+        <label>文件名来源 <span style="color:#f87171">*</span></label>
+        <select id="authorizeFilenameSource" onchange="toggleOverrideFilename('authorize')">
+          <option value="track">使用曲目表文件名</option>
+          <option value="stage">使用舞台文件名</option>
+          <option value="override">手动覆盖</option>
+        </select>
+      </div>
+      <div class="form-group hidden" id="authorizeOverrideFilenameGroup">
+        <label>覆盖文件名 <span style="color:#f87171">*</span></label>
+        <input type="text" id="authorizeOverrideFilename" placeholder="例如：PODCAST_INTRO_OUTRO_FINAL.wav">
       </div>
       <div class="form-group">
         <label>时码修正（可选）</label>
         <input type="text" id="authorizeTimecode" placeholder="例如：00:01:25:10">
       </div>
+      <div class="form-group">
+        <label>标题修正（可选）</label>
+        <input type="text" id="authorizeTitle" placeholder="例如：片尾音乐（授权版）">
+      </div>
+      <div class="form-group" id="authorizePreview">
+        <label>授权预览</label>
+        <div style="background:#1f2937; padding:12px; border-radius:6px; font-size:13px; font-family:monospace;">
+          <div id="authorizePreviewContent">请填写参数后查看预览</div>
+        </div>
+      </div>
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal('authorizeModal')">取消</button>
         <button class="btn btn-success" onclick="submitAuthorize()">确认授权</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="exportModal">
+    <div class="modal-content">
+      <h2>导出清单</h2>
+      <div class="form-group">
+        <label>导出格式 <span style="color:#f87171">*</span></label>
+        <select id="exportFormat">
+          <option value="csv">CSV (Excel 可打开)</option>
+          <option value="json">JSON (完整数据)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>状态筛选</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" class="exportStatus" value="matched" checked> 已匹配
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" class="exportStatus" value="authorized" checked> 已授权
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" class="exportStatus" value="rejudged" checked> 已改判
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" class="exportStatus" value="archived" checked> 已归档
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" class="exportStatus" value="mismatch_filename"> 文件名不匹配
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" class="exportStatus" value="mismatch_timecode"> 时码不匹配
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" class="exportStatus" value="late_arrival"> 晚到附件
+          </label>
+          <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" class="exportStatus" value="mismatch_both"> 双重不匹配
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+          <input type="checkbox" id="exportIncludeHistory"> 包含历史记录（仅 JSON）
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('exportModal')">取消</button>
+        <button class="btn btn-primary" onclick="submitExport()">确认导出</button>
       </div>
     </div>
   </div>
@@ -202,6 +313,76 @@
     let archiveItems = [];
     let stageRecords = [];
     let trackItems = [];
+
+    function populateStageSelect(selectId, selectedId) {
+      const select = document.getElementById(selectId);
+      select.innerHTML = selectId === 'rejudgeStageFile' 
+        ? '<option value="">保持当前</option>' 
+        : '';
+      stageRecords.forEach(stage => {
+        const option = document.createElement('option');
+        option.value = stage.id;
+        option.textContent = `CH${stage.channelNo}: ${stage.originalFilename}`;
+        if (selectedId && stage.id === selectedId) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    function populateTrackSelect(selectId, selectedId) {
+      const select = document.getElementById(selectId);
+      select.innerHTML = '';
+      trackItems.forEach(track => {
+        const option = document.createElement('option');
+        option.value = track.id;
+        option.textContent = `TRK${track.trackNo}: ${track.expectedTitle} [${track.segment}]`;
+        if (selectedId && track.id === selectedId) option.selected = true;
+        select.appendChild(option);
+      });
+    }
+
+    function toggleOverrideFilename(type) {
+      const source = document.getElementById(`${type}FilenameSource`).value;
+      const group = document.getElementById(`${type}OverrideFilenameGroup`);
+      if (source === 'override') {
+        group.classList.remove('hidden');
+      } else {
+        group.classList.add('hidden');
+      }
+      updatePreview(type);
+    }
+
+    function updatePreview(type) {
+      const stageId = document.getElementById(`${type}StageFile`).value;
+      const trackId = document.getElementById(`${type}TrackItem`)?.value;
+      const filenameSource = document.getElementById(`${type}FilenameSource`).value;
+      const overrideFilename = document.getElementById(`${type}OverrideFilename`)?.value;
+      const timecode = document.getElementById(`${type}Timecode`).value;
+      const title = document.getElementById(`${type}Title`)?.value || document.getElementById(`${type === 'rejudge' ? 'rejudgeTitle' : 'authorizeTitle'}`)?.value;
+
+      const stage = stageRecords.find(s => s.id === stageId);
+      const track = trackId ? trackItems.find(t => t.id === trackId) : null;
+      
+      let finalFilename = '';
+      if (filenameSource === 'stage' && stage) {
+        finalFilename = stage.originalFilename;
+      } else if (filenameSource === 'override' && overrideFilename) {
+        finalFilename = overrideFilename;
+      } else if (track) {
+        finalFilename = track.expectedFilename;
+      }
+
+      const finalTitle = title || (track ? track.expectedTitle : '');
+      const finalTimecode = timecode || (track ? track.expectedTimecodeStart : (stage ? stage.timecodeStart : ''));
+
+      const previewHtml = `
+        <div><span style="color:#9ca3af;">最终文件名:</span> <span style="color:#60a5fa;">${finalFilename || '(未设置)'}</span></div>
+        <div><span style="color:#9ca3af;">最终标题:</span> <span style="color:#60a5fa;">${finalTitle || '(未设置)'}</span></div>
+        <div><span style="color:#9ca3af;">最终时码:</span> <span style="color:#60a5fa;">${finalTimecode || '(未设置)'}</span></div>
+        <div><span style="color:#9ca3af;">舞台文件:</span> ${stage ? stage.originalFilename : '(保持当前)'}</div>
+        <div><span style="color:#9ca3af;">曲目表:</span> ${track ? track.expectedTitle : '(保持当前)'}</div>
+      `;
+      document.getElementById(`${type}PreviewContent`).innerHTML = previewHtml;
+    }
 
     const statusLabels = {
       matched: '已匹配',
@@ -322,17 +503,46 @@
     }
 
     function showRejudge(itemId) {
+      const item = archiveItems.find(i => i.id === itemId);
+      if (!item) return;
+      
       document.getElementById('rejudgeItemId').value = itemId;
+      document.getElementById('rejudgeOperator').value = '';
+      document.getElementById('rejudgeReason').value = '';
+      document.getElementById('rejudgeTimecode').value = '';
+      document.getElementById('rejudgeTitle').value = '';
+      document.getElementById('rejudgeOverrideFilename').value = '';
+      document.getElementById('rejudgeFilenameSource').value = 'track';
+      document.getElementById('rejudgeOverrideFilenameGroup').classList.add('hidden');
+      
+      populateStageSelect('rejudgeStageFile', item.stageRecordId);
+      
+      updatePreview('rejudge');
       document.getElementById('rejudgeModal').classList.add('active');
     }
 
     function showAuthorize(itemId) {
       const item = archiveItems.find(i => i.id === itemId);
+      if (!item) return;
+      
       document.getElementById('authorizeItemId').value = itemId;
-      if (item && item.stageRecord) {
-        document.getElementById('authorizeTimecode').value = item.stageRecord.timecodeStart;
-      }
+      document.getElementById('authorizeName').value = '';
+      document.getElementById('authorizeNote').value = '';
+      document.getElementById('authorizeTimecode').value = item.stageRecord?.timecodeStart || '';
+      document.getElementById('authorizeTitle').value = '';
+      document.getElementById('authorizeOverrideFilename').value = '';
+      document.getElementById('authorizeFilenameSource').value = 'track';
+      document.getElementById('authorizeOverrideFilenameGroup').classList.add('hidden');
+      
+      populateStageSelect('authorizeStageFile', item.stageRecordId);
+      populateTrackSelect('authorizeTrackItem', item.trackItemId);
+      
+      updatePreview('authorize');
       document.getElementById('authorizeModal').classList.add('active');
+    }
+
+    function showExport() {
+      document.getElementById('exportModal').classList.add('active');
     }
 
     async function showHistory(itemId) {
@@ -374,94 +584,198 @@
 
     async function submitRejudge() {
       const itemId = document.getElementById('rejudgeItemId').value;
-      const operator = document.getElementById('rejudgeOperator').value;
-      const reason = document.getElementById('rejudgeReason').value;
-      const overrideTimecode = document.getElementById('rejudgeTimecode').value || undefined;
-      const overrideTitle = document.getElementById('rejudgeTitle').value || undefined;
+      const operator = document.getElementById('rejudgeOperator').value.trim();
+      const reason = document.getElementById('rejudgeReason').value.trim();
+      const newStageRecordId = document.getElementById('rejudgeStageFile').value || undefined;
+      const filenameSource = document.getElementById('rejudgeFilenameSource').value;
+      const overrideFilename = document.getElementById('rejudgeOverrideFilename').value.trim() || undefined;
+      const overrideTimecode = document.getElementById('rejudgeTimecode').value.trim() || undefined;
+      const overrideTitle = document.getElementById('rejudgeTitle').value.trim() || undefined;
 
-      if (!operator || !reason) {
-        alert('请填写操作人和原因');
+      if (!operator) {
+        alert('❌ 请填写操作人');
+        return;
+      }
+      if (!reason) {
+        alert('❌ 请填写改判原因');
+        return;
+      }
+      if (filenameSource === 'override' && !overrideFilename) {
+        alert('❌ 选择了手动覆盖文件名，请填写覆盖文件名');
         return;
       }
 
       const item = archiveItems.find(i => i.id === itemId);
-      const res = await fetch(`${API_BASE}/rejudge`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          archiveItemId: itemId,
-          operator,
-          reason,
-          newStageRecordId: item?.stageRecordId,
-          newTrackItemId: item?.trackItemId,
-          overrideTimecode,
-          overrideTitle
-        })
-      });
+      try {
+        const res = await fetch(`${API_BASE}/rejudge`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            archiveItemId: itemId,
+            operator,
+            reason,
+            newStageRecordId: newStageRecordId || item?.stageRecordId,
+            newTrackItemId: item?.trackItemId,
+            overrideTimecode,
+            overrideTitle,
+            filenameSource,
+            overrideFilename
+          })
+        });
 
-      const data = await res.json();
-      if (data.success) {
-        alert('改判成功');
-        closeModal('rejudgeModal');
-        loadData();
-      } else {
-        alert(data.error || '改判失败');
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ 改判成功\n\n最终文件名: ${data.data.finalFilename}\n最终标题: ${data.data.finalTitle}`);
+          closeModal('rejudgeModal');
+          loadData();
+        } else {
+          alert(`❌ 改判失败: ${data.error || '未知错误'}`);
+        }
+      } catch (error) {
+        alert(`❌ 网络错误: ${error.message}`);
       }
     }
 
     async function submitAuthorize() {
       const itemId = document.getElementById('authorizeItemId').value;
-      const authorizer = document.getElementById('authorizeName').value;
-      const note = document.getElementById('authorizeNote').value;
-      const overrideTimecode = document.getElementById('authorizeTimecode').value || undefined;
+      const authorizer = document.getElementById('authorizeName').value.trim();
+      const note = document.getElementById('authorizeNote').value.trim();
+      const useStageFile = document.getElementById('authorizeStageFile').value;
+      const useTrackItem = document.getElementById('authorizeTrackItem').value;
+      const filenameSource = document.getElementById('authorizeFilenameSource').value;
+      const overrideFilename = document.getElementById('authorizeOverrideFilename').value.trim() || undefined;
+      const overrideTimecode = document.getElementById('authorizeTimecode').value.trim() || undefined;
+      const overrideTitle = document.getElementById('authorizeTitle').value.trim() || undefined;
 
-      if (!authorizer || !note) {
-        alert('请填写授权人和备注');
+      if (!authorizer) {
+        alert('❌ 请填写授权人');
+        return;
+      }
+      if (!note) {
+        alert('❌ 请填写授权备注');
+        return;
+      }
+      if (!useStageFile) {
+        alert('❌ 请选择舞台文件');
+        return;
+      }
+      if (!useTrackItem) {
+        alert('❌ 请选择曲目表');
+        return;
+      }
+      if (filenameSource === 'override' && !overrideFilename) {
+        alert('❌ 选择了手动覆盖文件名，请填写覆盖文件名');
         return;
       }
 
-      const item = archiveItems.find(i => i.id === itemId);
-      const res = await fetch(`${API_BASE}/authorize`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          archiveItemId: itemId,
-          authorizer,
-          note,
-          alignmentDecision: {
-            useStageFile: item?.stageRecordId || '',
-            useTrackItem: item?.trackItemId || '',
-            overrideTimecode
-          }
-        })
-      });
+      try {
+        const res = await fetch(`${API_BASE}/authorize`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            archiveItemId: itemId,
+            authorizer,
+            note,
+            alignmentDecision: {
+              useStageFile,
+              useTrackItem,
+              overrideTimecode,
+              overrideTitle,
+              filenameSource,
+              overrideFilename
+            }
+          })
+        });
 
-      const data = await res.json();
-      if (data.success) {
-        alert(data.message);
-        closeModal('authorizeModal');
-        loadData();
-      } else {
-        alert(data.error || '授权失败');
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ ${data.message}\n\n最终文件名: ${data.data.finalFilename}\n最终时码: ${data.data.finalTimecodeStart}`);
+          closeModal('authorizeModal');
+          loadData();
+        } else {
+          alert(`❌ 授权失败: ${data.error || '未知错误'}`);
+        }
+      } catch (error) {
+        alert(`❌ 网络错误: ${error.message}`);
+      }
+    }
+
+    async function submitExport() {
+      const format = document.getElementById('exportFormat').value;
+      const includeHistory = document.getElementById('exportIncludeHistory').checked;
+      const statusFilter = Array.from(document.querySelectorAll('.exportStatus:checked'))
+        .map(cb => cb.value);
+
+      try {
+        const res = await fetch(`${API_BASE}/export`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            format,
+            includeHistory,
+            statusFilter
+          })
+        });
+
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error || '导出失败');
+        }
+
+        const blob = await res.blob();
+        const disposition = res.headers.get('Content-Disposition');
+        const filenameMatch = disposition && disposition.match(/filename="?([^"]+)"?/);
+        const filename = filenameMatch ? decodeURIComponent(filenameMatch[1]) : `export.${format}`;
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        alert(`✅ 导出成功: ${filename}`);
+        closeModal('exportModal');
+      } catch (error) {
+        alert(`❌ 导出失败: ${error.message}`);
       }
     }
 
     async function archiveItem(itemId) {
-      if (!confirm('确认归档该条目？归档后不可修改。')) return;
+      if (!confirm('⚠️ 确认归档该条目？归档后不可修改。')) return;
 
-      const res = await fetch(`${API_BASE}/archive/${itemId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ operator: '当前用户' })
-      });
+      try {
+        const res = await fetch(`${API_BASE}/archive/${itemId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ operator: '当前用户' })
+        });
 
-      const data = await res.json();
-      if (data.success) {
-        alert('归档成功');
-        loadData();
-      } else {
-        alert(data.error || '归档失败');
+        const data = await res.json();
+        if (data.success) {
+          alert(`✅ 归档成功: ${data.data.finalTitle}`);
+          loadData();
+        } else {
+          alert(`❌ 归档失败: ${data.error || '未知错误'}`);
+        }
+      } catch (error) {
+        alert(`❌ 网络错误: ${error.message}`);
       }
+    }
+
+    function setupEventListeners() {
+      ['rejudge', 'authorize'].forEach(type => {
+        document.getElementById(`${type}StageFile`)?.addEventListener('change', () => updatePreview(type));
+        document.getElementById(`${type}TrackItem`)?.addEventListener('change', () => updatePreview(type));
+        document.getElementById(`${type}FilenameSource`).addEventListener('change', () => {
+          toggleOverrideFilename(type);
+        });
+        document.getElementById(`${type}OverrideFilename`)?.addEventListener('input', () => updatePreview(type));
+        document.getElementById(`${type}Timecode`).addEventListener('input', () => updatePreview(type));
+        document.getElementById(`${type}Title`)?.addEventListener('input', () => updatePreview(type));
+      });
     }
 
     document.querySelectorAll('.modal').forEach(modal => {
@@ -470,6 +784,7 @@
       });
     });
 
+    setupEventListeners();
     loadSummary();
   </script>
 </body>

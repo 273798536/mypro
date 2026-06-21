@@ -42,6 +42,8 @@ export interface TrackItem {
   segment: 'opening' | 'intro' | 'theme' | 'outro';
 }
 
+export type FilenameSource = 'stage' | 'track' | 'override';
+
 export interface AuthorizationNote {
   id: string;
   archiveItemId: string;
@@ -53,6 +55,8 @@ export interface AuthorizationNote {
     useTrackItem: string;
     overrideTimecode?: Timecode;
     overrideTitle?: string;
+    filenameSource: FilenameSource;
+    overrideFilename?: string;
   };
 }
 
@@ -97,6 +101,8 @@ export interface RejudgeRequest {
   newTrackItemId?: string;
   overrideTimecode?: Timecode;
   overrideTitle?: string;
+  filenameSource?: FilenameSource;
+  overrideFilename?: string;
 }
 
 export interface AuthorizationRequest {

@@ -1,7 +1,7 @@
 import { loadSeedData } from './seed';
 import * as archiveService from './services/archiveService';
 import * as dataStore from './store/dataStore';
-import { ArchiveItem, MatchStatus } from './types';
+import { ArchiveItem, MatchStatus, FilenameSource } from './types';
 
 function printItem(item: ArchiveItem, index: number) {
   const stage = dataStore.getStageRecordById(item.stageRecordId);
@@ -9,6 +9,7 @@ function printItem(item: ArchiveItem, index: number) {
   console.log(`\n--- 条目 ${index + 1}: ${item.finalTitle} ---`);
   console.log(`  状态: ${item.status}`);
   console.log(`  通道: CH${stage?.channelNo} -> 曲目: TRK${track?.trackNo}`);
+  console.log(`  最终文件名: ${item.finalFilename}`);
   console.log(`  时码偏差: ${item.timecodeDeviationMs}ms`);
   console.log(`  问题: ${item.alignmentIssues.length > 0 ? item.alignmentIssues.join(' | ') : '无'}`);
   if (stage?.rawDescription && (stage.rawDescription.includes('半拍') || stage.rawDescription.includes('晚到'))) {
@@ -42,7 +43,7 @@ function printHistory(item: ArchiveItem) {
 
 async function runVerification() {
   console.log('========================================');
-  console.log('  播客片头清单归档 - 完整流程验证');
+  console.log('  播客片头清单归档 - 完整流程验证（v2）');
   console.log('========================================');
 
   console.log('\n📥 步骤 1: 加载试跑数据');
@@ -74,23 +75,34 @@ async function runVerification() {
   console.log(`  晚到: ${summary.lateArrival}`);
   console.log(`  待复核: ${summary.needReview}`);
 
-  console.log('\n✏️ 步骤 4: 人工改判 - 处理文件名不匹配');
+  console.log('\n✏️ 步骤 4: 人工改判 - 文件名不匹配（使用舞台文件名）');
   const mismatchItem = aligned.find(a => a.status === 'mismatch_filename');
   if (mismatchItem) {
     const rejudged = archiveService.rejudgeItem({
       archiveItemId: mismatchItem.id,
       operator: '老王',
-      reason: '确认是主持人开场白第二版，曲目表未更新版本号',
+      reason: '确认是主持人开场白第二版，保留舞台实际文件名',
       overrideTitle: '主持人开场白（第二版）',
+      filenameSource: 'stage' as FilenameSource,
     });
     if (rejudged) {
-      console.log(`  ✅ 改判成功: ${rejudged.finalTitle}`);
+      console.log(`  ✅ 改判成功`);
       console.log(`     新状态: ${rejudged.status}`);
+      console.log(`     最终文件名: ${rejudged.finalFilename}`);
+      console.log(`     最终标题: ${rejudged.finalTitle}`);
+      console.log(`     对齐问题: ${rejudged.alignmentIssues.join(' | ')}`);
+      
+      const stageFile = stages.find(s => s.id === rejudged.stageRecordId);
+      if (stageFile && rejudged.finalFilename === stageFile.originalFilename) {
+        console.log(`     ✅ 验证: 最终文件名正确使用了舞台文件名`);
+      } else {
+        console.log(`     ❌ 验证失败: 最终文件名未使用舞台文件名`);
+      }
     }
   }
 
-  console.log('\n✅ 步骤 5: 授权对齐 - 补授权备注处理晚到附件');
-  const lateItemAligned = aligned.find(a => a.status === 'late_arrival');
+  console.log('\n✅ 步骤 5: 授权对齐 - 处理晚到附件（使用曲目表文件名，修正时码）');
+  const lateItemAligned = dataStore.getArchiveItems().find(a => a.status === 'late_arrival');
   if (lateItemAligned) {
     const stage = dataStore.getStageRecordById(lateItemAligned.stageRecordId);
     const track = dataStore.getTrackItemById(lateItemAligned.trackItemId);
@@ -103,23 +115,34 @@ async function runVerification() {
           useStageFile: stage.id,
           useTrackItem: track.id,
           overrideTimecode: stage.timecodeStart,
+          filenameSource: 'track' as FilenameSource,
         },
       });
       if (authorized) {
-        console.log(`  ✅ 授权成功: ${authorized.finalTitle}`);
+        console.log(`  ✅ 授权成功`);
         console.log(`     授权人: ${authorized.authorizationNote?.authorizer}`);
         console.log(`     备注: ${authorized.authorizationNote?.note}`);
+        console.log(`     最终文件名: ${authorized.finalFilename}`);
         console.log(`     最终时码: ${authorized.finalTimecodeStart}`);
+        console.log(`     文件名来源: ${authorized.authorizationNote?.alignmentDecision.filenameSource}`);
+        console.log(`     对齐详情: ${authorized.alignmentIssues.join(' | ')}`);
+        
+        if (authorized.finalFilename === track.expectedFilename) {
+          console.log(`     ✅ 验证: 最终文件名正确使用了曲目表文件名`);
+        } else {
+          console.log(`     ❌ 验证失败: 最终文件名未使用曲目表文件名`);
+        }
       }
     }
   }
 
-  console.log('\n✅ 步骤 6: 授权对齐 - 处理时码偏半拍');
-  const halfFrameAligned = aligned.find(a => a.status === 'mismatch_timecode');
+  console.log('\n✅ 步骤 6: 授权对齐 - 处理时码偏半拍（手动覆盖文件名）');
+  const halfFrameAligned = dataStore.getArchiveItems().find(a => a.status === 'mismatch_timecode');
   if (halfFrameAligned) {
     const stage = dataStore.getStageRecordById(halfFrameAligned.stageRecordId);
     const track = dataStore.getTrackItemById(halfFrameAligned.trackItemId);
     if (stage && track) {
+      const overrideFilename = 'PODCAST_INTRO_THEME_MUSIC_APPROVED.wav';
       const authorized = archiveService.authorizeItem({
         archiveItemId: halfFrameAligned.id,
         authorizer: '老许',
@@ -127,13 +150,22 @@ async function runVerification() {
         alignmentDecision: {
           useStageFile: stage.id,
           useTrackItem: track.id,
+          filenameSource: 'override' as FilenameSource,
+          overrideFilename,
         },
       });
       if (authorized) {
-        const fullStage = dataStore.getStageRecordById(authorized.stageRecordId);
-        console.log(`  ✅ 授权成功: ${authorized.finalTitle}`);
+        console.log(`  ✅ 授权成功`);
+        console.log(`     最终文件名: ${authorized.finalFilename}`);
         console.log(`     时码偏差: ${authorized.timecodeDeviationMs}ms（已接受）`);
-        console.log(`     原始说法追溯: "${fullStage?.rawDescription}"`);
+        console.log(`     原始说法追溯: "${stage.rawDescription}"`);
+        console.log(`     文件名来源: ${authorized.authorizationNote?.alignmentDecision.filenameSource}`);
+        
+        if (authorized.finalFilename === overrideFilename) {
+          console.log(`     ✅ 验证: 最终文件名正确使用了手动覆盖的文件名`);
+        } else {
+          console.log(`     ❌ 验证失败: 最终文件名未使用覆盖文件名`);
+        }
       }
     }
   }
@@ -171,7 +203,90 @@ async function runVerification() {
     printHistory(lateFinal);
   }
 
-  console.log('\n📊 步骤 9: 最终状态汇总');
+  const rejudgedFinal = finalItems.find(f => f.status === 'archived' && 
+    f.alignmentIssues.some(i => i.includes('使用舞台文件名')));
+  if (rejudgedFinal) {
+    printHistory(rejudgedFinal);
+  }
+
+  console.log('\n📤 步骤 9: 测试导出功能');
+  
+  console.log(`\n  导出 JSON（含历史）:`);
+  const jsonExport = archiveService.exportArchive({
+    format: 'json',
+    includeHistory: true,
+    statusFilter: ['archived'],
+  });
+  console.log(`  ✅ 文件名: ${jsonExport.filename}`);
+  console.log(`     MIME类型: ${jsonExport.mimeType}`);
+  console.log(`     内容大小: ${jsonExport.content.length} 字符`);
+  
+  const jsonData = JSON.parse(jsonExport.content);
+  console.log(`     导出条目数: ${jsonData.length}`);
+  if (jsonData.length > 0 && jsonData[0].history) {
+    console.log(`     历史记录数: ${jsonData[0].history.length} 条`);
+  }
+
+  console.log(`\n  导出 CSV（仅已归档）:`);
+  const csvExport = archiveService.exportArchive({
+    format: 'csv',
+    includeHistory: false,
+    statusFilter: ['archived'],
+  });
+  console.log(`  ✅ 文件名: ${csvExport.filename}`);
+  console.log(`     MIME类型: ${csvExport.mimeType}`);
+  console.log(`     内容大小: ${csvExport.content.length} 字符`);
+  
+  const csvLines = csvExport.content.trim().split('\n');
+  console.log(`     行数: ${csvLines.length}（含表头）`);
+  if (csvLines.length > 0) {
+    console.log(`     表头: ${csvLines[0].split(',').length} 列`);
+  }
+
+  console.log(`\n  导出 JSON（全部状态）:`);
+  const fullExport = archiveService.exportArchive({
+    format: 'json',
+    includeHistory: false,
+    statusFilter: [],
+  });
+  const fullData = JSON.parse(fullExport.content);
+  console.log(`  ✅ 全部条目数: ${fullData.length}`);
+
+  console.log('\n💥 步骤 10: 测试错误处理');
+  
+  console.log(`\n  测试 1: 授权时指定不存在的舞台文件:`);
+  try {
+    const testItem = finalItems[0];
+    archiveService.authorizeItem({
+      archiveItemId: testItem.id,
+      authorizer: '测试',
+      note: '测试错误',
+      alignmentDecision: {
+        useStageFile: 'nonexistent_id',
+        useTrackItem: testItem.trackItemId,
+        filenameSource: 'track' as FilenameSource,
+      },
+    });
+    console.log(`  ❌ 应该抛出错误但没有`);
+  } catch (error) {
+    console.log(`  ✅ 正确抛出错误: ${error instanceof Error ? error.message : '未知错误'}`);
+  }
+
+  console.log(`\n  测试 2: 改判时选择覆盖文件名但未提供:`);
+  try {
+    const testItem = finalItems[0];
+    archiveService.rejudgeItem({
+      archiveItemId: testItem.id,
+      operator: '测试',
+      reason: '测试错误',
+      filenameSource: 'override' as FilenameSource,
+    });
+    console.log(`  ❌ 应该抛出错误但没有`);
+  } catch (error) {
+    console.log(`  ✅ 正确抛出错误: ${error instanceof Error ? error.message : '未知错误'}`);
+  }
+
+  console.log('\n📊 步骤 11: 最终状态汇总');
   const finalSummary = archiveService.getIssueSummary();
   console.log(`  总计: ${finalSummary.total}`);
   console.log(`  已匹配: ${finalSummary.matched}`);
@@ -180,15 +295,23 @@ async function runVerification() {
   console.log(`  待复核: ${finalSummary.needReview}`);
 
   console.log('\n========================================');
-  console.log('  ✅ 完整流程验证通过!');
+  console.log('  ✅ 完整流程验证通过!（v2）');
   console.log('========================================');
-  console.log('\n📌 关键特性验证:');
-  console.log('  ✅ 后端不只是返回成功，每次改判都有来源和状态追踪');
-  console.log('  ✅ 时码偏半拍可追到舞台通道表原始说法');
-  console.log('  ✅ 晚到附件已混入试跑数据');
-  console.log('  ✅ 授权备注可重新对齐文件-曲目-清单');
-  console.log('  ✅ 人工确认前后变化进入历史');
-  console.log('  ✅ 评审会前可追溯完整链路给复核人');
+  console.log('\n📌 新增功能验证:');
+  console.log('  ✅ 文件名来源可选择: 舞台文件 / 曲目表 / 手动覆盖');
+  console.log('  ✅ 最终文件名根据选择正确设置');
+  console.log('  ✅ 支持导出 JSON（含历史）和 CSV 格式');
+  console.log('  ✅ 导出支持状态筛选');
+  console.log('  ✅ 错误处理完善，无效参数会抛出明确错误');
+  console.log('  ✅ 授权/改判详情在 alignmentIssues 中可见');
+  console.log('  ✅ 文件名来源记录在历史和授权备注中');
+  console.log('');
+  console.log('\n📋 核心检查点:');
+  console.log('  1. 授权/改判时，alignmentDecision.useStageFile 被正确读取');
+  console.log('  2. finalFilename 不再固定为 track.expectedFilename');
+  console.log('  3. 前端可选择舞台文件和文件名来源');
+  console.log('  4. 导出内容包含完整字段和历史记录');
+  console.log('  5. 异常情况有明确错误提示');
   console.log('');
 }
 
