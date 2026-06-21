@@ -1,0 +1,21 @@
+[
+  {
+    "original_text": "一个圆的半径是5厘米，面积是78.5千米，求周长。学生算出周长是10厘米。",
+    "source_label": "老叶-三年级期末卷-题3",
+    "metadata": {
+      "student": "张三",
+      "exam": "三年级期末",
+      "score": 2
+    }
+  },
+  {
+    "original_text": "矩形长8米宽3米，周长24米，面积是11平方米。学生外推到边长100米时面积=300平方米。",
+    "source_label": "老叶-三年级期末卷-题5",
+    "metadata": {
+      "student": "李四",
+      "exam": "三年级期末",
+      "score": 1,
+      "extrapolation_boundary": true
+    }
+  }
+]

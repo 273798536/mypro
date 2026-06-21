@@ -1,0 +1,24 @@
+[project]
+name = "topo-error-tracker"
+version = "0.1.0"
+description = "拓扑路径错因追踪工具——面向数学教学，保留原始材料、审计轨迹与可读报告"
+requires-python = ">=3.9"
+dependencies = [
+    "click>=8.1",
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "pydantic>=2.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+topo-tracker = "topo_error_tracker.cli:cli"
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
