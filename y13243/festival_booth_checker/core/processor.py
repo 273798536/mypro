@@ -174,8 +174,10 @@ class BoothProcessor:
                 "异常位置": dash.get("anomaly_locations", []),
                 "待补证据": dash.get("need_evidence_list", []),
                 "导出命令参考": {
-                    "导出全部CSV": "python booth_checker.py export --format csv --all",
-                    "导出异常明细JSON": "python booth_checker.py export --format json --only anomalies"
+                    "导出全部CSV": "python3 booth_checker.py export --format csv --only all",
+                    "导出异常明细JSON": "python3 booth_checker.py export --format json --only anomalies",
+                    "导出待处理CSV": "python3 booth_checker.py export --format csv --only pending",
+                    "导出已通过JSON": "python3 booth_checker.py export --format json --only passed"
                 },
                 "统计": {
                     "待处理": dash.get("pending_count", 0),

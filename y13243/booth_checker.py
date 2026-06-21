@@ -53,9 +53,17 @@ def build_parser() -> argparse.ArgumentParser:
     # export 命令
     p_exp = sub.add_parser("export", help="导出处理结果")
     p_exp.add_argument("--format", "-f", choices=["json", "csv"], default="json", help="导出格式")
-    p_exp.add_argument("--only", choices=["all", "anomalies", "pending", "passed"], default="all",
+    p_exp.add_argument("--only", choices=["all", "anomalies", "pending", "passed"], default=None,
                         help="筛选范围：全部/仅异常/待处理/已通过")
-    p_exp.add_argument("--output", "-O", help="指定导出文件完整路径")
+    p_exp.add_argument("--all", dest="only", action="store_const", const="all",
+                        help="等价于 --only all")
+    p_exp.add_argument("--anomalies", dest="only", action="store_const", const="anomalies",
+                        help="等价于 --only anomalies")
+    p_exp.add_argument("--pending", dest="only", action="store_const", const="pending",
+                        help="等价于 --only pending")
+    p_exp.add_argument("--passed", dest="only", action="store_const", const="passed",
+                        help="等价于 --only passed")
+    p_exp.add_argument("--output", "-O", help="指定导出文件完整路径（含文件名）")
 
     # status 命令
     p_stat = sub.add_parser("status", help="查询单摊位状态或更新状态")
@@ -140,11 +148,25 @@ def run() -> int:
         result = processor.get_summary_for_alan()
 
     elif args.command == "export":
-        result = exporter.export_all(args.format, args.only)
-        if args.output and result.success:
-            import shutil
-            shutil.copy2(result.data["file_path"], args.output)
-            result.data["file_path"] = args.output
+        only_value = args.only or "all"
+        if args.output and os.path.isdir(args.output):
+            result = ProcessingResult(
+                success=False,
+                code="INVALID_OUTPUT",
+                message=f"--output/-O 必须是完整文件路径（含文件名），不能是目录：{args.output}",
+                errors=["请将 --output 指定为目标文件完整路径，例如 /tmp/booth.csv"],
+                params_used={"format": args.format, "only": only_value, "output": args.output}
+            )
+            exit_code = 1
+        else:
+            result = exporter.export_all(args.format, only_value)
+            if args.output and result.success:
+                import shutil
+                os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
+                shutil.copy2(result.data["file_path"], args.output)
+                result.data["file_path"] = args.output
+                result.data["saved_as_requested"] = True
+            result.params_used = {"format": args.format, "only": only_value, "output": args.output}
 
     elif args.command == "status":
         if args.set_status:
