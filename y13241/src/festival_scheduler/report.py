@@ -52,13 +52,15 @@ class TimelineGenerator:
     def generate_markdown(self, output_path: Optional[str] = None) -> str:
         history = sorted(self.result.history, key=lambda h: h.timestamp)
 
+        summary = self._calculate_summary()
+
         lines = []
         lines.append("# 音乐节摊位排期冲突 - 历史时间线")
         lines.append("")
         lines.append(f"**生成时间:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        lines.append(f"**总条目数:** {self.result.stats.total}")
-        lines.append(f"**已处理:** {self.result.stats.processed} | **待补证据:** {self.result.stats.needs_evidence} | **待确认:** {self.result.stats.needs_confirmation}")
-        lines.append(f"**检测到冲突:** {self.result.stats.conflicts_detected} | **已解决:** {self.result.stats.conflicts_resolved}")
+        lines.append(f"**总条目数:** {summary['total']}")
+        lines.append(f"**已处理:** {summary['processed']} | **待补证据:** {summary['needs_evidence']} | **待确认:** {summary['needs_confirmation']}")
+        lines.append(f"**检测到冲突:** {summary['conflicts_detected']} | **已解决:** {summary['conflicts_resolved']}")
         lines.append("")
 
         lines.append("---")
@@ -85,14 +87,15 @@ class TimelineGenerator:
         lines.append("")
         lines.append("| 类别 | 数量 |")
         lines.append("|------|------|")
-        lines.append(f"| 总条目数 | {self.result.stats.total} |")
-        lines.append(f"| ✅ 已处理 | {self.result.stats.processed} |")
-        lines.append(f"| ⏭️ 已跳过 | {self.result.stats.skipped} |")
-        lines.append(f"| ❌ 坏行 | {self.result.stats.bad} |")
-        lines.append(f"| 📎 待补证据 | {self.result.stats.needs_evidence} |")
-        lines.append(f"| 👤 待人工确认 | {self.result.stats.needs_confirmation} |")
-        lines.append(f"| ⚠️ 检测到冲突 | {self.result.stats.conflicts_detected} |")
-        lines.append(f"| ✅ 已解决冲突 | {self.result.stats.conflicts_resolved} |")
+        lines.append(f"| 总条目数 | {summary['total']} |")
+        lines.append(f"| ✅ 已处理 | {summary['processed']} |")
+        lines.append(f"| ⏭️ 已跳过 | {summary['skipped']} |")
+        lines.append(f"| ❌ 坏行 | {summary['bad']} |")
+        lines.append(f"| 📎 待补证据 | {summary['needs_evidence']} |")
+        lines.append(f"| 👤 待人工确认 | {summary['needs_confirmation']} |")
+        lines.append(f"| ⏳ 待处理 | {summary['pending']} |")
+        lines.append(f"| ⚠️ 检测到冲突 | {summary['conflicts_detected']} |")
+        lines.append(f"| ✅ 已解决冲突 | {summary['conflicts_resolved']} |")
         lines.append("")
 
         if self.result.bad_rows:
@@ -119,6 +122,22 @@ class TimelineGenerator:
             Path(output_path).write_text(content, encoding="utf-8")
 
         return content
+
+    def _calculate_summary(self) -> Dict[str, int]:
+        items = self.result.schedule_items
+        return {
+            "total": len(items),
+            "processed": sum(1 for i in items if i.status == ItemStatus.PROCESSED),
+            "skipped": sum(1 for i in items if i.status == ItemStatus.SKIPPED),
+            "bad": sum(1 for i in items if i.status == ItemStatus.BAD),
+            "needs_evidence": sum(1 for i in items if i.status == ItemStatus.NEEDS_EVIDENCE),
+            "needs_confirmation": sum(1 for i in items if i.status == ItemStatus.NEEDS_CONFIRMATION),
+            "pending": sum(1 for i in items if i.status == ItemStatus.PENDING),
+            "conflicts_detected": len(self.result.conflicts),
+            "conflicts_resolved": sum(1 for c in self.result.conflicts if c.resolved_at is not None),
+            "bad_rows": len(self.result.bad_rows),
+            "skipped_rows": len(self.result.skipped_rows),
+        }
 
     def _group_by_date(self, history: List[HistoryEntry]) -> Dict[str, List[HistoryEntry]]:
         grouped = defaultdict(list)
@@ -220,6 +239,8 @@ class DutyViewGenerator:
         self.result = result
 
     def generate_markdown(self, output_path: Optional[str] = None) -> str:
+        summary = self._calculate_summary()
+
         lines = []
         lines.append("# 音乐节排期 - 算法值班视图")
         lines.append("")
@@ -230,12 +251,12 @@ class DutyViewGenerator:
         lines.append("")
         lines.append("| 状态 | 数量 |")
         lines.append("|------|------|")
-        lines.append(f"| ✅ 已处理 | {self.result.stats.processed} |")
-        lines.append(f"| 📎 待补证据 | {self.result.stats.needs_evidence} |")
-        lines.append(f"| 👤 待人工确认 | {self.result.stats.needs_confirmation} |")
-        lines.append(f"| ⏳ 待处理 | {sum(1 for i in self.result.schedule_items if i.status == ItemStatus.PENDING)} |")
-        lines.append(f"| ⏭️ 已跳过 | {self.result.stats.skipped} |")
-        lines.append(f"| ❌ 坏行 | {self.result.stats.bad} |")
+        lines.append(f"| ✅ 已处理 | {summary['processed']} |")
+        lines.append(f"| 📎 待补证据 | {summary['needs_evidence']} |")
+        lines.append(f"| 👤 待人工确认 | {summary['needs_confirmation']} |")
+        lines.append(f"| ⏳ 待处理 | {summary['pending']} |")
+        lines.append(f"| ⏭️ 已跳过 | {summary['skipped']} |")
+        lines.append(f"| ❌ 坏行 | {summary['bad']} |")
         lines.append("")
 
         lines.append("## 📎 需要补充证据的条目")
@@ -306,3 +327,19 @@ class DutyViewGenerator:
             Path(output_path).write_text(content, encoding="utf-8")
 
         return content
+
+    def _calculate_summary(self) -> Dict[str, int]:
+        items = self.result.schedule_items
+        return {
+            "total": len(items),
+            "processed": sum(1 for i in items if i.status == ItemStatus.PROCESSED),
+            "skipped": sum(1 for i in items if i.status == ItemStatus.SKIPPED),
+            "bad": sum(1 for i in items if i.status == ItemStatus.BAD),
+            "needs_evidence": sum(1 for i in items if i.status == ItemStatus.NEEDS_EVIDENCE),
+            "needs_confirmation": sum(1 for i in items if i.status == ItemStatus.NEEDS_CONFIRMATION),
+            "pending": sum(1 for i in items if i.status == ItemStatus.PENDING),
+            "conflicts_detected": len(self.result.conflicts),
+            "conflicts_resolved": sum(1 for c in self.result.conflicts if c.resolved_at is not None),
+            "bad_rows": len(self.result.bad_rows),
+            "skipped_rows": len(self.result.skipped_rows),
+        }

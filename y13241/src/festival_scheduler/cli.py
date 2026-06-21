@@ -94,6 +94,7 @@ class FestivalScheduler:
         if auto_process:
             self._auto_mark_processed()
 
+        self.history_manager.recalculate_stats()
         self.history_manager._persist_history()
         self._print_final_stats()
 
@@ -227,10 +228,15 @@ class FestivalScheduler:
     def _print_final_stats(self):
         self.result.stats.end_time = datetime.now()
 
-        processed = sum(1 for i in self.result.schedule_items if i.status == ItemStatus.PROCESSED)
-        needs_evidence = sum(1 for i in self.result.schedule_items if i.status == ItemStatus.NEEDS_EVIDENCE)
-        needs_confirmation = sum(1 for i in self.result.schedule_items if i.status == ItemStatus.NEEDS_CONFIRMATION)
-        pending = sum(1 for i in self.result.schedule_items if i.status == ItemStatus.PENDING)
+        items = self.result.schedule_items
+        processed = sum(1 for i in items if i.status == ItemStatus.PROCESSED)
+        needs_evidence = sum(1 for i in items if i.status == ItemStatus.NEEDS_EVIDENCE)
+        needs_confirmation = sum(1 for i in items if i.status == ItemStatus.NEEDS_CONFIRMATION)
+        pending = sum(1 for i in items if i.status == ItemStatus.PENDING)
+        bad_status = sum(1 for i in items if i.status == ItemStatus.BAD)
+        skipped_status = sum(1 for i in items if i.status == ItemStatus.SKIPPED)
+        conflicts_total = len(self.result.conflicts)
+        conflicts_resolved = sum(1 for c in self.result.conflicts if c.resolved_at is not None)
 
         grid = Table.grid(expand=True)
         grid.add_column(justify="center")
@@ -241,9 +247,9 @@ class FestivalScheduler:
         grid.add_row(
             Panel(f"[bold green]✅ 已处理[/bold green]\n[green]{processed}[/green]",
                   border_style="green"),
-            Panel(f"[bold red]❌ 坏行[/bold red]\n[red]{self.result.stats.bad}[/red]",
+            Panel(f"[bold red]❌ 坏行[/bold red]\n[red]{bad_status}[/red]",
                   border_style="red"),
-            Panel(f"[bold yellow]⏭️  已跳过[/bold yellow]\n[yellow]{self.result.stats.skipped}[/yellow]",
+            Panel(f"[bold yellow]⏭️  已跳过[/bold yellow]\n[yellow]{skipped_status}[/yellow]",
                   border_style="yellow"),
             Panel(f"[bold blue]📎 待补证据[/bold blue]\n[blue]{needs_evidence}[/blue]",
                   border_style="blue"),
@@ -253,9 +259,9 @@ class FestivalScheduler:
                   border_style="magenta"),
             Panel(f"[bold white]⏳ 待处理[/bold white]\n[white]{pending}[/white]",
                   border_style="white"),
-            Panel(f"[bold yellow]⚠️  冲突总数[/bold yellow]\n[yellow]{self.result.stats.conflicts_detected}[/yellow]",
+            Panel(f"[bold yellow]⚠️  冲突总数[/bold yellow]\n[yellow]{conflicts_total}[/yellow]",
                   border_style="yellow"),
-            Panel(f"[bold green]✅ 已解决[/bold green]\n[green]{self.result.stats.conflicts_resolved}[/green]",
+            Panel(f"[bold green]✅ 已解决[/bold green]\n[green]{conflicts_resolved}[/green]",
                   border_style="green"),
         )
 

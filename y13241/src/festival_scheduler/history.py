@@ -122,19 +122,52 @@ class HistoryManager:
 
         self.result.history.append(entry)
 
-        if new_status == ItemStatus.PROCESSED:
-            self.result.stats.processed += 1
-        elif new_status == ItemStatus.SKIPPED:
-            self.result.stats.skipped += 1
-        elif new_status == ItemStatus.BAD:
-            self.result.stats.bad += 1
-        elif new_status == ItemStatus.NEEDS_EVIDENCE:
-            self.result.stats.needs_evidence += 1
-        elif new_status == ItemStatus.NEEDS_CONFIRMATION:
-            self.result.stats.needs_confirmation += 1
+        self._decrement_status_count(old_status)
+        self._increment_status_count(new_status)
 
         self._persist_history()
         return entry
+
+    def _increment_status_count(self, status: ItemStatus) -> None:
+        if status == ItemStatus.PROCESSED:
+            self.result.stats.processed += 1
+        elif status == ItemStatus.SKIPPED:
+            self.result.stats.skipped += 1
+        elif status == ItemStatus.BAD:
+            self.result.stats.bad += 1
+        elif status == ItemStatus.NEEDS_EVIDENCE:
+            self.result.stats.needs_evidence += 1
+        elif status == ItemStatus.NEEDS_CONFIRMATION:
+            self.result.stats.needs_confirmation += 1
+
+    def _decrement_status_count(self, status: ItemStatus) -> None:
+        if status == ItemStatus.PROCESSED:
+            self.result.stats.processed = max(0, self.result.stats.processed - 1)
+        elif status == ItemStatus.SKIPPED:
+            self.result.stats.skipped = max(0, self.result.stats.skipped - 1)
+        elif status == ItemStatus.BAD:
+            self.result.stats.bad = max(0, self.result.stats.bad - 1)
+        elif status == ItemStatus.NEEDS_EVIDENCE:
+            self.result.stats.needs_evidence = max(0, self.result.stats.needs_evidence - 1)
+        elif status == ItemStatus.NEEDS_CONFIRMATION:
+            self.result.stats.needs_confirmation = max(0, self.result.stats.needs_confirmation - 1)
+
+    def recalculate_stats(self) -> None:
+        stats = self.result.stats
+        stats.processed = 0
+        stats.skipped = 0
+        stats.bad = 0
+        stats.needs_evidence = 0
+        stats.needs_confirmation = 0
+        stats.total = len(self.result.schedule_items)
+
+        for item in self.result.schedule_items:
+            self._increment_status_count(item.status)
+
+        stats.conflicts_detected = len(self.result.conflicts)
+        stats.conflicts_resolved = sum(
+            1 for c in self.result.conflicts if c.resolved_at is not None
+        )
 
     def update_item_field(
         self,
@@ -291,6 +324,8 @@ class HistoryManager:
                 self.result.stats = ProcessingStats(**state_data["stats"])
             self.result.bad_rows = state_data.get("bad_rows", [])
             self.result.skipped_rows = state_data.get("skipped_rows", [])
+
+        self.recalculate_stats()
 
     def find_item_by_id(self, item_id: str) -> Optional[Union[ScheduleItem, ConflictRecord, AudioFile]]:
         try:

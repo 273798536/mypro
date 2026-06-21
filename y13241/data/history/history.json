@@ -1,9 +1,9 @@
 [
   {
-    "id": "76198bd7-6a32-4c25-9d2f-f867cd41aff2",
-    "timestamp": "2026-06-16T00:36:43.631865",
+    "id": "e4e32790-3201-4e98-b252-86d2c8f3b095",
+    "timestamp": "2026-06-21T17:51:42.293925",
     "action": "created",
-    "item_id": "b89804de-8617-417b-8851-94fa4bab2d8c",
+    "item_id": "acd876c4-9016-48e4-ab83-077ee3e84ded",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -11,7 +11,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "b89804de-8617-417b-8851-94fa4bab2d8c",
+      "id": "acd876c4-9016-48e4-ab83-077ee3e84ded",
       "track_id": "TRK001",
       "title": "夏日海浪",
       "artist": "乐队A",
@@ -41,10 +41,10 @@
     "screenshot_path": null
   },
   {
-    "id": "2ff29a3a-37a7-4be4-a524-285b798ff27b",
-    "timestamp": "2026-06-16T00:36:43.631936",
+    "id": "078f71c8-15ca-4e5c-bea9-744684479e6c",
+    "timestamp": "2026-06-21T17:51:42.293939",
     "action": "created",
-    "item_id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+    "item_id": "f0b44d84-21b4-4ed4-8eb5-b958cf4a3d89",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -52,7 +52,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+      "id": "f0b44d84-21b4-4ed4-8eb5-b958cf4a3d89",
       "track_id": "TRK002",
       "title": "城市夜曲",
       "artist": "乐队B",
@@ -82,10 +82,10 @@
     "screenshot_path": null
   },
   {
-    "id": "2fdc5c0f-1c84-44b5-9856-9a4ad65fbdee",
-    "timestamp": "2026-06-16T00:36:43.631961",
+    "id": "6b373a56-fb8a-4e58-98aa-809a31a6eb5d",
+    "timestamp": "2026-06-21T17:51:42.293946",
     "action": "created",
-    "item_id": "db9eb577-ae32-4260-918a-9e800aa42ee2",
+    "item_id": "3e270c39-b10a-4355-b61a-8bb4300680f9",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -93,7 +93,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "db9eb577-ae32-4260-918a-9e800aa42ee2",
+      "id": "3e270c39-b10a-4355-b61a-8bb4300680f9",
       "track_id": "TRK003",
       "title": "时间重叠1",
       "artist": "乐队C",
@@ -123,10 +123,10 @@
     "screenshot_path": null
   },
   {
-    "id": "1d9184d1-1bcc-47b7-b77a-f436701ab5e3",
-    "timestamp": "2026-06-16T00:36:43.631988",
+    "id": "928e2943-0d3c-411a-81bd-1dd6f66c5c0d",
+    "timestamp": "2026-06-21T17:51:42.293952",
     "action": "created",
-    "item_id": "b375c7fb-057c-4417-9e5e-09e9ee7f2b7a",
+    "item_id": "8915fa08-46e5-4400-a52e-6a8133034185",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -134,7 +134,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "b375c7fb-057c-4417-9e5e-09e9ee7f2b7a",
+      "id": "8915fa08-46e5-4400-a52e-6a8133034185",
       "track_id": "TRK004",
       "title": "时间重叠2",
       "artist": "乐队D",
@@ -164,10 +164,10 @@
     "screenshot_path": null
   },
   {
-    "id": "beceaee0-5037-4122-8fe6-5b527cfccf1e",
-    "timestamp": "2026-06-16T00:36:43.632037",
+    "id": "2f72e29b-a9eb-4294-a859-088bf44cbe76",
+    "timestamp": "2026-06-21T17:51:42.293959",
     "action": "created",
-    "item_id": "eda5f880-7b42-4a82-ab99-1bf3862f670b",
+    "item_id": "4d6986a6-1800-4b16-9f4c-37e4ca8b39da",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -175,7 +175,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "eda5f880-7b42-4a82-ab99-1bf3862f670b",
+      "id": "4d6986a6-1800-4b16-9f4c-37e4ca8b39da",
       "track_id": "TRK005",
       "title": "文件名不匹配",
       "artist": "乐队E",
@@ -205,10 +205,10 @@
     "screenshot_path": null
   },
   {
-    "id": "11a0f65e-88b8-464d-a422-463eb3aad693",
-    "timestamp": "2026-06-16T00:36:43.632068",
+    "id": "b1eb2951-b9d9-499d-b2e6-a803891c9119",
+    "timestamp": "2026-06-21T17:51:42.293965",
     "action": "created",
-    "item_id": "c1dadf49-49ee-480a-8117-60c268bf3f9a",
+    "item_id": "18aaacd4-ed7f-4e3e-b332-2fdb7750a5ed",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -216,7 +216,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "c1dadf49-49ee-480a-8117-60c268bf3f9a",
+      "id": "18aaacd4-ed7f-4e3e-b332-2fdb7750a5ed",
       "track_id": "TRK006",
       "title": "缺失文件",
       "artist": "乐队F",
@@ -246,10 +246,10 @@
     "screenshot_path": null
   },
   {
-    "id": "cc7f8bb4-5048-4ae3-b71a-8ba1087ba106",
-    "timestamp": "2026-06-16T00:36:43.632092",
+    "id": "3b942f07-27ac-419e-9262-143253e2fef8",
+    "timestamp": "2026-06-21T17:51:42.293973",
     "action": "created",
-    "item_id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
+    "item_id": "fb329576-01d0-44fd-9194-d0b3f1c80be7",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -257,7 +257,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
+      "id": "fb329576-01d0-44fd-9194-d0b3f1c80be7",
       "track_id": "TRK007",
       "title": "时码偏差",
       "artist": "乐队G",
@@ -287,10 +287,10 @@
     "screenshot_path": null
   },
   {
-    "id": "ad1e05d0-d88a-4f8d-a5e7-3441526cdb6a",
-    "timestamp": "2026-06-16T00:36:43.632114",
+    "id": "4dc1257f-2044-41f9-8ce0-4cb0886e6381",
+    "timestamp": "2026-06-21T17:51:42.293981",
     "action": "created",
-    "item_id": "7dce8e6f-fc71-4a29-ac65-db95709aa961",
+    "item_id": "eaabac72-cb45-4f94-abaa-646cc4deb2d6",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -298,7 +298,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "7dce8e6f-fc71-4a29-ac65-db95709aa961",
+      "id": "eaabac72-cb45-4f94-abaa-646cc4deb2d6",
       "track_id": "TRK008",
       "title": "重复条目",
       "artist": "乐队H",
@@ -328,10 +328,10 @@
     "screenshot_path": null
   },
   {
-    "id": "3b9b9c8c-a831-46ee-ae14-183bfb92c5bf",
-    "timestamp": "2026-06-16T00:36:43.632135",
+    "id": "45f1230d-ae59-4586-8cdd-9a4551c4b824",
+    "timestamp": "2026-06-21T17:51:42.293987",
     "action": "created",
-    "item_id": "455aa2af-8e62-4f89-a8b6-fc78cf3b1efb",
+    "item_id": "8f75fe33-e49c-4e18-a2cd-c09573d81ed5",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -339,7 +339,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "455aa2af-8e62-4f89-a8b6-fc78cf3b1efb",
+      "id": "8f75fe33-e49c-4e18-a2cd-c09573d81ed5",
       "track_id": "TRK008",
       "title": "重复条目副本",
       "artist": "乐队H2",
@@ -369,10 +369,10 @@
     "screenshot_path": null
   },
   {
-    "id": "ab39819a-9d08-4a2a-a74d-3a751038f7dc",
-    "timestamp": "2026-06-16T00:36:43.632159",
+    "id": "9ca16fe1-fd13-4874-8487-28771630cf93",
+    "timestamp": "2026-06-21T17:51:42.293993",
     "action": "created",
-    "item_id": "2a1ea4e8-5d01-4077-bd84-5050900b39d2",
+    "item_id": "7c2fb211-2c44-4660-a3e9-b0474294c1ed",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -380,7 +380,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "2a1ea4e8-5d01-4077-bd84-5050900b39d2",
+      "id": "7c2fb211-2c44-4660-a3e9-b0474294c1ed",
       "track_id": "TRK009",
       "title": "正常条目",
       "artist": "乐队I",
@@ -410,10 +410,10 @@
     "screenshot_path": null
   },
   {
-    "id": "f7a9905f-78bb-4775-b39e-ce2c368798e2",
-    "timestamp": "2026-06-16T00:36:43.632260",
+    "id": "6304a716-38a1-4675-986d-8eaa6cf80971",
+    "timestamp": "2026-06-21T17:51:42.293999",
     "action": "created",
-    "item_id": "6bc42796-2b90-487b-8a61-89210f2aa9a8",
+    "item_id": "6e0f3e9a-9aff-4eb5-96a3-263123f805c2",
     "actor": "system",
     "details": {
       "source": "examples/schedule.csv",
@@ -421,7 +421,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "6bc42796-2b90-487b-8a61-89210f2aa9a8",
+      "id": "6e0f3e9a-9aff-4eb5-96a3-263123f805c2",
       "track_id": "TRK011",
       "title": "多余文件测试",
       "artist": "乐队K",
@@ -451,10 +451,10 @@
     "screenshot_path": null
   },
   {
-    "id": "5badb79a-10e2-4716-87e4-213be8a78085",
-    "timestamp": "2026-06-16T00:36:44.020980",
+    "id": "6e5ca4e8-29d8-4031-8ad7-4ffb27398657",
+    "timestamp": "2026-06-21T17:51:42.295447",
     "action": "created",
-    "item_id": "800d1f35-b93f-42eb-8016-4ced9488dd7d",
+    "item_id": "179b8782-8428-464d-a106-6dfc938ad10f",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK007_10:25:00:00_乐队G_时码偏差.wav",
@@ -462,7 +462,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "800d1f35-b93f-42eb-8016-4ced9488dd7d",
+      "id": "179b8782-8428-464d-a106-6dfc938ad10f",
       "filename": "TRK007_10:25:00:00_乐队G_时码偏差.wav",
       "file_path": "data/audio_files/TRK007_10:25:00:00_乐队G_时码偏差.wav",
       "file_size": 11,
@@ -487,10 +487,10 @@
     "screenshot_path": null
   },
   {
-    "id": "3357ce40-cffc-4134-9979-fe7494fc1978",
-    "timestamp": "2026-06-16T00:36:44.023655",
+    "id": "efc24795-da91-4cd0-b1fb-962bf6966b46",
+    "timestamp": "2026-06-21T17:51:42.295476",
     "action": "created",
-    "item_id": "da8fde8c-9e6a-4c52-bfb9-0927163af666",
+    "item_id": "6deaef18-52f1-4996-8257-d51b335930b7",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK008_乐队H_重复条目.wav",
@@ -498,7 +498,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "da8fde8c-9e6a-4c52-bfb9-0927163af666",
+      "id": "6deaef18-52f1-4996-8257-d51b335930b7",
       "filename": "TRK008_乐队H_重复条目.wav",
       "file_path": "data/audio_files/TRK008_乐队H_重复条目.wav",
       "file_size": 11,
@@ -517,10 +517,10 @@
     "screenshot_path": null
   },
   {
-    "id": "4861e7e1-125f-41e9-aed9-ad6971d1cdf8",
-    "timestamp": "2026-06-16T00:36:44.023854",
+    "id": "348e9c95-52f3-49dc-a64e-e3eb63576b45",
+    "timestamp": "2026-06-21T17:51:42.295499",
     "action": "created",
-    "item_id": "8483ac34-8f42-4df9-9b60-7594bc26dd39",
+    "item_id": "3bb84e72-fe5b-47b3-9b5a-c08480271b1b",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK002_乐队B_城市夜曲.wav",
@@ -528,7 +528,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "8483ac34-8f42-4df9-9b60-7594bc26dd39",
+      "id": "3bb84e72-fe5b-47b3-9b5a-c08480271b1b",
       "filename": "TRK002_乐队B_城市夜曲.wav",
       "file_path": "data/audio_files/TRK002_乐队B_城市夜曲.wav",
       "file_size": 11,
@@ -547,10 +547,10 @@
     "screenshot_path": null
   },
   {
-    "id": "2039ad26-72a0-4df1-b23f-bf323e2ce29c",
-    "timestamp": "2026-06-16T00:36:44.023930",
+    "id": "fb794107-8ee5-43c3-99ca-12ba70a50546",
+    "timestamp": "2026-06-21T17:51:42.295519",
     "action": "created",
-    "item_id": "38bf4ab5-77ac-4a71-86aa-f5afe70f9713",
+    "item_id": "15c0c9d0-e2bc-483d-825a-459b0021f6b0",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK009_乐队I_正常条目.wav",
@@ -558,7 +558,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "38bf4ab5-77ac-4a71-86aa-f5afe70f9713",
+      "id": "15c0c9d0-e2bc-483d-825a-459b0021f6b0",
       "filename": "TRK009_乐队I_正常条目.wav",
       "file_path": "data/audio_files/TRK009_乐队I_正常条目.wav",
       "file_size": 11,
@@ -577,10 +577,10 @@
     "screenshot_path": null
   },
   {
-    "id": "0e01975a-3538-4aab-848f-65f6ee53fdcd",
-    "timestamp": "2026-06-16T00:36:44.024000",
+    "id": "02a3307a-b599-4407-8982-ef47ab27ee2c",
+    "timestamp": "2026-06-21T17:51:42.295539",
     "action": "created",
-    "item_id": "e39dbd8f-c7cf-475d-84f3-decc7e9052e8",
+    "item_id": "0287338f-14af-4707-b864-46cc7a624593",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK005_文件名不匹配_旧版本.jpg",
@@ -588,7 +588,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "e39dbd8f-c7cf-475d-84f3-decc7e9052e8",
+      "id": "0287338f-14af-4707-b864-46cc7a624593",
       "filename": "TRK005_文件名不匹配_旧版本.jpg",
       "file_path": "data/audio_files/TRK005_文件名不匹配_旧版本.jpg",
       "file_size": 11,
@@ -607,10 +607,10 @@
     "screenshot_path": null
   },
   {
-    "id": "9fdcefd8-e454-4b03-a5c5-a6259754e88c",
-    "timestamp": "2026-06-16T00:36:44.024066",
+    "id": "2a02436f-1836-4172-9165-7e41d7398a2b",
+    "timestamp": "2026-06-21T17:51:42.295559",
     "action": "created",
-    "item_id": "ed40a347-0a30-4fa8-8bf4-7d98fe7522b0",
+    "item_id": "4a02ae17-ccfe-48fd-b276-16ad655b051f",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK012_多余文件_不在曲目表.wav",
@@ -618,7 +618,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "ed40a347-0a30-4fa8-8bf4-7d98fe7522b0",
+      "id": "4a02ae17-ccfe-48fd-b276-16ad655b051f",
       "filename": "TRK012_多余文件_不在曲目表.wav",
       "file_path": "data/audio_files/TRK012_多余文件_不在曲目表.wav",
       "file_size": 11,
@@ -637,10 +637,10 @@
     "screenshot_path": null
   },
   {
-    "id": "c9c5514f-9495-4798-be60-0fb33e8dfc08",
-    "timestamp": "2026-06-16T00:36:44.024143",
+    "id": "cc748ac0-0e47-4640-9ec9-0abee25e9b46",
+    "timestamp": "2026-06-21T17:51:42.295579",
     "action": "created",
-    "item_id": "ab602c91-cd9e-403e-a9de-666ceeb59838",
+    "item_id": "430ad001-4a0e-453e-b99a-d8fdd8be9ef7",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK001_录音备注.md",
@@ -648,7 +648,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "ab602c91-cd9e-403e-a9de-666ceeb59838",
+      "id": "430ad001-4a0e-453e-b99a-d8fdd8be9ef7",
       "filename": "TRK001_录音备注.md",
       "file_path": "data/audio_files/TRK001_录音备注.md",
       "file_size": 58,
@@ -667,10 +667,10 @@
     "screenshot_path": null
   },
   {
-    "id": "2f961af1-b096-42d4-b080-28dba0269f52",
-    "timestamp": "2026-06-16T00:36:44.024392",
+    "id": "1bd48325-e54a-4e18-8236-095d603008a5",
+    "timestamp": "2026-06-21T17:51:42.295600",
     "action": "created",
-    "item_id": "9f7f01dd-9a60-4cf3-91ce-b7d32e0d03f0",
+    "item_id": "e3eb60e7-2be0-41ee-8eee-ad975ef9f254",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK005_文件名备注.txt",
@@ -678,7 +678,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "9f7f01dd-9a60-4cf3-91ce-b7d32e0d03f0",
+      "id": "e3eb60e7-2be0-41ee-8eee-ad975ef9f254",
       "filename": "TRK005_文件名备注.txt",
       "file_path": "data/audio_files/TRK005_文件名备注.txt",
       "file_size": 52,
@@ -697,10 +697,10 @@
     "screenshot_path": null
   },
   {
-    "id": "cb03a096-6ea4-470b-874e-46025a5de34e",
-    "timestamp": "2026-06-16T00:36:44.026152",
+    "id": "739246b3-7e69-4f1c-9dd9-7f44d100bf25",
+    "timestamp": "2026-06-21T17:51:42.295619",
     "action": "created",
-    "item_id": "a9b67e6d-d58a-4be7-90b4-f880cb1faf57",
+    "item_id": "88f42256-5d6d-45af-9ae0-28fb2dd4db56",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK003_乐队C_时间重叠1.wav",
@@ -708,7 +708,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "a9b67e6d-d58a-4be7-90b4-f880cb1faf57",
+      "id": "88f42256-5d6d-45af-9ae0-28fb2dd4db56",
       "filename": "TRK003_乐队C_时间重叠1.wav",
       "file_path": "data/audio_files/TRK003_乐队C_时间重叠1.wav",
       "file_size": 11,
@@ -727,10 +727,10 @@
     "screenshot_path": null
   },
   {
-    "id": "1379c188-feee-46bf-b59d-edfc318b0d26",
-    "timestamp": "2026-06-16T00:36:44.026411",
+    "id": "85746bf7-a9a5-4a3d-bffc-d4e48c5f2b1f",
+    "timestamp": "2026-06-21T17:51:42.295639",
     "action": "created",
-    "item_id": "4b25bbd0-f9d7-491b-904f-873d6987fa87",
+    "item_id": "0a61cd91-bce8-46d9-b84a-c205fa942145",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK001_乐队A_彩排截图.png",
@@ -738,7 +738,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "4b25bbd0-f9d7-491b-904f-873d6987fa87",
+      "id": "0a61cd91-bce8-46d9-b84a-c205fa942145",
       "filename": "TRK001_乐队A_彩排截图.png",
       "file_path": "data/audio_files/TRK001_乐队A_彩排截图.png",
       "file_size": 11,
@@ -757,10 +757,10 @@
     "screenshot_path": null
   },
   {
-    "id": "8daf82fd-7a40-4e84-9f03-d0e721f77037",
-    "timestamp": "2026-06-16T00:36:44.026489",
+    "id": "e533b644-788c-4d41-8366-a3433869deaf",
+    "timestamp": "2026-06-21T17:51:42.295657",
     "action": "created",
-    "item_id": "d66fd1ee-e6c6-4cef-a7f1-771e7260100a",
+    "item_id": "476b9a2c-a5c9-40b6-adf1-b0ef4c918206",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK005_乐队E_错误文件名.wav",
@@ -768,7 +768,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "d66fd1ee-e6c6-4cef-a7f1-771e7260100a",
+      "id": "476b9a2c-a5c9-40b6-adf1-b0ef4c918206",
       "filename": "TRK005_乐队E_错误文件名.wav",
       "file_path": "data/audio_files/TRK005_乐队E_错误文件名.wav",
       "file_size": 11,
@@ -787,10 +787,10 @@
     "screenshot_path": null
   },
   {
-    "id": "56eb627b-0510-4a84-8a3b-303a55891241",
-    "timestamp": "2026-06-16T00:36:44.026556",
+    "id": "3d532cf9-43c7-4309-a16e-2fd43205f624",
+    "timestamp": "2026-06-21T17:51:42.295676",
     "action": "created",
-    "item_id": "cb55178d-2d5a-4dde-affd-f1d3ed267814",
+    "item_id": "03c8a97f-e4cc-4473-a447-9e03832924e4",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK001_乐队A_夏日海浪.wav",
@@ -798,7 +798,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "cb55178d-2d5a-4dde-affd-f1d3ed267814",
+      "id": "03c8a97f-e4cc-4473-a447-9e03832924e4",
       "filename": "TRK001_乐队A_夏日海浪.wav",
       "file_path": "data/audio_files/TRK001_乐队A_夏日海浪.wav",
       "file_size": 11,
@@ -817,10 +817,10 @@
     "screenshot_path": null
   },
   {
-    "id": "2a7ed068-eb7a-4e7e-8193-cc13ebda1ea0",
-    "timestamp": "2026-06-16T00:36:44.037842",
+    "id": "1e606e47-e670-497c-ae41-50ded2232a41",
+    "timestamp": "2026-06-21T17:51:42.295694",
     "action": "created",
-    "item_id": "420b86df-2121-4b48-8306-eb87f4ac5e9d",
+    "item_id": "a089864a-685a-4c56-92c6-76f02d640e91",
     "actor": "system",
     "details": {
       "source": "data/audio_files/TRK004_乐队D_时间重叠2.wav",
@@ -828,7 +828,7 @@
     },
     "old_value": null,
     "new_value": {
-      "id": "420b86df-2121-4b48-8306-eb87f4ac5e9d",
+      "id": "a089864a-685a-4c56-92c6-76f02d640e91",
       "filename": "TRK004_乐队D_时间重叠2.wav",
       "file_path": "data/audio_files/TRK004_乐队D_时间重叠2.wav",
       "file_size": 11,
@@ -847,21 +847,21 @@
     "screenshot_path": null
   },
   {
-    "id": "3f438657-f65f-4bea-9d70-5050679885ef",
-    "timestamp": "2026-06-16T00:36:44.313684",
+    "id": "e0e383dd-28be-4003-916b-ab09e23269ab",
+    "timestamp": "2026-06-21T17:51:42.297377",
     "action": "conflict_detected",
-    "item_id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
+    "item_id": "fb329576-01d0-44fd-9194-d0b3f1c80be7",
     "actor": "system",
     "details": {
-      "conflict_id": "3e860484-b5eb-4646-91a5-a9982d00fec5",
+      "conflict_id": "21f0486e-a903-4769-9c3f-7c58654752ff",
       "conflict_type": "name_mismatch"
     },
     "old_value": null,
     "new_value": {
-      "id": "3e860484-b5eb-4646-91a5-a9982d00fec5",
+      "id": "21f0486e-a903-4769-9c3f-7c58654752ff",
       "conflict_type": "name_mismatch",
-      "schedule_item_id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
-      "audio_file_id": "800d1f35-b93f-42eb-8016-4ced9488dd7d",
+      "schedule_item_id": "fb329576-01d0-44fd-9194-d0b3f1c80be7",
+      "audio_file_id": "179b8782-8428-464d-a106-6dfc938ad10f",
       "description": "文件名不匹配：曲目表预期 'TRK007_乐队G_时码偏差.wav'，实际文件 'TRK007_10:25:00:00_乐队G_时码偏差.wav'",
       "severity": "warning",
       "resolution": null,
@@ -875,20 +875,20 @@
     "screenshot_path": null
   },
   {
-    "id": "4e8fa247-bc7e-406d-989f-ce11eb8f784a",
-    "timestamp": "2026-06-16T00:36:44.313732",
+    "id": "fc4f5f55-f40a-48f7-93bb-1f148bd46683",
+    "timestamp": "2026-06-21T17:51:42.297386",
     "action": "conflict_detected",
-    "item_id": "c1dadf49-49ee-480a-8117-60c268bf3f9a",
+    "item_id": "18aaacd4-ed7f-4e3e-b332-2fdb7750a5ed",
     "actor": "system",
     "details": {
-      "conflict_id": "a14ee5de-cb9e-4d6b-bddd-c03f0836ecec",
+      "conflict_id": "f27eb35f-04dc-47d5-9137-6aedb61a7162",
       "conflict_type": "missing_file"
     },
     "old_value": null,
     "new_value": {
-      "id": "a14ee5de-cb9e-4d6b-bddd-c03f0836ecec",
+      "id": "f27eb35f-04dc-47d5-9137-6aedb61a7162",
       "conflict_type": "missing_file",
-      "schedule_item_id": "c1dadf49-49ee-480a-8117-60c268bf3f9a",
+      "schedule_item_id": "18aaacd4-ed7f-4e3e-b332-2fdb7750a5ed",
       "audio_file_id": null,
       "description": "缺失音频文件：曲目 '缺失文件' (TRK006) 在音频文件夹中未找到对应文件",
       "severity": "error",
@@ -908,20 +908,20 @@
     "screenshot_path": null
   },
   {
-    "id": "596b94f5-8475-4839-9358-9772aca2b20d",
-    "timestamp": "2026-06-16T00:36:44.313844",
+    "id": "35933ee5-ab02-49ac-83cb-5d88b81000a5",
+    "timestamp": "2026-06-21T17:51:42.297392",
     "action": "conflict_detected",
-    "item_id": "6bc42796-2b90-487b-8a61-89210f2aa9a8",
+    "item_id": "6e0f3e9a-9aff-4eb5-96a3-263123f805c2",
     "actor": "system",
     "details": {
-      "conflict_id": "7a40f028-010a-455b-957e-56c2f9f2799e",
+      "conflict_id": "d6d02431-73ed-4f25-93bc-5283a39840d7",
       "conflict_type": "missing_file"
     },
     "old_value": null,
     "new_value": {
-      "id": "7a40f028-010a-455b-957e-56c2f9f2799e",
+      "id": "d6d02431-73ed-4f25-93bc-5283a39840d7",
       "conflict_type": "missing_file",
-      "schedule_item_id": "6bc42796-2b90-487b-8a61-89210f2aa9a8",
+      "schedule_item_id": "6e0f3e9a-9aff-4eb5-96a3-263123f805c2",
       "audio_file_id": null,
       "description": "缺失音频文件：曲目 '多余文件测试' (TRK011) 在音频文件夹中未找到对应文件",
       "severity": "error",
@@ -941,21 +941,21 @@
     "screenshot_path": null
   },
   {
-    "id": "27bedfb4-5d75-438f-8d1d-b20c71ed2dbb",
-    "timestamp": "2026-06-16T00:36:44.313886",
+    "id": "0e4c05bc-56cf-42ad-8721-a10aee3787b2",
+    "timestamp": "2026-06-21T17:51:42.297400",
     "action": "conflict_detected",
     "item_id": null,
     "actor": "system",
     "details": {
-      "conflict_id": "84a45870-f15d-4e96-9b61-e1ee7229da6c",
+      "conflict_id": "5d514ed6-58a2-474c-912f-65d34b2458d3",
       "conflict_type": "extra_file"
     },
     "old_value": null,
     "new_value": {
-      "id": "84a45870-f15d-4e96-9b61-e1ee7229da6c",
+      "id": "5d514ed6-58a2-474c-912f-65d34b2458d3",
       "conflict_type": "extra_file",
       "schedule_item_id": null,
-      "audio_file_id": "ed40a347-0a30-4fa8-8bf4-7d98fe7522b0",
+      "audio_file_id": "4a02ae17-ccfe-48fd-b276-16ad655b051f",
       "description": "多余文件：音频文件 'TRK012_多余文件_不在曲目表.wav' 的 TRACK ID 'TRK012' 不在曲目表中",
       "severity": "info",
       "resolution": null,
@@ -974,20 +974,20 @@
     "screenshot_path": null
   },
   {
-    "id": "73121915-fbb2-481e-a0d8-3469b0d74807",
-    "timestamp": "2026-06-16T00:36:44.313912",
+    "id": "2af98367-c7a3-47d1-8eb9-597733b7b49f",
+    "timestamp": "2026-06-21T17:51:42.297405",
     "action": "conflict_detected",
-    "item_id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+    "item_id": "f0b44d84-21b4-4ed4-8eb5-b958cf4a3d89",
     "actor": "system",
     "details": {
-      "conflict_id": "81e25832-7727-482e-b9fa-c7461aa19694",
+      "conflict_id": "47995ff7-9566-46f6-99a9-9ec372566add",
       "conflict_type": "time_overlap"
     },
     "old_value": null,
     "new_value": {
-      "id": "81e25832-7727-482e-b9fa-c7461aa19694",
+      "id": "47995ff7-9566-46f6-99a9-9ec372566add",
       "conflict_type": "time_overlap",
-      "schedule_item_id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+      "schedule_item_id": "f0b44d84-21b4-4ed4-8eb5-b958cf4a3d89",
       "audio_file_id": null,
       "description": "时间重叠：第1天 主舞台 摊位 '城市夜曲' (10:05:00:00-10:10:00:00) 与 '时间重叠1' (10:08:00:00-10:13:00:00) 重叠 120.00 秒",
       "severity": "error",
@@ -1007,20 +1007,20 @@
     "screenshot_path": null
   },
   {
-    "id": "e6fbbf69-4ae0-44bf-ade4-eaeba9abd3d1",
-    "timestamp": "2026-06-16T00:36:44.313935",
+    "id": "474913a8-a931-497f-b013-24e4ba882e3b",
+    "timestamp": "2026-06-21T17:51:42.297411",
     "action": "conflict_detected",
-    "item_id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+    "item_id": "f0b44d84-21b4-4ed4-8eb5-b958cf4a3d89",
     "actor": "system",
     "details": {
-      "conflict_id": "5ec0dade-1bda-43a7-980d-7f9da0da7cb8",
+      "conflict_id": "bff3cd78-3a63-4f18-a710-4826ed2571d4",
       "conflict_type": "time_overlap"
     },
     "old_value": null,
     "new_value": {
-      "id": "5ec0dade-1bda-43a7-980d-7f9da0da7cb8",
+      "id": "bff3cd78-3a63-4f18-a710-4826ed2571d4",
       "conflict_type": "time_overlap",
-      "schedule_item_id": "183c4304-4c79-42c2-aa23-96f2163079aa",
+      "schedule_item_id": "f0b44d84-21b4-4ed4-8eb5-b958cf4a3d89",
       "audio_file_id": null,
       "description": "时间重叠：第1天 主舞台 摊位 '城市夜曲' (10:05:00:00-10:10:00:00) 与 '时间重叠2' (10:09:00:00-10:14:00:00) 重叠 60.00 秒",
       "severity": "error",
@@ -1040,20 +1040,20 @@
     "screenshot_path": null
   },
   {
-    "id": "1ff275ed-e431-4564-bd23-c35e831a03de",
-    "timestamp": "2026-06-16T00:36:44.320337",
+    "id": "b8bb0e11-1160-4a6e-aef9-5fe1554a17cf",
+    "timestamp": "2026-06-21T17:51:42.297417",
     "action": "conflict_detected",
-    "item_id": "db9eb577-ae32-4260-918a-9e800aa42ee2",
+    "item_id": "3e270c39-b10a-4355-b61a-8bb4300680f9",
     "actor": "system",
     "details": {
-      "conflict_id": "889128ff-8719-40be-8c3e-29bf97b58d82",
+      "conflict_id": "bbcb3f1e-4dcb-44c0-b245-81801a92f853",
       "conflict_type": "time_overlap"
     },
     "old_value": null,
     "new_value": {
-      "id": "889128ff-8719-40be-8c3e-29bf97b58d82",
+      "id": "bbcb3f1e-4dcb-44c0-b245-81801a92f853",
       "conflict_type": "time_overlap",
-      "schedule_item_id": "db9eb577-ae32-4260-918a-9e800aa42ee2",
+      "schedule_item_id": "3e270c39-b10a-4355-b61a-8bb4300680f9",
       "audio_file_id": null,
       "description": "时间重叠：第1天 主舞台 摊位 '时间重叠1' (10:08:00:00-10:13:00:00) 与 '时间重叠2' (10:09:00:00-10:14:00:00) 重叠 240.00 秒",
       "severity": "error",
@@ -1073,21 +1073,21 @@
     "screenshot_path": null
   },
   {
-    "id": "adf1ec77-1f3a-41ad-b63f-be781c6f2e41",
-    "timestamp": "2026-06-16T00:36:44.320405",
+    "id": "eab721dc-8365-420d-b973-87a21f498d5e",
+    "timestamp": "2026-06-21T17:51:42.297423",
     "action": "conflict_detected",
-    "item_id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
+    "item_id": "fb329576-01d0-44fd-9194-d0b3f1c80be7",
     "actor": "system",
     "details": {
-      "conflict_id": "d215e636-1bbd-4742-82bb-87e165d340ac",
+      "conflict_id": "1eaeff70-7d05-4a96-b148-68edf872b014",
       "conflict_type": "timecode_drift"
     },
     "old_value": null,
     "new_value": {
-      "id": "d215e636-1bbd-4742-82bb-87e165d340ac",
+      "id": "1eaeff70-7d05-4a96-b148-68edf872b014",
       "conflict_type": "timecode_drift",
-      "schedule_item_id": "e1aa10b2-4a18-4073-ae82-4da76e6cdbeb",
-      "audio_file_id": "800d1f35-b93f-42eb-8016-4ced9488dd7d",
+      "schedule_item_id": "fb329576-01d0-44fd-9194-d0b3f1c80be7",
+      "audio_file_id": "179b8782-8428-464d-a106-6dfc938ad10f",
       "description": "时码偏差超过半拍：曲目 '时码偏差' 预期时码 10:25:00:12，文件时码 10:25:00:00，偏差 0.4800 秒 (允许偏差 0.0200 秒)",
       "severity": "warning",
       "resolution": null,
@@ -1101,20 +1101,20 @@
     "screenshot_path": null
   },
   {
-    "id": "5947c3e2-243d-4126-8221-302c44be91d9",
-    "timestamp": "2026-06-16T00:36:44.320433",
+    "id": "fda22b4c-73eb-4dce-b151-9ae7f2af776e",
+    "timestamp": "2026-06-21T17:51:42.297428",
     "action": "conflict_detected",
-    "item_id": "455aa2af-8e62-4f89-a8b6-fc78cf3b1efb",
+    "item_id": "8f75fe33-e49c-4e18-a2cd-c09573d81ed5",
     "actor": "system",
     "details": {
-      "conflict_id": "c06fdd96-181e-495f-9836-49ab3332c8de",
+      "conflict_id": "b4abc6b9-d5ab-4f51-8332-39a848a94ad4",
       "conflict_type": "duplicate"
     },
     "old_value": null,
     "new_value": {
-      "id": "c06fdd96-181e-495f-9836-49ab3332c8de",
+      "id": "b4abc6b9-d5ab-4f51-8332-39a848a94ad4",
       "conflict_type": "duplicate",
-      "schedule_item_id": "455aa2af-8e62-4f89-a8b6-fc78cf3b1efb",
+      "schedule_item_id": "8f75fe33-e49c-4e18-a2cd-c09573d81ed5",
       "audio_file_id": null,
       "description": "重复条目：TRACK ID 'TRK008' 在曲目表中出现 2 次。首现条目：'重复条目'，重复条目：'重复条目副本'",
       "severity": "warning",
@@ -1133,10 +1133,10 @@
     "screenshot_path": null
   },
   {
-    "id": "9e310452-2090-46eb-a639-13a5da4f6498",
-    "timestamp": "2026-06-16T00:36:45.737732",
+    "id": "2ef2f5d7-5f0c-4f9e-9d82-380c15224b23",
+    "timestamp": "2026-06-21T17:51:42.304793",
     "action": "status_changed",
-    "item_id": "b89804de-8617-417b-8851-94fa4bab2d8c",
+    "item_id": "acd876c4-9016-48e4-ab83-077ee3e84ded",
     "actor": "system",
     "details": {
       "reason": "无冲突，自动标记为已处理"
@@ -1147,10 +1147,10 @@
     "screenshot_path": null
   },
   {
-    "id": "a8027d0c-e220-42a2-992c-fda9d80aebcd",
-    "timestamp": "2026-06-16T00:36:45.779055",
+    "id": "0de5ad37-a65a-4963-81cf-3b02f6673932",
+    "timestamp": "2026-06-21T17:51:42.306225",
     "action": "status_changed",
-    "item_id": "eda5f880-7b42-4a82-ab99-1bf3862f670b",
+    "item_id": "4d6986a6-1800-4b16-9f4c-37e4ca8b39da",
     "actor": "system",
     "details": {
       "reason": "无冲突，自动标记为已处理"
@@ -1161,10 +1161,10 @@
     "screenshot_path": null
   },
   {
-    "id": "1907eb64-bd6c-4a39-8c14-152189594e2f",
-    "timestamp": "2026-06-16T00:36:45.958883",
+    "id": "ae265e08-3fbe-4a26-9640-7ada72297489",
+    "timestamp": "2026-06-21T17:51:42.307374",
     "action": "status_changed",
-    "item_id": "7dce8e6f-fc71-4a29-ac65-db95709aa961",
+    "item_id": "eaabac72-cb45-4f94-abaa-646cc4deb2d6",
     "actor": "system",
     "details": {
       "reason": "无冲突，自动标记为已处理"
@@ -1175,10 +1175,10 @@
     "screenshot_path": null
   },
   {
-    "id": "8ef2564d-c9aa-4ad8-a96c-df09a57e544f",
-    "timestamp": "2026-06-16T00:36:45.997127",
+    "id": "3d56615d-3a89-4678-b564-567290d1e13a",
+    "timestamp": "2026-06-21T17:51:42.308531",
     "action": "status_changed",
-    "item_id": "2a1ea4e8-5d01-4077-bd84-5050900b39d2",
+    "item_id": "7c2fb211-2c44-4660-a3e9-b0474294c1ed",
     "actor": "system",
     "details": {
       "reason": "无冲突，自动标记为已处理"
@@ -1189,51 +1189,51 @@
     "screenshot_path": null
   },
   {
-    "id": "4d99a55a-e8d7-49d0-ab23-6e8b9c3b5839",
-    "timestamp": "2026-06-16T00:36:46.530058",
+    "id": "b7792f43-d56c-4043-b6bc-a07d8121dd39",
+    "timestamp": "2026-06-21T17:51:42.313143",
     "action": "note_added",
-    "item_id": "b89804de-8617-417b-8851-94fa4bab2d8c",
+    "item_id": "acd876c4-9016-48e4-ab83-077ee3e84ded",
     "actor": "值班员-张三",
     "details": {
       "item_type": "ScheduleItem"
     },
     "old_value": [],
     "new_value": [
-      "录音师老许确认：音量已调整到合适水平"
+      "录音师老许确认：音量已调整妥当"
     ],
-    "note": "录音师老许确认：音量已调整到合适水平",
+    "note": "录音师老许确认：音量已调整妥当",
     "screenshot_path": null
   },
   {
-    "id": "b26fb1ab-7998-49f1-a563-6590772d4ce8",
-    "timestamp": "2026-06-16T00:36:46.635431",
+    "id": "1d39839c-ffda-4b09-bf0b-b1e84b14a24f",
+    "timestamp": "2026-06-21T17:51:42.314684",
     "action": "screenshot_added",
-    "item_id": "b89804de-8617-417b-8851-94fa4bab2d8c",
+    "item_id": "acd876c4-9016-48e4-ab83-077ee3e84ded",
     "actor": "值班员-张三",
     "details": {
       "item_type": "ScheduleItem",
       "original_path": "data/audio_files/TRK001_乐队A_彩排截图.png",
-      "caption": "彩排现场截图，确认设备正常"
+      "caption": "彩排现场确认设备正常"
     },
     "old_value": [],
     "new_value": [
-      "data/history/screenshots/b89804de-8617-417b-8851-94fa4bab2d8c_20260616_003646.png"
+      "data/history/screenshots/acd876c4-9016-48e4-ab83-077ee3e84ded_20260621_175142.png"
     ],
-    "note": "彩排现场截图，确认设备正常",
-    "screenshot_path": "data/history/screenshots/b89804de-8617-417b-8851-94fa4bab2d8c_20260616_003646.png"
+    "note": "彩排现场确认设备正常",
+    "screenshot_path": "data/history/screenshots/acd876c4-9016-48e4-ab83-077ee3e84ded_20260621_175142.png"
   },
   {
-    "id": "15ee230f-f202-4d3f-95e6-a0114fe81463",
-    "timestamp": "2026-06-16T00:36:46.687479",
+    "id": "1bdeed77-971a-46cb-a4fc-25b107fbb632",
+    "timestamp": "2026-06-21T17:51:42.316051",
     "action": "status_changed",
-    "item_id": "eda5f880-7b42-4a82-ab99-1bf3862f670b",
+    "item_id": "f0b44d84-21b4-4ed4-8eb5-b958cf4a3d89",
     "actor": "值班员-张三",
     "details": {
-      "reason": "文件名已修正，重新检查通过"
+      "reason": "人工确认后标记为已处理"
     },
-    "old_value": "processed",
+    "old_value": "needs_confirmation",
     "new_value": "processed",
-    "note": "文件名已修正，重新检查通过",
+    "note": "人工确认后标记为已处理",
     "screenshot_path": null
   }
 ]
