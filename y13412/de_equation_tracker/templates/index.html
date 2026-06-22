@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>微分方程错因追踪</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>微分方程错因追踪</h1>
+    <p class="sub">按教研编辑阿宁的日常流程：收参数表 → 核备注 → 图顺但明细对不回去就单独拎出来</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 上传参数表</h2>
+      <p class="hint">支持 CSV 或 Excel（.xlsx / .xls）。坏行不会混进成功结果，会被单独分类列出。</p>
+      <div class="upload-area">
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
+        <button id="runBtn" class="primary">开始处理</button>
+      </div>
+      <div class="samples">
+        <p>或者直接用样例试试：</p>
+        <div id="sampleList" class="sample-chips"></div>
+      </div>
+    </section>
+
+    <section class="card" id="resultCard" style="display:none;">
+      <h2>2. 处理结果</h2>
+      <div id="summary" class="summary-grid"></div>
+
+      <div class="exports">
+        <a id="dlSuccess" class="btn" href="#" target="_blank">📄 下载成功记录</a>
+        <a id="dlBad" class="btn warn" href="#" target="_blank">⚠️ 下载坏记录（按分类分sheet）</a>
+        <a id="dlReport" class="btn primary" href="#" target="_blank">📝 下载完整报告(Markdown)</a>
+      </div>
+
+      <h3>明细（按分类，不混放）</h3>
+      <div class="tabs">
+        <button class="tab active" data-tab="successful">成功 <span id="cnt-success" class="badge"></span></button>
+        <button class="tab" data-tab="bad_missing">缺字段 <span id="cnt-missing" class="badge"></span></button>
+        <button class="tab" data-tab="bad_format">格式问题 <span id="cnt-format" class="badge"></span></button>
+        <button class="tab" data-tab="bad_business">业务规则 <span id="cnt-business" class="badge"></span></button>
+        <button class="tab" data-tab="duplicates">重复样本 <span id="cnt-dup" class="badge"></span></button>
+      </div>
+
+      <div id="tabContent" class="tab-content"></div>
+    </section>
+
+    <section class="card">
+      <h2>试用流程</h2>
+      <ol class="steps">
+        <li><b>数据放哪：</b>上传后临时文件存 <code>data/input/</code>；样例在 <code>data/samples/</code>。</li>
+        <li><b>怎么跑：</b>选文件点"开始处理"，成功结果去 <code>data/output/</code>。</li>
+        <li><b>坏记录去哪看：</b>按分类分 sheet 存在 <code>data/bad_records/</code>，复盘直接读"现场交接"那一节。</li>
+        <li><b>接口口径：</b>返回除了 success，明细里都带 <code>source / status / last_manual_note / anomalies</code> 和可导出摘要。</li>
+      </ol>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
