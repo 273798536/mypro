@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>微分方程参数沙盘</title>
+  <link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="logo">∂</span>
+      <div>
+        <h1>微分方程参数沙盘</h1>
+        <p class="subtitle">题目管理 · 参数复核 · 导入追踪</p>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="import">数据导入</button>
+      <button class="tab-btn" data-tab="review">复核入口</button>
+      <button class="tab-btn" data-tab="records">导入记录</button>
+      <button class="tab-btn" data-tab="logs">修改痕迹</button>
+    </nav>
+  </header>
+
+  <main class="app-main">
+    <section id="tab-import" class="tab-panel active">
+      <div class="panel-card">
+        <h2>数据导入 <span class="hint">支持 CSV / Excel / JSON / TXT，幂等去重</span></h2>
+        <p class="description">
+          同一文件重复导入不会重复计数。系统通过文件哈希自动识别重复批次，并在报告中明确标记新增与跳过内容。
+          如遇排序不稳定，系统会中止导入并告知值班同事需要补齐的材料。
+        </p>
+
+        <div class="form-row">
+          <label class="form-label">导入类型</label>
+          <select id="importType">
+            <option value="question">题目清单</option>
+            <option value="parameter">参数版本</option>
+            <option value="supplement">补录记录</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">操作人</label>
+          <input id="operator" type="text" value="阿宁" placeholder="请输入您的姓名或工号" />
+        </div>
+
+        <div class="form-row">
+          <label class="form-label">选择文件</label>
+          <input id="fileInput" type="file" accept=".csv,.xlsx,.xls,.json,.txt" />
+        </div>
+
+        <button id="importBtn" class="primary-btn">开始导入</button>
+
+        <div id="importResult" class="result-box" style="display:none;"></div>
+      </div>
+
+      <div class="panel-card">
+        <h3>模板字段说明</h3>
+        <div class="template-grid">
+          <div class="template-item">
+            <strong>题目清单</strong>
+            <code>question_no, title, formula, description, difficulty, category</code>
+          </div>
+          <div class="template-item">
+            <strong>参数版本</strong>
+            <code>question_no, version_no, param_name, param_value, unit, boundary_condition, description, data_type</code>
+          </div>
+          <div class="template-item">
+            <strong>补录记录</strong>
+            <code>question_no, batch_no, supplement_type, content, source, remark</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-review" class="tab-panel">
+      <div class="panel-card">
+        <h2>复核入口 <span class="hint">参数 · 单位 · 边界条件一览无余</span></h2>
+        <p class="description">
+          在这里可以按题目编号或 ID 进入复核页面，所有公式与专业术语完整保留，关键的单位、参数取值和边界条件都可以直接复核。
+          同时可查看该题目相关的所有补录记录与修改痕迹。
+        </p>
+
+        <div class="form-row inline">
+          <label class="form-label">题目编号</label>
+          <input id="reviewNo" type="text" placeholder="例如：ODE-001" />
+          <button id="reviewByNoBtn" class="primary-btn">按编号查询</button>
+        </div>
+
+        <div class="form-row inline">
+          <label class="form-label">或题目 ID</label>
+          <input id="reviewId" type="number" placeholder="数字 ID" />
+          <button id="reviewByIdBtn" class="primary-btn">按 ID 查询</button>
+        </div>
+
+        <hr />
+
+        <h3>题目列表 <span class="hint" id="qCount"></span></h3>
+        <div class="form-row inline">
+          <input id="qKeyword" type="text" placeholder="关键词（题目编号或标题）" />
+          <input id="qCategory" type="text" placeholder="分类" />
+          <button id="searchQBtn" class="primary-btn">搜索</button>
+        </div>
+
+        <table class="data-table" id="questionTable">
+          <thead>
+            <tr>
+              <th>编号</th>
+              <th>标题</th>
+              <th>分类</th>
+              <th>难度</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div id="reviewDetail" class="review-detail" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section id="tab-records" class="tab-panel">
+      <div class="panel-card">
+        <h2>导入记录 <span class="hint">每次导入和修改的完整痕迹</span></h2>
+        <p class="description">
+          所有导入操作都会在此处留痕。重复导入会自动跳过并标记。点击"查看报告"可以看到该批次的新增、跳过明细。
+        </p>
+
+        <div class="form-row inline">
+          <input id="rBatchNo" type="text" placeholder="批次号" />
+          <select id="rStatus">
+            <option value="">全部状态</option>
+            <option value="completed">已完成</option>
+            <option value="completed_with_errors">有错误</option>
+            <option value="skipped_duplicate">重复跳过</option>
+            <option value="aborted_sort_unstable">排序中止</option>
+          </select>
+          <button id="searchRBtn" class="primary-btn">查询</button>
+        </div>
+
+        <table class="data-table" id="recordTable">
+          <thead>
+            <tr>
+              <th>批次号</th>
+              <th>文件名</th>
+              <th>类型</th>
+              <th>总数</th>
+              <th>新增</th>
+              <th>跳过</th>
+              <th>更新</th>
+              <th>错误</th>
+              <th>状态</th>
+              <th>导入时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div id="reportDetail" class="report-detail" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section id="tab-logs" class="tab-panel">
+      <div class="panel-card">
+        <h2>修改痕迹 <span class="hint">追踪每次变更，谁改了什么一目了然</span></h2>
+        <p class="description">
+          同学改过的题目、参数版本都在这里有完整记录。按批次号或操作人可以快速定位。
+        </p>
+
+        <div class="form-row inline">
+          <select id="logTargetType">
+            <option value="">全部对象</option>
+            <option value="question">题目</option>
+            <option value="parameter">参数</option>
+            <option value="supplement">补录</option>
+          </select>
+          <input id="logBatchNo" type="text" placeholder="批次号" />
+          <input id="logChangedBy" type="text" placeholder="操作人" />
+          <button id="searchLogBtn" class="primary-btn">查询</button>
+        </div>
+
+        <table class="data-table" id="logTable">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>对象类型</th>
+              <th>操作</th>
+              <th>字段</th>
+              <th>原值</th>
+              <th>新值</th>
+              <th>操作人</th>
+              <th>批次号</th>
+              <th>备注</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>微分方程参数沙盘 · 教研编辑专用 · 所有变更自动留痕</p>
+  </footer>
+
+  <script src="static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+question_no,version_no,param_name,param_value,unit,boundary_condition,description,data_type
+ODE-001,v1.0,a,1.0,1,,系数P(x)为常数时的取值,float
+ODE-001,v1.0,b,2.5,1/m,0 ≤ x ≤ 10,定义域,float
+ODE-001,v1.0,y0,0.5,,初值条件y(0)=0.5,函数初值,float
+ODE-002,v1.0,p,3.0,1,,特征方程系数p,float
+ODE-002,v1.0,q,2.0,1,,特征方程系数q,float
+ODE-003,v1.0,y0,1.0,,初值条件,函数值,float
+PDE-001,v1.0,a,0.01,m²/s,,热扩散系数,float
+PDE-001,v1.0,L,1.0,m,0 ≤ x ≤ 1,空间域长度,float
+PDE-001,v1.0,T,10.0,s,0 ≤ t ≤ T,时间区间,float
