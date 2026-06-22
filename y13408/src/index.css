@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #1a1f36;
+  --color-primary-light: #232948;
+  --color-warning: #f59e0b;
+  --color-normal: #10b981;
+  --color-bg: #0f1219;
+  --color-surface: #151a2e;
+  --color-error: #ef4444;
+  --color-border: #1e2440;
+  --color-text: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-text-dim: #64748b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'DM Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Source Serif 4', serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-dim);
+}
+
+@layer utilities {
+  .bg-deep {
+    background-color: var(--color-primary);
+  }
+  .bg-deep-light {
+    background-color: var(--color-primary-light);
+  }
+  .bg-cold {
+    background-color: var(--color-bg);
+  }
+  .bg-surface {
+    background-color: var(--color-surface);
+  }
+  .text-warning {
+    color: var(--color-warning);
+  }
+  .text-normal {
+    color: var(--color-normal);
+  }
+  .text-danger {
+    color: var(--color-error);
+  }
+  .text-muted {
+    color: var(--color-text-muted);
+  }
+  .text-dim {
+    color: var(--color-text-dim);
+  }
+  .border-subtle {
+    border-color: var(--color-border);
+  }
+}
