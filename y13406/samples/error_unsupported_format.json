@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": "UNSUPPORTED_FORMAT",
+    "message": "不支持的扩展名 txt",
+    "details": {
+      "allowed": ["csv", "xlsx", "xls", "json"]
+    }
+  }
+}

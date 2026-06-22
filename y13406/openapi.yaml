@@ -1,0 +1,606 @@
+openapi: 3.0.3
+info:
+  title: 概率抽样参数沙盘 API
+  version: 1.0.0
+  description: |
+    错题抽样场景的数据清洗 + 概率抽样 + 异常分流 API。
+    核心价值：
+    - 单位缺失在导入阶段就标记，后续图表/报告能直接看到它被排除
+    - 所有抽样公式带中间过程输出（变量、单位、结果）
+    - 异常分流视图让复核人不用回到代码找公式
+  contact:
+    name: 数据分析小孟
+servers:
+  - url: http://localhost:5001
+    description: 本地开发
+
+tags:
+  - name: System
+  - name: Cleanse
+  - name: Sampling
+  - name: Pipeline
+  - name: Exceptions
+
+paths:
+  /health:
+    get:
+      tags: [System]
+      summary: 服务健康检查
+      operationId: getHealth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  service:
+                    type: string
+                    example: probability-sampling-sandbox
+                  status:
+                    type: string
+                    example: ok
+                  allowed_methods:
+                    type: array
+                    items:
+                      type: string
+                      enum: [simple_random, stratified, systematic, cluster]
+                  allowed_statuses:
+                    type: array
+                    items:
+                      type: string
+
+  /openapi:
+    get:
+      tags: [System]
+      summary: 返回本契约（YAML）
+      responses:
+        '200':
+          description: YAML 文件
+
+  /api/v1/cleanse:
+    post:
+      tags: [Cleanse]
+      summary: 数据清洗（缺值/旧称呼/单位/边界/后补说明）
+      description: |
+        支持 multipart/form-data（上传文件）或 application/json（传 records 数组）。
+        输出：每条样本的状态、问题清单、被排除的单位缺失 ID 列表。
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 支持 csv/xlsx/xls/json
+          application/json:
+            schema:
+              type: object
+              required: [records]
+              properties:
+                records:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RawRecord'
+      responses:
+        '200':
+          description: 清洗完成
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CleanseResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '415':
+          $ref: '#/components/responses/Error415'
+
+  /api/v1/sample:
+    post:
+      tags: [Sampling]
+      summary: 执行概率抽样（输入已清洗样本）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [samples]
+              properties:
+                samples:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ErrorQuestionSample'
+                params:
+                  $ref: '#/components/schemas/SamplingParams'
+      responses:
+        '200':
+          description: 抽样完成，含中间公式过程
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SamplingResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+
+  /api/v1/pipeline:
+    post:
+      tags: [Pipeline]
+      summary: 清洗 + 抽样 + 异常视图 一键流水线
+      description: |
+        输入：原始记录（文件或 records）+ 抽样参数
+        输出：清洗摘要、抽样结果、公式中间过程、异常分流视图、cleanse 日志行
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                params:
+                  type: string
+                  description: JSON 字符串，同 SamplingParams
+          application/json:
+            schema:
+              type: object
+              required: [records]
+              properties:
+                records:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/RawRecord'
+                params:
+                  $ref: '#/components/schemas/SamplingParams'
+      responses:
+        '200':
+          description: 流水线完成
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PipelineResponse'
+        '400':
+          $ref: '#/components/responses/Error400'
+
+  /api/v1/exceptions:
+    post:
+      tags: [Exceptions]
+      summary: 构建异常分流仪表盘（复核人视图）
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [cleanse]
+              properties:
+                cleanse:
+                  $ref: '#/components/schemas/CleanseResult'
+                sampling:
+                  $ref: '#/components/schemas/SamplingResult'
+      responses:
+        '200':
+          description: 异常仪表盘
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExceptionDashboard'
+
+components:
+  responses:
+    Error400:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error415:
+      description: 不支持的 Content-Type
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum:
+                - MISSING_FILE
+                - UNSUPPORTED_FORMAT
+                - UNSUPPORTED_CONTENT_TYPE
+                - PARSE_ERROR
+                - INVALID_BODY
+                - INVALID_PARAMS
+                - INVALID_SAMPLE
+                - INVALID_CLEANSE
+                - INVALID_SAMPLING
+                - MISSING_SAMPLES
+                - CLEANSE_ERROR
+                - SAMPLING_ERROR
+                - PIPELINE_ERROR
+                - SPEC_MISSING
+              example: INVALID_PARAMS
+            message:
+              type: string
+              example: 抽样参数校验失败
+            details:
+              type: array
+              items: {}
+
+    SampleStatus:
+      type: string
+      enum:
+        - valid
+        - missing_value
+        - unit_missing
+        - old_term
+        - supplement_remark
+        - boundary_outlier
+        - excluded
+
+    SamplingMethod:
+      type: string
+      enum: [simple_random, stratified, systematic, cluster]
+      default: simple_random
+
+    RawRecord:
+      type: object
+      description: |
+        允许字段名用旧称呼（错题/同学/班级/备注/后补说明等），清洗阶段会做映射。
+      additionalProperties: true
+      example:
+        学生ID: S001
+        学生姓名: 张三
+        班级: 高一(1)班
+        错题数: 5题
+        失分: 12分
+        备注: 计算错误
+        后补说明: 第3题是审题错
+
+    ErrorQuestionSample:
+      type: object
+      required: [sample_id, status]
+      properties:
+        sample_id:
+          type: string
+          example: S7F3A2C1D9E0B4
+        raw_row_no:
+          type: integer
+          example: 2
+        student_id:
+          type: string
+          nullable: true
+        student_name:
+          type: string
+          nullable: true
+        class_id:
+          type: string
+          nullable: true
+        error_question_count:
+          type: number
+          nullable: true
+          description: 错题数量（数值部分）
+        error_question_count_unit:
+          type: string
+          nullable: true
+          description: 错题数量单位（题/道/个），为 null 表示缺失
+        error_score:
+          type: number
+          nullable: true
+          description: 失分（数值部分）
+        error_score_unit:
+          type: string
+          nullable: true
+          description: 失分单位（分/points/分數），为 null 表示缺失
+        remark:
+          type: string
+          nullable: true
+        remark_supplement:
+          type: string
+          nullable: true
+        screenshot_ref:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/SampleStatus'
+        issues:
+          type: array
+          items:
+            type: object
+            properties:
+              issue_type:
+                type: string
+              field:
+                type: string
+                nullable: true
+              detail:
+                type: string
+              detected_at:
+                type: string
+                format: date-time
+        original_fields:
+          type: object
+          additionalProperties: true
+
+    SamplingParams:
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/SamplingMethod'
+        sample_size:
+          type: integer
+          minimum: 1
+          description: 绝对样本量；与 sample_ratio 二选一；都不传则用 Cochran 公式
+          nullable: true
+        sample_ratio:
+          type: number
+          exclusiveMinimum: 0
+          maximum: 1
+          nullable: true
+        confidence_level:
+          type: number
+          minimum: 0.8
+          maximum: 0.999
+          default: 0.95
+        margin_of_error:
+          type: number
+          minimum: 0.001
+          maximum: 0.2
+          default: 0.05
+        stratify_by:
+          type: string
+          nullable: true
+          description: 分层抽样字段，如 class_id
+        random_seed:
+          type: integer
+          nullable: true
+        include_boundary:
+          type: boolean
+          default: false
+          description: 是否包含边界异常样本
+        exclude_status:
+          type: array
+          items:
+            $ref: '#/components/schemas/SampleStatus'
+          default: [unit_missing, excluded]
+          description: 抽样阶段排除的状态列表
+
+    SamplingIntermediate:
+      type: object
+      required: [step_name]
+      properties:
+        step_name:
+          type: string
+          example: 样本量确定-Cochran公式(无限总体)
+        formula:
+          type: string
+          example: n₀ = (Z² × p̂ × (1-p̂)) / e²
+        variables:
+          type: object
+          additionalProperties: true
+        unit_check:
+          type: object
+          additionalProperties:
+            type: string
+          description: 每个变量对应的单位，便于复核
+        result_value:
+          oneOf:
+            - type: number
+            - type: string
+            - type: integer
+          nullable: true
+
+    CleanseResult:
+      type: object
+      properties:
+        total_input:
+          type: integer
+        valid_count:
+          type: integer
+        excluded_count:
+          type: integer
+        missing_value_count:
+          type: integer
+        unit_missing_count:
+          type: integer
+        old_term_renamed:
+          type: array
+          items:
+            type: object
+        supplement_merged:
+          type: integer
+        boundary_outlier_count:
+          type: integer
+        excluded_unit_missing_ids:
+          type: array
+          items:
+            type: string
+        samples:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorQuestionSample'
+        cleanse_log:
+          type: array
+          items: {}
+
+    SamplingResult:
+      type: object
+      properties:
+        params:
+          $ref: '#/components/schemas/SamplingParams'
+        total_eligible:
+          type: integer
+        sample_size_used:
+          type: integer
+        sample_ratio_used:
+          type: number
+          nullable: true
+        selected_ids:
+          type: array
+          items:
+            type: string
+        selected_samples:
+          type: array
+          items: {}
+        stratify_distribution:
+          type: object
+          additionalProperties: {}
+        excluded_from_sampling:
+          type: array
+          items:
+            type: object
+        intermediate_steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SamplingIntermediate'
+        summary:
+          type: object
+          additionalProperties: true
+
+    CleanseResponse:
+      type: object
+      properties:
+        summary:
+          type: object
+          properties:
+            total_input: {type: integer}
+            valid_count: {type: integer}
+            excluded_count: {type: integer}
+            missing_value_count: {type: integer}
+            unit_missing_count: {type: integer}
+            boundary_outlier_count: {type: integer}
+            supplement_merged: {type: integer}
+            old_term_renamed: {type: integer}
+        excluded_unit_missing_ids:
+          type: array
+          items:
+            type: string
+          description: 因单位缺失被排除的样本ID，供图表层过滤
+        cleanse_log:
+          type: array
+          items: {}
+        samples:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorQuestionSample'
+
+    SamplingResponse:
+      type: object
+      properties:
+        summary:
+          type: object
+          additionalProperties: true
+        total_eligible: {type: integer}
+        sample_size_used: {type: integer}
+        sample_ratio_used: {type: number, nullable: true}
+        selected_ids:
+          type: array
+          items: {type: string}
+        selected_samples:
+          type: array
+          items: {}
+        stratify_distribution:
+          type: object
+          additionalProperties: {}
+        excluded_from_sampling:
+          type: array
+          items: {}
+        intermediate_steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SamplingIntermediate'
+
+    ExceptionDashboard:
+      type: object
+      properties:
+        status_distribution:
+          type: object
+          additionalProperties:
+            type: integer
+        by_issue_type:
+          type: object
+          additionalProperties:
+            type: array
+            items: {}
+        unit_missing_count: {type: integer}
+        unit_missing_excluded_ids:
+          type: array
+          items: {type: string}
+        unit_missing_detail:
+          type: array
+          items: {}
+        boundary_outlier_count: {type: integer}
+        boundary_outlier_detail:
+          type: array
+          items: {}
+        supplement_merged_count: {type: integer}
+        supplement_detail:
+          type: array
+          items: {}
+        old_term_renamed:
+          type: array
+          items: {}
+        missing_value_count: {type: integer}
+        sampling_excluded:
+          type: array
+          items: {}
+        selected_ids:
+          type: array
+          items: {type: string}
+        sampling_summary:
+          type: object
+          additionalProperties: true
+        sampling_intermediate_steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SamplingIntermediate'
+
+    PipelineResponse:
+      type: object
+      properties:
+        cleanse_summary:
+          type: object
+          additionalProperties: true
+        sampling_summary:
+          type: object
+          additionalProperties: true
+        sample_size_used: {type: integer}
+        sample_ratio_used: {type: number, nullable: true}
+        selected_ids:
+          type: array
+          items: {type: string}
+        selected_samples:
+          type: array
+          items: {}
+        stratify_distribution:
+          type: object
+          additionalProperties: {}
+        intermediate_steps:
+          type: array
+          items:
+            $ref: '#/components/schemas/SamplingIntermediate'
+        excluded_from_sampling:
+          type: array
+          items: {}
+        exception_dashboard:
+          $ref: '#/components/schemas/ExceptionDashboard'
+        cleanse_log_lines:
+          type: array
+          items:
+            type: string
+          description: 可直接给复核人看的清洗日志行

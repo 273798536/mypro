@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "MISSING_FILE",
+    "message": "缺少 file 字段"
+  }
+}
