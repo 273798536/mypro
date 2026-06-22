@@ -1,0 +1,280 @@
+{
+  "samples": [
+    {
+      "sample_id": "SAMPLE-001",
+      "vertices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "expected_cut_points": [
+        2,
+        3
+      ],
+      "source": "课堂作业_第3章_第12题",
+      "version": "1.0",
+      "created_at": "2026-06-15T09:30:00",
+      "updated_at": "2026-06-15T09:30:00",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "supplementary_note": null,
+      "boundary_flag": false,
+      "boundary_reason": null,
+      "metadata": {
+        "description": "课堂例题1 - 简单连通图"
+      },
+      "_checksum": "1d7b90fb5dc722de"
+    },
+    {
+      "sample_id": "SAMPLE-002",
+      "vertices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ],
+        [
+          3,
+          5
+        ],
+        [
+          4,
+          5
+        ]
+      ],
+      "expected_cut_points": [
+        2,
+        3
+      ],
+      "source": "期末复习_边界题型汇编",
+      "version": "1.1",
+      "created_at": "2026-06-16T14:20:00",
+      "updated_at": "2026-06-18T10:15:00",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "supplementary_note": "2026-06-18补录：学生提问为什么顶点2也算割点，补充说明这是桥的端点特征",
+      "boundary_flag": true,
+      "boundary_reason": "顶点2是桥的端点，移除后图分裂为2个分量，属于边界割点",
+      "metadata": {
+        "description": "边界样本 - 单桥连接两分量"
+      },
+      "_checksum": "ba5eb4a53dcc46bf"
+    },
+    {
+      "sample_id": "SAMPLE-003",
+      "vertices": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          0,
+          4
+        ]
+      ],
+      "expected_cut_points": [
+        0
+      ],
+      "source": "教材习题_P127_第8题",
+      "version": "1.0",
+      "created_at": "2026-06-17T11:00:00",
+      "updated_at": "2026-06-17T11:00:00",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "supplementary_note": null,
+      "boundary_flag": true,
+      "boundary_reason": "包含孤立点(5)，同时顶点0是星型中心，移除后分裂为4个分量+1孤立点",
+      "metadata": {
+        "description": "边界样本 - 孤立点 + 星型图"
+      },
+      "_checksum": "530f3dbf014a1b90"
+    },
+    {
+      "sample_id": "SAMPLE-004",
+      "vertices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "expected_cut_points": [
+        2,
+        3
+      ],
+      "source": "学生补交作业_张三",
+      "version": "1.0",
+      "created_at": "2026-06-19T16:45:00",
+      "updated_at": "2026-06-19T16:45:00",
+      "is_duplicate": true,
+      "duplicate_of": "SAMPLE-001",
+      "supplementary_note": "2026-06-20复核发现：此样本与SAMPLE-001数据完全相同，但提交人不同。已与两位同学确认，系合作完成后分别提交，不属于抄袭。但为保证数据一致性，两条记录均保留，此标记用于触发人工复核流程。",
+      "boundary_flag": false,
+      "boundary_reason": null,
+      "metadata": {
+        "description": "重复样本 - 与SAMPLE-001数据完全一致，用于测试重复检测"
+      },
+      "_checksum": "1d7b90fb5dc722de"
+    },
+    {
+      "sample_id": "SAMPLE-005",
+      "vertices": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "edges": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          4
+        ],
+        [
+          0,
+          2
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          4
+        ]
+      ],
+      "expected_cut_points": [],
+      "source": "课堂小测_第5题",
+      "version": "1.0",
+      "created_at": "2026-06-20T08:30:00",
+      "updated_at": "2026-06-20T08:30:00",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "supplementary_note": null,
+      "boundary_flag": false,
+      "boundary_reason": null,
+      "metadata": {
+        "description": "普通样本 - 双连通分量（无割点）"
+      },
+      "_checksum": "8986c7d9e44c4d50"
+    },
+    {
+      "sample_id": "SAMPLE-006",
+      "vertices": [
+        0
+      ],
+      "edges": [],
+      "expected_cut_points": [],
+      "source": "思考题_极端情况讨论",
+      "version": "1.0",
+      "created_at": "2026-06-21T13:15:00",
+      "updated_at": "2026-06-21T13:15:00",
+      "is_duplicate": false,
+      "duplicate_of": null,
+      "supplementary_note": "2026-06-21补录：关于单点是否为割点的课堂讨论结论：割点定义要求移除后连通分量增加，但单点图移除后分量从1变0，不满足'增加'。因此单点不是割点。此条作为边界样本保留。",
+      "boundary_flag": true,
+      "boundary_reason": "只有一个顶点，没有边。属于边界情况中的极端案例，移除后图为空。",
+      "metadata": {
+        "description": "边界样本 - 单点图（极端边界）"
+      },
+      "_checksum": "1a774b9bfe500c91"
+    }
+  ]
+}
